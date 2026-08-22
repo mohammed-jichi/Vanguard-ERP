@@ -4,8 +4,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../css/style.css';
 
 export const metadata = {
-  title: 'منتوجات زيت وزيتون الجنوب V2 - Vanguard ERP',
-  description: 'Refinery & Enterprise Resource Planning Portal',
+  title: 'Vanguard ERP',
+  description: 'Enterprise Resource Planning Portal',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-white text-black min-h-screen">
         {children}
         <LiveAssistantWidget />
         <SpeedInsights />
