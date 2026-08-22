@@ -3,77 +3,90 @@ import React from 'react';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1b4379] via-[#2a5d9e] to-[#ab8320] p-8 font-sans">
 
-      {/* 
-        هون زرعنا الأوامر السحرية للحركة (Animations) 
-        - spinAndSettle: بتخلي اللوجو يبرم وينزل يركز مكانه.
-        - goldShine: بتعطي لمعان ونبض للإضاءة الذهبية.
-      */}
-      <style>{`
-        @keyframes spinAndSettle {
-          0% { transform: translateY(-80px) rotate(-720deg) scale(0.5); opacity: 0; }
-          60% { transform: translateY(10px) rotate(20deg) scale(1.1); opacity: 1; }
-          100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-        }
-        @keyframes goldShine {
-          0% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
-          50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 215, 0, 0.9)); }
-          100% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
-        }
-        .animate-logo {
-          animation: spinAndSettle 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        .animate-gold {
-          animation: goldShine 3s infinite alternate;
-        }
-      `}</style>
+      {/* الهيكل الأساسي */}
+      <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-12 z-10">
 
-      {/* خلفية الأمواج مع إخفاء التاب الوهمي */}
-      <div
-        className="absolute w-full h-[calc(100%+3.5rem)] top-[-3.5rem] left-0 bg-cover bg-center bg-no-repeat z-0"
-        style={{ backgroundImage: "url('/bg-waves.jpg..jpg')" }}
-      ></div>
+        {/* القسم الأيسر - النصوص والأزرار */}
+        <div className="flex-1 w-full text-left">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 drop-shadow-lg">
+            Vanguard Business Solutions
+          </h1>
+          <p className="text-lg text-blue-100 mb-10 font-medium">
+            (Restaurants, Hotels, Retail)
+          </p>
 
-      {/* 
-        اللوجو المتحرك: حطينا صورة اللوجو الحقيقية فوق اللوجو المطبوع بالصورة 
-        وربطناها بأنيميشن الدوران واللمعان الذهبي! 
-      */}
-      <div className="absolute top-[22%] right-[5%] md:top-[25%] md:right-[15%] z-30 flex justify-center w-[320px] md:w-[350px] pointer-events-none">
-        {/* تأكد إنو صورة vanguard.jpg موجودة بملف public */}
-        <img
-          src="/vanguard.jpg"
-          alt="Vanguard Animated Logo"
-          className="h-24 md:h-28 object-contain animate-logo animate-gold"
-        />
+          <h2 className="text-3xl font-bold text-white mb-6 drop-shadow-md">
+            Vanguard Platforms
+          </h2>
+
+          <div className="text-blue-50 text-lg leading-relaxed mb-12 max-w-xl font-medium">
+            POS, Inventory, Accounting, Human Resources & Payroll, CRM & Loyalty, Tasks & Appointments, Analytics, Mobile
+          </div>
+
+          {/* الأزرار بالأسماء الجديدة */}
+          <div className="flex gap-4">
+            <button className="bg-[#123b70] hover:bg-[#0b254a] text-white px-8 py-3 rounded-md font-bold shadow-xl transition-all border border-blue-400/30">
+              Contact Us
+            </button>
+            <button className="bg-gradient-to-r from-[#ab8320] to-[#d4b055] hover:brightness-110 text-white px-8 py-3 rounded-md font-bold shadow-xl transition-all border border-yellow-300/50">
+              Request A Demo
+            </button>
+          </div>
+        </div>
+
+        {/* القسم الأيمن - بطاقة تسجيل الدخول */}
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-8 relative border border-white/20">
+
+          {/* حركة اللوجو (دوران واستقرار) */}
+          <style>{`
+            @keyframes spinAndSettle {
+              0% { transform: translateY(-50px) rotate(-360deg) scale(0.5); opacity: 0; }
+              100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            }
+            .animate-logo {
+              animation: spinAndSettle 1.2s ease-out forwards;
+            }
+          `}</style>
+
+          <div className="flex justify-center mb-6 relative">
+            {/* هالة ذهبية ورا اللوجو */}
+            <div className="absolute inset-0 bg-yellow-400 blur-2xl opacity-30 rounded-full animate-pulse"></div>
+            <img
+              src="/vanguard.jpg"
+              alt="Vanguard Logo"
+              className="h-28 object-contain animate-logo relative z-10"
+            />
+          </div>
+
+          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <input
+                type="email"
+                placeholder="Email Address"
+                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#123b70] outline-none transition-all bg-white font-semibold text-slate-800"
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#123b70] outline-none transition-all bg-white font-semibold text-slate-800"
+              />
+            </div>
+
+            <div className="text-right pb-2">
+              <a href="#" className="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot Password?</a>
+            </div>
+
+            <button className="w-full bg-[#123b70] hover:bg-[#0b254a] text-white font-bold py-3 rounded-md shadow-lg transition-all text-lg tracking-wide">
+              Sign In
+            </button>
+          </form>
+        </div>
+
       </div>
-
-      {/* الأزرار الحقيقية لتغطية الأزرار القديمة (مع لمعان للزر الذهبي) */}
-      <div className="absolute bottom-[10%] left-[5%] md:bottom-[15%] md:left-[10%] flex gap-4 z-20">
-        <button className="bg-[#123b70] hover:bg-[#0b254a] text-white px-6 md:px-8 py-3 rounded-md font-bold text-sm md:text-lg shadow-lg transition-all border border-blue-500/30">
-          Contact Us
-        </button>
-        <button className="bg-gradient-to-r from-[#ab8320] via-[#d4b055] to-[#ab8320] hover:brightness-110 text-white px-6 md:px-8 py-3 rounded-md font-bold text-sm md:text-lg shadow-[0_0_15px_rgba(212,176,85,0.6)] animate-gold transition-all border border-yellow-300/50">
-          Request A Demo
-        </button>
-      </div>
-
-      {/* مربعات تسجيل الدخول الشفافة */}
-      <div className="absolute top-[30%] right-[5%] md:top-[35%] md:right-[10%] w-[320px] md:w-[350px] p-6 z-20 flex flex-col gap-4 md:gap-5 mt-4">
-        <input
-          type="email"
-          placeholder=" "
-          className="w-full h-[40px] md:h-[45px] bg-transparent border-2 border-transparent hover:border-blue-400/50 focus:border-blue-500 focus:bg-white/10 outline-none rounded-md px-4 text-slate-900 font-bold transition-all"
-        />
-        <input
-          type="password"
-          placeholder=" "
-          className="w-full h-[40px] md:h-[45px] mt-1 md:mt-2 bg-transparent border-2 border-transparent hover:border-blue-400/50 focus:border-blue-500 focus:bg-white/10 outline-none rounded-md px-4 text-slate-900 font-bold transition-all"
-        />
-        <button className="w-full h-[45px] md:h-[50px] mt-5 md:mt-6 bg-transparent cursor-pointer rounded-md hover:bg-white/10 transition-colors">
-        </button>
-      </div>
-
     </div>
   );
 }
