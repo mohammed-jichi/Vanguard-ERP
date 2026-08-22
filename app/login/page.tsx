@@ -5,65 +5,123 @@ import React, { useState } from 'react';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.href = '/';
+    setIsLoading(true);
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1000);
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-2 md:p-6 font-sans">
-      <div className="w-full max-w-7xl relative bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden">
-        
-        {/* HIGH RESOLUTION MOCKUP IMAGE DISPLAY */}
-        <div className="relative w-full">
-          <img
-            src="/vanguard_login_mockup.jpg"
-            alt="Vanguard ERP Sign-In Page UI Mockup"
-            className="w-full h-auto object-cover rounded-2xl"
-          />
+  const platformItems = [
+    'POS',
+    'Inventory',
+    'Accounting',
+    'HR & Payroll',
+    'CRM & Loyalty',
+    'Tasks & Appointments',
+    'Analytics',
+    'Mobile',
+  ];
 
-          {/* INTERACTIVE FORM OVERLAY */}
-          <div className="absolute top-[32%] right-[5%] w-[32%] max-w-md hidden md:block z-20">
-            <form onSubmit={handleSubmit} className="space-y-4 p-4">
-              <input
-                type="email"
-                placeholder="Enter Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/90 border border-slate-300 text-slate-900 text-sm font-semibold rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500 opacity-0 hover:opacity-100 focus:opacity-100 transition-all cursor-pointer shadow-lg"
-              />
-              <input
-                type="password"
-                placeholder="Enter Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/90 border border-slate-300 text-slate-900 text-sm font-semibold rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500 opacity-0 hover:opacity-100 focus:opacity-100 transition-all cursor-pointer shadow-lg"
-              />
-              <button
-                type="submit"
-                className="w-full h-12 bg-blue-600/0 hover:bg-blue-600 text-transparent hover:text-white font-black text-sm rounded-lg transition-all cursor-pointer"
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-yellow-50 p-4 md:p-8">
+      <div className="max-w-6xl w-full flex flex-col md:flex-row gap-12 items-center">
+        
+        {/* LEFT COLUMN (MARKETING CONTENT - 60% WIDTH) */}
+        <div className="w-full md:w-3/5 space-y-2">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-blue-900 mb-2">
+            Vanguard Business Solutions
+          </h1>
+          <p className="text-lg text-slate-600 mb-8">
+            (Restaurants, Hotels, Retail)
+          </p>
+
+          <h2 className="text-3xl font-bold text-blue-800 mb-6">
+            Vanguard Platforms
+          </h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {platformItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-gray-200 shadow-sm rounded-full px-4 py-2 text-sm font-medium text-slate-700 text-center"
               >
-                Sign In
-              </button>
-            </form>
+                {item}
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-4 mt-10">
+            <a
+              href="#request-demo"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-bold shadow-md transition-colors inline-block text-center"
+            >
+              Request A Demo
+            </a>
+            <a
+              href="#contact-us"
+              className="bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-bold shadow-md transition-colors inline-block text-center"
+            >
+              Contact Us
+            </a>
           </div>
         </div>
 
-        {/* BOTTOM LEFT BUTTONS */}
-        <div className="absolute bottom-6 left-6 flex items-center gap-4 z-20">
-          <a
-            href="#request-demo"
-            className="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-black px-6 py-3 rounded-xl shadow-2xl text-sm transition-all hover:scale-105 border border-yellow-400"
-          >
-            Request A Demo
-          </a>
-          <a
-            href="#contact-us"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl shadow-2xl text-sm transition-all hover:scale-105 border border-blue-500"
-          >
-            Contact Us
-          </a>
+        {/* RIGHT COLUMN (LOGIN CARD - 40% WIDTH) */}
+        <div className="w-full md:w-2/5 flex justify-center md:justify-end">
+          <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md relative">
+            <h3 className="text-2xl font-bold text-center text-slate-800 mb-6">
+              Sign In to Vanguard
+            </h3>
+
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="name@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border border-gray-300 rounded-md p-3 w-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+
+              <div className="mb-2">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border border-gray-300 rounded-md p-3 w-full text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+
+              <a
+                href="#forgot"
+                className="text-sm text-blue-600 text-right block mb-6 hover:underline"
+              >
+                Forgot Password?
+              </a>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-gradient-to-r from-blue-700 to-blue-900 text-white w-full rounded-md py-3 font-semibold hover:shadow-lg transition-all duration-200 cursor-pointer"
+              >
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+          </div>
         </div>
 
       </div>
