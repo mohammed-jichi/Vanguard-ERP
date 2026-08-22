@@ -7,24 +7,28 @@ import { useTenant } from '../lib/TenantContext';
 
 export default function Header() {
   const { currentTenant } = useTenant();
+  const tenantName = currentTenant?.brandNameAr;
   const router = useRouter();
 
   return (
-    <header dir="rtl" className="w-full bg-[#1e293b] border-b-2 border-[#d97706] px-6 py-4 text-white flex flex-wrap items-center justify-between gap-4 shadow-xl">
+    <header dir="rtl" className="w-full bg-white border-b border-gray-200 px-6 py-4 text-gray-900 flex flex-wrap items-center justify-between gap-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <img src="/assets/images/logo.png" alt="Southern Olive Logo" className="w-12 h-12 rounded-full border-2 border-[#d97706] shadow-sm" />
+        <img src="/assets/images/logo.png" alt="Southern Olive Logo" className="w-12 h-12 rounded-full border-2 border-amber-500 shadow-sm" />
         <div>
-          <h1 className="font-black text-lg text-white">{currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب ش.م.م'}</h1>
-          <p className="text-xs text-amber-400 font-semibold">{currentTenant.brandNameEn || 'Southern Olive Oil Products, S.A.R.L.'}</p>
+          <h1 className="font-black text-lg text-gray-900 flex items-center gap-2">
+            <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-8 h-8 object-contain" />
+            <span>{tenantName || "Vanguard ERP System"}</span>
+          </h1>
+          <p className="text-xs text-gray-600 font-semibold">{currentTenant?.brandNameEn || 'Southern Olive Oil Products, S.A.R.L.'}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/admin')}
-          className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl shadow-lg text-xs flex items-center gap-2 transition-all border border-amber-300"
+          className="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-2 rounded-xl shadow-sm text-xs flex items-center gap-2 transition-all border border-amber-600"
         >
-          <Crown className="w-4 h-4 text-slate-950" /> Vanguard Admin
+          <Crown className="w-4 h-4 text-white" /> Vanguard Admin
         </button>
       </div>
     </header>
