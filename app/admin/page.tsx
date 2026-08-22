@@ -4,9 +4,6 @@ import React from 'react';
 import { TenantProvider } from '@/lib/TenantContext';
 import SuperSonicFleetManager from '@/components/SuperSonicFleetManager';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 export default function AdminDashboardPage() {
   return (
     <TenantProvider>
