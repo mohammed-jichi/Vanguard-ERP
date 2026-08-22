@@ -72,6 +72,7 @@ const handleRequest = async (req, res) => {
   }
 
   if (cleanUrl === '/') cleanUrl = '/index.html';
+  if (cleanUrl === '/login' || cleanUrl === '/app/login' || cleanUrl === '/signin') cleanUrl = '/login.html';
   if (cleanUrl === '/admin' || cleanUrl === '/vanguard-admin' || cleanUrl === '/vanguard-hub' || cleanUrl === '/vanguard/hub') cleanUrl = '/vanguard-admin.html';
   if (cleanUrl === '/erp') cleanUrl = '/index.html';
 
@@ -94,7 +95,7 @@ const handleRequest = async (req, res) => {
     if (error) {
       if (error.code === 'ENOENT') {
         res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end('<!DOCTYPE html><html><head><title>404 Not Found</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>404 Page Not Found</h1><p><a href="/">Return to Southern Olive ERP Home</a></p></body></html>', 'utf-8');
+        res.end('<!DOCTYPE html><html><head><title>404 Not Found</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>404 Page Not Found</h1><p><a href="/">Return to Vanguard ERP Home</a></p></body></html>', 'utf-8');
       } else {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end(`Server Error: ${error.code}`);
@@ -110,7 +111,7 @@ const server = http.createServer(handleRequest);
 
 if (require.main === module) {
   server.listen(PORT, () => {
-    console.log(`Southern Olive Oil Products ERP Portal running at http://localhost:${PORT}/`);
+    console.log(`Vanguard ERP Portal running at http://localhost:${PORT}/`);
   });
 }
 
