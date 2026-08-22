@@ -5,97 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vanguard ERP - Sign In</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes spinAndSettle {
+      0% { transform: translateY(-50px) rotate(-360deg) scale(0.5); opacity: 0; }
+      100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    }
+    .animate-logo {
+      animation: spinAndSettle 1.2s ease-out forwards;
+    }
+  </style>
 </head>
-<body class="min-h-screen relative overflow-hidden flex items-center justify-center bg-slate-50 font-sans">
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1b4379] via-[#2a5d9e] to-[#ab8320] p-8 font-sans">
 
-  <!-- Background Lighting Orbs -->
-  <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-60"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-yellow-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-40"></div>
+  <!-- Main Container -->
+  <div class="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-12 z-10">
 
-  <div class="max-w-7xl w-full z-10 flex flex-col lg:flex-row items-center gap-16 px-8 relative">
-
-    <!-- Left Column: Vanguard Marketing -->
+    <!-- Left Column - Marketing -->
     <div class="flex-1 w-full text-left">
-      <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tight mb-4">
-        Vanguard <span class="text-blue-700">Business Solutions</span>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-2 drop-shadow-lg">
+        Vanguard Business Solutions
       </h1>
-      <p class="text-xl md:text-2xl text-slate-600 mb-10 font-semibold tracking-wide">
-        Restaurants <span class="text-yellow-500 mx-2">•</span> Hotels <span class="text-yellow-500 mx-2">•</span> Retail
+      <p class="text-lg text-blue-100 mb-10 font-medium">
+        (Restaurants, Hotels, Retail)
       </p>
 
-      <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-        <span class="w-8 h-1 bg-blue-600 rounded-full"></span> Vanguard Platforms
+      <h2 class="text-3xl font-bold text-white mb-6 drop-shadow-md">
+        Vanguard Platforms
       </h2>
 
-      <div className="flex flex-wrap gap-3 mb-12 flex items-center justify-start gap-3">
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">POS</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Inventory</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Accounting</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">HR & Payroll</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">CRM & Loyalty</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Tasks & Appointments</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Analytics</span>
-        <span class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Mobile</span>
+      <div class="text-blue-50 text-lg leading-relaxed mb-12 max-w-xl font-medium">
+        POS, Inventory, Accounting, Human Resources & Payroll, CRM & Loyalty, Tasks & Appointments, Analytics, Mobile
       </div>
 
-      <div class="flex flex-wrap gap-4 mt-8">
-        <a href="/" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 font-extrabold px-8 py-4 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all inline-block">
-          Request A Demo
-        </a>
-        <a href="/" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:-translate-y-1 transition-all inline-block">
+      <!-- Action Buttons -->
+      <div class="flex gap-4">
+        <button onclick="window.location.href='/'" class="bg-[#123b70] hover:bg-[#0b254a] text-white px-8 py-3 rounded-md font-bold shadow-xl transition-all border border-blue-400/30 cursor-pointer">
           Contact Us
-        </a>
+        </button>
+        <button onclick="window.location.href='/'" class="bg-gradient-to-r from-[#ab8320] to-[#d4b055] hover:brightness-110 text-white px-8 py-3 rounded-md font-bold shadow-xl transition-all border border-yellow-300/50 cursor-pointer">
+          Request A Demo
+        </button>
       </div>
     </div>
 
-    <!-- Right Column: Login Card -->
-    <div class="w-full max-w-md mt-12 lg:mt-0">
-      <div class="bg-white/70 backdrop-blur-2xl border border-white p-10 rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.1)] relative">
+    <!-- Right Column - Login Card -->
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-8 relative border border-white/20">
 
-        <div class="flex justify-center mb-10 relative">
-          <div class="absolute inset-0 bg-yellow-400 blur-2xl opacity-30 rounded-full animate-pulse"></div>
-          <img
-            src="/vanguard.jpg"
-            alt="Vanguard Logo"
-            class="h-28 w-28 object-contain relative z-10 animate-[spin_2s_ease-out_1]"
+      <div class="flex justify-center mb-6 relative">
+        <div class="absolute inset-0 bg-yellow-400 blur-2xl opacity-30 rounded-full animate-pulse"></div>
+        <img
+          src="/vanguard.jpg"
+          alt="Vanguard Logo"
+          class="h-28 object-contain animate-logo relative z-10"
+        />
+      </div>
+
+      <form class="space-y-5" onsubmit="event.preventDefault(); window.location.href='/';">
+        <div>
+          <input
+            type="email"
+            placeholder="Email Address"
+            required
+            class="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#123b70] outline-none transition-all bg-white font-semibold text-slate-800"
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            class="w-full px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-[#123b70] outline-none transition-all bg-white font-semibold text-slate-800"
           />
         </div>
 
-        <h3 class="text-2xl font-bold text-center text-slate-800 mb-8">Sign In to Vanguard</h3>
+        <div class="text-right pb-2">
+          <a href="#" class="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot Password?</a>
+        </div>
 
-        <form class="space-y-6" onsubmit="event.preventDefault(); window.location.href='/';">
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
-            <input
-              type="email"
-              placeholder="name@company.com"
-              required
-              class="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white/50 font-medium"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              required
-              class="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-white/50 font-medium tracking-widest"
-            />
-          </div>
-
-          <div class="flex justify-end pt-2">
-            <a href="#" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">Forgot Password?</a>
-          </div>
-
-          <button type="submit" class="w-full bg-slate-900 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-xl hover:shadow-blue-500/30 transition-all transform hover:-translate-y-1 mt-4">
-            Sign In
-          </button>
-        </form>
-
-        <p class="text-center text-xs text-slate-400 mt-8 font-medium">
-          Protected by Vanguard Enterprise Security Systems
-        </p>
-      </div>
+        <button type="submit" class="w-full bg-[#123b70] hover:bg-[#0b254a] text-white font-bold py-3 rounded-md shadow-lg transition-all text-lg tracking-wide cursor-pointer">
+          Sign In
+        </button>
+      </form>
     </div>
 
   </div>
