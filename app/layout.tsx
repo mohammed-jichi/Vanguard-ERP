@@ -1,8 +1,10 @@
 import React from 'react';
 import { LiveAssistantWidget } from '@/components/voice/LiveAssistantWidget';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../css/style.css';
+
 export const metadata = {
-  title: 'Southern Olive & Oil Product V2 - Vanguard ERP',
+  title: 'منتوجات زيت وزيتون الجنوب V2 - Vanguard ERP',
   description: 'Refinery & Enterprise Resource Planning Portal',
 };
 
@@ -16,6 +18,7 @@ export default function RootLayout({
       <body>
         {children}
         <LiveAssistantWidget />
+        <SpeedInsights />
       </body>
     </html>
   );
