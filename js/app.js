@@ -4366,8 +4366,8 @@ window.VanguardTenantManager = {
   currentTenant: {
     id: '00000000-0000-0000-0000-000000000001',
     name: 'Vanguard Master Enterprise',
-    brandNameAr: 'منتوجات زيت وزيتون الجنوب',
-    brandNameEn: 'Southern Olive & Oil Products',
+    brandNameAr: 'المؤسسة المعتمدة',
+    brandNameEn: 'Vanguard Enterprise Client',
     subscriptionTier: 'ENTERPRISE'
   },
 
@@ -4375,8 +4375,8 @@ window.VanguardTenantManager = {
     if (companyObj) {
       this.currentTenant = Object.assign({}, this.currentTenant, companyObj);
     }
-    var brandAr = this.currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب';
-    var brandEn = this.currentTenant.brandNameEn || 'Southern Olive & Oil Products';
+    var brandAr = this.currentTenant.brandNameAr || 'المؤسسة المعتمدة';
+    var brandEn = this.currentTenant.brandNameEn || 'Vanguard Enterprise Client';
 
     if (typeof window !== 'undefined' && window.location.pathname.includes('/admin')) {
       document.title = 'Vanguard SaaS Master Controller';

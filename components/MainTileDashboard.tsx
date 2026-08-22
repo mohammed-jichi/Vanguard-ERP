@@ -285,7 +285,7 @@ export default function MainTileDashboard() {
               </span>
             </h1>
             <p className="text-xs text-gray-500 font-bold mt-0.5">
-              Southern Olive & Oil Products S.A.R.L. -- Enterprise ERP System
+              Enterprise Resource Planning System
             </p>
           </div>
         </div>

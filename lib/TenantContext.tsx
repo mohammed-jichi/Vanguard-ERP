@@ -40,11 +40,11 @@ interface TenantContextType {
 
 const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   id: '00000000-0000-0000-0000-000000000001',
-  name: 'منتوجات زيت وزيتون الجنوب',
-  slug: 'southern-olive',
-  brandNameAr: 'منتوجات زيت وزيتون الجنوب',
-  brandNameEn: 'Southern Olive & Oil Products',
-  logoUrl: '/assets/images/logo.png',
+  name: 'Vanguard Enterprise',
+  slug: 'vanguard-enterprise',
+  brandNameAr: 'المؤسسة المعتمدة',
+  brandNameEn: 'Vanguard Enterprise Client',
+  logoUrl: '',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
@@ -86,11 +86,11 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (data && Array.isArray(data)) {
         const fetchedCompanies: TenantCompany[] = data.map((t: any) => ({
           id: t.id || 'comp-' + Date.now(),
-          name: t.name || t.brand_name_ar || 'منتوجات زيت وزيتون الجنوب',
+          name: t.name || t.brand_name_ar || 'Vanguard Enterprise Client',
           slug: t.slug || t.name,
-          brandNameAr: t.brand_name_ar || t.name || 'منتوجات زيت وزيتون الجنوب',
-          brandNameEn: t.brand_name_en || t.name || 'Southern Olive & Oil Products',
-          logoUrl: t.logo_url || '/assets/images/logo.png',
+          brandNameAr: t.brand_name_ar || t.name || 'المؤسسة المعتمدة',
+          brandNameEn: t.brand_name_en || t.name || 'Vanguard Enterprise Client',
+          logoUrl: t.logo_url || '',
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,
@@ -126,8 +126,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return;
     }
 
-    const brandAr = currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب';
-    const brandEn = currentTenant.brandNameEn || 'Southern Olive & Oil Products';
+    const brandAr = currentTenant.brandNameAr || 'المؤسسة المعتمدة';
+    const brandEn = currentTenant.brandNameEn || 'Vanguard Enterprise Client';
 
     document.title = `${brandEn} - Vanguard ERP Portal`;
 
@@ -156,7 +156,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const onboardNewTenant = async (tenantData: Partial<TenantCompany>, adminEmail: string): Promise<{ success: boolean; error?: string }> => {
-    const tenantName = tenantData.name || 'منتوجات زيت وزيتون الجنوب';
+    const tenantName = tenantData.name || 'Vanguard Enterprise Client';
     const slug = tenantData.slug || tenantName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `tenant-${Date.now()}`;
 
     const newCompany: TenantCompany = {
@@ -164,8 +164,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       name: tenantName,
       slug: slug,
       brandNameAr: tenantData.brandNameAr || tenantName,
-      brandNameEn: tenantData.brandNameEn || 'Southern Olive & Oil Products',
-      logoUrl: tenantData.logoUrl || '/assets/images/logo.png',
+      brandNameEn: tenantData.brandNameEn || 'Vanguard Enterprise Client',
+      logoUrl: tenantData.logoUrl || '',
       subscriptionTier: tenantData.subscriptionTier || 'PRO',
       subscriptionStatus: 'ACTIVE',
       aiUsageCount: tenantData.aiUsageCount || 0,

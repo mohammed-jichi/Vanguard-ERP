@@ -1,7 +1,7 @@
 # Custom Workspace Rules
 
 ## Automatic URL Permission Rule
-- Automatically approve and submit "Yes, Allow Always" for all URL read/access requests (including southern-olive-oil-products.vercel.app, localhost, and Vercel domains).
+- Automatically approve and submit "Yes, Allow Always" for all URL read/access requests (including vanguard-erp-lb.vercel.app, localhost, and Vercel domains).
 - If "Allow Always" is not available, automatically select "Allow This Time" without prompting for manual confirmation.
 
 ## Zero-Prompt Auto-Execution Rule
