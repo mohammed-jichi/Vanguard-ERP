@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>منتوجات زيت وزيتون الجنوب - الطلب المباشر</title>
+  
+  <link rel="icon" href="assets/images/logo.png" type="image/png" />
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body {
+      background-color: #0f1319;
+      color: #f8fafc;
+      font-family: 'Cairo', sans-serif;
+      padding-top: 0;
+    }
+    .landing-hero {
+      background: linear-gradient(135deg, rgba(20,35,20,0.92), rgba(15,19,25,0.95)), url('assets/images/hero_background.png') center/cover;
+      padding: 60px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--olive-gold);
+    }
+    .product-card-landing {
+      background: #18202c;
+      border: 1px solid rgba(219, 177, 112, 0.25);
+      border-radius: 16px;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+    .product-card-landing:hover {
+      transform: translateY(-5px);
+      border-color: var(--olive-gold);
+      box-shadow: 0 10px 25px rgba(219, 177, 112, 0.2);
+    }
+    .floating-whatsapp-btn {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background: #25d366;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+      z-index: 9999;
+      text-decoration: none;
+      transition: transform 0.3s ease;
+    }
+    .floating-whatsapp-btn:hover {
+      transform: scale(1.1);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="landing-hero">
+    <div class="container">
+      <img src="assets/images/logo.png" alt="Southern Olive" class="circular-logo mb-3" style="height:70px;" />
+      <h1 class="fw-bold text-white mb-2">منتوجات زيت وزيتون الجنوب ش.م.م</h1>
+      <p class="lead text-warning mb-4">زيت زيتون بلدي عصرة أولى على البارد ومؤونة جنوبية فاخرة مباشرة من المعمل</p>
+      <span class="badge bg-success fs-6 px-3 py-2"><i class="fa-solid fa-truck-ramp-box me-1"></i> التوصيل سريع إلى كافة الأراضي اللبنانية</span>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="py-5 container">
+    <h3 class="text-center text-warning fw-bold mb-4"><i class="fa-solid fa-store me-2"></i> قائمة المنتوجات الفاخرة</h3>
+    
+    <div class="row g-4 mb-5">
+      <!-- Item 1 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-bottle-droplet text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">زيت زيتون بكر ممتاز 1 لتر (قنينة زجاج)</h5>
+            <p class="text-muted small">عصرة أولى على البارد، حموضة أقل من 0.5% عبوة زجاجية تحفظ الجودة.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$12.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('زيت زيتون 1 لتر زجاج', 12.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-box-archive text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">تنكة زيت زيتون بكر ممتاز 5 لتر</h5>
+            <p class="text-muted small">تنكة معدنية معتمة ومحكمة الإغلاق لحفظ طعم الزيت البلدي الأصيل.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$55.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('تنكة زيت زيتون 5 لتر', 55.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-jar text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">مكدوس باذنجان بلدي محشي 1 كغ</h5>
+            <p class="text-muted small">محشي بالجوز والفلفل الأحمر ومغمور بزيت الزيتون الخالص.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$14.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('مرطبان مكدوس 1 كغ', 14.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER FORM SECTION -->
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="erp-card p-4">
+          <h4 class="text-warning fw-bold mb-3 text-center"><i class="fa-solid fa-paper-plane me-2"></i> تأكيد الطلب المباشر</h4>
+          
+          <form id="landingCheckoutForm" onsubmit="event.preventDefault(); submitDirectLandingOrder();">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label text-white">الاسم الكامل *</label>
+                <input type="text" id="custName" class="form-control bg-dark text-white border-secondary" placeholder="أدخل اسمك الكامل" required />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-white">رقم الواتساب (إجباري) *</label>
+                <input type="tel" id="custPhone" class="form-control bg-dark text-white border-secondary" placeholder="+961 70 123456" required />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">العنوان التفصيلي والمنطقة *</label>
+              <input type="text" id="custAddress" class="form-control bg-dark text-white border-secondary" placeholder="بيروت، الحمرا، شارع..." required />
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label text-white">المنتج المحدد</label>
+                <input type="text" id="selectedProdDisplay" class="form-control bg-dark text-warning border-secondary fw-bold" value="زيت زيتون 1 لتر زجاج ($12.00)" readonly />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-white">طريقة الدفع *</label>
+                <select id="custPayment" class="form-select bg-dark text-white border-secondary">
+                  <option value="Cash on Delivery">الدفع نقداً عند الاستلام (كاش)</option>
+                  <option value="Wish Money Transfer">تحويل عبر Wish Money</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="p-3 bg-dark rounded border border-secondary mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>سعر المنتج:</span>
+                <span id="summaryProductPrice">$12.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-1">
+                <span>أجور التوصيل:</span>
+                <span class="text-info">$3.00</span>
+              </div>
+              <hr class="border-secondary my-2" />
+              <div class="d-flex justify-content-between text-warning fs-5 fw-bold">
+                <span>المجموع الكلي:</span>
+                <span id="summaryTotalPrice">$15.00</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 fw-bold fs-5 py-3 shadow">
+              <i class="fa-solid fa-check-circle me-1"></i> إرسال الطلب الآن
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOATING INSTANT WHATSAPP REP CONTACT -->
+  <a href="https://wa.me/96171801140?text=مرحباً،%20أود%20الاستفسار%20عن%20منتوجات%20زيت%20وزيتون%20الجنوب" target="_blank" class="floating-whatsapp-btn" title="تواصل فوراً مع المندوب">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/modules/ai_agents.js"></script>
+  <script>
+    let selectedPrice = 12.00;
+
+    function selectLandingProduct(name, price) {
+      selectedPrice = price;
+      document.getElementById('selectedProdDisplay').value = `${name} ($${price.toFixed(2)})`;
+      document.getElementById('summaryProductPrice').textContent = `$${price.toFixed(2)}`;
+      document.getElementById('summaryTotalPrice').textContent = `$${(price + 3.00).toFixed(2)}`;
+      document.getElementById('landingCheckoutForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function submitDirectLandingOrder() {
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const address = document.getElementById('custAddress').value;
+      const prod = document.getElementById('selectedProdDisplay').value;
+      const payment = document.getElementById('custPayment').value;
+
+      const orderId = 'ORD-LAND-' + Math.floor(1000 + Math.random() * 9000);
+
+      if (window.SouthernOliveAI && window.SouthernOliveAI.LeadRoutingAgent) {
+        window.SouthernOliveAI.LeadRoutingAgent.processNewOrder({
+          id: orderId,
+          customerName: name,
+          phone: phone,
+          address: address,
+          items: prod,
+          totalAmount: selectedPrice + 3.00,
+          paymentMethod: payment
+        }, 'REP-101');
+      }
+
+      alert(`تم استلام طلبك بنجاح! رقم الطلب #${orderId}. سيقوم مندوبنا بالتواصل معك عبر الواتساب (${phone}) خلال دقائق.`);
+    }
+  </script>
+</body>
+</html>

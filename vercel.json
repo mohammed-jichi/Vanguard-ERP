@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "routes": [
+    { "src": "/oil-press", "dest": "/oil-press.html" },
+    { "src": "/app/receive-production", "dest": "/oil-press.html" },
+    { "src": "/receive-production", "dest": "/oil-press.html" },
+    { "src": "/landing", "dest": "/landing.html" },
+    { "src": "/sales-control", "dest": "/sales-control.html" },
+    { "src": "/operation-center", "dest": "/operation-center.html" },
+    { "src": "/customer-management", "dest": "/customer-management.html" },
+    { "src": "/accounting-management", "dest": "/accounting-management.html" },
+    { "src": "/supersonic-management", "dest": "/supersonic-management.html" },
+    { "src": "/social-media-management", "dest": "/social-media-management.html" },
+    { "src": "/human-resource", "dest": "/human-resource.html" },
+    { "src": "/stock", "dest": "/stock.html" },
+    { "src": "/pos", "dest": "/pos.html" },
+    { "src": "/supersonic", "dest": "/supersonic.html" },
+    { "src": "/social", "dest": "/social.html" },
+    { "src": "/activate", "dest": "/activate.html" },
+    { "src": "/developer", "dest": "/developer.html" },
+    { "src": "/admin", "dest": "/vanguard-admin.html" },
+    { "src": "/vanguard-admin", "dest": "/vanguard-admin.html" },
+    { "src": "/user-manual", "dest": "/user_manual_ar.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}

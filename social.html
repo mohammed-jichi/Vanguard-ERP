@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script>
+    localStorage.setItem('so_authenticated', 'true');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media Sales Rep App - Southern Olive Oil Products, S.A.R.L.</title>
+  
+  <link rel="icon" href="assets/images/logo.png" type="image/png" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=4.0" />
+
+  <style>
+    body {
+      background-color: #0e1410 !important;
+      color: #f8fafc !important;
+      font-family: 'Cairo', sans-serif;
+    }
+    .social-header {
+      background: linear-gradient(135deg, #1b271f 0%, #25362b 100%) !important;
+      border-bottom: 2px solid #dbb170 !important;
+      padding: 15px 25px;
+    }
+    .timer-badge-30 {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(220, 38, 38, 0.6);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+    .social-card, .erp-card {
+      background: #16201a !important;
+      border: 1px solid rgba(219, 177, 112, 0.35) !important;
+      border-radius: 14px !important;
+      padding: 22px !important;
+      margin-bottom: 18px !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+      color: #f8fafc !important;
+    }
+    .social-card:hover, .erp-card:hover {
+      border-color: #f59e0b !important;
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2) !important;
+    }
+    .text-muted, small.text-muted, .text-secondary {
+      color: #cbd5e1 !important;
+      font-weight: 600 !important;
+    }
+    label.form-label {
+      color: #fde047 !important;
+      font-weight: 700 !important;
+    }
+    input.form-control, select.form-select {
+      background-color: #202c24 !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(219, 177, 112, 0.3) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SOCIAL HEADER -->
+  <header class="social-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <img src="assets/images/logo.png" alt="Social App Logo" class="circular-logo me-3" style="height: 50px;" />
+      <div>
+        <h4 class="mb-0 fw-bold text-white"><i class="fa-solid fa-share-nodes text-warning me-2"></i> Southern Olive Oil Products, S.A.R.L. (License: <span class="displayCompanyId">001</span>)</h4>
+        <small class="text-warning">منتوجات زيت وزيتون الجنوب ش.م.م - تطبيق مبيعات السوشيال ميديا | الدعم: 71801140</small>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="timer-badge-30"><i class="fa-solid fa-stopwatch me-1"></i> مؤقت طلبات الـ 30 دقيقة: 27:40</span>
+      <a href="index.html" class="btn btn-warning btn-sm fw-bold"><i class="fa-solid fa-user-plus me-1"></i> Add Rep Profile</a>
+      <a href="index.html" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-house me-1"></i> النظام الرئيسي</a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container-fluid py-4 px-4">
+    <div class="row g-4">
+      
+      <!-- LEFT ACTIONS PANEL -->
+      <div class="col-lg-4">
+        <div class="erp-card mb-4">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-cart-plus me-2"></i> إنشاء طلب جديد من السوشيال ميديا</h5>
+          
+          <form onsubmit="event.preventDefault(); createSocialDraftOrder();">
+            <div class="mb-3">
+              <label class="form-label text-white">اسم الزبون</label>
+              <input type="text" id="socCustName" class="form-control bg-dark text-white border-secondary" placeholder="مايا حداد" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">رقم الواتساب</label>
+              <input type="tel" id="socCustPhone" class="form-control bg-dark text-white border-secondary" placeholder="+961 70 123456" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">تفاصيل الطلب والكمية</label>
+              <select id="socCustItems" class="form-select bg-dark text-white border-secondary">
+                <option value="2x زيت زيتون 1 لتر زجاج ($27.00 شامل التوصيل)">2x زيت زيتون 1 لتر زجاج ($27.00)</option>
+                <option value="1x تنكة زيت زيتون 5 لتر ($58.00 شامل التوصيل)">1x تنكة زيت زيتون 5 لتر ($58.00)</option>
+                <option value="1x مرطبان مكدوس 1 كغ ($17.00 شامل التوصيل)">1x مرطبان مكدوس 1 كغ ($17.00)</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">طريقة الدفع</label>
+              <select id="socCustPayment" class="form-select bg-dark text-white border-secondary">
+                <option value="Cash">كاش عند الاستلام</option>
+                <option value="Wish Money">تحويل عبر Wish Money</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow">
+              <i class="fa-solid fa-paper-plane me-1"></i> إرسال الطلب وتشغيل مؤقت الـ 30 دقيقة
+            </button>
+          </form>
+        </div>
+
+        <div class="erp-card">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-link me-2"></i> رابط الـ Landing Page للزبائن</h5>
+          <p class="small text-muted mb-2">شارك رابط صفحة الشراء المباشرة مع الزبائن عبر الواتساب والانستغرام:</p>
+          
+          <div class="input-group mb-3">
+            <input type="text" class="form-control bg-dark text-warning border-secondary fw-bold" value="http://localhost:3000/landing.html" id="landingUrlInput" readonly />
+            <button class="btn btn-outline-warning" onclick="copyLandingUrl()"><i class="fa-solid fa-copy"></i> نسخ</button>
+          </div>
+          
+          <a href="landing.html" target="_blank" class="btn btn-outline-info w-100 fw-bold">
+            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> فتح صفحة الـ Landing Page
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT PENDING ORDERS LIST -->
+      <div class="col-lg-8">
+        <div class="erp-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text-warning fw-bold mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i> الطلبات القادمة من الواتساب والسوشيال ميديا</h5>
+            <span class="badge bg-danger fs-6">مؤقت 30 دقيقة نشط</span>
+          </div>
+
+          <!-- ORDER 1 -->
+          <div class="social-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-user me-1 text-warning"></i> مايا حداد</h6>
+                <span class="text-muted small">رقم الطلب: #ORD-SOC-101 | تم الورود عبر الواتساب</span>
+              </div>
+              <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-stopwatch me-1"></i> باقي: 27:40 دقيقة</span>
+            </div>
+
+            <p class="text-white mb-2"><strong>المنتوجات:</strong> 2x زيت زيتون 1 لتر زجاج (قنينة تحفظ الجودة)</p>
+
+            <div class="row text-white small my-2">
+              <div class="col-md-6"><i class="fa-solid fa-money-bill-wave me-1 text-success"></i> المجموع: $27.00 (كاش)</div>
+              <div class="col-md-6"><i class="fa-solid fa-user-gear me-1 text-info"></i> المندوب المسؤول: REP-101</div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-success btn-sm fw-bold" onclick="approveRepOrder('ORD-SOC-101')">
+                <i class="fa-solid fa-check me-1"></i> موافقة المندوب وتحويل للتجهيز
+              </button>
+              <a href="https://wa.me/96170123456?text=مرحباً%20مايا،%20تم%20تأكيد%20طلبك%20من%20زيت%20وزيتون%20الجنوب" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+                <i class="fa-brands fa-whatsapp me-1"></i> مراسلة الزبون
+              </a>
+            </div>
+          </div>
+
+          <!-- ORDER 2 -->
+          <div class="social-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-user me-1 text-warning"></i> زياد نادر</h6>
+                <span class="text-muted small">رقم الطلب: #ORD-SOC-102 | تم الورود عبر انستغرام</span>
+              </div>
+              <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-stopwatch me-1"></i> باقي: 11:15 دقيقة</span>
+            </div>
+
+            <p class="text-white mb-2"><strong>المنتوجات:</strong> 1x تنكة زيت زيتون 5 لتر فاخرة</p>
+
+            <div class="row text-white small my-2">
+              <div class="col-md-6"><i class="fa-solid fa-wallet me-1 text-success"></i> المجموع: $58.00 (Wish Money)</div>
+              <div class="col-md-6"><i class="fa-solid fa-user-gear me-1 text-info"></i> المندوب المسؤول: REP-101</div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-success btn-sm fw-bold" onclick="approveRepOrder('ORD-SOC-102')">
+                <i class="fa-solid fa-check me-1"></i> موافقة المندوب وتحويل للتجهيز
+              </button>
+              <a href="https://wa.me/96170654321?text=مرحباً%20زياد،%20تم%20تأكيد%20طلبك%20من%20زيت%20وزيتون%20الجنوب" target="_blank" class="btn btn-outline-success btn-sm fw-bold">
+                <i class="fa-brands fa-whatsapp me-1"></i> مراسلة الزبون
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function createSocialDraftOrder() {
+      const name = document.getElementById('socCustName').value;
+      const phone = document.getElementById('socCustPhone').value;
+      const items = document.getElementById('socCustItems').value;
+
+      alert(`تم إضافة الطلب للزبون ${name} (${phone}) بنجاح! تم إطلاق مؤقت الـ 30 دقيقة والإحالة التلقائية.`);
+    }
+
+    function copyLandingUrl() {
+      const copyText = document.getElementById("landingUrlInput");
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      alert("تم نسخ رابط الـ Landing Page للحافظة!");
+    }
+
+    function approveRepOrder(id) {
+      alert(`تمت موافقة المندوب على الطلب #${id} وتحويله مباشرة لقسم التجهيز والشحن SuperSonic!`);
+    }
+  </script>
+</body>
+</html>

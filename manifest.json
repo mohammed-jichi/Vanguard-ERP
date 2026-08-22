@@ -1,0 +1,50 @@
+{
+  "id": "/index.html",
+  "name": "Southern Olive and Oil Products SARL",
+  "short_name": "southernlbpr",
+  "description": "Southern Olive and Oil Products SARL (منتوجات زيت وزيتون الجنوب) Unified ERP Platform",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#f59e0b",
+  "orientation": "any",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "SuperSonic Driver App",
+      "short_name": "SuperSonic",
+      "description": "SuperSonic Fleet Dispatch, e-POD & COD Settlement",
+      "url": "/supersonic",
+      "icons": [{ "src": "/assets/images/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sales Control POS",
+      "short_name": "Sales POS",
+      "description": "Sales Agent POS Terminal & Invoicing",
+      "url": "/pos",
+      "icons": [{ "src": "/assets/images/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "B2B Partner Portal",
+      "short_name": "B2B Portal",
+      "description": "B2B Wholesale Ordering & Client Directory",
+      "url": "/landing",
+      "icons": [{ "src": "/assets/images/logo.png", "sizes": "192x192" }]
+    }
+  ]
+}

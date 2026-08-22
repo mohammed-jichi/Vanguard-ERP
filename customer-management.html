@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Management & B2B Portal - Southern Olive & Oil Products</title>
+  
+  <link rel="icon" href="/assets/images/logo.png" type="image/png" />
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      background-color: #0f1319;
+      color: #f8fafc;
+      font-family: 'Cairo', sans-serif;
+      padding-top: 0;
+    }
+    .landing-hero {
+      background: linear-gradient(135deg, rgba(20,35,20,0.92), rgba(15,19,25,0.95)), url('/assets/images/hero_background.png') center/cover;
+      padding: 60px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--olive-gold);
+    }
+    .product-card-landing {
+      background: #18202c;
+      border: 1px solid rgba(219, 177, 112, 0.25);
+      border-radius: 16px;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+    .product-card-landing:hover {
+      transform: translateY(-5px);
+      border-color: var(--olive-gold);
+      box-shadow: 0 10px 25px rgba(219, 177, 112, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="landing-hero">
+    <div class="container">
+      <img src="/assets/images/logo.png" alt="Southern Olive" class="circular-logo mb-3" style="height:70px;" />
+      <h1 class="fw-bold text-white mb-2">منتوجات زيت وزيتون الجنوب ش.م.م</h1>
+      <p class="lead text-warning mb-4">Customer Directory, Aged Debtors Ledger & Wholesale B2B Ordering Portal</p>
+      <div class="d-flex justify-content-center gap-3">
+        <a href="/index.html" class="btn btn-outline-light"><i class="fa-solid fa-house me-1"></i> Main ERP Workspace</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="py-5 container">
+    <h3 class="text-center text-warning fw-bold mb-4"><i class="fa-solid fa-store me-2"></i> B2B Customer Wholesale Ordering</h3>
+    
+    <div class="row g-4 mb-5">
+      <!-- Item 1 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-bottle-droplet text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">زيت زيتون بكر ممتاز 1 لتر (قنينة زجاج)</h5>
+            <p class="text-muted small">عصرة أولى على البارد، حموضة أقل من 0.5% عبوة زجاجية تحفظ الجودة.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$12.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('زيت زيتون 1 لتر زجاج', 12.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-box-archive text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">تنكة زيت زيتون بكر ممتاز 5 لتر</h5>
+            <p class="text-muted small">تنكة معدنية معتمة ومحكمة الإغلاق لحفظ طعم الزيت البلدي الأصيل.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$55.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('تنكة زيت زيتون 5 لتر', 55.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="col-md-4">
+        <div class="product-card-landing">
+          <div>
+            <i class="fa-solid fa-jar text-warning fs-1 mb-3"></i>
+            <h5 class="fw-bold text-white">مكدوس باذنجان بلدي محشي 1 كغ</h5>
+            <p class="text-muted small">محشي بالجوز والفلفل الأحمر ومغمور بزيت الزيتون الخالص.</p>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center my-3">
+              <span class="text-muted">السعر:</span>
+              <h4 class="text-success fw-bold mb-0">$14.00</h4>
+            </div>
+            <button class="btn btn-warning w-100 fw-bold" onclick="selectLandingProduct('مرطبان مكدوس 1 كغ', 14.00)">
+              <i class="fa-solid fa-cart-plus me-1"></i> اطلب الآن
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

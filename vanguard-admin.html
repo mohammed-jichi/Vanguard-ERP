@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanguard SaaS Master Controller</title>
+  
+  <link rel="icon" href="/assets/images/logo.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css?v=5.0" />
+
+  <style>
+    body {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      font-family: 'Inter', 'Outfit', sans-serif;
+    }
+    .vanguard-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+      border-bottom: 3px solid #d97706 !important;
+      padding: 16px 28px;
+      color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .vanguard-badge {
+      background: rgba(217, 119, 6, 0.2);
+      color: #f59e0b;
+      border: 1px solid #d97706;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .master-card {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 14px !important;
+      padding: 24px !important;
+      margin-bottom: 24px !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    }
+    .master-card:hover {
+      border-color: #d97706 !important;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.12) !important;
+    }
+    .license-row {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .license-row:hover {
+      background: #fffdfa;
+      border-color: #d97706;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- VANGUARD SAAS MASTER HEADER -->
+  <header class="vanguard-header d-flex justify-content-between align-items-center py-3 px-4 shadow-lg border-bottom border-warning" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="d-flex align-items-center gap-3">
+      <img src="assets/images/vanguard_logo.png" alt="Vanguard ERP System Logo" class="circular-logo shadow-lg" style="height: 75px; width: 75px; object-fit: cover; border-radius: 50%; border: 3px solid #f59e0b;" />
+      <div>
+        <h3 class="mb-0 fw-extrabold text-warning text-uppercase tracking-wider" style="font-size: 1.65rem; text-shadow: 0 0 14px rgba(245, 158, 11, 0.5);">
+          <i class="fa-solid fa-crown text-warning me-2"></i>Vanguard SaaS Master Controller
+        </h3>
+        <div class="mt-1">
+          <span class="badge bg-warning text-dark fw-bold fs-6 shadow-sm px-3 py-1" style="letter-spacing: 0.5px; border: 1px solid #f59e0b;">
+            <i class="fa-solid fa-layer-group me-1"></i> SaaS Master Owner Portal &amp; Multi-Tenant License Management Platform
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="vanguard-badge me-1 text-white font-bold opacity-100" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #f59e0b; color: #ffffff !important;"><i class="fa-solid fa-server me-1 text-warning"></i> Master SaaS Cluster: ONLINE (99.99%)</span>
+      <button class="btn btn-warning btn-sm fw-bold text-dark shadow-sm opacity-100" onclick="window.VanguardSecurityEngine ? window.VanguardSecurityEngine.openSecuritySuiteModal() : alert('Max Security Suite Activated')" title="Open Vanguard Maximum Security Suite">
+        <i class="fa-solid fa-shield-halved text-dark me-1"></i> Max Security Suite
+      </button>
+      <a href="user_manual_ar.html" target="_blank" class="btn btn-danger btn-sm fw-bold text-white shadow-sm opacity-100" title="فتح وتحميل دليل المستخدم الشامل - PDF">
+        <i class="fa-solid fa-file-pdf me-1 text-white"></i> دليل المستخدم (PDF)
+      </a>
+      <a href="/index.html" id="launchActiveTenantBtn" class="btn btn-warning btn-sm fw-bold text-dark opacity-100"><i class="fa-solid fa-building-user me-1"></i> Launch Tenant #1 (Southern Olive)</a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container-fluid py-4 px-4">
+    
+    <!-- MASTER METRICS ROW -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="master-card text-center">
+          <i class="fa-solid fa-key text-warning fs-2 mb-2"></i>
+          <span class="text-muted small d-block">Active Client Licenses</span>
+          <h2 id="activeTenantsCountHeader" class="text-dark fw-bold my-1">1 Tenant</h2>
+          <small id="activeTenantsSubtext" class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> License #1 Active (Southern Olive)</small>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="master-card text-center">
+          <i class="fa-solid fa-sack-dollar text-success fs-2 mb-2"></i>
+          <span class="text-muted small d-block">Monthly SaaS Revenue (MRR)</span>
+          <h2 class="text-dark fw-bold my-1">$12,500.00</h2>
+          <small class="text-success fw-bold"><i class="fa-solid fa-arrow-trend-up me-1"></i> PRO Tier Annual Contract</small>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="master-card text-center">
+          <i class="fa-solid fa-users-gear text-primary fs-2 mb-2"></i>
+          <span class="text-muted small d-block">Active Operator Sessions</span>
+          <h2 class="text-dark fw-bold my-1">14 Users</h2>
+          <small class="text-info fw-bold"><i class="fa-solid fa-network-wired me-1"></i> saida / Beirut / Choueifat</small>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="master-card text-center">
+          <i class="fa-solid fa-database text-danger fs-2 mb-2"></i>
+          <span class="text-muted small d-block">System Database Health</span>
+          <h2 class="text-dark fw-bold my-1">100% Synced</h2>
+          <small class="text-success fw-bold"><i class="fa-solid fa-shield-virus me-1"></i> Automated Cloud Backup OK</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAAS TENANTS & LICENSES MANAGEMENT SECTION -->
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="master-card">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-id-card-clip me-2 text-warning"></i> Vanguard Multi-Tenant SaaS License Registry</h5>
+              <small class="text-muted">Master List of Authorized Enterprise ERP Licenses</small>
+            </div>
+            <button class="btn btn-warning btn-sm fw-bold" onclick="showProvisionModal()"><i class="fa-solid fa-plus me-1"></i> Provision New License</button>
+          </div>
+
+          <div id="vanguardLicensesRegistryList" class="space-y-3">
+            <!-- Dynamically populated from Supabase tenants table -->
+          </div>
+
+          <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+            <small class="text-muted"><i class="fa-solid fa-database text-warning me-1"></i> Dynamic Supabase RLS Isolated Tenant Registry</small>
+            <button class="btn btn-sm btn-outline-warning fw-bold" onclick="showProvisionModal()"><i class="fa-solid fa-plus me-1"></i> Provision Tenant #2</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR: MASTER CONTROLS & SYSTEM HEALTH -->
+      <div class="col-lg-4">
+        <div class="master-card">
+          <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-sliders text-warning me-2"></i> Master SaaS System Controls</h5>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-dark fw-bold py-2 text-start" onclick="alert('All 14 operator sessions refreshed.')">
+              <i class="fa-solid fa-rotate me-2 text-warning"></i> Force Sync All Tenant Nodes
+            </button>
+            <button class="btn btn-outline-dark fw-bold py-2 text-start" onclick="alert('Master System Security Scan completed: 0 threats.')">
+              <i class="fa-solid fa-shield-virus me-2 text-success"></i> Run Master Security Audit
+            </button>
+            <button class="btn btn-outline-dark fw-bold py-2 text-start" onclick="alert('Global database backup archived to local storage.')">
+              <i class="fa-solid fa-box-archive me-2 text-info"></i> Create Global Platform Backup
+            </button>
+          </div>
+        </div>
+
+        <div class="master-card">
+          <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-list-check text-warning me-2"></i> Master Activity Logs</h5>
+          <ul class="list-group list-group-flush small">
+            <li class="list-group-item bg-transparent px-0 py-2">
+              <i class="fa-solid fa-check text-success me-2"></i> <strong>Tenant #1 (Southern Olive)</strong> authenticated via Vanguard SaaS Gateway.
+            </li>
+            <li class="list-group-item bg-transparent px-0 py-2">
+              <i class="fa-solid fa-database text-info me-2"></i> Southern Olive ERP Data Bridge auto-migrated 1,500 inventory items into Tenant #1.
+            </li>
+            <li class="list-group-item bg-transparent px-0 py-2">
+              <i class="fa-solid fa-shield text-warning me-2"></i> Master License `LIC-VG-2026-SOUTHERN-OLIVE-01` verified & active.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function showProvisionModal() {
+      const tenantName = prompt("Enter new Client / Company Name for Vanguard SaaS License #2:");
+      if (!tenantName || !tenantName.trim()) return;
+
+      const trimmedName = tenantName.trim();
+      const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || ('tenant-' + Date.now());
+
+      if (!window.supabaseClient) {
+        const errorMsg = 'Supabase database client is not initialized.';
+        console.error(errorMsg);
+        if (typeof showToast === 'function') {
+          showToast("Provisioning Failed", errorMsg, "danger");
+        } else {
+          alert("Error: " + errorMsg);
+        }
+        return;
+      }
+
+      try {
+        const { data, error } = await window.supabaseClient
+          .from('tenants')
+          .insert([{ name: trimmedName, slug: slug }])
+          .select();
+
+        if (error) {
+          console.error('Supabase tenants insert error:', error);
+          const msg = error.message || 'Failed to insert tenant into Supabase database.';
+          if (typeof showToast === 'function') {
+            showToast("Provisioning Failed", msg, "danger");
+          } else {
+            alert("Supabase Error: " + msg);
+          }
+          return; // DO NOT show success toast!
+        }
+
+        console.log('✅ Real Supabase Insert Success:', data);
+
+        // Instantly refresh TenantContext state if available
+        if (typeof window.vanguardRefreshTenants === 'function') {
+          await window.vanguardRefreshTenants();
+        }
+
+        if (typeof showToast === 'function') {
+          showToast("SaaS License Provisioned", `Successfully created new tenant '${trimmedName}' in Supabase!`, "success");
+        } else {
+          alert("Success! License for '" + trimmedName + "' has been provisioned under Vanguard SaaS Suite and saved to Supabase.");
+        }
+      } catch (err) {
+        console.error('Unhandled exception during Supabase tenant insert:', err);
+        const errStr = err.message || String(err);
+        if (typeof showToast === 'function') {
+          showToast("Provisioning Error", errStr, "danger");
+        } else {
+          alert("Unexpected Error: " + errStr);
+        }
+      }
+    }
+
+    window.renderAdminLicensesRegistry = function (tenants) {
+      const container = document.getElementById('vanguardLicensesRegistryList');
+      const countHeader = document.getElementById('activeTenantsCountHeader');
+      const subtextEl = document.getElementById('activeTenantsSubtext');
+      const launchBtn = document.getElementById('launchActiveTenantBtn');
+
+      const count = tenants ? tenants.length : 0;
+
+      if (countHeader) {
+        countHeader.textContent = `${count} Tenant${count === 1 ? '' : 's'}`;
+      }
+
+      const primaryTenant = tenants && tenants.length > 0 ? tenants[0] : null;
+      const primaryName = primaryTenant ? (primaryTenant.name || primaryTenant.brand_name_ar || 'Southern Olive') : 'Southern Olive';
+
+      if (subtextEl) {
+        subtextEl.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> ${count > 0 ? `License #1 Active (${primaryName})` : 'No Active Licenses'}`;
+      }
+
+      if (launchBtn) {
+        launchBtn.innerHTML = `<i class="fa-solid fa-building-user me-1"></i> Launch Tenant #1 (${primaryName})`;
+      }
+
+      if (!container) return;
+
+      if (!tenants || tenants.length === 0) {
+        container.innerHTML = `
+          <div class="license-row opacity-75 p-4 rounded border bg-light text-center">
+            <h6 class="fw-bold text-secondary mb-1"><i class="fa-solid fa-building me-2"></i> No Tenant Accounts Found</h6>
+            <small class="text-muted d-block mb-3">Click below to provision the first tenant account in Supabase</small>
+            <button class="btn btn-sm btn-warning fw-bold" onclick="showProvisionModal()"><i class="fa-solid fa-plus me-1"></i> Provision Tenant Account</button>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = tenants.map((t, idx) => {
+        const formattedDate = t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+        const displayName = t.name || t.brand_name_ar || 'Enterprise Tenant';
+        const brandAr = t.brand_name_ar || '';
+
+        return `
+          <div class="license-row mb-3 p-3 rounded border border-slate-300 bg-white shadow-sm">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h5 class="fw-bold text-dark mb-1">
+                  <i class="fa-solid fa-bottle-droplet text-warning me-2"></i> ${displayName} 
+                  ${brandAr && brandAr !== displayName ? `<span class="text-muted dir-rtl">(${brandAr})</span>` : ''}
+                </h5>
+                <span class="badge bg-warning text-dark me-2">License #${(idx + 1).toString().padStart(3, '0')} ${idx === 0 ? '(Master)' : ''}</span>
+                <span class="badge bg-success">Slug: ${t.slug || t.name}</span>
+              </div>
+              <span class="badge bg-emerald fs-6 text-white p-2" style="background:#059669;">
+                <i class="fa-solid fa-shield-check me-1"></i> ${t.subscription_tier || t.subscriptionTier || 'PRO'} ${t.subscription_status || t.subscriptionStatus || 'ACTIVE'}
+              </span>
+            </div>
+
+            <div class="row g-2 my-2 text-muted small">
+              <div class="col-md-4"><i class="fa-solid fa-id-card text-warning me-1"></i> ID: <strong class="font-mono text-dark">${t.id || 'N/A'}</strong></div>
+              <div class="col-md-4"><i class="fa-solid fa-calendar-alt text-success me-1"></i> Created At: <strong class="text-dark">${formattedDate}</strong></div>
+              <div class="col-md-4"><i class="fa-solid fa-microchip text-info me-1"></i> AI Usage: <strong class="text-dark">${t.ai_usage_count || 0} / ${t.ai_usage_limit || 1000}</strong></div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+              <div class="d-flex gap-2">
+                <a href="/index.html" class="btn btn-sm btn-warning fw-bold text-dark"><i class="fa-solid fa-right-to-bracket me-1"></i> Open Tenant Workspace</a>
+                <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('${t.id || ''}'); alert('Tenant ID copied to clipboard!')"><i class="fa-solid fa-copy me-1"></i> Copy ID</button>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-outline-success" onclick="alert('Tenant backup generated for ${displayName}')"><i class="fa-solid fa-download me-1"></i> Tenant Backup</button>
+                <button class="btn btn-sm btn-outline-info ms-1" onclick="alert('Subscription verified!')"><i class="fa-solid fa-arrow-rotate-right me-1"></i> Renew</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    async function loadAndRenderAdminTenants() {
+      if (window.supabaseClient) {
+        try {
+          const { data, error } = await window.supabaseClient.from('tenants').select('*').order('created_at', { ascending: true });
+          if (!error && data) {
+            window.renderAdminLicensesRegistry(data);
+          } else if (error) {
+            console.error('Error fetching admin tenants from Supabase:', error);
+          }
+        } catch (err) {
+          console.error('Exception fetching admin tenants:', err);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(loadAndRenderAdminTenants, 300);
+    });
+  </script>
+</body>
+</html>

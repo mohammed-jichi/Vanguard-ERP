@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script>
+    localStorage.setItem('so_authenticated', 'true');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media Sales Rep App - Southern Olive Oil Products, S.A.R.L.</title>
+  
+  <link rel="icon" href="/assets/images/logo.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      font-family: 'Cairo', sans-serif;
+    }
+    .social-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+      border-bottom: 3px solid #d97706 !important;
+      padding: 15px 25px;
+      color: #ffffff !important;
+    }
+    .timer-badge-30 {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(220, 38, 38, 0.4);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+    .social-card, .erp-card {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 12px !important;
+      padding: 22px !important;
+      margin-bottom: 18px !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+      color: #0f172a !important;
+    }
+    .social-card:hover, .erp-card:hover {
+      border-color: #d97706 !important;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.12) !important;
+    }
+    .text-muted, small.text-muted, .text-secondary {
+      color: #475569 !important;
+      font-weight: 600 !important;
+    }
+    label.form-label {
+      color: #0f172a !important;
+      font-weight: 700 !important;
+    }
+    input.form-control, select.form-select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SOCIAL HEADER -->
+  <header class="social-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <img src="/assets/images/logo.png" alt="Social App Logo" class="circular-logo me-3" style="height: 50px;" />
+      <div>
+        <h4 class="mb-0 fw-bold text-white"><i class="fa-solid fa-share-nodes text-warning me-2"></i> Southern Olive Oil Products, S.A.R.L. (License: <span class="displayCompanyId">001</span>)</h4>
+        <small class="text-warning">منتوجات زيت وزيتون الجنوب ش.م.م - تطبيق مبيعات السوشيال ميديا | الدعم: 71801140</small>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="timer-badge-30"><i class="fa-solid fa-stopwatch me-1"></i> مؤقت طلبات الـ 30 دقيقة: 27:40</span>
+      <a href="/index.html" class="btn btn-warning btn-sm fw-bold"><i class="fa-solid fa-user-plus me-1"></i> Add Rep Profile</a>
+      <a href="/index.html" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-house me-1"></i> النظام الرئيسي</a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container-fluid py-4 px-4">
+    <div class="row g-4">
+      
+      <!-- LEFT ACTIONS PANEL -->
+      <div class="col-lg-4">
+        <div class="erp-card mb-4">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-cart-plus me-2"></i> إنشاء طلب جديد من السوشيال ميديا</h5>
+          
+          <form onsubmit="event.preventDefault(); createSocialDraftOrder();">
+            <div class="mb-3">
+              <label class="form-label text-white">اسم الزبون</label>
+              <input type="text" id="socCustName" class="form-control bg-dark text-white border-secondary" placeholder="مايا حداد" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">رقم الواتساب</label>
+              <input type="tel" id="socCustPhone" class="form-control bg-dark text-white border-secondary" placeholder="+961 70 123456" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">تفاصيل الطلب والكمية</label>
+              <select id="socCustItems" class="form-select bg-dark text-white border-secondary">
+                <option value="2x زيت زيتون 1 لتر زجاج ($27.00 شامل التوصيل)">2x زيت زيتون 1 لتر زجاج ($27.00)</option>
+                <option value="1x تنكة زيت زيتون 5 لتر ($58.00 شامل التوصيل)">1x تنكة زيت زيتون 5 لتر ($58.00)</option>
+                <option value="1x مرطبان مكدوس 1 كغ ($17.00 شامل التوصيل)">1x مرطبان مكدوس 1 كغ ($17.00)</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-white">طريقة الدفع</label>
+              <select id="socCustPayment" class="form-select bg-dark text-white border-secondary">
+                <option value="Cash">كاش عند الاستلام</option>
+                <option value="Wish Money">تحويل عبر Wish Money</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100 fw-bold py-2 shadow">
+              <i class="fa-solid fa-paper-plane me-1"></i> إرسال الطلب وتشغيل مؤقت الـ 30 دقيقة
+            </button>
+          </form>
+        </div>
+
+        <div class="erp-card mb-4">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-brands fa-whatsapp me-2 text-success"></i> Gemini WhatsApp Sales AI Bot</h5>
+          <p class="small text-muted mb-2">مساعد الذكاء الاصطناعي لاستقبال الاستفسارات، تسعير العملتين (USD/LBP)، وتوليد مسودات الطلبات (Draft Orders):</p>
+          
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-success fw-bold py-2" onclick="testGeminiWhatsAppBot()">
+              <i class="fa-solid fa-robot me-1"></i> محاكاة محادثة الواتساب الـ AI
+            </button>
+            <button class="btn btn-outline-warning btn-sm" onclick="testEscalationHandoff()">
+              <i class="fa-solid fa-headset me-1"></i> تجربة تحويل استفسار الجملة للبشر
+            </button>
+          </div>
+        </div>
+
+        <div class="erp-card">
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-link me-2"></i> رابط الـ Landing Page للزبائن</h5>
+          <p class="small text-muted mb-2">شارك رابط صفحة الشراء المباشرة مع الزبائن عبر الواتساب والانستغرام:</p>
+          
+          <div class="input-group mb-3">
+            <input type="text" class="form-control bg-dark text-warning border-secondary fw-bold" value="https://southern-olive-oil-products.vercel.app/landing" id="landingUrlInput" readonly />
+            <button class="btn btn-outline-warning" onclick="copyLandingUrl()"><i class="fa-solid fa-copy"></i> نسخ</button>
+          </div>
+          
+          <a href="/landing" target="_blank" class="btn btn-outline-info w-100 fw-bold">
+            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> فتح صفحة الـ Landing Page
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT PENDING ORDERS LIST -->
+      <div class="col-lg-8">
+        <div class="erp-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="text-warning fw-bold mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i> الطلبات القادمة من الواتساب والسوشيال ميديا</h5>
+            <span class="badge bg-danger fs-6">مؤقت 30 دقيقة نشط</span>
+          </div>
+
+          <!-- ORDER 1 -->
+          <div class="social-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-user me-1 text-warning"></i> مايا حداد</h6>
+                <span class="text-muted small">رقم الطلب: #ORD-SOC-101 | تم الورود عبر الواتساب</span>
+              </div>
+              <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-stopwatch me-1"></i> باقي: 27:40 دقيقة</span>
+            </div>
+
+            <p class="text-white mb-2"><strong>المنتوجات:</strong> 2x زيت زيتون 1 لتر زجاج (قنينة تحفظ الجودة)</p>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <span class="text-white fw-bold">إجمالي المبلغ:</span>
+                <span class="text-success fw-bold fs-5 ms-2">$27.00 USD</span>
+                <span class="badge bg-info ms-2">عمولة مندوب 5%: $1.35</span>
+              </div>
+              <button class="btn btn-sm btn-success fw-bold" onclick="approveSocialOrder('ORD-SOC-101')">
+                <i class="fa-solid fa-check me-1"></i> الموافقة وإرسال للمستودع
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- GEMINI AI BOT CHAT MODAL -->
+  <div class="modal fade" id="aiWhatsAppBotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark text-white border-warning">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-warning fw-bold"><i class="fa-brands fa-whatsapp text-success me-2"></i> Southern Olive AI Assistant - WhatsApp Bot Simulator</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="aiChatBox" class="p-3 mb-3 border border-secondary rounded" style="height: 320px; overflow-y: auto; background: #0c1015;">
+            <div class="p-2 mb-2 rounded bg-secondary text-white" style="max-width: 80%;">
+              <small class="d-block text-warning fw-bold">الزبون (+961 70 123456):</small>
+              مرحبا، بدي استفسر عن سعر تنكة زيت الزيتون الـ 5 لتر والدبس والتوصيل للمناطق
+            </div>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="aiUserPromptInput" class="form-control bg-dark text-white border-secondary" placeholder="أدخل رسالة الزبون للواتساب..." value="تأكيد الطلب باسم جاد حداد، بيروت الحمراء" />
+            <button class="btn btn-warning fw-bold" onclick="sendAiSimulatedMessage()"><i class="fa-solid fa-paper-plane me-1"></i> إرسال</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/modules/ai_agents.js"></script>
+  <script src="/js/app.js"></script>
+
+  <script>
+    async function testGeminiWhatsAppBot() {
+      const modal = new bootstrap.Modal(document.getElementById('aiWhatsAppBotModal'));
+      modal.show();
+    }
+
+    async function sendAiSimulatedMessage() {
+      const promptEl = document.getElementById('aiUserPromptInput');
+      const text = promptEl.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('aiChatBox');
+      chatBox.innerHTML += `
+        <div class="p-2 mb-2 rounded bg-secondary text-white ms-auto" style="max-width: 80%;">
+          <small class="d-block text-warning fw-bold">الزبون (+961 70 123456):</small>
+          ${text}
+        </div>
+      `;
+
+      if (window.SouthernOliveAI && window.SouthernOliveAI.GeminiWhatsAppSalesBot) {
+        const res = await window.SouthernOliveAI.GeminiWhatsAppSalesBot.processWhatsAppMessage("+96170123456", text, {
+          customerName: "جاد حداد",
+          address: "بيروت - الحمراء - شارع Bliss",
+          totalUsd: 55.00,
+          isReadyToConfirm: text.includes("تأكيد")
+        });
+
+        chatBox.innerHTML += `
+          <div class="p-2 mb-2 rounded bg-success text-white me-auto" style="max-width: 85%; white-space: pre-line;">
+            <small class="d-block text-dark fw-bold">🤖 Southern Olive AI Assistant:</small>
+            ${res.reply}
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+      promptEl.value = "";
+    }
+
+    async function testEscalationHandoff() {
+      const promptEl = document.getElementById('aiUserPromptInput');
+      promptEl.value = "بدي أسأل عن أسعار الجملة وكميات التصدير 50 تنكة لفرنسا هل في خصم تجاري؟";
+      testGeminiWhatsAppBot();
+    }
+  </script>
+</body>
+</html>

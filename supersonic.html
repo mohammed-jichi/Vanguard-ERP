@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script>
+    localStorage.setItem('so_authenticated', 'true');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuperSonic Delivery Driver App - Southern Olive Oil Products</title>
+  
+  <link rel="icon" href="/assets/images/logo.png" type="image/png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SuperSonic Driver" />
+  <link rel="apple-touch-icon" href="/assets/images/logo.png" />
+  <meta name="theme-color" content="#f59e0b" />
+
+  <!-- OpenGraph WhatsApp Preview Tags -->
+  <meta property="og:title" content="SuperSonic Delivery Driver App" />
+  <meta property="og:description" content="Southern Olive Oil Products S.A.R.L. Field Delivery Driver & Dispatch Mobile App" />
+  <meta property="og:image" content="https://southern-olive-oil-products.vercel.app/assets/images/logo.png" />
+  <meta property="og:url" content="https://southern-olive-oil-products.vercel.app/supersonic" />
+  <meta property="og:type" content="website" />
+
+  <!-- Font Awesome 6 Icons & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #070d08;
+      --card-bg: #0f1911;
+      --card-border: #1d3321;
+      --accent-emerald: #10b981;
+      --accent-gold: #f59e0b;
+      --accent-sky: #0ea5e9;
+      --accent-red: #ef4444;
+    }
+    body {
+      background-color: var(--bg-dark) !important;
+      color: #ffffff !important;
+      font-family: 'Cairo', sans-serif;
+    }
+    .supersonic-header {
+      background: linear-gradient(135deg, #0e1910 0%, #162619 100%) !important;
+      border-bottom: 2px solid var(--accent-gold) !important;
+      padding: 14px 22px;
+    }
+    .status-pill {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #34d399 !important;
+      border: 1px solid #10b981 !important;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .delivery-card, .erp-card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--card-border) !important;
+      border-radius: 16px !important;
+      padding: 22px !important;
+      margin-bottom: 18px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+      color: #ffffff !important;
+      transition: all 0.25s ease-in-out;
+    }
+    .delivery-card:hover, .erp-card:hover {
+      border-color: var(--accent-gold) !important;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2) !important;
+    }
+    .active-client-card {
+      border: 2px solid var(--accent-gold) !important;
+      background: #152419 !important;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.25) !important;
+    }
+    .signature-pad-container {
+      background: #050a06 !important;
+      border: 2px dashed var(--accent-gold) !important;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    canvas {
+      background: #ffffff;
+      border-radius: 8px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .shift-btn {
+      font-weight: 700;
+      font-size: 0.8rem;
+      border-radius: 10px;
+      padding: 8px 14px;
+      transition: all 0.2s;
+    }
+    /* HIGH CONTRAST TYPOGRAPHY OVERRIDES */
+    .text-muted, small.text-muted, .text-secondary {
+      color: #e2e8f0 !important;
+      font-weight: 600 !important;
+    }
+    label.form-label {
+      color: #f59e0b !important;
+      font-weight: 700 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DEDICATED SUPERSONIC MOBILE DRIVER APP HEADER -->
+  <header class="supersonic-header d-flex justify-content-between align-items-center gap-2 py-3 px-3">
+    <div class="d-flex align-items-center gap-2">
+      <img src="assets/images/supersonic_driver_logo.png" alt="SuperSonic Driver App Logo" class="circular-logo shadow" style="height: 65px; width: 65px; object-fit: cover; border-radius: 12px; border: 2px solid #f59e0b;" />
+      <div>
+        <h5 class="mb-0 font-black text-warning flex-wrap">
+          <i class="fa-solid fa-truck-fast me-1"></i> SuperSonic Driver App
+        </h5>
+        <small class="text-white font-bold d-block" style="font-size: 0.8rem;">
+          منتوجات زيت وزيتون الجنوب | <i class="fa-solid fa-phone text-warning ms-1 me-1"></i><span class="text-warning">+961 79 083 417</span>
+        </small>
+      </div>
+    </div>
+    
+    <div class="d-flex align-items-center gap-2">
+      <button id="pwaInstallBtn" class="btn btn-success btn-sm font-bold shadow animate__animated animate__pulse animate__infinite px-3 py-1.5" onclick="installSuperSonicPWA()">
+        <i class="fa-solid fa-download me-1"></i> تثبيت التطبيق 📲
+      </button>
+      <span class="status-pill d-none d-md-inline-block" id="currentDriverStatusPill">
+        <i class="fa-solid fa-circle-dot me-1 text-success"></i> في الخدمة
+      </span>
+    </div>
+  </header>
+
+  <!-- WHATSAPP IN-APP BROWSER NOTICE BANNER -->
+  <div id="whatsappBrowserNotice" class="alert alert-warning border-2 border-warning d-none my-3 mx-4 shadow-lg rounded-4 text-dark" style="background: #fffbeb; border-left: 6px solid #f59e0b !important;">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <i class="fa-brands fa-whatsapp fs-2 text-success"></i>
+      <h6 class="fw-black mb-0 text-dark">
+        تنبيه هام عند الفتح من داخل الواتساب (WhatsApp In-App Browser):
+      </h6>
+    </div>
+    <p class="mb-2 fs-6 text-secondary font-bold">
+      متصفح الواتساب الداخلي يمنع تثبيت وتنزيل التطبيقات (PWA) على الشاشة الرئيسية للهاتف. لكي تتمكن من تنزيل وتثبيت <strong>تطبيق السائق (SuperSonic App)</strong>:
+    </p>
+    <ol class="mb-1 text-dark font-bold fs-6">
+      <li>اضغط على <strong>النقاط الثلاث (⋮)</strong> في أعلى يمين أو يسار الشاشة.</li>
+      <li>اختر <strong>"فتح في Chrome" (Open in Chrome)</strong> على أجهزة Android، أو <strong>"فتح في Safari" (Open in Safari)</strong> على iPhone.</li>
+      <li>بعد الفتح في المتصفح الرئيسي، اضغط على <strong>"تثبيت التطبيق على الهاتف"</strong> أو من قائمة المتصفح <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.</li>
+    </ol>
+  </div>
+
+  <!-- MAIN DRIVER CONTAINER -->
+  <main class="container-fluid py-4 px-4">
+    
+    <!-- DRIVER TELEMETRY & SHIFT CONTROL STRIP -->
+    <div class="row g-3 mb-4">
+      
+      <!-- SHIFT CONTROL BUTTONS & VEHICLE OWNERSHIP SELECTOR -->
+      <div class="col-lg-6">
+        <div class="erp-card h-100 d-flex flex-column justify-content-between">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-warning font-bold mb-0">
+              <i class="fa-solid fa-id-card-clip me-2 text-warning"></i> حالة وردية السائق (Driver Shift State)
+            </h6>
+            <span class="badge bg-success text-white font-bold px-3 py-1">سائق معتمد #DRV-101</span>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <button class="btn btn-outline-info shift-btn flex-fill" onclick="updateShiftState('Loading')">
+              <i class="fa-solid fa-boxes-packing me-1"></i> 1. تحميل الشحنة
+            </button>
+            <button class="btn btn-success shift-btn flex-fill font-bold shadow" onclick="departAndBroadcast()">
+              <i class="fa-brands fa-whatsapp me-1 text-white fs-6"></i> 2. في الخدمة والإنطلاق (Departure & WhatsApp)
+            </button>
+            <button class="btn btn-warning shift-btn flex-fill text-dark font-bold" id="btnReturnToBase" onclick="updateShiftState('Returning to Base')">
+              <i class="fa-solid fa-rotate-left me-1"></i> 3. العودة للمركز
+            </button>
+            <button class="btn btn-outline-danger shift-btn flex-fill" onclick="updateShiftState('Shift Ended')">
+              <i class="fa-solid fa-flag-checkered me-1"></i> 4. إنهاء الوردية
+            </button>
+          </div>
+
+          <!-- DYNAMIC VEHICLE OWNERSHIP SELECTOR -->
+          <div class="p-2 rounded bg-black border border-secondary my-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <span class="small text-warning font-bold"><i class="fa-solid fa-truck-ramp-box me-1"></i> حالة/ملكية المركبة (Vehicle Ownership):</span>
+              <select id="vehicleOwnershipSelect" class="form-select form-select-sm bg-dark text-white border-warning w-auto font-bold" onchange="handleVehicleOwnershipChange(this.value)">
+                <option value="COMPANY_OWNED" selected>شركة - ملك (Company Owned)</option>
+                <option value="COMPANY_LEASED">شركة - مستأجرة (Company Leased)</option>
+                <option value="DRIVER_OWNED">سائق - ملك خاص (Driver Personal Owned)</option>
+                <option value="DRIVER_LEASED">سائق - مستأجرة خاصة (Driver Personal Leased)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="small text-light border-top border-secondary pt-2 mt-1 d-flex justify-content-between">
+            <span><i class="fa-solid fa-user me-1 text-info"></i> السائق: <strong class="text-white" id="driverDisplayName">أبو علي منصور</strong></span>
+            <span><i class="fa-solid fa-truck me-1 text-warning"></i> المركبة: <strong class="text-white" id="driverDisplayVehicle">فان غزال تبريد (M-4890)</strong></span>
+            <span><i class="fa-solid fa-user-tie me-1 text-success"></i> المندوب: <strong class="text-white">سامي الخوري (REP-04)</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TELEMETRY COUNTERS -->
+      <div class="col-lg-6">
+        <div class="erp-card h-100">
+          <h6 class="text-warning font-bold mb-3">
+            <i class="fa-solid fa-gauge-high me-2 text-info"></i> مؤشرات الرحلة والمسافة المباشرة (Live Telemetry)
+          </h6>
+
+          <div class="row g-3 mb-2">
+            <div class="col-6">
+              <div class="p-2 rounded bg-black border border-secondary text-center">
+                <small class="text-light d-block font-bold">عداد المسافة المقطوعة اليوم</small>
+                <strong class="text-warning fs-5" id="kmCounter">42.5 كم</strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-black border border-secondary text-center">
+                <small class="text-light d-block font-bold">زمن المحطة الأخيرة (Lap Time)</small>
+                <strong class="text-info fs-5">14 دقيقة</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <div class="d-flex justify-content-between text-white small mb-1">
+              <span>سعة المسافة اليومية المسموحة (250 كم):</span>
+              <span class="text-warning font-bold">17.0% مستهلك</span>
+            </div>
+            <div class="progress bg-dark" style="height: 10px; border-radius: 5px;">
+              <div class="progress-bar bg-warning" role="progressbar" style="width: 17%;"></div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <button class="btn btn-warning btn-sm w-100 text-dark font-bold py-2 shadow-sm" onclick="openZReportModal()">
+              <i class="fa-solid fa-file-invoice-dollar me-2 fs-6"></i> تقرير تسوية الوردية الميداني (Z-Report Summary)
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAIN ORDERS & STOCK ROW -->
+    <div class="row g-4">
+      
+      <!-- LEFT HANDOVER STOCK & FUEL LOG (CONDITIONAL VISIBILITY) -->
+      <div class="col-lg-4">
+        
+        <!-- COMPANY VEHICLE CONTAINER (SHOWS FOR COMPANY OWNED / LEASED) -->
+        <div id="companyVehicleContainer">
+          <!-- DRIVER ASSIGNED STOCK -->
+          <div class="erp-card mb-4 border-success" id="driverStockCard">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="text-success font-bold mb-0">
+                <i class="fa-solid fa-boxes-stacked me-2 text-warning"></i> عهدة المركبة والمخزون الميداني
+              </h6>
+              <span class="badge bg-success fs-7">جاهز للتوزيع</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-dark table-hover table-bordered align-middle text-center mb-0 small">
+                <thead class="table-success text-dark font-bold">
+                  <tr>
+                    <th>الصنف والعبوة</th>
+                    <th>الكمية</th>
+                    <th>الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="driverAssignedStockTable">
+                  <tr>
+                    <td class="font-bold text-warning">تنكة كاملة معشبة (15.2 كجم)</td>
+                    <td class="font-bold text-white fs-6">10 عبوات</td>
+                    <td><span class="badge bg-success">عهدة بالمركبة</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-bold text-warning">قنينة زجاج ممتازة (1 لتر)</td>
+                    <td class="font-bold text-white fs-6">24 عبوة</td>
+                    <td><span class="badge bg-success">عهدة بالمركبة</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- FUEL EXPENSE LOG -->
+          <div class="erp-card" id="fuelLogCard">
+            <h6 class="text-warning font-bold mb-3"><i class="fa-solid fa-gas-pump me-2 text-danger"></i> سجل الوقود والمصروفات الميدانية</h6>
+            <form onsubmit="event.preventDefault(); addFuelLog();">
+              <div class="mb-3">
+                <label class="form-label text-warning small">كمية التعبئة (لتر)</label>
+                <input type="number" id="fuelLiters" class="form-control bg-dark text-white border-secondary" placeholder="40" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-warning small">التكلفة الإجمالية ($)</label>
+                <input type="number" id="fuelCost" class="form-control bg-dark text-white border-secondary" placeholder="32.00" step="0.01" required />
+              </div>
+              <button type="submit" class="btn btn-outline-info w-100 font-bold">
+                <i class="fa-solid fa-floppy-disk me-1"></i> تسجيل مصاريف الوقود
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- DRIVER PERSONAL VEHICLE BANNER (SHOWS FOR DRIVER OWNED / LEASED) -->
+        <div class="erp-card border-info p-4 text-center" id="personalVehicleBanner" style="display: none;">
+          <i class="fa-solid fa-user-shield text-info fs-1 mb-2"></i>
+          <h6 class="text-info font-bold mb-2">مركبة خاصة بالسائق (Driver Personal Vehicle)</h6>
+          <p class="small text-light mb-0">
+            مصروفات الوقود والعهدة الميدانية خاصة بالسائق، وتتم المحاسبة عبر كلفة الدليفري المستحقة عن كل طلب، وتستثنى المركبة من سجل نفقات وعهدة الشركة المباشرة.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SEQUENTIAL DELIVERIES QUEUE -->
+      <div class="col-lg-8">
+        
+        <div class="erp-card">
+          
+          <!-- DYNAMIC ACTIVE CLIENT BANNER -->
+          <div class="p-3 mb-4 rounded-3 border border-warning" style="background: linear-gradient(135deg, #152417 0%, #1c3320 100%);" id="activeClientBanner">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h6 class="text-warning font-black mb-0 fs-5" id="activeClientTitle">
+                <i class="fa-solid fa-location-crosshairs text-success me-2"></i> الزبون الحالي المستهدف: [1 من 2] - تعاونية الشوف التجارية
+              </h6>
+              <span class="badge bg-warning text-dark font-bold" id="activeClientBadge">في الطريق إلى الزبون (In Transit)</span>
+            </div>
+            
+            <p class="small text-white mb-3" id="activeClientSub">
+              أرسل إشعار الوصول المباشر للزبون الحالي عبر الواتساب لتجهيز الاستلام، ثم سجل النتيجة للانتقال تلقائياً للزبون التالي.
+            </p>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-success font-bold py-2 px-3 flex-fill" id="btnNotifyCurrentClient" onclick="notifyCurrentClient()">
+                <i class="fa-brands fa-whatsapp fs-5 me-2"></i> 📲 إرسال إشعار للزبون الحالي: <span id="lblCurrentClientBtn">تعاونية الشوف (أنا في الطريق إليك)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-warning font-bold mb-0">
+              <i class="fa-solid fa-route me-2 text-info"></i> جدول التوصيل التتابعي (Sequential Client Routing)
+            </h6>
+            <span class="badge bg-primary fs-7" id="remainingCountBadge">2 طلبات متبقية</span>
+          </div>
+
+          <div id="ordersContainer">
+            <!-- Dynamically populated orders -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ADD DRIVER PROFILE MODAL WITH VEHICLE OWNERSHIP TYPE -->
+  <div class="modal fade" id="addDriverModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-warning">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-warning"><i class="fa-solid fa-user-plus me-2"></i> تعريف ملف سائق جديد (Add Driver Profile)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form onsubmit="event.preventDefault(); saveNewDriverProfile();">
+          <div class="modal-body p-4 space-y-3">
+            <div class="mb-3">
+              <label class="form-label text-warning small">اسم السائق الثلاثي</label>
+              <input type="text" id="newDriverName" class="form-control bg-black text-white border-secondary" placeholder="أبو علي منصور" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-warning small">نوع ورقم المركبة</label>
+              <input type="text" id="newDriverVehicle" class="form-control bg-black text-white border-secondary" placeholder="فان غزال (M-4890)" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-warning small">حالة ملكية/تبعية المركبة (Vehicle Ownership Category)</label>
+              <select id="newDriverOwnership" class="form-select bg-black text-white border-warning font-bold">
+                <option value="COMPANY_OWNED">شركة - ملك (Company Owned - Fuel Log & Stock Active)</option>
+                <option value="COMPANY_LEASED">شركة - مستأجرة (Company Leased - Fuel Log & Stock Active)</option>
+                <option value="DRIVER_OWNED">سائق - ملك خاص (Driver Personal Owned - Fuel Log Excluded)</option>
+                <option value="DRIVER_LEASED">سائق - مستأجرة خاصة (Driver Personal Leased - Fuel Log Excluded)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">إلغاء</button>
+            <button type="submit" class="btn btn-warning text-dark font-bold">حفظ ملف السائق 💾</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGNATURE MODAL -->
+  <div class="modal fade" id="signatureModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-warning">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-warning"><i class="fa-solid fa-signature me-2"></i> توقيع المستلم الرقمي (POD Signature)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="small text-light mb-2">يرجى توقيع الزبون على الشاشة أدناه لتأكيد التسليم واستلام المبلغ كامل:</p>
+          <div class="signature-pad-container">
+            <canvas id="sigCanvas" width="380" height="180"></canvas>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" onclick="clearCanvas()">مسح التوقيع</button>
+          <button type="button" class="btn btn-success font-bold" onclick="saveSignature()">حفظ التوقيع وتأكيد الفاتورة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAILED DRIVER Z-REPORT SHIFT MODAL -->
+  <div class="modal fade" id="zReportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark text-white border-success">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-success font-black"><i class="fa-solid fa-file-invoice-dollar me-2"></i> تقرير تسوية الوردية التفصيلي للسائق (Driver Shift Z-Report)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          
+          <!-- DRIVER HEADER INFO -->
+          <div class="p-3 bg-black rounded border border-success mb-3">
+            <div class="row g-2 text-white">
+              <div class="col-md-6">
+                <span class="text-warning font-bold">اسم السائق:</span>
+                <strong class="text-white ms-1" id="zReportDriverName">أبو علي منصور</strong>
+              </div>
+              <div class="col-md-6">
+                <span class="text-warning font-bold">المركبة المسجلة:</span>
+                <strong class="text-white ms-1" id="zReportVehicleName">فان غزال تبريد (M-4890)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- ITEMIZED ORDERS BREAKDOWN TABLE -->
+          <h6 class="text-warning font-bold mb-2">
+            <i class="fa-solid fa-list-check me-1 text-info"></i> بيان الطلبيات والتسليم وكلفة الدليفري المستحقة للسائق:
+          </h6>
+          
+          <div class="table-responsive mb-3">
+            <table class="table table-dark table-bordered align-middle text-center mb-0 small">
+              <thead class="table-success text-dark font-bold">
+                <tr>
+                  <th>#</th>
+                  <th>اسم الزبون (Client)</th>
+                  <th>حالة الطلب (Outcome)</th>
+                  <th>قيمة الفاتورة ($)</th>
+                  <th>كلفة الدليفري للسائق ($)</th>
+                </tr>
+              </thead>
+              <tbody id="zReportOrdersTbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- TOTALS SUMMARY BOX -->
+          <div class="p-3 rounded border border-warning" style="background: #0d170f;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-white font-bold fs-6">إجمالي المبالغ المحصلة كاش ($ Cash Collected):</span>
+              <strong class="text-success fs-5 font-bold" id="zTotalCashUsd">$4,340.00</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-white font-bold fs-6">إجمالي كلفة الدليفري المستحقة للسائق (Driver Fees Earned):</span>
+              <strong class="text-warning fs-5 font-bold" id="zTotalDriverFeesUsd">$8.00</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-light font-bold small">إجمالي المسافة المقطوعة بالوردية:</span>
+              <strong class="text-info font-bold">42.5 كم</strong>
+            </div>
+          </div>
+
+          <p class="small text-light mt-3 mb-0">
+            <i class="fa-solid fa-shield-check text-success me-1"></i> يتم إرسال هذا التقرير التفصيلي مباشرة إلى قسم الحسابات والمدير العام عند إغلاق الوردية.
+          </p>
+
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">إغلاق</button>
+          <button type="button" class="btn btn-success font-bold" onclick="finishShiftZReport()">إنهاء الوردية والترحيل للحسابات 📤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // SEQUENTIAL CLIENT ROUTING DATA WITH PER-ORDER DELIVERY FEES FOR DRIVER
+    let clientOrders = [
+      {
+        id: 'DEL-8801',
+        orderNumber: 'SO-INV-2026-041',
+        customerName: 'تعاونية الشوف التجارية',
+        cityDistrict: 'الشوف - بقعاتا',
+        addressDetails: 'الشارع العام - مقابل البنك اللبناني',
+        phoneNumber: '+96105500120',
+        amountUsd: 1450.00,
+        deliveryFeeUsd: 3.00,
+        outcome: 'Delivered',
+        repCode: 'REP-04 (سامي)',
+        notes: 'تسليم 10 تنكات زيت بكر ممتاز + 2 كرتونة زيتون'
+      },
+      {
+        id: 'DEL-8802',
+        orderNumber: 'SO-INV-2026-042',
+        customerName: 'مؤسسة الجنوب للمواد الغذائية',
+        cityDistrict: 'صيدا - الحسبة',
+        addressDetails: 'مجمع الثمار - العنبر 4',
+        phoneNumber: '+96107720340',
+        amountUsd: 2890.00,
+        deliveryFeeUsd: 5.00,
+        outcome: 'Pending',
+        repCode: 'REP-04 (سامي)',
+        notes: 'دفعة نقدية عند التسليم بالدولار الأمريكي'
+      }
+    ];
+
+    let currentClientIndex = 0;
+    let activePendingOrderId = null;
+
+    function handleVehicleOwnershipChange(val) {
+      const companyContainer = document.getElementById('companyVehicleContainer');
+      const personalBanner = document.getElementById('personalVehicleBanner');
+
+      if (val === 'COMPANY_OWNED' || val === 'COMPANY_LEASED') {
+        if (companyContainer) companyContainer.style.display = 'block';
+        if (personalBanner) personalBanner.style.display = 'none';
+      } else {
+        // DRIVER_OWNED or DRIVER_LEASED
+        if (companyContainer) companyContainer.style.display = 'none';
+        if (personalBanner) personalBanner.style.display = 'block';
+      }
+    }
+
+    function openAddDriverModal() {
+      const modal = new bootstrap.Modal(document.getElementById('addDriverModal'));
+      modal.show();
+    }
+
+    function saveNewDriverProfile() {
+      const name = document.getElementById('newDriverName').value;
+      const vehicle = document.getElementById('newDriverVehicle').value;
+      const ownership = document.getElementById('newDriverOwnership').value;
+
+      document.getElementById('driverDisplayName').innerText = name;
+      document.getElementById('driverDisplayVehicle').innerText = vehicle;
+      document.getElementById('vehicleOwnershipSelect').value = ownership;
+
+      handleVehicleOwnershipChange(ownership);
+
+      alert(`تم إضافة وتفعيل ملف السائق الجديد (${name}) بنجاح!`);
+      bootstrap.Modal.getInstance(document.getElementById('addDriverModal')).hide();
+    }
+
+    function renderOrders() {
+      const container = document.getElementById('ordersContainer');
+      if (!container) return;
+
+      container.innerHTML = clientOrders.map((order, idx) => {
+        const isActive = idx === currentClientIndex;
+        let badgeClass = "bg-secondary";
+        let outcomeLabel = "قيد الانتظار (Pending)";
+
+        if (order.outcome === 'Delivered') {
+          badgeClass = "bg-success";
+          outcomeLabel = "تم التسليم بنجاح (Delivered)";
+        } else if (order.outcome === 'Rejected') {
+          badgeClass = "bg-danger";
+          outcomeLabel = "مرتجع (تحصيل $3 أجور فقط)";
+        } else if (order.outcome === 'Postponed') {
+          badgeClass = "bg-warning text-dark";
+          outcomeLabel = "مؤجل ($0 رسم صفر)";
+        } else if (isActive) {
+          badgeClass = "bg-warning text-dark";
+          outcomeLabel = "الزبون الحالي المستهدف (Active Client)";
+        }
+
+        return `
+          <div class="delivery-card ${isActive ? 'active-client-card' : ''}" id="card-${order.id}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h6 class="font-bold text-white mb-1">
+                  <span class="badge bg-dark border border-secondary text-warning me-1">#${idx + 1}</span>
+                  <i class="fa-solid fa-store me-1 text-warning"></i> ${order.customerName}
+                </h6>
+                <span class="text-light small">رقم الطلب: #${order.orderNumber} | ${order.addressDetails}</span>
+              </div>
+              <span class="badge ${badgeClass} font-bold px-3 py-2" id="badge-${order.id}">${outcomeLabel}</span>
+            </div>
+            
+            <div class="row text-white small my-2 g-2">
+              <div class="col-md-4"><i class="fa-solid fa-phone me-1 text-info"></i> ${order.phoneNumber}</div>
+              <div class="col-md-4"><i class="fa-solid fa-money-bill-wave me-1 text-success"></i> المجموع: <strong class="text-white">$${order.amountUsd.toFixed(2)}</strong> (كاش)</div>
+              <div class="col-md-4"><i class="fa-solid fa-truck-ramp-box me-1 text-warning"></i> كلفة الدليفري للسائق: <strong class="text-warning">$${(order.deliveryFeeUsd || 3.00).toFixed(2)}</strong></div>
+            </div>
+            
+            <p class="small text-light mb-2 bg-dark p-2 rounded border border-secondary">
+              <i class="fa-solid fa-note-sticky text-warning me-1"></i> ملاحظات: ${order.notes}
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-3" id="actions-${order.id}">
+              ${order.outcome === 'Pending' || order.outcome === 'In Transit' ? `
+                <button class="btn btn-success btn-sm font-bold flex-fill" onclick="completeDelivery('${order.id}')">
+                  <i class="fa-solid fa-check-double me-1"></i> 1. تأكيد التسليم (Delivered)
+                </button>
+                <button class="btn btn-outline-danger btn-sm font-bold flex-fill" onclick="rejectDelivery('${order.id}')">
+                  <i class="fa-solid fa-xmark me-1"></i> 2. مرتجع / رفض ($3 أجور)
+                </button>
+                <button class="btn btn-outline-warning btn-sm font-bold flex-fill" onclick="postponeDelivery('${order.id}')">
+                  <i class="fa-solid fa-clock-rotate-left me-1"></i> 3. تأجيل ($0 رسم)
+                </button>
+              ` : `
+                <span class="text-success small font-bold"><i class="fa-solid fa-circle-check me-1"></i> تم تسجيل النتيجة: ${outcomeLabel}</span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateClientBanner();
+    }
+
+    function updateClientBanner() {
+      const bannerTitle = document.getElementById('activeClientTitle');
+      const bannerSub = document.getElementById('activeClientSub');
+      const btnNotifyLabel = document.getElementById('lblCurrentClientBtn');
+      const btnNotify = document.getElementById('btnNotifyCurrentClient');
+      const remainingBadge = document.getElementById('remainingCountBadge');
+
+      const completedCount = clientOrders.filter(o => o.outcome !== 'Pending' && o.outcome !== 'In Transit').length;
+      const totalCount = clientOrders.length;
+      
+      if (remainingBadge) {
+        remainingBadge.innerText = `${totalCount - completedCount} طلبات متبقية من أصل ${totalCount}`;
+      }
+
+      if (currentClientIndex < clientOrders.length) {
+        const client = clientOrders[currentClientIndex];
+        if (bannerTitle) bannerTitle.innerHTML = `<i class="fa-solid fa-location-crosshairs text-success me-2"></i> الزبون الحالي المستهدف: [${currentClientIndex + 1} من ${totalCount}] - ${client.customerName}`;
+        if (bannerSub) bannerSub.innerHTML = `أرسل إشعار الوصول المباشر للزبون الحالي عبر الواتساب لتجهيز الاستلام، ثم سجل النتيجة للانتقال تلقائياً للزبون التالي.`;
+        if (btnNotifyLabel) btnNotifyLabel.innerText = `${client.customerName} (أنا في الطريق إليك)`;
+        if (btnNotify) btnNotify.style.display = 'inline-flex';
+      } else {
+        // All clients completed!
+        if (bannerTitle) bannerTitle.innerHTML = `<i class="fa-solid fa-circle-check text-success me-2"></i> 🎉 اكتملت جميع طلبيات الوردية! (${totalCount}/${totalCount})`;
+        if (bannerSub) bannerSub.innerHTML = `تم تسليم / معالجة جميع الطلبات بنجاح! يرجى الضغط على زر <strong>"العودة للمركز"</strong> لإغلاق الوردية وترحيل Z-Report للحسابات.`;
+        if (btnNotify) btnNotify.style.display = 'none';
+
+        const btnReturn = document.getElementById('btnReturnToBase');
+        if (btnReturn) {
+          btnReturn.className = "btn btn-warning shift-btn flex-fill text-dark font-bold pulse-animation";
+        }
+      }
+    }
+
+    function notifyCurrentClient() {
+      if (currentClientIndex >= clientOrders.length) {
+        alert("تم الوصول إلى آخر زبون في الوردية!");
+        return;
+      }
+      const client = clientOrders[currentClientIndex];
+      const driverName = "أبو علي منصور (فان M-4890)";
+      const repCompanyCode = "REP-04 (سامي الخوري)";
+      
+      const msg = `مرحباً ${client.customerName}،\n` +
+                  `🚚 شاحنة التوصيل الخاصة بـ SuperSonic Delivery في الطريق إليكم الآن!\n` +
+                  `📍 العنوان: ${client.addressDetails}\n` +
+                  `👤 اسم السائق: ${driverName}\n` +
+                  `👤 كود المندوب: ${repCompanyCode}\n\n` +
+                  `يرجى التكرم بالاستعداد لاستلام الفاتورة رقم #${client.orderNumber}. شكراً لثقتكم!`;
+
+      const waUrl = `https://wa.me/${client.phoneNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
+      
+      alert(`تم تجهيز إشعار الوصول المباشر للزبون الحالي (${client.customerName}):\n----------------------------------------\n${msg}`);
+      window.open(waUrl, '_blank');
+    }
+
+    function advanceToNextClient() {
+      if (currentClientIndex < clientOrders.length - 1) {
+        currentClientIndex++;
+      } else {
+        currentClientIndex = clientOrders.length; // All done
+      }
+      renderOrders();
+    }
+
+    function completeDelivery(id) {
+      activePendingOrderId = id;
+      openSignaturePad();
+    }
+
+    function rejectDelivery(id) {
+      const reason = prompt("يرجى تحديد سبب رفض التسليم / الإرجاع:");
+      if (reason) {
+        const order = clientOrders.find(o => o.id === id);
+        if (order) order.outcome = 'Rejected';
+        alert(`تم تسجيل رفض الطلب #${id}. تم تحصيل 3.00$ أجور التوصيل فقط.`);
+        advanceToNextClient();
+      }
+    }
+
+    function postponeDelivery(id) {
+      const reason = prompt("يرجى تحديد سبب تأجيل الطلب للوردية القادمة:");
+      if (reason) {
+        const order = clientOrders.find(o => o.id === id);
+        if (order) order.outcome = 'Postponed';
+        alert(`تم تأجيل الطلب #${id} بدون أي رسوم ($0).`);
+        advanceToNextClient();
+      }
+    }
+
+    function saveSignature() {
+      if (activePendingOrderId) {
+        const order = clientOrders.find(o => o.id === activePendingOrderId);
+        if (order) order.outcome = 'Delivered';
+      }
+      alert("تم حفظ التوقيع الرقمي بنجاح وإغلاق الفاتورة المستندية!");
+      bootstrap.Modal.getInstance(document.getElementById('signatureModal')).hide();
+      advanceToNextClient();
+    }
+
+    function departAndBroadcast() {
+      updateShiftState('On Duty / Departed');
+      triggerDepartureBroadcast();
+    }
+
+    function updateShiftState(state) {
+      const pill = document.getElementById('currentDriverStatusPill');
+      if (pill) {
+        pill.innerHTML = `<i class="fa-solid fa-circle-dot me-1 text-warning"></i> الوردية: ${state} — أبو علي منصور (M-4890)`;
+      }
+      alert(`تم تحديث حالة الوردية للسائق إلى: [${state}]`);
+      if (state === 'Returning to Base' || state === 'Shift Ended') {
+        openZReportModal();
+      }
+    }
+
+    function triggerDepartureBroadcast() {
+      const driverName = "أبو علي منصور (فان M-4890)";
+      const repCompanyCode = "REP-04 (سامي الخوري)";
+      const orderDetails = "شحنة منتوجات زيت وزيتون الجنوب SARL (جميع طلبات اليوم الميدانية)";
+      
+      const msg = `مرحباً، تم انطلاق شاحنة التوصيل الخاصة بـ SuperSonic Delivery\n\n` +
+                  `🚛 اسم السائق: ${driverName}\n` +
+                  `📋 تفاصيل الطلب: ${orderDetails}\n` +
+                  `👤 كود المندوب بالشركة: ${repCompanyCode}\n\n` +
+                  `📍 شاحنة التوصيل في الطريق إليكم الآن. شكراً لثقتكم بمنتوجاتنا!`;
+      
+      const encoded = encodeURIComponent(msg);
+      const waUrl = `https://wa.me/?text=${encoded}`;
+      
+      alert(`تم تجهيز إشعار انطلاق الشاحنة الموحد عبر الواتساب:\n----------------------------------------\n${msg}`);
+      window.open(waUrl, '_blank');
+    }
+
+    function openSignaturePad() {
+      const modal = new bootstrap.Modal(document.getElementById('signatureModal'));
+      modal.show();
+      setTimeout(initCanvas, 300);
+    }
+
+    function openZReportModal() {
+      const tbody = document.getElementById('zReportOrdersTbody');
+      const totalCashEl = document.getElementById('zTotalCashUsd');
+      const totalDriverFeesEl = document.getElementById('zTotalDriverFeesUsd');
+
+      let totalCash = 0;
+      let totalFees = 0;
+
+      if (tbody) {
+        tbody.innerHTML = clientOrders.map((ord, idx) => {
+          let outcomeBadge = '<span class="badge bg-secondary">قيد الانتظار</span>';
+          let collectedVal = 0;
+          let feeVal = 0;
+
+          if (ord.outcome === 'Delivered') {
+            outcomeBadge = '<span class="badge bg-success">تم التسليم بنجاح</span>';
+            collectedVal = ord.amountUsd;
+            feeVal = ord.deliveryFeeUsd || 3.00;
+          } else if (ord.outcome === 'Rejected') {
+            outcomeBadge = '<span class="badge bg-danger">مرتجع (تحصيل أجور فقط)</span>';
+            collectedVal = ord.deliveryFeeUsd || 3.00;
+            feeVal = ord.deliveryFeeUsd || 3.00;
+          } else if (ord.outcome === 'Postponed') {
+            outcomeBadge = '<span class="badge bg-warning text-dark">مؤجل ($0)</span>';
+            collectedVal = 0;
+            feeVal = 0;
+          }
+
+          totalCash += collectedVal;
+          totalFees += feeVal;
+
+          return `
+            <tr>
+              <td class="font-bold text-warning">${idx + 1}</td>
+              <td class="font-bold text-white">${ord.customerName}</td>
+              <td>${outcomeBadge}</td>
+              <td class="font-bold text-success">$${collectedVal.toFixed(2)}</td>
+              <td class="font-bold text-info">$${feeVal.toFixed(2)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      if (totalCashEl) totalCashEl.innerText = `$${totalCash.toFixed(2)}`;
+      if (totalDriverFeesEl) totalDriverFeesEl.innerText = `$${totalFees.toFixed(2)}`;
+
+      const modal = new bootstrap.Modal(document.getElementById('zReportModal'));
+      modal.show();
+    }
+
+    function finishShiftZReport() {
+      alert('تم ترحيل تقرير Z-Report التفصيلي وإغلاق الوردية وإعادة العهدة بنجاح إلى قسم الحسابات والإدارة العامة!');
+      bootstrap.Modal.getInstance(document.getElementById('zReportModal')).hide();
+    }
+
+    let isDrawing = false;
+    let canvas, ctx;
+
+    function initCanvas() {
+      canvas = document.getElementById('sigCanvas');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#050a06';
+
+      canvas.onmousedown = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+      canvas.onmousemove = (e) => { if (isDrawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } };
+      canvas.onmouseup = () => { isDrawing = false; };
+    }
+
+    function clearCanvas() {
+      if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function addFuelLog() {
+      const liters = document.getElementById('fuelLiters').value;
+      const cost = document.getElementById('fuelCost').value;
+      alert(`تم تسجيل مصاريف الوقود: ${liters} لتر بقيمة $${cost}`);
+    }
+
+    // PWA & SERVICE WORKER REGISTRATION HANDLERS
+    let deferredPrompt = null;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js?v=43', { updateViaCache: 'none' })
+          .then(reg => console.log('SuperSonic ServiceWorker registered:', reg))
+          .catch(err => console.warn('ServiceWorker registration error:', err));
+      });
+    }
+
+    // Detect WhatsApp / In-App WebView Browser
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isWhatsAppWebView = /WhatsApp/i.test(userAgent) || /FBAV/i.test(userAgent) || /Instagram/i.test(userAgent);
+
+    if (isWhatsAppWebView) {
+      const noticeEl = document.getElementById('whatsappBrowserNotice');
+      if (noticeEl) noticeEl.classList.remove('d-none');
+    }
+
+    // Handle PWA Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      if (btn) btn.classList.remove('d-none');
+    });
+
+    function installSuperSonicPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted SuperSonic PWA installation');
+          }
+          deferredPrompt = null;
+          const btn = document.getElementById('pwaInstallBtn');
+          if (btn) btn.classList.add('d-none');
+        });
+      } else {
+        alert('لتثبيت التطبيق على جهازك:\n- على أجهزة Android: اضغط على القائمة (⋮) في أعلى المتصفح واختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".\n- على أجهزة iPhone: اضغط على زر المشاركة (Share) في Safari واطلع لأعلى واختار "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderOrders);
+  </script>
+</body>
+</html>

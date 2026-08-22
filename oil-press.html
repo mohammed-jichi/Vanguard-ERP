@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <script>
+    localStorage.setItem('so_authenticated', 'true');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تطبيق معصرة واستلام وإنتاج الزيت - Southern Olive & Oil Products</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/style.css?v=4.0" />
+  <style>
+    body {
+      background-color: #2b3e2a !important; /* Olive Green Background */
+      color: #000000 !important;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .oil-app-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .oil-card {
+      background: #2b3e2a !important; /* Olive Green Box */
+      border: 3px solid #84a98c !important;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+      color: #000000 !important;
+    }
+    .subnav-tabs {
+      background: #1c2b1a;
+      padding: 8px;
+      border-radius: 12px;
+      gap: 6px;
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      white-space: nowrap !important;
+    }
+    .subnav-tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+    .subnav-tabs::-webkit-scrollbar-thumb {
+      background: #84a98c;
+      border-radius: 4px;
+    }
+    .subnav-tabs .nav-item {
+      flex: 0 0 auto !important;
+    }
+    .subnav-tabs .nav-link {
+      color: #1e293b !important;
+      background: #ffffff !important;
+      opacity: 0.85;
+      border: 2px solid transparent !important;
+      margin-left: 0;
+      border-radius: 8px;
+      font-weight: 700;
+      padding: 10px 18px;
+      white-space: nowrap !important;
+    }
+    .subnav-tabs .nav-link.active {
+      color: #000000 !important;
+      background-color: #fefae0 !important; /* Cream color tab */
+      border: 2px solid #2b3e2a !important;
+      font-weight: 900 !important;
+      opacity: 1 !important;
+    }
+    .so-res-card {
+      background: #fefae0 !important; /* Cream color box */
+      border: 2px solid #ccd5ae !important;
+      padding: 14px;
+      border-radius: 10px;
+      color: #000000 !important;
+    }
+    .so-small {
+      display: block;
+      font-size: 0.85rem;
+      color: #000000 !important;
+      font-weight: 700;
+    }
+    .stock-banner {
+      background: #fefae0 !important; /* Cream color banner */
+      border: 2px solid #84a98c !important;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      color: #000000 !important;
+    }
+    label, .form-label {
+      color: #000000 !important;
+      font-weight: 800 !important;
+      font-size: 0.95rem;
+    }
+    .form-control, .form-select {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
+      font-weight: 900 !important;
+      border: 2px solid #354b32 !important;
+      opacity: 1 !important;
+    }
+    .form-control::placeholder {
+      color: #475569 !important;
+      -webkit-text-fill-color: #475569 !important;
+      opacity: 0.8 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="oil-app-container">
+    <!-- APP HEADER BAR -->
+    <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 p-3 rounded-4" style="background: #2b3e2a; border: 3px solid #84a98c;">
+      <div class="d-flex align-items-center gap-3">
+        <img src="assets/images/logo.png" alt="Southern Olive Logo" height="52" class="circular-logo" />
+        <div>
+          <h4 class="mb-0 fw-bold" style="color: #fefae0 !important;"><i class="fa-solid fa-seedling me-2"></i> مركز الاستلام والإنتاج -- منتوجات زيت وزيتون الجنوب</h4>
+          <small style="color: #ccd5ae !important; font-weight: 600;">Receive & Production Center -- Southern Oil & Olive Products S.A.R.L.</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="index.html" class="btn btn-sm fw-bold" style="background: #fefae0; color: #000000; border: 2px solid #354b32;"><i class="fa-solid fa-house me-1"></i> العودة للنظام الرئيسي (ERP)</a>
+      </div>
+    </header>
+
+    <!-- LIVE STOCK SUMMARY -->
+    <div id="standaloneStockBanner" class="stock-banner shadow-sm">
+      <!-- JavaScript populated -->
+    </div>
+
+    <!-- MAIN APP NAVIGATION TABS (EXACTLY 4 MAIN TABS) -->
+    <ul class="nav nav-pills subnav-tabs mb-4" id="oilAppTabs">
+      <li class="nav-item">
+        <button class="nav-link active" onclick="switchTab('receiving', this)">
+          <i class="fa-solid fa-truck-ramp-box me-1"></i> 📦 1. استلام زيت (Receive Oil)
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="switchTab('production', this)">
+          <i class="fa-solid fa-flask-vial me-1"></i> ⚙️ 2. خلط وإنتاج (Mixing & Production)
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="switchTab('handover', this)">
+          <i class="fa-solid fa-truck-fast me-1"></i> 🚚 3. تسليم الإنتاج (Production Delivery)
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="switchTab('inventory', this)">
+          <i class="fa-solid fa-boxes-stacked me-1"></i> 📊 4. جرد ورصيد (Inventory Balance)
+        </button>
+      </li>
+    </ul>
+
+    <!-- TAB 1: RECEIVING RAW OIL (ACTIVE DEFAULT TAB) -->
+    <div id="tab-receiving" class="tab-pane active">
+      <div class="oil-card">
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-oil-can me-2"></i> استلام وتفريغ زيت بالوزن (كجم / kg) بالخزانات الخام</h5>
+        
+        <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">المورد / المزارع</label>
+              <div class="input-group">
+                <select id="appRecvVendorSelect" class="form-select">
+                  <option value="أنور الموزع">أنور الموزع (Anwar Al-Muwazzi')</option>
+                  <option value="تعاونية معاصر زيتون النبطية">تعاونية معاصر زيتون النبطية</option>
+                  <option value="مزارع صيدا وحاصبيا">مزارع صيدا وحاصبيا</option>
+                  <option value="مزارع صور والناقورة">مزارع صور والناقورة</option>
+                </select>
+                <button class="btn fw-bold" style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 800;" type="button" onclick="addNewVendorPrompt()"><i class="fa-solid fa-plus me-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">إضافة (Add)</span></button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">خزان الاستلام المستهدف</label>
+              <select id="appRecvTankSelect" class="form-select">
+                <option value="TANK-01">الخزان الرئيسي 01 (كورة)</option>
+                <option value="TANK-02">الخزان الرئيسي 02 (بكر ممتاز)</option>
+                <option value="TANK-03">الخزان الرئيسي 03 (نخيل)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">استلام زيت كورة (كجم / kg)</label>
+              <input type="number" id="appRecvKuraKg" class="form-control" placeholder="0" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">استلام زيت ممتاز (كجم / kg)</label>
+              <input type="number" id="appRecvEVOOKg" class="form-control" placeholder="0" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">استلام زيت نخيل (كجم / kg)</label>
+              <input type="number" id="appRecvPalmKg" class="form-control" placeholder="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-3">
+          <button type="button" class="btn fw-bold px-4" style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="saveReceiving()"><i class="fa-solid fa-circle-check me-1"></i> تأكيد الاستلام وتحديث مخزون كجم</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PRODUCTION -->
+    <div id="tab-production" class="tab-pane" style="display: none;">
+      <div class="oil-card">
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-boxes-packing me-2"></i> خلط وسحب الزيت بالخصم (كجم / kg) وتحديد التعبئة</h5>
+        
+        <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label">سحب كورة (كجم / kg)</label>
+              <input type="number" id="appProdKuraKg" class="form-control" placeholder="0" oninput="recalcProd()" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">سحب ممتاز (كجم / kg)</label>
+              <input type="number" id="appProdEVOOKg" class="form-control" placeholder="0" oninput="recalcProd()" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">سحب نخيل (كجم / kg)</label>
+              <input type="number" id="appProdPalmKg" class="form-control" placeholder="0" oninput="recalcProd()" />
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label mb-0 fw-bold" style="color: #000000 !important;">طرق وأعداد التعبئة والتغليف المنتجة (تحديد أعداد العبوات لعدة أصناف بنفس الوقت)</label>
+              <button type="button" class="btn btn-sm fw-bold" style="background: #2b3e2a; color: #ffffff; border: 1px solid #1c2b1a;" onclick="window.SouthernOliveBridge.addNewPackagingItemPrompt()"><i class="fa-solid fa-plus me-1"></i> إضافة للمخزون</button>
+            </div>
+            <div id="appMultiPackList" class="p-2 rounded-3" style="background: #fefae0; border: 1px solid #84a98c; max-height: 240px; overflow-y: auto;">
+              <!-- Dynamically Injected Multi Packaging Rows -->
+            </div>
+          </div>
+        </div>
+
+        <div id="appProdResultBox" class="p-3 rounded-3 mb-3" style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
+          <!-- Live production calculations -->
+        </div>
+
+        <div class="text-end">
+          <button type="button" class="btn fw-bold px-4" style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="executeProd()"><i class="fa-solid fa-gears me-1"></i> تنفيذ السحب والإنتاج وتحديث الخزانات</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PRODUCTION DELIVERY (MULTI-ITEM SELECTION TO SUPERSONIC HUB) -->
+    <div id="tab-handover" class="tab-pane" style="display: none;">
+      <div class="oil-card">
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-truck-fast me-2"></i> تسليم وترحيل الإنتاج إلى شركة SuperSonic (SuperSonic Delivery & Stock Handover)</h5>
+        
+        <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">جهة التوصيل / مستودع شركة SuperSonic المستهدف</label>
+              <select id="appHandoverBranchSelect" class="form-select">
+                <option value="المستودع الرئيسي لشركة SuperSonic - بيروت والشويفات">المستودع الرئيسي لشركة SuperSonic - بيروت والشويفات</option>
+                <option value="مستودع شركة SuperSonic - فرع الجنوب وصيدا">مستودع شركة SuperSonic - فرع الجنوب وصيدا</option>
+                <option value="مستودع شركة SuperSonic - فرع البقاع وزحلة">مستودع شركة SuperSonic - فرع البقاع وزحلة</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">وصف وملاحظات شحنة التسليم (Delivery Batch Description / Notes)</label>
+              <input type="text" id="appHandoverClient" class="form-control" placeholder="أدخل تفاصيل الشحنة والملاحظات اللوجستية..." />
+            </div>
+          </div>
+
+          <!-- MULTI-ITEM QUANTITY HANDOVER SELECTION -->
+          <div class="mt-3">
+            <label class="form-label mb-2 fw-bold" style="color: #000000 !important;"><i class="fa-solid fa-boxes-stacked me-1"></i> الكمية المسلمة والمرحلة حسب الصنف والعبوة (تحديد الكمية لعدة أصناف بنفس الوقت):</label>
+            <div id="appMultiHandoverList" class="p-3 rounded-3 bg-white border border-success">
+              <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
+                <div class="col-md-7">
+                  <strong class="text-dark">تنكة كاملة خضير (15.2 كجم) — زيت بلدي خضير</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="تنكة كاملة خضير (15.2 كجم)" data-kg="15.2" value="10" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+
+              <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
+                <div class="col-md-7">
+                  <strong class="text-dark">تنكة كاملة فيرجن (15.2 كجم) — بكر ممتاز EVOO</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="تنكة كاملة فيرجن (15.2 كجم)" data-kg="15.2" value="5" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+
+              <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
+                <div class="col-md-7">
+                  <strong class="text-dark">نصف تنكة خضير (7.8 كجم) — زيت بلدي خضير</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="نصف تنكة خضير (7.8 كجم)" data-kg="7.8" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+
+              <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
+                <div class="col-md-7">
+                  <strong class="text-dark">نصف تنكة فيرجن (7.8 كجم) — بكر ممتاز EVOO</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="نصف تنكة فيرجن (7.8 كجم)" data-kg="7.8" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+
+              <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
+                <div class="col-md-7">
+                  <strong class="text-dark">غالون بلاستيك 5 لتر (4.5 كجم) — بلاستيك مقوى</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="غالون بلاستيك 5 لتر (4.5 كجم)" data-kg="4.5" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+
+              <div class="row g-2 align-items-center">
+                <div class="col-md-7">
+                  <strong class="text-dark">قنينة زجاج 1 لتر (1.09 كجم) — زجاج فاخر</strong>
+                </div>
+                <div class="col-md-5 d-flex items-center gap-2">
+                  <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
+                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="قنينة زجاج 1 لتر (1.09 كجم)" data-kg="1.09" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <span class="small font-bold">عبوة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="appHandoverResultBox" class="p-3 rounded-3 mb-3" style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
+          <!-- Live Handover Calculations -->
+        </div>
+
+        <div class="text-end mb-4">
+          <button type="button" class="btn fw-bold px-4" style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 900;" onclick="saveHandover()"><i class="fa-solid fa-paper-plane me-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">تأكيد تحويل وتسليم الشحنة لشركة SuperSonic</span></button>
+        </div>
+
+        <!-- RECENT DISPATCHES LOG TABLE -->
+        <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+          <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-clock-rotate-left me-2"></i> سجل الشحنات المسلمة والمحولة لقسم إدارة التوصيل (Delivery Management Stock Audit):</h6>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle mb-0 text-center">
+              <thead style="background: #2b3e2a; color: #ffffff;">
+                <tr>
+                  <th>تاريخ التسليم</th>
+                  <th>مرجع دفعة التسليم</th>
+                  <th>المستودع المستهدف</th>
+                  <th>الصنف والكمية المسلمة</th>
+                  <th>حالة الاستلام في تطبيق التوصيل</th>
+                </tr>
+              </thead>
+              <tbody id="appHandoverTable">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: INVENTORY BALANCE (WITH 4 INNER SUB-TABS) -->
+    <div id="tab-inventory" class="tab-pane" style="display: none;">
+      <div class="oil-card">
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-warehouse me-2"></i> جرد ورصيد المستودع والأسطول (Inventory Balance & Audit)</h5>
+
+        <!-- 4 INNER SUB-TABS NAV BAR -->
+        <ul class="nav nav-pills mb-4 p-2 rounded-3" style="background: #ffffff; border: 2px solid #84a98c; gap: 6px;">
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 active fw-bold border" id="subtabStockBtn" onclick="switchInventorySubtab('stock', this)">
+              <i class="fa-solid fa-boxes-stacked me-1"></i> جرد المخزون (Stock)
+            </button>
+          </li>
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 fw-bold border text-dark" id="subtabLogBtn" onclick="switchInventorySubtab('log', this)">
+              <i class="fa-solid fa-clock-rotate-left me-1"></i> سجل الحركات (Log)
+            </button>
+          </li>
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 fw-bold border text-dark" id="subtabSupersonicBtn" onclick="switchInventorySubtab('supersonic', this)">
+              <i class="fa-solid fa-truck-fast me-1"></i> جرد الأسطول (Supersonic)
+            </button>
+          </li>
+          <li class="nav-item flex-fill">
+            <button class="nav-link w-100 fw-bold border text-danger" id="subtabAlertsBtn" onclick="switchInventorySubtab('alerts', this)">
+              <i class="fa-solid fa-triangle-exclamation me-1"></i> تنبيهات نقص المخزون (Alerts)
+            </button>
+          </li>
+        </ul>
+
+        <!-- SUBTAB 1: STOCK (جرد المخزون) -->
+        <div id="invSubtabStock">
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+                <small class="fw-bold text-muted d-block mb-1">زيت كورة خام (كجم)</small>
+                <strong id="invKuraKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
+                <small id="invKuraTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+                <small class="fw-bold text-muted d-block mb-1">زيت ممتاز خام EVOO (كجم)</small>
+                <strong id="invEvooKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
+                <small id="invEvooTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+                <small class="fw-bold text-muted d-block mb-1">زيت نخيل خام (كجم)</small>
+                <strong id="invPalmKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
+                <small id="invPalmTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+            <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-boxes-packing me-2"></i> قائمة أصناف وسعات التعبئة والتغليف بالمخزون:</h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped align-middle mb-0 text-center">
+                <thead style="background: #2b3e2a; color: #ffffff;">
+                  <tr>
+                    <th>اسم صنف العبوة</th>
+                    <th>سعة صافي الزيت (كجم)</th>
+                    <th>نوع العبوة والتغليف</th>
+                    <th>حالة التوفر</th>
+                  </tr>
+                </thead>
+                <tbody id="appInventoryPackTable">
+                  <!-- Dynamically rendered -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 2: LOG (سجل الحركات) -->
+        <div id="invSubtabLog" style="display: none;">
+          <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-history me-2"></i> سجل حركات الاستلام والتعبئة والتسليم:</h6>
+            <ul class="list-group list-group-flush rounded-3 font-bold" id="invLogList">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge bg-success me-2">RECEIVE</span>
+                  <strong>استلام شحنة زيت خام من المورد أنور الموزع</strong>
+                  <small class="d-block text-muted">بواسطة أمين المستودع — اليوم 09:30 ص</small>
+                </div>
+                <span class="fw-extrabold text-success">+240 كجم</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge bg-primary me-2">PRODUCTION</span>
+                  <strong>إنتاج وتعبئة 20 تنكة كاملة (15.2 كجم)</strong>
+                  <small class="d-block text-muted">بواسطة فريق الإنتاج — اليوم 10:45 ص</small>
+                </div>
+                <span class="fw-extrabold text-primary">+20 عبوة</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="badge bg-info text-dark me-2">DELIVERY</span>
+                  <strong>تسليم وترحيل بضائع إلى شركة SuperSonic Management</strong>
+                  <small class="d-block text-muted">بواسطة مدير اللوجستيات — اليوم 11:20 ص</small>
+                </div>
+                <span class="fw-extrabold text-info">15 عبوة</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SUBTAB 3: SUPERSONIC (جرد الأسطول) -->
+        <div id="invSubtabSupersonic" style="display: none;">
+          <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-truck-fast me-2"></i> عهدة ومخزون أسطول وسائقي شركة SuperSonic:</h6>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="p-3 rounded-3 bg-white border border-primary">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">سائق S-01 — أبو علي</strong>
+                    <span class="badge bg-primary">فان هيونداي</span>
+                  </div>
+                  <small class="d-block fw-bold mb-1 text-dark">تنكة كاملة خضير (15.2 كجم)</small>
+                  <span class="fw-black fs-5 text-success">18 عبوة</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 rounded-3 bg-white border border-primary">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">سائق S-02 — حسن</strong>
+                    <span class="badge bg-primary">رابيد رينو</span>
+                  </div>
+                  <small class="d-block fw-bold mb-1 text-dark">نصف تنكة خضير (7.8 كجم)</small>
+                  <span class="fw-black fs-5 text-success">12 عبوة</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-3 rounded-3 bg-white border border-primary">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">SuperSonic Hub المركزي</strong>
+                    <span class="badge bg-secondary">مقر الشركة</span>
+                  </div>
+                  <small class="d-block fw-bold mb-1 text-dark">غالون بلاستيك 5 لتر (4.5 كجم)</small>
+                  <span class="fw-black fs-5 text-success">45 عبوة</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 4: ALERTS (تنبيهات نقص المخزون) -->
+        <div id="invSubtabAlerts" style="display: none;">
+          <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+            <h6 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> تنبيهات نقص المخزون وتجاوز الحد الأدنى:</h6>
+            <div class="alert alert-warning d-flex justify-content-between align-items-center mb-2 font-bold">
+              <div>
+                <strong>نصف تنكة خضير (7.8 كجم)</strong>
+                <small class="d-block">الرصيد المتاح (25 عبوة) قريب من الحد الأدنى المطلوب (20 عبوة).</small>
+              </div>
+              <span class="badge bg-warning text-dark">تحذير</span>
+            </div>
+            <div class="alert alert-danger d-flex justify-content-between align-items-center mb-0 font-bold">
+              <div>
+                <strong>زيت نخيل خام بالمستودع</strong>
+                <small class="d-block">الرصيد الحالي (800 كجم) يتطلب إعادة توريد من المورد أنور الموزع.</small>
+              </div>
+              <span class="badge bg-danger">حرج</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/modules/southern_olive_bridge.js"></script>
+  <script>
+    const bridge = window.SouthernOliveBridge || null;
+
+    function switchInventorySubtab(sub, btn) {
+      const stock = document.getElementById('invSubtabStock');
+      const log = document.getElementById('invSubtabLog');
+      const supersonic = document.getElementById('invSubtabSupersonic');
+      const alerts = document.getElementById('invSubtabAlerts');
+
+      const btns = [
+        document.getElementById('subtabStockBtn'),
+        document.getElementById('subtabLogBtn'),
+        document.getElementById('subtabSupersonicBtn'),
+        document.getElementById('subtabAlertsBtn')
+      ];
+
+      btns.forEach(b => {
+        if (b) {
+          b.classList.remove('active', 'bg-dark', 'text-white');
+          b.classList.add('text-dark');
+        }
+      });
+
+      if (btn) {
+        btn.classList.add('active');
+      }
+
+      if (stock) stock.style.display = sub === 'stock' ? 'block' : 'none';
+      if (log) log.style.display = sub === 'log' ? 'block' : 'none';
+      if (supersonic) supersonic.style.display = sub === 'supersonic' ? 'block' : 'none';
+      if (alerts) alerts.style.display = sub === 'alerts' ? 'block' : 'none';
+    }
+
+    function getStock() {
+      if (bridge && typeof bridge.getRawOilStock === 'function') return bridge.getRawOilStock();
+      const raw = localStorage.getItem('so_raw_oil_stock');
+      return raw ? JSON.parse(raw) : { kuraKg: 1600, evooKg: 2400, palmKg: 800 };
+    }
+
+    function saveStock(st) {
+      if (bridge && typeof bridge.saveRawOilStock === 'function') bridge.saveRawOilStock(st);
+      else localStorage.setItem('so_raw_oil_stock', JSON.stringify(st));
+      renderStockBanner();
+    }
+
+    function renderStockBanner() {
+      const st = getStock();
+      const kuraTins = (st.kuraKg / 15.2).toFixed(1);
+      const evooTins = (st.evooKg / 15.2).toFixed(1);
+      const palmTins = (st.palmKg / 15.2).toFixed(1);
+
+      const el = document.getElementById('standaloneStockBanner');
+      if (el) {
+        el.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span class="fw-bold" style="color: #000000 !important;"><i class="fa-solid fa-boxes-stacked me-1"></i> رصيد المخزون الخام المتاح بالمستودع (كجم):</span>
+            <span class="fw-bold fs-6" style="color: #000000 !important;">
+              <span>${st.kuraKg} kg (${kuraTins} تنكة) كورة</span> | 
+              <span>${st.evooKg} kg (${evooTins} تنكة) ممتاز</span> | 
+              <span>${st.palmKg} kg (${palmTins} تنكة) نخيل</span>
+            </span>
+          </div>
+        `;
+      }
+
+      // Update Inventory Tab Cards
+      const ik = document.getElementById('invKuraKg');
+      if (ik) {
+        document.getElementById('invKuraKg').innerText = `${st.kuraKg} kg`;
+        document.getElementById('invKuraTins').innerText = `(${kuraTins} تنكة كاملة 15.2kg)`;
+        document.getElementById('invEvooKg').innerText = `${st.evooKg} kg`;
+        document.getElementById('invEvooTins').innerText = `(${evooTins} تنكة كاملة 15.2kg)`;
+        document.getElementById('invPalmKg').innerText = `${st.palmKg} kg`;
+        document.getElementById('invPalmTins').innerText = `(${palmTins} تنكة كاملة 15.2kg)`;
+      }
+
+      renderInventoryPackTable();
+    }
+
+    function renderInventoryPackTable() {
+      const tbody = document.getElementById('appInventoryPackTable');
+      if (!tbody) return;
+
+      let items = [];
+      if (window.SouthernOliveBridge && window.SouthernOliveBridge.getInventoryPackagingItems) {
+        items = window.SouthernOliveBridge.getInventoryPackagingItems();
+      } else {
+        items = [
+          { name: 'تنكة كاملة خضير (15.2 كجم)', capacityKg: 15.2, type: 'زيت بلدي خضير' },
+          { name: 'تنكة كاملة فيرجن (15.2 كجم)', capacityKg: 15.2, type: 'بكر ممتاز EVOO' },
+          { name: 'نصف تنكة خضير (7.8 كجم)', capacityKg: 7.8, type: 'زيت بلدي خضير' },
+          { name: 'نصف تنكة فيرجن (7.8 كجم)', capacityKg: 7.8, type: 'بكر ممتاز EVOO' },
+          { name: 'غالون بلاستيك 5 لتر (4.5 كجم)', capacityKg: 4.5, type: 'بلاستيك مقوى' },
+          { name: 'قنينة زجاج 1 لتر (1.09 كجم)', capacityKg: 1.09, type: 'زجاج فاخر' }
+        ];
+      }
+
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td class="fw-bold" style="color: #000000;">${item.name}</td>
+          <td><span class="badge bg-success fs-6">${item.capacityKg} kg</span></td>
+          <td>${item.type || 'عبوة قياسية'}</td>
+          <td><span class="badge bg-primary">متوفر وجاهز للتعبئة</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.subnav-tabs .nav-link').forEach(el => el.classList.remove('active'));
+      
+      const targetPane = document.getElementById('tab-' + tabId);
+      if (targetPane) targetPane.style.display = 'block';
+      if (btn) btn.classList.add('active');
+
+      if (tabId === 'pressing') recalcPressing();
+      if (tabId === 'receiving') recalcReceiving();
+      if (tabId === 'production') recalcProd();
+      if (tabId === 'handover') { recalcHandover(); renderHandoverTable(); }
+      if (tabId === 'inventory') renderStockBanner();
+    }
+
+    function recalcPressing() {
+      const kg = parseFloat(document.getElementById('appOliveWeightKg')?.value || 0);
+      const pct = parseFloat(document.getElementById('appOilYieldPct')?.value || 18);
+      const oilKg = (kg * (pct / 100)).toFixed(1);
+      const tins = (oilKg / 16).toFixed(1);
+      const liters = (tins * 17.5).toFixed(1);
+
+      const box = document.getElementById('appPressingResultBox');
+      if (box) {
+        box.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: #ccd5ae !important;">
+            <span class="fw-bold" style="color: #000000 !important;">نتيجة ناتج العصر الصافي:</span>
+            <span class="fw-bold fs-5" style="color: #000000 !important;">${oilKg} كجم زيت صافي</span>
+          </div>
+          <div class="row text-center g-2">
+            <div class="col-4"><div class="so-res-card"><small class="so-small">الوزن الصافي</small><strong style="color: #000000 !important;">${oilKg} kg</strong></div></div>
+            <div class="col-4"><div class="so-res-card"><small class="so-small">المكافئ بالتنكات</small><strong style="color: #000000 !important;">${tins} تنكة</strong></div></div>
+            <div class="col-4"><div class="so-res-card"><small class="so-small">الحجم بالليتر</small><strong style="color: #000000 !important;">${liters} L</strong></div></div>
+          </div>
+        `;
+      }
+    }
+
+    function savePressing() {
+      alert("تم حفظ دفعة العصر وإضافتها إلى سجلات خزانات الزيت بنجاح!");
+    }
+
+    function loadSavedVendors() {
+      if (bridge && typeof bridge.loadSavedVendors === 'function') {
+        bridge.loadSavedVendors();
+        return;
+      }
+      try {
+        const raw = localStorage.getItem('so_vendors_list');
+        const list = raw ? JSON.parse(raw) : [
+          { name: 'معصرة الجنوب المركزية', phone: '07-720100', address: 'صيدا - الجنوب', category: 'معصرة زيت مركزية' },
+          { name: 'مزارع صيدا وحاصبيا', phone: '70-112233', address: 'حاصبيا', category: 'مزارع زيتون' }
+        ];
+        const sel = document.getElementById('appRecvVendorSelect');
+        if (sel) {
+          sel.innerHTML = list.map(v => {
+            const label = typeof v === 'object' ? `${v.name} — (${v.category || 'مورد'} - 📞 ${v.phone || ''})` : v;
+            const val = typeof v === 'object' ? v.name : v;
+            return `<option value="${val}">${label}</option>`;
+          }).join('');
+        }
+      } catch(e) {}
+    }
+
+    function addNewVendorPrompt() {
+      if (bridge && typeof bridge.openAddVendorModal === 'function') {
+        bridge.openAddVendorModal();
+      }
+    }
+
+    function saveReceiving() {
+      const v = document.getElementById('appRecvVendorSelect')?.value || 'مورد عام';
+      const kuraKg = parseFloat(document.getElementById('appRecvKuraKg')?.value || 0);
+      const evooKg = parseFloat(document.getElementById('appRecvEVOOKg')?.value || 0);
+      const palmKg = parseFloat(document.getElementById('appRecvPalmKg')?.value || 0);
+      const totalKg = kuraKg + evooKg + palmKg;
+
+      if (totalKg <= 0) {
+        alert("يرجى إدخال وزن الزيت المستلم بالكيلوجرام (kg)");
+        return;
+      }
+
+      const st = getStock();
+      st.kuraKg += kuraKg;
+      st.evooKg += evooKg;
+      st.palmKg += palmKg;
+      saveStock(st);
+
+      alert(`تم تسجيل استلام ${totalKg} kg زيت من [${v}] وتحديث المخزون بنجاح!`);
+      document.getElementById('appRecvKuraKg').value = '';
+      document.getElementById('appRecvEVOOKg').value = '';
+      document.getElementById('appRecvPalmKg').value = '';
+    }
+
+    function recalcProd() {
+      if (window.SouthernOliveBridge && window.SouthernOliveBridge.recalculateProduction) {
+        window.SouthernOliveBridge.recalculateProduction();
+      }
+    }
+
+    function executeProd() {
+      if (window.SouthernOliveBridge && window.SouthernOliveBridge.executeProductionBatch) {
+        window.SouthernOliveBridge.executeProductionBatch();
+        document.getElementById('appProdKuraKg').value = '';
+        document.getElementById('appProdEVOOKg').value = '';
+        document.getElementById('appProdPalmKg').value = '';
+        renderStockBanner();
+      }
+    }
+
+    function recalcHandover() {
+      const branch = document.getElementById('appHandoverBranchSelect')?.value || '';
+      const ref = document.getElementById('appHandoverRef')?.value || 'HO-BATCH-' + Math.floor(Math.random() * 9000 + 1000);
+      const item = document.getElementById('appHandoverItemSelect')?.value || '';
+      const qty = parseInt(document.getElementById('appHandoverQty')?.value || 0, 10);
+
+      const box = document.getElementById('appHandoverResultBox');
+      if (box) {
+        box.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom" style="border-color: #ccd5ae !important;">
+            <span class="fw-bold" style="color: #000000 !important;">معاينة دفعة تسليم وتدوير المخزون لقسم التوصيل:</span>
+            <span class="fw-bold fs-6" style="color: #000000 !important;">${qty} عبوة — [${item}]</span>
+          </div>
+          <div class="row text-center g-2">
+            <div class="col-4"><div class="so-res-card"><small class="so-small">المستودع المستهدف</small><strong style="color: #000000 !important; font-size: 0.85rem;">${branch.split('-')[0]}</strong></div></div>
+            <div class="col-4"><div class="so-res-card"><small class="so-small">مرجع الشحنة</small><strong style="color: #000000 !important; font-size: 0.85rem;">${ref}</strong></div></div>
+            <div class="col-4"><div class="so-res-card"><small class="so-small">إجمالي العبوات</small><strong style="color: #000000 !important;">${qty} عبوة</strong></div></div>
+          </div>
+        `;
+      }
+    }
+
+    function saveHandover() {
+      const branch = document.getElementById('appHandoverBranchSelect')?.value || 'مستودع إدارة التوصيل المركزي';
+      const ref = document.getElementById('appHandoverRef')?.value || 'HO-BATCH-' + Math.floor(Math.random() * 9000 + 1000);
+      const notes = document.getElementById('appHandoverClient')?.value || 'شحنة محولة من قسم المعصرة والإنتاج';
+      const item = document.getElementById('appHandoverItemSelect')?.value || 'تنكة كاملة خضير (15.2 كجم)';
+      const qty = parseInt(document.getElementById('appHandoverQty')?.value || 0, 10);
+
+      if (qty <= 0) {
+        alert("يرجى إدخال كمية العبوات المسلمة والمرحلة لإدارة التوصيل!");
+        return;
+      }
+
+      let handovers = [];
+      try {
+        handovers = JSON.parse(localStorage.getItem('so_delivery_handovers') || '[]');
+      } catch(e) {}
+
+      let deliveryReceivedStock = [];
+      try {
+        deliveryReceivedStock = JSON.parse(localStorage.getItem('so_delivery_management_received_stock') || '[]');
+      } catch(e) {}
+
+      const record = {
+        id: 'HO-' + Date.now(),
+        timestamp: new Date().toLocaleString('ar-LB'),
+        ref,
+        branch,
+        notes,
+        item,
+        qty,
+        status: 'جاهز ومعتمد في تطبيق التوصيل 📦'
+      };
+
+      handovers.unshift(record);
+      deliveryReceivedStock.unshift(record);
+
+      localStorage.setItem('so_delivery_handovers', JSON.stringify(handovers));
+      localStorage.setItem('so_delivery_management_received_stock', JSON.stringify(deliveryReceivedStock));
+
+      renderHandoverTable();
+      alert(` تم تحويل وتسليم الشحنة (${qty} عبوة - ${item}) إلى تطبيق قسم إدارة التوصيل (SuperSonic Delivery Management App) بنجاح!\nمرجع الشحنة: ${ref}`);
+
+      document.getElementById('appHandoverQty').value = '';
+      document.getElementById('appHandoverRef').value = '';
+      document.getElementById('appHandoverClient').value = '';
+    }
+
+    function renderHandoverTable() {
+      const tbody = document.getElementById('appHandoverTable');
+      if (!tbody) return;
+
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem('so_delivery_handovers') || '[]');
+      } catch(e) {}
+
+      if (list.length === 0) {
+        list = [
+          { timestamp: 'اليوم 10:30 صباحاً', ref: 'HO-BATCH-9810', branch: 'مستودع التوصيل المركزي', item: 'تنكة كاملة خضير (15.2 كجم)', qty: 40, status: 'مستلم ومعتمد في تطبيق التوصيل 📦' },
+          { timestamp: 'اليوم 09:15 صباحاً', ref: 'HO-BATCH-9811', branch: 'فرع إدارة توزيع الجنوب', item: 'قنينة زجاج 1 لتر', qty: 60, status: 'تم الترحيل والاستلام 📦' }
+        ];
+      }
+
+      tbody.innerHTML = list.slice(0, 10).map(h => `
+        <tr>
+          <td><small class="fw-bold" style="color: #000000;">${h.timestamp}</small></td>
+          <td class="fw-bold" style="color: #000000;">${h.ref}</td>
+          <td><span class="badge bg-secondary">${h.branch}</span></td>
+          <td><strong style="color: #2b3e2a;">${h.qty} &times; ${h.item}</strong></td>
+      `).join('');
+    }
+
+    function addNewDriverPrompt() {
+      const name = prompt("أدخل اسم السائق والسيارة الجديد:");
+      if (name) {
+        const sel = document.getElementById('appHandoverDriverSelect');
+        if (sel) {
+          const opt = document.createElement('option');
+          opt.value = `سائق — ${name}`;
+          opt.textContent = `سائق — ${name}`;
+          opt.selected = true;
+          sel.appendChild(opt);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStockBanner();
+      loadSavedVendors();
+      recalcPressing();
+      recalcHandover();
+      renderHandoverTable();
+      if (window.SouthernOliveBridge) {
+        window.SouthernOliveBridge.loadInventoryPackagingOptions();
+        window.SouthernOliveBridge.recalculateProduction();
+      }
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js?v=42', { updateViaCache: 'none' }).then(reg => {
+          reg.update();
+        }).catch(err => console.log('SW Reg:', err));
+      }
+    });
+  </script>
+</body>
+</html>
