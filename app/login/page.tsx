@@ -3,88 +3,77 @@ import React from 'react';
 
 export default function LoginPage() {
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-8 font-sans bg-cover bg-center bg-no-repeat relative"
-      style={{ backgroundImage: "url('/vanguard_login_mockup.jpg')" }}
-    >
-      {/* طبقة زجاجية خفيفة جداً فوق الصورة لحتى تعطي فخامة وتوضح الكلام */}
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-[6px]"></div>
+    <div className="min-h-screen w-full relative overflow-hidden bg-slate-900">
 
-      <div className="max-w-6xl w-full flex flex-col md:flex-row items-center gap-12 relative z-10">
+      {/* 
+        هون زرعنا الأوامر السحرية للحركة (Animations) 
+        - spinAndSettle: بتخلي اللوجو يبرم وينزل يركز مكانه.
+        - goldShine: بتعطي لمعان ونبض للإضاءة الذهبية.
+      */}
+      <style>{`
+        @keyframes spinAndSettle {
+          0% { transform: translateY(-80px) rotate(-720deg) scale(0.5); opacity: 0; }
+          60% { transform: translateY(10px) rotate(20deg) scale(1.1); opacity: 1; }
+          100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+        }
+        @keyframes goldShine {
+          0% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
+          50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 215, 0, 0.9)); }
+          100% { filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
+        }
+        .animate-logo {
+          animation: spinAndSettle 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .animate-gold {
+          animation: goldShine 3s infinite alternate;
+        }
+      `}</style>
 
-        {/* القسم الأيسر */}
-        <div className="flex-1 w-full text-left">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-blue-950 mb-2 drop-shadow-md">
-            Vanguard Business Solutions
-          </h1>
-          <p className="text-lg text-slate-800 mb-10 font-bold drop-shadow-sm">
-            (Restaurants, Hotels, Retail)
-          </p>
+      {/* خلفية الأمواج مع إخفاء التاب الوهمي */}
+      <div
+        className="absolute w-full h-[calc(100%+3.5rem)] top-[-3.5rem] left-0 bg-cover bg-center bg-no-repeat z-0"
+        style={{ backgroundImage: "url('/bg-waves.jpg..jpg')" }}
+      ></div>
 
-          <h2 className="text-3xl font-bold text-blue-950 mb-6 drop-shadow-md">
-            Vanguard Platforms
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12">
-            {['POS', 'Inventory', 'Accounting', 'HR & Payroll', 'CRM & Loyalty', 'Tasks & Appointments', 'Analytics', 'Mobile'].map((item) => (
-              <div key={item} className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-full px-4 py-2 text-center text-sm font-bold text-slate-800 shadow-md">
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-4">
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold px-6 py-3 rounded-md shadow-lg transition-colors border border-yellow-400">
-              Request A Demo
-            </button>
-            <button className="bg-blue-900 hover:bg-blue-950 text-white font-bold px-6 py-3 rounded-md shadow-lg transition-colors border border-blue-700">
-              Contact Us
-            </button>
-          </div>
-        </div>
-
-        {/* القسم الأيمن - بطاقة تسجيل الدخول */}
-        <div className="w-full max-w-md bg-white/80 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.2)] rounded-2xl p-8 border border-white/50 relative">
-
-          <div className="flex justify-center mb-6">
-            <img src="/vanguard.jpg" alt="Vanguard Logo" className="h-20 object-contain drop-shadow-lg" />
-          </div>
-
-          <h3 className="text-xl font-bold text-center text-slate-900 mb-6 drop-shadow-sm">Sign In to Vanguard</h3>
-
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label className="block text-sm font-bold text-slate-800 mb-1">Email Address</label>
-              <input
-                type="email"
-                placeholder="name@company.com"
-                className="w-full px-4 py-3 rounded-md border border-gray-300/80 focus:ring-2 focus:ring-blue-600 outline-none transition-all bg-white/90 shadow-inner"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-800 mb-1">Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-md border border-gray-300/80 focus:ring-2 focus:ring-blue-600 outline-none transition-all bg-white/90 shadow-inner"
-              />
-            </div>
-
-            <div className="text-right pb-2">
-              <a href="#" className="text-sm font-bold text-blue-800 hover:text-blue-950">Forgot Password?</a>
-            </div>
-
-            <button className="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 rounded-md shadow-lg transition-all border border-blue-700">
-              Sign In
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-slate-600 mt-6 font-bold drop-shadow-sm">
-            Protected by Vanguard Enterprise Security Systems
-          </p>
-        </div>
-
+      {/* 
+        اللوجو المتحرك: حطينا صورة اللوجو الحقيقية فوق اللوجو المطبوع بالصورة 
+        وربطناها بأنيميشن الدوران واللمعان الذهبي! 
+      */}
+      <div className="absolute top-[22%] right-[5%] md:top-[25%] md:right-[15%] z-30 flex justify-center w-[320px] md:w-[350px] pointer-events-none">
+        {/* تأكد إنو صورة vanguard.jpg موجودة بملف public */}
+        <img
+          src="/vanguard.jpg"
+          alt="Vanguard Animated Logo"
+          className="h-24 md:h-28 object-contain animate-logo animate-gold"
+        />
       </div>
+
+      {/* الأزرار الحقيقية لتغطية الأزرار القديمة (مع لمعان للزر الذهبي) */}
+      <div className="absolute bottom-[10%] left-[5%] md:bottom-[15%] md:left-[10%] flex gap-4 z-20">
+        <button className="bg-[#123b70] hover:bg-[#0b254a] text-white px-6 md:px-8 py-3 rounded-md font-bold text-sm md:text-lg shadow-lg transition-all border border-blue-500/30">
+          Contact Us
+        </button>
+        <button className="bg-gradient-to-r from-[#ab8320] via-[#d4b055] to-[#ab8320] hover:brightness-110 text-white px-6 md:px-8 py-3 rounded-md font-bold text-sm md:text-lg shadow-[0_0_15px_rgba(212,176,85,0.6)] animate-gold transition-all border border-yellow-300/50">
+          Request A Demo
+        </button>
+      </div>
+
+      {/* مربعات تسجيل الدخول الشفافة */}
+      <div className="absolute top-[30%] right-[5%] md:top-[35%] md:right-[10%] w-[320px] md:w-[350px] p-6 z-20 flex flex-col gap-4 md:gap-5 mt-4">
+        <input
+          type="email"
+          placeholder=" "
+          className="w-full h-[40px] md:h-[45px] bg-transparent border-2 border-transparent hover:border-blue-400/50 focus:border-blue-500 focus:bg-white/10 outline-none rounded-md px-4 text-slate-900 font-bold transition-all"
+        />
+        <input
+          type="password"
+          placeholder=" "
+          className="w-full h-[40px] md:h-[45px] mt-1 md:mt-2 bg-transparent border-2 border-transparent hover:border-blue-400/50 focus:border-blue-500 focus:bg-white/10 outline-none rounded-md px-4 text-slate-900 font-bold transition-all"
+        />
+        <button className="w-full h-[45px] md:h-[50px] mt-5 md:mt-6 bg-transparent cursor-pointer rounded-md hover:bg-white/10 transition-colors">
+        </button>
+      </div>
+
     </div>
   );
 }
