@@ -1,7 +1,7 @@
 import SuperSonicFleetManager from '@/components/SuperSonicFleetManager';
 
 export const metadata = {
-  title: 'SuperSonic Driver App - Southern Olive & Oil Products',
+  title: 'SuperSonic Driver App - Vanguard Enterprise Solutions',
   description: 'SuperSonic Mobile Delivery Driver Application & Fleet Telemetry System',
 };
 

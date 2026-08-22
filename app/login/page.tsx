@@ -50,7 +50,7 @@ export default function LoginPage() {
             <div className="flex justify-center mb-10 relative">
               <div className="absolute inset-0 bg-yellow-400 blur-2xl opacity-30 rounded-full animate-pulse"></div>
               <img
-                src="/vanguard ERP logo concept.jpg"
+                src="/vanguard.jpg"
                 alt="Vanguard Logo"
                 className="h-28 w-28 object-contain relative z-10 animate-[spin_2s_ease-out_1]"
               />
