@@ -269,19 +269,19 @@ export default function MainTileDashboard() {
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
       
-      {/* 1. TOP SYSTEM HEADER (Omega POS / Southern Olive ERP Top Banner) */}
+      {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
         
         {/* BRAND IDENTITY */}
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 bg-amber-500 text-white rounded-2xl flex items-center justify-center shadow-sm border border-amber-400">
-            <Droplets className="w-8 h-8 text-white" />
+          <div className="w-14 h-14 bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1">
+            <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-full h-full object-cover rounded-xl" />
           </div>
           <div>
             <h1 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
-              {tenantName || "Vanguard ERP System"}
+              Vanguard ERP System
               <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                Tenant 001
+                Tenant Workspace
               </span>
             </h1>
             <p className="text-xs text-gray-500 font-bold mt-0.5">
@@ -299,10 +299,10 @@ export default function MainTileDashboard() {
             <span>سعر الصرف: <strong className="text-amber-600">{usdRate.toLocaleString()} LBP</strong></span>
           </div>
 
-          {/* ACTIVE WORKSPACE BADGE */}
+          {/* ACTIVE SYSTEM STATUS BADGE */}
           <div className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 flex items-center gap-1">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>الفرع الرئيسي: صيدا / بيروت</span>
+            <span>النظام التشغيلي الفعّال</span>
           </div>
 
           {/* BACK TO MAIN DASHBOARD TILE GRID BUTTON */}
