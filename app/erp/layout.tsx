@@ -1,9 +1,9 @@
 import React from 'react';
 import '@/css/style.css';
-
-export const metadata = {
-  title: 'Vanguard ERP System - Enterprise Resource Planning Portal',
-  description: 'Vanguard ERP System Enterprise SaaS Portal',
+import type { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: "Vanguard ERP System",
+  description: "Enterprise Resource Planning platform for Restaurants, Hotels, and Retail.",
 };
 
 export default function TenantErpLayout({ children }: { children: React.ReactNode }) {
