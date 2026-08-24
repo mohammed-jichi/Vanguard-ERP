@@ -380,6 +380,123 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           </div>
         ) : (activeScreen === 'delivery-goods' || activeScreen === 'supersonic-fleet') ? (
           <SuperSonicFleetManager onBack={() => setActiveScreen('grid-dash')} />
+        ) : (activeScreen === 'sales-pos' || activeScreen === 'sales-dash' || activeScreen === 'sales') ? (
+          /* FULL SALES CONTROL & POS TERMINAL MODULE */
+          <div className="space-y-6">
+            {/* MODULE HEADER */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm">
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                    نقطة البيع وإدارة المبيعات (POS & Sales Control)
+                    <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                      مباشر - مباشر
+                    </span>
+                  </h2>
+                  <p className="text-xs text-gray-500 font-bold mt-0.5">
+                    سجل الفواتير المباشرة وحركات المبيعات لـ {tenantName || "منتوجات زيت وزيتون الجنوب"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => typeof window !== 'undefined' && (window as any).openReportModal?.('sales_summary', 'تقرير المبيعات الصندوقي')}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                >
+                  <FileText className="w-4 h-4" /> تقرير المبيعات الصندوقي
+                </button>
+                <button
+                  onClick={() => setActiveScreen('grid-dash')}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs border border-gray-200"
+                >
+                  ← العودة للشبكة الرئيسية
+                </button>
+              </div>
+            </div>
+
+            {/* KPI METRICS ROW */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-1">
+                <p className="text-xs font-bold text-gray-500">إجمالي مبيعات اليوم ($USD)</p>
+                <p className="text-2xl font-black text-emerald-600">$12,480.00</p>
+                <p className="text-[10px] text-gray-400 font-bold">1,116,960,000 LBP @ 89,500</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-1">
+                <p className="text-xs font-bold text-gray-500">عدد الفواتير المنفذة</p>
+                <p className="text-2xl font-black text-gray-900">48 فاتورة</p>
+                <p className="text-[10px] text-emerald-600 font-bold">100% مكتمل ومثبت</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-1">
+                <p className="text-xs font-bold text-gray-500">متوسط قيمة الفاتورة</p>
+                <p className="text-2xl font-black text-amber-600">$260.00</p>
+                <p className="text-[10px] text-gray-400 font-bold">زيتون وثمار وزيت بكر</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-1">
+                <p className="text-xs font-bold text-gray-500">صندوق الكاش والمقبوضات</p>
+                <p className="text-2xl font-black text-blue-600">نشط (Open POS)</p>
+                <p className="text-[10px] text-gray-400 font-bold">أمناء الصندوق: 2 موظف</p>
+              </div>
+            </div>
+
+            {/* RECENT SALES TRANSACTIONS TABLE */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                  <Receipt className="w-4 h-4 text-emerald-600" /> جدول حركات المبيعات الصادرة حديثاً
+                </h3>
+                <span className="text-xs font-bold text-gray-500">آخر تحديث: الآن</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-xs">
+                  <thead className="bg-gray-50 text-gray-700 font-black border-b border-gray-200">
+                    <tr>
+                      <th className="p-3">رقم الفاتورة</th>
+                      <th className="p-3">العميل / الجهة</th>
+                      <th className="p-3">الفرع / الصندوق</th>
+                      <th className="p-3">المبلغ ($USD)</th>
+                      <th className="p-3">المبلغ (LBP)</th>
+                      <th className="p-3">حالة الدفع</th>
+                      <th className="p-3 text-center">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 font-bold text-gray-800">
+                    <tr className="hover:bg-gray-50/80">
+                      <td className="p-3 text-amber-600">SO-INV-2026-048</td>
+                      <td className="p-3">تعاونية الشوف التجارية</td>
+                      <td className="p-3 text-gray-500">صندوق المعصرة الرئيسي</td>
+                      <td className="p-3 text-emerald-600 font-black">$1,450.00</td>
+                      <td className="p-3 text-gray-500">129,775,000 LBP</td>
+                      <td className="p-3"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px]">مدفوع نقداً</span></td>
+                      <td className="p-3 text-center"><button className="bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg text-[10px] text-gray-700">طباعة الفاتورة</button></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/80">
+                      <td className="p-3 text-amber-600">SO-INV-2026-047</td>
+                      <td className="p-3">مؤسسة الجنوب للمواد الغذائية</td>
+                      <td className="p-3 text-gray-500">POS فرع صيدا</td>
+                      <td className="p-3 text-emerald-600 font-black">$2,890.00</td>
+                      <td className="p-3 text-gray-500">258,655,000 LBP</td>
+                      <td className="p-3"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px]">مدفوع نقداً</span></td>
+                      <td className="p-3 text-center"><button className="bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg text-[10px] text-gray-700">طباعة الفاتورة</button></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/80">
+                      <td className="p-3 text-amber-600">SO-INV-2026-046</td>
+                      <td className="p-3">سوبرماركت الرائد</td>
+                      <td className="p-3 text-gray-500">صندوق المبيعات الجملة</td>
+                      <td className="p-3 text-emerald-600 font-black">$870.00</td>
+                      <td className="p-3 text-gray-500">77,865,000 LBP</td>
+                      <td className="p-3"><span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md text-[10px]">ذمم ذمم كمبيالة</span></td>
+                      <td className="p-3 text-center"><button className="bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg text-[10px] text-gray-700">طباعة الفاتورة</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         ) : activeScreen !== 'grid-dash' ? (
           <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-10 space-y-6 shadow-sm text-center">
             <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto text-amber-600">

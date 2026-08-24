@@ -111,7 +111,9 @@ export default function SuperSonicFleetManager({
   const [shiftStatus, setShiftStatus] = useState<ShiftStatus>('Off Duty');
   const [shiftStartTime, setShiftStartTime] = useState<string | null>(null);
   const [shiftEndTime, setShiftEndTime] = useState<string | null>(null);
-  const [activeDriverTab, setActiveDriverTab] = useState<'dispatch' | 'driver-pwa' | 'profile-manage' | 'reconciliation'>('dispatch');
+  const [activeDriverTab, setActiveDriverTab] = useState<'dispatch' | 'driver-pwa' | 'profile-manage' | 'reconciliation'>(
+    currentUserRole === 'Driver' ? 'driver-pwa' : 'dispatch'
+  );
 
   // Telemetry metrics
   const [totalDistanceKm, setTotalDistanceKm] = useState<number>(42.5);
@@ -503,37 +505,39 @@ ${trackingLink}`;
       )}
 
       {/* TAB NAVIGATION: FLEET DISPATCH vs DRIVER PWA vs DRIVER PROFILE RBAC */}
-      <div className="flex items-center gap-2 border-b border-emerald-900/60 pb-3">
-        <button
-          onClick={() => setActiveDriverTab('dispatch')}
-          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'dispatch'
-            ? 'bg-emerald-500 text-black shadow-lg'
-            : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
-            }`}
-        >
-          <Truck className="w-4 h-4" /> لوحة إدارة التوزيع (Fleet Dispatch)
-        </button>
+      {currentUserRole !== 'Driver' && (
+        <div className="flex items-center gap-2 border-b border-emerald-900/60 pb-3">
+          <button
+            onClick={() => setActiveDriverTab('dispatch')}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'dispatch'
+              ? 'bg-emerald-500 text-black shadow-lg'
+              : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
+              }`}
+          >
+            <Truck className="w-4 h-4" /> لوحة إدارة التوزيع (Fleet Dispatch)
+          </button>
 
-        <button
-          onClick={() => setActiveDriverTab('profile-manage')}
-          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'profile-manage'
-            ? 'bg-emerald-500 text-black shadow-lg'
-            : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
-            }`}
-        >
-          <User className="w-4 h-4" /> إدارة ملف السائق والعمولة (RBAC)
-        </button>
+          <button
+            onClick={() => setActiveDriverTab('profile-manage')}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'profile-manage'
+              ? 'bg-emerald-500 text-black shadow-lg'
+              : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
+              }`}
+          >
+            <User className="w-4 h-4" /> إدارة ملف السائق والعمولة (RBAC)
+          </button>
 
-        <button
-          onClick={() => setActiveDriverTab('reconciliation')}
-          className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'reconciliation'
-            ? 'bg-emerald-500 text-black shadow-lg'
-            : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
-            }`}
-        >
-          <BarChart2 className="w-4 h-4" /> المطابقة وإغلاق الصندوق (Z-Report)
-        </button>
-      </div>
+          <button
+            onClick={() => setActiveDriverTab('reconciliation')}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'reconciliation'
+              ? 'bg-emerald-500 text-black shadow-lg'
+              : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
+              }`}
+          >
+            <BarChart2 className="w-4 h-4" /> المطابقة وإغلاق الصندوق (Z-Report)
+          </button>
+        </div>
+      )}
 
       {/* TAB 1: FLEET DISPATCH & OUTCOMES */}
       {activeDriverTab === 'dispatch' && (

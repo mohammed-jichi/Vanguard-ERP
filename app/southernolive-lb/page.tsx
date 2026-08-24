@@ -1,15 +1,10 @@
-'use client';
+import MainTileDashboard from '@/components/MainTileDashboard';
 
-import React from 'react';
+export const metadata = {
+  title: 'Southern Olive & Oil Products - Full ERP Dashboard',
+  description: 'Unrestricted ERP Tile Grid Dashboard for Southern Olive & Oil Products',
+};
 
 export default function SouthernOliveLbPage() {
-  return (
-    <div className="w-full h-screen overflow-hidden bg-[#0f1319]">
-      <iframe
-        src="/index.html"
-        title="Southern Olive & Oil Products - Full Unrestricted ERP Dashboard"
-        className="w-full h-full border-0"
-      />
-    </div>
-  );
+  return <MainTileDashboard />;
 }
