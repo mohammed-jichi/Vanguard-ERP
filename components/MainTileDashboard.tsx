@@ -271,15 +271,15 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    < div suppressHydrationWarning className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6" >
+    <div suppressHydrationWarning className="w-full max-w-7xl mx-auto min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
 
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
-      <header className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="w-full bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
 
         {/* BRAND IDENTITY */}
-        <div className="flex items-center gap-3">
-          <div className="w-14 h-14 bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1">
-            <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-full h-full object-cover rounded-xl" />
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="w-14 h-14 max-w-[56px] max-h-[56px] bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1 shrink-0">
+            <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-full h-full object-cover rounded-xl shrink-0" />
           </div>
           <div>
             <h1 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
@@ -569,6 +569,6 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية
       </footer>
 
-    </div >
+    </div>
   );
 }

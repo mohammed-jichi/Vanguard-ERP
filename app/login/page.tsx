@@ -43,37 +43,37 @@ export default function LoginPage() {
       {/* 
         اللوجو المركزي - اللينك متجه لـ /request-demo 
       */}
-      <div className="hidden lg:flex absolute top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center">
+      <div className="hidden lg:flex absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center shrink-0">
         <Link
           href="/request-demo"
           title="Request an Enterprise Demo"
-          className="relative flex items-center justify-center group cursor-pointer"
+          className="relative flex items-center justify-center group cursor-pointer shrink-0"
         >
-          <div className="absolute inset-0 bg-[#d4b055] blur-[50px] opacity-70 rounded-full animate-pulse w-48 h-48 transition-all duration-300 group-hover:blur-[70px] group-hover:opacity-100"></div>
+          <div className="absolute inset-0 bg-[#d4b055] blur-[40px] opacity-70 rounded-full animate-pulse w-36 h-36 transition-all duration-300 group-hover:blur-[60px] group-hover:opacity-100"></div>
 
-          <div className="relative w-44 h-44 rounded-full overflow-hidden border-[6px] border-[#09152b] shadow-[0_0_40px_rgba(171,131,32,0.6)] bg-[#09152b] z-10 transition-transform duration-300 group-hover:scale-105">
+          <div className="relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] border-[#09152b] shadow-[0_0_30px_rgba(171,131,32,0.6)] bg-[#09152b] z-10 transition-transform duration-300 group-hover:scale-105 shrink-0">
             <Image src="/vanguard.jpg" alt="Vanguard Enterprise Demo" fill className="object-cover" priority />
           </div>
         </Link>
       </div>
 
       {/* ================= القسم الأيسر - الأزرق ================= */}
-      <div className="hidden lg:flex w-1/2 bg-[#09152b] flex-col justify-start items-center p-12 pt-20 relative overflow-hidden text-center">
+      <div className="hidden lg:flex w-1/2 flex-1 bg-[#09152b] flex-col justify-center items-center p-8 lg:p-12 relative overflow-hidden text-center">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#123b70]/60 to-transparent z-0"></div>
         <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-[#ab8320] rounded-full blur-[150px] opacity-15 z-0 pointer-events-none"></div>
 
-        <div className="relative z-10 w-full max-w-xl space-y-12 pr-12">
+        <div className="relative z-10 w-full max-w-lg space-y-8">
 
           <div className="space-y-6">
             {/* 
               العنوان مع التحديد الذهبي للأطراف (Stroke) وتوهج ذهبي متناسق 
             */}
-            <h1 className="text-4xl xl:text-5xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
+            <h1 className="text-3xl xl:text-4xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
               VANGUARD ERP SYSTEM
             </h1>
 
             <div className="space-y-2">
-              <Link href="/solutions" target="_blank" className="block text-2xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors drop-shadow-md">
+              <Link href="/solutions" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors drop-shadow-md">
                 Business Solutions
               </Link>
               <Link href="/sectors" target="_blank" className="block text-[#d4b055] font-semibold tracking-widest uppercase text-sm hover:text-white transition-colors">
@@ -82,18 +82,18 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="pt-8 border-t border-[#123b70]/50">
-            <Link href="/platforms" target="_blank" className="block text-2xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors mb-8 drop-shadow-md">
+          <div className="pt-6 border-t border-[#123b70]/50">
+            <Link href="/platforms" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors mb-6 drop-shadow-md">
               Enterprise Platforms
             </Link>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-left">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-left">
               {platforms.map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
                   target="_blank"
-                  className="px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 text-sm font-medium backdrop-blur-md hover:bg-[#123b70]/40 hover:text-white hover:border-[#d4b055]/50 transition-all cursor-pointer shadow-sm text-center"
+                  className="px-3.5 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 text-xs font-medium backdrop-blur-md hover:bg-[#123b70]/40 hover:text-white hover:border-[#d4b055]/50 transition-all cursor-pointer shadow-sm text-center"
                 >
                   {item.name}
                 </Link>
@@ -105,7 +105,7 @@ export default function LoginPage() {
       </div>
 
       {/* ================= القسم الأيمن - الأبيض ================= */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:pl-28 relative bg-gradient-to-br from-white to-slate-100">
+      <div className="w-full lg:w-1/2 flex-1 flex items-center justify-center p-8 sm:p-12 lg:p-12 relative bg-gradient-to-br from-white to-slate-100">
         <div className="w-full max-w-md space-y-8">
 
           <div className="lg:hidden relative flex justify-center mb-10">

@@ -9,38 +9,38 @@ export default function RequestDemoPage() {
             {/* 
         اللوجو المركزي - مع رابط للعودة لصفحة الدخول 
       */}
-            <div className="hidden lg:flex absolute top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center">
+            <div className="hidden lg:flex absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center shrink-0">
                 <Link
                     href="/login"
                     title="Back to Login"
-                    className="relative flex items-center justify-center group cursor-pointer"
+                    className="relative flex items-center justify-center group cursor-pointer shrink-0"
                 >
-                    <div className="absolute inset-0 bg-[#d4b055] blur-[50px] opacity-70 rounded-full animate-pulse w-48 h-48 transition-all duration-300 group-hover:blur-[70px] group-hover:opacity-100"></div>
+                    <div className="absolute inset-0 bg-[#d4b055] blur-[40px] opacity-70 rounded-full animate-pulse w-36 h-36 transition-all duration-300 group-hover:blur-[60px] group-hover:opacity-100"></div>
 
-                    <div className="relative w-44 h-44 rounded-full overflow-hidden border-[6px] border-[#09152b] shadow-[0_0_40px_rgba(171,131,32,0.6)] bg-[#09152b] z-10 transition-transform duration-300 group-hover:scale-105">
+                    <div className="relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] border-[#09152b] shadow-[0_0_30px_rgba(171,131,32,0.6)] bg-[#09152b] z-10 transition-transform duration-300 group-hover:scale-105 shrink-0">
                         <Image src="/vanguard.jpg" alt="Vanguard Enterprise" fill className="object-cover" priority />
                     </div>
                 </Link>
             </div>
 
             {/* ================= القسم الأيسر - الأزرق ================= */}
-            <div className="hidden lg:flex w-1/2 bg-[#09152b] flex-col justify-start items-center p-12 pt-32 relative overflow-hidden text-center">
+            <div className="hidden lg:flex w-1/2 flex-1 bg-[#09152b] flex-col justify-center items-center p-8 lg:p-12 relative overflow-hidden text-center">
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#123b70]/60 to-transparent z-0"></div>
                 <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-[#ab8320] rounded-full blur-[150px] opacity-15 z-0 pointer-events-none"></div>
 
-                <div className="relative z-10 w-full max-w-xl space-y-8 pr-12 mt-10">
+                <div className="relative z-10 w-full max-w-lg space-y-8">
 
                     <div className="space-y-6">
-                        <h1 className="text-4xl xl:text-5xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
+                        <h1 className="text-3xl xl:text-4xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
                             VANGUARD ENTERPRISE
                         </h1>
 
                         {/* تنسيق النص الجديد - مشابه لـ Business Solutions */}
                         <div className="space-y-3 pt-6 border-t border-[#123b70]/50">
-                            <p className="block text-xl font-bold text-slate-100 drop-shadow-md leading-relaxed">
+                            <p className="block text-lg font-bold text-slate-100 drop-shadow-md leading-relaxed">
                                 Schedule a personalized demo with our enterprise team.
                             </p>
-                            <p className="block text-[#d4b055] font-semibold tracking-widest uppercase text-sm transition-colors">
+                            <p className="block text-[#d4b055] font-semibold tracking-widest uppercase text-xs transition-colors">
                                 See How Vanguard Can Transform Your Operations
                             </p>
                         </div>
@@ -50,7 +50,7 @@ export default function RequestDemoPage() {
             </div>
 
             {/* ================= القسم الأيمن - الأبيض ================= */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:pl-28 relative bg-gradient-to-br from-white to-slate-100">
+            <div className="w-full lg:w-1/2 flex-1 flex items-center justify-center p-8 sm:p-12 lg:p-12 relative bg-gradient-to-br from-white to-slate-100">
                 <div className="w-full max-w-md space-y-8">
 
                     <div className="lg:hidden relative flex justify-center mb-10">
