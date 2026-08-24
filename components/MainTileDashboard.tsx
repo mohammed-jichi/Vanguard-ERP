@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * * Southern Olive & Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م) (منتوجت زيت وزيتون الجنوب ش.م
+ * SOUTHERN OLIVE OIL PRODUCTS S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
  * Main ERP Dashboard Component: <MainTileDashboard />
  * 
  * High-End Omega POS Style Tile Grid / Tile View Dashboard
@@ -267,7 +267,7 @@ export default function MainTileDashboard() {
   ];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
+    <div className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
 
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
@@ -362,7 +362,7 @@ export default function MainTileDashboard() {
         <div className="space-y-4">
           <div className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm">
             <h2 className="text-sm font-black text-amber-600 flex items-center gap-2">
-              <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Southern Olive & Oil Products S.A.R.L."}
+              <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
             </h2>
             <button
               onClick={() => setActiveScreen('grid-dash')}
