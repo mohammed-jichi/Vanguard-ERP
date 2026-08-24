@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SOUTHERN OLIVE OIL PRODUCTS S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
+ * * Southern Olive & Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م) (منتوجت زيت وزيتون الجنوب ش.م
  * Main ERP Dashboard Component: <MainTileDashboard />
  * 
  * High-End Omega POS Style Tile Grid / Tile View Dashboard
@@ -11,35 +11,35 @@ import React, { useState, useEffect } from 'react';
 import ReceiveAndProductionMaster from './ReceiveAndProductionMaster';
 import ProductMasterModal from './ProductMasterModal';
 import SuperSonicFleetManager from './SuperSonicFleetManager';
-import { 
-  Building2, 
-  Droplets, 
-  ShieldCheck, 
-  UserCheck, 
-  LogOut, 
-  Package, 
-  Truck, 
-  BarChart3, 
-  CheckCircle2, 
-  Warehouse, 
-  LayoutGrid, 
-  TrendingUp, 
-  FileText, 
-  Calendar, 
-  Users, 
-  Receipt, 
-  DollarSign, 
-  ArrowLeft, 
-  Sparkles, 
-  ShoppingCart, 
-  Settings, 
-  Bell, 
-  Search, 
-  Mic, 
-  Sliders, 
-  Layers, 
-  Award, 
-  ClipboardList, 
+import {
+  Building2,
+  Droplets,
+  ShieldCheck,
+  UserCheck,
+  LogOut,
+  Package,
+  Truck,
+  BarChart3,
+  CheckCircle2,
+  Warehouse,
+  LayoutGrid,
+  TrendingUp,
+  FileText,
+  Calendar,
+  Users,
+  Receipt,
+  DollarSign,
+  ArrowLeft,
+  Sparkles,
+  ShoppingCart,
+  Settings,
+  Bell,
+  Search,
+  Mic,
+  Sliders,
+  Layers,
+  Award,
+  ClipboardList,
   RefreshCw,
   Plus
 } from 'lucide-react';
@@ -268,10 +268,10 @@ export default function MainTileDashboard() {
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
-      
+
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-        
+
         {/* BRAND IDENTITY */}
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1">
@@ -292,7 +292,7 @@ export default function MainTileDashboard() {
 
         {/* CONTROLS & METRICS */}
         <div className="flex flex-wrap items-center gap-2">
-          
+
           {/* USD RATE BADGE */}
           <div className="bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-700 flex items-center gap-1.5 shadow-sm">
             <DollarSign className="w-4 h-4 text-emerald-600" />
@@ -319,7 +319,7 @@ export default function MainTileDashboard() {
 
       {/* 2. SUBHEADER ACTION & QUICK SEARCH BAR */}
       <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
-        
+
         {/* SEARCH BAR */}
         <div className="relative w-full md:w-80">
           <input
@@ -334,24 +334,22 @@ export default function MainTileDashboard() {
 
         {/* QUICK BUTTON TABS */}
         <div className="flex flex-wrap items-center gap-2">
-          <button 
+          <button
             onClick={() => setActiveScreen('grid-dash')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
-              activeScreen === 'grid-dash'
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${activeScreen === 'grid-dash'
               ? 'bg-amber-500 text-white shadow-sm'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <LayoutGrid className="w-4 h-4 inline me-1" /> لوحة المربعات الرئيسية (Grid Dashboard)
           </button>
 
-          <button 
+          <button
             onClick={() => setActiveScreen('oil-pressing')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
-              activeScreen === 'oil-pressing'
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${activeScreen === 'oil-pressing'
               ? 'bg-emerald-600 text-white shadow-sm'
               : 'bg-gray-100 text-emerald-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <Droplets className="w-4 h-4 inline me-1" /> المعصرة والإنتاج (Oil Pressing)
           </button>
@@ -364,7 +362,7 @@ export default function MainTileDashboard() {
         <div className="space-y-4">
           <div className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm">
             <h2 className="text-sm font-black text-amber-600 flex items-center gap-2">
-              <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
+              <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Southern Olive & Oil Products S.A.R.L."}
             </h2>
             <button
               onClick={() => setActiveScreen('grid-dash')}
@@ -407,7 +405,7 @@ export default function MainTileDashboard() {
       ) : (
         /* MAIN OMEGA POS TILE GRID DASHBOARD */
         <div className="space-y-8">
-          
+
           {/* SECTION 1: OVERVIEW BLOCK */}
           <div className="space-y-3">
             <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
@@ -555,9 +553,9 @@ export default function MainTileDashboard() {
       )}
 
       {/* PRODUCT MASTER SUB-SYSTEM MODAL */}
-      <ProductMasterModal 
-        isOpen={isProductModalOpen} 
-        onClose={() => setIsProductModalOpen(false)} 
+      <ProductMasterModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
       />
 
       {/* FOOTER */}

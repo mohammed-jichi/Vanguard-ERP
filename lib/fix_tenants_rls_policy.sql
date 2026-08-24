@@ -1,5 +1,5 @@
 -- =========================================================
--- SOUTHERN OLIVE & OIL PRODUCTS / VANGUARD ERP
+-- Southern Olive & Oil Products / VANGUARD ERP
 -- Supabase Row Level Security (RLS) Fix for Tenants Table
 -- =========================================================
 

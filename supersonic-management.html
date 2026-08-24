@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SuperSonic Fleet Management & Dispatch - Southern Olive Oil Products</title>
-  
+  <title>SuperSonic Fleet Management & Dispatch - Vanguard ERP System</title>
+
   <link rel="icon" href="/assets/images/logo.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
 
@@ -23,12 +24,14 @@
       color: #0f172a !important;
       font-family: 'Cairo', sans-serif;
     }
+
     .supersonic-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
       border-bottom: 3px solid #d97706 !important;
       padding: 15px 25px;
       color: #ffffff !important;
     }
+
     .status-pill {
       background: rgba(5, 150, 105, 0.15) !important;
       color: #059669 !important;
@@ -38,7 +41,9 @@
       font-weight: 700;
       font-size: 0.85rem;
     }
-    .delivery-card, .erp-card {
+
+    .delivery-card,
+    .erp-card {
       background: #ffffff !important;
       border: 1px solid #cbd5e1 !important;
       border-radius: 12px !important;
@@ -47,10 +52,12 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
       color: #0f172a !important;
     }
+
     .delivery-card:hover {
       border-color: #d97706 !important;
       box-shadow: 0 8px 24px rgba(217, 119, 6, 0.12) !important;
     }
+
     .signature-pad-container {
       background: #f1f5f9 !important;
       border: 2px dashed #d97706 !important;
@@ -58,51 +65,67 @@
       padding: 10px;
       text-align: center;
     }
-    .text-muted, small.text-muted, .text-secondary {
+
+    .text-muted,
+    small.text-muted,
+    .text-secondary {
       color: #475569 !important;
       font-weight: 600 !important;
     }
+
     label.form-label {
       color: #0f172a !important;
       font-weight: 700 !important;
     }
-    input.form-control, select.form-select {
+
+    input.form-control,
+    select.form-select {
       background-color: #ffffff !important;
       color: #0f172a !important;
       border: 1px solid #cbd5e1 !important;
     }
+
     input.form-control::placeholder {
       color: #94a3b8 !important;
     }
   </style>
 </head>
+
 <body>
 
   <!-- SUPERSONIC HEADER -->
   <header class="supersonic-header d-flex justify-content-between align-items-center py-3 px-4">
     <div class="d-flex align-items-center gap-3">
-      <img src="assets/images/supersonic_fleet_logo.png" alt="SuperSonic Fleet Logo" class="circular-logo shadow" style="height: 70px; width: 70px; object-fit: cover; border-radius: 12px; border: 2px solid #f59e0b;" />
+      <img src="assets/images/supersonic_fleet_logo.png" alt="SuperSonic Fleet Logo" class="circular-logo shadow"
+        style="height: 70px; width: 70px; object-fit: cover; border-radius: 12px; border: 2px solid #f59e0b;" />
       <div>
-        <h4 class="mb-0 fw-bold text-warning"><i class="fa-solid fa-truck-fast me-2"></i> SuperSonic Logistics &amp; Fleet Management</h4>
-        <small class="text-white fw-bold d-block mt-0.5"><i class="fa-solid fa-building me-1 text-warning"></i> منتوجات زيت وزيتون الجنوب ش.م.م | <i class="fa-solid fa-phone text-warning me-1"></i>الهاتف: <span class="text-warning">+961 79 083 417</span></small>
+        <h4 class="mb-0 fw-bold text-warning"><i class="fa-solid fa-truck-fast me-2"></i> SuperSonic Logistics &amp;
+          Fleet Management</h4>
+        <small class="text-white fw-bold d-block mt-0.5"><i class="fa-solid fa-building me-1 text-warning"></i> منتوجات
+          زيت وزيتون الجنوب ش.م.م | <i class="fa-solid fa-phone text-warning me-1"></i>الهاتف: <span
+            class="text-warning">+961 79 083 417</span></small>
       </div>
     </div>
     <div class="d-flex align-items-center gap-3">
-      <span class="status-pill"><i class="fa-solid fa-circle-dot me-1 fs-6"></i> وردية نشطة - سائق: شربل ك. (فان #104)</span>
-      <a href="/index.html" class="btn btn-warning btn-sm fw-bold"><i class="fa-solid fa-user-plus me-1"></i> Add Driver Profile</a>
-      <a href="/index.html" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-house me-1"></i> النظام الرئيسي</a>
+      <span class="status-pill"><i class="fa-solid fa-circle-dot me-1 fs-6"></i> وردية نشطة - سائق: شربل ك. (فان
+        #104)</span>
+      <a href="/index.html" class="btn btn-warning btn-sm fw-bold"><i class="fa-solid fa-user-plus me-1"></i> Add Driver
+        Profile</a>
+      <a href="/index.html" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-house me-1"></i> النظام
+        الرئيسي</a>
     </div>
   </header>
 
   <!-- MAIN CONTAINER -->
   <main class="container-fluid py-4 px-4">
     <div class="row g-4">
-      
+
       <!-- LEFT DISPATCH PANEL -->
       <div class="col-lg-4">
         <div class="erp-card mb-4">
-          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-gauge-high me-2 text-warning"></i> مؤشرات الرحلة والمسافة المباشرة</h5>
-          
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-gauge-high me-2 text-warning"></i> مؤشرات الرحلة
+            والمسافة المباشرة</h5>
+
           <div class="mb-3">
             <div class="d-flex justify-content-between text-white mb-1">
               <span class="fw-bold"><i class="fa-solid fa-route me-1 text-info"></i> عداد الكيلومترات اليومي:</span>
@@ -111,7 +134,8 @@
             <div class="progress" style="height: 14px; border-radius: 7px; background: #0a0e0b;">
               <div class="progress-bar bg-warning" role="progressbar" style="width: 56.8%;"></div>
             </div>
-            <small class="text-light mt-2 d-block fw-bold"><i class="fa-solid fa-circle-info text-info me-1"></i> سعة المسافة اليومية المسموحة: 250 كم لفرع الشويفات</small>
+            <small class="text-light mt-2 d-block fw-bold"><i class="fa-solid fa-circle-info text-info me-1"></i> سعة
+              المسافة اليومية المسموحة: 250 كم لفرع الشويفات</small>
           </div>
 
           <hr class="border-secondary" />
@@ -127,31 +151,39 @@
         </div>
 
         <div class="erp-card">
-          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-gas-pump me-2 text-danger"></i> سجل الوقود والمصروفات الميدانية</h5>
+          <h5 class="text-warning fw-bold mb-3"><i class="fa-solid fa-gas-pump me-2 text-danger"></i> سجل الوقود
+            والمصروفات الميدانية</h5>
           <form onsubmit="event.preventDefault(); addFuelLog();">
             <div class="mb-3">
-              <label class="form-label text-warning"><i class="fa-solid fa-bottle-droplet me-1"></i> كمية التعبئة (لتر)</label>
-              <input type="number" id="fuelLiters" class="form-control bg-dark text-white border-secondary" placeholder="40" required />
+              <label class="form-label text-warning"><i class="fa-solid fa-bottle-droplet me-1"></i> كمية التعبئة
+                (لتر)</label>
+              <input type="number" id="fuelLiters" class="form-control bg-dark text-white border-secondary"
+                placeholder="40" required />
             </div>
             <div class="mb-3">
-              <label class="form-label text-warning"><i class="fa-solid fa-sack-dollar me-1"></i> التكلفة الإجمالية ($)</label>
-              <input type="number" id="fuelCost" class="form-control bg-dark text-white border-secondary" placeholder="32.00" step="0.01" required />
+              <label class="form-label text-warning"><i class="fa-solid fa-sack-dollar me-1"></i> التكلفة الإجمالية
+                ($)</label>
+              <input type="number" id="fuelCost" class="form-control bg-dark text-white border-secondary"
+                placeholder="32.00" step="0.01" required />
             </div>
-            <button type="submit" class="btn btn-outline-info w-100 fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> تسجيل مصاريف الوقود</button>
+            <button type="submit" class="btn btn-outline-info w-100 fw-bold"><i
+                class="fa-solid fa-floppy-disk me-1"></i> تسجيل مصاريف الوقود</button>
           </form>
         </div>
       </div>
 
       <!-- RIGHT ORDERS LIST PANEL -->
       <div class="col-lg-8">
-        
+
         <!-- RECEIVED STOCK FROM OIL PRESS & PRODUCTION APP -->
         <div class="erp-card mb-4 border-warning">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="text-warning fw-bold mb-0">
-              <i class="fa-solid fa-boxes-packing text-success me-2"></i> رصيد شحنات الزيت والعبوات المستلمة من قسم المعصرة والإنتاج (Production App Handover Stock)
+              <i class="fa-solid fa-boxes-packing text-success me-2"></i> رصيد شحنات الزيت والعبوات المستلمة من قسم
+              المعصرة والإنتاج (Production App Handover Stock)
             </h5>
-            <span class="badge bg-success fs-6"><i class="fa-solid fa-circle-check me-1"></i> متصل بتطبيق المعصرة 🟢</span>
+            <span class="badge bg-success fs-6"><i class="fa-solid fa-circle-check me-1"></i> متصل بتطبيق المعصرة
+              🟢</span>
           </div>
 
           <div class="table-responsive">
@@ -177,9 +209,11 @@
         <div class="erp-card mb-4 border-info">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="text-info fw-bold mb-0">
-              <i class="fa-solid fa-truck-droplet text-warning me-2"></i> تسليم البضائع والزيت من شركة SuperSonic إلى السائقين (SuperSonic Handover to Drivers)
+              <i class="fa-solid fa-truck-droplet text-warning me-2"></i> تسليم البضائع والزيت من شركة SuperSonic إلى
+              السائقين (SuperSonic Handover to Drivers)
             </h5>
-            <span class="badge bg-info text-dark fs-6 fw-bold"><i class="fa-solid fa-user-gear me-1"></i> إدارة الأسطول</span>
+            <span class="badge bg-info text-dark fs-6 fw-bold"><i class="fa-solid fa-user-gear me-1"></i> إدارة
+              الأسطول</span>
           </div>
 
           <div class="p-3 mb-3 rounded-3" style="background: #141f17; border: 1px solid #28442c;">
@@ -187,7 +221,8 @@
               <div class="col-md-4">
                 <label class="form-label text-warning">اختيار السائق المستلم</label>
                 <select id="ssDriverSelect" class="form-select bg-dark text-white border-secondary">
-                  <option value="سائق S-01 — أبو علي (فان هيونداي بضائع)">سائق S-01 — أبو علي (فان هيونداي بضائع)</option>
+                  <option value="سائق S-01 — أبو علي (فان هيونداي بضائع)">سائق S-01 — أبو علي (فان هيونداي بضائع)
+                  </option>
                   <option value="سائق S-02 — حسن (رابيد رينو توزيع)">سائق S-02 — حسن (رابيد رينو توزيع)</option>
                   <option value="سائق S-03 — محمود (شاحنة نقل الجنوب)">سائق S-03 — محمود (شاحنة نقل الجنوب)</option>
                   <option value="سائق S-04 — طارق (دراجة توصيل سريعة)">سائق S-04 — طارق (دراجة توصيل سريعة)</option>
@@ -204,7 +239,8 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label text-warning">الكمية المستلمة (عدد العبوات)</label>
-                <input type="number" id="ssDriverQty" class="form-control bg-dark text-white border-secondary" placeholder="0" min="1" />
+                <input type="number" id="ssDriverQty" class="form-control bg-dark text-white border-secondary"
+                  placeholder="0" min="1" />
               </div>
             </div>
             <div class="text-end">
@@ -234,7 +270,8 @@
 
         <div class="erp-card">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="text-warning fw-bold mb-0"><i class="fa-solid fa-map-location-dot me-2 text-success"></i> خطة التوزيع والطلبات الجارية المباشرة</h5>
+            <h5 class="text-warning fw-bold mb-0"><i class="fa-solid fa-map-location-dot me-2 text-success"></i> خطة
+              التوزيع والطلبات الجارية المباشرة</h5>
             <span class="badge bg-primary fs-6"><i class="fa-solid fa-truck-ramp-box me-1"></i> 2 طلب قيد التوصيل</span>
           </div>
 
@@ -242,14 +279,19 @@
           <div class="delivery-card">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div>
-                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-store me-2 text-warning"></i> سوبرماركت المدينة - فرع الحمرا</h6>
-                <span class="text-light small fw-bold"><i class="fa-solid fa-hashtag text-info me-1"></i> رقم الطلب: #ORD-9801 | <i class="fa-solid fa-location-dot text-danger me-1"></i> بيروت - شارع الحمرا الرئيسي</span>
+                <h6 class="fw-bold text-white mb-1"><i class="fa-solid fa-store me-2 text-warning"></i> سوبرماركت
+                  المدينة - فرع الحمرا</h6>
+                <span class="text-light small fw-bold"><i class="fa-solid fa-hashtag text-info me-1"></i> رقم الطلب:
+                  #ORD-9801 | <i class="fa-solid fa-location-dot text-danger me-1"></i> بيروت - شارع الحمرا
+                  الرئيسي</span>
               </div>
-              <span class="badge bg-warning text-dark fw-bold p-2"><i class="fa-solid fa-clock me-1"></i> قيد التوصيل</span>
+              <span class="badge bg-warning text-dark fw-bold p-2"><i class="fa-solid fa-clock me-1"></i> قيد
+                التوصيل</span>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <div>
-                <span class="text-white fw-bold"><i class="fa-solid fa-hand-holding-dollar me-1 text-success"></i> المبلغ المطلوب تحصيله:</span>
+                <span class="text-white fw-bold"><i class="fa-solid fa-hand-holding-dollar me-1 text-success"></i>
+                  المبلغ المطلوب تحصيله:</span>
                 <span class="text-success fw-bold fs-5 ms-2">$450.00 USD</span>
               </div>
               <button class="btn btn-sm btn-success fw-bold" onclick="markOrderDelivered('ORD-9801')">
@@ -273,7 +315,7 @@
       let list = [];
       try {
         list = JSON.parse(localStorage.getItem('so_delivery_management_received_stock') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       if (list.length === 0) {
         list = [
@@ -315,7 +357,7 @@
       let driverHandovers = [];
       try {
         driverHandovers = JSON.parse(localStorage.getItem('so_driver_handovers') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       const record = {
         id: 'SS-DRV-' + Date.now(),
@@ -343,7 +385,7 @@
       let list = [];
       try {
         list = JSON.parse(localStorage.getItem('so_driver_handovers') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       if (list.length === 0) {
         list = [
@@ -368,4 +410,5 @@
     });
   </script>
 </body>
+
 </html>

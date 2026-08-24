@@ -194,7 +194,7 @@ const manualHtml = `<!DOCTYPE html>
         <img src="assets/images/vanguard_logo.png" alt="Vanguard Logo" class="manual-logo-img shadow-sm" style="border: 2px solid #f59e0b;" />
         <div>
           <h2 class="fw-bold mb-1" style="color: #0f172a;">دليل المستخدم الشامل والنظام التشغيلي (User Manual)</h2>
-          <span class="text-muted fw-semibold">منظومة فاندغارد المؤسسية - شركة منتوجات زيت وزيتون الجنوب ش.م.م (Vanguard Software Inc. / Southern Olive SARL)</span>
+          <span class="text-muted fw-semibold">منظومة فاندغارد المؤسسية - شركة منتوجات زيت وزيتون الجنوب ش.م.م (Vanguard Software Inc. / Vanguard SARL)</span>
         </div>
       </div>
       <div>
@@ -214,7 +214,7 @@ const manualHtml = `<!DOCTYPE html>
       </div>
       <div class="col-md-3">
         <small class="text-muted d-block">معرّف الترخيص (CID):</small>
-        <strong class="text-warning">CID-22901 (Southern Olive Master)</strong>
+        <strong class="text-warning">CID-22901 (Vanguard Master)</strong>
       </div>
       <div class="col-md-3">
         <small class="text-muted d-block">مستوى الأمان والدرع:</small>
@@ -244,7 +244,7 @@ const manualHtml = `<!DOCTYPE html>
     </p>
     <ul>
       <li><strong>الجهة اليسرى (Left Section)</strong>: تضم زر القائمة الجانبية (☰) بالإضافة إلى شارة <strong>شعار فاندغارد (Vanguard Software Medallion Badge)</strong> التي تتيح إمكانية فتح <strong>مركز الأمان الشامل (Vanguard Maximum Security Suite)</strong> فور الضغط عليها.</li>
-      <li><strong>الوسط (Center Section)</strong>: يضم اسم المشروع والشركة المترخصة (<strong>منتوجات زيت وزيتون الجنوب ش.م.م - Southern Olive SARL</strong>) مع الشعار الدائري الخاص بها في منتصف الشاشة.</li>
+      <li><strong>الوسط (Center Section)</strong>: يضم اسم المشروع والشركة المترخصة (<strong>منتوجات زيت وزيتون الجنوب ش.م.م - Vanguard SARL</strong>) مع الشعار الدائري الخاص بها في منتصف الشاشة.</li>
       <li><strong>الجهة اليمنى (Right Section)</strong>: تضم أزرار التفاعل السريع (<strong>مركز التطبيقات المستقلة Standalone Apps Hub</strong>، <strong>الرئيسية 🏠</strong>، <strong>الرسائل ✉️</strong>، <strong>الإعدادات ⚙️</strong>، <strong>شارة مستخدم المالك الرئيسي Master Owner</strong>، وزر <strong>تسجيل الخروج 🚪</strong>).</li>
     </ul>
 

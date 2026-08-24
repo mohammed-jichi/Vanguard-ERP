@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L. / VANGUARD ERP
+ * Vanguard ERP System
  * Super Admin Workspace Manager & Multi-Tenant Subscription Hub
  * 
  * Exact Visual Styling & Layout components matching vanguard-admin.html
@@ -10,17 +10,17 @@
 import React, { useState, useEffect } from 'react';
 import { useTenant, TenantCompany } from '../lib/TenantContext';
 import { supabase } from '../lib/supabaseClient';
-import { 
-  ShieldCheck, 
-  Plus, 
-  Sparkles, 
-  CheckCircle2, 
-  Key, 
-  TrendingUp, 
-  DollarSign, 
-  Activity, 
-  Building, 
-  FileText, 
+import {
+  ShieldCheck,
+  Plus,
+  Sparkles,
+  CheckCircle2,
+  Key,
+  TrendingUp,
+  DollarSign,
+  Activity,
+  Building,
+  FileText,
   ExternalLink,
   Crown,
   Lock,
@@ -182,14 +182,14 @@ export default function SuperAdminWorkspaceManager() {
 
       {/* MASTER METRICS CARDS ROW */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        
+
         {/* CARD 1 */}
         <div className="bg-slate-900 border-2 border-slate-800 hover:border-amber-400/50 rounded-2xl p-5 text-center shadow-xl space-y-2 transition-all">
           <Key className="w-8 h-8 text-amber-400 mx-auto" />
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Active Client Licenses</span>
           <h2 className="text-2xl font-black text-white">{displayTenants.length} Tenant Account</h2>
           <small className="text-emerald-400 font-bold flex items-center justify-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> License #1 Active (Southern Olive)
+            <CheckCircle2 className="w-3.5 h-3.5" /> License #1 Active (Vanguard)
           </small>
         </div>
 

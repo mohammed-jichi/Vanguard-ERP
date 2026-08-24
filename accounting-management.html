@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
@@ -16,11 +17,13 @@
       color: #f8fafc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .acc-app-container {
       max-width: 1300px;
       margin: 0 auto;
       padding: 20px;
     }
+
     .acc-card {
       background: #171e27;
       border: 1px solid rgba(219, 177, 112, 0.2);
@@ -28,6 +31,7 @@
       padding: 24px;
       margin-bottom: 24px;
     }
+
     .acc-header {
       display: flex;
       justify-content: space-between;
@@ -36,6 +40,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       margin-bottom: 20px;
     }
+
     .subnav-tabs .nav-link {
       color: #cbd5e1;
       background: rgba(255, 255, 255, 0.05);
@@ -43,21 +48,25 @@
       margin-right: 6px;
       border-radius: 8px;
     }
+
     .subnav-tabs .nav-link.active {
       color: #121814 !important;
       background-color: #dbb170 !important;
       font-weight: 700;
     }
+
     .table-dark-custom {
       color: #0f172a !important;
       background-color: #ffffff !important;
     }
+
     .table-dark-custom th {
       background-color: #fef3c7 !important;
       color: #0f172a !important;
       border-bottom: 2px solid #f59e0b !important;
       font-weight: 800 !important;
     }
+
     .table-dark-custom td {
       border-bottom: 1px solid #e2e8f0 !important;
       color: #0f172a !important;
@@ -66,14 +75,16 @@
     }
   </style>
 </head>
+
 <body>
   <div class="acc-app-container">
     <!-- Header Navbar -->
     <div class="acc-header">
       <div>
-        <a href="index.html" class="btn btn-outline-warning btn-sm mb-2"><i class="fa-solid fa-arrow-left me-1"></i> Back to Main Dashboard</a>
+        <a href="index.html" class="btn btn-outline-warning btn-sm mb-2"><i class="fa-solid fa-arrow-left me-1"></i>
+          Back to Main Dashboard</a>
         <h2 class="mb-0 text-warning"><i class="fa-solid fa-calculator me-2"></i> Accounting & Financial Management</h2>
-        <small class="text-muted">Southern Olive and Oil Product S.A.R.L. &bull; Multi-Bank Ledger & VAT Control</small>
+        <small class="text-muted">Vanguard ERP System. &bull; Multi-Bank Ledger & VAT Control</small>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-outline-warning fw-bold" onclick="openAddCustomBankModal()">
@@ -88,16 +99,20 @@
     <!-- Accounting Tabs -->
     <ul class="nav nav-tabs subnav-tabs mb-4" id="accSubTabs">
       <li class="nav-item">
-        <button class="nav-link active" onclick="switchSubTab('acc', 'coa', this)"><i class="fa-solid fa-sitemap me-1"></i> Chart of Accounts</button>
+        <button class="nav-link active" onclick="switchSubTab('acc', 'coa', this)"><i
+            class="fa-solid fa-sitemap me-1"></i> Chart of Accounts</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('acc', 'reports', this)"><i class="fa-solid fa-chart-pie me-1"></i> Cash Flow & Reports</button>
+        <button class="nav-link" onclick="switchSubTab('acc', 'reports', this)"><i
+            class="fa-solid fa-chart-pie me-1"></i> Cash Flow & Reports</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('acc', 'rec', this)"><i class="fa-solid fa-scale-balanced me-1"></i> Bank Rec & VAT Closing</button>
+        <button class="nav-link" onclick="switchSubTab('acc', 'rec', this)"><i
+            class="fa-solid fa-scale-balanced me-1"></i> Bank Rec & VAT Closing</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('acc', 'jv', this)"><i class="fa-solid fa-book-journal-whills me-1"></i> Journal Vouchers</button>
+        <button class="nav-link" onclick="switchSubTab('acc', 'jv', this)"><i
+            class="fa-solid fa-book-journal-whills me-1"></i> Journal Vouchers</button>
       </li>
     </ul>
 
@@ -105,8 +120,10 @@
     <div id="subpanel-acc-coa" class="subpanel active">
       <div class="acc-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="text-warning mb-0"><i class="fa-solid fa-sitemap me-2"></i> Chart of Accounts (COA) General Ledger Structure</h5>
-          <button class="btn btn-sm btn-outline-warning" onclick="openAddCustomBankModal()">+ Add Bank / Wallet Account</button>
+          <h5 class="text-warning mb-0"><i class="fa-solid fa-sitemap me-2"></i> Chart of Accounts (COA) General Ledger
+            Structure</h5>
+          <button class="btn btn-sm btn-outline-warning" onclick="openAddCustomBankModal()">+ Add Bank / Wallet
+            Account</button>
         </div>
         <table class="table table-dark-custom small">
           <thead>
@@ -189,17 +206,21 @@
     <!-- SUBPANEL 3: BANK REC & VAT CLOSING -->
     <div id="subpanel-acc-rec" class="subpanel" style="display:none;">
       <div class="acc-card">
-        <h5 class="text-warning mb-3"><i class="fa-solid fa-scale-balanced me-2"></i> Multi-Bank Reconciliation & VAT Closing</h5>
+        <h5 class="text-warning mb-3"><i class="fa-solid fa-scale-balanced me-2"></i> Multi-Bank Reconciliation & VAT
+          Closing</h5>
         <div class="row g-4">
           <div class="col-md-6">
             <div class="p-3 bg-dark rounded border border-secondary">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="text-warning mb-0">Bank / Wallet Statement Matching:</h6>
-                <button class="btn btn-xs btn-outline-warning py-0 px-2 small" onclick="openAddCustomBankModal()">+ Add Bank / Wallet</button>
+                <button class="btn btn-xs btn-outline-warning py-0 px-2 small" onclick="openAddCustomBankModal()">+ Add
+                  Bank / Wallet</button>
               </div>
-              <p class="small text-muted mb-2">Select financial institution to match bank statements with general ledger:</p>
+              <p class="small text-muted mb-2">Select financial institution to match bank statements with general
+                ledger:</p>
               <select id="accBankSelect" class="form-select form-select-sm bank-wallet-select mb-3"></select>
-              <button class="btn btn-sm btn-info fw-bold w-100" onclick="showToast('Bank Rec', 'Reconciled selected bank/wallet account with General Ledger', 'success')">
+              <button class="btn btn-sm btn-info fw-bold w-100"
+                onclick="showToast('Bank Rec', 'Reconciled selected bank/wallet account with General Ledger', 'success')">
                 <i class="fa-solid fa-rotate me-1"></i> Run Bank Auto-Matching
               </button>
             </div>
@@ -208,7 +229,8 @@
             <div class="p-3 bg-dark rounded border border-secondary">
               <h6 class="text-warning mb-2">Lebanese VAT Period Closing:</h6>
               <p class="small text-muted mb-3">Q3 2026 VAT Declaration (11% Standard Rate)</p>
-              <button class="btn btn-sm btn-warning fw-bold w-100" onclick="showToast('VAT Lock', 'Q3 VAT Period Closed and Locked', 'warning')">
+              <button class="btn btn-sm btn-warning fw-bold w-100"
+                onclick="showToast('VAT Lock', 'Q3 VAT Period Closed and Locked', 'warning')">
                 <i class="fa-solid fa-lock me-1"></i> Lock VAT Period Q3
               </button>
             </div>
@@ -221,8 +243,10 @@
     <div id="subpanel-acc-jv" class="subpanel" style="display:none;">
       <div class="acc-card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="text-warning mb-0"><i class="fa-solid fa-book-journal-whills me-2"></i> Journal Voucher (JV) Log</h5>
-          <button class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#jvModal">+ New JV Entry</button>
+          <h5 class="text-warning mb-0"><i class="fa-solid fa-book-journal-whills me-2"></i> Journal Voucher (JV) Log
+          </h5>
+          <button class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#jvModal">+ New JV
+            Entry</button>
         </div>
         <table class="table table-dark-custom small">
           <thead>
@@ -263,10 +287,12 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white border-success">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-success fw-bold"><i class="fa-solid fa-book-journal-whills me-2"></i> New Journal Voucher (JV) Entry</h5>
+          <h5 class="modal-title text-success fw-bold"><i class="fa-solid fa-book-journal-whills me-2"></i> New Journal
+            Voucher (JV) Entry</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <form id="jvForm" onsubmit="event.preventDefault(); showToast('JV Created', 'Journal Voucher registered successfully', 'success'); bootstrap.Modal.getInstance(document.getElementById('jvModal')).hide();">
+        <form id="jvForm"
+          onsubmit="event.preventDefault(); showToast('JV Created', 'Journal Voucher registered successfully', 'success'); bootstrap.Modal.getInstance(document.getElementById('jvModal')).hide();">
           <div class="modal-body p-4">
             <div class="row g-3 mb-3">
               <div class="col-md-6">
@@ -284,12 +310,14 @@
             </div>
             <div class="mb-3">
               <label class="form-label text-white fw-bold">Description / Narration</label>
-              <input type="text" id="jvMemo" class="form-control" placeholder="e.g. Raw material payout via bank transfer" required />
+              <input type="text" id="jvMemo" class="form-control"
+                placeholder="e.g. Raw material payout via bank transfer" required />
             </div>
           </div>
           <div class="modal-footer border-top border-secondary">
             <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success fw-bold"><i class="fa-solid fa-check me-1"></i> Post Journal Voucher</button>
+            <button type="submit" class="btn btn-success fw-bold"><i class="fa-solid fa-check me-1"></i> Post Journal
+              Voucher</button>
           </div>
         </form>
       </div>
@@ -301,18 +329,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white border-warning">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-warning fw-bold"><i class="fa-solid fa-building-columns me-2"></i> + Add Custom Bank / Financial Wallet</h5>
+          <h5 class="modal-title text-warning fw-bold"><i class="fa-solid fa-building-columns me-2"></i> + Add Custom
+            Bank / Financial Wallet</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form id="addCustomBankForm" onsubmit="handleSaveCustomBankWallet(event)">
           <div class="modal-body p-4">
             <div class="mb-3">
               <label class="form-label text-white fw-bold">Bank / Financial Wallet Name</label>
-              <input type="text" id="customBankName" class="form-control" placeholder="e.g. Banque BEMO, Purpl Wallet, Revolut" required />
+              <input type="text" id="customBankName" class="form-control"
+                placeholder="e.g. Banque BEMO, Purpl Wallet, Revolut" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-white fw-bold">SWIFT / Routing / Provider Code</label>
-              <input type="text" id="customBankSwift" class="form-control" placeholder="e.g. BEMO LBBX, PURPL LB, REVO GB21" required />
+              <input type="text" id="customBankSwift" class="form-control"
+                placeholder="e.g. BEMO LBBX, PURPL LB, REVO GB21" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-white fw-bold">Institution Category</label>
@@ -335,7 +366,8 @@
           </div>
           <div class="modal-footer border-top border-secondary">
             <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-warning fw-bold"><i class="fa-solid fa-save me-1"></i> Save Bank / Wallet</button>
+            <button type="submit" class="btn btn-warning fw-bold"><i class="fa-solid fa-save me-1"></i> Save Bank /
+              Wallet</button>
           </div>
         </form>
       </div>
@@ -354,4 +386,5 @@
     }
   </script>
 </body>
+
 </html>

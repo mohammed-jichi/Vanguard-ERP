@@ -1,6 +1,6 @@
 import re
 
-with open(r'c:\Users\User\OneDrive\Documents\Southern Olive and Oil Product V2\index.html', 'r', encoding='utf-8') as f:
+with open(r'c:\Users\User\OneDrive\Documents\Vanguard and Oil Product V2\index.html', 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
 stack = []

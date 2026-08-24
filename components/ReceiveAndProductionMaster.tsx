@@ -1,6 +1,6 @@
 'use client';
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L.
+ * Vanguard ERP System
  * Master Shared Component: <ReceiveAndProductionMaster />
  * 
  * Official Header: مركز الاستلام والإنتاج -- منتوجات زيت وزيتون الجنوب
@@ -14,17 +14,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Package, 
-  Truck, 
-  Flame, 
-  Layers, 
-  Plus, 
-  AlertTriangle, 
-  History, 
-  CheckCircle2, 
-  Warehouse, 
-  Building2, 
+import {
+  Package,
+  Truck,
+  Flame,
+  Layers,
+  Plus,
+  AlertTriangle,
+  History,
+  CheckCircle2,
+  Warehouse,
+  Building2,
   Droplet
 } from 'lucide-react';
 
@@ -238,7 +238,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
 
   return (
     <div dir="rtl" className="w-full font-sans bg-[#1c2b1a] text-white p-4 sm:p-6 rounded-2xl border-2 border-[#2b3e2a] shadow-2xl">
-      
+
       {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 mb-6 border-b border-[#2b3e2a]">
         <div className="flex items-center gap-3 text-center sm:text-right">
@@ -256,8 +256,8 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
         </div>
 
         {isModalView && onClose && (
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition-all shadow-md"
           >
             إغلاق (Close) ✖
@@ -288,44 +288,40 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#142013] p-2 rounded-xl border border-[#2b3e2a] mb-6">
         <button
           onClick={() => setActiveTab('RECEIVE')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${
-            activeTab === 'RECEIVE'
-              ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${activeTab === 'RECEIVE'
+            ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
+            : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
         >
           <Package className="w-4 h-4" /> 📦 1. استلام زيت (Receive Oil)
         </button>
 
         <button
           onClick={() => setActiveTab('PRODUCTION')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${
-            activeTab === 'PRODUCTION'
-              ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${activeTab === 'PRODUCTION'
+            ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
+            : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
         >
           <Flame className="w-4 h-4" /> ⚙️ 2. خلط وإنتاج (Mixing & Production)
         </button>
 
         <button
           onClick={() => setActiveTab('DELIVERY')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${
-            activeTab === 'DELIVERY'
-              ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${activeTab === 'DELIVERY'
+            ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
+            : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
         >
           <Truck className="w-4 h-4" /> 🚚 3. تسليم الإنتاج (Production Delivery)
         </button>
 
         <button
           onClick={() => setActiveTab('INVENTORY')}
-          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${
-            activeTab === 'INVENTORY'
-              ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
-              : 'bg-white/10 text-white hover:bg-white/20'
-          }`}
+          className={`flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-black text-xs sm:text-sm transition-all ${activeTab === 'INVENTORY'
+            ? 'bg-[#fefae0] text-[#000000] border-2 border-[#2b3e2a] shadow-lg'
+            : 'bg-white/10 text-white hover:bg-white/20'
+            }`}
         >
           <Layers className="w-4 h-4" /> 📊 4. جرد ورصيد (Inventory Balance)
         </button>
@@ -452,7 +448,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
       {activeTab === 'PRODUCTION' && (
         <div className="bg-white text-black p-5 rounded-xl border-2 border-slate-300 space-y-4">
           <h2 className="text-lg font-black text-[#1c2b1a]">خلط سحب وتعبئة الزيت (Mixing & Production Lines)</h2>
-          
+
           <div className="flex justify-between items-center bg-slate-100 p-3 rounded-lg border border-slate-300">
             <span className="text-sm font-bold">صنف العبوة المستهدفة للتعبئة:</span>
             <button
@@ -509,7 +505,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
       {activeTab === 'DELIVERY' && (
         <div className="bg-[#fefae0] text-black p-5 rounded-xl border-2 border-[#ccd5ae] space-y-4">
           <h2 className="text-lg font-black text-[#1c2b1a]">تسليم وترحيل الإنتاج إلى شركة SuperSonic (SuperSonic Delivery)</h2>
-          
+
           <div>
             <label className="block text-xs font-bold mb-1">وجهة التوصيل / فرع SuperSonic:</label>
             <select
@@ -565,33 +561,29 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
           <div className="flex flex-wrap gap-2 pb-2 border-b border-[#2b3e2a]">
             <button
               onClick={() => setInventorySubTab('STOCK')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs ${
-                inventorySubTab === 'STOCK' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-lg font-bold text-xs ${inventorySubTab === 'STOCK' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
+                }`}
             >
               جرد المخزون
             </button>
             <button
               onClick={() => setInventorySubTab('LOG')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs ${
-                inventorySubTab === 'LOG' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-lg font-bold text-xs ${inventorySubTab === 'LOG' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
+                }`}
             >
               سجل الحركات
             </button>
             <button
               onClick={() => setInventorySubTab('SUPERSONIC')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs ${
-                inventorySubTab === 'SUPERSONIC' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-lg font-bold text-xs ${inventorySubTab === 'SUPERSONIC' ? 'bg-[#2b3e2a] text-white' : 'bg-white/10 text-slate-300'
+                }`}
             >
               جرد الأسطول
             </button>
             <button
               onClick={() => setInventorySubTab('ALERTS')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs ${
-                inventorySubTab === 'ALERTS' ? 'bg-red-800 text-white' : 'bg-white/10 text-slate-300'
-              }`}
+              className={`px-4 py-2 rounded-lg font-bold text-xs ${inventorySubTab === 'ALERTS' ? 'bg-red-800 text-white' : 'bg-white/10 text-slate-300'
+                }`}
             >
               تنبيهات نقص المخزون
             </button>

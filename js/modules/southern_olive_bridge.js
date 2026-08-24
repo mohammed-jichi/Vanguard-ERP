@@ -1,7 +1,7 @@
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS SARL - DATA INTEGRATION & MIGRATION BRIDGE
+ * Southern Olive & Oil Products SARL - DATA INTEGRATION & MIGRATION BRIDGE
  * 
- * Interoperability, Parsing, & Migration Engine for Southern Olive ERP V2.
+ * Interoperability, Parsing, & Migration Engine for Vanguard ERP V2.
  * 
  * Handles schema mapping for:
  *  - Items & Inventory (Inventory Management)
@@ -37,14 +37,14 @@
     }
 
     /**
-     * Map Inventory Item schema to Southern Olive POS/Stock schema
+     * Map Inventory Item schema to Vanguard POS/Stock schema
      */
     mapItem(raw) {
       if (!raw) return null;
       const usdPrice = parseFloat(raw.SellingPrice || raw.SELLINGPRICE || raw.priceUsd || raw.PRICE || 0);
       const lbpPrice = parseFloat(raw.SecondSellingPrice || raw.SECONDSELLINGPRICE || raw.priceLbp || (usdPrice * 89500));
       const costUsd = parseFloat(raw.CostPrice || raw.COSTPRICE || raw.costUsd || 0);
-      
+
       return {
         id: String(raw.ITEMID || raw.itemId || raw.id || 'SO-' + Date.now() + '-' + Math.floor(Math.random() * 1000)),
         code: String(raw.ITEMCODE || raw.itemCode || raw.code || ''),
@@ -54,7 +54,7 @@
         category: raw.CATEGORYNAME || raw.categoryName || raw.CATEGORY || 'General',
         division: raw.DIVISIONNAME || raw.divisionName || raw.DIVISION || 'Retail',
         group: raw.GROUPNAME || raw.groupName || raw.GROUP || 'General',
-        brand: raw.BRANDNAME || raw.brandName || 'Southern Olive',
+        brand: raw.BRANDNAME || raw.brandName || 'Vanguard',
         unitPriceUsd: usdPrice,
         unitPriceLbp: lbpPrice,
         costPriceUsd: costUsd,
@@ -64,20 +64,20 @@
         maxQty: parseFloat(raw.MAXQTY || raw.maxQty || 0),
         vatApplicable: raw.VATAPPLICABLE !== false && raw.vat !== 0,
         vatRate: 0.11, // Standard Lebanese 11% VAT
-        source: raw.SOURCE || 'Southern Olive System',
+        source: raw.SOURCE || 'Vanguard System',
         importedAt: new Date().toISOString()
       };
     }
 
     /**
-     * Map Customer schema to Southern Olive Customer Directory
+     * Map Customer schema to Vanguard Customer Directory
      */
     mapCustomer(raw) {
       if (!raw) return null;
       return {
         id: String(raw.CUSTOMERID || raw.customerId || raw.id || 'CUST-SO-' + Date.now()),
         code: String(raw.CUSTOMERCODE || raw.customerCode || ''),
-        name: raw.CUSTOMERNAME || raw.customerName || raw.name || 'Southern Olive Client',
+        name: raw.CUSTOMERNAME || raw.customerName || raw.name || 'Vanguard Client',
         nameAr: raw.CUSTOMERNAMEAR || raw.customerNameAr || raw.CUSTOMERNAME || 'عميل',
         phone: raw.PHONE || raw.mobile || raw.PHONE1 || '',
         email: raw.EMAIL || raw.email || '',
@@ -92,14 +92,14 @@
     }
 
     /**
-     * Map Supplier schema to Southern Olive Operations/Purchases
+     * Map Supplier schema to Vanguard Operations/Purchases
      */
     mapSupplier(raw) {
       if (!raw) return null;
       return {
         id: String(raw.SUPPLIERID || raw.supplierId || raw.id || 'SUP-SO-' + Date.now()),
         code: String(raw.SUPPLIERCODE || raw.supplierCode || ''),
-        name: raw.SUPPLIERNAME || raw.supplierName || raw.name || 'Southern Olive Supplier',
+        name: raw.SUPPLIERNAME || raw.supplierName || raw.name || 'Vanguard Supplier',
         phone: raw.PHONE || raw.TELEPHONE || '',
         address: raw.ADDRESS || raw.LOCATION || 'Lebanon',
         balanceUsd: parseFloat(raw.BALANCEUSD || raw.balanceUsd || 0),
@@ -110,7 +110,7 @@
     }
 
     /**
-     * Map Sales/Transaction schema to Southern Olive Accounting & POS
+     * Map Sales/Transaction schema to Vanguard Accounting & POS
      */
     mapSale(raw) {
       if (!raw) return null;
@@ -139,7 +139,7 @@
       if (!htmlContent) return { items: [], customers: [], suppliers: [], sales: [] };
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlContent, 'text/html');
-      
+
       const items = [];
       const customers = [];
       const suppliers = [];
@@ -189,7 +189,7 @@
     }
 
     /**
-     * Merge imported items, customers, suppliers, and sales into Southern Olive local storage
+     * Merge imported items, customers, suppliers, and sales into Vanguard local storage
      * WITHOUT removing existing data! (Strict Addition & Non-Destructive Edit Rule)
      */
     mergeIntoSouthernOlive(parsedData, options = {}) {
@@ -205,12 +205,12 @@
         let currentPosItems = [];
         try {
           currentPosItems = JSON.parse(localStorage.getItem('so_pos_items') || '[]');
-        } catch(e) { currentPosItems = []; }
+        } catch (e) { currentPosItems = []; }
 
         let currentStockItems = [];
         try {
           currentStockItems = JSON.parse(localStorage.getItem('so_stock_items') || '[]');
-        } catch(e) { currentStockItems = []; }
+        } catch (e) { currentStockItems = []; }
 
         parsedData.items.forEach(newItem => {
           if (!newItem) return;
@@ -251,7 +251,7 @@
         let currentCusts = [];
         try {
           currentCusts = JSON.parse(localStorage.getItem('so_customers') || '[]');
-        } catch(e) { currentCusts = []; }
+        } catch (e) { currentCusts = []; }
 
         parsedData.customers.forEach(newCust => {
           if (!newCust) return;
@@ -273,7 +273,7 @@
         let currentSups = [];
         try {
           currentSups = JSON.parse(localStorage.getItem('so_suppliers') || '[]');
-        } catch(e) { currentSups = []; }
+        } catch (e) { currentSups = []; }
 
         parsedData.suppliers.forEach(newSup => {
           if (!newSup) return;
@@ -303,7 +303,7 @@
 
       if (window.showToast) {
         window.showToast(
-          "Southern Olive Data Integration",
+          "Vanguard Data Integration",
           `Successfully processed data. Added/Updated: ${results.addedItems} Items, ${results.addedCustomers} Clients, ${results.addedSuppliers} Suppliers.`,
           "success"
         );
@@ -313,14 +313,14 @@
     }
 
     /**
-     * Generate a Southern Olive Z-Report Daily Summary
+     * Generate a Vanguard Z-Report Daily Summary
      */
     generateZReport(dateStr) {
       const targetDate = dateStr || new Date().toISOString().split('T')[0];
       let sales = [];
       try {
         sales = JSON.parse(localStorage.getItem('so_sales_orders') || '[]');
-      } catch(e) { sales = []; }
+      } catch (e) { sales = []; }
 
       const daySales = sales.filter(s => (s.date || '').startsWith(targetDate));
       const totalUsd = daySales.reduce((sum, s) => sum + parseFloat(s.totalUsd || s.total || 0), 0);
@@ -331,7 +331,7 @@
       return {
         reportType: "Z-REPORT (DAILY CLOSURE)",
         company: "Southern Olive & Oil Products SARL",
-        softwareSource: "Southern Olive ERP Compatible",
+        softwareSource: "Vanguard ERP Compatible",
         date: targetDate,
         totalInvoices: daySales.length,
         grossSalesUsd: totalUsd.toFixed(2),
@@ -412,7 +412,7 @@
     saveRawOilStock(stock) {
       try {
         localStorage.setItem('so_raw_oil_stock', JSON.stringify(stock));
-      } catch (e) {}
+      } catch (e) { }
     }
 
     /**
@@ -921,7 +921,7 @@
         if (iSec) iSec.style.display = 'block';
 
         setActive(iBtn); setInactive(pBtn); setInactive(rBtn); setInactive(prBtn); setInactive(hBtn);
-        
+
         // Update Inventory Metrics
         const st = this.getRawOilStock();
         const kuraTins = (st.kuraKg / 15.2).toFixed(1);
@@ -992,7 +992,7 @@
       let handovers = [];
       try {
         handovers = JSON.parse(localStorage.getItem('so_delivery_handovers') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       const record = {
         id: 'HO-' + Date.now(),
@@ -1097,7 +1097,7 @@
       try {
         const raw = localStorage.getItem('so_packaging_catalog');
         if (raw) customCatalog = JSON.parse(raw);
-      } catch (e) {}
+      } catch (e) { }
 
       let stockCatalog = [];
       try {
@@ -1110,7 +1110,7 @@
             capacityKg: parseFloat(i.capacityKg || i.specKg || (i.name && i.name.includes('8') ? 7.8 : 15.2))
           }));
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const defaultCatalog = [
         { id: 'PKG-16KG-KHUDAIR', name: 'تنكة كاملة خضير (15.2 كجم = 17.5 لتر)', capacityKg: 15.2 },
@@ -1168,7 +1168,7 @@
       try {
         const raw = localStorage.getItem('so_packaging_catalog');
         if (raw) customCatalog = JSON.parse(raw);
-      } catch (e) {}
+      } catch (e) { }
 
       const newItem = {
         id: 'PKG-CUSTOM-' + Date.now(),
@@ -1291,8 +1291,8 @@
       if (modal) modal.style.display = 'none';
       if (window.showToast) {
         window.showToast(
-          "استلام زيت بالوزن (كجم)", 
-          `تم تسجيل استلام ${totalKg} kg (${totalTins} تنكة / ${totalLiters} لتر) من [${vendor}] وتحديث المخزون بنجاح`, 
+          "استلام زيت بالوزن (كجم)",
+          `تم تسجيل استلام ${totalKg} kg (${totalTins} تنكة / ${totalLiters} لتر) من [${vendor}] وتحديث المخزون بنجاح`,
           "success"
         );
       }
@@ -1360,7 +1360,7 @@
       try {
         const raw = localStorage.getItem('so_vendors_list');
         if (raw) return JSON.parse(raw);
-      } catch (e) {}
+      } catch (e) { }
       return [
         { name: 'معصرة الجنوب المركزية', phone: '07-720100', address: 'صيدا - الجنوب', category: 'معصرة زيت مركزية', notes: 'المعصرة الرئيسية' },
         { name: 'مزارع صيدا وحاصبيا', phone: '70-112233', address: 'حاصبيا', category: 'مزارع زيتون', notes: 'مزارع زيتون بلدي' },
@@ -1452,7 +1452,7 @@
         `;
         document.body.appendChild(modal);
       }
-      
+
       const nameEl = document.getElementById('soVendorNameInput');
       const phoneEl = document.getElementById('soVendorPhoneInput');
       const addrEl = document.getElementById('soVendorAddressInput');
@@ -1563,7 +1563,7 @@
 
   // Expose singleton on global window object
   window.SouthernOliveBridge = new SouthernOliveBridge();
-  window.openOlivePressingModal = function(mode = 'PRESSING') {
+  window.openOlivePressingModal = function (mode = 'PRESSING') {
     return window.SouthernOliveBridge.openOlivePressingModal(mode);
   };
 

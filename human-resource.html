@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
@@ -16,11 +17,13 @@
       color: #f8fafc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .hr-app-container {
       max-width: 1300px;
       margin: 0 auto;
       padding: 20px;
     }
+
     .hr-card {
       background: #171e27;
       border: 1px solid rgba(219, 177, 112, 0.2);
@@ -28,6 +31,7 @@
       padding: 24px;
       margin-bottom: 24px;
     }
+
     .hr-header {
       display: flex;
       justify-content: space-between;
@@ -36,6 +40,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       margin-bottom: 20px;
     }
+
     .subnav-tabs .nav-link {
       color: #cbd5e1;
       background: rgba(255, 255, 255, 0.05);
@@ -43,21 +48,25 @@
       margin-right: 6px;
       border-radius: 8px;
     }
+
     .subnav-tabs .nav-link.active {
       color: #121814 !important;
       background-color: #dbb170 !important;
       font-weight: 700;
     }
+
     .table-dark-custom {
       color: #0f172a !important;
       background-color: #ffffff !important;
     }
+
     .table-dark-custom th {
       background-color: #fef3c7 !important;
       color: #0f172a !important;
       border-bottom: 2px solid #f59e0b !important;
       font-weight: 800 !important;
     }
+
     .table-dark-custom td {
       border-bottom: 1px solid #e2e8f0 !important;
       color: #0f172a !important;
@@ -66,14 +75,16 @@
     }
   </style>
 </head>
+
 <body>
   <div class="hr-app-container">
     <!-- Header Navbar -->
     <div class="hr-header">
       <div>
-        <a href="index.html" class="btn btn-outline-warning btn-sm mb-2"><i class="fa-solid fa-arrow-left me-1"></i> Back to Main Dashboard</a>
+        <a href="index.html" class="btn btn-outline-warning btn-sm mb-2"><i class="fa-solid fa-arrow-left me-1"></i>
+          Back to Main Dashboard</a>
         <h2 class="mb-0 text-warning"><i class="fa-solid fa-user-gear me-2"></i> HR & Multi-Bank Payroll Processing</h2>
-        <small class="text-muted">Southern Olive and Oil Product S.A.R.L. &bull; Enterprise Personnel & Banking Hub</small>
+        <small class="text-muted">Vanguard ERP System. &bull; Enterprise Personnel & Banking Hub</small>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-outline-warning fw-bold" onclick="openAddCustomBankModal()">
@@ -88,16 +99,20 @@
     <!-- HR Tabs -->
     <ul class="nav nav-tabs subnav-tabs mb-4" id="hrSubTabs">
       <li class="nav-item">
-        <button class="nav-link active" onclick="switchSubTab('hr', 'dir', this)"><i class="fa-solid fa-user-group me-1"></i> Personnel Directory</button>
+        <button class="nav-link active" onclick="switchSubTab('hr', 'dir', this)"><i
+            class="fa-solid fa-user-group me-1"></i> Personnel Directory</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('hr', 'schedule', this)"><i class="fa-solid fa-calendar-week me-1"></i> Shift Schedule</button>
+        <button class="nav-link" onclick="switchSubTab('hr', 'schedule', this)"><i
+            class="fa-solid fa-calendar-week me-1"></i> Shift Schedule</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('hr', 'attendance', this)"><i class="fa-solid fa-clock-rotate-left me-1"></i> Attendance Log</button>
+        <button class="nav-link" onclick="switchSubTab('hr', 'attendance', this)"><i
+            class="fa-solid fa-clock-rotate-left me-1"></i> Attendance Log</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchSubTab('hr', 'payroll', this)"><i class="fa-solid fa-money-check-dollar me-1"></i> Multi-Bank Payroll</button>
+        <button class="nav-link" onclick="switchSubTab('hr', 'payroll', this)"><i
+            class="fa-solid fa-money-check-dollar me-1"></i> Multi-Bank Payroll</button>
       </li>
     </ul>
 
@@ -107,19 +122,23 @@
         <div class="col-md-5">
           <div class="hr-card">
             <h5 class="text-warning mb-3"><i class="fa-solid fa-user-plus me-2"></i> Employee Profile Creator</h5>
-            <p class="text-muted small">Configure salary structures, designations, assigned departments, and banking details.</p>
+            <p class="text-muted small">Configure salary structures, designations, assigned departments, and banking
+              details.</p>
             <button class="btn btn-warning w-100 fw-bold py-2 mb-3" onclick="openDeptEmployeeModal('HR')">
               <i class="fa-solid fa-user-plus me-1"></i> Register New Employee Profile
             </button>
             <div class="p-3 bg-dark rounded border border-secondary">
               <h6 class="text-warning small fw-bold mb-2">Quick Department Templates:</h6>
-              <button class="btn btn-sm btn-outline-warning w-100 text-start mb-2" onclick="openDeptEmployeeModal('SocialMedia')">
+              <button class="btn btn-sm btn-outline-warning w-100 text-start mb-2"
+                onclick="openDeptEmployeeModal('SocialMedia')">
                 <i class="fa-solid fa-share-nodes me-2"></i> Add Social Media Agent
               </button>
-              <button class="btn btn-sm btn-outline-warning w-100 text-start mb-2" onclick="openDeptEmployeeModal('Fleet')">
+              <button class="btn btn-sm btn-outline-warning w-100 text-start mb-2"
+                onclick="openDeptEmployeeModal('Fleet')">
                 <i class="fa-solid fa-truck-fast me-2"></i> Add SuperSonic Fleet Driver
               </button>
-              <button class="btn btn-sm btn-outline-warning w-100 text-start" onclick="openDeptEmployeeModal('Factory')">
+              <button class="btn btn-sm btn-outline-warning w-100 text-start"
+                onclick="openDeptEmployeeModal('Factory')">
                 <i class="fa-solid fa-boxes-packing me-2"></i> Add Factory Plant Operator
               </button>
             </div>
@@ -181,10 +200,13 @@
     <!-- SUBPANEL 2: SHIFT SCHEDULE -->
     <div id="subpanel-hr-schedule" class="subpanel" style="display:none;">
       <div class="hr-card">
-        <h5 class="text-warning mb-3"><i class="fa-solid fa-calendar-week me-2"></i> Weekly Roster & Shift Allocations</h5>
-        <p class="text-muted small">Manage morning, afternoon, and night shift duties across olive press and distribution units.</p>
+        <h5 class="text-warning mb-3"><i class="fa-solid fa-calendar-week me-2"></i> Weekly Roster & Shift Allocations
+        </h5>
+        <p class="text-muted small">Manage morning, afternoon, and night shift duties across olive press and
+          distribution units.</p>
         <div class="alert alert-dark border-secondary">
-          <i class="fa-solid fa-circle-info text-warning me-2"></i> Shift roster for current week (Aug 10 - Aug 16, 2026) is published and locked.
+          <i class="fa-solid fa-circle-info text-warning me-2"></i> Shift roster for current week (Aug 10 - Aug 16,
+          2026) is published and locked.
         </div>
       </div>
     </div>
@@ -192,8 +214,10 @@
     <!-- SUBPANEL 3: ATTENDANCE LOG -->
     <div id="subpanel-hr-attendance" class="subpanel" style="display:none;">
       <div class="hr-card">
-        <h5 class="text-warning mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i> Biometric & Digital Attendance Log</h5>
-        <p class="text-muted small">Real-time check-in and check-out tracking linked directly to monthly payroll calculation.</p>
+        <h5 class="text-warning mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i> Biometric & Digital Attendance
+          Log</h5>
+        <p class="text-muted small">Real-time check-in and check-out tracking linked directly to monthly payroll
+          calculation.</p>
       </div>
     </div>
 
@@ -201,7 +225,8 @@
     <div id="subpanel-hr-payroll" class="subpanel" style="display:none;">
       <div class="hr-card">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          <h5 class="text-warning mb-0"><i class="fa-solid fa-money-check-dollar me-2"></i> Multi-Bank & Financial Wallet Payroll Engine</h5>
+          <h5 class="text-warning mb-0"><i class="fa-solid fa-money-check-dollar me-2"></i> Multi-Bank & Financial
+            Wallet Payroll Engine</h5>
           <div class="d-flex gap-2">
             <button class="btn btn-outline-warning fw-bold" onclick="openAddCustomBankModal()">
               <i class="fa-solid fa-plus me-1"></i> + Add Custom Bank / Wallet
@@ -215,12 +240,14 @@
         <div class="p-3 bg-dark rounded border border-secondary mb-4">
           <div class="row g-3 align-items-center">
             <div class="col-md-6">
-              <label class="form-label text-warning small fw-bold">Select Target Bank / Financial Wallet for Export:</label>
+              <label class="form-label text-warning small fw-bold">Select Target Bank / Financial Wallet for
+                Export:</label>
               <select id="hrBankSelect" class="form-select bank-wallet-select"></select>
             </div>
             <div class="col-md-6">
               <h6 class="text-white small mb-1">Supported Dynamic Banking Formats:</h6>
-              <small class="text-muted">BLOM Bank, Bank Audi, Wish Money, BOB/OMT, HSBC, Emirates NBD, Citi, & Custom File Exporter.</small>
+              <small class="text-muted">BLOM Bank, Bank Audi, Wish Money, BOB/OMT, HSBC, Emirates NBD, Citi, & Custom
+                File Exporter.</small>
             </div>
           </div>
         </div>
@@ -280,18 +307,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white border-warning">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-warning fw-bold"><i class="fa-solid fa-building-columns me-2"></i> + Add Custom Bank / Financial Wallet</h5>
+          <h5 class="modal-title text-warning fw-bold"><i class="fa-solid fa-building-columns me-2"></i> + Add Custom
+            Bank / Financial Wallet</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form id="addCustomBankForm" onsubmit="handleSaveCustomBankWallet(event)">
           <div class="modal-body p-4">
             <div class="mb-3">
               <label class="form-label text-white fw-bold">Bank / Financial Wallet Name</label>
-              <input type="text" id="customBankName" class="form-control" placeholder="e.g. Banque BEMO, Purpl Wallet, Revolut" required />
+              <input type="text" id="customBankName" class="form-control"
+                placeholder="e.g. Banque BEMO, Purpl Wallet, Revolut" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-white fw-bold">SWIFT / Routing / Provider Code</label>
-              <input type="text" id="customBankSwift" class="form-control" placeholder="e.g. BEMO LBBX, PURPL LB, REVO GB21" required />
+              <input type="text" id="customBankSwift" class="form-control"
+                placeholder="e.g. BEMO LBBX, PURPL LB, REVO GB21" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-white fw-bold">Institution Category</label>
@@ -314,7 +344,8 @@
           </div>
           <div class="modal-footer border-top border-secondary">
             <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-warning fw-bold"><i class="fa-solid fa-save me-1"></i> Save Bank / Wallet</button>
+            <button type="submit" class="btn btn-warning fw-bold"><i class="fa-solid fa-save me-1"></i> Save Bank /
+              Wallet</button>
           </div>
         </form>
       </div>
@@ -333,4 +364,5 @@
     }
   </script>
 </body>
+
 </html>

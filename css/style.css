@@ -1,7 +1,7 @@
 /* ==========================================================================
-   SOUTHERN OLIVE OIL PRODUCTS, S.A.R.L. - CLEAN SOUTHERN OLIVE DESIGN SYSTEM
+   Vanguard ERP System. - CLEAN Vanguard DESIGN SYSTEM
    Clean, Elegant, Spacious & Clutter-Free UI/UX (2016-2026 Evolution)
-   Official Brand: Southern Olive Oil Products, S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
+   Official Brand: Vanguard ERP System. (منتوجات زيت وزيتون الجنوب ش.م.م)
    Company ID: 001 | Support: 71801140 / +961 71 801140
    ========================================================================== */
 
@@ -70,7 +70,7 @@ html {
 }
 
 :root {
-  /* Vanguard SaaS & Southern Olive Master Light Theme */
+  /* Vanguard SaaS & Vanguard Master Light Theme */
   --app-bg: #f8fafc !important;
   /* Clean Off-White Base */
   --app-sidebar: #ffffff !important;
@@ -328,7 +328,7 @@ body.workspace-active {
   opacity: 1 !important;
 }
 
-/* Southern Olive Oil Products System Header - Gradient Amber Honey Gold */
+/* Vanguard ERP System System Header - Gradient Amber Honey Gold */
 #erp-app-workspace,
 .southern-top-header {
   margin-top: 0 !important;
@@ -709,7 +709,7 @@ body.main-dashboard-active .southern-action-bar {
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid #cbd5e1;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .void-modal-header {

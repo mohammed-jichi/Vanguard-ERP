@@ -1,5 +1,5 @@
 /**
- * SOUTHERN OLIVE AND OIL PRODUCTS SARL (منتوجات زيت وزيتون الجنوب ش.م.م)
+ * Vanguard AND OIL PRODUCTS SARL (منتوجات زيت وزيتون الجنوب ش.م.م)
  * Universal Real Interactive Reports Engine (Zero Placeholder Toasts)
  * System ID: southernlbpr
  */
@@ -321,7 +321,7 @@
         try {
           const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
           modal.show();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   };
@@ -398,7 +398,7 @@
     if (!activeReportData) return;
 
     let csvContent = 'data:text/csv;charset=utf-8,\uFEFF';
-    
+
     // Header title row
     csvContent += `"${activeReportData.title}"\n`;
     csvContent += `"Southern Olive & Oil Products SARL - System ID: southernlbpr"\n\n`;
@@ -450,14 +450,14 @@
     // Trigger direct downloadable PDF file
     const blob = new Blob([
       `===================================================\n` +
-      `SOUTHERN OLIVE & OIL PRODUCTS - OFFICIAL FINANCIAL REPORT\n` +
+      `Southern Olive & Oil Products - OFFICIAL FINANCIAL REPORT\n` +
       `Report: ${repTitle}\n` +
       `Date Generated: ${new Date().toLocaleString()}\n` +
       `System ID: southernlbpr\n` +
       `===================================================\n\n` +
       (printableArea.innerText || printableArea.textContent)
     ], { type: 'application/pdf' });
-    
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -485,25 +485,25 @@
   };
 
   // 8. Global Legacy Function Binds (Zero Placeholder Toasts)
-  window.generateStockVarianceReport = function() { window.openReportModal('stock_variance', 'Stock Variance & Physical Audit Report'); };
-  window.generateReorderGuideReport = function() { window.openReportModal('reorder_guide', 'Inventory Reorder Guide & Stock Depletion Report'); };
-  window.generateWastageReport = function() { window.openReportModal('lost_goods', 'Lost Goods, Wastage & Breakage Log'); };
-  window.generateBomReport = function() { window.openReportModal('bom_assembly', 'Production & BOM Assembly Log'); };
-  window.generateSalesSummaryReport = function() { window.openReportModal('sales_summary', 'Sales Summary & Detailed Invoices Register'); };
-  window.generateVoidsReport = function() { window.openReportModal('voids_refunds', 'Summary of Voids, Cancelations & Refunds Audit Log'); };
-  window.generateSalesZoneReport = function() { window.openReportModal('sales_zone', 'Sales by Geographical Zone & Product Breakdown'); };
-  window.generateTrialBalanceReport = function() { window.openReportModal('trial_balance', 'Trial Balance Report (ميزان المراجعة)'); };
-  window.generateIncomeStatementReport = function() { window.openReportModal('income_statement', 'Income Statement / Profit & Loss Report (P&L)'); };
-  window.generateBalanceSheetReport = function() { window.openReportModal('balance_sheet', 'Balance Sheet (الميزانية العمومية)'); };
-  window.generateStatementAccountReport = function() { window.openReportModal('statement_account', 'Statement of Customer Account (كشف حساب عميل)'); };
-  window.generateVatTaxReport = function() { window.openReportModal('vat_tax', 'Tax Summary & Ministry of Finance VAT Report'); };
-  window.generateAgedDebtorsReport = function() { window.openReportModal('aged_debtors', 'Aged Debtors & Accounts Receivable Breakdown'); };
-  window.generateCustomerInsightsReport = function() { window.openReportModal('customer_insights', 'Customer Insights, LTV & Complaints Audit Log'); };
-  window.generateFleetMileageReport = function() { window.openReportModal('fleet_mileage', 'Vehicle Trip Distance & Fuel Consumption Log'); };
-  window.generateCodSettlementReport = function() { window.openReportModal('cod_settlement', 'COD Cash Settlement & Driver Reconciliation Report'); };
-  window.generateOmnichannelReport = function() { window.openReportModal('omnichannel_inquiries', 'Omnichannel Social Media Inquiries & Conversion Audit'); };
-  window.generateCommissionsReport = function() { window.openReportModal('sales_commissions', 'Sales Representatives 5% Commission Report'); };
-  window.generateHrAttendanceReport = function() { window.openReportModal('hr_attendance', 'HR Attendance & Time Punch Log Report'); };
+  window.generateStockVarianceReport = function () { window.openReportModal('stock_variance', 'Stock Variance & Physical Audit Report'); };
+  window.generateReorderGuideReport = function () { window.openReportModal('reorder_guide', 'Inventory Reorder Guide & Stock Depletion Report'); };
+  window.generateWastageReport = function () { window.openReportModal('lost_goods', 'Lost Goods, Wastage & Breakage Log'); };
+  window.generateBomReport = function () { window.openReportModal('bom_assembly', 'Production & BOM Assembly Log'); };
+  window.generateSalesSummaryReport = function () { window.openReportModal('sales_summary', 'Sales Summary & Detailed Invoices Register'); };
+  window.generateVoidsReport = function () { window.openReportModal('voids_refunds', 'Summary of Voids, Cancelations & Refunds Audit Log'); };
+  window.generateSalesZoneReport = function () { window.openReportModal('sales_zone', 'Sales by Geographical Zone & Product Breakdown'); };
+  window.generateTrialBalanceReport = function () { window.openReportModal('trial_balance', 'Trial Balance Report (ميزان المراجعة)'); };
+  window.generateIncomeStatementReport = function () { window.openReportModal('income_statement', 'Income Statement / Profit & Loss Report (P&L)'); };
+  window.generateBalanceSheetReport = function () { window.openReportModal('balance_sheet', 'Balance Sheet (الميزانية العمومية)'); };
+  window.generateStatementAccountReport = function () { window.openReportModal('statement_account', 'Statement of Customer Account (كشف حساب عميل)'); };
+  window.generateVatTaxReport = function () { window.openReportModal('vat_tax', 'Tax Summary & Ministry of Finance VAT Report'); };
+  window.generateAgedDebtorsReport = function () { window.openReportModal('aged_debtors', 'Aged Debtors & Accounts Receivable Breakdown'); };
+  window.generateCustomerInsightsReport = function () { window.openReportModal('customer_insights', 'Customer Insights, LTV & Complaints Audit Log'); };
+  window.generateFleetMileageReport = function () { window.openReportModal('fleet_mileage', 'Vehicle Trip Distance & Fuel Consumption Log'); };
+  window.generateCodSettlementReport = function () { window.openReportModal('cod_settlement', 'COD Cash Settlement & Driver Reconciliation Report'); };
+  window.generateOmnichannelReport = function () { window.openReportModal('omnichannel_inquiries', 'Omnichannel Social Media Inquiries & Conversion Audit'); };
+  window.generateCommissionsReport = function () { window.openReportModal('sales_commissions', 'Sales Representatives 5% Commission Report'); };
+  window.generateHrAttendanceReport = function () { window.openReportModal('hr_attendance', 'HR Attendance & Time Punch Log Report'); };
   window.closeReportModal = function () {
     const modalEl = document.getElementById('universalReportModal');
     if (modalEl && window.bootstrap) {

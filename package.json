@@ -1,7 +1,7 @@
 {
   "name": "vanguard-erp",
   "version": "2.0.0",
-  "description": "Southern Olive Oil Products, S.A.R.L. - ERP Web Application Portal",
+  "description": "Vanguard ERP System. - ERP Web Application Portal",
   "scripts": {
     "dev": "next dev",
     "dev:static": "node server.js",

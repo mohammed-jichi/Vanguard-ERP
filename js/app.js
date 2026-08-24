@@ -1,5 +1,5 @@
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS SARL - PORTAL CONTROLLER
+ * Southern Olive & Oil Products SARL - PORTAL CONTROLLER
  * Handles views, forms, authentication flow, notifications, and language toggling.
  */
 
@@ -65,11 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
       brandNameEn: "Southern Olive & Oil Products SARL",
       brandNameAr: "منتوجات زيت وزيتون الجنوب ش.م.م",
       heroBadge: "Unified ERP System",
-      heroTitle: "Southern Olive ERP",
+      heroTitle: "Vanguard ERP",
       heroTagline: "Run your entire olive oil production & distribution business on one unified platform.",
       appLabel: "Now available as an app",
       appVisit: "Scan to download or visit: southernolive.com/app",
-      welcomeMsg: "Welcome to Southern Olive ERP",
+      welcomeMsg: "Welcome to Vanguard ERP",
       signInMsg: "Sign in to your account",
       companyId: "Company Id",
       companyIdPlaceholder: "Your License ID (e.g. 001)",
@@ -229,11 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
       brandNameEn: "Southern Olive & Oil Products SARL",
       brandNameAr: "منتوجات زيت وزيتون الجنوب ش.م.م",
       heroBadge: "Système ERP Unifié",
-      heroTitle: "Southern Olive ERP",
+      heroTitle: "Vanguard ERP",
       heroTagline: "Gérez l'ensemble de votre production et distribution d'huile d'olive sur une plateforme unifiée.",
       appLabel: "Maintenant disponible en application",
       appVisit: "Scannez pour télécharger ou visitez: southernolive.com/app",
-      welcomeMsg: "Bienvenue sur Southern Olive ERP",
+      welcomeMsg: "Bienvenue sur Vanguard ERP",
       signInMsg: "Connectez-vous à votre compte",
       companyId: "ID Société",
       companyIdPlaceholder: "Votre ID Client / Licence (ex: 001)",
@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try { initSignatureCanvas(); } catch (e) { }
     try { start30MinTimerLoop(); } catch (e) { }
 
-    showToast("Authenticated", `Welcome to Southern Olive ERP Workspace (${role}).`, "success");
+    showToast("Authenticated", `Welcome to Vanguard ERP Workspace (${role}).`, "success");
     return true;
   };
 
@@ -680,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 'inventory-brands', title: 'Inventory Brands & Vintage', icon: 'fa-award', category: 'Master Setup' },
     { id: 'saas-master', title: 'SaaS Master Tenant Licensing', icon: 'fa-key', category: 'Master Setup' },
 
-    // Primary Southern Olive Special Factory & Voice AI Modules
+    // Primary Vanguard Special Factory & Voice AI Modules
     { id: 'olive-press', title: '🫒 معصرة واستلام وإنتاج الزيت (Oil Press, Receive & Production)', icon: 'fa-seedling', category: 'معصرة واستلام الزيت (Oil Press)', keywords: ['معصرة', 'معصره', 'زيتون', 'عصر', 'حموضة', 'تنكة', 'زيت', 'استلام', 'كورة', 'kura', 'bkr', 'extra virgin', 'olive', 'press', 'receiving', 'oil', 'production'] },
     { id: 'vanguard-admin', title: '👑 لوحة تحكم المالِك الرئيسي (Vanguard SaaS Master Controller)', icon: 'fa-crown', category: 'Vanguard Software', keywords: ['vanguard', 'fanguard', 'فانغارد', 'فان جارد', 'ترخيص', 'admin', 'saas', 'master', 'controller', 'license'] },
     { id: 'vara-ai', title: '🎙️ فارا — المساعد الصوتي والذكاء الاصطناعي (Vara AI Assistant)', icon: 'fa-microphone', category: 'Vara Voice AI', keywords: ['فارا', 'vara', 'مساعد', 'صوت', 'ذكاء', 'صوتي', 'olive ai', 'ai', 'voice', 'assistant', 'mic'] }
@@ -2001,7 +2001,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (payloadContainer && activeSelectedOrderForWhatsApp) {
       payloadContainer.innerHTML = `
-        <strong>SOUTHERN OLIVE ORDER APPROVAL #1</strong><br/>
+        <strong>Vanguard ORDER APPROVAL #1</strong><br/>
         Order ID: ${activeSelectedOrderForWhatsApp.id}<br/>
         Customer: ${activeSelectedOrderForWhatsApp.customerName}<br/>
         Items: ${activeSelectedOrderForWhatsApp.items}<br/>
@@ -2128,7 +2128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stream.prepend(entryEl);
   };
 
-  // Southern Olive Oil Products, S.A.R.L. UI Navigation Handlers
+  // Vanguard ERP System. UI Navigation Handlers
   window.toggleSouthernSidebar = function () {
     const sidebar = document.getElementById('southernSidebar');
     if (sidebar) {
@@ -2192,7 +2192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetModule) {
       window.switchErpModule(targetModule);
     }
-    showToast("Southern Olive Products", `Switched active section tab: ${tabKey.toUpperCase()}`, "info");
+    showToast("Vanguard Products", `Switched active section tab: ${tabKey.toUpperCase()}`, "info");
   };
 
   window.switchErpModule = function (moduleKey) {
@@ -2358,7 +2358,7 @@ document.addEventListener('DOMContentLoaded', () => {
       directTarget.style.setProperty('display', 'block', 'important');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       const titleName = screenId.replace('-', ' ').toUpperCase();
-      showToast("Southern Olive Products", `Opened ${titleName} Workspace Screen`, "success");
+      showToast("Vanguard Products", `Opened ${titleName} Workspace Screen`, "success");
       return;
     }
 
@@ -2533,7 +2533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.switchErpModule(module);
       window.switchSubTab(subMod, tab);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      showToast("Southern Olive Products", `Opened ${screenId.replace('-', ' ').toUpperCase()} Screen Workspace`, "success");
+      showToast("Vanguard Products", `Opened ${screenId.replace('-', ' ').toUpperCase()} Screen Workspace`, "success");
       return;
     }
 
@@ -2572,7 +2572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast("Southern Olive Products", `Opened ${screenId.replace('-', ' ').toUpperCase()} Screen Workspace`, "success");
+    showToast("Vanguard Products", `Opened ${screenId.replace('-', ' ').toUpperCase()} Screen Workspace`, "success");
   };
 
   // Multi-Bank & Financial Wallet Payroll File Generator
@@ -3188,7 +3188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sqlViewer = document.getElementById('sqlSchemaContent');
     if (!sqlViewer) return;
     sqlViewer.innerHTML = `
--- SOUTHERN OLIVE & OIL PRODUCTS SARL - POSTGRESQL 15 + POSTGIS DDL SCHEMA
+-- Southern Olive & Oil Products SARL - POSTGRESQL 15 + POSTGIS DDL SCHEMA
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
@@ -3253,7 +3253,7 @@ CREATE INDEX idx_customers_gis ON customers USING GIST(location_coords);
     const codeViewer = document.getElementById('controllerCodeContent');
     if (!codeViewer) return;
     codeViewer.innerHTML = `
-// EXPRESS NODE.JS CONTROLLER - SOUTHERN OLIVE SUPERSONIC DISPATCH ENGINE
+// EXPRESS NODE.JS CONTROLLER - Vanguard SUPERSONIC DISPATCH ENGINE
 
 import { Request, Response } from 'express';
 import { db } from '../db/client';
@@ -3371,7 +3371,7 @@ export class DispatchController {
   // ==========================================
 
   // 1. Real PDF Export Generator
-  window.exportToPDF = function (title = "Southern Olive Report", targetId = null) {
+  window.exportToPDF = function (title = "Vanguard Report", targetId = null) {
     if (window.checkPermission && !window.checkPermission(null, 'exportRights')) {
       showToast("Access Denied", "Your active role does not have permission to export PDF data reports.", "error");
       return;
@@ -4232,7 +4232,7 @@ export class DispatchController {
     } else if (bank.format === "json") {
       const payload = {
         companyId: "001",
-        companyName: "Southern Olive and Oil Product S.A.R.L.",
+        companyName: "Vanguard ERP System.",
         processingBank: bank.name,
         swiftCode: bank.swiftCode,
         exportTimestamp: new Date().toISOString(),
@@ -4246,7 +4246,7 @@ export class DispatchController {
       content += `:20:PAYROLL-${Date.now()}\n`;
       content += `:23B:CRED\n`;
       content += `:32A:260831USD3020,00\n`;
-      content += `:50K:/001\nSOUTHERN OLIVE & OIL PRODUCTS SARL\n`;
+      content += `:50K:/001\nSouthern Olive & Oil Products SARL\n`;
       payrollData.forEach(r => {
         content += `:59:/${r.iban}\n${r.name}\n:70:SALARY AUGUST 2026 - ${r.dept}\n`;
       });
@@ -4299,7 +4299,7 @@ export class DispatchController {
   if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
     try {
       window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('Supabase Cloud Database Client initialized successfully for Southern Olive ERP.');
+      console.log('Supabase Cloud Database Client initialized successfully for Vanguard ERP.');
       setTimeout(function () {
         if (typeof window.fetchAndRenderSupabaseTenants === 'function') {
           window.fetchAndRenderSupabaseTenants();
@@ -4744,7 +4744,7 @@ window.openStandaloneAppsModal = function () {
   }
 };
 
-// SOUTHERN OLIVE DATA INTEGRATION HELPERS
+// Vanguard DATA INTEGRATION HELPERS
 window.triggerSouthernDataImport = function () {
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
@@ -4801,7 +4801,7 @@ window.triggerSouthernZReportExport = function () {
   }
 };
 
-// Southern Olive Data & Export Engine Aliases
+// Vanguard Data & Export Engine Aliases
 window.triggerSouthernImport = window.triggerSouthernDataImport;
 window.triggerSouthernExport = window.triggerSouthernZReportExport;
 window.SouthernBridge = window.SouthernOliveBridge;
@@ -5428,17 +5428,17 @@ document.addEventListener('click', function (e) {
 window.topBuyersData = [
   { id: 101, customer: 'Al Bustan General Trading', brand: 'Zeit w zaytoun ljanoub', group: 'Wholesale', transactions: 42, totalSpend: 148500.00, lastTx: '15-Aug-2026' },
   { id: 104, customer: 'Golden Olive Hotel & Resort', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 38, totalSpend: 124200.00, lastTx: '14-Aug-2026' },
-  { id: 108, customer: 'Cedar Fine Foods S.A.L.', brand: 'Southern Olive Premium', group: 'Wholesale', transactions: 31, totalSpend: 98750.00, lastTx: '12-Aug-2026' },
+  { id: 108, customer: 'Cedar Fine Foods S.A.L.', brand: 'Vanguard Premium', group: 'Wholesale', transactions: 31, totalSpend: 98750.00, lastTx: '12-Aug-2026' },
   { id: 112, customer: 'Riviera Restaurant & Lounge', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 29, totalSpend: 86400.00, lastTx: '11-Aug-2026' },
   { id: 115, customer: 'Beirut Gourmet Market', brand: 'Janoub Estate', group: 'Clients', transactions: 26, totalSpend: 74100.00, lastTx: '10-Aug-2026' },
-  { id: 119, customer: 'Mediterranean Delights Co', brand: 'Southern Olive Premium', group: 'GENERAL', transactions: 24, totalSpend: 68900.00, lastTx: '09-Aug-2026' },
+  { id: 119, customer: 'Mediterranean Delights Co', brand: 'Vanguard Premium', group: 'GENERAL', transactions: 24, totalSpend: 68900.00, lastTx: '09-Aug-2026' },
   { id: 122, customer: 'Tannourine Catering Services', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 21, totalSpend: 59300.00, lastTx: '08-Aug-2026' },
   { id: 125, customer: 'Zahle Oils & Fine Foods', brand: 'Janoub Estate', group: 'Clients', transactions: 19, totalSpend: 51200.00, lastTx: '06-Aug-2026' },
   { id: 129, customer: 'Baalbeck Supermarket', brand: 'Zeit w zaytoun ljanoub', group: 'GENERAL', transactions: 17, totalSpend: 44800.00, lastTx: '05-Aug-2026' },
-  { id: 133, customer: 'Sour Trading Co', brand: 'Southern Olive Premium', group: 'Wholesale', transactions: 15, totalSpend: 39500.00, lastTx: '03-Aug-2026' },
+  { id: 133, customer: 'Sour Trading Co', brand: 'Vanguard Premium', group: 'Wholesale', transactions: 15, totalSpend: 39500.00, lastTx: '03-Aug-2026' },
   { id: 137, customer: 'Byblos Food Services', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 14, totalSpend: 34100.00, lastTx: '01-Aug-2026' },
   { id: 140, customer: 'Tyre Specialty Market', brand: 'Janoub Estate', group: 'Clients', transactions: 12, totalSpend: 29800.00, lastTx: '28-Jul-2026' },
-  { id: 144, customer: 'Tripoli Emporium', brand: 'Southern Olive Premium', group: 'GENERAL', transactions: 11, totalSpend: 25400.00, lastTx: '25-Jul-2026' },
+  { id: 144, customer: 'Tripoli Emporium', brand: 'Vanguard Premium', group: 'GENERAL', transactions: 11, totalSpend: 25400.00, lastTx: '25-Jul-2026' },
   { id: 148, customer: 'Bhamdoun Bistro & Cafe', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 9, totalSpend: 19600.00, lastTx: '20-Jul-2026' },
   { id: 152, customer: 'Kaslik Olive Co', brand: 'Janoub Estate', group: 'VIP Accounts', transactions: 8, totalSpend: 16200.00, lastTx: '18-Jul-2026' }
 ];
@@ -5535,7 +5535,7 @@ window.filterCustomerInsightsByBrand = function (brandName) {
   showToast("Customer Insights", `Filtered customer insights by brand: ${brandName}`, "info");
 };
 
-// --- COMPREHENSIVE VANGUARD POS & SOUTHERN OLIVE SALES REPORTS SYSTEM ---
+// --- COMPREHENSIVE VANGUARD POS & Vanguard SALES REPORTS SYSTEM ---
 let recentlyViewedReports = [];
 try {
   recentlyViewedReports = JSON.parse(localStorage.getItem('so_recently_viewed_reports')) || [];
@@ -6523,7 +6523,7 @@ window.confirmExportReport = function () {
 
   const fileContent =
     `===================================================\n` +
-    `SOUTHERN OLIVE & OIL PRODUCTS - SALES CONTROL REPORT\n` +
+    `Southern Olive & Oil Products - SALES CONTROL REPORT\n` +
     `Report Name: ${currentActiveReportName}\n` +
     `Format: ${fmt}\n` +
     `System: Vanguard POS Software\n` +
@@ -7459,7 +7459,7 @@ window.VanguardSecurityEngine = {
         try {
           const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
           modal.show();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   };

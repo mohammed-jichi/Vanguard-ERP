@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
@@ -18,11 +19,13 @@
       height: 100vh;
       overflow: hidden;
     }
+
     .pos-standalone-container {
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
+
     .pos-standalone-header {
       background: #121814;
       border-bottom: 2px solid var(--olive-gold);
@@ -30,31 +33,38 @@
       flex-wrap: wrap;
       gap: 10px;
     }
+
     .pos-body-grid {
       display: grid;
       grid-template-columns: 1fr 380px;
       flex: 1;
       overflow: hidden;
     }
+
     @media (max-width: 991.98px) {
       .pos-body-grid {
         grid-template-columns: 1fr 320px;
       }
-      .pos-products-panel, .pos-cart-panel {
+
+      .pos-products-panel,
+      .pos-cart-panel {
         padding: 12px !important;
       }
     }
+
     @media (max-width: 767.98px) {
       .pos-body-grid {
         grid-template-columns: 1fr;
         overflow-y: auto;
       }
     }
+
     .pos-products-panel {
       padding: 20px;
       overflow-y: auto;
       background: #0f1319;
     }
+
     .pos-cart-panel {
       background: #171e27;
       border-left: 1px solid rgba(219, 177, 112, 0.2);
@@ -63,17 +73,23 @@
       padding: 20px;
       overflow: hidden;
     }
-    .pos-cart-panel span, .pos-cart-panel strong {
+
+    .pos-cart-panel span,
+    .pos-cart-panel strong {
       color: #f8fafc !important;
     }
-    .pos-cart-panel .text-warning, .pos-cart-panel .text-warning strong {
+
+    .pos-cart-panel .text-warning,
+    .pos-cart-panel .text-warning strong {
       color: #f59e0b !important;
     }
+
     .pos-cart-items-list {
       flex: 1;
       overflow-y: auto;
       margin-bottom: 15px;
     }
+
     .pos-product-touch-card {
       background: #1e2631;
       border: 1px solid rgba(219, 177, 112, 0.2);
@@ -82,11 +98,13 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+
     .pos-product-touch-card:hover {
       border-color: var(--olive-gold);
       transform: translateY(-2px);
       background: #25303e;
     }
+
     .pos-cat-scroll-container {
       display: flex !important;
       flex-wrap: nowrap !important;
@@ -95,6 +113,7 @@
       white-space: nowrap !important;
       padding-bottom: 4px !important;
     }
+
     .pos-cat-btn {
       border-radius: 20px;
       padding: 6px 16px;
@@ -102,54 +121,69 @@
       flex: 0 0 auto !important;
       white-space: nowrap !important;
     }
+
     .pos-cat-btn.active {
       background-color: var(--olive-gold) !important;
       color: #121814 !important;
       font-weight: 700;
     }
-    .form-select.bg-dark, .form-control.bg-dark {
+
+    .form-select.bg-dark,
+    .form-control.bg-dark {
       background-color: #1e2631 !important;
       color: #ffffff !important;
       -webkit-text-fill-color: #ffffff !important;
       border: 1px solid #475569 !important;
     }
+
     .form-select.bg-dark option {
       background-color: #1e2631 !important;
       color: #ffffff !important;
     }
   </style>
 </head>
+
 <body>
 
   <div class="pos-standalone-container">
     <!-- POS HEADER -->
     <header class="pos-standalone-header d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-3">
-        <img src="assets/images/logo.png" alt="Southern Olive Logo" height="46" class="circular-logo" />
+        <img src="assets/images/logo.png" alt="Vanguard Logo" height="46" class="circular-logo" />
         <div>
-          <h5 class="text-warning mb-0"><i class="fa-solid fa-cash-register me-2"></i> Southern Olive Oil Products, S.A.R.L. (License: <span class="displayCompanyId">001</span>)</h5>
-          <small class="text-muted">منتوجات زيت وزيتون الجنوب ش.م.م - محطة مبيعات الصندوق والتسليم | الدعم: 71801140</small>
+          <h5 class="text-warning mb-0"><i class="fa-solid fa-cash-register me-2"></i> Vanguard ERP System. (License:
+            <span class="displayCompanyId">001</span>)
+          </h5>
+          <small class="text-muted">منتوجات زيت وزيتون الجنوب ش.م.م - محطة مبيعات الصندوق والتسليم | الدعم:
+            71801140</small>
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-success p-2"><i class="fa-solid fa-circle me-1 fs-6"></i> Cashier Terminal #01 (Active)</span>
-        <button class="btn btn-sm btn-outline-info" onclick="if(window.opener&&window.opener.openCustomerBackScreenDisplay){window.opener.openCustomerBackScreenDisplay();}else{showToast('Back Display', 'Customer Back Screen Active', 'info');}"><i class="fa-solid fa-desktop me-1"></i> Back Display</button>
-        <button class="btn btn-sm btn-outline-warning" onclick="generateZReport()"><i class="fa-solid fa-print me-1"></i> Z-Report (EOD)</button>
+        <span class="badge bg-success p-2"><i class="fa-solid fa-circle me-1 fs-6"></i> Cashier Terminal #01
+          (Active)</span>
+        <button class="btn btn-sm btn-outline-info"
+          onclick="if(window.opener&&window.opener.openCustomerBackScreenDisplay){window.opener.openCustomerBackScreenDisplay();}else{showToast('Back Display', 'Customer Back Screen Active', 'info');}"><i
+            class="fa-solid fa-desktop me-1"></i> Back Display</button>
+        <button class="btn btn-sm btn-outline-warning" onclick="generateZReport()"><i
+            class="fa-solid fa-print me-1"></i> Z-Report (EOD)</button>
         <a href="index.html" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-house me-1"></i> Main ERP</a>
       </div>
     </header>
 
     <!-- POS BODY GRID -->
     <div class="pos-body-grid">
-      
+
       <!-- LEFT PRODUCTS SELECTION PANEL -->
       <div class="pos-products-panel">
         <div class="row g-2 mb-3">
           <div class="col-md-9">
-            <input type="text" id="posSearchInput" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="Scan Barcode / Custom Code / Search Product..." onkeyup="filterPOSProducts(this.value)" />
+            <input type="text" id="posSearchInput"
+              class="form-control form-control-lg bg-dark text-white border-secondary"
+              placeholder="Scan Barcode / Custom Code / Search Product..." onkeyup="filterPOSProducts(this.value)" />
           </div>
           <div class="col-md-3">
-            <button class="btn btn-lg btn-warning w-100 fw-bold" onclick="triggerBarcodeScanSim()"><i class="fa-solid fa-barcode me-1"></i> Scan</button>
+            <button class="btn btn-lg btn-warning w-100 fw-bold" onclick="triggerBarcodeScanSim()"><i
+                class="fa-solid fa-barcode me-1"></i> Scan</button>
           </div>
         </div>
 
@@ -205,7 +239,8 @@
             </button>
             <div class="d-flex gap-2">
               <button class="btn btn-primary w-50 fw-bold" onclick="processPOSPayment('Wish Money')">Wish Money</button>
-              <button class="btn btn-secondary w-50 fw-bold" onclick="processPOSPayment('Network Card')">Credit Card</button>
+              <button class="btn btn-secondary w-50 fw-bold" onclick="processPOSPayment('Network Card')">Credit
+                Card</button>
             </div>
           </div>
         </div>
@@ -232,4 +267,5 @@
     });
   </script>
 </body>
+
 </html>

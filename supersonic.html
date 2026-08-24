@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SuperSonic Delivery Driver App - Southern Olive Oil Products</title>
-  
+  <title>SuperSonic Delivery Driver App - Vanguard ERP System</title>
+
   <link rel="icon" href="/assets/images/logo.png" type="image/png" />
   <link rel="manifest" href="/manifest.json" />
 
@@ -21,7 +22,7 @@
 
   <!-- OpenGraph WhatsApp Preview Tags -->
   <meta property="og:title" content="SuperSonic Delivery Driver App" />
-  <meta property="og:description" content="Southern Olive Oil Products S.A.R.L. Field Delivery Driver & Dispatch Mobile App" />
+  <meta property="og:description" content="Vanguard ERP System Field Delivery Driver & Dispatch Mobile App" />
   <meta property="og:image" content="https://southern-olive-oil-products.vercel.app/assets/images/logo.png" />
   <meta property="og:url" content="https://southern-olive-oil-products.vercel.app/supersonic" />
   <meta property="og:type" content="website" />
@@ -42,16 +43,19 @@
       --accent-sky: #0ea5e9;
       --accent-red: #ef4444;
     }
+
     body {
       background-color: var(--bg-dark) !important;
       color: #ffffff !important;
       font-family: 'Cairo', sans-serif;
     }
+
     .supersonic-header {
       background: linear-gradient(135deg, #0e1910 0%, #162619 100%) !important;
       border-bottom: 2px solid var(--accent-gold) !important;
       padding: 14px 22px;
     }
+
     .status-pill {
       background: rgba(16, 185, 129, 0.15) !important;
       color: #34d399 !important;
@@ -61,7 +65,9 @@
       font-weight: 700;
       font-size: 0.85rem;
     }
-    .delivery-card, .erp-card {
+
+    .delivery-card,
+    .erp-card {
       background: var(--card-bg) !important;
       border: 1px solid var(--card-border) !important;
       border-radius: 16px !important;
@@ -71,15 +77,19 @@
       color: #ffffff !important;
       transition: all 0.25s ease-in-out;
     }
-    .delivery-card:hover, .erp-card:hover {
+
+    .delivery-card:hover,
+    .erp-card:hover {
       border-color: var(--accent-gold) !important;
       box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2) !important;
     }
+
     .active-client-card {
       border: 2px solid var(--accent-gold) !important;
       background: #152419 !important;
       box-shadow: 0 0 25px rgba(245, 158, 11, 0.25) !important;
     }
+
     .signature-pad-container {
       background: #050a06 !important;
       border: 2px dashed var(--accent-gold) !important;
@@ -87,12 +97,14 @@
       padding: 10px;
       text-align: center;
     }
+
     canvas {
       background: #ffffff;
       border-radius: 8px;
       cursor: crosshair;
       touch-action: none;
     }
+
     .shift-btn {
       font-weight: 700;
       font-size: 0.8rem;
@@ -100,35 +112,44 @@
       padding: 8px 14px;
       transition: all 0.2s;
     }
+
     /* HIGH CONTRAST TYPOGRAPHY OVERRIDES */
-    .text-muted, small.text-muted, .text-secondary {
+    .text-muted,
+    small.text-muted,
+    .text-secondary {
       color: #e2e8f0 !important;
       font-weight: 600 !important;
     }
+
     label.form-label {
       color: #f59e0b !important;
       font-weight: 700 !important;
     }
   </style>
 </head>
+
 <body>
 
   <!-- DEDICATED SUPERSONIC MOBILE DRIVER APP HEADER -->
   <header class="supersonic-header d-flex justify-content-between align-items-center gap-2 py-3 px-3">
     <div class="d-flex align-items-center gap-2">
-      <img src="assets/images/supersonic_driver_logo.png" alt="SuperSonic Driver App Logo" class="circular-logo shadow" style="height: 65px; width: 65px; object-fit: cover; border-radius: 12px; border: 2px solid #f59e0b;" />
+      <img src="assets/images/supersonic_driver_logo.png" alt="SuperSonic Driver App Logo" class="circular-logo shadow"
+        style="height: 65px; width: 65px; object-fit: cover; border-radius: 12px; border: 2px solid #f59e0b;" />
       <div>
         <h5 class="mb-0 font-black text-warning flex-wrap">
           <i class="fa-solid fa-truck-fast me-1"></i> SuperSonic Driver App
         </h5>
         <small class="text-white font-bold d-block" style="font-size: 0.8rem;">
-          منتوجات زيت وزيتون الجنوب | <i class="fa-solid fa-phone text-warning ms-1 me-1"></i><span class="text-warning">+961 79 083 417</span>
+          منتوجات زيت وزيتون الجنوب | <i class="fa-solid fa-phone text-warning ms-1 me-1"></i><span
+            class="text-warning">+961 79 083 417</span>
         </small>
       </div>
     </div>
-    
+
     <div class="d-flex align-items-center gap-2">
-      <button id="pwaInstallBtn" class="btn btn-success btn-sm font-bold shadow animate__animated animate__pulse animate__infinite px-3 py-1.5" onclick="installSuperSonicPWA()">
+      <button id="pwaInstallBtn"
+        class="btn btn-success btn-sm font-bold shadow animate__animated animate__pulse animate__infinite px-3 py-1.5"
+        onclick="installSuperSonicPWA()">
         <i class="fa-solid fa-download me-1"></i> تثبيت التطبيق 📲
       </button>
       <span class="status-pill d-none d-md-inline-block" id="currentDriverStatusPill">
@@ -138,7 +159,9 @@
   </header>
 
   <!-- WHATSAPP IN-APP BROWSER NOTICE BANNER -->
-  <div id="whatsappBrowserNotice" class="alert alert-warning border-2 border-warning d-none my-3 mx-4 shadow-lg rounded-4 text-dark" style="background: #fffbeb; border-left: 6px solid #f59e0b !important;">
+  <div id="whatsappBrowserNotice"
+    class="alert alert-warning border-2 border-warning d-none my-3 mx-4 shadow-lg rounded-4 text-dark"
+    style="background: #fffbeb; border-left: 6px solid #f59e0b !important;">
     <div class="d-flex align-items-center gap-2 mb-2">
       <i class="fa-brands fa-whatsapp fs-2 text-success"></i>
       <h6 class="fw-black mb-0 text-dark">
@@ -146,21 +169,25 @@
       </h6>
     </div>
     <p class="mb-2 fs-6 text-secondary font-bold">
-      متصفح الواتساب الداخلي يمنع تثبيت وتنزيل التطبيقات (PWA) على الشاشة الرئيسية للهاتف. لكي تتمكن من تنزيل وتثبيت <strong>تطبيق السائق (SuperSonic App)</strong>:
+      متصفح الواتساب الداخلي يمنع تثبيت وتنزيل التطبيقات (PWA) على الشاشة الرئيسية للهاتف. لكي تتمكن من تنزيل وتثبيت
+      <strong>تطبيق السائق (SuperSonic App)</strong>:
     </p>
     <ol class="mb-1 text-dark font-bold fs-6">
       <li>اضغط على <strong>النقاط الثلاث (⋮)</strong> في أعلى يمين أو يسار الشاشة.</li>
-      <li>اختر <strong>"فتح في Chrome" (Open in Chrome)</strong> على أجهزة Android، أو <strong>"فتح في Safari" (Open in Safari)</strong> على iPhone.</li>
-      <li>بعد الفتح في المتصفح الرئيسي، اضغط على <strong>"تثبيت التطبيق على الهاتف"</strong> أو من قائمة المتصفح <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.</li>
+      <li>اختر <strong>"فتح في Chrome" (Open in Chrome)</strong> على أجهزة Android، أو <strong>"فتح في Safari" (Open in
+          Safari)</strong> على iPhone.</li>
+      <li>بعد الفتح في المتصفح الرئيسي، اضغط على <strong>"تثبيت التطبيق على الهاتف"</strong> أو من قائمة المتصفح
+        <strong>"إضافة إلى الشاشة الرئيسية" (Add to Home Screen)</strong>.
+      </li>
     </ol>
   </div>
 
   <!-- MAIN DRIVER CONTAINER -->
   <main class="container-fluid py-4 px-4">
-    
+
     <!-- DRIVER TELEMETRY & SHIFT CONTROL STRIP -->
     <div class="row g-3 mb-4">
-      
+
       <!-- SHIFT CONTROL BUTTONS & VEHICLE OWNERSHIP SELECTOR -->
       <div class="col-lg-6">
         <div class="erp-card h-100 d-flex flex-column justify-content-between">
@@ -178,7 +205,8 @@
             <button class="btn btn-success shift-btn flex-fill font-bold shadow" onclick="departAndBroadcast()">
               <i class="fa-brands fa-whatsapp me-1 text-white fs-6"></i> 2. في الخدمة والإنطلاق (Departure & WhatsApp)
             </button>
-            <button class="btn btn-warning shift-btn flex-fill text-dark font-bold" id="btnReturnToBase" onclick="updateShiftState('Returning to Base')">
+            <button class="btn btn-warning shift-btn flex-fill text-dark font-bold" id="btnReturnToBase"
+              onclick="updateShiftState('Returning to Base')">
               <i class="fa-solid fa-rotate-left me-1"></i> 3. العودة للمركز
             </button>
             <button class="btn btn-outline-danger shift-btn flex-fill" onclick="updateShiftState('Shift Ended')">
@@ -189,8 +217,11 @@
           <!-- DYNAMIC VEHICLE OWNERSHIP SELECTOR -->
           <div class="p-2 rounded bg-black border border-secondary my-2">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <span class="small text-warning font-bold"><i class="fa-solid fa-truck-ramp-box me-1"></i> حالة/ملكية المركبة (Vehicle Ownership):</span>
-              <select id="vehicleOwnershipSelect" class="form-select form-select-sm bg-dark text-white border-warning w-auto font-bold" onchange="handleVehicleOwnershipChange(this.value)">
+              <span class="small text-warning font-bold"><i class="fa-solid fa-truck-ramp-box me-1"></i> حالة/ملكية
+                المركبة (Vehicle Ownership):</span>
+              <select id="vehicleOwnershipSelect"
+                class="form-select form-select-sm bg-dark text-white border-warning w-auto font-bold"
+                onchange="handleVehicleOwnershipChange(this.value)">
                 <option value="COMPANY_OWNED" selected>شركة - ملك (Company Owned)</option>
                 <option value="COMPANY_LEASED">شركة - مستأجرة (Company Leased)</option>
                 <option value="DRIVER_OWNED">سائق - ملك خاص (Driver Personal Owned)</option>
@@ -200,9 +231,12 @@
           </div>
 
           <div class="small text-light border-top border-secondary pt-2 mt-1 d-flex justify-content-between">
-            <span><i class="fa-solid fa-user me-1 text-info"></i> السائق: <strong class="text-white" id="driverDisplayName">أبو علي منصور</strong></span>
-            <span><i class="fa-solid fa-truck me-1 text-warning"></i> المركبة: <strong class="text-white" id="driverDisplayVehicle">فان غزال تبريد (M-4890)</strong></span>
-            <span><i class="fa-solid fa-user-tie me-1 text-success"></i> المندوب: <strong class="text-white">سامي الخوري (REP-04)</strong></span>
+            <span><i class="fa-solid fa-user me-1 text-info"></i> السائق: <strong class="text-white"
+                id="driverDisplayName">أبو علي منصور</strong></span>
+            <span><i class="fa-solid fa-truck me-1 text-warning"></i> المركبة: <strong class="text-white"
+                id="driverDisplayVehicle">فان غزال تبريد (M-4890)</strong></span>
+            <span><i class="fa-solid fa-user-tie me-1 text-success"></i> المندوب: <strong class="text-white">سامي الخوري
+                (REP-04)</strong></span>
           </div>
         </div>
       </div>
@@ -240,7 +274,8 @@
           </div>
 
           <div class="mt-3">
-            <button class="btn btn-warning btn-sm w-100 text-dark font-bold py-2 shadow-sm" onclick="openZReportModal()">
+            <button class="btn btn-warning btn-sm w-100 text-dark font-bold py-2 shadow-sm"
+              onclick="openZReportModal()">
               <i class="fa-solid fa-file-invoice-dollar me-2 fs-6"></i> تقرير تسوية الوردية الميداني (Z-Report Summary)
             </button>
           </div>
@@ -251,10 +286,10 @@
 
     <!-- MAIN ORDERS & STOCK ROW -->
     <div class="row g-4">
-      
+
       <!-- LEFT HANDOVER STOCK & FUEL LOG (CONDITIONAL VISIBILITY) -->
       <div class="col-lg-4">
-        
+
         <!-- COMPANY VEHICLE CONTAINER (SHOWS FOR COMPANY OWNED / LEASED) -->
         <div id="companyVehicleContainer">
           <!-- DRIVER ASSIGNED STOCK -->
@@ -293,15 +328,18 @@
 
           <!-- FUEL EXPENSE LOG -->
           <div class="erp-card" id="fuelLogCard">
-            <h6 class="text-warning font-bold mb-3"><i class="fa-solid fa-gas-pump me-2 text-danger"></i> سجل الوقود والمصروفات الميدانية</h6>
+            <h6 class="text-warning font-bold mb-3"><i class="fa-solid fa-gas-pump me-2 text-danger"></i> سجل الوقود
+              والمصروفات الميدانية</h6>
             <form onsubmit="event.preventDefault(); addFuelLog();">
               <div class="mb-3">
                 <label class="form-label text-warning small">كمية التعبئة (لتر)</label>
-                <input type="number" id="fuelLiters" class="form-control bg-dark text-white border-secondary" placeholder="40" required />
+                <input type="number" id="fuelLiters" class="form-control bg-dark text-white border-secondary"
+                  placeholder="40" required />
               </div>
               <div class="mb-3">
                 <label class="form-label text-warning small">التكلفة الإجمالية ($)</label>
-                <input type="number" id="fuelCost" class="form-control bg-dark text-white border-secondary" placeholder="32.00" step="0.01" required />
+                <input type="number" id="fuelCost" class="form-control bg-dark text-white border-secondary"
+                  placeholder="32.00" step="0.01" required />
               </div>
               <button type="submit" class="btn btn-outline-info w-100 font-bold">
                 <i class="fa-solid fa-floppy-disk me-1"></i> تسجيل مصاريف الوقود
@@ -315,7 +353,8 @@
           <i class="fa-solid fa-user-shield text-info fs-1 mb-2"></i>
           <h6 class="text-info font-bold mb-2">مركبة خاصة بالسائق (Driver Personal Vehicle)</h6>
           <p class="small text-light mb-0">
-            مصروفات الوقود والعهدة الميدانية خاصة بالسائق، وتتم المحاسبة عبر كلفة الدليفري المستحقة عن كل طلب، وتستثنى المركبة من سجل نفقات وعهدة الشركة المباشرة.
+            مصروفات الوقود والعهدة الميدانية خاصة بالسائق، وتتم المحاسبة عبر كلفة الدليفري المستحقة عن كل طلب، وتستثنى
+            المركبة من سجل نفقات وعهدة الشركة المباشرة.
           </p>
         </div>
 
@@ -323,25 +362,31 @@
 
       <!-- RIGHT SEQUENTIAL DELIVERIES QUEUE -->
       <div class="col-lg-8">
-        
+
         <div class="erp-card">
-          
+
           <!-- DYNAMIC ACTIVE CLIENT BANNER -->
-          <div class="p-3 mb-4 rounded-3 border border-warning" style="background: linear-gradient(135deg, #152417 0%, #1c3320 100%);" id="activeClientBanner">
+          <div class="p-3 mb-4 rounded-3 border border-warning"
+            style="background: linear-gradient(135deg, #152417 0%, #1c3320 100%);" id="activeClientBanner">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
               <h6 class="text-warning font-black mb-0 fs-5" id="activeClientTitle">
-                <i class="fa-solid fa-location-crosshairs text-success me-2"></i> الزبون الحالي المستهدف: [1 من 2] - تعاونية الشوف التجارية
+                <i class="fa-solid fa-location-crosshairs text-success me-2"></i> الزبون الحالي المستهدف: [1 من 2] -
+                تعاونية الشوف التجارية
               </h6>
-              <span class="badge bg-warning text-dark font-bold" id="activeClientBadge">في الطريق إلى الزبون (In Transit)</span>
+              <span class="badge bg-warning text-dark font-bold" id="activeClientBadge">في الطريق إلى الزبون (In
+                Transit)</span>
             </div>
-            
+
             <p class="small text-white mb-3" id="activeClientSub">
-              أرسل إشعار الوصول المباشر للزبون الحالي عبر الواتساب لتجهيز الاستلام، ثم سجل النتيجة للانتقال تلقائياً للزبون التالي.
+              أرسل إشعار الوصول المباشر للزبون الحالي عبر الواتساب لتجهيز الاستلام، ثم سجل النتيجة للانتقال تلقائياً
+              للزبون التالي.
             </p>
 
             <div class="d-flex gap-2 flex-wrap">
-              <button class="btn btn-success font-bold py-2 px-3 flex-fill" id="btnNotifyCurrentClient" onclick="notifyCurrentClient()">
-                <i class="fa-brands fa-whatsapp fs-5 me-2"></i> 📲 إرسال إشعار للزبون الحالي: <span id="lblCurrentClientBtn">تعاونية الشوف (أنا في الطريق إليك)</span>
+              <button class="btn btn-success font-bold py-2 px-3 flex-fill" id="btnNotifyCurrentClient"
+                onclick="notifyCurrentClient()">
+                <i class="fa-brands fa-whatsapp fs-5 me-2"></i> 📲 إرسال إشعار للزبون الحالي: <span
+                  id="lblCurrentClientBtn">تعاونية الشوف (أنا في الطريق إليك)</span>
               </button>
             </div>
           </div>
@@ -370,18 +415,21 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white border-warning">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-warning"><i class="fa-solid fa-user-plus me-2"></i> تعريف ملف سائق جديد (Add Driver Profile)</h5>
+          <h5 class="modal-title text-warning"><i class="fa-solid fa-user-plus me-2"></i> تعريف ملف سائق جديد (Add
+            Driver Profile)</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <form onsubmit="event.preventDefault(); saveNewDriverProfile();">
           <div class="modal-body p-4 space-y-3">
             <div class="mb-3">
               <label class="form-label text-warning small">اسم السائق الثلاثي</label>
-              <input type="text" id="newDriverName" class="form-control bg-black text-white border-secondary" placeholder="أبو علي منصور" required />
+              <input type="text" id="newDriverName" class="form-control bg-black text-white border-secondary"
+                placeholder="أبو علي منصور" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-warning small">نوع ورقم المركبة</label>
-              <input type="text" id="newDriverVehicle" class="form-control bg-black text-white border-secondary" placeholder="فان غزال (M-4890)" required />
+              <input type="text" id="newDriverVehicle" class="form-control bg-black text-white border-secondary"
+                placeholder="فان غزال (M-4890)" required />
             </div>
             <div class="mb-3">
               <label class="form-label text-warning small">حالة ملكية/تبعية المركبة (Vehicle Ownership Category)</label>
@@ -407,7 +455,8 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white border-warning">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-warning"><i class="fa-solid fa-signature me-2"></i> توقيع المستلم الرقمي (POD Signature)</h5>
+          <h5 class="modal-title text-warning"><i class="fa-solid fa-signature me-2"></i> توقيع المستلم الرقمي (POD
+            Signature)</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center">
@@ -418,7 +467,8 @@
         </div>
         <div class="modal-footer border-secondary">
           <button type="button" class="btn btn-outline-secondary" onclick="clearCanvas()">مسح التوقيع</button>
-          <button type="button" class="btn btn-success font-bold" onclick="saveSignature()">حفظ التوقيع وتأكيد الفاتورة</button>
+          <button type="button" class="btn btn-success font-bold" onclick="saveSignature()">حفظ التوقيع وتأكيد
+            الفاتورة</button>
         </div>
       </div>
     </div>
@@ -429,11 +479,12 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content bg-dark text-white border-success">
         <div class="modal-header border-secondary">
-          <h5 class="modal-title text-success font-black"><i class="fa-solid fa-file-invoice-dollar me-2"></i> تقرير تسوية الوردية التفصيلي للسائق (Driver Shift Z-Report)</h5>
+          <h5 class="modal-title text-success font-black"><i class="fa-solid fa-file-invoice-dollar me-2"></i> تقرير
+            تسوية الوردية التفصيلي للسائق (Driver Shift Z-Report)</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4">
-          
+
           <!-- DRIVER HEADER INFO -->
           <div class="p-3 bg-black rounded border border-success mb-3">
             <div class="row g-2 text-white">
@@ -452,7 +503,7 @@
           <h6 class="text-warning font-bold mb-2">
             <i class="fa-solid fa-list-check me-1 text-info"></i> بيان الطلبيات والتسليم وكلفة الدليفري المستحقة للسائق:
           </h6>
-          
+
           <div class="table-responsive mb-3">
             <table class="table table-dark table-bordered align-middle text-center mb-0 small">
               <thead class="table-success text-dark font-bold">
@@ -487,13 +538,15 @@
           </div>
 
           <p class="small text-light mt-3 mb-0">
-            <i class="fa-solid fa-shield-check text-success me-1"></i> يتم إرسال هذا التقرير التفصيلي مباشرة إلى قسم الحسابات والمدير العام عند إغلاق الوردية.
+            <i class="fa-solid fa-shield-check text-success me-1"></i> يتم إرسال هذا التقرير التفصيلي مباشرة إلى قسم
+            الحسابات والمدير العام عند إغلاق الوردية.
           </p>
 
         </div>
         <div class="modal-footer border-secondary">
           <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">إغلاق</button>
-          <button type="button" class="btn btn-success font-bold" onclick="finishShiftZReport()">إنهاء الوردية والترحيل للحسابات 📤</button>
+          <button type="button" class="btn btn-success font-bold" onclick="finishShiftZReport()">إنهاء الوردية والترحيل
+            للحسابات 📤</button>
         </div>
       </div>
     </div>
@@ -646,7 +699,7 @@
 
       const completedCount = clientOrders.filter(o => o.outcome !== 'Pending' && o.outcome !== 'In Transit').length;
       const totalCount = clientOrders.length;
-      
+
       if (remainingBadge) {
         remainingBadge.innerText = `${totalCount - completedCount} طلبات متبقية من أصل ${totalCount}`;
       }
@@ -678,16 +731,16 @@
       const client = clientOrders[currentClientIndex];
       const driverName = "أبو علي منصور (فان M-4890)";
       const repCompanyCode = "REP-04 (سامي الخوري)";
-      
+
       const msg = `مرحباً ${client.customerName}،\n` +
-                  `🚚 شاحنة التوصيل الخاصة بـ SuperSonic Delivery في الطريق إليكم الآن!\n` +
-                  `📍 العنوان: ${client.addressDetails}\n` +
-                  `👤 اسم السائق: ${driverName}\n` +
-                  `👤 كود المندوب: ${repCompanyCode}\n\n` +
-                  `يرجى التكرم بالاستعداد لاستلام الفاتورة رقم #${client.orderNumber}. شكراً لثقتكم!`;
+        `🚚 شاحنة التوصيل الخاصة بـ SuperSonic Delivery في الطريق إليكم الآن!\n` +
+        `📍 العنوان: ${client.addressDetails}\n` +
+        `👤 اسم السائق: ${driverName}\n` +
+        `👤 كود المندوب: ${repCompanyCode}\n\n` +
+        `يرجى التكرم بالاستعداد لاستلام الفاتورة رقم #${client.orderNumber}. شكراً لثقتكم!`;
 
       const waUrl = `https://wa.me/${client.phoneNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`;
-      
+
       alert(`تم تجهيز إشعار الوصول المباشر للزبون الحالي (${client.customerName}):\n----------------------------------------\n${msg}`);
       window.open(waUrl, '_blank');
     }
@@ -756,16 +809,16 @@
       const driverName = "أبو علي منصور (فان M-4890)";
       const repCompanyCode = "REP-04 (سامي الخوري)";
       const orderDetails = "شحنة منتوجات زيت وزيتون الجنوب SARL (جميع طلبات اليوم الميدانية)";
-      
+
       const msg = `مرحباً، تم انطلاق شاحنة التوصيل الخاصة بـ SuperSonic Delivery\n\n` +
-                  `🚛 اسم السائق: ${driverName}\n` +
-                  `📋 تفاصيل الطلب: ${orderDetails}\n` +
-                  `👤 كود المندوب بالشركة: ${repCompanyCode}\n\n` +
-                  `📍 شاحنة التوصيل في الطريق إليكم الآن. شكراً لثقتكم بمنتوجاتنا!`;
-      
+        `🚛 اسم السائق: ${driverName}\n` +
+        `📋 تفاصيل الطلب: ${orderDetails}\n` +
+        `👤 كود المندوب بالشركة: ${repCompanyCode}\n\n` +
+        `📍 شاحنة التوصيل في الطريق إليكم الآن. شكراً لثقتكم بمنتوجاتنا!`;
+
       const encoded = encodeURIComponent(msg);
       const waUrl = `https://wa.me/?text=${encoded}`;
-      
+
       alert(`تم تجهيز إشعار انطلاق الشاحنة الموحد عبر الواتساب:\n----------------------------------------\n${msg}`);
       window.open(waUrl, '_blank');
     }
@@ -902,4 +955,5 @@
     document.addEventListener('DOMContentLoaded', renderOrders);
   </script>
 </body>
+
 </html>

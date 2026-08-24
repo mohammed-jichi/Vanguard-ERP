@@ -1,6 +1,6 @@
 'use client';
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L.
+ * Vanguard ERP System
  * Receive & Production Main Export Wrapper
  */
 

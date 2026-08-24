@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
+ * Southern Olive & Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
  * Vanguard ERP — Products & Services Master Sub-System Component (<ProductMasterModal />)
  * 
  * Strict Technical Implementation Fulfilling All 4 Core Functional Sections:
@@ -12,35 +12,35 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Package, 
-  Tag, 
-  DollarSign, 
-  Layers, 
-  Warehouse, 
-  Lock, 
-  Save, 
-  X, 
-  AlertTriangle, 
-  QrCode, 
-  Printer, 
-  Upload, 
-  RefreshCw, 
-  Sliders, 
-  CheckCircle2, 
-  Calendar, 
-  Truck, 
-  FileText, 
-  ShieldAlert, 
-  Copy, 
-  Sparkles, 
-  Plus, 
-  Trash2, 
-  Eye, 
-  Download, 
-  Video, 
-  Scale, 
-  Grid 
+import {
+  Package,
+  Tag,
+  DollarSign,
+  Layers,
+  Warehouse,
+  Lock,
+  Save,
+  X,
+  AlertTriangle,
+  QrCode,
+  Printer,
+  Upload,
+  RefreshCw,
+  Sliders,
+  CheckCircle2,
+  Calendar,
+  Truck,
+  FileText,
+  ShieldAlert,
+  Copy,
+  Sparkles,
+  Plus,
+  Trash2,
+  Eye,
+  Download,
+  Video,
+  Scale,
+  Grid
 } from 'lucide-react';
 
 interface ProductMasterModalProps {
@@ -176,7 +176,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
     { id: 'BOM-1', nameAr: 'زيت زيتون خام غير مصفى (Raw Extra Virgin Oil)', unit: 'Liters', qty: 16.00, costPerUnitUsd: 2.50, isMainIngredient: true },
     { id: 'BOM-2', nameAr: 'تنكة معدنية خضراء صاج 16 لتر (Tin Can 16L)', unit: 'Piece', qty: 1.00, costPerUnitUsd: 1.80, isMainIngredient: false },
     { id: 'BOM-3', nameAr: 'سدادة بلاستيكية ضاغطة ومقبض (Plastic Cap & Handle)', unit: 'Piece', qty: 1.00, costPerUnitUsd: 0.15, isMainIngredient: false },
-    { id: 'BOM-4', nameAr: 'لاصق وعلامة تجارية فاخرة (Southern Olive Brand Label)', unit: 'Piece', qty: 1.00, costPerUnitUsd: 0.25, isMainIngredient: false },
+    { id: 'BOM-4', nameAr: 'لاصق وعلامة تجارية فاخرة (Vanguard Brand Label)', unit: 'Piece', qty: 1.00, costPerUnitUsd: 0.25, isMainIngredient: false },
     { id: 'BOM-5', nameAr: 'زيت نتروجين لحفظ النكهة (Food Grade Nitrogen Injection)', unit: 'Dose', qty: 0.042, costPerUnitUsd: 2.00, isMainIngredient: false }
   ]);
   const [newBomName, setNewBomName] = useState<string>('');
@@ -281,13 +281,13 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
   return (
     <div dir="rtl" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      
+
       {/* PERSISTENT MODAL CONTAINER SHELL */}
       <div className="bg-[#142013] border-2 border-[#2b3e2a] rounded-2xl w-full max-w-6xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
-        
+
         {/* 1. PERSISTENT HEADER WITH LOCKED ITEM NAME & ID DISPLAY */}
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b-2 border-amber-500 p-4 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 shadow-lg">
-          
+
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-amber-400 text-slate-950 rounded-xl flex items-center justify-center shadow-lg font-black border border-amber-300">
               <Package className="w-7 h-7 text-slate-950" />
@@ -347,47 +347,43 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
         {/* 2. TAB ARCHITECTURE NAVIGATION BAR */}
         <div className="bg-[#1c2b1a] border-b border-[#2b3e2a] px-4 py-2 flex flex-wrap items-center gap-2 shrink-0">
-          
+
           <button
             onClick={() => setActiveTab('tab1')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
-              activeTab === 'tab1'
-                ? 'bg-amber-400 text-slate-950 shadow-lg border border-amber-300'
-                : 'bg-[#243522] text-amber-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
-            }`}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'tab1'
+              ? 'bg-amber-400 text-slate-950 shadow-lg border border-amber-300'
+              : 'bg-[#243522] text-amber-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
+              }`}
           >
             <DollarSign className="w-4 h-4" /> 1. البيانات والمالية (Data & Cost Matrix)
           </button>
 
           <button
             onClick={() => setActiveTab('tab2')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
-              activeTab === 'tab2'
-                ? 'bg-emerald-500 text-white shadow-lg border border-emerald-300'
-                : 'bg-[#243522] text-emerald-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
-            }`}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'tab2'
+              ? 'bg-emerald-500 text-white shadow-lg border border-emerald-300'
+              : 'bg-[#243522] text-emerald-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
+              }`}
           >
             <Warehouse className="w-4 h-4" /> 2. جرد الفروع وإعادة الطلب (QTOH & Reorder)
           </button>
 
           <button
             onClick={() => setActiveTab('tab3')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
-              activeTab === 'tab3'
-                ? 'bg-sky-500 text-white shadow-lg border border-sky-300'
-                : 'bg-[#243522] text-sky-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
-            }`}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'tab3'
+              ? 'bg-sky-500 text-white shadow-lg border border-sky-300'
+              : 'bg-[#243522] text-sky-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
+              }`}
           >
             <Upload className="w-4 h-4" /> 3. الوسائط والرموز الجمركية (Media & Customs)
           </button>
 
           <button
             onClick={() => setActiveTab('tab4')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
-              activeTab === 'tab4'
-                ? 'bg-purple-500 text-white shadow-lg border border-purple-300'
-                : 'bg-[#243522] text-purple-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
-            }`}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === 'tab4'
+              ? 'bg-purple-500 text-white shadow-lg border border-purple-300'
+              : 'bg-[#243522] text-purple-300 hover:bg-[#2b3e2a] border border-[#3b5438]'
+              }`}
           >
             <Printer className="w-4 h-4" /> 4. تركيبات BOM والبار كود (BOM & Print Utility)
           </button>
@@ -396,11 +392,11 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
         {/* 3. TAB CONTENT BODY (SCROLLABLE CONTAINER) */}
         <div className="p-4 md:p-6 overflow-y-auto space-y-6 flex-grow">
-          
+
           {/* TAB 1: ITEM DATA & FINANCIAL LOGIC */}
           {activeTab === 'tab1' && (
             <div className="space-y-6">
-              
+
               {/* CLASSIFICATION & DESCRIPTIONS CARD */}
               <div className="bg-[#1c2b1a] border-2 border-[#2b3e2a] rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 className="text-sm font-black text-amber-400 flex items-center gap-2 border-b border-[#2b3e2a] pb-2">
@@ -480,7 +476,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                       onChange={(e) => setBrandId(e.target.value)}
                       className="w-full bg-[#0a1209] border border-[#3b5438] rounded-xl p-2.5 text-white font-bold focus:border-amber-400 focus:outline-none"
                     >
-                      <option value="BRAND-001">منتوجات زيت وزيتون الجنوب (Southern Olive)</option>
+                      <option value="BRAND-001">منتوجات زيت وزيتون الجنوب (Vanguard)</option>
                       <option value="BRAND-002">معاصر الجنوب الذهبية (Golden Olive Press)</option>
                       <option value="BRAND-003">مزارع صور والبقاع (Tyre & Bekaa Farms)</option>
                     </select>
@@ -549,7 +545,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  
+
                   {/* BUYING UNIT */}
                   <div className="bg-[#0a1209] border border-[#3b5438] rounded-xl p-3 space-y-2">
                     <span className="text-slate-300 font-bold block">وحدة الشراء (Buying Unit)</span>
@@ -621,7 +617,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
               {/* DUAL-CURRENCY COST MATRIX & TIERED PRICING CARD */}
               <div className="bg-[#1c2b1a] border-2 border-[#2b3e2a] rounded-2xl p-5 space-y-4 shadow-xl">
-                
+
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2b3e2a] pb-2">
                   <h3 className="text-sm font-black text-sky-400 flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-sky-400" /> مصفوفة التكلفة المزدوجة والأسعار الأربعة (Cost & 4-Tier Pricing)
@@ -675,7 +671,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
                 {/* OPEN MARKUP & TIERED PRICING TABLE */}
                 <div className="space-y-3">
-                  
+
                   <div className="flex items-center justify-between bg-[#243522] p-2.5 rounded-xl border border-[#3b5438]">
                     <span className="text-xs font-bold text-amber-300">نسبة هامش الربح المفتوح (Open Markup %):</span>
                     <div className="flex items-center gap-2">
@@ -701,7 +697,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#2b3e2a] text-white">
-                        
+
                         {/* SP1 RETAIL */}
                         <tr>
                           <td className="p-2.5 font-bold text-emerald-400">سعر المفرق الرئيسي (SP1 - Retail)</td>
@@ -801,7 +797,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
           {/* TAB 2: LIVE QTOH MATRIX & SCHEDULED REORDERING */}
           {activeTab === 'tab2' && (
             <div className="space-y-6">
-              
+
               {/* LIVE QTOH MATRIX TABLE CARD */}
               <div className="bg-[#1c2b1a] border-2 border-[#2b3e2a] rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2 border-b border-[#2b3e2a] pb-2">
@@ -875,7 +871,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 {/* DAY OF WEEK SCHEDULER */}
                 <div className="bg-[#0a1209] border border-[#3b5438] rounded-xl p-4 space-y-3">
                   <span className="text-xs font-bold text-amber-300 block">جدولة أيام التوليد التلقائي لأوامر الشراء (Reorder Day Scheduler):</span>
-                  
+
                   <div className="flex flex-wrap gap-3 text-xs font-bold">
                     {[
                       { key: 'mon', name: 'الإثنين' },
@@ -914,7 +910,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
           {/* TAB 3: MEDIA STRICTNESS & CUSTOMS CODES */}
           {activeTab === 'tab3' && (
             <div className="space-y-6">
-              
+
               {/* MEDIA STRICTNESS CARD (200KB & 225x225 Guideline Check) */}
               <div className="bg-[#1c2b1a] border-2 border-[#2b3e2a] rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 className="text-sm font-black text-sky-400 flex items-center gap-2 border-b border-[#2b3e2a] pb-2">
@@ -922,11 +918,11 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                  
+
                   {/* UPLOAD & PREVIEW */}
                   <div className="space-y-3">
                     <label className="block text-slate-300 font-bold">صورة المنتج الرئيسية (Primary Product Image)</label>
-                    
+
                     <div className="border-2 border-dashed border-[#3b5438] bg-[#0a1209] rounded-xl p-4 text-center space-y-3">
                       {imagePreview ? (
                         <div className="relative w-36 h-36 mx-auto bg-black rounded-lg overflow-hidden border border-amber-400">
@@ -1038,10 +1034,10 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
           {/* TAB 4: BOM ASSEMBLY & PRO-PRINT ENGINE */}
           {activeTab === 'tab4' && (
             <div className="space-y-6">
-              
+
               {/* FRACTIONAL MANUFACTURING & COMPONENT LOCKING CARD */}
               <div className="bg-[#1c2b1a] border-2 border-[#2b3e2a] rounded-2xl p-5 space-y-4 shadow-xl">
-                
+
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2b3e2a] pb-2">
                   <h3 className="text-sm font-black text-purple-400 flex items-center gap-2">
                     <Grid className="w-4 h-4 text-purple-400" /> جدول تركيبات BOM والكسور الدقيقة (BOM Fractional Manufacturing)
@@ -1173,7 +1169,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                  
+
                   {/* PRINT CONFIG FORM */}
                   <div className="space-y-4">
                     <div>
@@ -1240,7 +1236,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                     <div className="bg-white text-black p-4 rounded-lg max-w-[240px] mx-auto shadow-2xl space-y-1">
                       <h4 className="font-black text-xs leading-tight">{itemNameAr}</h4>
                       <p className="text-[9px] font-bold text-slate-700">{itemNameEn}</p>
-                      
+
                       {/* BARCODE DRAW */}
                       <div className="py-2">
                         <div className="bg-slate-950 h-10 w-full rounded flex items-center justify-center text-white font-mono text-xs font-bold tracking-widest">
@@ -1270,7 +1266,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
       {safeguardModalType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-[#142013] border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-white space-y-4 shadow-2xl">
-            
+
             <div className="flex items-center gap-3 text-red-400">
               <ShieldAlert className="w-8 h-8 shrink-0" />
               <div>

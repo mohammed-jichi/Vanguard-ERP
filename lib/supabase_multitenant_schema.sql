@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- 3. INSERT DEFAULT MASTER SUPER ADMIN COMPANY
 INSERT INTO public.companies (id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'Southern Olive Master Enterprise', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive & Oil Products', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 'Vanguard Master Enterprise', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive & Oil Products', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. ADD company_id TO ALL CORE TABLES

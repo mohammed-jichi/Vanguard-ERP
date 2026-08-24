@@ -1,5 +1,5 @@
 /**
- * SOUTHERN OLIVE ERP - BACKEND AI AGENTS ENGINE
+ * Vanguard ERP - BACKEND AI AGENTS ENGINE
  * Event-Driven Architecture with 4 Autonomous AI Agents working without human intervention:
  * 1. Lead Routing Agent (Landing page order routing, Rep Agent_ID binding, 30-min timer, commission transfer)
  * 2. Inventory & Production Sync Agent (BOM assembly recipes, raw material deduction, finished goods stock credit)
@@ -133,7 +133,7 @@ window.SouthernOliveAI = (function () {
 
       const notifications = orders.map(ord => {
         const eta = (routeName.includes('Beirut') || routeName.includes('Choueifat')) ? '1-3 Days' : '3-5 Days';
-        const msg = `Dear ${ord.customerName}, your Southern Olive order #${ord.id} is ON THE WAY with Driver ${driverName} (+961 70 123456). Total: $${ord.totalAmount} (${ord.paymentMethod}). Track Live: https://southernolive.com/track?id=${ord.id}`;
+        const msg = `Dear ${ord.customerName}, your Vanguard order #${ord.id} is ON THE WAY with Driver ${driverName} (+961 70 123456). Total: $${ord.totalAmount} (${ord.paymentMethod}). Track Live: https://southernolive.com/track?id=${ord.id}`;
 
         logAgentEvent(this.name, 'WHATSAPP_SENT', `Sent automated WhatsApp notice to ${ord.phone} (ETA: ${eta}).`);
         return { phone: ord.phone, message: msg };
@@ -180,7 +180,7 @@ window.SouthernOliveAI = (function () {
 
   // AGENT 5: Gemini WhatsApp Sales Bot (Autonomous Sales & Order Intake Agent)
   const GeminiWhatsAppSalesBot = {
-    name: 'Southern Olive AI Assistant',
+    name: 'Vanguard AI Assistant',
     role: 'WhatsApp Sales & Order Intake Bot',
 
     // Product Catalog (Read-Only via Supabase PostgreSQL / Local Fallback)

@@ -1,6 +1,6 @@
 'use client';
 /**
- * SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L. / VANGUARD ERP
+ * Vanguard ERP System
  * Multi-Tenant Context & Dynamic UI Branding Provider
  */
 

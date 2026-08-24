@@ -1,9 +1,9 @@
 /**
- * SOUTHERN OLIVE ERP - PWA & SHORTCUT APP HANDLER
+ * Vanguard ERP - PWA & SHORTCUT APP HANDLER
  * Manages service worker registration, PWA install prompts, device auto-detection, and smart role-based app installation.
  */
 
-window.SouthernOlivePWA = (function() {
+window.SouthernOlivePWA = (function () {
   let deferredPrompt = null;
 
   function init() {
@@ -58,7 +58,7 @@ window.SouthernOlivePWA = (function() {
     window.addEventListener('appinstalled', () => {
       deferredPrompt = null;
       if (window.showToast) {
-        window.showToast("App Installed", "Southern Olive ERP shortcut installed successfully!", "success");
+        window.showToast("App Installed", "Vanguard ERP shortcut installed successfully!", "success");
       }
     });
   }
@@ -116,7 +116,7 @@ window.SouthernOlivePWA = (function() {
 })();
 
 // Global Sub-App Sharing & Installation Helpers for Mobile & Tablets
-window.shareSubApp = function(appUrl, appTitle) {
+window.shareSubApp = function (appUrl, appTitle) {
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '::1';
   const liveProductionOrigin = 'https://southern-olive-oil-products.vercel.app';
   const baseOrigin = isLocalhost ? liveProductionOrigin : window.location.origin;
@@ -142,15 +142,15 @@ window.shareSubApp = function(appUrl, appTitle) {
   }
 };
 
-window.installSubApp = function(appUrl, appTitle) {
+window.installSubApp = function (appUrl, appTitle) {
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '::1';
   const liveProductionOrigin = 'https://southern-olive-oil-products.vercel.app';
   const baseOrigin = isLocalhost ? liveProductionOrigin : window.location.origin;
   const cleanAppPath = appUrl.startsWith('/') ? appUrl : '/' + appUrl;
   const fullUrl = baseOrigin + cleanAppPath;
-  
+
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(fullUrl).catch(() => {});
+    navigator.clipboard.writeText(fullUrl).catch(() => { });
   }
 
   // Check if browser native PWA installation prompt is ready

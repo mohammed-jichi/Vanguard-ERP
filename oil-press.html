@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <script>
     localStorage.setItem('so_authenticated', 'true');
@@ -12,17 +13,21 @@
   <link rel="stylesheet" href="/css/style.css?v=4.0" />
   <style>
     body {
-      background-color: #2b3e2a !important; /* Olive Green Background */
+      background-color: #2b3e2a !important;
+      /* Olive Green Background */
       color: #000000 !important;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     .oil-app-container {
       max-width: 1100px;
       margin: 0 auto;
       padding: 16px;
     }
+
     .oil-card {
-      background: #2b3e2a !important; /* Olive Green Box */
+      background: #2b3e2a !important;
+      /* Olive Green Box */
       border: 3px solid #84a98c !important;
       border-radius: 16px;
       padding: 24px;
@@ -30,6 +35,7 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
       color: #000000 !important;
     }
+
     .subnav-tabs {
       background: #1c2b1a;
       padding: 8px;
@@ -41,16 +47,20 @@
       -webkit-overflow-scrolling: touch !important;
       white-space: nowrap !important;
     }
+
     .subnav-tabs::-webkit-scrollbar {
       height: 4px;
     }
+
     .subnav-tabs::-webkit-scrollbar-thumb {
       background: #84a98c;
       border-radius: 4px;
     }
+
     .subnav-tabs .nav-item {
       flex: 0 0 auto !important;
     }
+
     .subnav-tabs .nav-link {
       color: #1e293b !important;
       background: #ffffff !important;
@@ -62,40 +72,51 @@
       padding: 10px 18px;
       white-space: nowrap !important;
     }
+
     .subnav-tabs .nav-link.active {
       color: #000000 !important;
-      background-color: #fefae0 !important; /* Cream color tab */
+      background-color: #fefae0 !important;
+      /* Cream color tab */
       border: 2px solid #2b3e2a !important;
       font-weight: 900 !important;
       opacity: 1 !important;
     }
+
     .so-res-card {
-      background: #fefae0 !important; /* Cream color box */
+      background: #fefae0 !important;
+      /* Cream color box */
       border: 2px solid #ccd5ae !important;
       padding: 14px;
       border-radius: 10px;
       color: #000000 !important;
     }
+
     .so-small {
       display: block;
       font-size: 0.85rem;
       color: #000000 !important;
       font-weight: 700;
     }
+
     .stock-banner {
-      background: #fefae0 !important; /* Cream color banner */
+      background: #fefae0 !important;
+      /* Cream color banner */
       border: 2px solid #84a98c !important;
       border-radius: 12px;
       padding: 14px 18px;
       margin-bottom: 20px;
       color: #000000 !important;
     }
-    label, .form-label {
+
+    label,
+    .form-label {
       color: #000000 !important;
       font-weight: 800 !important;
       font-size: 0.95rem;
     }
-    .form-control, .form-select {
+
+    .form-control,
+    .form-select {
       background-color: #ffffff !important;
       color: #000000 !important;
       -webkit-text-fill-color: #000000 !important;
@@ -103,6 +124,7 @@
       border: 2px solid #354b32 !important;
       opacity: 1 !important;
     }
+
     .form-control::placeholder {
       color: #475569 !important;
       -webkit-text-fill-color: #475569 !important;
@@ -110,20 +132,26 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="oil-app-container">
     <!-- APP HEADER BAR -->
-    <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 p-3 rounded-4" style="background: #2b3e2a; border: 3px solid #84a98c;">
+    <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 p-3 rounded-4"
+      style="background: #2b3e2a; border: 3px solid #84a98c;">
       <div class="d-flex align-items-center gap-3">
-        <img src="assets/images/logo.png" alt="Southern Olive Logo" height="52" class="circular-logo" />
+        <img src="assets/images/logo.png" alt="Vanguard Logo" height="52" class="circular-logo" />
         <div>
-          <h4 class="mb-0 fw-bold" style="color: #fefae0 !important;"><i class="fa-solid fa-seedling me-2"></i> مركز الاستلام والإنتاج -- منتوجات زيت وزيتون الجنوب</h4>
-          <small style="color: #ccd5ae !important; font-weight: 600;">Receive & Production Center -- Southern Oil & Olive Products S.A.R.L.</small>
+          <h4 class="mb-0 fw-bold" style="color: #fefae0 !important;"><i class="fa-solid fa-seedling me-2"></i> مركز
+            الاستلام والإنتاج -- منتوجات زيت وزيتون الجنوب</h4>
+          <small style="color: #ccd5ae !important; font-weight: 600;">Receive & Production Center -- Southern Oil &
+            Olive Products S.A.R.L.</small>
         </div>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="index.html" class="btn btn-sm fw-bold" style="background: #fefae0; color: #000000; border: 2px solid #354b32;"><i class="fa-solid fa-house me-1"></i> العودة للنظام الرئيسي (ERP)</a>
+        <a href="index.html" class="btn btn-sm fw-bold"
+          style="background: #fefae0; color: #000000; border: 2px solid #354b32;"><i class="fa-solid fa-house me-1"></i>
+          العودة للنظام الرئيسي (ERP)</a>
       </div>
     </header>
 
@@ -159,8 +187,9 @@
     <!-- TAB 1: RECEIVING RAW OIL (ACTIVE DEFAULT TAB) -->
     <div id="tab-receiving" class="tab-pane active">
       <div class="oil-card">
-        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-oil-can me-2"></i> استلام وتفريغ زيت بالوزن (كجم / kg) بالخزانات الخام</h5>
-        
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-oil-can me-2"></i> استلام
+          وتفريغ زيت بالوزن (كجم / kg) بالخزانات الخام</h5>
+
         <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
           <div class="row g-3 mb-3">
             <div class="col-md-6">
@@ -172,7 +201,11 @@
                   <option value="مزارع صيدا وحاصبيا">مزارع صيدا وحاصبيا</option>
                   <option value="مزارع صور والناقورة">مزارع صور والناقورة</option>
                 </select>
-                <button class="btn fw-bold" style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 800;" type="button" onclick="addNewVendorPrompt()"><i class="fa-solid fa-plus me-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">إضافة (Add)</span></button>
+                <button class="btn fw-bold"
+                  style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 800;"
+                  type="button" onclick="addNewVendorPrompt()"><i class="fa-solid fa-plus me-1"
+                    style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">إضافة
+                    (Add)</span></button>
               </div>
             </div>
             <div class="col-md-6">
@@ -202,7 +235,9 @@
         </div>
 
         <div class="text-end mt-3">
-          <button type="button" class="btn fw-bold px-4" style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="saveReceiving()"><i class="fa-solid fa-circle-check me-1"></i> تأكيد الاستلام وتحديث مخزون كجم</button>
+          <button type="button" class="btn fw-bold px-4"
+            style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="saveReceiving()"><i
+              class="fa-solid fa-circle-check me-1"></i> تأكيد الاستلام وتحديث مخزون كجم</button>
         </div>
       </div>
     </div>
@@ -210,8 +245,9 @@
     <!-- TAB 2: PRODUCTION -->
     <div id="tab-production" class="tab-pane" style="display: none;">
       <div class="oil-card">
-        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-boxes-packing me-2"></i> خلط وسحب الزيت بالخصم (كجم / kg) وتحديد التعبئة</h5>
-        
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-boxes-packing me-2"></i> خلط
+          وسحب الزيت بالخصم (كجم / kg) وتحديد التعبئة</h5>
+
         <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
           <div class="row g-3 mb-3">
             <div class="col-md-4">
@@ -230,21 +266,29 @@
 
           <div class="mt-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <label class="form-label mb-0 fw-bold" style="color: #000000 !important;">طرق وأعداد التعبئة والتغليف المنتجة (تحديد أعداد العبوات لعدة أصناف بنفس الوقت)</label>
-              <button type="button" class="btn btn-sm fw-bold" style="background: #2b3e2a; color: #ffffff; border: 1px solid #1c2b1a;" onclick="window.SouthernOliveBridge.addNewPackagingItemPrompt()"><i class="fa-solid fa-plus me-1"></i> إضافة للمخزون</button>
+              <label class="form-label mb-0 fw-bold" style="color: #000000 !important;">طرق وأعداد التعبئة والتغليف
+                المنتجة (تحديد أعداد العبوات لعدة أصناف بنفس الوقت)</label>
+              <button type="button" class="btn btn-sm fw-bold"
+                style="background: #2b3e2a; color: #ffffff; border: 1px solid #1c2b1a;"
+                onclick="window.SouthernOliveBridge.addNewPackagingItemPrompt()"><i class="fa-solid fa-plus me-1"></i>
+                إضافة للمخزون</button>
             </div>
-            <div id="appMultiPackList" class="p-2 rounded-3" style="background: #fefae0; border: 1px solid #84a98c; max-height: 240px; overflow-y: auto;">
+            <div id="appMultiPackList" class="p-2 rounded-3"
+              style="background: #fefae0; border: 1px solid #84a98c; max-height: 240px; overflow-y: auto;">
               <!-- Dynamically Injected Multi Packaging Rows -->
             </div>
           </div>
         </div>
 
-        <div id="appProdResultBox" class="p-3 rounded-3 mb-3" style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
+        <div id="appProdResultBox" class="p-3 rounded-3 mb-3"
+          style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
           <!-- Live production calculations -->
         </div>
 
         <div class="text-end">
-          <button type="button" class="btn fw-bold px-4" style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="executeProd()"><i class="fa-solid fa-gears me-1"></i> تنفيذ السحب والإنتاج وتحديث الخزانات</button>
+          <button type="button" class="btn fw-bold px-4"
+            style="background: #fefae0; color: #000000; border: 2px solid #354b32;" onclick="executeProd()"><i
+              class="fa-solid fa-gears me-1"></i> تنفيذ السحب والإنتاج وتحديث الخزانات</button>
         </div>
       </div>
     </div>
@@ -252,27 +296,34 @@
     <!-- TAB 3: PRODUCTION DELIVERY (MULTI-ITEM SELECTION TO SUPERSONIC HUB) -->
     <div id="tab-handover" class="tab-pane" style="display: none;">
       <div class="oil-card">
-        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-truck-fast me-2"></i> تسليم وترحيل الإنتاج إلى شركة SuperSonic (SuperSonic Delivery & Stock Handover)</h5>
-        
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-truck-fast me-2"></i> تسليم
+          وترحيل الإنتاج إلى شركة SuperSonic (SuperSonic Delivery & Stock Handover)</h5>
+
         <div class="p-3 mb-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae;">
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <label class="form-label">جهة التوصيل / مستودع شركة SuperSonic المستهدف</label>
               <select id="appHandoverBranchSelect" class="form-select">
-                <option value="المستودع الرئيسي لشركة SuperSonic - بيروت والشويفات">المستودع الرئيسي لشركة SuperSonic - بيروت والشويفات</option>
-                <option value="مستودع شركة SuperSonic - فرع الجنوب وصيدا">مستودع شركة SuperSonic - فرع الجنوب وصيدا</option>
-                <option value="مستودع شركة SuperSonic - فرع البقاع وزحلة">مستودع شركة SuperSonic - فرع البقاع وزحلة</option>
+                <option value="المستودع الرئيسي لشركة SuperSonic - بيروت والشويفات">المستودع الرئيسي لشركة SuperSonic -
+                  بيروت والشويفات</option>
+                <option value="مستودع شركة SuperSonic - فرع الجنوب وصيدا">مستودع شركة SuperSonic - فرع الجنوب وصيدا
+                </option>
+                <option value="مستودع شركة SuperSonic - فرع البقاع وزحلة">مستودع شركة SuperSonic - فرع البقاع وزحلة
+                </option>
               </select>
             </div>
             <div class="col-md-6">
               <label class="form-label">وصف وملاحظات شحنة التسليم (Delivery Batch Description / Notes)</label>
-              <input type="text" id="appHandoverClient" class="form-control" placeholder="أدخل تفاصيل الشحنة والملاحظات اللوجستية..." />
+              <input type="text" id="appHandoverClient" class="form-control"
+                placeholder="أدخل تفاصيل الشحنة والملاحظات اللوجستية..." />
             </div>
           </div>
 
           <!-- MULTI-ITEM QUANTITY HANDOVER SELECTION -->
           <div class="mt-3">
-            <label class="form-label mb-2 fw-bold" style="color: #000000 !important;"><i class="fa-solid fa-boxes-stacked me-1"></i> الكمية المسلمة والمرحلة حسب الصنف والعبوة (تحديد الكمية لعدة أصناف بنفس الوقت):</label>
+            <label class="form-label mb-2 fw-bold" style="color: #000000 !important;"><i
+                class="fa-solid fa-boxes-stacked me-1"></i> الكمية المسلمة والمرحلة حسب الصنف والعبوة (تحديد الكمية لعدة
+              أصناف بنفس الوقت):</label>
             <div id="appMultiHandoverList" class="p-3 rounded-3 bg-white border border-success">
               <div class="row g-2 align-items-center mb-2 pb-2 border-bottom">
                 <div class="col-md-7">
@@ -280,7 +331,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="تنكة كاملة خضير (15.2 كجم)" data-kg="15.2" value="10" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="تنكة كاملة خضير (15.2 كجم)" data-kg="15.2" value="10" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -291,7 +344,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="تنكة كاملة فيرجن (15.2 كجم)" data-kg="15.2" value="5" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="تنكة كاملة فيرجن (15.2 كجم)" data-kg="15.2" value="5" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -302,7 +357,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="نصف تنكة خضير (7.8 كجم)" data-kg="7.8" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="نصف تنكة خضير (7.8 كجم)" data-kg="7.8" value="0" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -313,7 +370,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="نصف تنكة فيرجن (7.8 كجم)" data-kg="7.8" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="نصف تنكة فيرجن (7.8 كجم)" data-kg="7.8" value="0" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -324,7 +383,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="غالون بلاستيك 5 لتر (4.5 كجم)" data-kg="4.5" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="غالون بلاستيك 5 لتر (4.5 كجم)" data-kg="4.5" value="0" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -335,7 +396,9 @@
                 </div>
                 <div class="col-md-5 d-flex items-center gap-2">
                   <span class="small font-bold text-muted text-nowrap">الكمية المسلمة:</span>
-                  <input type="number" class="form-control form-control-sm handover-item-qty" data-item="قنينة زجاج 1 لتر (1.09 كجم)" data-kg="1.09" value="0" min="0" oninput="recalcMultiHandover()" />
+                  <input type="number" class="form-control form-control-sm handover-item-qty"
+                    data-item="قنينة زجاج 1 لتر (1.09 كجم)" data-kg="1.09" value="0" min="0"
+                    oninput="recalcMultiHandover()" />
                   <span class="small font-bold">عبوة</span>
                 </div>
               </div>
@@ -343,17 +406,22 @@
           </div>
         </div>
 
-        <div id="appHandoverResultBox" class="p-3 rounded-3 mb-3" style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
+        <div id="appHandoverResultBox" class="p-3 rounded-3 mb-3"
+          style="background: #fefae0; border: 2px solid #84a98c; color: #000000;">
           <!-- Live Handover Calculations -->
         </div>
 
         <div class="text-end mb-4">
-          <button type="button" class="btn fw-bold px-4" style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 900;" onclick="saveHandover()"><i class="fa-solid fa-paper-plane me-1" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">تأكيد تحويل وتسليم الشحنة لشركة SuperSonic</span></button>
+          <button type="button" class="btn fw-bold px-4"
+            style="background: #16a34a; color: #ffffff !important; border: 2px solid #14532d; font-weight: 900;"
+            onclick="saveHandover()"><i class="fa-solid fa-paper-plane me-1" style="color: #ffffff !important;"></i>
+            <span style="color: #ffffff !important;">تأكيد تحويل وتسليم الشحنة لشركة SuperSonic</span></button>
         </div>
 
         <!-- RECENT DISPATCHES LOG TABLE -->
         <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
-          <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-clock-rotate-left me-2"></i> سجل الشحنات المسلمة والمحولة لقسم إدارة التوصيل (Delivery Management Stock Audit):</h6>
+          <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-clock-rotate-left me-2"></i>
+            سجل الشحنات المسلمة والمحولة لقسم إدارة التوصيل (Delivery Management Stock Audit):</h6>
           <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle mb-0 text-center">
               <thead style="background: #2b3e2a; color: #ffffff;">
@@ -378,27 +446,32 @@
     <!-- TAB 4: INVENTORY BALANCE (WITH 4 INNER SUB-TABS) -->
     <div id="tab-inventory" class="tab-pane" style="display: none;">
       <div class="oil-card">
-        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-warehouse me-2"></i> جرد ورصيد المستودع والأسطول (Inventory Balance & Audit)</h5>
+        <h5 class="fw-bold mb-3" style="color: #fefae0 !important;"><i class="fa-solid fa-warehouse me-2"></i> جرد ورصيد
+          المستودع والأسطول (Inventory Balance & Audit)</h5>
 
         <!-- 4 INNER SUB-TABS NAV BAR -->
         <ul class="nav nav-pills mb-4 p-2 rounded-3" style="background: #ffffff; border: 2px solid #84a98c; gap: 6px;">
           <li class="nav-item flex-fill">
-            <button class="nav-link w-100 active fw-bold border" id="subtabStockBtn" onclick="switchInventorySubtab('stock', this)">
+            <button class="nav-link w-100 active fw-bold border" id="subtabStockBtn"
+              onclick="switchInventorySubtab('stock', this)">
               <i class="fa-solid fa-boxes-stacked me-1"></i> جرد المخزون (Stock)
             </button>
           </li>
           <li class="nav-item flex-fill">
-            <button class="nav-link w-100 fw-bold border text-dark" id="subtabLogBtn" onclick="switchInventorySubtab('log', this)">
+            <button class="nav-link w-100 fw-bold border text-dark" id="subtabLogBtn"
+              onclick="switchInventorySubtab('log', this)">
               <i class="fa-solid fa-clock-rotate-left me-1"></i> سجل الحركات (Log)
             </button>
           </li>
           <li class="nav-item flex-fill">
-            <button class="nav-link w-100 fw-bold border text-dark" id="subtabSupersonicBtn" onclick="switchInventorySubtab('supersonic', this)">
+            <button class="nav-link w-100 fw-bold border text-dark" id="subtabSupersonicBtn"
+              onclick="switchInventorySubtab('supersonic', this)">
               <i class="fa-solid fa-truck-fast me-1"></i> جرد الأسطول (Supersonic)
             </button>
           </li>
           <li class="nav-item flex-fill">
-            <button class="nav-link w-100 fw-bold border text-danger" id="subtabAlertsBtn" onclick="switchInventorySubtab('alerts', this)">
+            <button class="nav-link w-100 fw-bold border text-danger" id="subtabAlertsBtn"
+              onclick="switchInventorySubtab('alerts', this)">
               <i class="fa-solid fa-triangle-exclamation me-1"></i> تنبيهات نقص المخزون (Alerts)
             </button>
           </li>
@@ -408,21 +481,24 @@
         <div id="invSubtabStock">
           <div class="row g-3 mb-4">
             <div class="col-md-4">
-              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+              <div class="p-3 rounded-3 text-center"
+                style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
                 <small class="fw-bold text-muted d-block mb-1">زيت كورة خام (كجم)</small>
                 <strong id="invKuraKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
                 <small id="invKuraTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
               </div>
             </div>
             <div class="col-md-4">
-              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+              <div class="p-3 rounded-3 text-center"
+                style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
                 <small class="fw-bold text-muted d-block mb-1">زيت ممتاز خام EVOO (كجم)</small>
                 <strong id="invEvooKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
                 <small id="invEvooTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
               </div>
             </div>
             <div class="col-md-4">
-              <div class="p-3 rounded-3 text-center" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
+              <div class="p-3 rounded-3 text-center"
+                style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
                 <small class="fw-bold text-muted d-block mb-1">زيت نخيل خام (كجم)</small>
                 <strong id="invPalmKg" class="fs-4 d-block my-1" style="color: #2b3e2a;">0.0 kg</strong>
                 <small id="invPalmTins" class="fw-bold text-dark">(0.0 تنكة كاملة 15.2kg)</small>
@@ -431,7 +507,8 @@
           </div>
 
           <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
-            <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-boxes-packing me-2"></i> قائمة أصناف وسعات التعبئة والتغليف بالمخزون:</h6>
+            <h6 class="fw-bold mb-3" style="color: #000000 !important;"><i class="fa-solid fa-boxes-packing me-2"></i>
+              قائمة أصناف وسعات التعبئة والتغليف بالمخزون:</h6>
             <div class="table-responsive">
               <table class="table table-bordered table-striped align-middle mb-0 text-center">
                 <thead style="background: #2b3e2a; color: #ffffff;">
@@ -486,7 +563,8 @@
         <!-- SUBTAB 3: SUPERSONIC (جرد الأسطول) -->
         <div id="invSubtabSupersonic" style="display: none;">
           <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
-            <h6 class="fw-bold mb-3"><i class="fa-solid fa-truck-fast me-2"></i> عهدة ومخزون أسطول وسائقي شركة SuperSonic:</h6>
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-truck-fast me-2"></i> عهدة ومخزون أسطول وسائقي شركة
+              SuperSonic:</h6>
             <div class="row g-3">
               <div class="col-md-4">
                 <div class="p-3 rounded-3 bg-white border border-primary">
@@ -525,7 +603,8 @@
         <!-- SUBTAB 4: ALERTS (تنبيهات نقص المخزون) -->
         <div id="invSubtabAlerts" style="display: none;">
           <div class="p-3 rounded-3" style="background: #fefae0; border: 2px solid #ccd5ae; color: #000000;">
-            <h6 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> تنبيهات نقص المخزون وتجاوز الحد الأدنى:</h6>
+            <h6 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> تنبيهات نقص
+              المخزون وتجاوز الحد الأدنى:</h6>
             <div class="alert alert-warning d-flex justify-content-between align-items-center mb-2 font-bold">
               <div>
                 <strong>نصف تنكة خضير (7.8 كجم)</strong>
@@ -659,7 +738,7 @@
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.subnav-tabs .nav-link').forEach(el => el.classList.remove('active'));
-      
+
       const targetPane = document.getElementById('tab-' + tabId);
       if (targetPane) targetPane.style.display = 'block';
       if (btn) btn.classList.add('active');
@@ -717,7 +796,7 @@
             return `<option value="${val}">${label}</option>`;
           }).join('');
         }
-      } catch(e) {}
+      } catch (e) { }
     }
 
     function addNewVendorPrompt() {
@@ -803,12 +882,12 @@
       let handovers = [];
       try {
         handovers = JSON.parse(localStorage.getItem('so_delivery_handovers') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       let deliveryReceivedStock = [];
       try {
         deliveryReceivedStock = JSON.parse(localStorage.getItem('so_delivery_management_received_stock') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       const record = {
         id: 'HO-' + Date.now(),
@@ -842,7 +921,7 @@
       let list = [];
       try {
         list = JSON.parse(localStorage.getItem('so_delivery_handovers') || '[]');
-      } catch(e) {}
+      } catch (e) { }
 
       if (list.length === 0) {
         list = [
@@ -893,4 +972,5 @@
     });
   </script>
 </body>
+
 </html>

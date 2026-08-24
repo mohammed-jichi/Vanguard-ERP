@@ -1,5 +1,5 @@
 -- ============================================================================
--- SOUTHERN OLIVE & OIL PRODUCTS S.A.R.L. - SUPABASE DATABASE SCHEMA & TRIGGERS
+-- Vanguard ERP System - SUPABASE DATABASE SCHEMA & TRIGGERS
 -- Module: Receive & Production Center (Oil Press, Receive & Production)
 -- ============================================================================
 

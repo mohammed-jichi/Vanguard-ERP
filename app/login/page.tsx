@@ -23,7 +23,6 @@ export default function LoginPage() {
       <div className="hidden lg:flex absolute top-[30%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center">
         <Link
           href="/request-demo"
-          target="_blank"
           title="Request an Enterprise Demo"
           className="relative flex items-center justify-center group cursor-pointer"
         >

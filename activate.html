@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Account Activation & Password Setup | Southern Olive & Oil Products SARL</title>
-  
+
   <!-- Favicon -->
   <link rel="icon" href="assets/images/logo.png" type="image/png" />
 
   <!-- Google Fonts & Font Awesome 6 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- Bootstrap 5 CSS -->
@@ -70,20 +73,24 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- TRILINGUAL LANGUAGE SWITCHER -->
   <div class="lang-switcher-top d-flex gap-2">
-    <button type="button" class="btn btn-sm btn-outline-warning lang-pill active" data-lang="en" onclick="setActivationLang('en')">EN</button>
-    <button type="button" class="btn btn-sm btn-outline-warning lang-pill" data-lang="ar" onclick="setActivationLang('ar')">عربي</button>
-    <button type="button" class="btn btn-sm btn-outline-warning lang-pill" data-lang="fr" onclick="setActivationLang('fr')">FR</button>
+    <button type="button" class="btn btn-sm btn-outline-warning lang-pill active" data-lang="en"
+      onclick="setActivationLang('en')">EN</button>
+    <button type="button" class="btn btn-sm btn-outline-warning lang-pill" data-lang="ar"
+      onclick="setActivationLang('ar')">عربي</button>
+    <button type="button" class="btn btn-sm btn-outline-warning lang-pill" data-lang="fr"
+      onclick="setActivationLang('fr')">FR</button>
   </div>
 
   <div class="activation-card text-center">
-    
+
     <!-- BRAND LOGO & HEADER -->
-    <img src="assets/images/logo.png" alt="Southern Olive Logo" class="brand-logo-hero mb-3" />
-    <h3 class="fw-bold text-white mb-1" id="actHeading">Welcome to Southern Olive ERP</h3>
+    <img src="assets/images/logo.png" alt="Vanguard Logo" class="brand-logo-hero mb-3" />
+    <h3 class="fw-bold text-white mb-1" id="actHeading">Welcome to Vanguard ERP</h3>
     <p class="text-warning small mb-3">منتوجات زيت وزيتون الجنوب ش.م.م - تفعيل حساب الموظف الجديد</p>
 
     <!-- INVITATION TOKEN & EMPLOYEE BADGE -->
@@ -118,22 +125,27 @@
     <!-- ACTIVATION & PASSWORD SETUP FORM -->
     <form id="activationForm" onsubmit="event.preventDefault(); submitActivation();">
       <div class="text-start mb-3">
-        <label class="form-label text-white small" id="lblNewPass">Set New Password <span class="text-danger">*</span></label>
+        <label class="form-label text-white small" id="lblNewPass">Set New Password <span
+            class="text-danger">*</span></label>
         <div class="input-group">
           <span class="input-group-text bg-dark border-secondary text-warning"><i class="fa-solid fa-lock"></i></span>
-          <input type="password" id="actPassword" class="form-control bg-dark text-white border-secondary" required placeholder="Minimum 8 characters" minlength="6" />
+          <input type="password" id="actPassword" class="form-control bg-dark text-white border-secondary" required
+            placeholder="Minimum 8 characters" minlength="6" />
         </div>
       </div>
 
       <div class="text-start mb-4">
-        <label class="form-label text-white small" id="lblConfirmPass">Confirm New Password <span class="text-danger">*</span></label>
+        <label class="form-label text-white small" id="lblConfirmPass">Confirm New Password <span
+            class="text-danger">*</span></label>
         <div class="input-group">
           <span class="input-group-text bg-dark border-secondary text-warning"><i class="fa-solid fa-lock"></i></span>
-          <input type="password" id="actConfirmPassword" class="form-control bg-dark text-white border-secondary" required placeholder="Re-enter password" minlength="6" />
+          <input type="password" id="actConfirmPassword" class="form-control bg-dark text-white border-secondary"
+            required placeholder="Re-enter password" minlength="6" />
         </div>
       </div>
 
-      <button type="submit" id="btnActivateSubmit" class="btn btn-warning w-100 py-2.5 fw-bold text-dark fs-6 shadow-sm">
+      <button type="submit" id="btnActivateSubmit"
+        class="btn btn-warning w-100 py-2.5 fw-bold text-dark fs-6 shadow-sm">
         <i class="fa-solid fa-user-check me-2"></i> Activate Account & Install App
       </button>
     </form>
@@ -154,7 +166,8 @@
   </div>
 
   <footer class="mt-4 text-center">
-    <small class="text-muted">&copy; 2026 Southern Olive & Oil Products SARL (منتوجات زيت وزيتون الجنوب ش.م.م). All rights reserved.</small>
+    <small class="text-muted">&copy; 2026 Southern Olive & Oil Products SARL (منتوجات زيت وزيتون الجنوب ش.م.م). All
+      rights reserved.</small>
   </footer>
 
   <!-- Bootstrap 5 JS Bundle -->
@@ -168,7 +181,7 @@
 
     const actI18n = {
       en: {
-        actHeading: "Welcome to Southern Olive ERP",
+        actHeading: "Welcome to Vanguard ERP",
         lblEmpName: "Employee Name:",
         lblEmpEmail: "Email Address:",
         lblEmpDept: "Department Scope:",
@@ -188,7 +201,7 @@
         btnActivateSubmit: "تفعيل الحساب وتثبيت التطبيق"
       },
       fr: {
-        actHeading: "Bienvenue sur Southern Olive ERP",
+        actHeading: "Bienvenue sur Vanguard ERP",
         lblEmpName: "Nom de l'employé:",
         lblEmpEmail: "Adresse e-mail:",
         lblEmpDept: "Domaine de département:",
@@ -203,7 +216,7 @@
       currentLang = lang;
       document.documentElement.setAttribute('lang', lang);
       document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-      
+
       document.querySelectorAll('.lang-pill').forEach(btn => {
         if (btn.getAttribute('data-lang') === lang) btn.classList.add('active');
         else btn.classList.remove('active');
@@ -232,11 +245,11 @@
     let matchedEmp = null;
     try {
       const storeEmployees = JSON.parse(localStorage.getItem('so_employees') || '[]');
-      matchedEmp = storeEmployees.find(e => 
+      matchedEmp = storeEmployees.find(e =>
         (token && (e.invToken === token || e.id === token)) ||
         (paramEmail && e.email === paramEmail)
       );
-    } catch(err) {}
+    } catch (err) { }
 
     // Final Dynamic Employee Attributes
     const empName = matchedEmp ? matchedEmp.fullName : (paramName || 'Charbel Khalil');
@@ -298,4 +311,5 @@
   </script>
 
 </body>
+
 </html>
