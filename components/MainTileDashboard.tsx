@@ -56,8 +56,12 @@ interface TileItem {
   action?: () => void;
 }
 
-export default function MainTileDashboard() {
-  const [activeScreen, setActiveScreen] = useState<string>('grid-dash');
+interface MainTileDashboardProps {
+  initialScreen?: string;
+}
+
+export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainTileDashboardProps) {
+  const [activeScreen, setActiveScreen] = useState<string>(initialScreen);
   const [usdRate, setUsdRate] = useState<number>(89500);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAlertsModal, setShowAlertsModal] = useState<boolean>(false);
@@ -267,7 +271,7 @@ export default function MainTileDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
+    < div suppressHydrationWarning className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6" >
 
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
@@ -358,199 +362,201 @@ export default function MainTileDashboard() {
       </div>
 
       {/* 3. DYNAMIC SCREEN ROUTER */}
-      {activeScreen === 'oil-pressing' ? (
-        <div className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm">
-            <h2 className="text-sm font-black text-amber-600 flex items-center gap-2">
-              <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
-            </h2>
-            <button
-              onClick={() => setActiveScreen('grid-dash')}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-bold border border-gray-200"
-            >
-              ← العودة للشبكة الرئيسية
-            </button>
-          </div>
-          <ReceiveAndProductionMaster />
-        </div>
-      ) : (activeScreen === 'delivery-goods' || activeScreen === 'supersonic-fleet') ? (
-        <SuperSonicFleetManager onBack={() => setActiveScreen('grid-dash')} />
-      ) : activeScreen !== 'grid-dash' ? (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-10 space-y-6 shadow-sm text-center">
-          <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto text-amber-600">
-            <Sparkles className="w-8 h-8" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-black text-gray-900">وحدة العمليات التشغيلية المعتمدة</h2>
-            <p className="text-xs text-emerald-600 font-bold mt-1">{tenantName || "Vanguard ERP System"} | ERP Sub-System Module</p>
-          </div>
-          <p className="text-sm text-gray-600 max-w-lg mx-auto font-medium">
-            هذه الشاشة مفعّلة وجاهزة للعمل ضمن نظام ERP. يمكنك التبديل مباشرة إلى شاشة المعصرة والإنتاج أو العودة إلى لوحة المربعات الرئيسية.
-          </p>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={() => setActiveScreen('oil-pressing')}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl shadow-sm text-xs flex items-center gap-2"
-            >
-              <Droplets className="w-4 h-4" /> فتح معصرة الزيت والإنتاج
-            </button>
-            <button
-              onClick={() => setActiveScreen('grid-dash')}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-2.5 rounded-xl border border-gray-200 text-xs"
-            >
-              العودة إلى لوحة المربعات الرئيسية
-            </button>
-          </div>
-        </div>
-      ) : (
-        /* MAIN OMEGA POS TILE GRID DASHBOARD */
-        <div className="space-y-8">
-
-          {/* SECTION 1: OVERVIEW BLOCK */}
-          <div className="space-y-3">
-            <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-              <h2 className="text-lg font-black text-amber-600 flex items-center gap-2">
-                <LayoutGrid className="w-5 h-5 text-amber-600" /> 1. Overview & Oil Production (نظرة عامة والإنتاج)
+      {
+        activeScreen === 'oil-pressing' ? (
+          <div className="space-y-4">
+            <div className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm">
+              <h2 className="text-sm font-black text-amber-600 flex items-center gap-2">
+                <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
               </h2>
-              <span className="text-xs text-gray-500 font-bold">5 وحدات تشغيلية</span>
+              <button
+                onClick={() => setActiveScreen('grid-dash')}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-bold border border-gray-200"
+              >
+                ← العودة للشبكة الرئيسية
+              </button>
             </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-              {overviewTiles.map((tile) => (
-                <div
-                  key={tile.id}
-                  onClick={tile.action}
-                  className="bg-white border border-gray-200 shadow-sm hover:border-amber-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
-                >
-                  <div className="relative">
-                    {tile.icon}
-                    {tile.badge && (
-                      <span className="absolute -top-2 -right-3 bg-amber-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                        {tile.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-black text-sm text-gray-800 group-hover:text-amber-600 transition-colors leading-tight">
-                      {tile.titleAr}
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-medium mt-1">
-                      {tile.titleEn}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <ReceiveAndProductionMaster />
+          </div>
+        ) : (activeScreen === 'delivery-goods' || activeScreen === 'supersonic-fleet') ? (
+          <SuperSonicFleetManager onBack={() => setActiveScreen('grid-dash')} />
+        ) : activeScreen !== 'grid-dash' ? (
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-10 space-y-6 shadow-sm text-center">
+            <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto text-amber-600">
+              <Sparkles className="w-8 h-8" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-gray-900">وحدة العمليات التشغيلية المعتمدة</h2>
+              <p className="text-xs text-emerald-600 font-bold mt-1">{tenantName || "Vanguard ERP System"} | ERP Sub-System Module</p>
+            </div>
+            <p className="text-sm text-gray-600 max-w-lg mx-auto font-medium">
+              هذه الشاشة مفعّلة وجاهزة للعمل ضمن نظام ERP. يمكنك التبديل مباشرة إلى شاشة المعصرة والإنتاج أو العودة إلى لوحة المربعات الرئيسية.
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setActiveScreen('oil-pressing')}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl shadow-sm text-xs flex items-center gap-2"
+              >
+                <Droplets className="w-4 h-4" /> فتح معصرة الزيت والإنتاج
+              </button>
+              <button
+                onClick={() => setActiveScreen('grid-dash')}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-2.5 rounded-xl border border-gray-200 text-xs"
+              >
+                العودة إلى لوحة المربعات الرئيسية
+              </button>
             </div>
           </div>
+        ) : (
+          /* MAIN OMEGA POS TILE GRID DASHBOARD */
+          <div className="space-y-8">
 
-          {/* SECTION 2: BILLING & SALES BLOCK */}
-          <div className="space-y-3">
-            <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-              <h2 className="text-lg font-black text-emerald-600 flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-emerald-600" /> 2. Billing & Sales Control (المبيعات والفوترة)
-              </h2>
-              <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
+            {/* SECTION 1: OVERVIEW BLOCK */}
+            <div className="space-y-3">
+              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
+                <h2 className="text-lg font-black text-amber-600 flex items-center gap-2">
+                  <LayoutGrid className="w-5 h-5 text-amber-600" /> 1. Overview & Oil Production (نظرة عامة والإنتاج)
+                </h2>
+                <span className="text-xs text-gray-500 font-bold">5 وحدات تشغيلية</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                {overviewTiles.map((tile) => (
+                  <div
+                    key={tile.id}
+                    onClick={tile.action}
+                    className="bg-white border border-gray-200 shadow-sm hover:border-amber-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                  >
+                    <div className="relative">
+                      {tile.icon}
+                      {tile.badge && (
+                        <span className="absolute -top-2 -right-3 bg-amber-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+                          {tile.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm text-gray-800 group-hover:text-amber-600 transition-colors leading-tight">
+                        {tile.titleAr}
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">
+                        {tile.titleEn}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {billingTiles.map((tile) => (
-                <div
-                  key={tile.id}
-                  onClick={tile.action}
-                  className="bg-white border border-gray-200 shadow-sm hover:border-emerald-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
-                >
-                  <div className="relative">
-                    {tile.icon}
-                    {tile.badge && (
-                      <span className="absolute -top-2 -right-3 bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                        {tile.badge}
-                      </span>
-                    )}
+            {/* SECTION 2: BILLING & SALES BLOCK */}
+            <div className="space-y-3">
+              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
+                <h2 className="text-lg font-black text-emerald-600 flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5 text-emerald-600" /> 2. Billing & Sales Control (المبيعات والفوترة)
+                </h2>
+                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {billingTiles.map((tile) => (
+                  <div
+                    key={tile.id}
+                    onClick={tile.action}
+                    className="bg-white border border-gray-200 shadow-sm hover:border-emerald-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                  >
+                    <div className="relative">
+                      {tile.icon}
+                      {tile.badge && (
+                        <span className="absolute -top-2 -right-3 bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+                          {tile.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">
+                        {tile.titleAr}
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">
+                        {tile.titleEn}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-black text-sm text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">
-                      {tile.titleAr}
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-medium mt-1">
-                      {tile.titleEn}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* SECTION 3: INVENTORY & SUPPLY CHAIN BLOCK */}
+            <div className="space-y-3">
+              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
+                <h2 className="text-lg font-black text-sky-600 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-sky-600" /> 3. Inventory & Supply Chain (المخازن والتوريد)
+                </h2>
+                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {inventoryTiles.map((tile) => (
+                  <div
+                    key={tile.id}
+                    onClick={tile.action}
+                    className="bg-white border border-gray-200 shadow-sm hover:border-sky-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                  >
+                    <div className="relative">
+                      {tile.icon}
+                      {tile.badge && (
+                        <span className="absolute -top-2 -right-3 bg-sky-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+                          {tile.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm text-gray-800 group-hover:text-sky-600 transition-colors leading-tight">
+                        {tile.titleAr}
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">
+                        {tile.titleEn}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SECTION 4: FINANCE & ACCOUNTING BLOCK */}
+            <div className="space-y-3">
+              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
+                <h2 className="text-lg font-black text-purple-600 flex items-center gap-2">
+                  <Receipt className="w-5 h-5 text-purple-600" /> 4. Finance & Accounting (المالية والحسابات)
+                </h2>
+                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {accountingTiles.map((tile) => (
+                  <div
+                    key={tile.id}
+                    onClick={tile.action}
+                    className="bg-white border border-gray-200 shadow-sm hover:border-purple-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                  >
+                    <div className="relative">
+                      {tile.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm text-gray-800 group-hover:text-purple-600 transition-colors leading-tight">
+                        {tile.titleAr}
+                      </h3>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">
+                        {tile.titleEn}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
-
-          {/* SECTION 3: INVENTORY & SUPPLY CHAIN BLOCK */}
-          <div className="space-y-3">
-            <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-              <h2 className="text-lg font-black text-sky-600 flex items-center gap-2">
-                <Package className="w-5 h-5 text-sky-600" /> 3. Inventory & Supply Chain (المخازن والتوريد)
-              </h2>
-              <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {inventoryTiles.map((tile) => (
-                <div
-                  key={tile.id}
-                  onClick={tile.action}
-                  className="bg-white border border-gray-200 shadow-sm hover:border-sky-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
-                >
-                  <div className="relative">
-                    {tile.icon}
-                    {tile.badge && (
-                      <span className="absolute -top-2 -right-3 bg-sky-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                        {tile.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-black text-sm text-gray-800 group-hover:text-sky-600 transition-colors leading-tight">
-                      {tile.titleAr}
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-medium mt-1">
-                      {tile.titleEn}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* SECTION 4: FINANCE & ACCOUNTING BLOCK */}
-          <div className="space-y-3">
-            <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-              <h2 className="text-lg font-black text-purple-600 flex items-center gap-2">
-                <Receipt className="w-5 h-5 text-purple-600" /> 4. Finance & Accounting (المالية والحسابات)
-              </h2>
-              <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {accountingTiles.map((tile) => (
-                <div
-                  key={tile.id}
-                  onClick={tile.action}
-                  className="bg-white border border-gray-200 shadow-sm hover:border-purple-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
-                >
-                  <div className="relative">
-                    {tile.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-black text-sm text-gray-800 group-hover:text-purple-600 transition-colors leading-tight">
-                      {tile.titleAr}
-                    </h3>
-                    <p className="text-[10px] text-gray-500 font-medium mt-1">
-                      {tile.titleEn}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      )}
+        )
+      }
 
       {/* PRODUCT MASTER SUB-SYSTEM MODAL */}
       <ProductMasterModal
@@ -563,6 +569,6 @@ export default function MainTileDashboard() {
         منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية
       </footer>
 
-    </div>
+    </div >
   );
 }

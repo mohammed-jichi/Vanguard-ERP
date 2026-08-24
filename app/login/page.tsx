@@ -1,8 +1,31 @@
 'use client';
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignIn = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      localStorage.setItem("so_authenticated", "true");
+      if (email) {
+        localStorage.setItem("vanguard_user_email", email);
+      }
+    } catch (err) {
+      console.error("LocalStorage save error:", err);
+    }
+
+    router.push("/erp");
+  };
+
   const platforms = [
     { name: "POS", path: "/platforms/pos" },
     { name: "Inventory", path: "/platforms/inventory" },
@@ -97,10 +120,17 @@ export default function LoginPage() {
             <p className="text-slate-500 mt-2 font-medium">Access your Vanguard dashboard</p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+          <form onSubmit={handleSignIn} className="space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Email Address</label>
-              <input type="email" placeholder="name@company.com" className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@company.com"
+                className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold"
+              />
             </div>
 
             <div className="space-y-2">
@@ -108,10 +138,23 @@ export default function LoginPage() {
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
                 <Link href="/forgot-password" target="_blank" className="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot password?</Link>
               </div>
-              <input type="password" placeholder="••••••••" className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold tracking-widest" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold tracking-widest"
+              />
             </div>
 
-            <button type="submit" className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-[#123b70] to-[#0a2342] hover:from-[#0a2342] hover:to-[#051324] text-white font-bold text-lg tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 mt-4 border border-[#123b70]/50">Sign In</button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-[#123b70] to-[#0a2342] hover:from-[#0a2342] hover:to-[#051324] text-white font-bold text-lg tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 mt-4 border border-[#123b70]/50 disabled:opacity-50"
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
+            </button>
           </form>
         </div>
       </div>

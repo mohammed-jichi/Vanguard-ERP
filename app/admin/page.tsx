@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { TenantProvider } from '@/lib/TenantContext';
-import SuperSonicFleetManager from '@/components/SuperSonicFleetManager';
+import SuperAdminWorkspaceManager from '@/components/SuperAdminWorkspaceManager';
 
 export default function AdminDashboardPage() {
   return (
     <TenantProvider>
-      <main className="min-h-screen bg-white text-black p-4 md:p-8">
-        <SuperSonicFleetManager />
+      <main className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
+        <SuperAdminWorkspaceManager />
       </main>
     </TenantProvider>
   );
