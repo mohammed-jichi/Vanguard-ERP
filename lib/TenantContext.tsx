@@ -40,11 +40,11 @@ interface TenantContextType {
 
 const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   id: '00000000-0000-0000-0000-000000000001',
-  name: 'Vanguard Enterprise',
-  slug: 'vanguard-enterprise',
-  brandNameAr: 'المؤسسة المعتمدة',
-  brandNameEn: 'Vanguard Enterprise Client',
-  logoUrl: '',
+  name: 'منتوجات زيت وزيتون الجنوب',
+  slug: 'southern-olive',
+  brandNameAr: 'منتوجات زيت وزيتون الجنوب',
+  brandNameEn: 'Southern Olive & Oil Products',
+  logoUrl: '/assets/images/logo.png',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,

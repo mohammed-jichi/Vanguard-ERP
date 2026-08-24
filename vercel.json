@@ -2,6 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/portal", "destination": "/index.html" },
+    { "source": "/southernolive-lb", "destination": "/index.html" },
     { "source": "/oil-press", "destination": "/oil-press.html" },
     { "source": "/app/receive-production", "destination": "/oil-press.html" },
     { "source": "/receive-production", "destination": "/oil-press.html" },
