@@ -44,7 +44,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
   }, [activeScreen]);
 
   return (
-    <div className="w-full bg-white border-b border-gray-200 px-4 py-2 flex flex-col md:flex-row items-center justify-between gap-3 shadow-2xs shrink-0 select-none">
+    <div className="w-full bg-white border-b border-gray-200 px-4 py-2 flex flex-col md:flex-row items-center justify-between gap-3 shadow-2xs shrink-0 select-none mt-6">
       
       {/* LEFT SIDE: RECENTLY VISITED DYNAMIC BREADCRUMBS */}
       <div className="flex items-center gap-2 overflow-x-auto max-w-full text-xs text-gray-700 font-medium">

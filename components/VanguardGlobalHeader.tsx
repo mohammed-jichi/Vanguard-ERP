@@ -100,61 +100,56 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   return (
     <div className="w-full flex flex-col font-sans dir-rtl select-none">
       
-      {/* 1. TOP MAIN HEADER (SLEEK SOLID DARK SLATE bg-[#1e1e2d] - VANGUARD BRANDED) */}
-      <header className="w-full h-16 bg-[#1e1e2d] text-white border-b border-[#2b2b40] px-4 md:px-6 flex items-center justify-between shadow-md top-0 left-0 right-0 z-50 shrink-0">
+      {/* 1. TOP MAIN HEADER (LIGHT CREAM THEME bg-[#FDFBF7] - VANGUARD BRANDED) */}
+      <header className="w-full h-16 bg-[#FDFBF7] text-black border-b border-stone-200/80 px-4 md:px-6 flex items-center justify-between shadow-xs top-0 left-0 right-0 z-50 shrink-0 select-none">
         
-        {/* LEFT: VANGUARD BRANDING & CRISP LOGO TYPOGRAPHY */}
+        {/* LEFT: VANGUARD BRANDING - PURE CIRCULAR LOGO & CONTINUOUS NON-BOLD TITLE */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => onSelectScreen('grid-dash')}>
-            <div className="w-10 h-10 rounded-xl bg-[#2b2b40] border border-amber-500/40 p-1 shadow-sm shrink-0 flex items-center justify-center">
-              <img
-                src="/assets/images/vanguard_logo.png"
-                alt="Vanguard ERP Logo"
-                className="w-full h-full object-contain rounded-lg"
-                onError={e => {
-                  (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-xl md:text-2xl tracking-wide text-white flex items-center gap-2">
-                Vanguard <span className="text-amber-400 font-black tracking-normal bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/30 text-base">ERP</span>
-              </span>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest -mt-0.5">Enterprise SaaS Platform</span>
-            </div>
+            <img
+              src="/assets/images/vanguard_logo.png"
+              alt="Vanguard ERP Logo"
+              className="w-11 h-11 rounded-full object-cover shadow-xs shrink-0 border border-stone-300/80 p-0.5 bg-white"
+              onError={e => {
+                (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
+              }}
+            />
+            <span className="text-lg md:text-xl font-normal text-black tracking-normal">
+              Vanguard ERP System
+            </span>
           </div>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME (PURE WHITE CONTRAST FIX) */}
-        <div className="hidden md:flex items-center gap-2.5 bg-[#2b2b40] border border-[#3b3b55] px-4 py-1.5 rounded-full text-xs shadow-inner">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="font-mono text-amber-400 font-black text-sm">22901</span>
-          <span className="text-slate-400 font-bold">-</span>
-          <span className="font-semibold text-white tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
-          <span className="text-[11px] text-white font-bold bg-emerald-700/90 border border-emerald-500 px-2.5 py-0.5 rounded-full shadow-xs">
+        {/* CENTER: TENANT LICENSE AND NAME (BLACK CONTRAST ON CREAM BACKGROUND) */}
+        <div className="hidden md:flex items-center gap-2.5 bg-stone-200/70 border border-stone-300 px-4 py-1.5 rounded-full text-xs shadow-2xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-black font-extrabold text-sm">22901</span>
+          <span className="text-stone-400 font-bold">-</span>
+          <span className="font-semibold text-black tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
+          <span className="text-[11px] text-emerald-950 font-bold bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full shadow-2xs">
             {currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب'}
           </span>
         </div>
 
-        {/* RIGHT ICONS ACTION BAR */}
+        {/* RIGHT ICONS ACTION BAR (ALL PURE BLACK ICONS) */}
         <div className="flex items-center gap-2">
 
           {/* HOME ICON */}
           <button
             onClick={() => onSelectScreen('grid-dash')}
-            title="الرئيسية (Home Dashboard)"
-            className="p-2 hover:bg-[#2b2b40] text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
+            title="Home Dashboard"
+            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-4 h-4 text-black" />
           </button>
 
           {/* MAIL ICON */}
           <button
             onClick={() => setIsInboxOpen(true)}
-            title="البريد المتبادل بين الفروع (Inbox between locations)"
-            className="p-2 hover:bg-slate-800 text-gray-300 hover:text-amber-400 rounded-xl transition-colors relative"
+            title="Inbox between locations"
+            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors relative"
           >
-            <Mail className="w-4 h-4" />
+            <Mail className="w-4 h-4 text-black" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full"></span>
           </button>
 
@@ -162,12 +157,12 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="relative">
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              title="إعدادات النظام الشاملة (Settings)"
+              title="System Settings"
               className={`p-2 rounded-xl transition-colors ${
-                isSettingsOpen ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-gray-300 hover:text-amber-400'
+                isSettingsOpen ? 'bg-amber-500 text-black font-bold' : 'hover:bg-stone-200/80 text-black hover:text-amber-700'
               }`}
             >
-              <SettingsIcon className="w-4 h-4" />
+              <SettingsIcon className="w-4 h-4 text-black" />
             </button>
 
             {/* SETTINGS MODAL / DROPDOWN WITH 5 EXACT SECTIONS */}
@@ -294,9 +289,9 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             target="_blank"
             rel="noreferrer"
             title="Support Center"
-            className="p-2 hover:bg-[#2b2b40] text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
+            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors"
           >
-            <HelpCircle className="w-4 h-4" />
+            <HelpCircle className="w-4 h-4 text-black" />
           </a>
 
           {/* LANGUAGE SWITCHER DROPDOWN */}
@@ -304,11 +299,11 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <button
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
               title="Select System Language"
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-[#2b2b40] hover:bg-[#3b3b55] text-amber-400 border border-[#3b3b55] rounded-xl text-xs font-bold transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-stone-200/80 hover:bg-stone-300 text-black border border-stone-300 rounded-xl text-xs font-bold transition-all shadow-2xs"
             >
-              <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="uppercase font-mono font-bold tracking-wider">{language}</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <Globe className="w-3.5 h-3.5 text-black shrink-0" />
+              <span className="uppercase font-mono font-bold tracking-wider text-black">{language}</span>
+              <ChevronDown className="w-3 h-3 text-stone-500" />
             </button>
 
             {isLangMenuOpen && (
@@ -349,15 +344,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-1.5 p-1.5 hover:bg-slate-800 text-gray-200 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 p-1.5 hover:bg-stone-200/80 text-black rounded-xl transition-colors"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300">
                 {language === 'ar' ? 'م' : 'M'}
               </div>
-              <span className="font-bold text-xs hidden sm:inline">
+              <span className="font-bold text-xs text-black hidden sm:inline">
                 {language === 'ar' ? 'محمد' : 'Mohammed'}
               </span>
-              <ChevronDown className="w-3 h-3 text-gray-400" />
+              <ChevronDown className="w-3 h-3 text-stone-500" />
             </button>
 
             {/* PROFILE DROPDOWN MENU */}
@@ -418,10 +413,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           {/* QUICK MENU ICON (9-CUBES) */}
           <button
             onClick={() => setIsQuickMenuOpen(true)}
-            title="القائمة السريعة (Quick Menu)"
-            className="p-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition-colors shadow-sm ml-1"
+            title="Quick Menu"
+            className="p-2 bg-stone-200/80 hover:bg-amber-500 text-black rounded-xl transition-colors shadow-2xs ml-1"
           >
-            <LayoutGrid className="w-4 h-4" />
+            <LayoutGrid className="w-4 h-4 text-black" />
           </button>
 
         </div>
