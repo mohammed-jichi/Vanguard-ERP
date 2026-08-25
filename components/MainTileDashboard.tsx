@@ -64,7 +64,7 @@ interface MainTileDashboardProps {
 }
 
 export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainTileDashboardProps) {
-  const { currentTenant } = useTenant();
+  const { currentTenant, currentUser } = useTenant();
   const [activeScreen, setActiveScreen] = useState<string>(initialScreen);
   const [usdRate, setUsdRate] = useState<number>(89500);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -286,7 +286,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="w-full bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
 
-        {/* BRAND IDENTITY */}
+        {/* BRAND IDENTITY: VANGUARD ERP PROVIDER + TENANT WORKSPACE */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-14 h-14 max-w-[56px] max-h-[56px] bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1 shrink-0">
             <img
@@ -299,14 +299,22 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
             />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
-              {currentTenant?.brandNameAr || currentTenant?.name || 'Vanguard ERP System'}
-              <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-amber-600 uppercase tracking-wider bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                Vanguard ERP
+              </span>
+              <span className="bg-slate-900 text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                Role: {currentUser?.role || 'SUPER_ADMIN'}
+              </span>
+            </div>
+            <h1 className="text-lg md:text-xl font-black text-gray-900 flex items-center gap-2 mt-1">
+              Workspace: <span className="text-amber-700">{currentTenant?.brandNameAr || currentTenant?.name || 'منتوجات زيت وزيتون الجنوب SARL'}</span>
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
                 {currentTenant?.subscriptionTier || 'ENTERPRISE'}
               </span>
             </h1>
             <div className="flex items-center gap-2 text-xs text-gray-500 font-bold mt-0.5">
-              <span>{currentTenant?.brandNameEn || 'Enterprise Resource Planning System'}</span>
+              <span>{currentTenant?.brandNameEn || 'Southern Olive & Oil Products SARL'}</span>
               {currentTenant?.companyRegistrationNumber && (
                 <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200 font-mono text-[10px]">
                   س.ت: {currentTenant.companyRegistrationNumber}
@@ -724,11 +732,22 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         onClose={() => setIsTenantSettingsOpen(false)}
       />
 
-      {/* FOOTER */}
-      <footer className="text-center text-xs text-gray-500 font-bold border-t border-gray-200 pt-4 space-y-1">
-        <p>منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية</p>
+      {/* GLOBAL SAAS FOOTER - POWERED BY VANGUARD ERP */}
+      <footer className="bg-white border-t border-gray-200 p-4 rounded-2xl text-center text-xs text-gray-500 font-bold space-y-2 shadow-sm">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-gray-700">
+          <span className="font-black text-amber-600 flex items-center gap-1">
+            ⚡ Powered by Vanguard ERP System
+          </span>
+          <span>© 2026 جميع الحقوق محفوظة</span>
+          <span className="text-gray-300">|</span>
+          <a href="#" className="hover:text-amber-600 transition-colors">سياسة الخصوصية (Privacy Policy)</a>
+          <span className="text-gray-300">|</span>
+          <a href="#" className="hover:text-amber-600 transition-colors">الشروط والأحكام (Terms of Service)</a>
+          <span className="text-gray-300">|</span>
+          <a href="#" className="hover:text-amber-600 transition-colors">الدعم والاتصال (Support)</a>
+        </div>
         <p className="text-[10px] text-gray-400 font-mono">
-          سجل تجاري: {currentTenant?.companyRegistrationNumber || 'CR-104928-LB'} | رقم مالي MOF: {currentTenant?.taxIdentificationNumber || 'MOF-7489201'}
+          Workspace: {tenantName || "منتوجات زيت وزيتون الجنوب SARL"} | سجل تجاري: {currentTenant?.companyRegistrationNumber || 'CR-104928-LB'} | رقم مالي MOF: {currentTenant?.taxIdentificationNumber || 'MOF-7489201'}
         </p>
       </footer>
     </div>

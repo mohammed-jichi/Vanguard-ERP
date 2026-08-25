@@ -43,6 +43,8 @@ import {
   Grid
 } from 'lucide-react';
 
+import { STRICT_UOM_LIST, validateUomQuantity, getUomInputStep } from '@/lib/uomValidation';
+
 interface ProductMasterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -50,28 +52,11 @@ interface ProductMasterModalProps {
   onSaveSuccess?: () => void;
 }
 
-// 19 Fixed Unit Formats Required
-const UNIT_FORMATS = [
-  { key: 'Box', nameAr: 'صندوق (Box)' },
-  { key: 'Gallon', nameAr: 'غالون (Gallon)' },
-  { key: 'Jar', nameAr: 'مرطبان (Jar)' },
-  { key: 'Kg', nameAr: 'كيلوغرام (Kg)' },
-  { key: 'Envelope', nameAr: 'ظرف (Envelope)' },
-  { key: 'Tin16L', nameAr: 'تنكة 16 لتر (Tin 16L)' },
-  { key: 'Tin10L', nameAr: 'تنكة 10 لتر (Tin 10L)' },
-  { key: 'Tin4L', nameAr: 'تنكة 4 لتر (Tin 4L)' },
-  { key: 'Bottle1L', nameAr: 'قنينة 1 لتر (Bottle 1L)' },
-  { key: 'Bottle750ml', nameAr: 'قنينة 750 مل (Bottle 750ml)' },
-  { key: 'Bottle500ml', nameAr: 'قنينة 500 مل (Bottle 500ml)' },
-  { key: 'Bottle250ml', nameAr: 'قنينة 250 مل (Bottle 250ml)' },
-  { key: 'Drum200L', nameAr: 'برميل 200 لتر (Drum 200L)' },
-  { key: 'Carton', nameAr: 'كرتونة (Carton)' },
-  { key: 'Pack', nameAr: 'باكيت (Pack)' },
-  { key: 'Piece', nameAr: 'قطعة (Piece)' },
-  { key: 'Pallet', nameAr: 'طبلية (Pallet)' },
-  { key: 'Crate', nameAr: 'سحارة (Crate)' },
-  { key: 'Bag', nameAr: 'كيس (Bag)' }
-];
+// 18 Strict Unit Formats Required (STRICT UOM ARRAY)
+const UNIT_FORMATS = STRICT_UOM_LIST.map(uom => ({
+  key: uom,
+  nameAr: `${uom} (${getUomInputStep(uom) === '1' ? 'عدد صحيح' : getUomInputStep(uom) === '0.001' ? 'كسر عشري' : 'حزمة/كرتون'})`
+}));
 
 // 25 Exact Millimeter Label Paper Sizes Required
 const PAPER_SIZES = [

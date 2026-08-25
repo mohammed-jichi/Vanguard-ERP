@@ -25,8 +25,10 @@ import {
   CheckCircle2,
   Warehouse,
   Building2,
-  Droplet
+  Droplet,
+  Sliders
 } from 'lucide-react';
+import { STRICT_UOM_LIST, getUomInputStep, validateUomQuantity } from '@/lib/uomValidation';
 
 export interface Vendor {
   id: string;
@@ -127,6 +129,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
   const [newUnitName, setNewUnitName] = useState<string>('');
   const [newUnitCapacity, setNewUnitCapacity] = useState<number>(10);
   const [newUnitType, setNewUnitType] = useState<string>('عبوة مخصصة');
+  const [selectedUom, setSelectedUom] = useState<string>('bottle');
 
   // --- INVENTORY DATA STATE ---
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
@@ -675,14 +678,47 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
         </div>
       )}
 
-      {/* DYNAMIC ADD UNIT MODAL */}
+      {/* DYNAMIC ADD UNIT & UOM SETUP MODAL */}
       {showAddUnitModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
           <div className="bg-[#fefae0] text-black p-6 rounded-2xl max-w-md w-full border-2 border-[#2b3e2a] space-y-4">
-            <h3 className="text-lg font-black text-[#1c2b1a]">إضافة صنف / عبوة جديدة للمخزون</h3>
-            <form onSubmit={handleAddNewCustomUnit} className="space-y-3">
+            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
+              <h3 className="text-lg font-black text-[#1c2b1a] flex items-center gap-1.5">
+                <Sliders className="w-5 h-5 text-amber-700" /> تهيئة وحدات قياس المخزون (UOM Setup)
+              </h3>
+              <span className="bg-amber-200 text-amber-900 font-bold text-[10px] px-2 py-0.5 rounded-full border border-amber-400">
+                18 Strict UOMs
+              </span>
+            </div>
+
+            <form onSubmit={handleAddNewCustomUnit} className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-bold mb-1">اسم العبوة / الصنف الجديد:</label>
+                <label className="block font-bold mb-1">وحدة القياس المعتمدة (Strict UOM):</label>
+                <select
+                  value={selectedUom}
+                  onChange={(e) => setSelectedUom(e.target.value)}
+                  className="w-full border-2 border-slate-400 p-2 rounded-lg text-xs bg-white font-bold text-gray-900"
+                >
+                  {STRICT_UOM_LIST.map(uom => (
+                    <option key={uom} value={uom}>
+                      {uom} — {getUomInputStep(uom) === '1' ? 'أعداد صحيحة فقط (Strict Integers step=1)' : getUomInputStep(uom) === '0.001' ? 'كسر عشري (Open Decimal step=0.001)' : 'أحجام حزمة/كرتون (Fixed Pack Size step=0.25)'}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-gray-600 font-semibold mt-1">
+                  قاعدة الإدخال للوحدة ({selectedUom}):{' '}
+                  <strong className="text-amber-700 font-bold">
+                    {getUomInputStep(selectedUom) === '1'
+                      ? '🔒 يتطلب أعداداً صحيحة فقط (Strict Integer step=1)'
+                      : getUomInputStep(selectedUom) === '0.001'
+                      ? '⚖️ كسر عشري مفتوح (Open Decimal step=0.001)'
+                      : '📦 حزمة/كرتونة مضاعفة (Pack Size Multiplier step=0.25)'}
+                  </strong>
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1">اسم العبوة / الصنف الجديد:</label>
                 <input
                   type="text"
                   required
@@ -694,10 +730,10 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
               </div>
 
               <div>
-                <label className="block text-xs font-bold mb-1">السعة بالكيلوجرام (kg):</label>
+                <label className="block font-bold mb-1">السعة بالكيلوجرام (kg):</label>
                 <input
                   type="number"
-                  step="0.1"
+                  step={getUomInputStep(selectedUom)}
                   required
                   value={newUnitCapacity}
                   onChange={(e) => setNewUnitCapacity(Number(e.target.value))}
@@ -706,7 +742,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
               </div>
 
               <div>
-                <label className="block text-xs font-bold mb-1">نوع التغليف / المادة:</label>
+                <label className="block font-bold mb-1">نوع التغليف / المادة:</label>
                 <input
                   type="text"
                   value={newUnitType}
@@ -718,14 +754,14 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
               <div className="flex gap-2 pt-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-2.5 rounded-xl text-sm"
+                  className="flex-1 bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-2.5 rounded-xl text-xs"
                 >
-                  حفظ الصنف الجديد
+                  حفظ وحدة القياس والصنف
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddUnitModal(false)}
-                  className="px-4 bg-slate-400 hover:bg-slate-500 text-white font-bold py-2.5 rounded-xl text-sm"
+                  className="px-4 bg-slate-400 hover:bg-slate-500 text-white font-bold py-2.5 rounded-xl text-xs"
                 >
                   إلغاء
                 </button>

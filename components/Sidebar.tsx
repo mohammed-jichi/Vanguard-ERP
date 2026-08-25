@@ -33,7 +33,8 @@ import {
   Crown,
   Droplets,
   Building,
-  Tag
+  Tag,
+  Lock
 } from 'lucide-react';
 
 import { useTenant } from '@/lib/TenantContext';
@@ -165,7 +166,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
           )}
         </div>
 
-        {/* 2. SUPERSONIC FLEET & DISPATCH */}
+        {/* 2. SUPERSONIC FLEET & DISPATCH (🔒 PREMIUM PRO TIER) */}
         <div>
           <button
             onClick={() => toggleGroup('supersonic')}
@@ -173,16 +174,25 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
               expandedGroups['supersonic'] ? 'bg-emerald-50 text-emerald-800' : 'hover:bg-gray-100 text-gray-800'
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 overflow-hidden">
               <Truck className="w-4 h-4 text-emerald-600 shrink-0" />
-              {isOpen && <span className="font-bold">أسطول الشحن (SuperSonic Fleet)</span>}
+              {isOpen && (
+                <span className="font-bold flex items-center gap-1.5 truncate" title="ميزة مدفوعة - ترقية باقة المحترفين">
+                  <Lock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>أسطول الشحن (SuperSonic Fleet)</span>
+                  <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 rounded font-black border border-amber-300 shrink-0">PRO</span>
+                </span>
+              )}
             </div>
             {isOpen && (expandedGroups['supersonic'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />)}
           </button>
 
           {isOpen && expandedGroups['supersonic'] && (
             <div className="mr-4 pr-2 border-r-2 border-emerald-200 space-y-1 mt-1 text-[11px]">
-              <button onClick={() => handleNav('supersonic-fleet')} className="w-full text-right p-1.5 hover:text-emerald-600 rounded font-bold text-emerald-700">إدارة الشحن والتوزيع</button>
+              <button onClick={() => handleNav('supersonic-fleet')} className="w-full text-right p-1.5 hover:text-emerald-600 rounded font-bold text-emerald-700 flex items-center justify-between">
+                <span>إدارة الشحن والتوزيع</span>
+                <span className="text-[9px] text-amber-600 font-bold">🔒 3PL</span>
+              </button>
               <button onClick={() => handleNav('fleet-map')} className="w-full text-right p-1.5 hover:text-emerald-600 rounded">خريطة تتبع الشاحنات GPS</button>
               <button onClick={() => handleNav('fleet-km')} className="w-full text-right p-1.5 hover:text-emerald-600 rounded">سجل المسافات والعدّاد</button>
               <button onClick={() => handleNav('fleet-fuel')} className="w-full text-right p-1.5 hover:text-emerald-600 rounded">استهلاك الوقود والتعبئة</button>
@@ -194,7 +204,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
           )}
         </div>
 
-        {/* 3. SOCIAL MEDIA MANAGEMENT */}
+        {/* 3. SOCIAL MEDIA MANAGEMENT (🔒 ENTERPRISE TIER) */}
         <div>
           <button
             onClick={() => toggleGroup('social')}
@@ -202,9 +212,15 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
               expandedGroups['social'] ? 'bg-blue-50 text-blue-800' : 'hover:bg-gray-100 text-gray-800'
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 overflow-hidden">
               <Share2 className="w-4 h-4 text-blue-600 shrink-0" />
-              {isOpen && <span className="font-bold">التواصل الاجتماعي (Social CRM)</span>}
+              {isOpen && (
+                <span className="font-bold flex items-center gap-1.5 truncate" title="ميزة مدفوعة - باقة المؤسسات">
+                  <Lock className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  <span>التواصل الاجتماعي (Social CRM)</span>
+                  <span className="bg-blue-100 text-blue-800 text-[9px] px-1.5 py-0.2 rounded font-black border border-blue-300 shrink-0">ENT</span>
+                </span>
+              )}
             </div>
             {isOpen && (expandedGroups['social'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />)}
           </button>
@@ -213,7 +229,10 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
             <div className="mr-4 pr-2 border-r-2 border-blue-200 space-y-1 mt-1 text-[11px]">
               <button onClick={() => handleNav('social-inbox')} className="w-full text-right p-1.5 hover:text-blue-600 rounded">صندوق الرسائل الموحد</button>
               <button onClick={() => handleNav('social-orders')} className="w-full text-right p-1.5 hover:text-blue-600 rounded">طلبات منصات التواصل</button>
-              <button onClick={() => handleNav('social-api')} className="w-full text-right p-1.5 hover:text-blue-600 rounded">ربط المنصات الأربعة (API)</button>
+              <button onClick={() => handleNav('social-api')} className="w-full text-right p-1.5 hover:text-blue-600 rounded flex items-center justify-between">
+                <span>ربط المنصات الأربعة (API)</span>
+                <span className="text-[9px] text-blue-600 font-bold">🔒 API</span>
+              </button>
               <button onClick={() => handleNav('social-campaigns')} className="w-full text-right p-1.5 hover:text-blue-600 rounded">الحملات الإعلانية وتكلفة الليد</button>
             </div>
           )}
