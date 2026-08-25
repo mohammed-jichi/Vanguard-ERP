@@ -434,15 +434,17 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden">
-      {/* 0. PERSISTENT GLOBAL NAVIGATION SIDEBAR */}
-      <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
+    <div className="flex flex-col min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden m-0 p-0">
+      {/* 1. TOP MAIN HEADER (100% VIEWPORT WIDTH, SLEEK SOLID DARK SLATE bg-[#1e1e2d], top-0, m-0) */}
+      <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
-      {/* MAIN DASHBOARD CONTENT AREA */}
-      <div suppressHydrationWarning className="flex-1 min-w-0 p-3 md:p-6 space-y-5 overflow-x-hidden">
+      {/* 2. BODY CONTAINER (SIDEBAR & MAIN WORKSPACE UNDERNEATH HEADER) */}
+      <div className="flex flex-1 min-w-0 w-full relative">
+        {/* 0. PERSISTENT GLOBAL NAVIGATION SIDEBAR (UNDER HEADER) */}
+        <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
 
-        {/* VANGUARD ERP GLOBAL HEADER & SUB-HEADER (PHASE 4) */}
-        <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
+        {/* MAIN DASHBOARD CONTENT AREA */}
+        <div suppressHydrationWarning className="flex-1 min-w-0 p-3 md:p-6 space-y-5 overflow-y-auto">
 
       {/* 3. DYNAMIC SCREEN ROUTER */}
       {
@@ -833,5 +835,6 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       </footer>
     </div>
   </div>
+</div>
   );
 }

@@ -95,50 +95,50 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   return (
     <div className="w-full flex flex-col font-sans dir-rtl select-none">
       
-      {/* 1. TOP MAIN HEADER (DARK THEME - VANGUARD BRANDED) */}
-      <header className="bg-slate-950 text-white border-b border-slate-800 px-4 py-2.5 flex items-center justify-between shadow-md">
+      {/* 1. TOP MAIN HEADER (SLEEK SOLID DARK SLATE bg-[#1e1e2d] - VANGUARD BRANDED) */}
+      <header className="w-full h-16 bg-[#1e1e2d] text-white border-b border-[#2b2b40] px-4 md:px-6 flex items-center justify-between shadow-md top-0 left-0 right-0 z-50 shrink-0">
         
-        {/* LEFT: VANGUARD BRANDING */}
+        {/* LEFT: VANGUARD BRANDING & CRISP LOGO TYPOGRAPHY */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => onSelectScreen('grid-dash')}>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-sm shrink-0">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onSelectScreen('grid-dash')}>
+            <div className="w-10 h-10 rounded-xl bg-[#2b2b40] border border-amber-500/40 p-1 shadow-sm shrink-0 flex items-center justify-center">
               <img
                 src="/assets/images/vanguard_logo.png"
                 alt="Vanguard ERP Logo"
-                className="w-full h-full object-cover rounded-lg bg-slate-900"
+                className="w-full h-full object-contain rounded-lg"
                 onError={e => {
                   (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
                 }}
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-sm tracking-tight text-white flex items-center gap-1">
-                Vanguard <span className="text-amber-400">ERP</span>
+              <span className="font-extrabold text-xl md:text-2xl tracking-wide text-white flex items-center gap-2">
+                Vanguard <span className="text-amber-400 font-black tracking-normal bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/30 text-base">ERP</span>
               </span>
-              <span className="text-[9px] text-gray-400 font-bold uppercase -mt-1 tracking-widest">SaaS Enterprise</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest -mt-0.5">Enterprise SaaS Platform</span>
             </div>
           </div>
         </div>
 
         {/* CENTER: TENANT LICENSE AND NAME */}
-        <div className="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-1.5 rounded-full text-xs shadow-inner">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-mono text-amber-400 font-bold">22901</span>
-          <span className="text-gray-500 font-bold">-</span>
-          <span className="font-bold text-gray-200">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
-          <span className="text-[10px] text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2 py-0.2 rounded-full font-bold">
+        <div className="hidden md:flex items-center gap-2.5 bg-[#2b2b40] border border-[#3b3b55] px-4 py-1.5 rounded-full text-xs shadow-inner">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="font-mono text-amber-400 font-black text-sm">22901</span>
+          <span className="text-slate-400 font-bold">-</span>
+          <span className="font-bold text-gray-100">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
+          <span className="text-[11px] text-emerald-400 bg-emerald-950/80 border border-emerald-700/80 px-2.5 py-0.5 rounded-full font-bold">
             {currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب'}
           </span>
         </div>
 
         {/* RIGHT ICONS ACTION BAR */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
 
           {/* HOME ICON */}
           <button
             onClick={() => onSelectScreen('grid-dash')}
             title="الرئيسية (Home Dashboard)"
-            className="p-2 hover:bg-slate-800 text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
+            className="p-2 hover:bg-[#2b2b40] text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
           >
             <Home className="w-4 h-4" />
           </button>
