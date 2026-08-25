@@ -14,6 +14,7 @@ import SuperSonicFleetManager from './SuperSonicFleetManager';
 import Sidebar from './Sidebar';
 import TenantSettingsModal from './TenantSettingsModal';
 import VanguardGlobalHeader from './VanguardGlobalHeader';
+import VanguardSubHeader from './VanguardSubHeader';
 import GenericDataTable from './GenericDataTable';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -526,16 +527,23 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
 
   return (
     <div dir={dir} className="flex flex-col min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden m-0 p-0">
-      {/* 1. TOP MAIN HEADER (100% VIEWPORT WIDTH, SLEEK SOLID DARK SLATE bg-[#1e1e2d], top-0, m-0) */}
+      {/* 1. TOP MAIN DARK HEADER (SPANS 100% VIEWPORT WIDTH AT THE TOP, h-16) */}
       <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
-      {/* 2. BODY CONTAINER (SIDEBAR & MAIN WORKSPACE UNDERNEATH HEADER) */}
-      <div className="flex flex-1 min-w-0 w-full relative">
-        {/* 0. PERSISTENT GLOBAL NAVIGATION SIDEBAR (UNDER HEADER) */}
+      {/* 2. MASTER FLEX CONTAINER DIRECTLY UNDERNEATH TOP DARK HEADER */}
+      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-64px)]">
+        
+        {/* LEFT SIDE: PERSISTENT SIDEBAR - Touches bottom of top dark header & spans full remaining height */}
         <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
 
-        {/* MAIN DASHBOARD CONTENT AREA */}
-        <div suppressHydrationWarning className="flex-1 min-w-0 p-3 md:p-6 space-y-5 overflow-y-auto">
+        {/* RIGHT SIDE: MAIN CONTENT COLUMN (flex-1 flex flex-col min-w-0) */}
+        <div suppressHydrationWarning className="flex-1 flex flex-col min-w-0 bg-[#f4f7f9]">
+          
+          {/* SUB-HEADER / RECENTLY VISITED TOOLBAR - CONSTRAINED WITHIN RIGHT CONTENT COLUMN NEXT TO SIDEBAR */}
+          <VanguardSubHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
+
+          {/* MAIN DASHBOARD CONTENT AREA / TILES GRID */}
+          <div className="p-3 md:p-6 space-y-5 flex-1 overflow-y-auto">
 
       {/* 3. DYNAMIC SCREEN ROUTER */}
       {
@@ -849,8 +857,9 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           Workspace: {tenantName || "منتوجات زيت وزيتون الجنوب SARL"} | سجل تجاري: {currentTenant?.companyRegistrationNumber || 'CR-104928-LB'} | رقم مالي MOF: {currentTenant?.taxIdentificationNumber || 'MOF-7489201'}
         </p>
       </footer>
+        </div>
+      </div>
     </div>
   </div>
-</div>
   );
 }
