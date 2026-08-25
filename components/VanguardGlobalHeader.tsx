@@ -352,48 +352,63 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               className="flex items-center gap-1.5 p-1.5 hover:bg-slate-800 text-gray-200 rounded-xl transition-colors"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300">
-                م
+                {language === 'ar' ? 'م' : 'M'}
               </div>
-              <span className="font-black text-xs hidden sm:inline">محمد</span>
+              <span className="font-bold text-xs hidden sm:inline">
+                {language === 'ar' ? 'محمد' : 'Mohammed'}
+              </span>
               <ChevronDown className="w-3 h-3 text-gray-400" />
             </button>
 
             {/* PROFILE DROPDOWN MENU */}
             {isProfileOpen && (
-              <div className="absolute left-0 mt-2 w-56 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-bold dir-rtl">
+              <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-rtl text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
-                  <p className="text-gray-900 font-black">محمد (مدير النظام)</p>
-                  <p className="text-[10px] text-gray-500 font-medium">{currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب'}</p>
+                  <p className="text-gray-900 font-bold">
+                    {language === 'ar' ? 'محمد (مدير النظام)' : 'Mohammed (System Admin)'}
+                  </p>
+                  <p className="text-[10px] text-gray-500 font-medium">
+                    {language === 'ar' ? (currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب') : (currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL')}
+                  </p>
                 </div>
 
-                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Globe className="w-3.5 h-3.5 text-amber-600" /> المؤسسة (Organization)
+                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'المؤسسة (Organization)' : 'Organization & License'}</span>
                 </button>
-                <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Bell className="w-3.5 h-3.5 text-amber-600" /> التنبيهات والإشعارات (Alerts & Notifications)
+                <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'التنبيهات والإشعارات (Alerts)' : 'Alerts & Notifications'}</span>
                 </button>
-                <button onClick={() => alert('اللغة المختارة: العربية')} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Globe className="w-3.5 h-3.5 text-amber-600" /> اللغة (Language: Arabic)
+                <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'اللغة (English)' : 'Language: English'}</span>
                 </button>
-                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-amber-600" /> حسابي الشخصي (My Account)
+                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'حسابي الشخصي' : 'My Profile Account'}</span>
                 </button>
-                <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Shield className="w-3.5 h-3.5 text-amber-600" /> الأدوَار والصلاحيات (Roles)
+                <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'الأدوَار والصلاحيات' : 'Roles & Permissions'}</span>
                 </button>
-                <button onClick={() => { onSelectScreen('hr-dir'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <UsersIcon className="w-3.5 h-3.5 text-amber-600" /> المستخدمين الكاشير (Users)
+                <button onClick={() => { onSelectScreen('hr-dir'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <UsersIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'المستخدمين الكاشير' : 'Users & Cashiers'}</span>
                 </button>
-                <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" /> آخر التحديثات (Latest Updates)
+                <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'آخر التحديثات' : 'Latest Updates'}</span>
                 </button>
-                <a href="/support" target="_blank" rel="noreferrer" className="w-full text-right p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <HelpCircle className="w-3.5 h-3.5 text-amber-600" /> مركز الدعم الفني (Support Center)
+                <a href="/support" target="_blank" rel="noreferrer" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                  <HelpCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{language === 'ar' ? 'مركز الدعم الفني' : 'Support Center'}</span>
                 </a>
                 
                 <div className="border-t border-gray-100 pt-1">
-                  <a href="/login" className="w-full text-right p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold">
-                    <LogOut className="w-3.5 h-3.5 text-rose-600" /> تسجيل الخروج (Log out)
+                  <a href="/login" className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold">
+                    <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                    <span>{language === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
                   </a>
                 </div>
               </div>
