@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react';
 import ReceiveAndProductionMaster from './ReceiveAndProductionMaster';
 import ProductMasterModal from './ProductMasterModal';
 import SuperSonicFleetManager from './SuperSonicFleetManager';
+import Sidebar from './Sidebar';
 import {
   Building2,
   Droplets,
@@ -271,7 +272,12 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    <div suppressHydrationWarning className="w-full max-w-7xl mx-auto min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans space-y-6">
+    <div className="flex min-h-screen w-full bg-gray-50 text-gray-800 font-sans overflow-x-hidden">
+      {/* 0. PERSISTENT GLOBAL NAVIGATION SIDEBAR */}
+      <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
+
+      {/* MAIN DASHBOARD CONTENT AREA */}
+      <div suppressHydrationWarning className="flex-1 min-w-0 p-4 md:p-8 space-y-6 overflow-x-hidden">
 
       {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
       <header className="w-full bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
@@ -685,7 +691,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       <footer className="text-center text-xs text-gray-500 font-bold border-t border-gray-200 pt-4">
         منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية
       </footer>
-
     </div>
+  </div>
   );
 }
