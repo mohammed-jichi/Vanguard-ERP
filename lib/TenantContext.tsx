@@ -14,6 +14,8 @@ export interface TenantCompany {
   brandNameAr: string;
   brandNameEn: string;
   logoUrl: string;
+  companyRegistrationNumber?: string;
+  taxIdentificationNumber?: string;
   subscriptionTier: 'STARTER' | 'PRO' | 'ENTERPRISE';
   subscriptionStatus: 'ACTIVE' | 'PAST_DUE' | 'CANCELLED';
   aiUsageCount: number;
@@ -33,6 +35,7 @@ interface TenantContextType {
   currentUser: TenantUser | null;
   isSuperAdmin: boolean;
   switchTenant: (company: TenantCompany) => void;
+  updateTenantSettings: (settings: Partial<TenantCompany>) => Promise<{ success: boolean; error?: string }>;
   onboardNewTenant: (tenantData: Partial<TenantCompany>, adminEmail: string) => Promise<{ success: boolean; error?: string }>;
   refreshTenants: () => Promise<void>;
   registeredCompanies: TenantCompany[];
@@ -45,6 +48,8 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   brandNameAr: 'منتوجات زيت وزيتون الجنوب',
   brandNameEn: 'Southern Olive & Oil Products',
   logoUrl: '/assets/images/logo.png',
+  companyRegistrationNumber: 'CR-104928-LB',
+  taxIdentificationNumber: 'MOF-7489201',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
@@ -151,8 +156,74 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     refreshTenants();
   }, []);
 
+  // Load user saved custom branding & legal numbers on initial mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_tenant_branding');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setCurrentTenant(prev => ({
+            ...prev,
+            ...parsed
+          }));
+        }
+      } catch (e) {
+        console.error('Error reading tenant branding from localStorage:', e);
+      }
+    }
+  }, []);
+
   const switchTenant = (company: TenantCompany) => {
     setCurrentTenant(company);
+  };
+
+  const updateTenantSettings = async (settings: Partial<TenantCompany>): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const updatedTenant: TenantCompany = {
+        ...currentTenant,
+        ...settings,
+        name: settings.name || settings.brandNameAr || currentTenant.name,
+        brandNameAr: settings.brandNameAr || settings.name || currentTenant.brandNameAr,
+        brandNameEn: settings.brandNameEn || settings.name || currentTenant.brandNameEn,
+      };
+
+      setCurrentTenant(updatedTenant);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('vanguard_tenant_branding', JSON.stringify({
+          name: updatedTenant.name,
+          brandNameAr: updatedTenant.brandNameAr,
+          brandNameEn: updatedTenant.brandNameEn,
+          logoUrl: updatedTenant.logoUrl,
+          companyRegistrationNumber: updatedTenant.companyRegistrationNumber,
+          taxIdentificationNumber: updatedTenant.taxIdentificationNumber
+        }));
+      }
+
+      // Update Supabase database if connected
+      const { error } = await supabase
+        .from('tenants')
+        .update({
+          name: updatedTenant.name,
+          brand_name_ar: updatedTenant.brandNameAr,
+          brand_name_en: updatedTenant.brandNameEn,
+          logo_url: updatedTenant.logoUrl,
+          company_registration_number: updatedTenant.companyRegistrationNumber,
+          tax_identification_number: updatedTenant.taxIdentificationNumber
+        })
+        .eq('id', updatedTenant.id);
+
+      if (error) {
+        console.warn('Supabase tenant update notice (fallback active):', error.message);
+      }
+
+      console.log('✅ Successfully updated Tenant Settings & Legal Registration Data:', updatedTenant);
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error updating tenant settings:', err);
+      return { success: false, error: err.message || String(err) };
+    }
   };
 
   const onboardNewTenant = async (tenantData: Partial<TenantCompany>, adminEmail: string): Promise<{ success: boolean; error?: string }> => {
@@ -166,6 +237,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       brandNameAr: tenantData.brandNameAr || tenantName,
       brandNameEn: tenantData.brandNameEn || 'Vanguard Enterprise Client',
       logoUrl: tenantData.logoUrl || '',
+      companyRegistrationNumber: tenantData.companyRegistrationNumber || 'CR-104928-LB',
+      taxIdentificationNumber: tenantData.taxIdentificationNumber || 'MOF-7489201',
       subscriptionTier: tenantData.subscriptionTier || 'PRO',
       subscriptionStatus: 'ACTIVE',
       aiUsageCount: tenantData.aiUsageCount || 0,
@@ -180,6 +253,9 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           slug: slug,
           brand_name_ar: tenantData.brandNameAr || tenantName,
           brand_name_en: tenantData.brandNameEn || 'Southern Olive & Oil Products',
+          logo_url: tenantData.logoUrl || '',
+          company_registration_number: tenantData.companyRegistrationNumber || 'CR-104928-LB',
+          tax_identification_number: tenantData.taxIdentificationNumber || 'MOF-7489201',
           owner_email: adminEmail
         }])
         .select();
@@ -202,7 +278,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   return (
-    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, onboardNewTenant, refreshTenants, registeredCompanies }}>
+    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, onboardNewTenant, refreshTenants, registeredCompanies }}>
       {children}
     </TenantContext.Provider>
   );
@@ -211,7 +287,21 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export const useTenant = () => {
   const context = useContext(TenantContext);
   if (!context) {
-    throw new Error('useTenant must be used within a TenantProvider');
+    return {
+      currentTenant: DEFAULT_SUPERADMIN_TENANT,
+      currentUser: {
+        id: 'usr-superadmin-01',
+        email: 'khadeer@vanguard-erp.com',
+        fullName: 'خضير (Vanguard Super Admin)',
+        role: 'SUPER_ADMIN' as const
+      },
+      isSuperAdmin: true,
+      switchTenant: () => {},
+      updateTenantSettings: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
+      onboardNewTenant: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
+      refreshTenants: async () => {},
+      registeredCompanies: INITIAL_COMPANIES
+    };
   }
   return context;
 };

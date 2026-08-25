@@ -12,6 +12,8 @@ import ReceiveAndProductionMaster from './ReceiveAndProductionMaster';
 import ProductMasterModal from './ProductMasterModal';
 import SuperSonicFleetManager from './SuperSonicFleetManager';
 import Sidebar from './Sidebar';
+import TenantSettingsModal from './TenantSettingsModal';
+import { useTenant } from '@/lib/TenantContext';
 import {
   Building2,
   Droplets,
@@ -62,12 +64,14 @@ interface MainTileDashboardProps {
 }
 
 export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainTileDashboardProps) {
+  const { currentTenant } = useTenant();
   const [activeScreen, setActiveScreen] = useState<string>(initialScreen);
   const [usdRate, setUsdRate] = useState<number>(89500);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAlertsModal, setShowAlertsModal] = useState<boolean>(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState<boolean>(false);
-  const tenantName: string | undefined = undefined;
+  const [isTenantSettingsOpen, setIsTenantSettingsOpen] = useState<boolean>(false);
+  const tenantName = currentTenant?.brandNameAr || currentTenant?.name || "منتوجات زيت وزيتون الجنوب";
 
   useEffect(() => {
     document.title = 'Vanguard ERP - لوحة التحكم الرئيسية';
@@ -285,23 +289,50 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         {/* BRAND IDENTITY */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-14 h-14 max-w-[56px] max-h-[56px] bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1 shrink-0">
-            <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-full h-full object-cover rounded-xl shrink-0" />
+            <img
+              src={currentTenant?.logoUrl || '/assets/images/vanguard_logo.png'}
+              alt={currentTenant?.brandNameAr || 'Tenant Logo'}
+              className="w-full h-full object-cover rounded-xl shrink-0"
+              onError={e => {
+                (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
+              }}
+            />
           </div>
           <div>
             <h1 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
-              Vanguard ERP System
+              {currentTenant?.brandNameAr || currentTenant?.name || 'Vanguard ERP System'}
               <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                Tenant Workspace
+                {currentTenant?.subscriptionTier || 'ENTERPRISE'}
               </span>
             </h1>
-            <p className="text-xs text-gray-500 font-bold mt-0.5">
-              Enterprise Resource Planning System
-            </p>
+            <div className="flex items-center gap-2 text-xs text-gray-500 font-bold mt-0.5">
+              <span>{currentTenant?.brandNameEn || 'Enterprise Resource Planning System'}</span>
+              {currentTenant?.companyRegistrationNumber && (
+                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200 font-mono text-[10px]">
+                  س.ت: {currentTenant.companyRegistrationNumber}
+                </span>
+              )}
+              {currentTenant?.taxIdentificationNumber && (
+                <span className="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-mono text-[10px]">
+                  MOF: {currentTenant.taxIdentificationNumber}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
         {/* CONTROLS & METRICS */}
         <div className="flex flex-wrap items-center gap-2">
+
+          {/* TENANT SETTINGS BUTTON */}
+          <button
+            onClick={() => setIsTenantSettingsOpen(true)}
+            className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+            title="إعدادات الهوية والترخيص والسجل التجاري"
+          >
+            <Settings className="w-4 h-4 text-amber-600" />
+            <span>إعدادات الهوية والتراخيص</span>
+          </button>
 
           {/* USD RATE BADGE */}
           <div className="bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-700 flex items-center gap-1.5 shadow-sm">
@@ -687,9 +718,18 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         onClose={() => setIsProductModalOpen(false)}
       />
 
+      {/* TENANT PROFILE, LOGO & LEGAL NUMBERS SETTINGS MODAL */}
+      <TenantSettingsModal
+        isOpen={isTenantSettingsOpen}
+        onClose={() => setIsTenantSettingsOpen(false)}
+      />
+
       {/* FOOTER */}
-      <footer className="text-center text-xs text-gray-500 font-bold border-t border-gray-200 pt-4">
-        منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية
+      <footer className="text-center text-xs text-gray-500 font-bold border-t border-gray-200 pt-4 space-y-1">
+        <p>منصة ERP لشركة {tenantName || "Vanguard ERP System"} © 2026 -- جميع البيانات محفوظة ومحمية</p>
+        <p className="text-[10px] text-gray-400 font-mono">
+          سجل تجاري: {currentTenant?.companyRegistrationNumber || 'CR-104928-LB'} | رقم مالي MOF: {currentTenant?.taxIdentificationNumber || 'MOF-7489201'}
+        </p>
       </footer>
     </div>
   </div>

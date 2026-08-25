@@ -36,13 +36,18 @@ import {
   Tag
 } from 'lucide-react';
 
+import { useTenant } from '@/lib/TenantContext';
+import TenantSettingsModal from './TenantSettingsModal';
+
 interface SidebarProps {
   activeScreen?: string;
   onSelectScreen?: (screenKey: string) => void;
 }
 
 export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: SidebarProps) {
+  const { currentTenant } = useTenant();
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     sales: true,
     supersonic: false,
@@ -76,13 +81,22 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
       <div className="p-3 border-b border-gray-200 flex items-center justify-between bg-gray-50/80">
         {isOpen ? (
           <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-900 border border-amber-500 flex items-center justify-center p-0.5 overflow-hidden">
-                <img src="/assets/images/vanguard_logo.png" alt="Vanguard Logo" className="w-full h-full object-cover rounded" />
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 border border-amber-500 flex items-center justify-center p-0.5 overflow-hidden shrink-0">
+                <img
+                  src={currentTenant.logoUrl || '/assets/images/vanguard_logo.png'}
+                  alt={currentTenant.brandNameAr || 'Company Logo'}
+                  className="w-full h-full object-cover rounded"
+                  onError={e => {
+                    (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
+                  }}
+                />
               </div>
-              <span className="font-black text-xs text-gray-900 tracking-tight">Vanguard ERP</span>
+              <span className="font-black text-xs text-gray-900 tracking-tight truncate">
+                {currentTenant.brandNameAr || currentTenant.name || 'Vanguard ERP'}
+              </span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => handleNav('grid-dash')}
                 title="الرئيسية (Home Dashboard)"
@@ -309,8 +323,16 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
           )}
         </div>
 
-        {/* 8. SUPER ADMIN SAAS CONTROLLER LINK */}
-        <div className="pt-2 border-t border-gray-200">
+        {/* 8. TENANT PROFILE & BRANDING SETTINGS */}
+        <div className="pt-2 border-t border-gray-200 space-y-1.5">
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200/80 transition-colors font-bold text-xs shadow-sm"
+          >
+            <Settings className="w-4 h-4 text-amber-600 shrink-0" />
+            {isOpen && <span>إعدادات الشعار والترخيص (Profile)</span>}
+          </button>
+
           <a
             href="/admin"
             className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-900 text-amber-400 hover:bg-slate-800 transition-colors font-bold text-xs shadow-sm"
@@ -325,10 +347,19 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
       {/* FOOTER METRICS */}
       {isOpen && (
         <div className="p-3 border-t border-gray-200 bg-gray-50 text-[10px] text-gray-500 font-bold text-center space-y-0.5">
-          <p className="text-gray-700">Vanguard ERP System v2.6</p>
-          <p className="text-amber-600">منتوجات زيت وزيتون الجنوب SARL</p>
+          <p className="text-gray-700">{currentTenant.brandNameEn || 'Vanguard ERP System'}</p>
+          <p className="text-amber-600">{currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب SARL'}</p>
+          {currentTenant.companyRegistrationNumber && (
+            <p className="text-[9px] text-gray-400 font-mono">س.ت: {currentTenant.companyRegistrationNumber}</p>
+          )}
         </div>
       )}
+
+      {/* TENANT PROFILE & LEGAL BRANDING MODAL */}
+      <TenantSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </aside>
   );
 }
