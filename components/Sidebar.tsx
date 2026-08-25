@@ -171,53 +171,53 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
           </button>
 
           {isOpen && expandedGroups['sales'] && (
-            <div className="mr-3 pr-2 border-r border-amber-200 space-y-0.5 mt-1 text-xs">
-              <button onClick={() => handleNav('sales-dash')} className="w-full text-right p-1.5 hover:text-amber-600 rounded">لوحة تحكم المبيعات (Dashboard)</button>
-              <button onClick={() => handleNav('sales-pos')} className="w-full text-right p-1.5 hover:text-amber-600 rounded font-medium text-amber-700">نقطة البيع الكاشير (POS Terminal)</button>
-              <button onClick={() => handleNav('sales-reports')} className="w-full text-right p-1.5 hover:text-amber-600 rounded">تقارير المبيعات (Reports)</button>
-              <button onClick={() => handleNav('sales-online')} className="w-full text-right p-1.5 hover:text-amber-600 rounded">الطلبيات الإلكترونية (Online Orders)</button>
-              <button onClick={() => handleNav('sales-eod')} className="w-full text-right p-1.5 hover:text-amber-600 rounded">إغلاق الصندوق Z-Report</button>
-              <a href="/pos" target="_blank" className="w-full text-right p-1.5 text-amber-600 hover:underline flex items-center gap-1 font-medium">
-                <ExternalLink className="w-3 h-3" /> تطبيق POS Touch
+            <div className="ml-3 pl-2 border-l border-amber-200 space-y-0.5 mt-1 text-xs">
+              <button onClick={() => handleNav('sc-dashboard')} className="w-full text-left p-1.5 hover:text-amber-600 rounded font-medium">Dashboard</button>
+              <button onClick={() => handleNav('sales-pos')} className="w-full text-left p-1.5 hover:text-amber-600 rounded font-bold text-amber-700">POS Touch Terminal</button>
+              <button onClick={() => handleNav('sc-reports')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">Reports</button>
+              <button onClick={() => handleNav('sc-online-orders')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">Online Orders</button>
+              <button onClick={() => handleNav('sc-eod')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">End of Day</button>
+              <a href="/pos" target="_blank" className="w-full text-left p-1.5 text-amber-600 hover:underline flex items-center gap-1 font-medium">
+                <ExternalLink className="w-3 h-3" /> POS Touch App (External)
               </a>
 
-              {/* SALES SETUP ACCORDION */}
+              {/* SETUP ACCORDION */}
               <div className="pt-1">
                 <button
                   onClick={() => toggleGroup('sales_setup')}
-                  className="w-full flex items-center justify-between p-1 text-amber-900 bg-amber-50 hover:bg-amber-100 rounded font-medium text-[11px]"
+                  className="w-full flex items-center justify-between p-1.5 text-amber-950 bg-amber-50 hover:bg-amber-100 rounded font-bold text-xs"
                 >
-                  <span>⚙️ إعدادات نقطة البيع</span>
-                  {expandedGroups['sales_setup'] ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                  <span>Setup</span>
+                  {expandedGroups['sales_setup'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                 </button>
                 {expandedGroups['sales_setup'] && (
-                  <div className="mr-2 pr-1.5 border-r border-amber-300 space-y-0.5 mt-0.5 text-[11px] text-gray-600">
-                    <button onClick={() => handleNav('sales-setup-screen')} className="w-full text-right p-1 hover:text-amber-600">تنسيق الشاشات (Screen Config)</button>
-                    <button onClick={() => handleNav('sales-setup-payment')} className="w-full text-right p-1 hover:text-amber-600">أنواع الدفع (Payment Types)</button>
-                    <button onClick={() => handleNav('sales-setup-coupons')} className="w-full text-right p-1 hover:text-amber-600">الكوبونات (Coupons)</button>
-                    <button onClick={() => handleNav('sales-setup-discounts')} className="w-full text-right p-1 hover:text-amber-600">الخصومات (Discounts)</button>
-                    <button onClick={() => handleNav('sales-setup-pricemodes')} className="w-full text-right p-1 hover:text-amber-600">أنماط الأسعار (Price Modes)</button>
-                    <button onClick={() => handleNav('sales-setup-workstations')} className="w-full text-right p-1 hover:text-amber-600">طابعات الفواتير (Workstations)</button>
+                  <div className="ml-2 pl-2 border-l border-amber-300 space-y-0.5 mt-0.5 text-xs text-gray-700">
+                    <button onClick={() => handleNav('setup-screens')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Screens</button>
+                    <button onClick={() => handleNav('setup-payment-types')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Payment Types</button>
+                    <button onClick={() => handleNav('setup-coupons')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Coupons and Gift Certificates</button>
+                    <button onClick={() => handleNav('setup-discounts')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Discounts</button>
+                    <button onClick={() => handleNav('setup-price-modes')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Price Modes</button>
+                    <button onClick={() => handleNav('setup-workstations')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Workstations and Printers</button>
                   </div>
                 )}
               </div>
 
-              {/* SALES MORE SETUP */}
+              {/* MORE SETUP ACCORDION */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('sales_moresetup')}
-                  className="w-full flex items-center justify-between p-1 text-gray-800 bg-gray-100 hover:bg-gray-200 rounded font-medium text-[11px]"
+                  className="w-full flex items-center justify-between p-1.5 text-gray-900 bg-gray-100 hover:bg-gray-200 rounded font-bold text-xs"
                 >
-                  <span>🛠️ إعدادات متقدمة</span>
-                  {expandedGroups['sales_moresetup'] ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                  <span>More Setup</span>
+                  {expandedGroups['sales_moresetup'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                 </button>
                 {expandedGroups['sales_moresetup'] && (
-                  <div className="mr-2 pr-1.5 border-r border-gray-300 space-y-0.5 mt-0.5 text-[11px] text-gray-600">
-                    <button onClick={() => handleNav('sales-moresetup-voidreasons')} className="w-full text-right p-1 hover:text-amber-600">أسباب الإلغاء (Void Reasons)</button>
-                    <button onClick={() => handleNav('sales-moresetup-vatexempt')} className="w-full text-right p-1 hover:text-amber-600">أسباب الإعفاء الضريبي (VAT Exemption)</button>
-                    <button onClick={() => handleNav('sales-moresetup-invoicemsg')} className="w-full text-right p-1 hover:text-amber-600">رسالة الفاتورة (Message on Invoice)</button>
-                    <button onClick={() => handleNav('sales-moresetup-zonesetup')} className="w-full text-right p-1 hover:text-amber-600">توزيع المناطق (Zone Setup)</button>
-                    <button onClick={() => handleNav('sales-moresetup-currencysetup')} className="w-full text-right p-1 hover:text-amber-600 font-medium text-amber-700">تهيئة العملات (Currency Setup)</button>
+                  <div className="ml-2 pl-2 border-l border-gray-300 space-y-0.5 mt-0.5 text-xs text-gray-700">
+                    <button onClick={() => handleNav('more-void')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Void Reasons</button>
+                    <button onClick={() => handleNav('more-vat')} className="w-full text-left p-1 hover:text-amber-600 font-medium">VAT Exemptions Reason</button>
+                    <button onClick={() => handleNav('more-message')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Message on Invoice</button>
+                    <button onClick={() => handleNav('more-zone')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Zone Setup</button>
+                    <button onClick={() => handleNav('more-currency')} className="w-full text-left p-1 hover:text-amber-600 font-bold text-amber-700">Currency Setup</button>
                   </div>
                 )}
               </div>

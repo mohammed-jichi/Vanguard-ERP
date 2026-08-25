@@ -14,6 +14,7 @@ import SuperSonicFleetManager from './SuperSonicFleetManager';
 import Sidebar from './Sidebar';
 import TenantSettingsModal from './TenantSettingsModal';
 import VanguardGlobalHeader from './VanguardGlobalHeader';
+import GenericDataTable from './GenericDataTable';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -60,6 +61,40 @@ interface TileItem {
   borderColor: string;
   action?: () => void;
 }
+
+const SALES_CONTROL_TITLES: Record<string, string> = {
+  'sc-dashboard': 'Dashboard',
+  'sc-reports': 'Reports',
+  'sc-online-orders': 'Online Orders',
+  'sc-eod': 'End of Day',
+  'setup-screens': 'Screens',
+  'setup-payment-types': 'Payment Types',
+  'setup-coupons': 'Coupons and Gift Certificates',
+  'setup-discounts': 'Discounts',
+  'setup-price-modes': 'Price Modes',
+  'setup-workstations': 'Workstations and Printers',
+  'more-void': 'Void Reasons',
+  'more-vat': 'VAT Exemptions Reason',
+  'more-message': 'Message on Invoice',
+  'more-zone': 'Zone Setup',
+  'more-currency': 'Currency Setup',
+
+  'sales-dash': 'Dashboard',
+  'sales-reports': 'Reports',
+  'sales-online': 'Online Orders',
+  'sales-eod': 'End of Day',
+  'sales-setup-screen': 'Screens',
+  'sales-setup-payment': 'Payment Types',
+  'sales-setup-coupons': 'Coupons and Gift Certificates',
+  'sales-setup-discounts': 'Discounts',
+  'sales-setup-pricemodes': 'Price Modes',
+  'sales-setup-workstations': 'Workstations and Printers',
+  'sales-moresetup-voidreasons': 'Void Reasons',
+  'sales-moresetup-vatexempt': 'VAT Exemptions Reason',
+  'sales-moresetup-invoicemsg': 'Message on Invoice',
+  'sales-moresetup-zonesetup': 'Zone Setup',
+  'sales-moresetup-currencysetup': 'Currency Setup'
+};
 
 function getSectionMetadata(screenKey: string) {
   const map: Record<string, { titleAr: string; titleEn: string; module: string }> = {
@@ -673,39 +708,19 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
               </div>
             </div>
 
-            {/* WORKSPACE DATA CARD */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                <div>
-                  <h3 className="font-black text-sm text-gray-900">سجل وتفاصيل {getSectionMetadata(activeScreen).titleAr}</h3>
-                  <p className="text-xs text-gray-500 font-bold mt-0.5">
-                    إدارة حركات واستعلامات قسم {getSectionMetadata(activeScreen).module} لشركة {tenantName || "منتوجات زيت وزيتون الجنوب SARL"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-xl font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> النظام متصل وجاهز (Live Connected)
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-8 text-center space-y-3">
-                <div className="w-12 h-12 bg-white rounded-full border border-gray-200 flex items-center justify-center mx-auto text-amber-600 shadow-sm">
-                  <Layers className="w-6 h-6" />
-                </div>
-                <h4 className="font-black text-sm text-gray-800">وحدة {getSectionMetadata(activeScreen).titleAr} ({getSectionMetadata(activeScreen).titleEn})</h4>
-                <p className="text-xs text-gray-500 max-w-lg mx-auto font-medium">
-                  يتم تحميل البيانات المباشرة وتطابق الجداول المحاسبية والتشغيلية لهذا القسم تلقائياً عبر محرك Vanguard ERP.
-                </p>
-                <div className="pt-2 flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => alert(`تم تحديث بيانات ${getSectionMetadata(activeScreen).titleAr} بنجاح!`)}
-                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition-all shadow-sm"
-                  >
-                    مزامنة وتحديث البيانات
-                  </button>
-                </div>
-              </div>
+            {/* WORKSPACE DATA CARD / DATA TABLE VIEW */}
+            <div className="w-full">
+              <GenericDataTable
+                title={
+                  SALES_CONTROL_TITLES[activeScreen] ||
+                  getSectionMetadata(activeScreen).titleEn ||
+                  activeScreen
+                }
+                description={`View, create, and manage records for ${
+                  SALES_CONTROL_TITLES[activeScreen] ||
+                  getSectionMetadata(activeScreen).titleEn
+                }.`}
+              />
             </div>
           </div>
         ) : (
