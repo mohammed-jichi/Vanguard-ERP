@@ -526,18 +526,18 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    <div dir={dir} className="flex flex-col min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden m-0 p-0">
+    <div dir={dir} className="flex flex-col min-h-screen w-full bg-white text-gray-800 font-sans overflow-x-hidden m-0 p-0">
       {/* 1. TOP MAIN DARK HEADER (SPANS 100% VIEWPORT WIDTH AT THE TOP, h-16) */}
       <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
       {/* 2. MASTER FLEX CONTAINER DIRECTLY UNDERNEATH TOP DARK HEADER */}
-      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-64px)]">
+      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-64px)] bg-white">
         
         {/* LEFT SIDE: PERSISTENT SIDEBAR - Touches bottom of top dark header & spans full remaining height */}
         <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
 
         {/* RIGHT SIDE: MAIN CONTENT COLUMN (flex-1 flex flex-col min-w-0) */}
-        <div suppressHydrationWarning className="flex-1 flex flex-col min-w-0 bg-[#f4f7f9]">
+        <div suppressHydrationWarning className="flex-1 flex flex-col min-w-0 bg-white">
           
           {/* SUB-HEADER / RECENTLY VISITED TOOLBAR - CONSTRAINED WITHIN RIGHT CONTENT COLUMN NEXT TO SIDEBAR */}
           <VanguardSubHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
@@ -746,7 +746,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -768,7 +768,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -790,7 +790,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -812,7 +812,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">

@@ -100,8 +100,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   return (
     <div className="w-full flex flex-col font-sans dir-rtl select-none">
       
-      {/* 1. TOP MAIN HEADER (LIGHT CREAM THEME bg-[#FDFBF7] - VANGUARD BRANDED) */}
-      <header className="w-full h-16 bg-[#FDFBF7] text-black border-b border-stone-200/80 px-4 md:px-6 flex items-center justify-between shadow-xs top-0 left-0 right-0 z-50 shrink-0 select-none">
+      {/* 1. TOP MAIN HEADER (LIGHT CREAM THEME bg-[#FDFBF7] - VANGUARD BRANDED WITH SEPARATOR LINE) */}
+      <header className="w-full h-16 bg-[#FDFBF7] text-black border-b-2 border-[#E5DCC3] shadow-xs px-4 md:px-6 flex items-center justify-between top-0 left-0 right-0 z-50 shrink-0 select-none">
         
         {/* LEFT: VANGUARD BRANDING - PURE CIRCULAR LOGO & CONTINUOUS NON-BOLD TITLE */}
         <div className="flex items-center gap-3">
@@ -431,7 +431,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="bg-slate-950 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-amber-400" />
-                <h3 className="font-black text-sm">القائمة السريعة (Vanguard Quick Menu)</h3>
+                <h3 className="font-black text-sm">{language === 'ar' ? 'القائمة السريعة (Vanguard Quick Menu)' : 'Vanguard Quick Menu'}</h3>
               </div>
               <button onClick={() => setIsQuickMenuOpen(false)} className="text-gray-400 hover:text-white p-1">
                 <X className="w-5 h-5" />
@@ -474,9 +474,11 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-4">
                   {/* SUPPORT CENTER */}
                   <div className="bg-amber-50/60 border border-amber-200 p-4 rounded-2xl space-y-2">
-                    <h4 className="font-black text-amber-900 text-sm">مركز الدعم الفني والتعليمات (Support Center)</h4>
+                    <h4 className="font-black text-amber-900 text-sm">
+                      {language === 'ar' ? 'مركز الدعم الفني والتعليمات (Support Center)' : 'Support Center'}
+                    </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      Open the main support page for guides, videos, and product help.
+                      {language === 'ar' ? 'افتح صفحة الدعم الرئيسية لمشاهدة الأدلة، الفيديو، والتعليمات.' : 'Open the main support page for guides, videos, and product help.'}
                     </p>
                     <a
                       href="/support"
@@ -484,15 +486,17 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" /> الانتقال إلى Support Center
+                      <ExternalLink className="w-3.5 h-3.5" /> {language === 'ar' ? 'الانتقال إلى Support Center' : 'Go to Support Center'}
                     </a>
                   </div>
 
                   {/* LIVE CHAT */}
                   <div className="bg-emerald-50/60 border border-emerald-200 p-4 rounded-2xl space-y-2">
-                    <h4 className="font-black text-emerald-900 text-sm">المحادثة المباشرة (Live WhatsApp Chat)</h4>
+                    <h4 className="font-black text-emerald-900 text-sm">
+                      {language === 'ar' ? 'المحادثة المباشرة (Live WhatsApp Chat)' : 'Live WhatsApp Chat'}
+                    </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      تواصل مباشرة مع فريق دعم Vanguard عبر واتساب.
+                      {language === 'ar' ? 'تواصل مباشرة مع فريق دعم Vanguard عبر واتساب.' : 'Connect directly with the Vanguard Support team via WhatsApp.'}
                     </p>
                     <a
                       href="https://wa.me/96170000000"
@@ -500,37 +504,41 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <MessageSquare className="w-3.5 h-3.5" /> فتح الدردشة المباشرة
+                      <MessageSquare className="w-3.5 h-3.5" /> {language === 'ar' ? 'فتح الدردشة المباشرة' : 'Open WhatsApp Chat'}
                     </a>
                   </div>
 
                   {/* PHONE CALL */}
                   <div className="bg-sky-50/60 border border-sky-200 p-4 rounded-2xl space-y-2">
-                    <h4 className="font-black text-sky-900 text-sm">الاتصال الفوري للدعم (Phone Support)</h4>
+                    <h4 className="font-black text-sky-900 text-sm">
+                      {language === 'ar' ? 'الاتصال الفوري للدعم (Phone Support)' : 'Phone Support'}
+                    </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      Triggers a tel: link prompt for Vanguard Support hotline.
+                      {language === 'ar' ? 'تفعيل رابط الاتصال السريع بخط الدعم الفني.' : 'Direct telephone hotline for urgent Vanguard support.'}
                     </p>
                     <a
                       href="tel:+96170000000"
                       className="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <Phone className="w-3.5 h-3.5" /> اتصال بـ Vanguard (+961 70 000 000)
+                      <Phone className="w-3.5 h-3.5" /> {language === 'ar' ? 'اتصال بـ Vanguard (+961 70 000 000)' : 'Call Vanguard (+961 70 000 000)'}
                     </a>
                   </div>
 
                   {/* DOWNLOADS LIST (NO OMEGA APPS - VANGUARD APPS ONLY) */}
                   <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
-                    <h4 className="font-black text-slate-900 text-sm">تطبيقات برامج Vanguard المباشرة (Downloads)</h4>
+                    <h4 className="font-black text-slate-900 text-sm">
+                      {language === 'ar' ? 'تطبيقات برامج Vanguard المباشرة (Downloads)' : 'Downloads'}
+                    </h4>
                     <div className="space-y-1.5 pt-1 text-[11px]">
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('تحميل Vanguard POS Desktop v4.2'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
+                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard POS Desktop v4.2'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
                         <span>Vanguard POS Desktop Terminal v4.2</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('تحميل Vanguard Thermal Print Server'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
+                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard Thermal Print Server'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
                         <span>Vanguard Thermal Invoice Print Agent</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('تحميل Vanguard SuperSonic Driver Mobile App'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
+                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard SuperSonic Driver Mobile App'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
                         <span>Vanguard Driver Fleet Mobile APK</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </a>
@@ -544,8 +552,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-3">
                   <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl">
                     <span className="text-[10px] text-amber-600 font-bold font-mono">v2026.8.25 Update</span>
-                    <h5 className="font-black text-gray-900">تحديث وحدات القياس UOM والحسابات</h5>
-                    <p className="text-gray-500 font-medium text-[11px] mt-1">تطبيق نظام الـ 18 وحدة قياس معقدة واحتساب أسعار التكلفة تلقائياً.</p>
+                    <h5 className="font-black text-gray-900">{language === 'ar' ? 'تحديث وحدات القياس UOM والحسابات' : 'UOM Units of Measure & Accounting Engine'}</h5>
+                    <p className="text-gray-500 font-medium text-[11px] mt-1">{language === 'ar' ? 'تطبيق نظام الـ 18 وحدة قياس معقدة واحتساب أسعار التكلفة تلقائياً.' : 'Automatic 18 unit of measure conversions & cost calculation.'}</p>
                   </div>
                 </div>
               )}
@@ -554,8 +562,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               {quickMenuTab === 'alerts' && (
                 <div className="space-y-2">
                   <div className="p-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl">
-                    <p className="font-black text-xs">⚠️ تنبيه إغلاق الشهر المحاسبي</p>
-                    <p className="text-[11px] font-medium mt-0.5">يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.</p>
+                    <p className="font-black text-xs">{language === 'ar' ? '⚠️ تنبيه إغلاق الشهر المحاسبي' : '⚠️ End of Month Closing Alert'}</p>
+                    <p className="text-[11px] font-medium mt-0.5">{language === 'ar' ? 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.' : 'Please reconcile JV entries and bank accounts prior to closure.'}</p>
                   </div>
                 </div>
               )}
@@ -563,8 +571,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               {/* LAST ACTIVITIES TAB */}
               {quickMenuTab === 'activities' && (
                 <div className="space-y-2 text-[11px]">
-                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">تحديث شعار الشركة لـ منتوجات زيت وزيتون الجنوب SARL</p>
-                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">إنشاء إرسالية استلام زيت زيتون بكر ممتاز - 16 لتر</p>
+                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">{language === 'ar' ? 'تحديث شعار الشركة لـ منتوجات زيت وزيتون الجنوب SARL' : 'Updated company profile for Southern Olive Oil & Products SARL'}</p>
+                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">{language === 'ar' ? 'إنشاء إرسالية استلام زيت زيتون بكر ممتاز - 16 لتر' : 'Created receipt voucher for Extra Virgin Olive Oil - 16L'}</p>
                 </div>
               )}
 
