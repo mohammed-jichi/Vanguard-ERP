@@ -125,13 +125,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           </div>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME */}
+        {/* CENTER: TENANT LICENSE AND NAME (PURE WHITE CONTRAST FIX) */}
         <div className="hidden md:flex items-center gap-2.5 bg-[#2b2b40] border border-[#3b3b55] px-4 py-1.5 rounded-full text-xs shadow-inner">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-mono text-amber-400 font-black text-sm">22901</span>
           <span className="text-slate-400 font-bold">-</span>
-          <span className="font-bold text-gray-100">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
-          <span className="text-[11px] text-emerald-400 bg-emerald-950/80 border border-emerald-700/80 px-2.5 py-0.5 rounded-full font-bold">
+          <span className="font-semibold text-white tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
+          <span className="text-[11px] text-white font-bold bg-emerald-700/90 border border-emerald-500 px-2.5 py-0.5 rounded-full shadow-xs">
             {currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب'}
           </span>
         </div>
@@ -412,19 +412,19 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
         </div>
       </header>
 
-      {/* 2. SUB-HEADER / TOOLBAR (LIGHT THEME) */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex flex-col md:flex-row items-center justify-between gap-3 shadow-xs">
+      {/* 2. SUB-HEADER / TOOLBAR (LIGHT THEME WITH mt-6 SPACING AFTER TOP HEADER) */}
+      <div className="bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3 shadow-xs mt-6">
         
         {/* LEFT SIDE: RECENTLY VISITED DYNAMIC BREADCRUMBS */}
-        <div className="flex items-center gap-2 overflow-x-auto max-w-full text-xs font-bold text-gray-700">
-          <span className="text-gray-400 font-bold shrink-0">Recently Visited:</span>
+        <div className="flex items-center gap-2 overflow-x-auto max-w-full text-xs text-gray-700 font-medium">
+          <span className="text-black font-semibold shrink-0">Recently Visited:</span>
           {recentlyVisited.map((item, idx) => (
             <React.Fragment key={item.key}>
               {idx > 0 && <span className="text-gray-300 text-[10px] shrink-0">›</span>}
               <button
                 onClick={() => onSelectScreen(item.key)}
                 className={`hover:text-amber-600 truncate transition-colors ${
-                  activeScreen === item.key ? 'text-amber-600 font-black underline' : 'text-gray-700'
+                  activeScreen === item.key ? 'text-amber-600 font-bold underline' : 'text-gray-700 font-medium'
                 }`}
               >
                 {item.titleAr}
