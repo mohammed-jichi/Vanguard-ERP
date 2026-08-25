@@ -240,110 +240,135 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   const overviewTiles: TileItem[] = [
     {
       id: 'oil-pressing',
-      titleAr: 'معصرة الزيت، الاستلام والإنتاج',
-      titleEn: 'Oil Press, Receive & Production',
-      icon: <Droplets className="w-8 h-8 text-emerald-600" />,
-      badge: 'نشط الآن',
+      titleEn: 'Oil Pressing & Production',
+      titleAr: 'معصرة الزيت والإنتاج',
+      icon: <Droplets className="w-6 h-6 text-emerald-600" />,
       color: 'text-emerald-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
       action: () => setActiveScreen('oil-pressing')
     },
     {
-      id: 'analytics-dash',
-      titleAr: 'لوحة تحليلات المبيعات والعمليات',
-      titleEn: 'Executive Sales & Operations',
-      icon: <TrendingUp className="w-8 h-8 text-amber-600" />,
-      badge: '+18.4%',
+      id: 'sales-dash',
+      titleEn: 'Sales Dashboard',
+      titleAr: 'لوحة تحكم المبيعات',
+      icon: <BarChart3 className="w-6 h-6 text-amber-600" />,
       color: 'text-amber-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('analytics-dash')
+      action: () => setActiveScreen('sales-dash')
     },
     {
-      id: 'reports-summary',
-      titleAr: 'التقارير المجمعة والتنفيذية',
-      titleEn: 'Executive Summary Reports',
-      icon: <FileText className="w-8 h-8 text-blue-600" />,
+      id: 'sales-reports',
+      titleEn: 'Executive Reports',
+      titleAr: 'التقارير التنفيذية',
+      icon: <FileText className="w-6 h-6 text-blue-600" />,
       color: 'text-blue-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('reports-summary')
+      action: () => setActiveScreen('sales-reports')
     },
     {
-      id: 'tasks-events',
-      titleAr: 'جدول المهام والمواعيد',
-      titleEn: 'Tasks & Calendar Events',
-      icon: <Calendar className="w-8 h-8 text-purple-600" />,
-      badge: '3 اليوم',
+      id: 'cust-tasks',
+      titleEn: 'Tasks & Appointments',
+      titleAr: 'المهام والمواعيد',
+      icon: <Calendar className="w-6 h-6 text-purple-600" />,
       color: 'text-purple-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('tasks-events')
+      action: () => setActiveScreen('cust-tasks')
     },
     {
-      id: 'aged-debtors',
-      titleAr: 'أعمار الديون والذمم المدينة',
-      titleEn: 'Customer Aged & Debtors',
-      icon: <Users className="w-8 h-8 text-red-600" />,
-      color: 'text-red-600',
+      id: 'cust-aged',
+      titleEn: 'Aged Debtors',
+      titleAr: 'أعمار الديون والذمم',
+      icon: <Users className="w-6 h-6 text-rose-600" />,
+      color: 'text-rose-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('aged-debtors')
+      action: () => setActiveScreen('cust-aged')
+    },
+    {
+      id: 'hr-dir',
+      titleEn: 'Employee Directory',
+      titleAr: 'سجل الموظفين',
+      icon: <UserCheck className="w-6 h-6 text-slate-700" />,
+      color: 'text-slate-700',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('hr-dir')
     }
   ];
 
   const billingTiles: TileItem[] = [
     {
-      id: 'customers-dir',
-      titleAr: 'دليل وحسابات العملاء',
-      titleEn: 'Customers Directory',
-      icon: <Users className="w-8 h-8 text-sky-600" />,
-      color: 'text-sky-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      action: () => setActiveScreen('customers-dir')
-    },
-    {
-      id: 'quotations',
-      titleAr: 'عروض الأسعار والمناقصات',
-      titleEn: 'Quotations & Bids',
-      icon: <ClipboardList className="w-8 h-8 text-amber-600" />,
-      color: 'text-amber-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      action: () => setActiveScreen('quotations')
-    },
-    {
       id: 'sales-pos',
-      titleAr: 'نقطة البيع ومراقبة المبيعات',
-      titleEn: 'POS & Sales Control',
-      icon: <ShoppingCart className="w-8 h-8 text-emerald-600" />,
-      badge: 'POS ON',
+      titleEn: 'POS Cashier Terminal',
+      titleAr: 'نقطة البيع الكاشير',
+      icon: <ShoppingCart className="w-6 h-6 text-emerald-600" />,
       color: 'text-emerald-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
       action: () => setActiveScreen('sales-pos')
     },
     {
-      id: 'delivery-goods',
-      titleAr: 'سندات وتسليم البضائع',
-      titleEn: 'Delivery of Goods',
-      icon: <Truck className="w-8 h-8 text-amber-600" />,
+      id: 'sales-reports-billing',
+      titleEn: 'Sales Cashier Reports',
+      titleAr: 'تقارير المبيعات الصندوقية',
+      icon: <FileText className="w-6 h-6 text-emerald-700" />,
+      color: 'text-emerald-700',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('sales-reports')
+    },
+    {
+      id: 'sales-online',
+      titleEn: 'Online Store Orders',
+      titleAr: 'الطلبيات الإلكترونية',
+      icon: <Package className="w-6 h-6 text-amber-600" />,
       color: 'text-amber-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('delivery-goods')
+      action: () => setActiveScreen('sales-online')
+    },
+    {
+      id: 'sales-eod',
+      titleEn: 'End of Day Z-Report',
+      titleAr: 'إغلاق الصندوق اليومي',
+      icon: <CheckCircle2 className="w-6 h-6 text-slate-700" />,
+      color: 'text-slate-700',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('sales-eod')
+    },
+    {
+      id: 'op-quotes',
+      titleEn: 'Quotations & Bids',
+      titleAr: 'عروض الأسعار والمناقصات',
+      icon: <FileText className="w-6 h-6 text-amber-600" />,
+      color: 'text-amber-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('op-quotes')
+    },
+    {
+      id: 'cust-dir',
+      titleEn: 'Customers Directory',
+      titleAr: 'دليل حسابات العملاء',
+      icon: <Users className="w-6 h-6 text-purple-600" />,
+      color: 'text-purple-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('cust-dir')
     }
   ];
 
-  const inventoryTiles: TileItem[] = [
+  const movementsTiles: TileItem[] = [
     {
       id: 'product-master',
-      titleAr: 'بطاقة تعريف المادة والمنتجات',
-      titleEn: 'Products & Services Master Modal',
-      icon: <Layers className="w-8 h-8 text-amber-600" />,
-      badge: 'المركزي',
+      titleEn: 'Products & Services Catalog',
+      titleAr: 'دليل المنتجات والخدمات',
+      icon: <Layers className="w-6 h-6 text-amber-600" />,
       color: 'text-amber-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
@@ -351,87 +376,116 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
     },
     {
       id: 'inventory-stock',
-      titleAr: 'جرد أصناف المواد والخزانات',
-      titleEn: 'Inventory Stock & Tanks',
-      icon: <Package className="w-8 h-8 text-amber-600" />,
-      badge: '1,500 صنف',
+      titleEn: 'Stock Inventory & Tanks',
+      titleAr: 'جرد المواد والخزانات',
+      icon: <Package className="w-6 h-6 text-amber-600" />,
       color: 'text-amber-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('inventory-stock')
+      action: () => setActiveScreen('inventory')
     },
     {
       id: 'stock-transfers',
-      titleAr: 'تحويلات المخازن والفروع',
-      titleEn: 'Stock Transfers & Inter-branch',
-      icon: <RefreshCw className="w-8 h-8 text-emerald-600" />,
+      titleEn: 'Stock Transfers',
+      titleAr: 'تحويلات المخزون',
+      icon: <TrendingUp className="w-6 h-6 text-emerald-600" />,
       color: 'text-emerald-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('stock-transfers')
+      action: () => setActiveScreen('op-transfer')
     },
     {
-      id: 'vendors-purchases',
-      titleAr: 'الموردين وأوامر الشراء',
-      titleEn: 'Vendors & Purchase Orders',
-      icon: <Warehouse className="w-8 h-8 text-blue-600" />,
-      color: 'text-blue-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      action: () => setActiveScreen('vendors-purchases')
-    },
-    {
-      id: 'inventory-brands',
-      titleAr: 'العلامات التجارية والبراندات',
-      titleEn: 'Inventory Brands & Lines',
-      icon: <Layers className="w-8 h-8 text-purple-600" />,
-      color: 'text-purple-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      action: () => setActiveScreen('inventory-brands')
-    }
-  ];
-
-  const accountingTiles: TileItem[] = [
-    {
-      id: 'journal-vouchers',
-      titleAr: 'سندات القيد اليومية (JVs)',
-      titleEn: 'Journal Vouchers',
-      icon: <Receipt className="w-8 h-8 text-amber-600" />,
+      id: 'delivery-goods',
+      titleEn: 'Delivery of Goods',
+      titleAr: 'تسليم البضائع',
+      icon: <Truck className="w-6 h-6 text-amber-600" />,
       color: 'text-amber-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('journal-vouchers')
+      action: () => setActiveScreen('delivery-goods')
     },
     {
-      id: 'accounts-receivables',
-      titleAr: 'متابعة الذمم والتحصيل',
-      titleEn: 'Accounts Receivables',
-      icon: <DollarSign className="w-8 h-8 text-emerald-600" />,
-      color: 'text-emerald-600',
+      id: 'lost-goods',
+      titleEn: 'Lost & Damaged Goods',
+      titleAr: 'البضائع المفقودة والتالفة',
+      icon: <Package className="w-6 h-6 text-rose-600" />,
+      color: 'text-rose-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('accounts-receivables')
+      action: () => setActiveScreen('op-lostgoods')
     },
     {
-      id: 'bank-rec',
-      titleAr: 'المطابقة والترصيد المصرفي',
-      titleEn: 'Bank Reconciliation',
-      icon: <ShieldCheck className="w-8 h-8 text-sky-600" />,
-      color: 'text-sky-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      action: () => setActiveScreen('bank-rec')
-    },
-    {
-      id: 'vat-closing',
-      titleAr: 'إغلاق فترة ضريبة T.V.A',
-      titleEn: 'VAT Period Closing',
-      icon: <CheckCircle2 className="w-8 h-8 text-purple-600" />,
+      id: 'bom-assembly',
+      titleEn: 'BOM Assembly',
+      titleAr: 'تجميع المنتجات BOM',
+      icon: <Layers className="w-6 h-6 text-purple-600" />,
       color: 'text-purple-600',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200',
-      action: () => setActiveScreen('vat-closing')
+      action: () => setActiveScreen('op-bom')
+    }
+  ];
+
+  const procurementsTiles: TileItem[] = [
+    {
+      id: 'suppliers-directory',
+      titleEn: 'Suppliers Directory',
+      titleAr: 'دليل الموردين والمزارعين',
+      icon: <Warehouse className="w-6 h-6 text-slate-700" />,
+      color: 'text-slate-700',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('op-setup-suppliers')
+    },
+    {
+      id: 'purchase-orders',
+      titleEn: 'Purchase Orders',
+      titleAr: 'أوامر الشراء',
+      icon: <FileText className="w-6 h-6 text-blue-600" />,
+      color: 'text-blue-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('op-po')
+    },
+    {
+      id: 'purchases-ledger',
+      titleEn: 'Purchases Ledger',
+      titleAr: 'فواتير المشتريات',
+      icon: <Receipt className="w-6 h-6 text-emerald-600" />,
+      color: 'text-emerald-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('op-purchases')
+    },
+    {
+      id: 'reorder-guide',
+      titleEn: 'Reorder Guide',
+      titleAr: 'دليل إعادة الطلب',
+      icon: <TrendingUp className="w-6 h-6 text-amber-600" />,
+      color: 'text-amber-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('op-reorder')
+    },
+    {
+      id: 'accounts-payable',
+      titleEn: 'Accounts Payable (AP)',
+      titleAr: 'ذمم الموردين الدائنة',
+      icon: <DollarSign className="w-6 h-6 text-indigo-600" />,
+      color: 'text-indigo-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('acc-ap')
+    },
+    {
+      id: 'bank-reconciliation',
+      titleEn: 'Bank Reconciliation',
+      titleAr: 'مطابقة الحسابات البنكية',
+      icon: <ShieldCheck className="w-6 h-6 text-sky-600" />,
+      color: 'text-sky-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      action: () => setActiveScreen('acc-rec')
     }
   ];
 
@@ -655,147 +709,92 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
             </div>
           </div>
         ) : (
-          /* MAIN OMEGA POS TILE GRID DASHBOARD */
-          <div className="space-y-8">
+          /* MAIN VANGUARD ERP CLEAN SQUARE TILE GRID DASHBOARD */
+          <div className="space-y-6">
 
-            {/* SECTION 1: OVERVIEW BLOCK */}
-            <div className="space-y-3">
-              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-                <h2 className="text-lg font-black text-amber-600 flex items-center gap-2">
-                  <LayoutGrid className="w-5 h-5 text-amber-600" /> 1. Overview & Oil Production (نظرة عامة والإنتاج)
-                </h2>
-                <span className="text-xs text-gray-500 font-bold">5 وحدات تشغيلية</span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {/* 1. OVERVIEW SECTION */}
+            <div>
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-3 mt-2 border-b border-gray-200 pb-1.5 flex items-center justify-between">
+                <span>Overview</span>
+                <span className="text-[10px] text-gray-400 font-medium">6 Modules</span>
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {overviewTiles.map((tile) => (
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm hover:border-amber-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
                   >
-                    <div className="relative">
-                      {tile.icon}
-                      {tile.badge && (
-                        <span className="absolute -top-2 -right-3 bg-amber-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                          {tile.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-sm text-gray-800 group-hover:text-amber-600 transition-colors leading-tight">
-                        {tile.titleAr}
-                      </h3>
-                      <p className="text-[10px] text-gray-500 font-medium mt-1">
-                        {tile.titleEn}
-                      </p>
-                    </div>
+                    <div className="shrink-0">{tile.icon}</div>
+                    <span className="text-sm font-medium text-gray-700 leading-tight">
+                      {language === 'ar' ? tile.titleAr : tile.titleEn}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* SECTION 2: BILLING & SALES BLOCK */}
-            <div className="space-y-3">
-              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-                <h2 className="text-lg font-black text-emerald-600 flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5 text-emerald-600" /> 2. Billing & Sales Control (المبيعات والفوترة)
-                </h2>
-                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {/* 2. BILLING SECTION */}
+            <div>
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-3 mt-6 border-b border-gray-200 pb-1.5 flex items-center justify-between">
+                <span>Billing</span>
+                <span className="text-[10px] text-gray-400 font-medium">6 Modules</span>
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {billingTiles.map((tile) => (
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm hover:border-emerald-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
                   >
-                    <div className="relative">
-                      {tile.icon}
-                      {tile.badge && (
-                        <span className="absolute -top-2 -right-3 bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                          {tile.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-sm text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">
-                        {tile.titleAr}
-                      </h3>
-                      <p className="text-[10px] text-gray-500 font-medium mt-1">
-                        {tile.titleEn}
-                      </p>
-                    </div>
+                    <div className="shrink-0">{tile.icon}</div>
+                    <span className="text-sm font-medium text-gray-700 leading-tight">
+                      {language === 'ar' ? tile.titleAr : tile.titleEn}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* SECTION 3: INVENTORY & SUPPLY CHAIN BLOCK */}
-            <div className="space-y-3">
-              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-                <h2 className="text-lg font-black text-sky-600 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-sky-600" /> 3. Inventory & Supply Chain (المخازن والتوريد)
-                </h2>
-                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {inventoryTiles.map((tile) => (
+            {/* 3. MOVEMENTS SECTION */}
+            <div>
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-3 mt-6 border-b border-gray-200 pb-1.5 flex items-center justify-between">
+                <span>Movements</span>
+                <span className="text-[10px] text-gray-400 font-medium">6 Modules</span>
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {movementsTiles.map((tile) => (
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm hover:border-sky-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
                   >
-                    <div className="relative">
-                      {tile.icon}
-                      {tile.badge && (
-                        <span className="absolute -top-2 -right-3 bg-sky-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
-                          {tile.badge}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-sm text-gray-800 group-hover:text-sky-600 transition-colors leading-tight">
-                        {tile.titleAr}
-                      </h3>
-                      <p className="text-[10px] text-gray-500 font-medium mt-1">
-                        {tile.titleEn}
-                      </p>
-                    </div>
+                    <div className="shrink-0">{tile.icon}</div>
+                    <span className="text-sm font-medium text-gray-700 leading-tight">
+                      {language === 'ar' ? tile.titleAr : tile.titleEn}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* SECTION 4: FINANCE & ACCOUNTING BLOCK */}
-            <div className="space-y-3">
-              <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-                <h2 className="text-lg font-black text-purple-600 flex items-center gap-2">
-                  <Receipt className="w-5 h-5 text-purple-600" /> 4. Finance & Accounting (المالية والحسابات)
-                </h2>
-                <span className="text-xs text-gray-500 font-bold">4 وحدات تشغيلية</span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {accountingTiles.map((tile) => (
+            {/* 4. PROCUREMENTS SECTION */}
+            <div>
+              <h3 className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-3 mt-6 border-b border-gray-200 pb-1.5 flex items-center justify-between">
+                <span>Procurements</span>
+                <span className="text-[10px] text-gray-400 font-medium">6 Modules</span>
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {procurementsTiles.map((tile) => (
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border border-gray-200 shadow-sm hover:border-purple-500 rounded-2xl p-4 md:p-5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-md group space-y-3 min-h-[160px]"
+                    className="bg-white border border-gray-200 shadow-sm rounded-md hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 hover:border-amber-500/50 min-h-[110px] aspect-square"
                   >
-                    <div className="relative">
-                      {tile.icon}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-sm text-gray-800 group-hover:text-purple-600 transition-colors leading-tight">
-                        {tile.titleAr}
-                      </h3>
-                      <p className="text-[10px] text-gray-500 font-medium mt-1">
-                        {tile.titleEn}
-                      </p>
-                    </div>
+                    <div className="shrink-0">{tile.icon}</div>
+                    <span className="text-sm font-medium text-gray-700 leading-tight">
+                      {language === 'ar' ? tile.titleAr : tile.titleEn}
+                    </span>
                   </div>
                 ))}
               </div>
