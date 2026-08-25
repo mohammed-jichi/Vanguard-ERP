@@ -733,7 +733,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           </div>
         ) : (
           /* MAIN VANGUARD ERP CLEAN SQUARE TILE GRID DASHBOARD */
-          <div className="space-y-6">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 w-full space-y-6">
 
             {/* 1. OVERVIEW SECTION */}
             <div>
@@ -746,7 +746,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-sm rounded-xl hover:shadow-md hover:border-amber-500/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -768,7 +768,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-sm rounded-xl hover:shadow-md hover:border-amber-500/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -790,7 +790,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-sm rounded-xl hover:shadow-md hover:border-amber-500/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
@@ -812,7 +812,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
                   <div
                     key={tile.id}
                     onClick={tile.action}
-                    className="bg-white border-2 border-[#EFE9D9] shadow-2xs rounded-2xl hover:shadow-md hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
+                    className="bg-white border-2 border-[#EFE9D9] shadow-sm rounded-xl hover:shadow-md hover:border-amber-500/80 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer p-4 flex flex-col items-center justify-center text-center space-y-2.5 min-h-[110px] aspect-square"
                   >
                     <div className="shrink-0">{tile.icon}</div>
                     <span className="text-sm font-medium text-gray-700 leading-tight">
