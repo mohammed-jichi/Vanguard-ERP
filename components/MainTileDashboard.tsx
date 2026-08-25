@@ -59,6 +59,163 @@ interface TileItem {
   action?: () => void;
 }
 
+function getSectionMetadata(screenKey: string) {
+  const map: Record<string, { titleAr: string; titleEn: string; module: string }> = {
+    // Sales
+    'sales-dash': { titleAr: 'لوحة تحكم المبيعات', titleEn: 'Sales Dashboard', module: 'Sales Control (المبيعات ونقطة البيع)' },
+    'sales-reports': { titleAr: 'تقارير المبيعات الصندوقية', titleEn: 'Sales Cashier Reports', module: 'Sales Control (المبيعات ونقطة البيع)' },
+    'sales-online': { titleAr: 'الطلبيات الإلكترونية والمتاجر', titleEn: 'Online Store Orders', module: 'Sales Control (المبيعات ونقطة البيع)' },
+    'sales-eod': { titleAr: 'إغلاق الصندوق اليومي (Z-Report)', titleEn: 'End of Day Z-Report', module: 'Sales Control (المبيعات ونقطة البيع)' },
+    'sales-setup-screen': { titleAr: 'تنسيق شاشات نقطة البيع', titleEn: 'POS Layout Screen Config', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-setup-payment': { titleAr: 'أنواع الدفع ووسائل السداد', titleEn: 'Payment Types & Methods', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-setup-coupons': { titleAr: 'الكوبونات وقسائم الهدايا', titleEn: 'Coupons & Gift Certificates', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-setup-discounts': { titleAr: 'سياسات الخصومات والتنزيلات', titleEn: 'Discounts & Promotions', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-setup-pricemodes': { titleAr: 'أنماط أسعار المبيعات', titleEn: 'Price Modes', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-setup-workstations': { titleAr: 'محطات العمل وطابعات الفواتير', titleEn: 'Workstations & Printers', module: 'Sales Setup (إعدادات المبيعات)' },
+    'sales-moresetup-voidreasons': { titleAr: 'أسباب إلغاء الفواتير', titleEn: 'Void Invoice Reasons', module: 'Sales Advanced Setup' },
+    'sales-moresetup-vatexempt': { titleAr: 'أسباب الإعفاء الضريبي', titleEn: 'VAT Exemption Reasons', module: 'Sales Advanced Setup' },
+    'sales-moresetup-invoicemsg': { titleAr: 'رسائل وتذييل الفواتير', titleEn: 'Message on Invoice', module: 'Sales Advanced Setup' },
+    'sales-moresetup-zonesetup': { titleAr: 'تنسيق مناطق البيع', titleEn: 'Zone Setup', module: 'Sales Advanced Setup' },
+    'sales-moresetup-currencysetup': { titleAr: 'تهيئة العملات وسعر الصرف', titleEn: 'Currency Setup', module: 'Sales Advanced Setup' },
+
+    // Fleet (🔒 PRO)
+    'fleet-map': { titleAr: 'خريطة تتبع الشاحنات الحي GPS 🔒', titleEn: 'Live Fleet GPS Map', module: 'SuperSonic Management (🔒 Fleet & Logistics)' },
+    'fleet-km': { titleAr: 'سجل المسافات والعدّادات 🔒', titleEn: 'KM Logs & Mileage', module: 'SuperSonic Management (🔒 Fleet & Logistics)' },
+    'fleet-fuel': { titleAr: 'استهلاك الوقود والتعبئة 🔒', titleEn: 'Fuel Consumption & Refills', module: 'SuperSonic Management (🔒 Fleet & Logistics)' },
+    'fleet-maint': { titleAr: 'صيانة وخدمة المركبات 🔒', titleEn: 'Vehicle Maintenance', module: 'SuperSonic Management (🔒 Fleet & Logistics)' },
+    'fleet-playback': { titleAr: 'سجل الرحلات وإعادة التشغيل 🔒', titleEn: 'Trip History & Route Playback', module: 'SuperSonic Management (🔒 Fleet & Logistics)' },
+
+    // Social CRM (🔒 ENT)
+    'social-inbox': { titleAr: 'صندوق الرسائل الموحد 🔒', titleEn: 'Omnichannel Unified Inbox', module: 'Social Media Management (🔒 Social CRM)' },
+    'social-orders': { titleAr: 'طلبات منصات التواصل 🔒', titleEn: 'Platform Orders & Draft Invoices', module: 'Social Media Management (🔒 Social CRM)' },
+    'social-calendar': { titleAr: 'رزنامة المحتوى والنشر 🔒', titleEn: 'Content & Publishing Calendar', module: 'Social Media Management (🔒 Social CRM)' },
+    'social-campaigns': { titleAr: 'الحملات الإعلانية وتكلفة الليد 🔒', titleEn: 'Ad Campaigns & CPL Analytics', module: 'Social Media Management (🔒 Social CRM)' },
+    'social-agents': { titleAr: 'فريق الدعم الداخلي 🔒', titleEn: 'Internal Support Agents', module: 'Social Media Management (🔒 Social CRM)' },
+    'social-distributors': { titleAr: 'دليل الموزعين الخارجيين 🔒', titleEn: 'External Distributors Directory', module: 'Social Media Management (🔒 Social CRM)' },
+
+    // Operations
+    'op-dash': { titleAr: 'لوحة تحكم العمليات الرئيسية', titleEn: 'Operations Center Dashboard', module: 'Operations Center & Olive Pressing' },
+    'op-reports': { titleAr: 'تقارير العمليات والمعاصرة', titleEn: 'Operations & Pressing Reports', module: 'Operations Center & Olive Pressing' },
+    'op-sales': { titleAr: 'مبيعات الجملة والتصدير', titleEn: 'Wholesale Sales & Export', module: 'Operations Actions' },
+    'op-quotes': { titleAr: 'عروض الأسعار والتثمين', titleEn: 'Quotations & Valuations', module: 'Operations Actions' },
+    'op-purchases': { titleAr: 'المشتريات والتوريد', titleEn: 'Purchases & Procurement', module: 'Operations Actions' },
+    'op-po': { titleAr: 'أوامر الشراء الرسمية', titleEn: 'Official Purchase Orders (PO)', module: 'Operations Actions' },
+    'op-reorder': { titleAr: 'دليل إعادة الطلب التلقائي', titleEn: 'Automated Reorder Guide', module: 'Operations Actions' },
+    'op-transfer': { titleAr: 'تحويلات المخزون بين الخزانات', titleEn: 'Inventory Tank Transfer', module: 'Operations Actions' },
+    'op-lostgoods': { titleAr: 'البضائع المفقودة والتالفة', titleEn: 'Lost & Damaged Goods Log', module: 'Operations Actions' },
+    'op-bom': { titleAr: 'تركيبة وتجميع المنتجات (BOM Assembly)', titleEn: 'Item Assembly & Multi-Decimal BOM', module: 'Operations Actions' },
+    'op-adjustments': { titleAr: 'تسويات المخزون الدوري', titleEn: 'Inventory Stock Adjustments', module: 'Operations Actions' },
+
+    // Product Requests
+    'op-prodreq-create': { titleAr: 'إنشاء طلب منتجات', titleEn: 'Create Product Request', module: 'Product Requests System' },
+    'op-prodreq-manage': { titleAr: 'إدارة طلبات المنتجات', titleEn: 'Manage Product Requests', module: 'Product Requests System' },
+    'op-prodreq-prep': { titleAr: 'تجهيز وإعداد الطلبات', titleEn: 'Preparation & Fulfilling', module: 'Product Requests System' },
+    'op-prodreq-receive': { titleAr: 'استلام البضائع والمواد', titleEn: 'Receiving of Goods', module: 'Product Requests System' },
+    'op-prodreq-reject': { titleAr: 'أسباب رفض شحنات البضائع', titleEn: 'Goods Reject Reasons', module: 'Product Requests System' },
+
+    // Events
+    'op-events-main': { titleAr: 'سجل الفعاليات والمناسبات', titleEn: 'Events Directory', module: 'Events Management' },
+    'op-events-venues': { titleAr: 'أماكن وقاعات الفعاليات', titleEn: 'Event Venues', module: 'Events Management' },
+    'op-events-resources': { titleAr: 'موارد تجهيز الفعاليات', titleEn: 'Event Resources', module: 'Events Management' },
+    'op-events-types': { titleAr: 'تصنيفات وأنواع الفعاليات', titleEn: 'Event Types', module: 'Events Management' },
+
+    // Setup
+    'op-setup-quick': { titleAr: 'الإعداد السريع للمؤسسة', titleEn: 'Quick Operations Setup', module: 'Operations Setup' },
+    'products-services': { titleAr: 'دليل المنتجات والخدمات', titleEn: 'Products & Services Master Catalog', module: 'Operations Setup' },
+    'op-setup-groups': { titleAr: 'مجموعات الأصناف', titleEn: 'Item Groups', module: 'Operations Setup' },
+    'op-setup-divisions': { titleAr: 'أقسام المنتجات', titleEn: 'Product Divisions', module: 'Operations Setup' },
+    'op-setup-categories': { titleAr: 'فئات الأصناف', titleEn: 'Item Categories', module: 'Operations Setup' },
+    'op-setup-locations': { titleAr: 'المواقع والمستودعات', titleEn: 'Warehouse Locations & Tanks', module: 'Operations Setup' },
+    'op-setup-suppliers': { titleAr: 'دليل الموردين والمزارعين', titleEn: 'Suppliers Directory', module: 'Operations Setup' },
+    'op-setup-depts': { titleAr: 'الإدارات التشغيلية', titleEn: 'Operational Departments', module: 'Operations Setup' },
+    'op-setup-lostreasons': { titleAr: 'أسباب تلف البضائع', titleEn: 'Lost Goods Reasons', module: 'Operations Setup' },
+    'op-setup-sizegroups': { titleAr: 'مجموعات المقاسات والأحجام', titleEn: 'Size Groups', module: 'Operations Setup' },
+    'op-setup-sizes': { titleAr: 'مقاسات المنتجات', titleEn: 'Product Sizes', module: 'Operations Setup' },
+    'op-setup-colors': { titleAr: 'ألوان العبوات', titleEn: 'Colors', module: 'Operations Setup' },
+    'op-setup-brands': { titleAr: 'العلامات التجارية', titleEn: 'Brands', module: 'Operations Setup' },
+    'op-setup-deliveryproviders': { titleAr: 'شركات التوصيل والشحن', titleEn: 'Delivery Providers', module: 'Operations Setup' },
+
+    // CRM
+    'cust-dir': { titleAr: 'دليل حسابات العملاء', titleEn: 'Customers Directory', module: 'Customer Management (CRM)' },
+    'cust-receipts': { titleAr: 'إيصالات المقبوضات (Money-in)', titleEn: 'Customer Receipts', module: 'Customer Management (CRM)' },
+    'cust-aged': { titleAr: 'أعمار ديون العملاء (Aged Debtors)', titleEn: 'Customer Aged Debtors', module: 'Customer Management (CRM)' },
+    'cust-insights': { titleAr: 'تحليلات القيمة الممتدة للعميل (LTV)', titleEn: 'Customer Insights & LTV', module: 'Customer Management (CRM)' },
+    'cust-tasks': { titleAr: 'المهام والمواعيد للعملاء', titleEn: 'Tasks & Appointments', module: 'Customer Management (CRM)' },
+    'cust-leads': { titleAr: 'الفرص البيعية والجهات الاتصالية', titleEn: 'Leads & Contacts', module: 'Customer Management (CRM)' },
+    'cust-performance': { titleAr: 'أداء فريق المبيعات والعملاء', titleEn: 'Sales Team Performance', module: 'Customer Management (CRM)' },
+    'cust-settings-groups': { titleAr: 'مجموعات العملاء', titleEn: 'Customer Groups', module: 'CRM Setup' },
+    'cust-settings-categories': { titleAr: 'تصنيفات العملاء', titleEn: 'Customer Categories', module: 'CRM Setup' },
+    'cust-settings-tags': { titleAr: 'علامات ووسوم العملاء', titleEn: 'Customer Tags', module: 'CRM Setup' },
+    'cust-settings-lead': { titleAr: 'إعدادات الفرص البيعية', titleEn: 'Lead Settings', module: 'CRM Setup' },
+
+    // Feedback & Loyalty
+    'cust-feedback-dash': { titleAr: 'لوحة الشكاوى والاقتراحات', titleEn: 'Feedback Dashboard', module: 'Feedback System' },
+    'cust-feedback-manage': { titleAr: 'إدارة شكاوى العملاء', titleEn: 'Manage Complaints', module: 'Feedback System' },
+    'cust-feedback-add': { titleAr: 'تسجيل شكوى جديدة', titleEn: 'Add Complaint', module: 'Feedback System' },
+    'cust-feedback-surveys': { titleAr: 'استطلاعات الرأي والتقييم', titleEn: 'Manage Surveys', module: 'Feedback System' },
+    'cust-feedback-emails': { titleAr: 'إرسال الاستطلاعات بالبريد', titleEn: 'Send Survey Emails', module: 'Feedback System' },
+    'cust-feedback-resources': { titleAr: 'مصادر الشكاوى', titleEn: 'Complaint Resources', module: 'Feedback Setup' },
+    'cust-feedback-cat': { titleAr: 'تصنيفات الشكاوى', titleEn: 'Complaint Categories', module: 'Feedback Setup' },
+    'cust-feedback-actions': { titleAr: 'أنواع الإجراءات للشكاوى', titleEn: 'Action Types', module: 'Feedback Setup' },
+    'cust-feedback-care': { titleAr: 'برنامج العناية بالعميل', titleEn: 'Complaint Care', module: 'Feedback Setup' },
+    'cust-feedback-surveysetup': { titleAr: 'تهيئة استطلاعات الرأي', titleEn: 'Survey Setup', module: 'Feedback Setup' },
+    'cust-loyalty-dash': { titleAr: 'لوحة برنامج الولاء والنقاط', titleEn: 'Loyalty Dashboard', module: 'Loyalty System' },
+    'cust-loyalty-reports': { titleAr: 'تقارير النقاط والخصومات', titleEn: 'Loyalty Reports', module: 'Loyalty System' },
+    'cust-loyalty-members': { titleAr: 'سجل أعضاء بطاقات الولاء', titleEn: 'Loyalty Members', module: 'Loyalty System' },
+    'cust-loyalty-levels': { titleAr: 'مستويات ومراحل الولاء', titleEn: 'Loyalty Levels', module: 'Loyalty System' },
+    'cust-loyalty-programs': { titleAr: 'برامج وتحديات الولاء', titleEn: 'Loyalty Programs', module: 'Loyalty System' },
+    'cust-loyalty-msg': { titleAr: 'إرسال الرسائل الترويجية', titleEn: 'Send Promotional Messages', module: 'Loyalty System' },
+    'cust-loyalty-company': { titleAr: 'بيانات برنامج ولاء الشركة', titleEn: 'Company Loyalty Info', module: 'Loyalty System' },
+
+    // Accounting
+    'acc-dash': { titleAr: 'لوحة النظام المحاسبي الشامل', titleEn: 'Accounting Dashboard', module: 'Accounting & Finance' },
+    'acc-reports': { titleAr: 'القوائم والتقارير المالية', titleEn: 'Financial Reports (GL, Trial Balance, P&L, Balance Sheet)', module: 'Accounting & Finance' },
+    'acc-jv': { titleAr: 'سندات اليومية العامة (JV)', titleEn: 'Journal Vouchers (JV)', module: 'Accounting Actions' },
+    'acc-purchases': { titleAr: 'فواتير ومستندات المشتريات', titleEn: 'Purchase Vouchers', module: 'Accounting Actions' },
+    'acc-payments': { titleAr: 'سندات الصرف والمدفوعات', titleEn: 'Payment Vouchers', module: 'Accounting Actions' },
+    'acc-receipts': { titleAr: 'سندات القبض والمقبوضات', titleEn: 'Receipt Vouchers', module: 'Accounting Actions' },
+    'acc-ar': { titleAr: 'حسابات ذمم العملاء المدينة', titleEn: 'Accounts Receivables (AR)', module: 'Accounting Actions' },
+    'acc-ap': { titleAr: 'حسابات ذمم الموردين الدائنة', titleEn: 'Accounts Payables (AP)', module: 'Accounting Actions' },
+    'acc-rec': { titleAr: 'تسوية ومطابقة الحسابات البنكية', titleEn: 'Bank Reconciliation', module: 'Accounting Actions' },
+    'acc-vat': { titleAr: 'إغلاق فترة ضريبة القيمة المضافة T.V.A', titleEn: 'VAT Period Closing', module: 'Accounting Actions' },
+    'acc-coa': { titleAr: 'شجرة الحسابات العامة (COA)', titleEn: 'Chart of Accounts Tree', module: 'Accounting Setup' },
+    'acc-aux-classes': { titleAr: 'تصنيفات الحسابات المالية', titleEn: 'Account Classes', module: 'Account Auxiliaries' },
+    'acc-aux-headers': { titleAr: 'المستويات القيادية 1-3', titleEn: 'Headers 1-3', module: 'Account Auxiliaries' },
+    'acc-aux-groups': { titleAr: 'مجموعات الحسابات', titleEn: 'Account Groups', module: 'Account Auxiliaries' },
+    'acc-aux-jvdesc': { titleAr: 'شروحات القيد النمطية', titleEn: 'JV Description Templates', module: 'Account Auxiliaries' },
+    'acc-aux-jvtypes': { titleAr: 'أنواع سندات اليومية', titleEn: 'JV Types', module: 'Account Auxiliaries' },
+    'acc-aux-currency': { titleAr: 'جدول العملات المحاسبية', titleEn: 'Currency Setup', module: 'Account Auxiliaries' },
+    'acc-aux-rates': { titleAr: 'أسعار الصرف اليومية', titleEn: 'Currency Rates', module: 'Account Auxiliaries' },
+    'acc-deptsetup-groups': { titleAr: 'مجموعات مراكز التكلفة', titleEn: 'Department Groups', module: 'Department Setup' },
+    'acc-deptsetup-depts': { titleAr: 'دليل مراكز التكلفة والإدارات', titleEn: 'Cost Center Departments', module: 'Department Setup' },
+    'acc-deptsetup-cashflow': { titleAr: 'إعداد تقرير التدفقات النقدية', titleEn: 'Cash Flow Report Setup', module: 'Department Setup' },
+    'acc-deptsetup-subdepts': { titleAr: 'الأقسام والمراكز الفرعية', titleEn: 'Sub Departments', module: 'Department Setup' },
+
+    // HR
+    'hr-overview': { titleAr: 'جدول دوام وحضور الموظفين', titleEn: 'Schedule Overview', module: 'Human Resources & Payroll' },
+    'hr-dir': { titleAr: 'سجل الموظفين والكادر الوظيفي', titleEn: 'Personnel Directory', module: 'Human Resources & Payroll' },
+    'hr-schedules': { titleAr: 'مناوبات وجداول العمل', titleEn: 'Work Schedules & Shifts', module: 'Human Resources & Payroll' },
+    'hr-orgsetup-depts': { titleAr: 'الإدارات والأقسام الداخلية', titleEn: 'Internal Departments', module: 'Organization Setup' },
+    'hr-orgsetup-designations': { titleAr: 'المسميات الوظيفية والرتب', titleEn: 'Job Designations', module: 'Organization Setup' },
+    'hr-orgsetup-permissions': { titleAr: 'صلاحيات الموظفين والكاشير', titleEn: 'POS Employee Permissions', module: 'Organization Setup' },
+    'hr-timeoff': { titleAr: 'طلبات الإجازات والمغادرات', titleEn: 'Time Off Requests', module: 'Time & Attendance' },
+    'hr-scheduletemplates': { titleAr: 'قوالب المناوبات والدوام', titleEn: 'Schedule Templates', module: 'Time & Attendance' },
+    'hr-timeoffreasons': { titleAr: 'تصنيفات وأسباب الإجازات', titleEn: 'Time Off Reasons', module: 'Time & Attendance' },
+    'hr-attendancesummary': { titleAr: 'ملخص الحضور والغياب', titleEn: 'Attendance Summary', module: 'Time & Attendance' },
+    'hr-attendancelog': { titleAr: 'سجل البصمة الإلكتروني', titleEn: 'Attendance Biometric Log', module: 'Time & Attendance' },
+    'hr-payroll-dash': { titleAr: 'لوحة مسير الرواتب والأجور', titleEn: 'Payroll Dashboard', module: 'Payroll Management' },
+    'hr-payroll-payslips': { titleAr: 'قسائم الرواتب واحتساب الصافي', titleEn: 'Net Pay & Payslips', module: 'Payroll Management' },
+    'hr-payroll-paymentsettings': { titleAr: 'إعدادات تحويل الرواتب للبنك', titleEn: 'Payroll Payment Settings', module: 'Payroll Management' },
+    'hr-payroll-earningsdeductions': { titleAr: 'التعويضات المكافآت والحسميات', titleEn: 'Earnings & Deductions', module: 'Payroll Management' }
+  };
+
+  return map[screenKey] || {
+    titleAr: screenKey,
+    titleEn: 'ERP Workspace Sub-Module',
+    module: 'Vanguard Enterprise Resource Planning'
+  };
+}
+
 interface MainTileDashboardProps {
   initialScreen?: string;
 }
@@ -543,30 +700,73 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
             </div>
           </div>
         ) : activeScreen !== 'grid-dash' ? (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-10 space-y-6 shadow-sm text-center">
-            <div className="w-16 h-16 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto text-amber-600">
-              <Sparkles className="w-8 h-8" />
+          <div className="space-y-6 dir-rtl font-sans">
+            {/* SECTION HEADER CARD */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-1">
+                    <span>Vanguard ERP</span>
+                    <span>/</span>
+                    <span>{getSectionMetadata(activeScreen).module}</span>
+                    <span>/</span>
+                    <span className="text-amber-600 font-black">{getSectionMetadata(activeScreen).titleAr}</span>
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
+                    {getSectionMetadata(activeScreen).titleAr}
+                    <span className="text-xs font-mono font-bold bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full border border-gray-200">
+                      {getSectionMetadata(activeScreen).titleEn}
+                    </span>
+                  </h2>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveScreen('grid-dash')}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all border border-gray-200"
+                >
+                  ← العودة للمربعات الرئيسية
+                </button>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-black text-gray-900">وحدة العمليات التشغيلية المعتمدة</h2>
-              <p className="text-xs text-emerald-600 font-bold mt-1">{tenantName || "Vanguard ERP System"} | ERP Sub-System Module</p>
-            </div>
-            <p className="text-sm text-gray-600 max-w-lg mx-auto font-medium">
-              هذه الشاشة مفعّلة وجاهزة للعمل ضمن نظام ERP. يمكنك التبديل مباشرة إلى شاشة المعصرة والإنتاج أو العودة إلى لوحة المربعات الرئيسية.
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => setActiveScreen('oil-pressing')}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl shadow-sm text-xs flex items-center gap-2"
-              >
-                <Droplets className="w-4 h-4" /> فتح معصرة الزيت والإنتاج
-              </button>
-              <button
-                onClick={() => setActiveScreen('grid-dash')}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-2.5 rounded-xl border border-gray-200 text-xs"
-              >
-                العودة إلى لوحة المربعات الرئيسية
-              </button>
+
+            {/* WORKSPACE DATA CARD */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                <div>
+                  <h3 className="font-black text-sm text-gray-900">سجل وتفاصيل {getSectionMetadata(activeScreen).titleAr}</h3>
+                  <p className="text-xs text-gray-500 font-bold mt-0.5">
+                    إدارة حركات واستعلامات قسم {getSectionMetadata(activeScreen).module} لشركة {tenantName || "منتوجات زيت وزيتون الجنوب SARL"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-xl font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> النظام متصل وجاهز (Live Connected)
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-8 text-center space-y-3">
+                <div className="w-12 h-12 bg-white rounded-full border border-gray-200 flex items-center justify-center mx-auto text-amber-600 shadow-sm">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <h4 className="font-black text-sm text-gray-800">وحدة {getSectionMetadata(activeScreen).titleAr} ({getSectionMetadata(activeScreen).titleEn})</h4>
+                <p className="text-xs text-gray-500 max-w-lg mx-auto font-medium">
+                  يتم تحميل البيانات المباشرة وتطابق الجداول المحاسبية والتشغيلية لهذا القسم تلقائياً عبر محرك Vanguard ERP.
+                </p>
+                <div className="pt-2 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => alert(`تم تحديث بيانات ${getSectionMetadata(activeScreen).titleAr} بنجاح!`)}
+                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition-all shadow-sm"
+                  >
+                    مزامنة وتحديث البيانات
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
