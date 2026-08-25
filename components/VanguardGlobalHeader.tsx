@@ -28,6 +28,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage, LanguageCode } from '@/lib/LanguageContext';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -41,6 +42,10 @@ interface VisitedItem {
 
 export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: VanguardGlobalHeaderProps) {
   const { currentTenant, currentUser } = useTenant();
+  const { language, dir, setLanguage, t } = useLanguage();
+
+  // Language Switcher Dropdown State
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState<boolean>(false);
 
   // Sub-header dynamic action button state
   const [hasPendingEndOfMonth, setHasPendingEndOfMonth] = useState<boolean>(true);
@@ -48,11 +53,11 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
 
   // Recently visited dynamic history state (last 5 routes)
   const [recentlyVisited, setRecentlyVisited] = useState<VisitedItem[]>([
-    { key: 'oil-pressing', titleAr: 'معصرة الزيت والإنتاج' },
-    { key: 'sales-pos', titleAr: 'نقطة البيع الكاشير' },
-    { key: 'inventory', titleAr: 'المخزون والخزانات' },
-    { key: 'acc-jv', titleAr: 'سندات اليومية JV' },
-    { key: 'cust-dir', titleAr: 'دليل حسابات العملاء' }
+    { key: 'oil-pressing', titleAr: t('olive_pressing', 'Olive Pressing & Production') },
+    { key: 'sales-pos', titleAr: t('pos_terminal', 'POS Cashier Terminal') },
+    { key: 'inventory', titleAr: t('uom_tanks', 'Units of Measure & Tanks') },
+    { key: 'acc-jv', titleAr: t('journal_vouchers', 'Journal Vouchers (JV)') },
+    { key: 'cust-dir', titleAr: t('customer_directory', 'Customer Directory') }
   ]);
 
   // Dropdown & Modal Toggle States
@@ -288,11 +293,57 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             href="/support"
             target="_blank"
             rel="noreferrer"
-            title="مركز الدعم الفني والمساعدة (Support Center)"
-            className="p-2 hover:bg-slate-800 text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
+            title="Support Center"
+            className="p-2 hover:bg-[#2b2b40] text-gray-300 hover:text-amber-400 rounded-xl transition-colors"
           >
             <HelpCircle className="w-4 h-4" />
           </a>
+
+          {/* LANGUAGE SWITCHER DROPDOWN */}
+          <div className="relative">
+            <button
+              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+              title="Select System Language"
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-[#2b2b40] hover:bg-[#3b3b55] text-amber-400 border border-[#3b3b55] rounded-xl text-xs font-bold transition-all shadow-sm"
+            >
+              <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="uppercase font-mono font-bold tracking-wider">{language}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {isLangMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-1.5 text-xs font-bold space-y-1">
+                <button
+                  onClick={() => { setLanguage('en'); setIsLangMenuOpen(false); }}
+                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'en' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
+                >
+                  <span>🇺🇸 English (Default)</span>
+                  {language === 'en' && <span className="text-amber-600 font-black">✓</span>}
+                </button>
+                <button
+                  onClick={() => { setLanguage('ar'); setIsLangMenuOpen(false); }}
+                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'ar' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
+                >
+                  <span>🇱🇧 العربية (Arabic)</span>
+                  {language === 'ar' && <span className="text-amber-600 font-black">✓</span>}
+                </button>
+                <button
+                  onClick={() => { setLanguage('fr'); setIsLangMenuOpen(false); }}
+                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'fr' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
+                >
+                  <span>🇫🇷 Français (French)</span>
+                  {language === 'fr' && <span className="text-amber-600 font-black">✓</span>}
+                </button>
+                <button
+                  onClick={() => { setLanguage('es'); setIsLangMenuOpen(false); }}
+                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'es' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
+                >
+                  <span>🇪🇸 Español (Spanish)</span>
+                  {language === 'es' && <span className="text-amber-600 font-black">✓</span>}
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* USER PROFILE DROPDOWN */}
           <div className="relative">

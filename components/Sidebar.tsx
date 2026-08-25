@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import TenantSettingsModal from './TenantSettingsModal';
 
 interface SidebarProps {
@@ -60,6 +61,7 @@ interface SidebarProps {
 
 export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: SidebarProps) {
   const { currentTenant } = useTenant();
+  const { language, dir, t } = useLanguage();
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [sidebarFilter, setSidebarFilter] = useState<string>('');
@@ -107,9 +109,10 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shrink-0 min-h-screen z-30 font-sans dir-rtl select-none ${
+      className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shrink-0 min-h-screen z-30 font-sans select-none ${
         isOpen ? 'w-64' : 'w-16'
       }`}
+      dir={dir}
     >
       {/* 1. SIDEBAR TOP CONTROL HEADER (HAMBURGER & HOME) */}
       <div className="p-3 border-b border-gray-200 flex flex-col gap-2 bg-white">

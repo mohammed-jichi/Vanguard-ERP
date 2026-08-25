@@ -15,6 +15,7 @@ import Sidebar from './Sidebar';
 import TenantSettingsModal from './TenantSettingsModal';
 import VanguardGlobalHeader from './VanguardGlobalHeader';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Building2,
   Droplets,
@@ -223,6 +224,7 @@ interface MainTileDashboardProps {
 
 export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainTileDashboardProps) {
   const { currentTenant, currentUser } = useTenant();
+  const { language, dir, t } = useLanguage();
   const [activeScreen, setActiveScreen] = useState<string>(initialScreen);
   const [usdRate, setUsdRate] = useState<number>(89500);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -434,7 +436,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden m-0 p-0">
+    <div dir={dir} className="flex flex-col min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden m-0 p-0">
       {/* 1. TOP MAIN HEADER (100% VIEWPORT WIDTH, SLEEK SOLID DARK SLATE bg-[#1e1e2d], top-0, m-0) */}
       <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
