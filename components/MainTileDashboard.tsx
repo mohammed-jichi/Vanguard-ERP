@@ -434,12 +434,12 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-50 text-gray-800 font-sans overflow-x-hidden">
+    <div className="flex min-h-screen w-full bg-[#f4f7f9] text-gray-800 font-sans overflow-x-hidden">
       {/* 0. PERSISTENT GLOBAL NAVIGATION SIDEBAR */}
       <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />
 
       {/* MAIN DASHBOARD CONTENT AREA */}
-      <div suppressHydrationWarning className="flex-1 min-w-0 p-4 md:p-8 space-y-6 overflow-x-hidden">
+      <div suppressHydrationWarning className="flex-1 min-w-0 p-3 md:p-6 space-y-5 overflow-x-hidden">
 
         {/* VANGUARD ERP GLOBAL HEADER & SUB-HEADER (PHASE 4) */}
         <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
