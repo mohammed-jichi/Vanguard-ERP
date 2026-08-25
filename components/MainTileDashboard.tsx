@@ -13,6 +13,7 @@ import ProductMasterModal from './ProductMasterModal';
 import SuperSonicFleetManager from './SuperSonicFleetManager';
 import Sidebar from './Sidebar';
 import TenantSettingsModal from './TenantSettingsModal';
+import VanguardGlobalHeader from './VanguardGlobalHeader';
 import { useTenant } from '@/lib/TenantContext';
 import {
   Building2,
@@ -440,128 +441,8 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       {/* MAIN DASHBOARD CONTENT AREA */}
       <div suppressHydrationWarning className="flex-1 min-w-0 p-4 md:p-8 space-y-6 overflow-x-hidden">
 
-      {/* 1. TOP SYSTEM HEADER (Vanguard ERP Top Banner) */}
-      <header className="w-full bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-
-        {/* BRAND IDENTITY: VANGUARD ERP PROVIDER + TENANT WORKSPACE */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-14 h-14 max-w-[56px] max-h-[56px] bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center shadow-sm overflow-hidden p-1 shrink-0">
-            <img
-              src={currentTenant?.logoUrl || '/assets/images/vanguard_logo.png'}
-              alt={currentTenant?.brandNameAr || 'Tenant Logo'}
-              className="w-full h-full object-cover rounded-xl shrink-0"
-              onError={e => {
-                (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
-              }}
-            />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-amber-600 uppercase tracking-wider bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
-                Vanguard ERP
-              </span>
-              <span className="bg-slate-900 text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold">
-                Role: {currentUser?.role || 'SUPER_ADMIN'}
-              </span>
-            </div>
-            <h1 className="text-lg md:text-xl font-black text-gray-900 flex items-center gap-2 mt-1">
-              Workspace: <span className="text-amber-700">{currentTenant?.brandNameAr || currentTenant?.name || 'منتوجات زيت وزيتون الجنوب SARL'}</span>
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                {currentTenant?.subscriptionTier || 'ENTERPRISE'}
-              </span>
-            </h1>
-            <div className="flex items-center gap-2 text-xs text-gray-500 font-bold mt-0.5">
-              <span>{currentTenant?.brandNameEn || 'Southern Olive & Oil Products SARL'}</span>
-              {currentTenant?.companyRegistrationNumber && (
-                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200 font-mono text-[10px]">
-                  س.ت: {currentTenant.companyRegistrationNumber}
-                </span>
-              )}
-              {currentTenant?.taxIdentificationNumber && (
-                <span className="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-mono text-[10px]">
-                  MOF: {currentTenant.taxIdentificationNumber}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* CONTROLS & METRICS */}
-        <div className="flex flex-wrap items-center gap-2">
-
-          {/* TENANT SETTINGS BUTTON */}
-          <button
-            onClick={() => setIsTenantSettingsOpen(true)}
-            className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-            title="إعدادات الهوية والترخيص والسجل التجاري"
-          >
-            <Settings className="w-4 h-4 text-amber-600" />
-            <span>إعدادات الهوية والتراخيص</span>
-          </button>
-
-          {/* USD RATE BADGE */}
-          <div className="bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-xl text-xs font-bold text-gray-700 flex items-center gap-1.5 shadow-sm">
-            <DollarSign className="w-4 h-4 text-emerald-600" />
-            <span>سعر الصرف: <strong className="text-amber-600">{usdRate.toLocaleString()} LBP</strong></span>
-          </div>
-
-          {/* ACTIVE SYSTEM STATUS BADGE */}
-          <div className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 flex items-center gap-1">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>النظام التشغيلي الفعّال</span>
-          </div>
-
-          {/* BACK TO MAIN DASHBOARD TILE GRID BUTTON */}
-          {activeScreen !== 'grid-dash' && (
-            <button
-              onClick={() => setActiveScreen('grid-dash')}
-              className="bg-amber-500 hover:bg-amber-600 text-white font-black px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all"
-            >
-              <ArrowLeft className="w-4 h-4" /> العودة إلى لوحة المربعات الرئيسية
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* 2. SUBHEADER ACTION & QUICK SEARCH BAR */}
-      <div className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
-
-        {/* SEARCH BAR */}
-        <div className="relative w-full md:w-80">
-          <input
-            type="text"
-            placeholder="بحث سريع في الشاشات والمعاملات..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2 px-4 pr-10 text-xs text-gray-800 font-bold focus:border-amber-500 focus:bg-white focus:outline-none"
-          />
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
-        </div>
-
-        {/* QUICK BUTTON TABS */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveScreen('grid-dash')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${activeScreen === 'grid-dash'
-              ? 'bg-amber-500 text-white shadow-sm'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-          >
-            <LayoutGrid className="w-4 h-4 inline me-1" /> لوحة المربعات الرئيسية (Grid Dashboard)
-          </button>
-
-          <button
-            onClick={() => setActiveScreen('oil-pressing')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${activeScreen === 'oil-pressing'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'bg-gray-100 text-emerald-700 hover:bg-gray-200'
-              }`}
-          >
-            <Droplets className="w-4 h-4 inline me-1" /> المعصرة والإنتاج (Oil Pressing)
-          </button>
-        </div>
-
-      </div>
+        {/* VANGUARD ERP GLOBAL HEADER & SUB-HEADER (PHASE 4) */}
+        <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
       {/* 3. DYNAMIC SCREEN ROUTER */}
       {
