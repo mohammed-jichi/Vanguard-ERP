@@ -670,6 +670,19 @@ export default function CustomerInsightsPage() {
                       <div className="flex justify-between"><span className="text-slate-600">Key Cities:</span><span className="font-mono font-bold">14</span></div>
                     </div>
                   </div>
+
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-blue-600 block mb-1">Loyalty</span>
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 text-xs">
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Program Type :</span><span className="font-mono font-bold text-slate-900">Loyalty Levels</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty Members :</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Active Members This Month :</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty Sales This Month :</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty AOV This Month :</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Active Loyalty Rules :</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5"><span className="text-slate-600">Loyalty Levels :</span><span className="font-mono font-bold text-slate-900">4</span></div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
