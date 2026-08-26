@@ -195,9 +195,9 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <SettingsIcon className={`w-4.5 h-4.5 ${isSettingsOpen ? 'text-slate-950' : 'text-amber-400'}`} />
             </button>
 
-            {/* SYSTEM SETTINGS MEGA MENU (3-COLUMN ENGLISH-ONLY WIDE OVERLAY) */}
+            {/* SYSTEM SETTINGS MEGA MENU (3-COLUMN ENGLISH-ONLY WIDE OVERLAY - ANCHORED RIGHT) */}
             {isSettingsOpen && (
-              <div className="absolute left-0 mt-3 w-[720px] max-w-[90vw] bg-white text-slate-900 border border-slate-200 rounded-2xl shadow-2xl z-50 p-6 font-sans dir-ltr text-left animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute top-full right-0 mt-2 w-[720px] max-w-[90vw] bg-white text-slate-900 border border-slate-200 rounded-2xl shadow-2xl z-50 p-6 font-sans dir-ltr text-left animate-in fade-in slide-in-from-top-2 duration-150">
                 
                 {/* MEGA MENU HEADER */}
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
