@@ -25,7 +25,9 @@ import {
   RefreshCw,
   Sparkles,
   Search,
-  MessageSquare
+  MessageSquare,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/lib/LanguageContext';
@@ -66,6 +68,27 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const [isQuickMenuOpen, setIsQuickMenuOpen] = useState<boolean>(false);
   const [quickMenuTab, setQuickMenuTab] = useState<'updates' | 'alerts' | 'activities' | 'help' | 'theme'>('help');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [showMoreUpdates, setShowMoreUpdates] = useState<boolean>(false);
+  const [showMoreActivities, setShowMoreActivities] = useState<boolean>(false);
+
+  // Alerts state for safe conditional rendering
+  const [alertsList, setAlertsList] = useState<Array<{ id: string; titleEn: string; titleAr: string; descEn: string; descAr: string }>>([
+    {
+      id: 'alt-1',
+      titleEn: '⚠️ End of Month Closure Alert',
+      titleAr: '⚠️ تنبيه إغلاق الشهر المحاسبي',
+      descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
+      descAr: 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.'
+    },
+    {
+      id: 'alt-2',
+      titleEn: '🫒 Pressing Tank #4 Capacity Warning',
+      titleAr: '🫒 تنبيه سعة خزان المعصرة #4',
+      descEn: 'Tank #4 has reached 85% maximum storage capacity threshold.',
+      descAr: 'وصل خزان المعصرة رقم 4 إلى نسبة 85% من سعة التخزين.'
+    }
+  ]);
   
   // Dialog Modals
   const [isInboxOpen, setIsInboxOpen] = useState<boolean>(false);
@@ -100,34 +123,38 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   return (
     <div className="w-full flex flex-col font-sans dir-rtl select-none">
       
-      {/* 1. TOP MAIN HEADER (LIGHT CREAM THEME bg-[#FDFBF7] - VANGUARD BRANDED WITH SEPARATOR LINE) */}
-      <header className="w-full h-16 bg-[#FDFBF7] text-black border-b-2 border-[#E5DCC3] shadow-xs px-4 md:px-6 flex items-center justify-between top-0 left-0 right-0 z-50 shrink-0 select-none">
+      {/* 1. TOP MAIN HEADER (DARK CHARCOAL/BLACK - VANGUARD BRANDED) */}
+      <header className="w-full h-16 bg-[#181824] text-white border-b border-[#2b2b40] px-4 md:px-6 flex items-center justify-between shadow-md top-0 left-0 right-0 z-50 shrink-0 select-none">
         
-        {/* LEFT: VANGUARD BRANDING - PURE CIRCULAR LOGO & CONTINUOUS NON-BOLD TITLE */}
+        {/* LEFT: VANGUARD BRANDING - LINK TO / WITH HEAVY WIDE SANS-SERIF TEXT */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onSelectScreen('grid-dash')}>
+          <a
+            href="/"
+            onClick={(e) => { e.preventDefault(); onSelectScreen('grid-dash'); }}
+            className="flex items-center gap-3 cursor-pointer group"
+          >
             <img
               src="/assets/images/vanguard_logo.png"
               alt="Vanguard ERP Logo"
-              className="w-11 h-11 rounded-full object-cover shadow-xs shrink-0 border border-stone-300/80 p-0.5 bg-white"
+              className="w-10 h-10 rounded-full object-cover shadow-xs shrink-0 border border-amber-500/40 p-0.5 bg-slate-900 group-hover:border-amber-400 transition-all"
               onError={e => {
                 (e.target as HTMLImageElement).src = '/assets/images/vanguard_logo.png';
               }}
             />
-            <span className="text-lg md:text-xl font-normal text-black tracking-normal">
-              Vanguard ERP System
+            <span className="font-black tracking-widest text-white text-lg md:text-xl font-sans uppercase group-hover:text-amber-400 transition-colors">
+              VANGUARD ERP
             </span>
-          </div>
+          </a>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME (BLACK CONTRAST ON CREAM BACKGROUND) */}
-        <div className="hidden md:flex items-center gap-2.5 bg-stone-200/70 border border-stone-300 px-4 py-1.5 rounded-full text-xs shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-mono text-black font-extrabold text-sm">22901</span>
-          <span className="text-stone-400 font-bold">-</span>
-          <span className="font-semibold text-black tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL'}</span>
-          <span className="text-[11px] text-emerald-950 font-bold bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full shadow-2xs">
-            {currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب'}
+        {/* CENTER: TENANT LICENSE AND NAME (EXACTLY: 001 - Southern Olive Oil S.A.R.L) */}
+        <div className="hidden md:flex items-center gap-2.5 bg-[#252538] border border-[#373752] px-4 py-1.5 rounded-full text-xs shadow-inner">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="font-mono text-amber-400 font-extrabold text-sm">001</span>
+          <span className="text-slate-400 font-bold">-</span>
+          <span className="font-semibold text-white tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil S.A.R.L'}</span>
+          <span className="text-[11px] text-emerald-200 font-bold bg-emerald-800/80 border border-emerald-500 px-2.5 py-0.5 rounded-full shadow-2xs">
+            {currentTenant?.brandNameAr || 'منتجات زيت وزيتون الجنوب'}
           </span>
         </div>
 
@@ -344,15 +371,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-1.5 p-1.5 hover:bg-stone-200/80 text-black rounded-xl transition-colors"
+              className="flex items-center gap-1.5 p-1.5 hover:bg-slate-800 text-white rounded-xl transition-colors"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300">
-                {language === 'ar' ? 'م' : 'M'}
+                {currentUser?.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'J'}
               </div>
-              <span className="font-bold text-xs text-black hidden sm:inline">
-                {language === 'ar' ? 'محمد' : 'Mohammed'}
+              <span className="font-bold text-xs text-white hidden sm:inline">
+                {currentUser?.fullName || 'Jichi Mohammed'}
               </span>
-              <ChevronDown className="w-3 h-3 text-stone-500" />
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
             {/* PROFILE DROPDOWN MENU */}
@@ -360,36 +387,36 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-rtl text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
                   <p className="text-gray-900 font-bold">
-                    {language === 'ar' ? 'محمد (مدير النظام)' : 'Mohammed (System Admin)'}
+                    {currentUser?.fullName || 'Jichi Mohammed'}
                   </p>
                   <p className="text-[10px] text-gray-500 font-medium">
-                    {language === 'ar' ? (currentTenant?.brandNameAr || 'منتوجات زيت وزيتون الجنوب') : (currentTenant?.brandNameEn || 'Southern Olive Oil & Products SARL')}
+                    {currentTenant?.brandNameEn || 'Southern Olive Oil S.A.R.L'}
                   </p>
                 </div>
 
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'المؤسسة (Organization)' : 'Organization & License'}</span>
+                  <span>{language === 'ar' ? 'المؤسسة (Organization)' : 'Organization'}</span>
                 </button>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'التنبيهات والإشعارات (Alerts)' : 'Alerts & Notifications'}</span>
+                  <span>{language === 'ar' ? 'التنبيهات والإشعارات' : 'Alerts & Notifications'}</span>
                 </button>
                 <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'اللغة (English)' : 'Language: English'}</span>
+                  <span>{language === 'ar' ? 'اللغة (English)' : 'Language'}</span>
                 </button>
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'حسابي الشخصي' : 'My Profile Account'}</span>
+                  <span>{language === 'ar' ? 'حسابي الشخصي' : 'My Account'}</span>
                 </button>
                 <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'الأدوَار والصلاحيات' : 'Roles & Permissions'}</span>
+                  <span>{language === 'ar' ? 'الأدوَار والصلاحيات' : 'Roles'}</span>
                 </button>
                 <button onClick={() => { onSelectScreen('hr-dir'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <UsersIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'المستخدمين الكاشير' : 'Users & Cashiers'}</span>
+                  <span>{language === 'ar' ? 'المستخدمين' : 'Users'}</span>
                 </button>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -403,7 +430,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="border-t border-gray-100 pt-1">
                   <a href="/login" className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold">
                     <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                    <span>{language === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
+                    <span>{language === 'ar' ? 'تسجيل الخروج' : 'Logout'}</span>
                   </a>
                 </div>
               </div>
@@ -438,37 +465,182 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               </button>
             </div>
 
-            {/* TOP TABS HEADER */}
-            <div className="flex items-center border-b border-gray-200 bg-gray-50 text-xs font-bold overflow-x-auto">
+            {/* TOP TABS HEADER (WITH DARK MODE TOGGLE BUTTON) */}
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 text-xs font-bold px-1">
+              <div className="flex items-center overflow-x-auto">
+                <button
+                  onClick={() => setQuickMenuTab('updates')}
+                  className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'updates' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+                >
+                  Latest Updates
+                </button>
+                <button
+                  onClick={() => setQuickMenuTab('alerts')}
+                  className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'alerts' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+                >
+                  Alerts {alertsList && alertsList.length > 0 && `(${alertsList.length})`}
+                </button>
+                <button
+                  onClick={() => setQuickMenuTab('activities')}
+                  className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'activities' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+                >
+                  Last Activities
+                </button>
+                <button
+                  onClick={() => setQuickMenuTab('help')}
+                  className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'help' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+                >
+                  Help
+                </button>
+              </div>
+
+              {/* DARK MODE TOGGLE BUTTON */}
               <button
-                onClick={() => setQuickMenuTab('help')}
-                className={`p-3 text-center border-b-2 shrink-0 ${quickMenuTab === 'help' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600'}`}
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                className="p-2 text-gray-600 hover:text-amber-600 rounded-lg hover:bg-gray-200/60 transition-colors shrink-0 ml-1"
               >
-                Help & Support
-              </button>
-              <button
-                onClick={() => setQuickMenuTab('updates')}
-                className={`p-3 text-center border-b-2 shrink-0 ${quickMenuTab === 'updates' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600'}`}
-              >
-                Latest Updates
-              </button>
-              <button
-                onClick={() => setQuickMenuTab('alerts')}
-                className={`p-3 text-center border-b-2 shrink-0 ${quickMenuTab === 'alerts' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600'}`}
-              >
-                Alerts
-              </button>
-              <button
-                onClick={() => setQuickMenuTab('activities')}
-                className={`p-3 text-center border-b-2 shrink-0 ${quickMenuTab === 'activities' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600'}`}
-              >
-                Last Activities
+                {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-700" />}
               </button>
             </div>
 
             {/* TAB CONTENT */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs font-bold text-gray-800">
               
+              {/* LATEST UPDATES TAB (WITH SHOW MORE SCROLLABLE AREA) */}
+              {quickMenuTab === 'updates' && (
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-1">
+                    <span className="text-[10px] text-amber-700 font-bold font-mono uppercase tracking-wider">v2026.8.26 Release</span>
+                    <h5 className="font-black text-amber-950 text-xs">Vanguard ERP Accounting & UOM Engine</h5>
+                    <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
+                      Integrated 18 multi-unit conversions (Tanks, Drums, Gallons, Liters, Kilos) with dynamic landed cost calculations.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-2xl space-y-1">
+                    <span className="text-[10px] text-emerald-600 font-bold font-mono uppercase tracking-wider">v2026.8.20 Release</span>
+                    <h5 className="font-black text-gray-900 text-xs">SuperSonic Driver Fleet Real-Time GPS Tracking</h5>
+                    <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
+                      Enabled live driver mobile dispatching and automated proof of delivery receipt generation.
+                    </p>
+                  </div>
+
+                  {showMoreUpdates && (
+                    <div className="space-y-3 animate-in fade-in duration-200">
+                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
+                        <span className="text-[10px] text-sky-600 font-bold font-mono uppercase tracking-wider">v2026.8.10 Release</span>
+                        <h5 className="font-black text-slate-900 text-xs">POS Touch Terminal Multi-Currency Checkout</h5>
+                        <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
+                          Dual cash drawer support handling simultaneous LBP and USD cash change logic.
+                        </p>
+                      </div>
+                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
+                        <span className="text-[10px] text-indigo-600 font-bold font-mono uppercase tracking-wider">v2026.8.01 Release</span>
+                        <h5 className="font-black text-slate-900 text-xs">Social CRM & Customer WhatsApp Integration</h5>
+                        <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
+                          Automated WhatsApp invoice PDF dispatching directly to registered customer numbers.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => setShowMoreUpdates(!showMoreUpdates)}
+                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors text-center border border-gray-200"
+                  >
+                    {showMoreUpdates ? 'Show Less Updates' : 'Show More Updates (2)'}
+                  </button>
+                </div>
+              )}
+
+              {/* ALERTS TAB (SAFE CONDITIONAL RENDERING) */}
+              {quickMenuTab === 'alerts' && (
+                <div className="space-y-3">
+                  {(!alertsList || alertsList.length === 0) ? (
+                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl text-center space-y-2">
+                      <Bell className="w-6 h-6 text-gray-400 mx-auto" />
+                      <p className="font-semibold text-gray-600 text-xs">No active alerts right now.</p>
+                      <button
+                        onClick={() => setAlertsList([
+                          {
+                            id: 'alt-1',
+                            titleEn: '⚠️ End of Month Closure Alert',
+                            titleAr: '⚠️ تنبيه إغلاق الشهر المحاسبي',
+                            descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
+                            descAr: 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.'
+                          }
+                        ])}
+                        className="text-[11px] text-amber-600 hover:underline font-bold pt-1"
+                      >
+                        + Restore Sample Alert
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {alertsList.map(alt => (
+                        <div key={alt.id} className="p-3.5 bg-rose-50/80 border border-rose-200 text-rose-950 rounded-2xl space-y-1">
+                          <p className="font-black text-xs">{language === 'ar' ? alt.titleAr : alt.titleEn}</p>
+                          <p className="text-[11px] font-medium text-rose-800">{language === 'ar' ? alt.descAr : alt.descEn}</p>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between pt-1">
+                        <button
+                          onClick={() => setAlertsList([])}
+                          className="text-[11px] text-gray-500 hover:text-rose-600 underline font-medium"
+                        >
+                          Clear all alerts
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* LAST ACTIVITIES TAB (RECENTLY VISITED VANGUARD ACTIONS WITH SHOW MORE) */}
+              {quickMenuTab === 'activities' && (
+                <div className="space-y-3 text-[11px]">
+                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+                    <span className="text-[10px] text-gray-400 font-mono">Today, 10:45 AM</span>
+                    <p className="font-bold text-gray-800">
+                      {language === 'ar' ? 'تحديث شعار الشركة لـ منتوجات زيت وزيتون الجنوب SARL' : 'Updated tenant branding & license settings'}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+                    <span className="text-[10px] text-gray-400 font-mono">Today, 09:30 AM</span>
+                    <p className="font-bold text-gray-800">
+                      {language === 'ar' ? 'إنشاء إرسالية استلام زيت زيتون بكر ممتاز - 16 لتر' : 'Processed Extra Virgin Olive Oil Receipt Voucher #RC-9042'}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+                    <span className="text-[10px] text-gray-400 font-mono">Yesterday, 04:15 PM</span>
+                    <p className="font-bold text-gray-800">
+                      {language === 'ar' ? 'تحديث قائمة أسعار المبيعات لنقطة البيع POS' : 'Updated POS Touch Terminal cashier price modes'}
+                    </p>
+                  </div>
+
+                  {showMoreActivities && (
+                    <div className="space-y-3 animate-in fade-in duration-200">
+                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+                        <span className="text-[10px] text-gray-400 font-mono">Yesterday, 02:00 PM</span>
+                        <p className="font-bold text-gray-800">Approved End of Day Cashier Z-Report for Station #2</p>
+                      </div>
+                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+                        <span className="text-[10px] text-gray-400 font-mono">Aug 24, 11:20 AM</span>
+                        <p className="font-bold text-gray-800">Dispatched SuperSonic Delivery Fleet Order #FLEET-849</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => setShowMoreActivities(!showMoreActivities)}
+                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors text-center border border-gray-200"
+                  >
+                    {showMoreActivities ? 'Show Less Activities' : 'Show More Activities (2)'}
+                  </button>
+                </div>
+              )}
+
               {/* HELP TAB CONTENT */}
               {quickMenuTab === 'help' && (
                 <div className="space-y-4">
@@ -524,10 +696,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     </a>
                   </div>
 
-                  {/* DOWNLOADS LIST (NO OMEGA APPS - VANGUARD APPS ONLY) */}
+                  {/* QUICK TIPS & DOWNLOADS */}
                   <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
                     <h4 className="font-black text-slate-900 text-sm">
-                      {language === 'ar' ? 'تطبيقات برامج Vanguard المباشرة (Downloads)' : 'Downloads'}
+                      Quick Tips & Downloads
                     </h4>
                     <div className="space-y-1.5 pt-1 text-[11px]">
                       <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard POS Desktop v4.2'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
@@ -538,41 +710,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         <span>Vanguard Thermal Invoice Print Agent</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard SuperSonic Driver Mobile App'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
-                        <span>Vanguard Driver Fleet Mobile APK</span>
-                        <Download className="w-3.5 h-3.5 text-amber-600" />
-                      </a>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* UPDATES TAB */}
-              {quickMenuTab === 'updates' && (
-                <div className="space-y-3">
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl">
-                    <span className="text-[10px] text-amber-600 font-bold font-mono">v2026.8.25 Update</span>
-                    <h5 className="font-black text-gray-900">{language === 'ar' ? 'تحديث وحدات القياس UOM والحسابات' : 'UOM Units of Measure & Accounting Engine'}</h5>
-                    <p className="text-gray-500 font-medium text-[11px] mt-1">{language === 'ar' ? 'تطبيق نظام الـ 18 وحدة قياس معقدة واحتساب أسعار التكلفة تلقائياً.' : 'Automatic 18 unit of measure conversions & cost calculation.'}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* ALERTS TAB */}
-              {quickMenuTab === 'alerts' && (
-                <div className="space-y-2">
-                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-xl">
-                    <p className="font-black text-xs">{language === 'ar' ? '⚠️ تنبيه إغلاق الشهر المحاسبي' : '⚠️ End of Month Closing Alert'}</p>
-                    <p className="text-[11px] font-medium mt-0.5">{language === 'ar' ? 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.' : 'Please reconcile JV entries and bank accounts prior to closure.'}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* LAST ACTIVITIES TAB */}
-              {quickMenuTab === 'activities' && (
-                <div className="space-y-2 text-[11px]">
-                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">{language === 'ar' ? 'تحديث شعار الشركة لـ منتوجات زيت وزيتون الجنوب SARL' : 'Updated company profile for Southern Olive Oil & Products SARL'}</p>
-                  <p className="p-2 bg-gray-50 rounded-lg text-gray-700">{language === 'ar' ? 'إنشاء إرسالية استلام زيت زيتون بكر ممتاز - 16 لتر' : 'Created receipt voucher for Extra Virgin Olive Oil - 16L'}</p>
                 </div>
               )}
 
