@@ -568,6 +568,23 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         {tabs.map((t) => {
           const IconComp = t.icon;
           const isActive = activeTab === t.id;
+
+          if (t.id === 'product-insights') {
+            return (
+              <a
+                key={t.id}
+                href="/product-insights"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 shrink-0 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200"
+                title="Open Product Insights in a new tab"
+              >
+                <IconComp className="w-3.5 h-3.5 text-slate-400" />
+                <span>{t.label} ↗</span>
+              </a>
+            );
+          }
+
           return (
             <button
               key={t.id}
