@@ -398,21 +398,21 @@ export default function ProductInsightsView() {
             {/* CATEGORY PERFORMANCE */}
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-3">
               <h3 className="font-extrabold text-slate-900 text-sm">Category Performance</h3>
-              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
+                <table className="w-full text-left font-sans text-base">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-2 px-3">Category</th>
-                      <th className="py-2 px-3 text-right">Units Sold</th>
-                      <th className="py-2 px-3 text-right">Revenue</th>
+                      <th className="py-3.5 px-4 font-semibold">Category</th>
+                      <th className="py-3.5 px-4 text-right font-semibold">Units Sold</th>
+                      <th className="py-3.5 px-4 text-right font-semibold">Revenue</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {categoryPerformance.map((row) => (
                       <tr key={row.category} className="hover:bg-slate-50">
-                        <td className="py-2 px-3 font-bold">{row.category}</td>
-                        <td className="py-2 px-3 text-right font-mono text-slate-600">{row.units}</td>
-                        <td className="py-2 px-3 text-right font-mono font-bold text-blue-700">{row.revenue}</td>
+                        <td className="py-3.5 px-4 font-normal">{row.category}</td>
+                        <td className="py-3.5 px-4 text-right font-mono text-slate-600 font-normal">{row.units}</td>
+                        <td className="py-3.5 px-4 text-right font-mono font-medium text-blue-700">{row.revenue}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -527,21 +527,21 @@ export default function ProductInsightsView() {
                 <AlertCircle className="w-4 h-4" />
                 <span>Zero Sales Products (Not Sold In Current Period)</span>
               </h3>
-              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                <table className="w-full text-left font-sans">
-                  <thead className="bg-rose-50 text-rose-900 font-extrabold uppercase text-[10px]">
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
+                <table className="w-full text-left font-sans text-base">
+                  <thead className="bg-rose-50 text-rose-900 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-2 px-3">Category</th>
-                      <th className="py-2 px-3">Item Code</th>
-                      <th className="py-2 px-3">Product Description</th>
+                      <th className="py-3.5 px-4 font-semibold">Category</th>
+                      <th className="py-3.5 px-4 font-semibold">Item Code</th>
+                      <th className="py-3.5 px-4 font-semibold">Product Description</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {notSoldItems.map((item) => (
                       <tr key={item.code} className="hover:bg-slate-50">
-                        <td className="py-2 px-3 text-slate-500 font-bold">{item.category}</td>
-                        <td className="py-2 px-3 font-mono">{item.code}</td>
-                        <td className="py-2 px-3 font-bold text-slate-900">{item.item}</td>
+                        <td className="py-3.5 px-4 text-slate-500 font-normal">{item.category}</td>
+                        <td className="py-3.5 px-4 font-mono font-normal">{item.code}</td>
+                        <td className="py-3.5 px-4 font-normal text-slate-900">{item.item}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -574,23 +574,23 @@ export default function ProductInsightsView() {
                   </div>
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                  <table className="w-full text-left font-sans">
-                    <thead className="bg-emerald-50 text-emerald-950 font-extrabold uppercase text-[10px]">
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
+                  <table className="w-full text-left font-sans text-base">
+                    <thead className="bg-emerald-50 text-emerald-950 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-2 px-3">Item Code</th>
-                        <th className="py-2 px-3">Item Name</th>
-                        <th className="py-2 px-3 text-right">Cost %</th>
-                        <th className="py-2 px-3 text-right">Selling Price</th>
+                        <th className="py-3.5 px-4 font-semibold">Item Code</th>
+                        <th className="py-3.5 px-4 font-semibold">Item Name</th>
+                        <th className="py-3.5 px-4 text-right font-semibold">Cost %</th>
+                        <th className="py-3.5 px-4 text-right font-semibold">Selling Price</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                       {lowCostItems.map((item) => (
                         <tr key={item.code} className="hover:bg-slate-50">
-                          <td className="py-2 px-3 font-mono">{item.code}</td>
-                          <td className="py-2 px-3 font-bold">{item.name}</td>
-                          <td className="py-2 px-3 text-right font-extrabold text-emerald-700">{item.costPercent}</td>
-                          <td className="py-2 px-3 text-right font-mono text-slate-700">{item.sellingPrice}</td>
+                          <td className="py-3.5 px-4 font-mono font-normal">{item.code}</td>
+                          <td className="py-3.5 px-4 font-normal">{item.name}</td>
+                          <td className="py-3.5 px-4 text-right font-medium text-emerald-700">{item.costPercent}</td>
+                          <td className="py-3.5 px-4 text-right font-mono font-normal text-slate-700">{item.sellingPrice}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -620,23 +620,23 @@ export default function ProductInsightsView() {
                   </div>
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                  <table className="w-full text-left font-sans">
-                    <thead className="bg-rose-50 text-rose-950 font-extrabold uppercase text-[10px]">
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
+                  <table className="w-full text-left font-sans text-base">
+                    <thead className="bg-rose-50 text-rose-950 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-2 px-3">Item Code</th>
-                        <th className="py-2 px-3">Item Name</th>
-                        <th className="py-2 px-3 text-right">Cost %</th>
-                        <th className="py-2 px-3 text-right">Selling Price</th>
+                        <th className="py-3.5 px-4 font-semibold">Item Code</th>
+                        <th className="py-3.5 px-4 font-semibold">Item Name</th>
+                        <th className="py-3.5 px-4 text-right font-semibold">Cost %</th>
+                        <th className="py-3.5 px-4 text-right font-semibold">Selling Price</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                       {highCostItems.map((item) => (
                         <tr key={item.code} className="hover:bg-slate-50">
-                          <td className="py-2 px-3 font-mono">{item.code}</td>
-                          <td className="py-2 px-3 font-bold">{item.name}</td>
-                          <td className="py-2 px-3 text-right font-extrabold text-rose-700">{item.costPercent}</td>
-                          <td className="py-2 px-3 text-right font-mono text-slate-700">{item.sellingPrice}</td>
+                          <td className="py-3.5 px-4 font-mono font-normal">{item.code}</td>
+                          <td className="py-3.5 px-4 font-normal">{item.name}</td>
+                          <td className="py-3.5 px-4 text-right font-medium text-rose-700">{item.costPercent}</td>
+                          <td className="py-3.5 px-4 text-right font-mono font-normal text-slate-700">{item.sellingPrice}</td>
                         </tr>
                       ))}
                     </tbody>

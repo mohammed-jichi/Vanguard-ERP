@@ -921,31 +921,31 @@ ${trackingLink}`;
               <FileText className="w-4 h-4 text-amber-400" /> بيان الطلبيات والتسليم وكلفة الدليفري المستحقة للسائق:
             </h3>
             <div className="overflow-x-auto rounded-xl border border-emerald-900/60 bg-[#0a1209]">
-              <table className="w-full text-center text-xs text-slate-200 border-collapse">
-                <thead className="bg-emerald-950/80 text-amber-400 font-bold border-b border-emerald-900/60">
+              <table className="w-full text-center text-base text-slate-200 border-collapse font-sans">
+                <thead className="bg-emerald-950/80 text-amber-400 font-semibold border-b border-emerald-900/60 tracking-wide">
                   <tr>
-                    <th className="p-2.5">#</th>
-                    <th className="p-2.5 text-right">اسم الزبون</th>
-                    <th className="p-2.5">حالة الطلب</th>
-                    <th className="p-2.5">قيمة الفاتورة ($)</th>
-                    <th className="p-2.5">كلفة الدليفري للسائق ($)</th>
+                    <th className="py-3.5 px-4 font-semibold">#</th>
+                    <th className="py-3.5 px-4 text-right font-semibold">اسم الزبون</th>
+                    <th className="py-3.5 px-4 font-semibold">حالة الطلب</th>
+                    <th className="py-3.5 px-4 font-semibold">قيمة الفاتورة ($)</th>
+                    <th className="py-3.5 px-4 font-semibold">كلفة الدليفري للسائق ($)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-emerald-900/40 font-medium">
+                <tbody className="divide-y divide-emerald-900/40 font-normal text-base">
                   {orders.map((ord, idx) => (
                     <tr key={ord.id} className="hover:bg-emerald-950/30">
-                      <td className="p-2.5 text-amber-400 font-bold">{idx + 1}</td>
-                      <td className="p-2.5 text-right font-bold text-white">{ord.customerName}</td>
-                      <td className="p-2.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${ord.outcome === 'Delivered' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
+                      <td className="py-3.5 px-4 text-amber-400 font-medium">{idx + 1}</td>
+                      <td className="py-3.5 px-4 text-right font-medium text-white">{ord.customerName}</td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${ord.outcome === 'Delivered' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' :
                           ord.outcome === 'Rejected' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' :
                             'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                           }`}>
                           {ord.outcome === 'Delivered' ? 'تم التسليم' : ord.outcome === 'Rejected' ? 'مرتجع' : 'مؤجل'}
                         </span>
                       </td>
-                      <td className="p-2.5 font-bold text-emerald-400">${ord.amountUsd.toFixed(2)}</td>
-                      <td className="p-2.5 font-bold text-amber-300">${(ord.rejectionFeeCollectedUsd || 3.00).toFixed(2)}</td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-emerald-400">${ord.amountUsd.toFixed(2)}</td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-amber-300">${(ord.rejectionFeeCollectedUsd || 3.00).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>

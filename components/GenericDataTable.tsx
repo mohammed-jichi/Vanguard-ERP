@@ -210,45 +210,45 @@ export default function GenericDataTable({
       {/* 3. STRUCTURED DATA GRID (COLUMNS: ID, NAME, STATUS, ACTIONS) */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-gray-700">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase font-semibold text-[11px] tracking-wider">
+          <table className="w-full text-left text-base text-gray-700 font-sans">
+            <thead className="bg-gray-50 border-b border-gray-200 text-gray-700 uppercase font-semibold text-base tracking-wide">
               <tr>
-                <th className="px-4 py-3 font-semibold">
+                <th className="px-4 py-3.5 font-semibold">
                   <div className="flex items-center gap-1 cursor-pointer">
                     <span>ID</span>
-                    <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                    <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
                   </div>
                 </th>
-                <th className="px-4 py-3 font-semibold">Name / Description</th>
-                <th className="px-4 py-3 font-semibold">Code / Type</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="px-4 py-3 font-semibold">Last Updated</th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
+                <th className="px-4 py-3.5 font-semibold">Name / Description</th>
+                <th className="px-4 py-3.5 font-semibold">Code / Type</th>
+                <th className="px-4 py-3.5 font-semibold">Status</th>
+                <th className="px-4 py-3.5 font-semibold">Last Updated</th>
+                <th className="px-4 py-3.5 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium">
+            <tbody className="divide-y divide-gray-100 font-normal text-base">
               {filteredRows.length > 0 ? (
                 filteredRows.map((row) => (
                   <tr key={row.id} className="hover:bg-amber-50/40 transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-gray-900">{row.id}</td>
-                    <td className="px-4 py-3 font-semibold text-gray-900">{row.name}</td>
-                    <td className="px-4 py-3 text-gray-500 font-mono text-[11px]">{row.code || 'N/A'}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5 font-mono font-medium text-gray-900">{row.id}</td>
+                    <td className="px-4 py-3.5 font-normal text-gray-900">{row.name}</td>
+                    <td className="px-4 py-3.5 text-gray-500 font-mono text-base">{row.code || 'N/A'}</td>
+                    <td className="px-4 py-3.5">
                       {row.status === 'Active' ? (
-                        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Active
+                        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Active
                         </span>
                       ) : row.status === 'Pending' ? (
-                        <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[11px] px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
+                        <span className="bg-amber-50 text-amber-800 border border-amber-200 text-sm px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
                           Pending
                         </span>
                       ) : (
-                        <span className="bg-gray-100 text-gray-600 border border-gray-200 text-[11px] px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                          <XCircle className="w-3 h-3 text-gray-400" /> Inactive
+                        <span className="bg-gray-100 text-gray-600 border border-gray-200 text-sm px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
+                          <XCircle className="w-3.5 h-3.5 text-gray-400" /> Inactive
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 font-mono">{row.updatedAt || '2026-08-25'}</td>
+                    <td className="px-4 py-3.5 text-gray-500 font-mono">{row.updatedAt || '2026-08-25'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button

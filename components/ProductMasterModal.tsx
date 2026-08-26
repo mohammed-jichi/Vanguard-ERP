@@ -672,16 +672,16 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-right text-xs">
+                    <table className="w-full text-right text-base font-sans">
                       <thead>
-                        <tr className="bg-[#0a1209] text-amber-300 font-bold border-b border-[#3b5438]">
-                          <th className="p-2.5">فئة السعر (Price Tier)</th>
-                          <th className="p-2.5">السعر بالدولار ($ USD)</th>
-                          <th className="p-2.5">السعر بالليرة (LBP)</th>
-                          <th className="p-2.5">الكمية المشروطة للتفعيل (Qty Trigger)</th>
+                        <tr className="bg-[#0a1209] text-amber-300 font-semibold border-b border-[#3b5438]">
+                          <th className="py-3.5 px-4 font-semibold">فئة السعر (Price Tier)</th>
+                          <th className="py-3.5 px-4 font-semibold">السعر بالدولار ($ USD)</th>
+                          <th className="py-3.5 px-4 font-semibold">السعر بالليرة (LBP)</th>
+                          <th className="py-3.5 px-4 font-semibold">الكمية المشروطة للتفعيل (Qty Trigger)</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#2b3e2a] text-white">
+                      <tbody className="divide-y divide-[#2b3e2a] text-white font-normal text-base">
 
                         {/* SP1 RETAIL */}
                         <tr>
@@ -790,24 +790,24 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 </h3>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-right text-xs">
+                  <table className="w-full text-right text-base font-sans">
                     <thead>
-                      <tr className="bg-[#0a1209] text-emerald-300 font-bold border-b border-[#3b5438]">
-                        <th className="p-3">موقع الفرع / المستودع</th>
-                        <th className="p-3">الرصيد الكلي (QTOH)</th>
-                        <th className="p-3">الكمية المحجوزة</th>
-                        <th className="p-3">الرصيد المتاح للبيع</th>
-                        <th className="p-3">تاريخ آخر جرد</th>
+                      <tr className="bg-[#0a1209] text-emerald-300 font-semibold border-b border-[#3b5438]">
+                        <th className="py-3.5 px-4 font-semibold">موقع الفرع / المستودع</th>
+                        <th className="py-3.5 px-4 font-semibold">الرصيد الكلي (QTOH)</th>
+                        <th className="py-3.5 px-4 font-semibold">الكمية المحجوزة</th>
+                        <th className="py-3.5 px-4 font-semibold">الرصيد المتاح للبيع</th>
+                        <th className="py-3.5 px-4 font-semibold">تاريخ آخر جرد</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2b3e2a] text-white">
+                    <tbody className="divide-y divide-[#2b3e2a] text-white font-normal text-base">
                       {qtohMatrix.map((row, idx) => (
                         <tr key={idx} className="hover:bg-[#243522] transition-colors">
-                          <td className="p-3 font-bold text-amber-300">{row.location}</td>
-                          <td className="p-3 font-mono font-bold text-white">{row.qtoh}</td>
-                          <td className="p-3 font-mono text-red-300">{row.reserved}</td>
-                          <td className="p-3 font-mono font-bold text-emerald-400">{row.available}</td>
-                          <td className="p-3 font-mono text-slate-400">{row.auditDate}</td>
+                          <td className="py-3.5 px-4 font-medium text-amber-300">{row.location}</td>
+                          <td className="py-3.5 px-4 font-mono font-normal text-white">{row.qtoh}</td>
+                          <td className="py-3.5 px-4 font-mono text-red-300 font-normal">{row.reserved}</td>
+                          <td className="py-3.5 px-4 font-mono font-medium text-emerald-400">{row.available}</td>
+                          <td className="py-3.5 px-4 font-mono text-slate-400 font-normal">{row.auditDate}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1035,19 +1035,19 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
                 {/* BOM TABLE */}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-right text-xs">
+                  <table className="w-full text-right text-base font-sans">
                     <thead>
-                      <tr className="bg-[#0a1209] text-purple-300 font-bold border-b border-[#3b5438]">
-                        <th className="p-2.5">🔒 المكون الأساسي (Main)</th>
-                        <th className="p-2.5">اسم المكون / الخامة</th>
-                        <th className="p-2.5">الوحدة</th>
-                        <th className="p-2.5">الكمية الكسرية (Multi-Decimal Qty)</th>
-                        <th className="p-2.5">تكلفة الوحدة ($)</th>
-                        <th className="p-2.5">إجمالي المكون ($)</th>
-                        <th className="p-2.5 text-center">إجراءات</th>
+                      <tr className="bg-[#0a1209] text-purple-300 font-semibold border-b border-[#3b5438]">
+                        <th className="py-3.5 px-4 font-semibold">🔒 المكون الأساسي (Main)</th>
+                        <th className="py-3.5 px-4 font-semibold">اسم المكون / الخامة</th>
+                        <th className="py-3.5 px-4 font-semibold">الوحدة</th>
+                        <th className="py-3.5 px-4 font-semibold">الكمية الكسرية (Multi-Decimal Qty)</th>
+                        <th className="py-3.5 px-4 font-semibold">تكلفة الوحدة ($)</th>
+                        <th className="py-3.5 px-4 font-semibold">إجمالي المكون ($)</th>
+                        <th className="py-3.5 px-4 text-center font-semibold">إجراءات</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2b3e2a] text-white">
+                    <tbody className="divide-y divide-[#2b3e2a] text-white font-normal text-base">
                       {bomItems.map((item) => (
                         <tr key={item.id} className="hover:bg-[#243522] transition-colors">
                           <td className="p-2.5 text-center">

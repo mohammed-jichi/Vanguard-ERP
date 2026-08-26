@@ -595,24 +595,24 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
           {/* SUB TAB 1: STOCK */}
           {inventorySubTab === 'STOCK' && (
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs">
+              <table className="w-full text-right text-base font-sans">
                 <thead>
-                  <tr className="bg-[#243522] text-[#fefae0] border-b border-[#3b5438]">
-                    <th className="p-2.5">الصنف / العبوة</th>
-                    <th className="p-2.5">النوع</th>
-                    <th className="p-2.5">السعة</th>
-                    <th className="p-2.5">مستودع Vanguard</th>
-                    <th className="p-2.5">مستودع SuperSonic</th>
+                  <tr className="bg-[#243522] text-[#fefae0] border-b border-[#3b5438] font-semibold tracking-wide">
+                    <th className="py-3.5 px-4 font-semibold">الصنف / العبوة</th>
+                    <th className="py-3.5 px-4 font-semibold">النوع</th>
+                    <th className="py-3.5 px-4 font-semibold">السعة</th>
+                    <th className="py-3.5 px-4 font-semibold">مستودع Vanguard</th>
+                    <th className="py-3.5 px-4 font-semibold">مستودع SuperSonic</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2b3e2a]">
+                <tbody className="divide-y divide-[#2b3e2a] text-base font-normal">
                   {inventoryItems.map(item => (
                     <tr key={item.id} className="hover:bg-white/5">
-                      <td className="p-2.5 font-bold">{item.name}</td>
-                      <td className="p-2.5">{item.packagingType}</td>
-                      <td className="p-2.5">{item.capacityKg} kg</td>
-                      <td className="p-2.5 font-black text-emerald-400">{item.vanguardStock} عبوة</td>
-                      <td className="p-2.5 font-black text-amber-300">{item.supersonicStock} عبوة</td>
+                      <td className="py-3.5 px-4 font-medium text-white">{item.name}</td>
+                      <td className="py-3.5 px-4 font-normal text-slate-300">{item.packagingType}</td>
+                      <td className="py-3.5 px-4 font-normal text-slate-300">{item.capacityKg} kg</td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-emerald-400">{item.vanguardStock} عبوة</td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-amber-300">{item.supersonicStock} عبوة</td>
                     </tr>
                   ))}
                 </tbody>
@@ -640,20 +640,20 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
           {/* SUB TAB 3: FLEET */}
           {inventorySubTab === 'SUPERSONIC' && (
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs">
+              <table className="w-full text-right text-base font-sans">
                 <thead>
-                  <tr className="bg-[#243522] text-[#fefae0]">
-                    <th className="p-2.5">السائق / الآلية</th>
-                    <th className="p-2.5">الصنف الحمول</th>
-                    <th className="p-2.5">الكمية بمعهد السيارة</th>
+                  <tr className="bg-[#243522] text-[#fefae0] font-semibold tracking-wide">
+                    <th className="py-3.5 px-4 font-semibold">السائق / الآلية</th>
+                    <th className="py-3.5 px-4 font-semibold">الصنف الحمول</th>
+                    <th className="py-3.5 px-4 font-semibold">الكمية بمعهد السيارة</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2b3e2a]">
+                <tbody className="divide-y divide-[#2b3e2a] text-base font-normal">
                   {fleetStocks.map(fs => (
                     <tr key={fs.id}>
-                      <td className="p-2.5 font-bold">{fs.driverName} ({fs.vehicle})</td>
-                      <td className="p-2.5">{fs.itemName}</td>
-                      <td className="p-2.5 font-black text-emerald-300">{fs.qty} عبوة</td>
+                      <td className="py-3.5 px-4 font-medium text-white">{fs.driverName} ({fs.vehicle})</td>
+                      <td className="py-3.5 px-4 font-normal text-slate-300">{fs.itemName}</td>
+                      <td className="py-3.5 px-4 font-mono font-medium text-emerald-300">{fs.qty} عبوة</td>
                     </tr>
                   ))}
                 </tbody>
