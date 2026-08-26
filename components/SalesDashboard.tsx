@@ -193,17 +193,61 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const hourlyData = [
-    { hour: '09:00', sales: 12, count: 5 },
-    { hour: '10:00', sales: 28, count: 12 },
-    { hour: '11:00', sales: 45, count: 18 },
-    { hour: '12:00', sales: 62, count: 24 },
-    { hour: '13:00', sales: 55, count: 22 },
-    { hour: '14:00', sales: 40, count: 16 },
-    { hour: '15:00', sales: 35, count: 14 },
-    { hour: '16:00', sales: 58, count: 21 },
-    { hour: '17:00', sales: 78, count: 29 },
-    { hour: '18:00', sales: 65, count: 25 },
-    { hour: '19:00', sales: 42, count: 17 }
+    { hour: '08:00', sales: 15, count: 6 },
+    { hour: '09:00', sales: 25, count: 10 },
+    { hour: '10:00', sales: 38, count: 15 },
+    { hour: '11:00', sales: 52, count: 20 },
+    { hour: '12:00', sales: 68, count: 26 },
+    { hour: '13:00', sales: 62, count: 24 },
+    { hour: '14:00', sales: 45, count: 18 },
+    { hour: '15:00', sales: 40, count: 16 },
+    { hour: '16:00', sales: 60, count: 22 },
+    { hour: '17:00', sales: 85, count: 32 },
+    { hour: '18:00', sales: 72, count: 28 },
+    { hour: '19:00', sales: 55, count: 21 },
+    { hour: '20:00', sales: 48, count: 19 },
+    { hour: '21:00', sales: 35, count: 14 },
+    { hour: '22:00', sales: 22, count: 9 },
+    { hour: '23:00', sales: 12, count: 5 },
+    { hour: '00:00', sales: 5, count: 2 }
+  ];
+
+  const yearlyStackedRevenueData = [
+    {
+      year: '2025',
+      jan: 350, feb: 310, mar: 420, apr: 390, may: 450, jun: 490,
+      jul: 520, aug: 580, sep: 460, oct: 410, nov: 360, dec: 610
+    },
+    {
+      year: '2026',
+      jan: 420, feb: 380, mar: 510, apr: 470, may: 540, jun: 590,
+      jul: 650, aug: 720, sep: 550, oct: 490, nov: 410, dec: 710
+    }
+  ];
+
+  const monthKeys = [
+    { key: 'jan', name: 'January', color: '#10b981' },
+    { key: 'feb', name: 'February', color: '#06b6d4' },
+    { key: 'mar', name: 'March', color: '#3b82f6' },
+    { key: 'apr', name: 'April', color: '#6366f1' },
+    { key: 'may', name: 'May', color: '#8b5cf6' },
+    { key: 'jun', name: 'June', color: '#d946ef' },
+    { key: 'jul', name: 'July', color: '#ec4899' },
+    { key: 'aug', name: 'August', color: '#f43f5e' },
+    { key: 'sep', name: 'September', color: '#ef4444' },
+    { key: 'oct', name: 'October', color: '#f97316' },
+    { key: 'nov', name: 'November', color: '#f59e0b' },
+    { key: 'dec', name: 'December', color: '#84cc16' }
+  ];
+
+  const comparativeVoidSummaryRows = [
+    {
+      branch: 'منتوجات زيت وزيتون الجنوب',
+      jan: '1.2M', feb: '0.8M', mar: '1.5M', apr: '1.0M',
+      may: '1.8M', jun: '2.1M', jul: '2.4M', aug: '2.8M',
+      sep: '1.6M', oct: '1.2M', nov: '0.9M', dec: '2.5M',
+      total: '19.8M'
+    }
   ];
 
   const weekdayData = [
@@ -1030,7 +1074,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="space-y-6">
           
           {/* 1. DAILY SUMMARY WIDGET (FULL WIDTH LINECHART + DATA TABLE) */}
-          <WidgetCard id="daily-summary-trends" title="Daily Summary Revenue Trends (Sat Aug 1 - Sat Aug 22)">
+          <WidgetCard id="daily-summary-trends" title="Daily Summary">
             <div className="space-y-4">
               <div className="h-72 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1130,7 +1174,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* HOURLY WIDGET */}
-            <WidgetCard id="hourly-sales-trends" title="Average Sales by Hour (09:00 - 19:00)">
+            <WidgetCard id="hourly-sales-trends" title="Average Sales by Hour">
               <div className="space-y-4">
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1176,7 +1220,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
             {/* WEEKDAYS WIDGET */}
-            <WidgetCard id="weekdays-sales-trends" title="Sales by WeekDays Distribution">
+            <WidgetCard id="weekdays-sales-trends" title="Sales by WeekDays">
               <div className="space-y-4">
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1220,6 +1264,81 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
           </div>
+
+          {/* WIDGET A: YEARLY REVENUE (STACKED BARCHART BY MONTH) */}
+          <WidgetCard id="yearly-revenue-comparison" title="Yearly Revenue">
+            <div className="space-y-4">
+              <div className="h-72 w-full pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={yearlyStackedRevenueData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+                    <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748b', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                      formatter={(val: any) => [`LBP ${val}M`, 'Revenue']}
+                    />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    {monthKeys.map((m) => (
+                      <Bar
+                        key={m.key}
+                        dataKey={m.key}
+                        name={m.name}
+                        stackId="year"
+                        fill={m.color}
+                        hide={!!hiddenSeries[m.key] || !!hiddenSeries[m.name]}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </WidgetCard>
+
+          {/* WIDGET B: VOID SUMMARY (DATA TABLE ONLY) */}
+          <WidgetCard id="comparative-void-summary" title="Void Summary">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+              <table className="w-full text-left font-sans">
+                <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-3">Branch</th>
+                    <th className="py-2.5 px-2 text-right">January</th>
+                    <th className="py-2.5 px-2 text-right">February</th>
+                    <th className="py-2.5 px-2 text-right">March</th>
+                    <th className="py-2.5 px-2 text-right">April</th>
+                    <th className="py-2.5 px-2 text-right">May</th>
+                    <th className="py-2.5 px-2 text-right">June</th>
+                    <th className="py-2.5 px-2 text-right">July</th>
+                    <th className="py-2.5 px-2 text-right">August</th>
+                    <th className="py-2.5 px-2 text-right">September</th>
+                    <th className="py-2.5 px-2 text-right">October</th>
+                    <th className="py-2.5 px-2 text-right">November</th>
+                    <th className="py-2.5 px-2 text-right">December</th>
+                    <th className="py-2.5 px-3 text-right bg-slate-800">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold text-[11px]">
+                  {comparativeVoidSummaryRows.map((r) => (
+                    <tr key={r.branch} className="hover:bg-slate-50">
+                      <td className="py-2 px-3 font-bold text-slate-900">{r.branch}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jan}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.feb}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.mar}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.apr}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.may}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jun}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jul}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.aug}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.sep}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.oct}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.nov}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.dec}</td>
+                      <td className="py-2 px-3 text-right font-mono font-extrabold text-rose-700 bg-slate-50">{r.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </WidgetCard>
 
           {/* 4. COMPARATIVE MONTHLY SALES BY EMPLOYEE (STACKED BARCHART + COMPREHENSIVE TABLE) */}
           <WidgetCard id="employee-monthly-comparison" title="Comparative Monthly Sales By Employee">
