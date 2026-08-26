@@ -64,6 +64,9 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
     { key: 'cust-dir', titleAr: t('customer_directory', 'Customer Directory') }
   ]);
 
+  // Unread Inbox Status state (default: false since inbox is empty)
+  const [hasUnread, setHasUnread] = useState<boolean>(false);
+
   // Dropdown & Modal Toggle States
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [activeSettingsSection, setActiveSettingsSection] = useState<'general' | 'sales' | 'inventory' | 'accounting' | 'interface'>('general');
@@ -174,13 +177,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
 
           {/* MAIL / INBOX ICON */}
           <button
-            onClick={() => setIsInboxOpen(true)}
+            onClick={() => {
+              setIsInboxOpen(true);
+              setHasUnread(false);
+            }}
             title="Inbox between locations"
             className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors relative"
           >
             <Mail className="w-4.5 h-4.5 text-amber-400" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full"></span>
+            {hasUnread && (
+              <>
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full"></span>
+              </>
+            )}
           </button>
 
           {/* SYSTEM SETTINGS GEAR ICON */}
