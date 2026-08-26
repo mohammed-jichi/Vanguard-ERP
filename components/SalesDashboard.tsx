@@ -366,16 +366,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
-  // Reusable Widget Card Component
-  const WidgetCard = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => {
+  // Reusable Widget Card Component (Centered Title Header)
+  const WidgetCard = ({ id, title, className = '', children }: { id: string; title: string; className?: string; children: React.ReactNode }) => {
     return (
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-          <h3 className="font-extrabold text-slate-800 text-sm flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+      <div className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between ${className}`}>
+        <div className="relative flex items-center justify-center border-b border-slate-100 pb-3 mb-4">
+          <h3 className="font-extrabold text-slate-800 text-sm flex items-center justify-center gap-2 text-center">
+            <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{title}</span>
           </h3>
-          <div className="flex items-center gap-1">
+          <div className="absolute right-0 flex items-center gap-1">
             <button
               onClick={() => setExpandedWidget(id)}
               title="Expand Chart Fullscreen"
@@ -404,12 +404,14 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     id,
     title,
     data,
-    labelKey = 'name'
+    labelKey = 'name',
+    className = ''
   }: {
     id: string;
     title: string;
     data: any[];
     labelKey?: string;
+    className?: string;
   }) => {
     const activeData = data.filter((item) => {
       const key = item[labelKey] || item.name || item.reason || item.user || item.method;
@@ -417,7 +419,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     });
 
     return (
-      <WidgetCard id={id} title={title}>
+      <WidgetCard id={id} title={title} className={className}>
         <div className="flex flex-col space-y-4">
           <div className="h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -760,6 +762,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       {activeTab === 'summary' && (
         <div className="space-y-6">
           
+          {/* SECTION TITLE: PERFORMANCE HIGHLIGHTS */}
+          <h2 className="text-center font-bold text-lg text-slate-800 tracking-tight pt-2">
+            Performance Highlights
+          </h2>
+
           {/* 6 PERFORMANCE HIGHLIGHTS CARDS WITH INTERACTIVE TOOLTIPS */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
             {/* Highlight 1: Revenue YoY */}
@@ -856,8 +863,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           {/* MAIN 2-COLUMN GRID FOR WIDGETS */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             
-            {/* WIDGET 1: MONTHLY REVENUE (BAR CHART) */}
-            <WidgetCard id="monthly-revenue" title="Monthly Revenue (Jan - Dec 2026)">
+            {/* WIDGET 1: MONTHLY REVENUE (BAR CHART) - FULL WIDTH */}
+            <WidgetCard id="monthly-revenue" title="Monthly Revenue (Jan - Dec 2026)" className="col-span-full">
               <div className="h-72 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyRevenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
