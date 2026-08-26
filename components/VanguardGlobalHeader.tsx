@@ -368,52 +368,6 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <HelpCircle className="w-4.5 h-4.5 text-amber-400" />
           </a>
 
-          {/* LANGUAGE SWITCHER DROPDOWN ("EN") */}
-          <div className="relative">
-            <button
-              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-              title="Select System Language"
-              className="flex items-center gap-1 px-2.5 py-1 bg-[#252538] hover:bg-[#32324a] text-amber-400 border border-amber-500/40 rounded-xl text-xs font-bold transition-all shadow-2xs"
-            >
-              <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="uppercase font-mono font-bold tracking-wider text-amber-400">{language}</span>
-              <ChevronDown className="w-3 h-3 text-amber-400" />
-            </button>
-
-            {isLangMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-1.5 text-xs font-bold space-y-1">
-                <button
-                  onClick={() => { setLanguage('en'); setIsLangMenuOpen(false); }}
-                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'en' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
-                >
-                  <span>🇺🇸 English (Default)</span>
-                  {language === 'en' && <span className="text-amber-600 font-black">✓</span>}
-                </button>
-                <button
-                  onClick={() => { setLanguage('ar'); setIsLangMenuOpen(false); }}
-                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'ar' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
-                >
-                  <span>🇱🇧 العربية (Arabic)</span>
-                  {language === 'ar' && <span className="text-amber-600 font-black">✓</span>}
-                </button>
-                <button
-                  onClick={() => { setLanguage('fr'); setIsLangMenuOpen(false); }}
-                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'fr' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
-                >
-                  <span>🇫🇷 Français (French)</span>
-                  {language === 'fr' && <span className="text-amber-600 font-black">✓</span>}
-                </button>
-                <button
-                  onClick={() => { setLanguage('es'); setIsLangMenuOpen(false); }}
-                  className={`w-full text-left p-2 rounded-xl flex items-center justify-between hover:bg-amber-50 ${language === 'es' ? 'bg-amber-50 text-amber-900 font-bold' : ''}`}
-                >
-                  <span>🇪🇸 Español (Spanish)</span>
-                  {language === 'es' && <span className="text-amber-600 font-black">✓</span>}
-                </button>
-              </div>
-            )}
-          </div>
-
           {/* USER PROFILE DROPDOWN (STRICTLY MOHAMMED) */}
           <div className="relative">
             <button
@@ -449,9 +403,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Alerts & Notifications</span>
                 </button>
-                <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
-                  <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Language</span>
+                {/* SOLE ENTRY POINT FOR LANGUAGE SETTINGS */}
+                <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between font-semibold">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Language</span>
+                  </div>
+                  <span className="text-[10px] uppercase font-mono font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                    {language}
+                  </span>
                 </button>
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
