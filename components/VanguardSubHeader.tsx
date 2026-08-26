@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, CheckSquare, Video, Edit2 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
+import EndOfMonthModal from './EndOfMonthModal';
 
 interface VanguardSubHeaderProps {
   activeScreen: string;
@@ -23,6 +24,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
   const [alertCount, setAlertCount] = useState(3);
   const [isChecklistOpen, setIsChecklistOpen] = useState(false);
   const [isTutorialsOpen, setIsTutorialsOpen] = useState(false);
+  const [isEndOfMonthOpen, setIsEndOfMonthOpen] = useState(false);
 
   useEffect(() => {
     if (!activeScreen) return;
@@ -70,10 +72,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
         {/* DYNAMIC ACTION BUTTON: END OF MONTH */}
         {hasPendingEndOfMonth && (
           <button
-            onClick={() => {
-              alert(language === 'ar' ? 'تمت معالجة إغلاق نهاية الشهر بنجاح!' : 'End of month closure processed successfully!');
-              setHasPendingEndOfMonth(false);
-            }}
+            onClick={() => setIsEndOfMonthOpen(true)}
             className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2.5 py-1 rounded-lg shadow-2xs transition-all animate-bounce"
             title="Click to process End of Month"
           >
@@ -98,7 +97,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
 
         {/* PERMANENT TOOLBAR LINKS */}
         <button
-          onClick={() => onSelectScreen('acc-vat')}
+          onClick={() => setIsEndOfMonthOpen(true)}
           className="text-gray-700 hover:text-amber-600 px-2 py-1 hover:bg-gray-100 rounded-md transition-colors"
         >
           End of Month
@@ -201,6 +200,13 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
           </div>
         </div>
       )}
+
+      {/* REUSABLE END OF MONTH MODAL */}
+      <EndOfMonthModal
+        isOpen={isEndOfMonthOpen}
+        onClose={() => setIsEndOfMonthOpen(false)}
+        onWatchTutorials={() => setIsTutorialsOpen(true)}
+      />
 
     </div>
   );
