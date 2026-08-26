@@ -21,7 +21,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
     { key: 'acc-coa', titleEn: 'Chart of Accounts', titleAr: 'شجرة الحسابات' }
   ]);
 
-  const [hasPendingEndOfMonth, setHasPendingEndOfMonth] = useState(true);
+  const [isMonthPendingClose, setIsMonthPendingClose] = useState<boolean>(false);
   const [alertCount, setAlertCount] = useState(3);
   const [isChecklistOpen, setIsChecklistOpen] = useState(false);
   const [isTutorialsOpen, setIsTutorialsOpen] = useState(false);
@@ -70,17 +70,6 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
       {/* RIGHT SIDE: ACTION BUTTONS & LINKS */}
       <div className="flex items-center gap-2 shrink-0 text-xs font-semibold">
         
-        {/* DYNAMIC ACTION BUTTON: END OF MONTH */}
-        {hasPendingEndOfMonth && (
-          <button
-            onClick={() => setIsEndOfMonthOpen(true)}
-            className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2.5 py-1 rounded-lg shadow-2xs transition-all animate-bounce"
-            title="Click to process End of Month"
-          >
-            End of Month ⚠️
-          </button>
-        )}
-
         {/* DYNAMIC ACTION BUTTON: ALERTS */}
         {alertCount > 0 && (
           <button
@@ -96,10 +85,15 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
           </button>
         )}
 
-        {/* PERMANENT TOOLBAR LINKS */}
+        {/* SINGLE SMART LINK: END OF MONTH (REACTS TO ISMONTHPENDINGCLOSE WITHOUT BOUNCING) */}
         <button
           onClick={() => setIsEndOfMonthOpen(true)}
-          className="text-gray-700 hover:text-amber-600 px-2 py-1 hover:bg-gray-100 rounded-md transition-colors"
+          className={`px-2 py-1 rounded-md transition-colors ${
+            isMonthPendingClose
+              ? 'text-red-600 font-bold hover:bg-rose-50'
+              : 'text-slate-700 font-semibold hover:text-amber-600 hover:bg-gray-100'
+          }`}
+          title="End of Month Inventory Closing"
         >
           End of Month
         </button>
