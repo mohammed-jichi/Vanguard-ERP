@@ -341,6 +341,31 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
+  // Custom Dark Tooltip for Yearly Revenue Stacked BarChart
+  const YearlyRevenueTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const activePayload = payload.filter((p: any) => !p.hide);
+    if (!activePayload.length) return null;
+    return (
+      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-xl text-xs space-y-2 font-sans min-w-[200px]" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
+        <p className="font-extrabold !text-amber-300 text-amber-300 border-b border-slate-800 pb-1 text-sm" style={{ color: '#fde047' }}>
+          Year {label}
+        </p>
+        <div className="space-y-1 max-h-48 overflow-y-auto">
+          {activePayload.map((entry: any, i: number) => (
+            <div key={i} className="flex items-center justify-between gap-3 font-semibold !text-white text-white text-[11px]" style={{ color: '#ffffff' }}>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-xs shrink-0" style={{ backgroundColor: entry.color || entry.fill }}></span>
+                <span className="!text-slate-200 text-slate-200" style={{ color: '#e2e8f0' }}>{entry.name || entry.dataKey}:</span>
+              </div>
+              <span className="font-mono font-bold !text-white text-white" style={{ color: '#ffffff' }}>LBP {entry.value}M</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   // Custom White Tooltip for Monthly Category Comparison Stacked BarChart
   const CategoryComparisonTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null;
@@ -819,95 +844,97 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </h2>
 
           {/* 6 PERFORMANCE HIGHLIGHTS CARDS WITH INTERACTIVE TOOLTIPS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
             {/* Highlight 1: Revenue YoY */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Revenue YoY</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-emerald-500 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Revenue YoY</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Completed-month YoY: Net Sales from 2026 Jan-Jul vs 2025 Jan-Jul. Current month is excluded until it is complete.
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-black text-emerald-700 mt-1.5">+18.4%</p>
-              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">2026 vs 2025</p>
+              <p className="text-lg font-bold text-black mt-2 flex items-center gap-1">
+                <span className="text-emerald-600 text-sm">▲</span> +18.4%
+              </p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">3.1 B LL | +100.0% YoY</p>
             </div>
 
             {/* Highlight 2: Best Month */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Best Month</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-blue-500 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Best Month</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Highest month revenue
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-black text-slate-900 mt-1.5">Aug 2026</p>
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">LBP 202.3M</p>
+              <p className="text-lg font-bold text-black mt-2">Aug 2026</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">202.3 M LL | Peak Month</p>
             </div>
 
             {/* Highlight 3: Softest Month */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Softest Month</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-amber-500 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Softest Month</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Lowest month revenue
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-black text-slate-900 mt-1.5">Feb 2026</p>
-              <p className="text-[10px] text-amber-600 font-bold mt-0.5">LBP 135M</p>
+              <p className="text-lg font-bold text-black mt-2">Feb 2026</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">135.0 M LL | Softest Month</p>
             </div>
 
             {/* Highlight 4: Top YoY Month */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Top YoY Month</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-teal-500 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Top YoY Month</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Highest month YoY change
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-black text-blue-700 mt-1.5">July</p>
-              <p className="text-[10px] text-blue-600 font-bold mt-0.5">+32.5% YoY</p>
+              <p className="text-lg font-bold text-black mt-2">July</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">+32.5% YoY Growth</p>
             </div>
 
             {/* Highlight 5: Best Category */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Best Category</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-purple-500 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Best Category</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Highest category revenue
                   </div>
                 </div>
               </div>
-              <p className="text-xs font-black text-slate-900 truncate mt-1.5" title="Extra Virgin Olive Oil">Extra Virgin</p>
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">45% Share</p>
+              <p className="text-lg font-bold text-black mt-2">مفرق</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">45.0% Share | Top Cat</p>
             </div>
 
             {/* Highlight 6: Peak Hour */}
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Peak Hour</span>
+            <div className="bg-white border border-slate-200 border-t-4 border-t-slate-600 rounded-xl p-4 shadow-2xs relative group">
+              <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
+                <span>Peak Hour</span>
                 <div className="relative group/tooltip">
-                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-52 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                  <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-52 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
                     Highest average hourly sales
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-black text-slate-900 mt-1.5">13:00 - 14:00</p>
-              <p className="text-[10px] text-amber-600 font-bold mt-0.5">LBP 18.5M Avg</p>
+              <p className="text-lg font-bold text-black mt-2">13:00 - 14:00</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">18.5 M LL Avg | Peak Hour</p>
             </div>
           </div>
 
@@ -1273,10 +1300,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <BarChart data={yearlyStackedRevenueData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                     <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748b', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                      formatter={(val: any) => [`LBP ${val}M`, 'Revenue']}
-                    />
+                    <Tooltip content={<YearlyRevenueTooltip />} />
                     <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
                     {monthKeys.map((m) => (
                       <Bar
