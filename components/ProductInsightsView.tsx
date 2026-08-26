@@ -384,52 +384,52 @@ export default function ProductInsightsView() {
           </div>
         </aside>
 
-        {/* MAIN DASHBOARD CONTENT COLUMN */}
-        <main className="flex-1 min-w-0 space-y-6 w-full">
+        {/* MAIN DASHBOARD CONTENT COLUMN WITH SPACIOUS GLOBAL MARGINS */}
+        <main className="flex-1 min-w-0 space-y-8 w-full">
 
-          {/* SECTION 2: ANALYSIS SCOPE (6 KPI CARDS GRID) */}
-          <div className="space-y-3">
+          {/* SECTION 2: ANALYSIS SCOPE (6 KPI CARDS STRICT 3-COLUMN GRID: 2 ROWS OF 3 WITH DISTINCT BORDERS) */}
+          <div className="space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-blue-600" />
               <span>Analysis Scope: All products currently in scope</span>
             </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3.5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Revenue</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">{formatCurrency(totalScopeRevenueLbp)}</span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full inline-block">+14.2% MTD</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{formatCurrency(totalScopeRevenueLbp)}</span>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block">+14.2% MTD</span>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Units Sold</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">{totalScopeUnits.toLocaleString()}</span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full inline-block">+8.5% Vol</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Units Sold</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{totalScopeUnits.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block">+8.5% Vol</span>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Avg Selling Price</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">{formatCurrencyCompact(avgSellingPriceLbp)}</span>
-                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full inline-block">Weighted</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Avg Selling Price</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{formatCurrencyCompact(avgSellingPriceLbp)}</span>
+                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full inline-block">Weighted</span>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Revenue Mix</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">100.0%</span>
-                <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block">Active Scope</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue Mix</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">100.0%</span>
+                <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full inline-block">Active Scope</span>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Active Branches</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">{branch === 'All Branches' ? '2 Hubs' : '1 Hub'}</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full inline-block">Synced</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Active Branches</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{branch === 'All Branches' ? '2 Hubs' : '1 Hub'}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">Synced</span>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-1">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Products In Scope</span>
-                <span className="text-base md:text-lg font-black text-slate-900 font-mono block truncate">{filteredProducts.length} Items</span>
-                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block">Filtered</span>
+              <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Products In Scope</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{filteredProducts.length} Items</span>
+                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full inline-block">Filtered</span>
               </div>
 
             </div>
@@ -616,27 +616,32 @@ export default function ProductInsightsView() {
 
           </div>
 
-          {/* SECTION 6: QUICK INSIGHTS (DYNAMIC TEXT LIST) */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
+          {/* SECTION 6: QUICK INSIGHTS (VERTICAL STACK LIST ITEMS) */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-4">
             <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
               <Info className="w-4 h-4 text-blue-600" />
               <span>Quick Insights (Takeaways from current dataset)</span>
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex flex-col gap-3">
               {quickInsights.map((insight) => {
                 const IconComp = insight.icon;
                 return (
-                  <div key={insight.id} className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-1.5 rounded-lg ${insight.color}`}>
-                        <IconComp className="w-4 h-4" />
+                  <div key={insight.id} className="bg-slate-50/80 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-xl shrink-0 ${insight.color}`}>
+                        <IconComp className="w-5 h-5" />
                       </div>
-                      <span className="text-xs font-black text-slate-900">{insight.title}</span>
+                      <div>
+                        <span className="text-xs font-black text-slate-900 block">{insight.title}</span>
+                        <p className="text-xs text-slate-600 font-semibold mt-0.5 leading-relaxed">
+                          {insight.text}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-slate-600 font-semibold leading-relaxed">
-                      {insight.text}
-                    </p>
+                    <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider shrink-0 bg-white px-3 py-1 rounded-lg border border-slate-200 self-start sm:self-center">
+                      Verified
+                    </span>
                   </div>
                 );
               })}
