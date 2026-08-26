@@ -726,7 +726,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             return (
               <a
                 key={t.id}
-                href="/product-insights"
+                href="/product-insight-view"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 shrink-0 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200"
