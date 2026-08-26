@@ -27,7 +27,9 @@ import {
   Search,
   MessageSquare,
   Sun,
-  Moon
+  Moon,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/lib/LanguageContext';
@@ -766,30 +768,133 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
         </div>
       )}
 
-      {/* MODAL 1: INBOX BETWEEN LOCATIONS */}
+      {/* MODAL 1: INBOX OVERLAY (ENTERPRISE ERP UI - ZERO ARABIC & EMPTY STATE DEFAULT) */}
       {isInboxOpen && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl font-sans dir-rtl">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <Mail className="w-5 h-5 text-amber-600" /> البريد المتبادل بين الفروع (Inbox between locations)
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            
+            {/* SUBTLE MODAL HEADER */}
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50/50">
+              <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                <Mail className="w-5 h-5 text-amber-500" />
+                <span>Inbox</span>
               </h3>
-              <button onClick={() => setIsInboxOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button
+                onClick={() => setIsInboxOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-xl transition-colors"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="space-y-2 text-xs font-bold text-gray-700">
-              <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl">
-                <div className="flex items-center justify-between text-amber-900 font-black">
-                  <span>فرع صيدا الرئيسي → المعصرة</span>
-                  <span className="text-[10px] text-gray-500 font-mono">10:45 AM</span>
+
+            {/* TOP TOOLBAR */}
+            <div className="bg-slate-50 border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+              
+              {/* LEFT TOOLBAR: CHECKBOX ALL, REFRESH, MORE DROPDOWN */}
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-700 select-none">
+                  <input type="checkbox" className="rounded text-amber-500 border-slate-300 focus:ring-amber-500" />
+                  <span>All</span>
+                </label>
+                <button
+                  onClick={() => alert('Inbox refreshed!')}
+                  title="Refresh Inbox"
+                  className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-200/60 rounded-lg transition-colors border border-slate-200 bg-white shadow-2xs"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-bold hover:bg-slate-100 transition-colors shadow-2xs"
+                  >
+                    <span>More</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
                 </div>
-                <p className="text-gray-600 font-medium text-[11px] mt-1">طلب تجهيز 50 تنكة زيت زيتون بكر ممتاز للشحن اليوم.</p>
+              </div>
+
+              {/* CENTER TOOLBAR: SEARCH INPUT FIELD */}
+              <div className="flex-1 max-w-sm relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search Message.."
+                  className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors font-medium shadow-2xs"
+                />
+              </div>
+
+              {/* RIGHT TOOLBAR: PAGINATION ARROWS < > */}
+              <div className="flex items-center gap-1">
+                <button
+                  disabled
+                  title="Previous Page"
+                  className="p-1.5 text-slate-300 bg-white border border-slate-200 rounded-lg cursor-not-allowed shadow-2xs"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  disabled
+                  title="Next Page"
+                  className="p-1.5 text-slate-300 bg-white border border-slate-200 rounded-lg cursor-not-allowed shadow-2xs"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+            </div>
+
+            {/* DATA TABLE (EMPTY STATE DEFAULT) */}
+            <div className="w-full overflow-x-auto min-h-[300px] flex flex-col justify-between">
+              <table className="w-full text-left border-collapse text-xs font-sans">
+                <thead>
+                  <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-extrabold uppercase tracking-wider text-[11px]">
+                    <th className="py-3 px-6 cursor-pointer select-none">
+                      <div className="flex items-center gap-1">
+                        <span>Title</span>
+                        <span className="text-slate-400 text-[10px]">▲▼</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-6 cursor-pointer select-none">
+                      <div className="flex items-center gap-1">
+                        <span>Message</span>
+                        <span className="text-slate-400 text-[10px]">▲▼</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-6 cursor-pointer select-none">
+                      <div className="flex items-center gap-1">
+                        <span>Status</span>
+                        <span className="text-slate-400 text-[10px]">▲▼</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-6 cursor-pointer select-none">
+                      <div className="flex items-center gap-1">
+                        <span>Created At</span>
+                        <span className="text-slate-400 text-[10px]">▲▼</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* EMPTY STATE */}
+                  <tr>
+                    <td colSpan={4} className="py-24 text-center text-slate-400 font-semibold text-sm">
+                      No Messages
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              {/* FOOTER BAR */}
+              <div className="border-t border-slate-100 p-4 bg-slate-50/50 flex justify-end">
+                <button
+                  onClick={() => setIsInboxOpen(false)}
+                  className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition-colors"
+                >
+                  Close
+                </button>
               </div>
             </div>
-            <div className="pt-2 flex justify-end">
-              <button onClick={() => setIsInboxOpen(false)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">إغلاق</button>
-            </div>
+
           </div>
         </div>
       )}
