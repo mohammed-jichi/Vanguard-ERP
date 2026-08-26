@@ -85,6 +85,12 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
     }
   ]);
 
+  // Dynamic English Month-Year calculation (e.g. "Aug-2026")
+  const currentDate = new Date();
+  const currentMonthName = currentDate.toLocaleString('en-US', { month: 'short' });
+  const currentYearNum = currentDate.getFullYear();
+  const displayDate = `${currentMonthName}-${currentYearNum}`;
+
   if (!isOpen) return null;
 
   const toggleItem = (id: number) => {
@@ -361,13 +367,13 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
           </div>
         </div>
 
-        {/* 4. FOOTER: GRAY DISABLED INPUT BOX AT BOTTOM CENTER (HIGH CONTRAST DARK TEXT) */}
+        {/* 4. FOOTER: GRAY DISABLED INPUT BOX AT BOTTOM CENTER (DYNAMIC EN-US MONTH-YEAR) */}
         <div className="border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-center">
           <input
             type="text"
             readOnly
             disabled
-            value="Aug-2026"
+            value={displayDate}
             className="w-32 py-1.5 px-3 bg-gray-200 text-gray-900 font-mono font-black text-xs rounded-xl text-center border border-gray-300 cursor-not-allowed shadow-inner opacity-100 disabled:opacity-100 text-black"
           />
         </div>
