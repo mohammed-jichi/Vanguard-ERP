@@ -30,6 +30,23 @@ import {
   CartesianGrid
 } from 'recharts';
 
+// High-Contrast Sales Trend Line Chart Tooltip Component
+const SalesTrendTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const val = payload[0].value;
+    return (
+      <div className="bg-white border border-slate-300 p-3 rounded-xl shadow-xl space-y-1.5 text-xs font-sans z-50 min-w-[160px]">
+        <p className="font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">{label}</p>
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-semibold text-slate-600">Daily Sales:</span>
+          <span className="font-mono text-blue-600 font-black text-sm">{val} Units</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function ProductInsightsView() {
   // 1. TOP FILTER STATES
   const [branch, setBranch] = useState<string>('All Branches');
@@ -456,10 +473,7 @@ export default function ProductInsightsView() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#ffffff', fontSize: '12px' }}
-                    labelStyle={{ color: '#94a3b8', fontWeight: 'bold' }}
-                  />
+                  <Tooltip content={<SalesTrendTooltip />} />
                   <Line type="monotone" dataKey="sales" stroke="#2563eb" strokeWidth={3} dot={{ r: 4, fill: '#2563eb' }} activeDot={{ r: 7 }} />
                 </LineChart>
               </ResponsiveContainer>
