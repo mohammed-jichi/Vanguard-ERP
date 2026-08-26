@@ -278,12 +278,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     const activePayload = payload.filter((p: any) => !p.hide);
     if (!activePayload.length) return null;
     return (
-      <div className="bg-slate-900 border border-slate-700 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[150px]">
-        <p className="font-bold text-slate-300 border-b border-slate-800 pb-1">{label}</p>
+      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-2.5 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[150px]" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
+        <p className="font-bold !text-white text-white border-b border-slate-800 pb-1" style={{ color: '#ffffff' }}>
+          {label}
+        </p>
         {activePayload.map((entry: any, i: number) => (
-          <div key={i} className="flex items-center gap-2 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-xs shrink-0 bg-emerald-500" style={{ backgroundColor: entry.color || '#10b981' }}></span>
-            <span>Sales: LBP {entry.value} {typeof entry.value === 'number' && entry.value < 1000 ? 'Million' : ''}</span>
+          <div key={i} className="flex items-center gap-2 font-semibold !text-white text-white" style={{ color: '#ffffff' }}>
+            <span
+              className="w-2.5 h-2.5 rounded-xs shrink-0"
+              style={{ backgroundColor: entry.color || entry.fill || '#10b981' }}
+            ></span>
+            <span className="!text-white text-white" style={{ color: '#ffffff' }}>
+              Sales: LBP {entry.value}{typeof entry.value === 'number' && entry.value < 1000 ? 'M' : ''}
+            </span>
           </div>
         ))}
       </div>
