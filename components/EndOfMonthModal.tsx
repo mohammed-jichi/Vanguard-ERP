@@ -87,14 +87,15 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
             <div className="space-y-1">
               <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Branch</label>
               <select
-                value={isReopenMode ? (selectedBranch === 'Southern Olive Oil S.A.R.L' ? '' : selectedBranch) : selectedBranch}
+                value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:border-amber-500 shadow-2xs"
+                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="">Select Branch</option>
-                <option value="Southern Olive Oil S.A.R.L">Southern Olive Oil S.A.R.L</option>
-                <option value="Beirut Central Branch">Beirut Central Branch</option>
-                <option value="Saida Production Press">Saida Production Press</option>
+                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Branch</option>
+                <option value="Southern Olive Oil S.A.R.L" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Southern Olive Oil S.A.R.L</option>
+                <option value="Beirut Central Branch" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
+                <option value="Saida Production Press" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Saida Production Press</option>
               </select>
             </div>
 
@@ -102,14 +103,15 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
             <div className="space-y-1">
               <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Year</label>
               <select
-                value={isReopenMode ? (selectedYear === '2026' ? '' : selectedYear) : selectedYear}
+                value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:border-amber-500 shadow-2xs"
+                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="">Select Year</option>
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
+                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Year</option>
+                <option value="2026" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2026</option>
+                <option value="2025" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2025</option>
+                <option value="2024" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2024</option>
               </select>
             </div>
 
@@ -117,13 +119,14 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
             <div className="space-y-1">
               <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Month</label>
               <select
-                value={isReopenMode ? (selectedMonth === 'August' ? '' : selectedMonth) : selectedMonth}
+                value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:border-amber-500 shadow-2xs"
+                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="">Select Month</option>
+                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Month</option>
                 {months.map(m => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m} style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>{m}</option>
                 ))}
               </select>
             </div>
