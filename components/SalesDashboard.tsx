@@ -494,10 +494,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       return !hiddenPieItems.includes(key);
     });
 
+    const isFullWidth = className.includes('col-span-full');
+
     return (
       <WidgetCard id={id} title={title} className={className}>
-        <div className="flex flex-col space-y-4">
-          <div className="h-52 w-full">
+        <div className={`flex flex-col space-y-4 ${isFullWidth ? 'items-center text-center' : ''}`}>
+          <div className={`h-52 w-full ${isFullWidth ? 'max-w-2xl mx-auto flex justify-center' : ''}`}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -528,7 +530,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </ResponsiveContainer>
           </div>
 
-          <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+          <div className={`border border-slate-200 rounded-xl overflow-hidden text-xs w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
             <table className="w-full text-left font-sans">
               <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
                 <tr>
@@ -1055,8 +1057,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             {/* WIDGET 9: USER SUMMARY */}
             <RenderPieWidget id="user-summary" title="User Summary" data={userSummaryData} labelKey="user" />
 
-            {/* WIDGET 10: PAYMENT SUMMARY */}
-            <RenderPieWidget id="payment-summary" title="Payment Summary" data={paymentSummaryData} labelKey="method" />
+            {/* WIDGET 10: PAYMENT SUMMARY (FULL WIDTH & CENTERED) */}
+            <RenderPieWidget id="payment-summary" title="Payment Summary" data={paymentSummaryData} labelKey="method" className="col-span-full" />
 
           </div>
 
