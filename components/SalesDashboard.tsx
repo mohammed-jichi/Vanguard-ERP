@@ -487,14 +487,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   const PieSliceTooltip = ({ active, payload }: any) => {
     if (!active || !payload || !payload.length) return null;
     const item = payload[0];
+    if (!item) return null;
     const dataObj = item.payload || {};
-    const nameLabel = item.name || dataObj.name || dataObj.reason || dataObj.method || dataObj.user || dataObj.type || 'Slice';
-    const amountVal = dataObj.amount ? dataObj.amount : null;
-    const countVal = dataObj.count !== undefined ? dataObj.count : null;
+    const nameLabel = item.name || dataObj.name || dataObj.reason || dataObj.method || dataObj.user || dataObj.type || dataObj.label || 'Slice';
+    const amountVal = dataObj.amount || null;
+    const countVal = dataObj.count !== undefined && dataObj.count !== null ? dataObj.count : null;
     const shareVal = item.value !== undefined ? item.value : null;
 
     return (
-      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[170px]" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
+      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-2xl text-xs space-y-1.5 font-sans min-w-[170px] pointer-events-none z-50" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2 border-b border-slate-800 pb-1.5">
           <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color || item.fill || dataObj.color || '#10b981' }}></span>
           <p className="font-extrabold !text-white text-white text-sm" style={{ color: '#ffffff' }}>
@@ -502,19 +503,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </p>
         </div>
         {amountVal && (
-          <div className="flex items-center justify-between text-[11px] font-semibold">
+          <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
             <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Amount:</span>
             <span className="font-mono font-bold !text-emerald-400 text-emerald-400" style={{ color: '#34d399' }}>{amountVal}</span>
           </div>
         )}
         {countVal !== null && (
-          <div className="flex items-center justify-between text-[11px] font-semibold">
-            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Voids Count:</span>
+          <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
+            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Count:</span>
             <span className="font-mono font-bold !text-amber-400 text-amber-400" style={{ color: '#fbbf24' }}>{countVal}</span>
           </div>
         )}
         {shareVal !== null && (
-          <div className="flex items-center justify-between text-[11px] font-semibold">
+          <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
             <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Share:</span>
             <span className="font-mono font-bold !text-white text-white" style={{ color: '#ffffff' }}>{shareVal}%</span>
           </div>
@@ -522,6 +523,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       </div>
     );
   };
+
+  const CustomTooltip = PieSliceTooltip;
 
   // Helper PieChart Widget Renderer (Solid Pies, Dynamic Filtering & Proper NameKey Legends)
   const RenderPieWidget = ({
