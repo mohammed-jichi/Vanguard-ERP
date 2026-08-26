@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, CheckSquare, Video, Edit2 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import EndOfMonthModal from './EndOfMonthModal';
+import ChecklistModal from './ChecklistModal';
 
 interface VanguardSubHeaderProps {
   activeScreen: string;
@@ -141,35 +142,12 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
 
       </div>
 
-      {/* CHECKLIST MODAL */}
-      {isChecklistOpen && (
-        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 font-sans">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <CheckSquare className="w-5 h-5 text-emerald-600" /> Operational Checklist
-            </h3>
-            <div className="space-y-2 text-xs font-medium text-gray-700">
-              <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded-lg hover:bg-amber-50">
-                <input type="checkbox" defaultChecked className="rounded text-amber-500 focus:ring-amber-500" />
-                <span>Verify POS Touch Cashier Balances</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded-lg hover:bg-amber-50">
-                <input type="checkbox" defaultChecked className="rounded text-amber-500 focus:ring-amber-500" />
-                <span>Daily Olive Oil Pressing Tanks Inspection</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer p-2 bg-gray-50 rounded-lg hover:bg-amber-50">
-                <input type="checkbox" className="rounded text-amber-500 focus:ring-amber-500" />
-                <span>Supplier Invoices AP Reconciliation</span>
-              </label>
-            </div>
-            <div className="pt-2 text-right">
-              <button onClick={() => setIsChecklistOpen(false)} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* REUSABLE CHECKLIST ITEMS MODAL */}
+      <ChecklistModal
+        isOpen={isChecklistOpen}
+        onClose={() => setIsChecklistOpen(false)}
+        onWatchTutorial={() => setIsTutorialsOpen(true)}
+      />
 
       {/* TUTORIALS MODAL */}
       {isTutorialsOpen && (
