@@ -840,22 +840,16 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       />
 
       {/* GLOBAL SAAS FOOTER - POWERED BY VANGUARD ERP */}
-      <footer className="bg-white border-t border-gray-200 p-4 rounded-2xl text-center text-xs text-gray-500 font-bold space-y-2 shadow-sm">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-gray-700">
-          <span className="font-black text-amber-600 flex items-center gap-1">
-            ⚡ Powered by Vanguard ERP System
-          </span>
-          <span>© 2026 جميع الحقوق محفوظة</span>
+      <footer className="w-full bg-white border-t border-gray-200 py-4 px-6 text-center text-xs text-gray-600 font-bold shadow-2xs mt-8 rounded-2xl">
+        <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4">
+          <a href="/support" target="_blank" rel="noreferrer" className="hover:text-amber-600 transition-colors">Support</a>
           <span className="text-gray-300">|</span>
-          <a href="#" className="hover:text-amber-600 transition-colors">سياسة الخصوصية (Privacy Policy)</a>
+          <a href="#" className="hover:text-amber-600 transition-colors">Terms of Service</a>
           <span className="text-gray-300">|</span>
-          <a href="#" className="hover:text-amber-600 transition-colors">الشروط والأحكام (Terms of Service)</a>
+          <a href="#" className="hover:text-amber-600 transition-colors">Privacy Policy</a>
           <span className="text-gray-300">|</span>
-          <a href="#" className="hover:text-amber-600 transition-colors">الدعم والاتصال (Support)</a>
+          <span className="font-bold text-gray-700">© 2026 Powered by Vanguard ERP System</span>
         </div>
-        <p className="text-[10px] text-gray-400 font-mono">
-          Workspace: {tenantName || "منتوجات زيت وزيتون الجنوب SARL"} | سجل تجاري: {currentTenant?.companyRegistrationNumber || 'CR-104928-LB'} | رقم مالي MOF: {currentTenant?.taxIdentificationNumber || 'MOF-7489201'}
-        </p>
       </footer>
         </div>
       </div>

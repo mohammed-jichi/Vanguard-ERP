@@ -67,8 +67,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [currentTenant, setCurrentTenant] = useState<TenantCompany>(DEFAULT_SUPERADMIN_TENANT);
   const [currentUser, setCurrentUser] = useState<TenantUser | null>({
     id: 'usr-superadmin-01',
-    email: 'khadeer@vanguard-erp.com',
-    fullName: 'خضير (Vanguard Super Admin)',
+    email: 'mohammed@vanguard-erp.com',
+    fullName: 'Mohammed (Vanguard Super Admin)',
     role: 'SUPER_ADMIN'
   });
 

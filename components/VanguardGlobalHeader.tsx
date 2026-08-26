@@ -147,49 +147,50 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           </a>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME (EXACTLY: 001 - Southern Olive Oil S.A.R.L) */}
+        {/* CENTER: TENANT LICENSE AND NAME (EXACTLY: 001 - Southern Olive Oil S.A.R.L منتوجات زيت وزيتون الجنوب) */}
         <div className="hidden md:flex items-center gap-2.5 bg-[#252538] border border-[#373752] px-4 py-1.5 rounded-full text-xs shadow-inner">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="font-mono text-amber-400 font-extrabold text-sm">001</span>
+          <span className="font-mono text-amber-400 font-black text-sm">001</span>
           <span className="text-slate-400 font-bold">-</span>
-          <span className="font-semibold text-white tracking-wide">{currentTenant?.brandNameEn || 'Southern Olive Oil S.A.R.L'}</span>
-          <span className="text-[11px] text-emerald-200 font-bold bg-emerald-800/80 border border-emerald-500 px-2.5 py-0.5 rounded-full shadow-2xs">
-            {currentTenant?.brandNameAr || 'منتجات زيت وزيتون الجنوب'}
+          <span className="font-semibold text-white tracking-wide">Southern Olive Oil S.A.R.L</span>
+          <span className="text-[11px] text-amber-300 font-bold bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full shadow-2xs">
+            منتوجات زيت وزيتون الجنوب
           </span>
         </div>
 
-        {/* RIGHT ICONS ACTION BAR (ALL PURE BLACK ICONS) */}
-        <div className="flex items-center gap-2">
+        {/* RIGHT ICONS ACTION BAR (PREMIUM GOLD THEME - text-amber-400 / text-amber-500) */}
+        <div className="flex items-center gap-1.5 md:gap-2">
 
           {/* HOME ICON */}
           <button
             onClick={() => onSelectScreen('grid-dash')}
             title="Home Dashboard"
-            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors"
+            className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors"
           >
-            <Home className="w-4 h-4 text-black" />
+            <Home className="w-4.5 h-4.5 text-amber-400" />
           </button>
 
-          {/* MAIL ICON */}
+          {/* MAIL / INBOX ICON */}
           <button
             onClick={() => setIsInboxOpen(true)}
             title="Inbox between locations"
-            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors relative"
+            className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors relative"
           >
-            <Mail className="w-4 h-4 text-black" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full"></span>
+            <Mail className="w-4.5 h-4.5 text-amber-400" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full"></span>
           </button>
 
-          {/* SETTINGS GEAR ICON */}
+          {/* SYSTEM SETTINGS GEAR ICON */}
           <div className="relative">
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
               title="System Settings"
               className={`p-2 rounded-xl transition-colors ${
-                isSettingsOpen ? 'bg-amber-500 text-black font-bold' : 'hover:bg-stone-200/80 text-black hover:text-amber-700'
+                isSettingsOpen ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-[#252538] text-amber-400 hover:text-amber-300'
               }`}
             >
-              <SettingsIcon className="w-4 h-4 text-black" />
+              <SettingsIcon className={`w-4.5 h-4.5 ${isSettingsOpen ? 'text-slate-950' : 'text-amber-400'}`} />
             </button>
 
             {/* SETTINGS MODAL / DROPDOWN WITH 5 EXACT SECTIONS */}
@@ -310,27 +311,27 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             )}
           </div>
 
-          {/* HELP ICON (?) */}
+          {/* HELP / SUPPORT ICON */}
           <a
             href="/support"
             target="_blank"
             rel="noreferrer"
-            title="Support Center"
-            className="p-2 hover:bg-stone-200/80 text-black hover:text-amber-700 rounded-xl transition-colors"
+            title="Help & Support"
+            className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors"
           >
-            <HelpCircle className="w-4 h-4 text-black" />
+            <HelpCircle className="w-4.5 h-4.5 text-amber-400" />
           </a>
 
-          {/* LANGUAGE SWITCHER DROPDOWN */}
+          {/* LANGUAGE SWITCHER DROPDOWN ("EN") */}
           <div className="relative">
             <button
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
               title="Select System Language"
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-stone-200/80 hover:bg-stone-300 text-black border border-stone-300 rounded-xl text-xs font-bold transition-all shadow-2xs"
+              className="flex items-center gap-1 px-2.5 py-1 bg-[#252538] hover:bg-[#32324a] text-amber-400 border border-amber-500/40 rounded-xl text-xs font-bold transition-all shadow-2xs"
             >
-              <Globe className="w-3.5 h-3.5 text-black shrink-0" />
-              <span className="uppercase font-mono font-bold tracking-wider text-black">{language}</span>
-              <ChevronDown className="w-3 h-3 text-stone-500" />
+              <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="uppercase font-mono font-bold tracking-wider text-amber-400">{language}</span>
+              <ChevronDown className="w-3 h-3 text-amber-400" />
             </button>
 
             {isLangMenuOpen && (
@@ -367,19 +368,19 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             )}
           </div>
 
-          {/* USER PROFILE DROPDOWN */}
+          {/* USER PROFILE DROPDOWN (STRICTLY MOHAMMED) */}
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-1.5 p-1.5 hover:bg-slate-800 text-white rounded-xl transition-colors"
+              className="flex items-center gap-1.5 p-1.5 hover:bg-[#252538] text-white rounded-xl transition-colors"
             >
-              <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300">
-                {currentUser?.fullName ? currentUser.fullName.charAt(0).toUpperCase() : 'J'}
+              <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300 shadow-xs">
+                M
               </div>
               <span className="font-bold text-xs text-white hidden sm:inline">
-                {currentUser?.fullName || 'Jichi Mohammed'}
+                Mohammed
               </span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <ChevronDown className="w-3 h-3 text-amber-400" />
             </button>
 
             {/* PROFILE DROPDOWN MENU */}
@@ -387,63 +388,63 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-rtl text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
                   <p className="text-gray-900 font-bold">
-                    {currentUser?.fullName || 'Jichi Mohammed'}
+                    Mohammed
                   </p>
                   <p className="text-[10px] text-gray-500 font-medium">
-                    {currentTenant?.brandNameEn || 'Southern Olive Oil S.A.R.L'}
+                    Southern Olive Oil S.A.R.L
                   </p>
                 </div>
 
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'المؤسسة (Organization)' : 'Organization'}</span>
+                  <span>Organization</span>
                 </button>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'التنبيهات والإشعارات' : 'Alerts & Notifications'}</span>
+                  <span>Alerts & Notifications</span>
                 </button>
                 <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'اللغة (English)' : 'Language'}</span>
+                  <span>Language</span>
                 </button>
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'حسابي الشخصي' : 'My Account'}</span>
+                  <span>My Account</span>
                 </button>
                 <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'الأدوَار والصلاحيات' : 'Roles'}</span>
+                  <span>Roles</span>
                 </button>
                 <button onClick={() => { onSelectScreen('hr-dir'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <UsersIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'المستخدمين' : 'Users'}</span>
+                  <span>Users</span>
                 </button>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'آخر التحديثات' : 'Latest Updates'}</span>
+                  <span>Latest Updates</span>
                 </button>
                 <a href="/support" target="_blank" rel="noreferrer" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <HelpCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>{language === 'ar' ? 'مركز الدعم الفني' : 'Support Center'}</span>
+                  <span>Support Center</span>
                 </a>
                 
                 <div className="border-t border-gray-100 pt-1">
                   <a href="/login" className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold">
                     <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                    <span>{language === 'ar' ? 'تسجيل الخروج' : 'Logout'}</span>
+                    <span>Logout</span>
                   </a>
                 </div>
               </div>
             )}
           </div>
 
-          {/* QUICK MENU ICON (9-CUBES) */}
+          {/* QUICK MENU TOGGLE ICON (9-CUBES - GOLD THEME) */}
           <button
             onClick={() => setIsQuickMenuOpen(true)}
             title="Quick Menu"
-            className="p-2 bg-stone-200/80 hover:bg-amber-500 text-black rounded-xl transition-colors shadow-2xs ml-1"
+            className="p-2 bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-slate-950 border border-amber-500/40 rounded-xl transition-colors shadow-2xs ml-1"
           >
-            <LayoutGrid className="w-4 h-4 text-black" />
+            <LayoutGrid className="w-4.5 h-4.5 text-amber-400 hover:text-slate-950" />
           </button>
 
         </div>
