@@ -431,12 +431,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     if (!active || !payload || !payload.length) return null;
     const monthVal = payload[0];
     return (
-      <div className="bg-slate-900 border border-slate-700 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[190px]">
-        <p className="font-black text-amber-300 border-b border-slate-800 pb-1">{label} 2026</p>
-        <p className="text-[11px] font-bold text-slate-300">Branch: منتوجات زيت وزيتون الجنوب</p>
-        <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 pt-1">
-          <span>Net Revenue:</span>
-          <span className="font-mono font-bold">LBP {monthVal.value}M</span>
+      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[190px]" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
+        <p className="font-black !text-amber-300 text-amber-300 border-b border-slate-800 pb-1 text-sm" style={{ color: '#fde047' }}>{label} 2026</p>
+        <p className="text-[11px] font-bold !text-slate-200 text-slate-200" style={{ color: '#e2e8f0' }}>Branch: منتوجات زيت وزيتون الجنوب</p>
+        <div className="flex items-center justify-between text-xs font-semibold !text-emerald-400 text-emerald-400 pt-1" style={{ color: '#34d399' }}>
+          <span className="!text-white text-white" style={{ color: '#ffffff' }}>Net Revenue:</span>
+          <span className="font-mono font-bold !text-emerald-400 text-emerald-400" style={{ color: '#34d399' }}>LBP {monthVal.value}M</span>
         </div>
       </div>
     );
@@ -475,7 +475,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
-  // Helper PieChart Widget Renderer (Dynamic Pie Filtering for 360-degree recalculation)
+  // Helper PieChart Widget Renderer (Solid Pies, Dynamic Filtering & Proper NameKey Legends)
   const RenderPieWidget = ({
     id,
     title,
@@ -506,10 +506,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   data={activeData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
                   outerRadius={75}
-                  paddingAngle={4}
+                  paddingAngle={2}
                   dataKey="value"
+                  nameKey={labelKey}
                 >
                   {activeData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -521,7 +521,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 />
                 <Legend
                   onClick={(e: any) => {
-                    const key = e.dataKey || e.value;
+                    const key = e.value || e.name || e.dataKey;
                     if (key) handleTogglePieItem(key);
                   }}
                   wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
@@ -1007,15 +1007,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={voidSummaryData}
+                        data={voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason))}
                         cx="50%"
                         cy="50%"
-                        innerRadius={50}
                         outerRadius={75}
-                        paddingAngle={4}
+                        paddingAngle={2}
                         dataKey="value"
+                        nameKey="reason"
                       >
-                        {voidSummaryData.map((entry, index) => (
+                        {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
@@ -1023,7 +1023,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         formatter={(val: any) => [`${val}%`, 'Share']}
                         contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
                       />
-                      <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
+                      <Legend
+                        onClick={(e: any) => {
+                          const key = e.value || e.name || e.dataKey;
+                          if (key) handleTogglePieItem(key);
+                        }}
+                        wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -1551,9 +1557,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       }
                       cx="50%"
                       cy="50%"
-                      innerRadius={80}
                       outerRadius={140}
-                      paddingAngle={6}
+                      paddingAngle={3}
                       dataKey="value"
                     >
                       {(
