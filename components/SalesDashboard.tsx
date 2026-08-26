@@ -417,13 +417,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   // EOD Status Modal State
   const [isEodModalOpen, setIsEodModalOpen] = useState<boolean>(false);
 
-  // Hidden Pie Slices State (for dynamic calculation)
+  // Hidden Pie Slices State (for dynamic 360-degree calculation & two-way toggling)
   const [hiddenPieItems, setHiddenPieItems] = useState<string[]>([]);
 
   const handleTogglePieItem = (itemKey: string) => {
+    if (!itemKey) return;
     setHiddenPieItems((prev) =>
       prev.includes(itemKey) ? prev.filter((k) => k !== itemKey) : [...prev, itemKey]
     );
+  };
+
+  const getItemKey = (item: any, labelKey?: string) => {
+    if (!item) return '';
+    if (labelKey && item[labelKey] !== undefined) return String(item[labelKey]);
+    return String(item.reason || item.method || item.user || item.name || item.type || '');
   };
 
   // Custom Tooltip for Monthly Revenue BarChart
@@ -490,7 +497,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     className?: string;
   }) => {
     const activeData = data.filter((item) => {
-      const key = item[labelKey] || item.name || item.reason || item.user || item.method;
+      const key = getItemKey(item, labelKey);
       return !hiddenPieItems.includes(key);
     });
 
@@ -500,34 +507,40 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       <WidgetCard id={id} title={title} className={className}>
         <div className={`flex flex-col space-y-4 ${isFullWidth ? 'items-center text-center' : ''}`}>
           <div className={`h-52 w-full ${isFullWidth ? 'max-w-2xl mx-auto flex justify-center' : ''}`}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={activeData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={75}
-                  paddingAngle={2}
-                  dataKey="value"
-                  nameKey={labelKey}
-                >
-                  {activeData.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(val: any) => [`${val}%`, 'Share']}
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                />
-                <Legend
-                  onClick={(e: any) => {
-                    const key = e.value || e.name || e.dataKey;
-                    if (key) handleTogglePieItem(key);
-                  }}
-                  wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {activeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={activeData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={75}
+                    paddingAngle={2}
+                    dataKey="value"
+                    nameKey={labelKey}
+                  >
+                    {activeData.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val: any) => [`${val}%`, 'Share']}
+                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                  />
+                  <Legend
+                    onClick={(e: any) => {
+                      const key = e.value || e.name || (e.payload && (e.payload[labelKey] || e.payload.name || e.payload.user || e.payload.method || e.payload.reason));
+                      if (key && typeof key === 'string') handleTogglePieItem(key);
+                    }}
+                    wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic">
+                All slices hidden. Click table rows below to restore.
+              </div>
+            )}
           </div>
 
           <div className={`border border-slate-200 rounded-xl overflow-hidden text-xs w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
@@ -541,26 +554,26 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
                 {data.map((row: any) => {
-                  const key = row[labelKey] || row.name || row.reason || row.user || row.method;
+                  const key = getItemKey(row, labelKey);
                   const isHidden = hiddenPieItems.includes(key);
                   return (
                     <tr
                       key={key}
                       onClick={() => handleTogglePieItem(key)}
-                      className={`cursor-pointer transition-colors ${
-                        isHidden ? 'opacity-40 bg-slate-50 line-through' : 'hover:bg-slate-50'
+                      className={`cursor-pointer transition-all ${
+                        isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
                       }`}
-                      title="Click to toggle item from PieChart recalculation"
+                      title="Click to toggle slice on/off"
                     >
                       <td className="py-2 px-3 flex items-center gap-2">
                         <span
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: isHidden ? '#94a3b8' : row.color }}
                         ></span>
-                        <span>{key}</span>
+                        <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
                       </td>
-                      <td className="py-2 px-3 text-right font-mono">{row.amount}</td>
-                      <td className="py-2 px-3 text-right font-bold text-emerald-700">{row.value}%</td>
+                      <td className={`py-2 px-3 text-right font-mono ${isHidden ? 'text-slate-400' : ''}`}>{row.amount}</td>
+                      <td className={`py-2 px-3 text-right font-bold ${isHidden ? 'text-slate-400' : 'text-emerald-700'}`}>{row.value}%</td>
                     </tr>
                   );
                 })}
@@ -1004,34 +1017,40 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <WidgetCard id="void-summary" title="Void Summary">
               <div className="flex flex-col space-y-4">
                 <div className="h-52 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason))}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={75}
-                        paddingAngle={2}
-                        dataKey="value"
-                        nameKey="reason"
-                      >
-                        {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(val: any) => [`${val}%`, 'Share']}
-                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                      />
-                      <Legend
-                        onClick={(e: any) => {
-                          const key = e.value || e.name || e.dataKey;
-                          if (key) handleTogglePieItem(key);
-                        }}
-                        wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason))}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={75}
+                          paddingAngle={2}
+                          dataKey="value"
+                          nameKey="reason"
+                        >
+                          {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(val: any) => [`${val}%`, 'Share']}
+                          contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                        />
+                        <Legend
+                          onClick={(e: any) => {
+                            const key = e.value || e.name || (e.payload && (e.payload.reason || e.payload.name));
+                            if (key && typeof key === 'string') handleTogglePieItem(key);
+                          }}
+                          wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic">
+                      All slices hidden. Click table rows below to restore.
+                    </div>
+                  )}
                 </div>
 
                 <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
@@ -1044,16 +1063,30 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
-                      {voidSummaryData.map((v) => (
-                        <tr key={v.reason} className="hover:bg-slate-50">
-                          <td className="py-2 px-3 flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: v.color }}></span>
-                            <span>{v.reason}</span>
-                          </td>
-                          <td className="py-2 px-3 text-right font-mono text-rose-700">{v.amount}</td>
-                          <td className="py-2 px-3 text-right font-bold text-slate-700">{v.count} voids</td>
-                        </tr>
-                      ))}
+                      {voidSummaryData.map((v) => {
+                        const key = v.reason;
+                        const isHidden = hiddenPieItems.includes(key);
+                        return (
+                          <tr
+                            key={key}
+                            onClick={() => handleTogglePieItem(key)}
+                            className={`cursor-pointer transition-all ${
+                              isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
+                            }`}
+                            title="Click to toggle slice on/off"
+                          >
+                            <td className="py-2 px-3 flex items-center gap-2">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full shrink-0"
+                                style={{ backgroundColor: isHidden ? '#94a3b8' : v.color }}
+                              ></span>
+                              <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
+                            </td>
+                            <td className={`py-2 px-3 text-right font-mono ${isHidden ? 'text-slate-400' : 'text-rose-700'}`}>{v.amount}</td>
+                            <td className={`py-2 px-3 text-right font-bold ${isHidden ? 'text-slate-400' : 'text-slate-700'}`}>{v.count} voids</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
