@@ -193,117 +193,161 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <SettingsIcon className={`w-4.5 h-4.5 ${isSettingsOpen ? 'text-slate-950' : 'text-amber-400'}`} />
             </button>
 
-            {/* SETTINGS MODAL / DROPDOWN WITH 5 EXACT SECTIONS */}
+            {/* SYSTEM SETTINGS MEGA MENU (3-COLUMN ENGLISH-ONLY WIDE OVERLAY) */}
             {isSettingsOpen && (
-              <div className="absolute left-0 mt-2 w-80 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-3 space-y-3 font-sans dir-rtl">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <span className="font-black text-xs text-gray-900 flex items-center gap-1.5">
-                    <SettingsIcon className="w-4 h-4 text-amber-600" /> إعدادات النظام الشاملة (System Settings)
-                  </span>
-                  <button onClick={() => setIsSettingsOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <div className="absolute left-0 mt-3 w-[720px] max-w-[90vw] bg-white text-slate-900 border border-slate-200 rounded-2xl shadow-2xl z-50 p-6 font-sans dir-ltr text-left animate-in fade-in slide-in-from-top-2 duration-150">
+                
+                {/* MEGA MENU HEADER */}
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                      <SettingsIcon className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-extrabold text-sm text-slate-900">System Settings</h3>
+                      <p className="text-[11px] text-slate-500 font-medium">Enterprise core configuration, accounting parameters, and sales control rules</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsSettingsOpen(false)}
+                    className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* 5 EXACT SECTIONS ACCORDION / TABS */}
-                <div className="space-y-1 text-xs font-bold">
+                {/* 3-COLUMN MEGA MENU GRID LAYOUT */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   
-                  {/* 1. GENERAL */}
-                  <div className="border border-gray-100 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setActiveSettingsSection('general')}
-                      className={`w-full text-right p-2 flex items-center justify-between ${
-                        activeSettingsSection === 'general' ? 'bg-amber-50 text-amber-900' : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>1. العامة (General)</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeSettingsSection === 'general' ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeSettingsSection === 'general' && (
-                      <div className="p-2 bg-white space-y-1 text-[11px] text-gray-600 pr-4">
-                        <button onClick={() => { onSelectScreen('settings'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">معلومات الشركة والترخيص (Company Information)</button>
-                        <button onClick={() => alert('إدارة قوالب البريد الإلكتروني')} className="w-full text-right py-1 hover:text-amber-600">قوالب البريد الإلكتروني (Email Templates)</button>
+                  {/* COLUMN 1: GENERAL & ACCOUNTING */}
+                  <div className="space-y-5">
+                    {/* GENERAL */}
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
+                        General
+                      </h4>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => { onSelectScreen('settings'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors flex items-center justify-between"
+                        >
+                          <span>Company Information</span>
+                        </button>
+                        <button
+                          onClick={() => { alert('Email Templates Configuration'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors flex items-center justify-between"
+                        >
+                          <span>Email Templates</span>
+                        </button>
                       </div>
-                    )}
+                    </div>
+
+                    {/* ACCOUNTING */}
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
+                        Accounting
+                      </h4>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => { onSelectScreen('acc-coa'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Company Configuration
+                        </button>
+                        <button
+                          onClick={() => { alert('Accounts Balances Recalculated Successfully!'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Recalculate Accounts Balances
+                        </button>
+                        <button
+                          onClick={() => { onSelectScreen('acc-aux-rates'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Difference of Exchange
+                        </button>
+                        <button
+                          onClick={() => { onSelectScreen('acc-vat'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          End of Year
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* 2. SALES CONTROL */}
-                  <div className="border border-gray-100 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setActiveSettingsSection('sales')}
-                      className={`w-full text-right p-2 flex items-center justify-between ${
-                        activeSettingsSection === 'sales' ? 'bg-amber-50 text-amber-900' : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>2. إدارة المبيعات (Sales Control)</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeSettingsSection === 'sales' ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeSettingsSection === 'sales' && (
-                      <div className="p-2 bg-white space-y-1 text-[11px] text-gray-600 pr-4">
-                        <button onClick={() => { onSelectScreen('sales-setup-screen'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">التهيئات العامة للمبيعات (General Configuration)</button>
-                        <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">تهيئة الموظفين والكاشير (Employee Configuration)</button>
-                        <button onClick={() => { onSelectScreen('hr-attendancelog'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">حضور ودوام الموظفين (Employee Attendance)</button>
+                  {/* COLUMN 2: SALES CONTROL & ACCOUNTING INTERFACE */}
+                  <div className="space-y-5">
+                    {/* SALES CONTROL */}
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
+                        Sales Control
+                      </h4>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => { onSelectScreen('sales-setup-screen'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          General Configuration
+                        </button>
+                        <button
+                          onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Employee Configuration
+                        </button>
+                        <button
+                          onClick={() => { onSelectScreen('hr-attendancelog'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Employee Attendance
+                        </button>
                       </div>
-                    )}
+                    </div>
+
+                    {/* ACCOUNTING INTERFACE */}
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
+                        Accounting Interface
+                      </h4>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => { alert('Opening Accounting Link Setup'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Accounting Link
+                        </button>
+                        <button
+                          onClick={() => { alert('Transferring entries to General Ledger'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Transfer to Accounting
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* 3. INVENTORY */}
-                  <div className="border border-gray-100 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setActiveSettingsSection('inventory')}
-                      className={`w-full text-right p-2 flex items-center justify-between ${
-                        activeSettingsSection === 'inventory' ? 'bg-amber-50 text-amber-900' : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>3. إدارة المخزون (Inventory)</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeSettingsSection === 'inventory' ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeSettingsSection === 'inventory' && (
-                      <div className="p-2 bg-white space-y-1 text-[11px] text-gray-600 pr-4">
-                        <button onClick={() => { onSelectScreen('inventory'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">التهيئات العامة للمخازن (General Configuration)</button>
-                        <button onClick={() => alert('تمت عملية إعادة احتساب أرصدة المخزون')} className="w-full text-right py-1 hover:text-amber-600 text-amber-700 font-bold">إعادة احتساب الأرصدة (Recalculate)</button>
+                  {/* COLUMN 3: INVENTORY */}
+                  <div className="space-y-5">
+                    <div>
+                      <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
+                        Inventory
+                      </h4>
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => { onSelectScreen('inventory'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          General Configuration
+                        </button>
+                        <button
+                          onClick={() => { alert('Inventory Stock Balances Recalculated!'); setIsSettingsOpen(false); }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
+                        >
+                          Recalculate
+                        </button>
                       </div>
-                    )}
-                  </div>
-
-                  {/* 4. ACCOUNTING */}
-                  <div className="border border-gray-100 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setActiveSettingsSection('accounting')}
-                      className={`w-full text-right p-2 flex items-center justify-between ${
-                        activeSettingsSection === 'accounting' ? 'bg-amber-50 text-amber-900' : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>4. المحاسبة والمالية (Accounting)</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeSettingsSection === 'accounting' ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeSettingsSection === 'accounting' && (
-                      <div className="p-2 bg-white space-y-1 text-[11px] text-gray-600 pr-4">
-                        <button onClick={() => { onSelectScreen('acc-coa'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">تهيئة النظام المحاسبي (Company Configuration)</button>
-                        <button onClick={() => alert('تمت عملية إعادة احتساب الأرصدة المحاسبية بنجاح!')} className="w-full text-right py-1 hover:text-amber-600 font-bold text-amber-700">إعادة احتساب الأرصدة (Recalculate Accounts Balances)</button>
-                        <button onClick={() => { onSelectScreen('acc-aux-rates'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600">فروقات أسعار الصرف (Difference of Exchange)</button>
-                        <button onClick={() => { onSelectScreen('acc-vat'); setIsSettingsOpen(false); }} className="w-full text-right py-1 hover:text-amber-600 font-bold text-rose-700">إغلاق السنة المالية (End of Year)</button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 5. ACCOUNTING INTERFACE */}
-                  <div className="border border-gray-100 rounded-xl overflow-hidden">
-                    <button
-                      onClick={() => setActiveSettingsSection('interface')}
-                      className={`w-full text-right p-2 flex items-center justify-between ${
-                        activeSettingsSection === 'interface' ? 'bg-amber-50 text-amber-900' : 'bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>5. الربط المحاسبي (Accounting Interface)</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeSettingsSection === 'interface' ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeSettingsSection === 'interface' && (
-                      <div className="p-2 bg-white space-y-1 text-[11px] text-gray-600 pr-4">
-                        <button onClick={() => alert('فتح شاشة الربط المحاسبي المباشر')} className="w-full text-right py-1 hover:text-amber-600 font-bold">الربط المحاسبي (Accounting Link)</button>
-                        <button onClick={() => alert('ترحيل الحركات إلى الحسابات')} className="w-full text-right py-1 hover:text-amber-600 font-bold text-emerald-700">ترحيل القيود للمحاسبة (Transfer to Accounting)</button>
-                      </div>
-                    )}
+                    </div>
                   </div>
 
                 </div>
