@@ -47,12 +47,55 @@ import {
   CreditCard,
   PieChart,
   UserCog,
-  Search
+  Search,
+  ArrowRightLeft,
+  BookOpen
 } from 'lucide-react';
 
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import TenantSettingsModal from './TenantSettingsModal';
+
+interface SalesMenuItem {
+  id: string;
+  title: string;
+  type: 'link' | 'accordion';
+  external?: boolean;
+  children?: Array<{ id: string; title: string }>;
+}
+
+const salesControlMenu: SalesMenuItem[] = [
+  { id: 'sc-dashboard', title: 'Dashboard', type: 'link' },
+  { id: 'sc-pos-terminal', title: 'POS Touch Terminal', type: 'link', external: true },
+  { id: 'sc-reports', title: 'Reports', type: 'link' },
+  { id: 'sc-online-orders', title: 'Online Orders', type: 'link' },
+  { id: 'sc-eod', title: 'End of Day', type: 'link' },
+  { 
+    id: 'sc-setup', 
+    title: 'Setup', 
+    type: 'accordion', 
+    children: [
+      { id: 'setup-screens', title: 'Screens' },
+      { id: 'setup-payment-types', title: 'Payment Types' },
+      { id: 'setup-coupons', title: 'Coupon and Gift Certificates' },
+      { id: 'setup-discounts', title: 'Discounts' },
+      { id: 'setup-price-modes', title: 'Price Modes' },
+      { id: 'setup-workstations', title: 'Workstations and Printers' }
+    ] 
+  },
+  { 
+    id: 'sc-more-setup', 
+    title: 'More Setup', 
+    type: 'accordion', 
+    children: [
+      { id: 'more-void', title: 'Void Reasons' },
+      { id: 'more-vat', title: 'VAT Exemption Reason' },
+      { id: 'more-message', title: 'Message on Invoice' },
+      { id: 'more-zone', title: 'Zone Setup' },
+      { id: 'more-currency', title: 'Currency Setup' }
+    ] 
+  }
+];
 
 interface SidebarProps {
   activeScreen?: string;
@@ -176,55 +219,66 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
 
           {isOpen && expandedGroups['sales'] && (
             <div className="ml-3 pl-2 border-l border-amber-200 space-y-0.5 mt-1 text-xs">
-              <button onClick={() => handleNav('sc-dashboard')} className="w-full text-left p-1.5 hover:text-amber-600 rounded font-medium">Dashboard</button>
-              <button onClick={() => handleNav('sales-pos')} className="w-full text-left p-1.5 hover:text-amber-600 rounded font-bold text-amber-700">POS Touch Terminal</button>
-              <button onClick={() => handleNav('sc-reports')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">Reports</button>
-              <button onClick={() => handleNav('sc-online-orders')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">Online Orders</button>
-              <button onClick={() => handleNav('sc-eod')} className="w-full text-left p-1.5 hover:text-amber-600 rounded">End of Day</button>
-              <a href="/pos" target="_blank" className="w-full text-left p-1.5 text-amber-600 hover:underline flex items-center gap-1 font-medium">
-                <ExternalLink className="w-3 h-3" /> POS Touch App (External)
-              </a>
+              {salesControlMenu.map((item) => {
+                if (item.type === 'link') {
+                  if (item.external) {
+                    return (
+                      <a
+                        key={item.id}
+                        href="/sales/pos"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full flex items-center justify-between p-1.5 text-amber-700 hover:text-amber-800 hover:bg-amber-50 rounded font-bold transition-colors"
+                      >
+                        <span>{item.title}</span>
+                        <ExternalLink className="w-3 h-3 text-amber-600 shrink-0" />
+                      </a>
+                    );
+                  }
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNav(item.id)}
+                      className={`w-full text-left p-1.5 hover:text-amber-600 rounded transition-colors ${
+                        activeScreen === item.id ? 'text-amber-600 font-bold bg-amber-50/60' : 'font-medium text-gray-700'
+                      }`}
+                    >
+                      {item.title}
+                    </button>
+                  );
+                }
 
-              {/* SETUP ACCORDION */}
-              <div className="pt-1">
-                <button
-                  onClick={() => toggleGroup('sales_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-amber-950 bg-amber-50 hover:bg-amber-100 rounded font-bold text-xs"
-                >
-                  <span>{language === 'ar' ? '⚙️ إعدادات نقطة البيع' : 'Setup'}</span>
-                  {expandedGroups['sales_setup'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                </button>
-                {expandedGroups['sales_setup'] && (
-                  <div className="ml-2 pl-2 border-l border-amber-300 space-y-0.5 mt-0.5 text-xs text-gray-700">
-                    <button onClick={() => handleNav('setup-screens')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Screens</button>
-                    <button onClick={() => handleNav('setup-payment-types')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Payment Types</button>
-                    <button onClick={() => handleNav('setup-coupons')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Coupons and Gift Certificates</button>
-                    <button onClick={() => handleNav('setup-discounts')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Discounts</button>
-                    <button onClick={() => handleNav('setup-price-modes')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Price Modes</button>
-                    <button onClick={() => handleNav('setup-workstations')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Workstations and Printers</button>
-                  </div>
-                )}
-              </div>
-
-              {/* MORE SETUP ACCORDION */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('sales_moresetup')}
-                  className="w-full flex items-center justify-between p-1.5 text-gray-900 bg-gray-100 hover:bg-gray-200 rounded font-bold text-xs"
-                >
-                  <span>{language === 'ar' ? '🛠️ إعدادات متقدمة' : 'More Setup'}</span>
-                  {expandedGroups['sales_moresetup'] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                </button>
-                {expandedGroups['sales_moresetup'] && (
-                  <div className="ml-2 pl-2 border-l border-gray-300 space-y-0.5 mt-0.5 text-xs text-gray-700">
-                    <button onClick={() => handleNav('more-void')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Void Reasons</button>
-                    <button onClick={() => handleNav('more-vat')} className="w-full text-left p-1 hover:text-amber-600 font-medium">VAT Exemptions Reason</button>
-                    <button onClick={() => handleNav('more-message')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Message on Invoice</button>
-                    <button onClick={() => handleNav('more-zone')} className="w-full text-left p-1 hover:text-amber-600 font-medium">Zone Setup</button>
-                    <button onClick={() => handleNav('more-currency')} className="w-full text-left p-1 hover:text-amber-600 font-bold text-amber-700">Currency Setup</button>
-                  </div>
-                )}
-              </div>
+                if (item.type === 'accordion') {
+                  const isExpanded = expandedGroups[item.id];
+                  return (
+                    <div key={item.id} className="pt-1">
+                      <button
+                        onClick={() => toggleGroup(item.id)}
+                        className="w-full flex items-center justify-between p-1.5 text-amber-950 bg-amber-50/80 hover:bg-amber-100/80 rounded font-bold text-xs transition-colors"
+                      >
+                        <span>{item.title}</span>
+                        {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-amber-700" /> : <ChevronRight className="w-3.5 h-3.5 text-amber-700" />}
+                      </button>
+                      {isExpanded && item.children && (
+                        <div className="ml-2 pl-2 border-l border-amber-300 space-y-0.5 mt-0.5 text-xs text-gray-700">
+                          {item.children.map((child) => (
+                            <button
+                              key={child.id}
+                              onClick={() => handleNav(child.id)}
+                              className={`w-full text-left p-1 hover:text-amber-600 rounded transition-colors ${
+                                activeScreen === child.id ? 'text-amber-600 font-bold bg-amber-50/60' : 'font-medium'
+                              }`}
+                            >
+                              {child.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                return null;
+              })}
             </div>
           )}
         </div>
