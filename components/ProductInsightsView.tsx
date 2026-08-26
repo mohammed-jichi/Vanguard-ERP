@@ -204,12 +204,13 @@ export default function ProductInsightsView() {
           </div>
 
           <button
-            onClick={() => alert('Exporting Product Insights Report...')}
-            style={{ color: '#ffffff' }}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0"
+            onClick={() => window.print()}
+            style={{ color: '#ffffff', backgroundColor: '#1d4ed8' }}
+            className="px-4 py-2 bg-blue-700 hover:bg-blue-800 !text-white font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors shrink-0 print:hidden cursor-pointer border border-blue-600"
+            title="Export Product Insights as PDF"
           >
-            <FileText className="w-4 h-4" />
-            <span style={{ color: '#ffffff' }} className="!text-white">Export PDF</span>
+            <FileText className="w-4 h-4 !text-white text-white shrink-0" style={{ color: '#ffffff' }} />
+            <span style={{ color: '#ffffff' }} className="!text-white font-bold">Export PDF</span>
           </button>
 
         </div>

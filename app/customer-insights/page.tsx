@@ -63,10 +63,10 @@ export default function CustomerInsightsPage() {
 
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => alert('تصدير تقرير تحليلات العملاء PDF...')}
-                  className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 border border-purple-400 shadow transition-all"
+                  onClick={() => window.print()}
+                  className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 border border-purple-400 shadow transition-all print:hidden cursor-pointer"
                 >
-                  <Award className="w-4 h-4" /> تصدير تقرير LTV
+                  <Award className="w-4 h-4 text-white" /> تصدير تقرير LTV
                 </button>
               </div>
             </div>

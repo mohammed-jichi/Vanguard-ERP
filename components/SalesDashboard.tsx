@@ -297,7 +297,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const handleExportPDF = () => {
-    alert(`Exporting Sales Control Dashboard PDF report for ${selectedBranch}...`);
+    window.print();
   };
 
   const handleRecalculate = () => {
