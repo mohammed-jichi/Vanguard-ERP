@@ -19,6 +19,7 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
   const [activeChecklistTitle, setActiveChecklistTitle] = useState<string>("Month-End Inventory Closing");
   const [isTitleSelectorOpen, setIsTitleSelectorOpen] = useState<boolean>(false);
+  const [isEditingList, setIsEditingList] = useState<boolean>(false);
 
   // Sub-modal for New Checklist item state
   const [showNewModal, setShowNewModal] = useState<boolean>(false);
@@ -162,6 +163,17 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
               <span>Set Default</span>
             </button>
 
+            {/* DONE EDITING BUTTON (WHEN IN EDIT MODE) */}
+            {isEditingList && (
+              <button
+                onClick={() => setIsEditingList(false)}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-2xs text-xs animate-pulse"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Done Editing</span>
+              </button>
+            )}
+
             {/* DARK SLATE ACTIONS DROPDOWN */}
             <div className="relative">
               <button
@@ -172,17 +184,24 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                 <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
               </button>
 
+              {/* AUTO-CLOSING ACTIONS DROPDOWN MENU */}
               {isActionsOpen && (
                 <div className="absolute right-0 mt-1 w-44 bg-white text-slate-900 border border-slate-200 rounded-xl shadow-xl z-50 p-1 space-y-0.5 text-xs font-semibold">
                   <button
-                    onClick={() => { setIsTitleSelectorOpen(true); setIsActionsOpen(false); }}
+                    onClick={() => {
+                      setIsEditingList(!isEditingList);
+                      setIsActionsOpen(false);
+                    }}
                     className="w-full text-left p-2 hover:bg-amber-50 text-slate-700 hover:text-amber-900 rounded-lg flex items-center gap-2"
                   >
                     <Pencil className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Edit Check List</span>
+                    <span>{isEditingList ? "Done Editing" : "Edit Check List"}</span>
                   </button>
                   <button
-                    onClick={() => { setShowNewModal(true); setIsActionsOpen(false); }}
+                    onClick={() => {
+                      setShowNewModal(true);
+                      setIsActionsOpen(false);
+                    }}
                     className="w-full text-left p-2 hover:bg-amber-50 text-slate-700 hover:text-amber-900 rounded-lg flex items-center gap-2"
                   >
                     <Plus className="w-3.5 h-3.5 text-amber-600" />
@@ -201,7 +220,7 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
               <thead>
                 {/* MAIN TABLE TITLE ROW WITH IN-PLACE DROPDOWN SELECTOR & + NEW BUTTON */}
                 <tr className="bg-slate-800 text-white font-black">
-                  <th colSpan={3} className="py-2.5 px-4 text-xs">
+                  <th colSpan={isEditingList ? 3 : 2} className="py-2.5 px-4 text-xs">
                     <div className="flex items-center justify-between">
                       
                       {/* CLICKABLE TITLE / DROPDOWN SELECTOR */}
@@ -249,22 +268,25 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
 
                 {/* COLUMN HEADERS */}
                 <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-extrabold uppercase tracking-wider text-[11px]">
-                  <th className="py-2.5 px-4 w-[70%] border-r border-slate-200">
+                  <th className={`py-2.5 px-4 border-r border-slate-200 ${isEditingList ? 'w-[70%]' : 'w-[80%]'}`}>
                     <div className="flex items-center gap-1 cursor-pointer select-none">
                       <span>Description</span>
                       <span className="text-slate-400 text-[10px]">▲▼</span>
                     </div>
                   </th>
-                  <th className="py-2.5 px-4 w-[15%] text-center border-r border-slate-200">
+                  <th className={`py-2.5 px-4 text-center ${isEditingList ? 'w-[15%] border-r border-slate-200' : 'w-[20%]'}`}>
                     <span>Status</span>
                   </th>
-                  <th className="py-2.5 px-4 w-[15%] text-center">
-                    <span>Actions</span>
-                  </th>
+                  {/* ACTIONS COLUMN HEADER ONLY VISIBLE IN EDIT MODE */}
+                  {isEditingList && (
+                    <th className="py-2.5 px-4 w-[15%] text-center">
+                      <span>Actions</span>
+                    </th>
+                  )}
                 </tr>
               </thead>
 
-              {/* TABLE BODY (RENDER ROWS WITH TOGGLES AND ACTIONS) */}
+              {/* TABLE BODY (RENDER ROWS WITH TOGGLES AND CONDITIONAL ACTIONS) */}
               <tbody className="divide-y divide-slate-200 text-slate-800 font-medium">
                 {items.map((row) => (
                   <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
@@ -275,7 +297,7 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                     </td>
 
                     {/* STATUS TOGGLE COLUMN */}
-                    <td className="py-3 px-4 text-center align-middle border-r border-slate-200">
+                    <td className={`py-3 px-4 text-center align-middle ${isEditingList ? 'border-r border-slate-200' : ''}`}>
                       <button
                         onClick={() => toggleItem(row.id)}
                         className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
@@ -290,28 +312,30 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                       </button>
                     </td>
 
-                    {/* ACTIONS COLUMN (EDIT & DELETE SQUARE BUTTONS) */}
-                    <td className="py-3 px-4 text-center align-middle">
-                      <div className="flex items-center justify-center gap-1.5">
-                        {/* EDIT BUTTON: DARK GRAY (bg-slate-600) */}
-                        <button
-                          onClick={() => handleEditRow(row.id, row.description)}
-                          title="Edit Item"
-                          className="bg-slate-600 hover:bg-slate-700 text-white p-1.5 rounded-lg flex items-center justify-center transition-colors shadow-2xs"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
+                    {/* ACTIONS COLUMN (EDIT & DELETE SQUARE BUTTONS) - ONLY VISIBLE IN EDIT MODE */}
+                    {isEditingList && (
+                      <td className="py-3 px-4 text-center align-middle">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {/* EDIT BUTTON: DARK GRAY (bg-slate-600) */}
+                          <button
+                            onClick={() => handleEditRow(row.id, row.description)}
+                            title="Edit Item"
+                            className="bg-slate-600 hover:bg-slate-700 text-white p-1.5 rounded-lg flex items-center justify-center transition-colors shadow-2xs"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
 
-                        {/* DELETE BUTTON: DARK RED/BROWN (bg-[#5c3a21]) */}
-                        <button
-                          onClick={() => handleDeleteRow(row.id)}
-                          title="Delete Item"
-                          className="bg-[#5c3a21] hover:bg-amber-900 text-white p-1.5 rounded-lg flex items-center justify-center transition-colors shadow-2xs"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
+                          {/* DELETE BUTTON: DARK RED/BROWN (bg-[#5c3a21]) */}
+                          <button
+                            onClick={() => handleDeleteRow(row.id)}
+                            title="Delete Item"
+                            className="bg-[#5c3a21] hover:bg-amber-900 text-white p-1.5 rounded-lg flex items-center justify-center transition-colors shadow-2xs"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
 
                   </tr>
                 ))}
