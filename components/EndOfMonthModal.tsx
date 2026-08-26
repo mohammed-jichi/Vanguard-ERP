@@ -89,13 +89,13 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Branch</option>
-                <option value="Southern Olive Oil S.A.R.L" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Southern Olive Oil S.A.R.L</option>
-                <option value="Beirut Central Branch" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
-                <option value="Saida Production Press" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Saida Production Press</option>
+                <option value="" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Select Branch</option>
+                <option value="Southern Olive Oil S.A.R.L" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive Oil S.A.R.L</option>
+                <option value="Beirut Central Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
+                <option value="Saida Production Press" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Saida Production Press</option>
               </select>
             </div>
 
@@ -105,13 +105,13 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Year</option>
-                <option value="2026" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2026</option>
-                <option value="2025" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2025</option>
-                <option value="2024" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>2024</option>
+                <option value="" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Select Year</option>
+                <option value="2026" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2026</option>
+                <option value="2025" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2025</option>
+                <option value="2024" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2024</option>
               </select>
             </div>
 
@@ -121,12 +121,12 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
-                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
-                <option value="" style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>Select Month</option>
+                <option value="" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Select Month</option>
                 {months.map(m => (
-                  <option key={m} value={m} style={{ color: '#0f172a', backgroundColor: '#ffffff' }}>{m}</option>
+                  <option key={m} value={m} style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{m}</option>
                 ))}
               </select>
             </div>
