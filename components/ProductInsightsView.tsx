@@ -128,8 +128,8 @@ export default function ProductInsightsView() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Products Insights</span>
-            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
-              Zeit w zaytoun ljanoub
+            <h1 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight mt-0.5">
+              منتوجات زيت وزيتون الجنوب (Southern Olive Oil and Products SARL.)
             </h1>
             <p className="text-xs font-semibold text-slate-500 mt-1">
               Product analysis with item drill-down, menu mix performance, and cost structure insights.

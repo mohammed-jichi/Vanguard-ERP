@@ -100,14 +100,36 @@ const salesControlMenu: SalesMenuItem[] = [
 interface SidebarProps {
   activeScreen?: string;
   onSelectScreen?: (screenKey: string) => void;
+  isOpen?: boolean;
+  onToggleOpen?: (open: boolean) => void;
 }
 
-export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: SidebarProps) {
+export default function Sidebar({
+  activeScreen = 'grid-dash',
+  onSelectScreen,
+  isOpen: externalIsOpen,
+  onToggleOpen
+}: SidebarProps) {
   const { currentTenant } = useTenant();
   const { language, dir, t } = useLanguage();
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [internalIsOpen, setInternalIsOpen] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [sidebarFilter, setSidebarFilter] = useState<string>('');
+
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
+  const handleToggle = () => {
+    const nextState = !isOpen;
+    setInternalIsOpen(nextState);
+    if (onToggleOpen) onToggleOpen(nextState);
+  };
+
+  const ensureOpen = () => {
+    if (!isOpen) {
+      setInternalIsOpen(true);
+      if (onToggleOpen) onToggleOpen(true);
+    }
+  };
 
   // Accordion toggle states for all main & sub-accordions
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
@@ -162,7 +184,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         <div className="flex items-center justify-between w-full">
           {/* HAMBURGER TOGGLE ICON (☰) */}
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={handleToggle}
             title={isOpen ? "إغلاق القائمة (Collapse Sidebar)" : "فتح القائمة (Expand Sidebar)"}
             className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-700 transition-colors"
           >
@@ -200,7 +222,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 1: SALES CONTROL */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('sales'); }}
+            onClick={() => { ensureOpen(); toggleGroup('sales'); }}
             title={language === 'ar' ? 'إدارة المبيعات ونقطة البيع' : 'Sales Control & POS'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['sales'] ? 'bg-amber-50 text-amber-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -286,7 +308,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 2: SUPERSONIC FLEET (🔒 PRO) */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('supersonic'); }}
+            onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
             title={language === 'ar' ? 'أسطول الشحن والسيارات' : 'SuperSonic Fleet Management'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['supersonic'] ? 'bg-emerald-50 text-emerald-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -323,7 +345,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 3: SOCIAL CRM (🔒 ENT) */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('social'); }}
+            onClick={() => { ensureOpen(); toggleGroup('social'); }}
             title={language === 'ar' ? 'التواصل الاجتماعي والدعم' : 'Social Media CRM'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['social'] ? 'bg-blue-50 text-blue-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -357,7 +379,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 4: OPERATIONS CENTER & OLIVE PRESSING */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('op'); }}
+            onClick={() => { ensureOpen(); toggleGroup('op'); }}
             title={language === 'ar' ? 'مركز العمليات والمعاصر' : 'Operations & Pressing Center'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['op'] ? 'bg-emerald-50 text-emerald-950 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -388,7 +410,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 5: CUSTOMER MANAGEMENT (CRM) */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('cust'); }}
+            onClick={() => { ensureOpen(); toggleGroup('cust'); }}
             title={language === 'ar' ? 'إدارة العملاء والذمم' : 'Customer Management & AR'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['cust'] ? 'bg-purple-50 text-purple-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -421,7 +443,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 6: ACCOUNTING & FINANCE */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('acc'); }}
+            onClick={() => { ensureOpen(); toggleGroup('acc'); }}
             title={language === 'ar' ? 'المحاسبة والمالية' : 'Accounting & Finance'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['acc'] ? 'bg-indigo-50 text-indigo-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
@@ -454,7 +476,7 @@ export default function Sidebar({ activeScreen = 'grid-dash', onSelectScreen }: 
         {/* MODULE 7: HUMAN RESOURCES & PAYROLL */}
         <div>
           <button
-            onClick={() => { if (!isOpen) setIsOpen(true); toggleGroup('hr'); }}
+            onClick={() => { ensureOpen(); toggleGroup('hr'); }}
             title={language === 'ar' ? 'الموارد البشرية والرواتب' : 'HR & Payroll Management'}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['hr'] ? 'bg-rose-50 text-rose-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
