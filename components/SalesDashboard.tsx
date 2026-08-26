@@ -27,7 +27,8 @@ import {
   PieChart as PieIcon,
   CreditCard,
   Ban,
-  User
+  User,
+  Info
 } from 'lucide-react';
 import {
   BarChart,
@@ -337,6 +338,34 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
+  // EOD Status Modal State
+  const [isEodModalOpen, setIsEodModalOpen] = useState<boolean>(false);
+
+  // Hidden Pie Slices State (for dynamic calculation)
+  const [hiddenPieItems, setHiddenPieItems] = useState<string[]>([]);
+
+  const handleTogglePieItem = (itemKey: string) => {
+    setHiddenPieItems((prev) =>
+      prev.includes(itemKey) ? prev.filter((k) => k !== itemKey) : [...prev, itemKey]
+    );
+  };
+
+  // Custom Tooltip for Monthly Revenue BarChart
+  const MonthlyRevenueTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const monthVal = payload[0];
+    return (
+      <div className="bg-slate-900 border border-slate-700 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[190px]">
+        <p className="font-black text-amber-300 border-b border-slate-800 pb-1">{label} 2026</p>
+        <p className="text-[11px] font-bold text-slate-300">Branch: منتوجات زيت وزيتون الجنوب</p>
+        <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 pt-1">
+          <span>Net Revenue:</span>
+          <span className="font-mono font-bold">LBP {monthVal.value}M</span>
+        </div>
+      </div>
+    );
+  };
+
   // Reusable Widget Card Component
   const WidgetCard = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => {
     return (
@@ -370,61 +399,98 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
-  // Helper PieChart Widget Renderer
-  const RenderPieWidget = ({ id, title, data, labelKey = 'name' }: { id: string; title: string; data: any[]; labelKey?: string }) => (
-    <WidgetCard id={id} title={title}>
-      <div className="flex flex-col space-y-4">
-        <div className="h-52 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={75}
-                paddingAngle={4}
-                dataKey="value"
-              >
-                {data.map((entry: any, index: number) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(val: any) => [`${val}%`, 'Share']}
-                contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-              />
-              <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+  // Helper PieChart Widget Renderer (Dynamic Pie Filtering for 360-degree recalculation)
+  const RenderPieWidget = ({
+    id,
+    title,
+    data,
+    labelKey = 'name'
+  }: {
+    id: string;
+    title: string;
+    data: any[];
+    labelKey?: string;
+  }) => {
+    const activeData = data.filter((item) => {
+      const key = item[labelKey] || item.name || item.reason || item.user || item.method;
+      return !hiddenPieItems.includes(key);
+    });
 
-        <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-          <table className="w-full text-left font-sans">
-            <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
-              <tr>
-                <th className="py-2 px-3">Name</th>
-                <th className="py-2 px-3 text-right">Amount</th>
-                <th className="py-2 px-3 text-right">Share</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
-              {data.map((row: any) => (
-                <tr key={row[labelKey] || row.name || row.reason || row.user || row.method} className="hover:bg-slate-50">
-                  <td className="py-2 px-3 flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: row.color }}></span>
-                    <span>{row[labelKey] || row.name || row.reason || row.user || row.method}</span>
-                  </td>
-                  <td className="py-2 px-3 text-right font-mono">{row.amount}</td>
-                  <td className="py-2 px-3 text-right font-bold text-emerald-700">{row.value}%</td>
+    return (
+      <WidgetCard id={id} title={title}>
+        <div className="flex flex-col space-y-4">
+          <div className="h-52 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={activeData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={75}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {activeData.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(val: any) => [`${val}%`, 'Share']}
+                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                />
+                <Legend
+                  onClick={(e: any) => {
+                    const key = e.dataKey || e.value;
+                    if (key) handleTogglePieItem(key);
+                  }}
+                  wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <table className="w-full text-left font-sans">
+              <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                <tr>
+                  <th className="py-2 px-3">Name</th>
+                  <th className="py-2 px-3 text-right">Amount</th>
+                  <th className="py-2 px-3 text-right">Share</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                {data.map((row: any) => {
+                  const key = row[labelKey] || row.name || row.reason || row.user || row.method;
+                  const isHidden = hiddenPieItems.includes(key);
+                  return (
+                    <tr
+                      key={key}
+                      onClick={() => handleTogglePieItem(key)}
+                      className={`cursor-pointer transition-colors ${
+                        isHidden ? 'opacity-40 bg-slate-50 line-through' : 'hover:bg-slate-50'
+                      }`}
+                      title="Click to toggle item from PieChart recalculation"
+                    >
+                      <td className="py-2 px-3 flex items-center gap-2">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: isHidden ? '#94a3b8' : row.color }}
+                        ></span>
+                        <span>{key}</span>
+                      </td>
+                      <td className="py-2 px-3 text-right font-mono">{row.amount}</td>
+                      <td className="py-2 px-3 text-right font-bold text-emerald-700">{row.value}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </WidgetCard>
-  );
+      </WidgetCard>
+    );
+  };
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50 p-4 md:p-6 space-y-6 font-sans dir-ltr text-left">
@@ -529,7 +595,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
           {/* THREE ICON BUTTONS */}
           <button
-            onClick={() => alert('Last EOD Report: 25-Aug-2026 at 23:45 PM')}
+            onClick={() => setIsEodModalOpen(true)}
             title="Clock / Last EOD"
             className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs"
           >
@@ -544,13 +610,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <RefreshCw className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={() => onSelectScreen ? onSelectScreen('sc-reports') : alert('Opening Detailed Sales Reports...')}
+          <a
+            href="/sales-report"
+            target="_blank"
+            rel="noopener noreferrer"
             title="BarChart / Reports"
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs"
+            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs flex items-center justify-center"
           >
             <BarChart3 className="w-4 h-4" />
-          </button>
+          </a>
 
         </div>
 
@@ -692,6 +760,99 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       {activeTab === 'summary' && (
         <div className="space-y-6">
           
+          {/* 6 PERFORMANCE HIGHLIGHTS CARDS WITH INTERACTIVE TOOLTIPS */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
+            {/* Highlight 1: Revenue YoY */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Revenue YoY</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Completed-month YoY: Net Sales from 2026 Jan-Jul vs 2025 Jan-Jul. Current month is excluded until it is complete.
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-black text-emerald-700 mt-1.5">+18.4%</p>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">2026 vs 2025</p>
+            </div>
+
+            {/* Highlight 2: Best Month */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Best Month</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Highest month revenue
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-black text-slate-900 mt-1.5">Aug 2026</p>
+              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">LBP 202.3M</p>
+            </div>
+
+            {/* Highlight 3: Softest Month */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Softest Month</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Lowest month revenue
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-black text-slate-900 mt-1.5">Feb 2026</p>
+              <p className="text-[10px] text-amber-600 font-bold mt-0.5">LBP 135M</p>
+            </div>
+
+            {/* Highlight 4: Top YoY Month */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Top YoY Month</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Highest month YoY change
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-black text-blue-700 mt-1.5">July</p>
+              <p className="text-[10px] text-blue-600 font-bold mt-0.5">+32.5% YoY</p>
+            </div>
+
+            {/* Highlight 5: Best Category */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Best Category</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Highest category revenue
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs font-black text-slate-900 truncate mt-1.5" title="Extra Virgin Olive Oil">Extra Virgin</p>
+              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">45% Share</p>
+            </div>
+
+            {/* Highlight 6: Peak Hour */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs relative group">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">Peak Hour</span>
+                <div className="relative group/tooltip">
+                  <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-700" />
+                  <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-52 p-2.5 bg-white border border-slate-300 rounded-xl shadow-xl text-[11px] font-medium text-slate-800 z-30 hidden group-hover/tooltip:block pointer-events-none">
+                    Highest average hourly sales
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-black text-slate-900 mt-1.5">13:00 - 14:00</p>
+              <p className="text-[10px] text-amber-600 font-bold mt-0.5">LBP 18.5M Avg</p>
+            </div>
+          </div>
+
           {/* MAIN 2-COLUMN GRID FOR WIDGETS */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             
@@ -702,10 +863,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <BarChart data={monthlyRevenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      formatter={(val: any) => [`LBP ${val}M`, 'Revenue']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                    />
+                    <Tooltip content={<MonthlyRevenueTooltip />} />
                     <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -1295,7 +1453,29 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
             )}
           </div>
+        </div>
+      )}
 
+      {/* END OF DAY STATUS MODAL OVERLAY */}
+      {isEodModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl p-5 max-w-xs w-full border border-slate-200 space-y-4">
+            <h3 className="text-red-600 font-extrabold text-base border-b border-slate-200 pb-2 text-center">
+              End of Day Status
+            </h3>
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 py-3 px-1 border-b border-slate-100">
+              <span className="text-slate-900 font-black">منتوجات زيت وزيتون الجنوب :</span>
+              <span className="font-mono text-slate-600">25 Aug, 2026</span>
+            </div>
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={() => setIsEodModalOpen(false)}
+                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold rounded-lg text-xs transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
