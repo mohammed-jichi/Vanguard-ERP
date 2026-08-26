@@ -192,13 +192,14 @@ export default function CustomerInsightsPage() {
                     <select
                       value={selectedBrand}
                       onChange={(e) => setSelectedBrand(e.target.value)}
-                      className="appearance-none bg-white border border-slate-300 pl-3 pr-8 py-2 rounded-xl text-xs font-bold text-slate-800 shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                      className="appearance-none bg-white border border-slate-300 pl-3 pr-8 py-2 rounded-xl text-xs font-black !text-slate-900 text-slate-900 !opacity-100 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                      <option value="All Brands">All Brands</option>
-                      <option value="Southern Olive SARL">Southern Olive SARL</option>
-                      <option value="Beirut Branch">Beirut Branch</option>
+                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Brands</option>
+                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Southern Olive SARL</option>
+                      <option value="Beirut Branch" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Beirut Branch</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-600 absolute right-2.5 top-2.5 pointer-events-none" />
                   </div>
 
                   <button
@@ -600,25 +601,27 @@ export default function CustomerInsightsPage() {
                     <select
                       value={selectedBrand}
                       onChange={(e) => setSelectedBrand(e.target.value)}
-                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-bold text-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-black !text-slate-900 text-slate-900 !opacity-100 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
-                      <option value="All Brands">All Brands</option>
-                      <option value="Southern Olive SARL">Southern Olive SARL</option>
+                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Brands</option>
+                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Southern Olive SARL</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2 pointer-events-none" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-2 top-2 pointer-events-none" />
                   </div>
 
                   <div className="relative flex-1">
                     <select
                       value={selectedGroup}
                       onChange={(e) => setSelectedGroup(e.target.value)}
-                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-bold text-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-black !text-slate-900 text-slate-900 !opacity-100 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
-                      <option value="All Groups">All Groups</option>
-                      <option value="Wholesale">Wholesale</option>
-                      <option value="Retail">Retail</option>
+                      <option value="All Groups" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Groups</option>
+                      <option value="Wholesale" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Wholesale</option>
+                      <option value="Retail" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Retail</option>
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2 pointer-events-none" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-2 top-2 pointer-events-none" />
                   </div>
                 </div>
 
