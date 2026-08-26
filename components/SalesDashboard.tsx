@@ -580,16 +580,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             )}
           </div>
 
-          <div className={`border border-slate-200 rounded-xl overflow-hidden text-xs w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
+          <div className={`border border-slate-200 rounded-xl overflow-hidden text-base w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
             <table className="w-full text-left font-sans">
-              <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+              <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                 <tr>
-                  <th className="py-2 px-3">Name</th>
-                  <th className="py-2 px-3 text-right">Amount</th>
-                  <th className="py-2 px-3 text-right">Share</th>
+                  <th className="py-3.5 px-4">Name</th>
+                  <th className="py-3.5 px-4 text-right">Amount</th>
+                  <th className="py-3.5 px-4 text-right">Share</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                 {data.map((row: any) => {
                   const key = getItemKey(row, labelKey);
                   const isHidden = hiddenPieItems.includes(key);
@@ -602,15 +602,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       }`}
                       title="Click to toggle slice on/off"
                     >
-                      <td className="py-2 px-3 flex items-center gap-2">
+                      <td className="py-3.5 px-4 flex items-center gap-2">
                         <span
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: isHidden ? '#94a3b8' : row.color }}
                         ></span>
                         <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
                       </td>
-                      <td className={`py-2 px-3 text-right font-mono ${isHidden ? 'text-slate-400' : ''}`}>{row.amount}</td>
-                      <td className={`py-2 px-3 text-right font-bold ${isHidden ? 'text-slate-400' : 'text-emerald-700'}`}>{row.value}%</td>
+                      <td className={`py-3.5 px-4 text-right font-mono ${isHidden ? 'text-slate-400' : ''}`}>{row.amount}</td>
+                      <td className={`py-3.5 px-4 text-right font-medium ${isHidden ? 'text-slate-400' : 'text-emerald-700'}`}>{row.value}%</td>
                     </tr>
                   );
                 })}
@@ -1024,25 +1024,25 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
             {/* WIDGET 7: DISCOUNT BY CATEGORY SUMMARY (DATA TABLE ONLY) */}
             <WidgetCard id="discount-by-category" title="Discount By Category Summary">
-              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
                 <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                  <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-2.5 px-3">Discount Type</th>
-                      <th className="py-2.5 px-3 text-right">Raw Materials</th>
-                      <th className="py-2.5 px-3 text-right">مفرق</th>
-                      <th className="py-2.5 px-3 text-right">عروض</th>
-                      <th className="py-2.5 px-3 text-right bg-slate-800">Total</th>
+                      <th className="py-3.5 px-4">Discount Type</th>
+                      <th className="py-3.5 px-4 text-right">Raw Materials</th>
+                      <th className="py-3.5 px-4 text-right">مفرق</th>
+                      <th className="py-3.5 px-4 text-right">عروض</th>
+                      <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {discountByCategoryData.map((r) => (
-                      <tr key={r.type} className={r.isTotal ? 'bg-amber-50 font-black text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
-                        <td className="py-2 px-3 font-bold">{r.type}</td>
-                        <td className="py-2 px-3 text-right font-mono text-slate-600">{r.raw}</td>
-                        <td className="py-2 px-3 text-right font-mono text-blue-700">{r.retail}</td>
-                        <td className="py-2 px-3 text-right font-mono text-amber-700">{r.promo}</td>
-                        <td className="py-2 px-3 text-right font-mono font-extrabold text-rose-700">{r.total}</td>
+                      <tr key={r.type} className={r.isTotal ? 'bg-amber-50 font-semibold text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
+                        <td className="py-3.5 px-4 font-medium">{r.type}</td>
+                        <td className="py-3.5 px-4 text-right font-mono text-slate-600">{r.raw}</td>
+                        <td className="py-3.5 px-4 text-right font-mono text-blue-700">{r.retail}</td>
+                        <td className="py-3.5 px-4 text-right font-mono text-amber-700">{r.promo}</td>
+                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-rose-700">{r.total}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1087,16 +1087,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   )}
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
                   <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                    <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-2 px-3">Reason</th>
-                        <th className="py-2 px-3 text-right">Amount</th>
-                        <th className="py-2 px-3 text-right">Count</th>
+                        <th className="py-3.5 px-4">Reason</th>
+                        <th className="py-3.5 px-4 text-right">Amount</th>
+                        <th className="py-3.5 px-4 text-right">Count</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                       {voidSummaryData.map((v) => {
                         const key = v.reason;
                         const isHidden = hiddenPieItems.includes(key);
@@ -1109,15 +1109,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                             }`}
                             title="Click to toggle slice on/off"
                           >
-                            <td className="py-2 px-3 flex items-center gap-2">
+                            <td className="py-3.5 px-4 flex items-center gap-2">
                               <span
                                 className="w-2.5 h-2.5 rounded-full shrink-0"
                                 style={{ backgroundColor: isHidden ? '#94a3b8' : v.color }}
                               ></span>
                               <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
                             </td>
-                            <td className={`py-2 px-3 text-right font-mono ${isHidden ? 'text-slate-400' : 'text-rose-700'}`}>{v.amount}</td>
-                            <td className={`py-2 px-3 text-right font-bold ${isHidden ? 'text-slate-400' : 'text-slate-700'}`}>{v.count} voids</td>
+                            <td className={`py-3.5 px-4 text-right font-mono ${isHidden ? 'text-slate-400' : 'text-rose-700'}`}>{v.amount}</td>
+                            <td className={`py-3.5 px-4 text-right font-medium ${isHidden ? 'text-slate-400' : 'text-slate-700'}`}>{v.count} voids</td>
                           </tr>
                         );
                       })}
@@ -1137,30 +1137,30 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
           {/* WIDGET 11: SALES BY EMPLOYEE BY CATEGORY (FULL WIDTH AT BOTTOM) */}
           <WidgetCard id="employee-by-category" title="Sales By Employee By Category (Complete Breakdown)">
-            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-base">
               <table className="w-full text-left font-sans">
-                <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                   <tr>
-                    <th className="py-3 px-4">User Name</th>
-                    <th className="py-3 px-4 text-right">Raw Materials</th>
-                    <th className="py-3 px-4 text-right">جملة (Wholesale)</th>
-                    <th className="py-3 px-4 text-right">عروض (Promotions)</th>
-                    <th className="py-3 px-4 text-right">مفرق (Retail)</th>
-                    <th className="py-3 px-4 text-right bg-slate-800">Total Net Sales</th>
+                    <th className="py-3.5 px-4">User Name</th>
+                    <th className="py-3.5 px-4 text-right">Raw Materials</th>
+                    <th className="py-3.5 px-4 text-right">جملة (Wholesale)</th>
+                    <th className="py-3.5 px-4 text-right">عروض (Promotions)</th>
+                    <th className="py-3.5 px-4 text-right">مفرق (Retail)</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-800">Total Net Sales</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold text-[11px]">
+                <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                   {employeeByCategoryData.map((emp) => (
                     <tr key={emp.user} className="hover:bg-slate-50">
-                      <td className="py-2.5 px-4 font-extrabold text-slate-900 flex items-center gap-2">
-                        <User className="w-3.5 h-3.5 text-blue-600" />
+                      <td className="py-3.5 px-4 font-medium text-slate-900 flex items-center gap-2">
+                        <User className="w-4 h-4 text-blue-600 shrink-0" />
                         <span>{emp.user}</span>
                       </td>
-                      <td className="py-2.5 px-4 text-right font-mono text-slate-600">{emp.raw}</td>
-                      <td className="py-2.5 px-4 text-right font-mono text-amber-700">{emp.wholesale}</td>
-                      <td className="py-2.5 px-4 text-right font-mono text-blue-700">{emp.promo}</td>
-                      <td className="py-2.5 px-4 text-right font-mono text-emerald-700">{emp.retail}</td>
-                      <td className="py-2.5 px-4 text-right font-mono font-black text-slate-900 bg-slate-50">{emp.total}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-slate-600">{emp.raw}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-amber-700">{emp.wholesale}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-blue-700">{emp.promo}</td>
+                      <td className="py-3.5 px-4 text-right font-mono text-emerald-700">{emp.retail}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-900 bg-slate-50">{emp.total}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1200,23 +1200,23 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
 
               {/* DAILY DATA SUMMARY TABLE */}
-              <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs max-h-48 overflow-y-auto">
+              <div className="border border-slate-200 rounded-xl overflow-x-auto text-base max-h-56 overflow-y-auto">
                 <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px] sticky top-0 bg-slate-100 z-10">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide sticky top-0 bg-slate-100 z-10">
                     <tr>
-                      <th className="py-2 px-3">Date</th>
-                      <th className="py-2 px-3 text-right">Net Revenue</th>
-                      <th className="py-2 px-3 text-right">Orders Count</th>
-                      <th className="py-2 px-3 text-right">Average Ticket</th>
+                      <th className="py-3.5 px-4">Date</th>
+                      <th className="py-3.5 px-4 text-right">Net Revenue</th>
+                      <th className="py-3.5 px-4 text-right">Orders Count</th>
+                      <th className="py-3.5 px-4 text-right">Average Ticket</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {dailyTrendsData.map((d) => (
                       <tr key={d.date} className="hover:bg-slate-50">
-                        <td className="py-1.5 px-3 font-bold">{d.date}</td>
-                        <td className="py-1.5 px-3 text-right font-mono font-bold text-emerald-700">LBP {d.revenue} Million</td>
-                        <td className="py-1.5 px-3 text-right font-mono">{d.count} invoices</td>
-                        <td className="py-1.5 px-3 text-right font-mono text-slate-600">LBP {d.avgTicket}</td>
+                        <td className="py-3 px-4 font-medium">{d.date}</td>
+                        <td className="py-3 px-4 text-right font-mono font-semibold text-emerald-700">LBP {d.revenue} Million</td>
+                        <td className="py-3 px-4 text-right font-mono">{d.count} invoices</td>
+                        <td className="py-3 px-4 text-right font-mono text-slate-600">LBP {d.avgTicket}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1245,25 +1245,25 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
 
               {/* DETAILED CATEGORY COMPARISON TABLE */}
-              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
                 <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                  <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-2.5 px-4">Category Name</th>
-                      <th className="py-2.5 px-4 text-right">2026 Amount</th>
-                      <th className="py-2.5 px-4 text-right">2025 Amount</th>
-                      <th className="py-2.5 px-4 text-right">Difference Amount</th>
-                      <th className="py-2.5 px-4 text-right">Growth %</th>
+                      <th className="py-3.5 px-4">Category Name</th>
+                      <th className="py-3.5 px-4 text-right">2026 Amount</th>
+                      <th className="py-3.5 px-4 text-right">2025 Amount</th>
+                      <th className="py-3.5 px-4 text-right">Difference Amount</th>
+                      <th className="py-3.5 px-4 text-right">Growth %</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
+                  <tbody className="divide-y divide-slate-200 text-slate-800 font-normal text-base">
                     {categoryTableData.map((row) => (
-                      <tr key={row.name} className={row.isTotal ? 'bg-amber-50 font-black text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
-                        <td className="py-2.5 px-4 font-bold">{row.name}</td>
-                        <td className="py-2.5 px-4 text-right font-mono">{row.year2026}</td>
-                        <td className="py-2.5 px-4 text-right font-mono text-slate-500">{row.year2025}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-emerald-700">{row.diff}</td>
-                        <td className="py-2.5 px-4 text-right font-extrabold text-emerald-700">{row.growth}</td>
+                      <tr key={row.name} className={row.isTotal ? 'bg-amber-50 font-semibold text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
+                        <td className="py-3.5 px-4 font-medium">{row.name}</td>
+                        <td className="py-3.5 px-4 text-right font-mono">{row.year2026}</td>
+                        <td className="py-3.5 px-4 text-right font-mono text-slate-500">{row.year2025}</td>
+                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-emerald-700">{row.diff}</td>
+                        <td className="py-3.5 px-4 text-right font-semibold text-emerald-700">{row.growth}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1298,21 +1298,21 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </ResponsiveContainer>
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs max-h-36 overflow-y-auto">
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-base max-h-48 overflow-y-auto">
                   <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                    <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-1.5 px-3">Hour</th>
-                        <th className="py-1.5 px-3 text-right">Avg Sales</th>
-                        <th className="py-1.5 px-3 text-right">Avg Invoices</th>
+                        <th className="py-3 px-4">Hour</th>
+                        <th className="py-3 px-4 text-right">Avg Sales</th>
+                        <th className="py-3 px-4 text-right">Avg Invoices</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                       {hourlyData.map((h) => (
                         <tr key={h.hour} className="hover:bg-slate-50">
-                          <td className="py-1 px-3 font-bold">{h.hour}</td>
-                          <td className="py-1 px-3 text-right font-mono font-bold text-blue-700">LBP {h.sales}M</td>
-                          <td className="py-1 px-3 text-right font-mono text-slate-600">{h.count}</td>
+                          <td className="py-2.5 px-4 font-medium">{h.hour}</td>
+                          <td className="py-2.5 px-4 text-right font-mono font-semibold text-blue-700">LBP {h.sales}M</td>
+                          <td className="py-2.5 px-4 text-right font-mono text-slate-600">{h.count}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1342,21 +1342,21 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </ResponsiveContainer>
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs max-h-36 overflow-y-auto">
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-base max-h-48 overflow-y-auto">
                   <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                    <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-1.5 px-3">Weekday</th>
-                        <th className="py-1.5 px-3 text-right">Total Revenue</th>
-                        <th className="py-1.5 px-3 text-right">Share %</th>
+                        <th className="py-3 px-4">Weekday</th>
+                        <th className="py-3 px-4 text-right">Total Revenue</th>
+                        <th className="py-3 px-4 text-right">Share %</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                       {weekdayData.map((w) => (
                         <tr key={w.day} className="hover:bg-slate-50">
-                          <td className="py-1 px-3 font-bold">{w.day}</td>
-                          <td className="py-1 px-3 text-right font-mono font-bold text-amber-700">LBP {w.sales}M</td>
-                          <td className="py-1 px-3 text-right font-extrabold text-slate-700">{w.share}</td>
+                          <td className="py-2.5 px-4 font-medium">{w.day}</td>
+                          <td className="py-2.5 px-4 text-right font-mono font-semibold text-amber-700">LBP {w.sales}M</td>
+                          <td className="py-2.5 px-4 text-right font-medium text-slate-700">{w.share}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1395,43 +1395,43 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
           {/* WIDGET B: VOID SUMMARY (DATA TABLE ONLY) */}
           <WidgetCard id="comparative-void-summary" title="Void Summary">
-            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-base">
               <table className="w-full text-left font-sans">
-                <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                   <tr>
-                    <th className="py-2.5 px-3">Branch</th>
-                    <th className="py-2.5 px-2 text-right">January</th>
-                    <th className="py-2.5 px-2 text-right">February</th>
-                    <th className="py-2.5 px-2 text-right">March</th>
-                    <th className="py-2.5 px-2 text-right">April</th>
-                    <th className="py-2.5 px-2 text-right">May</th>
-                    <th className="py-2.5 px-2 text-right">June</th>
-                    <th className="py-2.5 px-2 text-right">July</th>
-                    <th className="py-2.5 px-2 text-right">August</th>
-                    <th className="py-2.5 px-2 text-right">September</th>
-                    <th className="py-2.5 px-2 text-right">October</th>
-                    <th className="py-2.5 px-2 text-right">November</th>
-                    <th className="py-2.5 px-2 text-right">December</th>
-                    <th className="py-2.5 px-3 text-right bg-slate-800">Total</th>
+                    <th className="py-3.5 px-4">Branch</th>
+                    <th className="py-3.5 px-3 text-right">January</th>
+                    <th className="py-3.5 px-3 text-right">February</th>
+                    <th className="py-3.5 px-3 text-right">March</th>
+                    <th className="py-3.5 px-3 text-right">April</th>
+                    <th className="py-3.5 px-3 text-right">May</th>
+                    <th className="py-3.5 px-3 text-right">June</th>
+                    <th className="py-3.5 px-3 text-right">July</th>
+                    <th className="py-3.5 px-3 text-right">August</th>
+                    <th className="py-3.5 px-3 text-right">September</th>
+                    <th className="py-3.5 px-3 text-right">October</th>
+                    <th className="py-3.5 px-3 text-right">November</th>
+                    <th className="py-3.5 px-3 text-right">December</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold text-[11px]">
+                <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                   {comparativeVoidSummaryRows.map((r) => (
                     <tr key={r.branch} className="hover:bg-slate-50">
-                      <td className="py-2 px-3 font-bold text-slate-900">{r.branch}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jan}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.feb}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.mar}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.apr}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.may}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jun}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.jul}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.aug}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.sep}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.oct}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.nov}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{r.dec}</td>
-                      <td className="py-2 px-3 text-right font-mono font-extrabold text-rose-700 bg-slate-50">{r.total}</td>
+                      <td className="py-3.5 px-4 font-medium text-slate-900">{r.branch}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.jan}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.feb}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.mar}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.apr}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.may}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.jun}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.jul}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.aug}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.sep}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.oct}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.nov}</td>
+                      <td className="py-3.5 px-3 text-right font-mono text-slate-600">{r.dec}</td>
+                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-rose-700 bg-slate-50">{r.total}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1460,48 +1460,48 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
 
               {/* COMPREHENSIVE EMPLOYEE SALES DATA TABLE */}
-              <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+              <div className="border border-slate-200 rounded-xl overflow-x-auto text-base">
                 <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                  <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-2.5 px-3">Employee</th>
-                      <th className="py-2.5 px-2 text-right">Jan</th>
-                      <th className="py-2.5 px-2 text-right">Feb</th>
-                      <th className="py-2.5 px-2 text-right">Mar</th>
-                      <th className="py-2.5 px-2 text-right">Apr</th>
-                      <th className="py-2.5 px-2 text-right">May</th>
-                      <th className="py-2.5 px-2 text-right">Jun</th>
-                      <th className="py-2.5 px-2 text-right">Jul</th>
-                      <th className="py-2.5 px-2 text-right">Aug</th>
-                      <th className="py-2.5 px-2 text-right">Sep</th>
-                      <th className="py-2.5 px-2 text-right">Oct</th>
-                      <th className="py-2.5 px-2 text-right">Nov</th>
-                      <th className="py-2.5 px-2 text-right">Dec</th>
-                      <th className="py-2.5 px-3 text-right bg-slate-800">Total</th>
-                      <th className="py-2.5 px-3 text-right bg-slate-800">Monthly Avg</th>
+                      <th className="py-3.5 px-4">Employee</th>
+                      <th className="py-3.5 px-3 text-right">Jan</th>
+                      <th className="py-3.5 px-3 text-right">Feb</th>
+                      <th className="py-3.5 px-3 text-right">Mar</th>
+                      <th className="py-3.5 px-3 text-right">Apr</th>
+                      <th className="py-3.5 px-3 text-right">May</th>
+                      <th className="py-3.5 px-3 text-right">Jun</th>
+                      <th className="py-3.5 px-3 text-right">Jul</th>
+                      <th className="py-3.5 px-3 text-right">Aug</th>
+                      <th className="py-3.5 px-3 text-right">Sep</th>
+                      <th className="py-3.5 px-3 text-right">Oct</th>
+                      <th className="py-3.5 px-3 text-right">Nov</th>
+                      <th className="py-3.5 px-3 text-right">Dec</th>
+                      <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
+                      <th className="py-3.5 px-4 text-right bg-slate-800">Monthly Avg</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold text-[11px]">
+                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {employeeTableRows.map((emp) => (
                       <tr key={emp.name} className="hover:bg-slate-50">
-                        <td className="py-2 px-3 font-bold flex items-center gap-2">
+                        <td className="py-3.5 px-4 font-medium text-slate-900 flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: emp.color }}></span>
                           <span>{emp.name}</span>
                         </td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.jan}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.feb}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.mar}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.apr}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.may}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.jun}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.jul}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.aug}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.sep}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.oct}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.nov}</td>
-                        <td className="py-2 px-2 text-right font-mono">{emp.dec}</td>
-                        <td className="py-2 px-3 text-right font-mono font-extrabold text-emerald-700 bg-slate-50">{emp.total}</td>
-                        <td className="py-2 px-3 text-right font-mono font-bold text-slate-700 bg-slate-50">{emp.avg}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.jan}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.feb}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.mar}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.apr}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.may}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.jun}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.jul}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.aug}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.sep}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.oct}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.nov}</td>
+                        <td className="py-3.5 px-3 text-right font-mono">{emp.dec}</td>
+                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-emerald-700 bg-slate-50">{emp.total}</td>
+                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-700 bg-slate-50">{emp.avg}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1646,16 +1646,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </PieChart>
                 </ResponsiveContainer>
 
-                <div className="border border-slate-200 rounded-2xl overflow-hidden text-sm">
+                <div className="border border-slate-200 rounded-2xl overflow-hidden text-base">
                   <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-900 text-white font-black text-xs uppercase">
+                    <thead className="bg-slate-900 text-white font-semibold text-base uppercase tracking-wide">
                       <tr>
-                        <th className="py-3 px-4">Name</th>
-                        <th className="py-3 px-4 text-right">Revenue Amount</th>
-                        <th className="py-3 px-4 text-right">Share %</th>
+                        <th className="py-3.5 px-4">Name</th>
+                        <th className="py-3.5 px-4 text-right">Revenue Amount</th>
+                        <th className="py-3.5 px-4 text-right">Share %</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
+                    <tbody className="divide-y divide-slate-200 text-slate-800 font-normal text-base">
                       {(
                         expandedWidget === 'sales-division' ? divisionSalesData :
                         expandedWidget === 'sales-group' ? groupSalesData :
@@ -1667,12 +1667,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         categorySalesData
                       ).map((c: any) => (
                         <tr key={c.name || c.reason || c.user || c.method} className="hover:bg-slate-50">
-                          <td className="py-3 px-4 flex items-center gap-3">
-                            <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: c.color }}></span>
+                          <td className="py-3.5 px-4 flex items-center gap-3 font-medium">
+                            <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: c.color }}></span>
                             <span>{c.name || c.reason || c.user || c.method}</span>
                           </td>
-                          <td className="py-3 px-4 text-right font-mono font-bold">{c.amount}</td>
-                          <td className="py-3 px-4 text-right font-extrabold text-emerald-700">{c.value}%</td>
+                          <td className="py-3.5 px-4 text-right font-mono">{c.amount}</td>
+                          <td className="py-3.5 px-4 text-right font-semibold text-emerald-700">{c.value}%</td>
                         </tr>
                       ))}
                     </tbody>
