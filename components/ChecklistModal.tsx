@@ -214,13 +214,14 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
           </div>
         </div>
 
-        {/* 4. FOOTER: GRAY DISABLED INPUT BOX AT BOTTOM CENTER */}
+        {/* 4. FOOTER: GRAY DISABLED INPUT BOX AT BOTTOM CENTER (HIGH CONTRAST DARK TEXT) */}
         <div className="border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-center">
           <input
             type="text"
+            readOnly
             disabled
             value="Aug-2026"
-            className="w-32 py-1.5 px-3 bg-slate-200 text-slate-600 font-mono font-bold text-xs rounded-xl text-center border border-slate-300 cursor-not-allowed shadow-inner"
+            className="w-32 py-1.5 px-3 bg-gray-200 text-gray-900 font-mono font-black text-xs rounded-xl text-center border border-gray-300 cursor-not-allowed shadow-inner opacity-100 disabled:opacity-100 text-black"
           />
         </div>
 
