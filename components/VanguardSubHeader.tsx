@@ -5,6 +5,7 @@ import { Bell, CheckSquare, Video, Edit2 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import EndOfMonthModal from './EndOfMonthModal';
 import ChecklistModal from './ChecklistModal';
+import AlertsModal from './AlertsModal';
 
 interface VanguardSubHeaderProps {
   activeScreen: string;
@@ -22,10 +23,11 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
   ]);
 
   const [isMonthPendingClose, setIsMonthPendingClose] = useState<boolean>(false);
-  const [alertCount, setAlertCount] = useState(3);
-  const [isChecklistOpen, setIsChecklistOpen] = useState(false);
-  const [isTutorialsOpen, setIsTutorialsOpen] = useState(false);
-  const [isEndOfMonthOpen, setIsEndOfMonthOpen] = useState(false);
+  const [alertsCount, setAlertsCount] = useState<number>(3);
+  const [showAlertsModal, setShowAlertsModal] = useState<boolean>(false);
+  const [isChecklistOpen, setIsChecklistOpen] = useState<boolean>(false);
+  const [isTutorialsOpen, setIsTutorialsOpen] = useState<boolean>(false);
+  const [isEndOfMonthOpen, setIsEndOfMonthOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!activeScreen) return;
@@ -70,18 +72,15 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
       {/* RIGHT SIDE: ACTION BUTTONS & LINKS */}
       <div className="flex items-center gap-2 shrink-0 text-xs font-semibold">
         
-        {/* DYNAMIC ACTION BUTTON: ALERTS */}
-        {alertCount > 0 && (
+        {/* DYNAMIC ACTION BUTTON: ALERTS (REMAINS VISIBLE UNTIL ALERTSMODAL IS VIEWED AND CLOSED) */}
+        {alertsCount > 0 && (
           <button
-            onClick={() => {
-              alert(language === 'ar' ? `تم الاطلاع على ${alertCount} تنبيهات!` : `Viewed ${alertCount} system alerts!`);
-              setAlertCount(0);
-            }}
+            onClick={() => setShowAlertsModal(true)}
             className="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg shadow-2xs transition-all flex items-center gap-1"
-            title="Click to clear notifications"
+            title="Click to view active system alerts"
           >
             <Bell className="w-3.5 h-3.5" />
-            <span>Alerts ({alertCount})</span>
+            <span>Alerts ({alertsCount})</span>
           </button>
         )}
 
@@ -135,6 +134,15 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
         </div>
 
       </div>
+
+      {/* SYSTEM ALERTS POPUP MODAL */}
+      <AlertsModal
+        isOpen={showAlertsModal}
+        onClose={() => {
+          setShowAlertsModal(false);
+          setAlertsCount(0);
+        }}
+      />
 
       {/* REUSABLE CHECKLIST ITEMS MODAL */}
       <ChecklistModal
