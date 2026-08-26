@@ -258,6 +258,85 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     alert('Sales balances and MTD/YTD metrics recalculated successfully!');
   };
 
+  // Interactive Legend Toggling State
+  const [hiddenSeries, setHiddenSeries] = useState<Record<string, boolean>>({});
+
+  const handleLegendClick = (entry: any) => {
+    const key = entry.dataKey || entry.value;
+    if (key) {
+      setHiddenSeries((prev) => ({
+        ...prev,
+        [key]: !prev[key]
+      }));
+    }
+  };
+
+  // Custom Dark Tooltip for LineCharts & Single BarCharts (Daily Summary, Hourly, Weekdays)
+  const DarkLineTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const activePayload = payload.filter((p: any) => !p.hide);
+    if (!activePayload.length) return null;
+    return (
+      <div className="bg-slate-900 border border-slate-700 text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[150px]">
+        <p className="font-bold text-slate-300 border-b border-slate-800 pb-1">{label}</p>
+        {activePayload.map((entry: any, i: number) => (
+          <div key={i} className="flex items-center gap-2 font-semibold">
+            <span className="w-2.5 h-2.5 rounded-xs shrink-0 bg-emerald-500" style={{ backgroundColor: entry.color || '#10b981' }}></span>
+            <span>Sales: LBP {entry.value} {typeof entry.value === 'number' && entry.value < 1000 ? 'Million' : ''}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Custom White Tooltip for Monthly Category Comparison Stacked BarChart
+  const CategoryComparisonTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const activePayload = payload.filter((p: any) => !p.hide);
+    if (!activePayload.length) return null;
+    return (
+      <div className="bg-white border border-slate-200 text-slate-900 p-3.5 rounded-xl shadow-xl text-xs space-y-2 font-sans min-w-[210px]">
+        <p className="font-black text-slate-900 text-sm border-b border-slate-100 pb-1">{label}</p>
+        <div className="space-y-1.5">
+          {activePayload.map((entry: any, i: number) => (
+            <div key={i} className="flex items-center justify-between gap-3 text-[11px]">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-xs shrink-0" style={{ backgroundColor: entry.color }}></span>
+                <span className="text-slate-700 font-semibold">{entry.name || entry.dataKey}:</span>
+              </div>
+              <span className="font-mono font-extrabold text-slate-900">
+                LBP {entry.value}{typeof entry.value === 'number' && entry.value < 1000 ? 'M' : ''}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Custom White Tooltip for Employee Monthly Sales Stacked BarChart
+  const EmployeeComparisonTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const activePayload = payload.filter((p: any) => !p.hide);
+    if (!activePayload.length) return null;
+    return (
+      <div className="bg-white border border-slate-200 text-slate-900 p-3.5 rounded-xl shadow-xl text-xs space-y-2 font-sans min-w-[220px]">
+        <p className="font-black text-slate-900 text-sm border-b border-slate-100 pb-1">{label}</p>
+        <div className="space-y-1.5">
+          {activePayload.map((entry: any, i: number) => (
+            <div key={i} className="flex items-center justify-between gap-3 text-[11px]">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-xs shrink-0" style={{ backgroundColor: entry.color }}></span>
+                <span className="text-slate-700 font-semibold">{entry.name || entry.dataKey}:</span>
+              </div>
+              <span className="font-mono font-extrabold text-slate-900">LBP {entry.value}M</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   // Reusable Widget Card Component
   const WidgetCard = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => {
     return (
@@ -786,11 +865,18 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <LineChart data={dailyTrendsData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis domain={[0, 300]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      formatter={(val: any) => [`LBP ${val} Million`, 'Daily Revenue']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                    <Tooltip content={<DarkLineTooltip />} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Line
+                      type="monotone"
+                      dataKey="revenue"
+                      name="Daily Revenue"
+                      stroke="#10b981"
+                      strokeWidth={3}
+                      dot={{ r: 4, fill: '#10b981' }}
+                      activeDot={{ r: 6 }}
+                      hide={!!hiddenSeries['revenue'] || !!hiddenSeries['Daily Revenue']}
                     />
-                    <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -829,16 +915,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <BarChart data={categoryMonthlyComparisonData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      formatter={(val: any) => [`LBP ${val}M`, 'Sales']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
-                    <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
-                    <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} />
-                    <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" radius={[0, 0, 0, 0]} />
-                    <Bar dataKey="raw26" name="Raw Materials (2026)" stackId="a" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="total25" name="Total 2025 (Ref)" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                    <Tooltip content={<CategoryComparisonTooltip />} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" hide={!!hiddenSeries['retail26'] || !!hiddenSeries['مفرق (2026)']} />
+                    <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" hide={!!hiddenSeries['promo26'] || !!hiddenSeries['عروض (2026)']} />
+                    <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" hide={!!hiddenSeries['wholesale26'] || !!hiddenSeries['جملة (2026)']} />
+                    <Bar dataKey="raw26" name="Raw Materials (2026)" stackId="a" fill="#8b5cf6" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['raw26'] || !!hiddenSeries['Raw Materials (2026)']} />
+                    <Bar dataKey="total25" name="Total 2025 (Ref)" fill="#94a3b8" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['total25'] || !!hiddenSeries['Total 2025 (Ref)']} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -882,11 +965,17 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <LineChart data={hourlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <XAxis dataKey="hour" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                      <Tooltip
-                        formatter={(val: any) => [`LBP ${val} Million`, 'Avg Hourly Revenue']}
-                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                      <Tooltip content={<DarkLineTooltip />} />
+                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                      <Line
+                        type="monotone"
+                        dataKey="sales"
+                        name="Avg Hourly Revenue"
+                        stroke="#3b82f6"
+                        strokeWidth={3}
+                        dot={{ r: 3, fill: '#3b82f6' }}
+                        hide={!!hiddenSeries['sales'] || !!hiddenSeries['Avg Hourly Revenue']}
                       />
-                      <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3, fill: '#3b82f6' }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -922,11 +1011,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <BarChart data={weekdayData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                      <Tooltip
-                        formatter={(val: any) => [`LBP ${val} Million`, 'Total Revenue']}
-                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                      <Tooltip content={<DarkLineTooltip />} />
+                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                      <Bar
+                        dataKey="sales"
+                        name="Total Revenue"
+                        fill="#f59e0b"
+                        radius={[6, 6, 0, 0]}
+                        hide={!!hiddenSeries['sales'] || !!hiddenSeries['Total Revenue']}
                       />
-                      <Bar dataKey="sales" fill="#f59e0b" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -964,17 +1057,14 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <BarChart data={employeeMonthlyData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      formatter={(val: any) => [`LBP ${val}M`, 'Employee Sales']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
-                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" />
-                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" />
-                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" />
-                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#ec4899" />
-                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#8b5cf6" />
-                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                    <Tooltip content={<EmployeeComparisonTooltip />} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
+                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
+                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
+                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#ec4899" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
+                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#8b5cf6" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
+                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1081,11 +1171,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <LineChart data={dailyTrendsData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#334155' }} />
                   <YAxis domain={[0, 300]} tick={{ fontSize: 12, fill: '#334155' }} />
-                  <Tooltip
-                    formatter={(val: any) => [`LBP ${val} Million`, 'Daily Revenue']}
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '14px', border: 'none', color: '#fff', fontSize: '14px' }}
-                  />
-                  <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={4} dot={{ r: 5, fill: '#10b981' }} activeDot={{ r: 8 }} />
+                  <Tooltip content={<DarkLineTooltip />} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Line type="monotone" dataKey="revenue" name="Daily Revenue" stroke="#10b981" strokeWidth={4} dot={{ r: 5, fill: '#10b981' }} activeDot={{ r: 8 }} hide={!!hiddenSeries['revenue'] || !!hiddenSeries['Daily Revenue']} />
                 </LineChart>
               </ResponsiveContainer>
             ) : expandedWidget === 'monthly-category-comparison' ? (
@@ -1093,16 +1181,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <BarChart data={categoryMonthlyComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#334155' }} />
                   <YAxis tick={{ fontSize: 13, fill: '#334155' }} />
-                  <Tooltip
-                    formatter={(val: any) => [`LBP ${val}M`, 'Sales']}
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '14px', border: 'none', color: '#fff', fontSize: '14px' }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '13px', color: '#334155' }} />
-                  <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" />
-                  <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" />
-                  <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" />
-                  <Bar dataKey="raw26" name="Raw Materials (2026)" stackId="a" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="total25" name="Total 2025 (Ref)" fill="#94a3b8" radius={[6, 6, 0, 0]} />
+                  <Tooltip content={<CategoryComparisonTooltip />} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" hide={!!hiddenSeries['retail26'] || !!hiddenSeries['مفرق (2026)']} />
+                  <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" hide={!!hiddenSeries['promo26'] || !!hiddenSeries['عروض (2026)']} />
+                  <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" hide={!!hiddenSeries['wholesale26'] || !!hiddenSeries['جملة (2026)']} />
+                  <Bar dataKey="raw26" name="Raw Materials (2026)" stackId="a" fill="#8b5cf6" radius={[6, 6, 0, 0]} hide={!!hiddenSeries['raw26'] || !!hiddenSeries['Raw Materials (2026)']} />
+                  <Bar dataKey="total25" name="Total 2025 (Ref)" fill="#94a3b8" radius={[6, 6, 0, 0]} hide={!!hiddenSeries['total25'] || !!hiddenSeries['Total 2025 (Ref)']} />
                 </BarChart>
               </ResponsiveContainer>
             ) : expandedWidget === 'employee-monthly-comparison' ? (
@@ -1110,17 +1195,14 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <BarChart data={employeeMonthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#334155' }} />
                   <YAxis tick={{ fontSize: 13, fill: '#334155' }} />
-                  <Tooltip
-                    formatter={(val: any) => [`LBP ${val}M`, 'Employee Sales']}
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '14px', border: 'none', color: '#fff', fontSize: '14px' }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '13px', color: '#334155' }} />
-                  <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" />
-                  <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" />
-                  <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" />
-                  <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#ec4899" />
-                  <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#8b5cf6" />
-                  <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[6, 6, 0, 0]} />
+                  <Tooltip content={<EmployeeComparisonTooltip />} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
+                  <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
+                  <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
+                  <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#ec4899" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
+                  <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#8b5cf6" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
+                  <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[6, 6, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
                 </BarChart>
               </ResponsiveContainer>
             ) : expandedWidget === 'monthly-revenue' ? (
