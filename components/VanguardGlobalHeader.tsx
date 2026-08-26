@@ -149,13 +149,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           </a>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME (EXACTLY: 001 - Southern Olive Oil S.A.R.L منتوجات زيت وزيتون الجنوب) */}
+        {/* CENTER: TENANT LICENSE AND NAME (FORCE PURE WHITE TEXT FOR HIGH CONTRAST) */}
         <div className="hidden md:flex items-center gap-2.5 bg-[#252538] border border-[#373752] px-4 py-1.5 rounded-full text-xs shadow-inner">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="font-mono text-amber-400 font-black text-sm">001</span>
-          <span className="text-slate-400 font-bold">-</span>
-          <span className="font-semibold text-white tracking-wide">Southern Olive Oil S.A.R.L</span>
-          <span className="text-[11px] text-amber-300 font-bold bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full shadow-2xs">
+          <span className="font-mono text-white font-black text-sm" style={{ color: '#ffffff' }}>001</span>
+          <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
+          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>Southern Olive Oil S.A.R.L</span>
+          <span className="text-[11px] text-white font-bold bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full shadow-2xs" style={{ color: '#ffffff' }}>
             منتوجات زيت وزيتون الجنوب
           </span>
         </div>
