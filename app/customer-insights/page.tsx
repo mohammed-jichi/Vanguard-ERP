@@ -190,7 +190,8 @@ export default function CustomerInsightsPage() {
                   <select
                     value={selectedBrand}
                     onChange={(e) => setSelectedBrand(e.target.value)}
-                    className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500"
+                    onClick={(e) => e.stopPropagation()}
+                    className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs"
                   >
                     <option value="All Brands">All Brands</option>
                     <option value="Southern Olive SARL">Southern Olive SARL</option>
@@ -595,7 +596,8 @@ export default function CustomerInsightsPage() {
                   <select
                     value={selectedBrand}
                     onChange={(e) => setSelectedBrand(e.target.value)}
-                    className="w-1/2 p-1.5 bg-slate-50 border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800"
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-1/2 p-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
                     <option value="All Brands">All Brands</option>
                     <option value="Southern Olive SARL">Southern Olive SARL</option>
@@ -603,7 +605,8 @@ export default function CustomerInsightsPage() {
                   <select
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
-                    className="w-1/2 p-1.5 bg-slate-50 border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800"
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-1/2 p-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
                     <option value="All Groups">All Groups</option>
                     <option value="Wholesale">Wholesale</option>
@@ -866,23 +869,23 @@ export default function CustomerInsightsPage() {
               </div>
             </div>
 
-            {/* PRESERVED VIP CUSTOMERS TABLE */}
-            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4" dir="rtl">
+            {/* PRESERVED VIP CUSTOMERS TABLE (STRICT ENGLISH LTR) */}
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4" dir="ltr">
               <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                 <Star className="w-5 h-5 text-amber-500" />
-                <span>كبار العملاء والأعلى قيمة ممتدة (Top 5 LTV VIP Customers)</span>
+                <span>Top 5 LTV VIP Customers</span>
               </h2>
 
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
-                <table className="w-full text-right text-base font-sans">
+                <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">اسم العميل / المؤسسة</th>
-                      <th className="py-3.5 px-4 font-semibold">فئة العميل</th>
-                      <th className="py-3.5 px-4 font-semibold">القيمة الممتدة (LTV)</th>
-                      <th className="py-3.5 px-4 font-semibold">عدد الطلبيات</th>
-                      <th className="py-3.5 px-4 font-semibold">متوسط الفاتورة</th>
-                      <th className="py-3.5 px-4 font-semibold">تاريخ آخر طلب</th>
+                      <th className="py-3.5 px-4 font-semibold">Customer / Company Name</th>
+                      <th className="py-3.5 px-4 font-semibold">Customer Category</th>
+                      <th className="py-3.5 px-4 font-semibold">Lifetime Value (LTV)</th>
+                      <th className="py-3.5 px-4 font-semibold">Number of Orders</th>
+                      <th className="py-3.5 px-4 font-semibold">Average Invoice</th>
+                      <th className="py-3.5 px-4 font-semibold">Last Order Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -895,7 +898,7 @@ export default function CustomerInsightsPage() {
                           </span>
                         </td>
                         <td className="py-3.5 px-4 font-mono font-medium text-emerald-600">{row.ltv}</td>
-                        <td className="py-3.5 px-4 font-mono font-normal">{row.ordersCount} طلب</td>
+                        <td className="py-3.5 px-4 font-mono font-normal">{row.ordersCount} Orders</td>
                         <td className="py-3.5 px-4 font-mono text-slate-600 font-normal">{row.avgTicket}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-500 font-normal">2026-08-24</td>
                       </tr>
