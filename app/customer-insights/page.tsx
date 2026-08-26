@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Zap,
   ChevronRight,
+  ChevronDown,
   Download,
   Globe,
   MapPin,
@@ -187,16 +188,18 @@ export default function CustomerInsightsPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5 print:hidden">
-                  <select
-                    value={selectedBrand}
-                    onChange={(e) => setSelectedBrand(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    className="px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs"
-                  >
-                    <option value="All Brands">All Brands</option>
-                    <option value="Southern Olive SARL">Southern Olive SARL</option>
-                    <option value="Beirut Branch">Beirut Branch</option>
-                  </select>
+                  <div className="relative inline-block text-left">
+                    <select
+                      value={selectedBrand}
+                      onChange={(e) => setSelectedBrand(e.target.value)}
+                      className="appearance-none bg-white border border-slate-300 pl-3 pr-8 py-2 rounded-xl text-xs font-bold text-slate-800 shadow-2xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      <option value="All Brands">All Brands</option>
+                      <option value="Southern Olive SARL">Southern Olive SARL</option>
+                      <option value="Beirut Branch">Beirut Branch</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+                  </div>
 
                   <button
                     onClick={() => triggerRefreshToast('Header KPIs')}
@@ -593,25 +596,30 @@ export default function CustomerInsightsPage() {
 
                 {/* Filters Row */}
                 <div className="flex items-center gap-2">
-                  <select
-                    value={selectedBrand}
-                    onChange={(e) => setSelectedBrand(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-1/2 p-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  >
-                    <option value="All Brands">All Brands</option>
-                    <option value="Southern Olive SARL">Southern Olive SARL</option>
-                  </select>
-                  <select
-                    value={selectedGroup}
-                    onChange={(e) => setSelectedGroup(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-1/2 p-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  >
-                    <option value="All Groups">All Groups</option>
-                    <option value="Wholesale">Wholesale</option>
-                    <option value="Retail">Retail</option>
-                  </select>
+                  <div className="relative flex-1">
+                    <select
+                      value={selectedBrand}
+                      onChange={(e) => setSelectedBrand(e.target.value)}
+                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-bold text-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      <option value="All Brands">All Brands</option>
+                      <option value="Southern Olive SARL">Southern Olive SARL</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2 pointer-events-none" />
+                  </div>
+
+                  <div className="relative flex-1">
+                    <select
+                      value={selectedGroup}
+                      onChange={(e) => setSelectedGroup(e.target.value)}
+                      className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-bold text-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      <option value="All Groups">All Groups</option>
+                      <option value="Wholesale">Wholesale</option>
+                      <option value="Retail">Retail</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2 pointer-events-none" />
+                  </div>
                 </div>
 
                 {/* Buyers Data Table */}
