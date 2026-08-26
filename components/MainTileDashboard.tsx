@@ -531,8 +531,8 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
       {/* 1. TOP MAIN DARK HEADER (SPANS 100% VIEWPORT WIDTH AT THE TOP, h-16) */}
       <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
-      {/* 2. MASTER FLEX CONTAINER DIRECTLY UNDERNEATH TOP DARK HEADER */}
-      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-64px)] bg-white">
+      {/* 2. MASTER FLEX CONTAINER DIRECTLY UNDERNEATH TOP DARK HEADER WITH 3CM GAP (PHASE 64) */}
+      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-96px)] bg-white mt-8">
         
         {/* LEFT SIDE: PERSISTENT SIDEBAR - Touches bottom of top dark header & spans full remaining height */}
         <Sidebar activeScreen={activeScreen} onSelectScreen={(screen) => setActiveScreen(screen)} />

@@ -14,8 +14,8 @@ export default function ProductInsightsPage() {
       {/* 1. GLOBAL TOP HEADER */}
       <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
-      {/* 2. MASTER CONTAINER WITH SIDEBAR & CONTENT COLUMN */}
-      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-64px)] bg-slate-50">
+      {/* 2. MASTER CONTAINER WITH SIDEBAR & CONTENT COLUMN WITH 3CM GAP (PHASE 64) */}
+      <div className="flex flex-row flex-1 min-w-0 w-full relative min-h-[calc(100vh-96px)] bg-slate-50 mt-8">
         
         {/* PERSISTENT SIDEBAR */}
         <Sidebar

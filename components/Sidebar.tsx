@@ -174,7 +174,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shrink-0 min-h-screen z-30 font-sans select-none ${
+      className={`bg-white border-r border-t border-gray-200 rounded-t-xl shadow-2xs transition-all duration-300 flex flex-col shrink-0 min-h-[calc(100vh-96px)] z-30 font-sans select-none ${
         isOpen ? 'w-64' : 'w-16'
       }`}
       dir={dir}
