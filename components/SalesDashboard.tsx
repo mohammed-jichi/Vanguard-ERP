@@ -22,7 +22,12 @@ import {
   DollarSign,
   ShoppingCart,
   Users2,
-  Clock3
+  Clock3,
+  Layers,
+  PieChart as PieIcon,
+  CreditCard,
+  Ban,
+  User
 } from 'lucide-react';
 import {
   BarChart,
@@ -80,9 +85,64 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { name: 'Soaps & Byproducts', value: 10, amount: 'LBP 20,230,000', color: '#8b5cf6' }
   ];
 
+  const divisionSalesData = [
+    { name: 'Retail Olive Oil (زيت مفرق)', value: 52, amount: 'LBP 322.4M', color: '#10b981' },
+    { name: 'Wholesale Drums (براميل جملة)', value: 25, amount: 'LBP 155.0M', color: '#3b82f6' },
+    { name: 'Extraction & Pressing (عصر الزيتون)', value: 15, amount: 'LBP 93.0M', color: '#f59e0b' },
+    { name: 'Organic Soaps (صابون بلدي)', value: 8, amount: 'LBP 49.6M', color: '#8b5cf6' }
+  ];
+
+  const groupSalesData = [
+    { name: 'Glass Bottles', value: 40, amount: 'LBP 248.0M', color: '#06b6d4' },
+    { name: 'Tin Cans 16L', value: 35, amount: 'LBP 217.0M', color: '#ec4899' },
+    { name: 'Plastic Containers', value: 15, amount: 'LBP 93.0M', color: '#f97316' },
+    { name: 'Loose Bulk', value: 10, amount: 'LBP 62.0M', color: '#64748b' }
+  ];
+
+  const departmentSalesData = [
+    { name: 'MAIN DEPARTMENT', value: 68, amount: 'LBP 421.6M', color: '#3b82f6' },
+    { name: 'Showroom', value: 22, amount: 'LBP 136.4M', color: '#10b981' },
+    { name: 'Direct Delivery', value: 10, amount: 'LBP 62.0M', color: '#f59e0b' }
+  ];
+
+  const discountSummaryData = [
+    { name: 'AMOUNT DISCOUNT', value: 65, amount: 'LBP 1,625,000', color: '#ef4444' },
+    { name: 'PERCENTAGE DISCOUNT', value: 35, amount: 'LBP 875,000', color: '#8b5cf6' }
+  ];
+
+  const discountByCategoryData = [
+    { type: 'AMOUNT DISCOUNT', raw: 'LBP 50,000', retail: 'LBP 950,000', promo: 'LBP 625,000', total: 'LBP 1,625,000' },
+    { type: 'PERCENTAGE DISCOUNT', raw: 'LBP 25,000', retail: 'LBP 450,000', promo: 'LBP 400,000', total: 'LBP 875,000' },
+    { type: 'TOTAL DISCOUNTS', raw: 'LBP 75,000', retail: 'LBP 1,400,000', promo: 'LBP 1,025,000', total: 'LBP 2,500,000', isTotal: true }
+  ];
+
+  const voidSummaryData = [
+    { reason: 'Price Correction', value: 50, amount: 'LBP 1,200,000', count: 6, color: '#f59e0b' },
+    { reason: 'Customer Cancellation', value: 30, amount: 'LBP 720,000', count: 4, color: '#ef4444' },
+    { reason: 'Cashier Error', value: 20, amount: 'LBP 480,000', count: 2, color: '#64748b' }
+  ];
+
+  const userSummaryData = [
+    { user: 'Hiba Aloulou', value: 30, amount: 'LBP 186.0M', color: '#ec4899' },
+    { user: 'Mahdi', value: 25, amount: 'LBP 155.0M', color: '#8b5cf6' },
+    { user: 'Cashier N2', value: 23, amount: 'LBP 142.6M', color: '#10b981' },
+    { user: 'Nour Yazbeck', value: 22, amount: 'LBP 136.4M', color: '#06b6d4' }
+  ];
+
+  const paymentSummaryData = [
+    { method: 'CASH LBP', value: 70, amount: 'LBP 434.0M', color: '#10b981' },
+    { method: 'CASH USD', value: 25, amount: 'LBP 155.0M', color: '#3b82f6' },
+    { method: 'Credit Card', value: 5, amount: 'LBP 31.0M', color: '#8b5cf6' }
+  ];
+
+  const employeeByCategoryData = [
+    { user: 'Hiba Aloulou', raw: 'LBP 10.0M', wholesale: 'LBP 45.0M', promo: 'LBP 41.0M', retail: 'LBP 90.0M', total: 'LBP 186.0M' },
+    { user: 'Mahdi', raw: 'LBP 8.0M', wholesale: 'LBP 35.0M', promo: 'LBP 32.0M', retail: 'LBP 80.0M', total: 'LBP 155.0M' },
+    { user: 'Cashier N2', raw: 'LBP 6.0M', wholesale: 'LBP 30.0M', promo: 'LBP 31.6M', retail: 'LBP 75.0M', total: 'LBP 142.6M' },
+    { user: 'Nour Yazbeck', raw: 'LBP 6.0M', wholesale: 'LBP 25.0M', promo: 'LBP 30.4M', retail: 'LBP 75.0M', total: 'LBP 136.4M' }
+  ];
+
   // --- LIVE DATA: COMPARATIVE TAB ---
-  
-  // 1. Daily Summary Revenue Trends (Sat Aug 1 - Sat Aug 22)
   const dailyTrendsData = [
     { date: 'Sat, Aug 1', revenue: 42, count: 18, avgTicket: '2.33M' },
     { date: 'Sun, Aug 2', revenue: 65, count: 24, avgTicket: '2.70M' },
@@ -108,7 +168,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { date: 'Sat, Aug 22', revenue: 300, count: 92, avgTicket: '3.26M' }
   ];
 
-  // 2. Monthly Sales By Category (2026 vs 2025 Stacked / Clustered)
   const categoryMonthlyComparisonData = [
     { month: 'Jan', retail26: 35, promo26: 15, wholesale26: 12, raw26: 5, total25: 55 },
     { month: 'Feb', retail26: 30, promo26: 12, wholesale26: 10, raw26: 4, total25: 48 },
@@ -132,7 +191,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { name: 'TOTAL SUMMARY', year2026: 'LBP 620,000,000', year2025: 'LBP 510,000,000', diff: '+LBP 110,000,000', growth: '+21.6%', isTotal: true }
   ];
 
-  // 3. Hourly & WeekDays Sales Trends
   const hourlyData = [
     { hour: '09:00', sales: 12, count: 5 },
     { hour: '10:00', sales: 28, count: 12 },
@@ -157,7 +215,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { day: 'Sunday', sales: 60, share: '9.7%' }
   ];
 
-  // 4. Comparative Monthly Sales By Employee
   const employeeMonthlyData = [
     { month: 'Jan', cashierN2: 80, cashierNK: 65, cashierR: 90, hiba: 70, mahdi: 55, nour: 60 },
     { month: 'Feb', cashierN2: 75, cashierNK: 60, cashierR: 85, hiba: 65, mahdi: 50, nour: 45 },
@@ -233,6 +290,62 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       </div>
     );
   };
+
+  // Helper PieChart Widget Renderer
+  const RenderPieWidget = ({ id, title, data, labelKey = 'name' }: { id: string; title: string; data: any[]; labelKey?: string }) => (
+    <WidgetCard id={id} title={title}>
+      <div className="flex flex-col space-y-4">
+        <div className="h-52 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={75}
+                paddingAngle={4}
+                dataKey="value"
+              >
+                {data.map((entry: any, index: number) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(val: any) => [`${val}%`, 'Share']}
+                contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+              />
+              <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+          <table className="w-full text-left font-sans">
+            <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+              <tr>
+                <th className="py-2 px-3">Name</th>
+                <th className="py-2 px-3 text-right">Amount</th>
+                <th className="py-2 px-3 text-right">Share</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+              {data.map((row: any) => (
+                <tr key={row[labelKey] || row.name || row.reason || row.user || row.method} className="hover:bg-slate-50">
+                  <td className="py-2 px-3 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: row.color }}></span>
+                    <span>{row[labelKey] || row.name || row.reason || row.user || row.method}</span>
+                  </td>
+                  <td className="py-2 px-3 text-right font-mono">{row.amount}</td>
+                  <td className="py-2 px-3 text-right font-bold text-emerald-700">{row.value}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </WidgetCard>
+  );
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50 p-4 md:p-6 space-y-6 font-sans dir-ltr text-left">
@@ -472,80 +585,165 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         })}
       </div>
 
-      {/* ---------------- SUMMARY TAB VIEW ---------------- */}
+      {/* ---------------- SUMMARY TAB VIEW (PHASE 43 POPULATED) ---------------- */}
       {activeTab === 'summary' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
           
-          {/* CHART 1: MONTHLY REVENUE (BAR CHART) */}
-          <WidgetCard id="monthly-revenue" title="Monthly Revenue (Jan - Dec 2026)">
-            <div className="h-72 w-full pt-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    formatter={(val: any) => [`LBP ${val}M`, 'Revenue']}
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                  />
-                  <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </WidgetCard>
-
-          {/* CHART 2: SALES BY CATEGORY (PIE CHART & DATA TABLE) */}
-          <WidgetCard id="sales-category" title="Sales By Category Distribution">
-            <div className="flex flex-col space-y-4">
-              <div className="h-52 w-full">
+          {/* MAIN 2-COLUMN GRID FOR WIDGETS */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            
+            {/* WIDGET 1: MONTHLY REVENUE (BAR CHART) */}
+            <WidgetCard id="monthly-revenue" title="Monthly Revenue (Jan - Dec 2026)">
+              <div className="h-72 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categorySalesData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={75}
-                      paddingAngle={4}
-                      dataKey="value"
-                    >
-                      {categorySalesData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
+                  <BarChart data={monthlyRevenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      formatter={(val: any) => [`${val}%`, 'Share']}
+                      formatter={(val: any) => [`LBP ${val}M`, 'Revenue']}
                       contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
                     />
-                    <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
-                  </PieChart>
+                    <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
+            </WidgetCard>
 
-              {/* CATEGORY BREAKDOWN DATA TABLE */}
+            {/* WIDGET 2: SALES BY CATEGORY DISTRIBUTION */}
+            <RenderPieWidget id="sales-category" title="Sales By Category Distribution" data={categorySalesData} />
+
+            {/* WIDGET 3: SALES BY DIVISION */}
+            <RenderPieWidget id="sales-division" title="Sales By Division" data={divisionSalesData} />
+
+            {/* WIDGET 4: SALES BY GROUP */}
+            <RenderPieWidget id="sales-group" title="Sales By Group" data={groupSalesData} />
+
+            {/* WIDGET 5: SALES BY DEPARTMENT */}
+            <RenderPieWidget id="sales-department" title="Sales By Department" data={departmentSalesData} />
+
+            {/* WIDGET 6: DISCOUNT SUMMARY */}
+            <RenderPieWidget id="discount-summary" title="Discount Summary" data={discountSummaryData} />
+
+            {/* WIDGET 7: DISCOUNT BY CATEGORY SUMMARY (DATA TABLE ONLY) */}
+            <WidgetCard id="discount-by-category" title="Discount By Category Summary">
               <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
                 <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                  <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
                     <tr>
-                      <th className="py-2 px-3">Category</th>
-                      <th className="py-2 px-3 text-right">Amount</th>
-                      <th className="py-2 px-3 text-right">Share</th>
+                      <th className="py-2.5 px-3">Discount Type</th>
+                      <th className="py-2.5 px-3 text-right">Raw Materials</th>
+                      <th className="py-2.5 px-3 text-right">مفرق</th>
+                      <th className="py-2.5 px-3 text-right">عروض</th>
+                      <th className="py-2.5 px-3 text-right bg-slate-800">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
-                    {categorySalesData.map((c) => (
-                      <tr key={c.name} className="hover:bg-slate-50">
-                        <td className="py-2 px-3 flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c.color }}></span>
-                          <span>{c.name}</span>
-                        </td>
-                        <td className="py-2 px-3 text-right font-mono">{c.amount}</td>
-                        <td className="py-2 px-3 text-right font-bold text-emerald-700">{c.value}%</td>
+                    {discountByCategoryData.map((r) => (
+                      <tr key={r.type} className={r.isTotal ? 'bg-amber-50 font-black text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
+                        <td className="py-2 px-3 font-bold">{r.type}</td>
+                        <td className="py-2 px-3 text-right font-mono text-slate-600">{r.raw}</td>
+                        <td className="py-2 px-3 text-right font-mono text-blue-700">{r.retail}</td>
+                        <td className="py-2 px-3 text-right font-mono text-amber-700">{r.promo}</td>
+                        <td className="py-2 px-3 text-right font-mono font-extrabold text-rose-700">{r.total}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+            </WidgetCard>
 
+            {/* WIDGET 8: VOID SUMMARY */}
+            <WidgetCard id="void-summary" title="Void Summary">
+              <div className="flex flex-col space-y-4">
+                <div className="h-52 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={voidSummaryData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={75}
+                        paddingAngle={4}
+                        dataKey="value"
+                      >
+                        {voidSummaryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(val: any) => [`${val}%`, 'Share']}
+                        contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '11px', color: '#334155' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                  <table className="w-full text-left font-sans">
+                    <thead className="bg-slate-100 text-slate-700 font-extrabold uppercase text-[10px]">
+                      <tr>
+                        <th className="py-2 px-3">Reason</th>
+                        <th className="py-2 px-3 text-right">Amount</th>
+                        <th className="py-2 px-3 text-right">Count</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold">
+                      {voidSummaryData.map((v) => (
+                        <tr key={v.reason} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: v.color }}></span>
+                            <span>{v.reason}</span>
+                          </td>
+                          <td className="py-2 px-3 text-right font-mono text-rose-700">{v.amount}</td>
+                          <td className="py-2 px-3 text-right font-bold text-slate-700">{v.count} voids</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </WidgetCard>
+
+            {/* WIDGET 9: USER SUMMARY */}
+            <RenderPieWidget id="user-summary" title="User Summary" data={userSummaryData} labelKey="user" />
+
+            {/* WIDGET 10: PAYMENT SUMMARY */}
+            <RenderPieWidget id="payment-summary" title="Payment Summary" data={paymentSummaryData} labelKey="method" />
+
+          </div>
+
+          {/* WIDGET 11: SALES BY EMPLOYEE BY CATEGORY (FULL WIDTH AT BOTTOM) */}
+          <WidgetCard id="employee-by-category" title="Sales By Employee By Category (Complete Breakdown)">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+              <table className="w-full text-left font-sans">
+                <thead className="bg-slate-900 text-white font-extrabold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-3 px-4">User Name</th>
+                    <th className="py-3 px-4 text-right">Raw Materials</th>
+                    <th className="py-3 px-4 text-right">جملة (Wholesale)</th>
+                    <th className="py-3 px-4 text-right">عروض (Promotions)</th>
+                    <th className="py-3 px-4 text-right">مفرق (Retail)</th>
+                    <th className="py-3 px-4 text-right bg-slate-800">Total Net Sales</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-800 font-semibold text-[11px]">
+                  {employeeByCategoryData.map((emp) => (
+                    <tr key={emp.user} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-extrabold text-slate-900 flex items-center gap-2">
+                        <User className="w-3.5 h-3.5 text-blue-600" />
+                        <span>{emp.user}</span>
+                      </td>
+                      <td className="py-2.5 px-4 text-right font-mono text-slate-600">{emp.raw}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-amber-700">{emp.wholesale}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-blue-700">{emp.promo}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-emerald-700">{emp.retail}</td>
+                      <td className="py-2.5 px-4 text-right font-mono font-black text-slate-900 bg-slate-50">{emp.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </WidgetCard>
 
@@ -827,6 +1025,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               <span>
                 {expandedWidget === 'monthly-revenue' && 'Monthly Revenue (Jan - Dec 2026) - Expanded Analysis'}
                 {expandedWidget === 'sales-category' && 'Sales By Category Distribution - Detailed Breakdown'}
+                {expandedWidget === 'sales-division' && 'Sales By Division - Detailed Breakdown'}
+                {expandedWidget === 'sales-group' && 'Sales By Group - Detailed Breakdown'}
+                {expandedWidget === 'sales-department' && 'Sales By Department - Detailed Breakdown'}
+                {expandedWidget === 'discount-summary' && 'Discount Summary - Detailed Breakdown'}
+                {expandedWidget === 'discount-by-category' && 'Discount By Category Summary - Detailed Grid'}
+                {expandedWidget === 'void-summary' && 'Void Summary - Detailed Breakdown'}
+                {expandedWidget === 'user-summary' && 'User Summary - Detailed Breakdown'}
+                {expandedWidget === 'payment-summary' && 'Payment Summary - Detailed Breakdown'}
+                {expandedWidget === 'employee-by-category' && 'Sales By Employee By Category - Full Breakdown'}
                 {expandedWidget === 'daily-summary-trends' && 'Daily Summary Revenue Trends - Detailed Breakdown'}
                 {expandedWidget === 'monthly-category-comparison' && 'Monthly Sales By Category (2026 vs 2025) - Comparative View'}
                 {expandedWidget === 'hourly-sales-trends' && 'Average Sales by Hour (09:00 - 19:00) - Detailed View'}
@@ -843,7 +1050,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </button>
           </div>
 
-          {/* MODAL BODY (ENLARGED LIVE CHART) */}
+          {/* MODAL BODY (ENLARGED LIVE CHART / TABLE) */}
           <div className="flex-1 bg-white border border-slate-200 rounded-2xl my-4 p-6 overflow-hidden flex flex-col justify-center">
             {expandedWidget === 'daily-summary-trends' ? (
               <ResponsiveContainer width="100%" height="90%">
@@ -909,7 +1116,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <ResponsiveContainer width="100%" height="90%">
                   <PieChart>
                     <Pie
-                      data={categorySalesData}
+                      data={
+                        expandedWidget === 'sales-division' ? divisionSalesData :
+                        expandedWidget === 'sales-group' ? groupSalesData :
+                        expandedWidget === 'sales-department' ? departmentSalesData :
+                        expandedWidget === 'discount-summary' ? discountSummaryData :
+                        expandedWidget === 'void-summary' ? voidSummaryData :
+                        expandedWidget === 'user-summary' ? userSummaryData :
+                        expandedWidget === 'payment-summary' ? paymentSummaryData :
+                        categorySalesData
+                      }
                       cx="50%"
                       cy="50%"
                       innerRadius={80}
@@ -917,7 +1133,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       paddingAngle={6}
                       dataKey="value"
                     >
-                      {categorySalesData.map((entry, index) => (
+                      {(
+                        expandedWidget === 'sales-division' ? divisionSalesData :
+                        expandedWidget === 'sales-group' ? groupSalesData :
+                        expandedWidget === 'sales-department' ? departmentSalesData :
+                        expandedWidget === 'discount-summary' ? discountSummaryData :
+                        expandedWidget === 'void-summary' ? voidSummaryData :
+                        expandedWidget === 'user-summary' ? userSummaryData :
+                        expandedWidget === 'payment-summary' ? paymentSummaryData :
+                        categorySalesData
+                      ).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -933,17 +1158,26 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-900 text-white font-black text-xs uppercase">
                       <tr>
-                        <th className="py-3 px-4">Category Name</th>
+                        <th className="py-3 px-4">Name</th>
                         <th className="py-3 px-4 text-right">Revenue Amount</th>
                         <th className="py-3 px-4 text-right">Share %</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 text-slate-800 font-semibold">
-                      {categorySalesData.map((c) => (
-                        <tr key={c.name} className="hover:bg-slate-50">
+                      {(
+                        expandedWidget === 'sales-division' ? divisionSalesData :
+                        expandedWidget === 'sales-group' ? groupSalesData :
+                        expandedWidget === 'sales-department' ? departmentSalesData :
+                        expandedWidget === 'discount-summary' ? discountSummaryData :
+                        expandedWidget === 'void-summary' ? voidSummaryData :
+                        expandedWidget === 'user-summary' ? userSummaryData :
+                        expandedWidget === 'payment-summary' ? paymentSummaryData :
+                        categorySalesData
+                      ).map((c: any) => (
+                        <tr key={c.name || c.reason || c.user || c.method} className="hover:bg-slate-50">
                           <td className="py-3 px-4 flex items-center gap-3">
                             <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: c.color }}></span>
-                            <span>{c.name}</span>
+                            <span>{c.name || c.reason || c.user || c.method}</span>
                           </td>
                           <td className="py-3 px-4 text-right font-mono font-bold">{c.amount}</td>
                           <td className="py-3 px-4 text-right font-extrabold text-emerald-700">{c.value}%</td>
