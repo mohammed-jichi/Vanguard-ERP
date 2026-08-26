@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import ProductInsightsView from './ProductInsightsView';
 import {
   FileText,
@@ -854,17 +855,17 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
           if (t.id === 'product-insights') {
             return (
-              <a
+              <Link
                 key={t.id}
                 href="/product-insight-view"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
                 className="px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 shrink-0 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200"
                 title="Open Product Insights in a new tab"
               >
                 <IconComp className="w-3.5 h-3.5 text-slate-400" />
                 <span>{t.label} ↗</span>
-              </a>
+              </Link>
             );
           }
 
