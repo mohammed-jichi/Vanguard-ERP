@@ -152,11 +152,12 @@ export default function ProductInsightsView() {
               <select
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:outline-none focus:border-blue-500"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
               >
-                <option value="All Branches">All Branches</option>
-                <option value="Southern Olive SARL">Southern Olive SARL</option>
-                <option value="Beirut Branch">Beirut Branch</option>
+                <option value="All Branches" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Branches</option>
+                <option value="Southern Olive SARL" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive SARL</option>
+                <option value="Beirut Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Branch</option>
               </select>
             </div>
 
@@ -165,10 +166,11 @@ export default function ProductInsightsView() {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:outline-none focus:border-blue-500"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
               >
-                <option value="LBP">LBP</option>
-                <option value="USD">USD</option>
+                <option value="LBP" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>LBP</option>
+                <option value="USD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>USD</option>
               </select>
             </div>
 
@@ -177,10 +179,11 @@ export default function ProductInsightsView() {
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:outline-none focus:border-blue-500"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
               >
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
+                <option value="2026" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2026</option>
+                <option value="2025" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2025</option>
               </select>
             </div>
 
@@ -189,11 +192,12 @@ export default function ProductInsightsView() {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:outline-none focus:border-blue-500"
+                style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
               >
-                <option value="August">August</option>
-                <option value="July">July</option>
-                <option value="June">June</option>
+                <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>August</option>
+                <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>July</option>
+                <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>June</option>
               </select>
             </div>
 
@@ -201,10 +205,11 @@ export default function ProductInsightsView() {
 
           <button
             onClick={() => alert('Exporting Product Insights Report...')}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0"
+            style={{ color: '#ffffff' }}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors shrink-0"
           >
             <FileText className="w-4 h-4" />
-            <span>Export PDF</span>
+            <span style={{ color: '#ffffff' }} className="!text-white">Export PDF</span>
           </button>
 
         </div>
@@ -247,13 +252,14 @@ export default function ProductInsightsView() {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500"
+                    style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Categories">All Categories</option>
-                    <option value="Extra Virgin Olive Oil">Extra Virgin Olive Oil</option>
-                    <option value="Bottled Oil & Jars">Bottled Oil & Jars</option>
-                    <option value="Pressing Services">Pressing Services</option>
-                    <option value="Soaps & Byproducts">Soaps & Byproducts</option>
+                    <option value="All Categories" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Categories</option>
+                    <option value="Extra Virgin Olive Oil" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Extra Virgin Olive Oil</option>
+                    <option value="Bottled Oil & Jars" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Bottled Oil & Jars</option>
+                    <option value="Pressing Services" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Pressing Services</option>
+                    <option value="Soaps & Byproducts" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Soaps & Byproducts</option>
                   </select>
                 </div>
 
@@ -263,12 +269,13 @@ export default function ProductInsightsView() {
                   <select
                     value={selectedDivision}
                     onChange={(e) => setSelectedDivision(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500"
+                    style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Divisions">All Divisions</option>
-                    <option value="Retail Products">Retail Products</option>
-                    <option value="Wholesale Drums">Wholesale Drums</option>
-                    <option value="Factory Services">Factory Services</option>
+                    <option value="All Divisions" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Divisions</option>
+                    <option value="Retail Products" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Retail Products</option>
+                    <option value="Wholesale Drums" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Wholesale Drums</option>
+                    <option value="Factory Services" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Factory Services</option>
                   </select>
                 </div>
 
@@ -278,12 +285,13 @@ export default function ProductInsightsView() {
                   <select
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500"
+                    style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                    className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Groups">All Groups</option>
-                    <option value="Glass Bottles">Glass Bottles</option>
-                    <option value="Tin Cans 16L">Tin Cans 16L</option>
-                    <option value="Bulk Services">Bulk Services</option>
+                    <option value="All Groups" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Groups</option>
+                    <option value="Glass Bottles" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Glass Bottles</option>
+                    <option value="Tin Cans 16L" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Tin Cans 16L</option>
+                    <option value="Bulk Services" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Bulk Services</option>
                   </select>
                 </div>
 

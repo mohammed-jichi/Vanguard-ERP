@@ -362,11 +362,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <select
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:outline-none focus:border-amber-500 shadow-2xs"
+              style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-amber-500 shadow-2xs"
             >
-              <option value="منتجات زيت وزيتون الجنوب">منتجات زيت وزيتون الجنوب (Southern Olive Oil S.A.R.L)</option>
-              <option value="Beirut Central Branch">Beirut Central Branch</option>
-              <option value="Saida Production Press">Saida Production Press</option>
+              <option value="منتجات زيت وزيتون الجنوب" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>منتجات زيت وزيتون الجنوب (Southern Olive Oil S.A.R.L)</option>
+              <option value="Beirut Central Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
+              <option value="Saida Production Press" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Saida Production Press</option>
             </select>
           </div>
 
@@ -376,11 +377,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <select
               value={selectedCurrency}
               onChange={(e) => setSelectedCurrency(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 shadow-2xs"
+              style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs"
             >
-              <option value="LBP">LBP</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value="LBP" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>LBP</option>
+              <option value="USD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>USD</option>
+              <option value="EUR" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>EUR</option>
             </select>
           </div>
 
@@ -390,11 +392,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 shadow-2xs"
+              style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs"
             >
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
+              <option value="2026" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2026</option>
+              <option value="2025" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2025</option>
+              <option value="2024" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>2024</option>
             </select>
           </div>
 
@@ -404,12 +407,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 shadow-2xs"
+              style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs"
             >
-              <option value="August">August</option>
-              <option value="July">July</option>
-              <option value="June">June</option>
-              <option value="May">May</option>
+              <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>August</option>
+              <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>July</option>
+              <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>June</option>
+              <option value="May" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>May</option>
             </select>
           </div>
 
@@ -419,12 +423,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <select
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 shadow-2xs"
+              style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs"
             >
-              <option value="All Days">All Days</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="MTD">MTD</option>
+              <option value="All Days" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Days</option>
+              <option value="Today" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Today</option>
+              <option value="This Week" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>This Week</option>
+              <option value="MTD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>MTD</option>
             </select>
           </div>
 
@@ -436,10 +441,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           {/* EXPORT PDF BUTTON */}
           <button
             onClick={handleExportPDF}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition-colors"
+            style={{ color: '#ffffff' }}
+            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 !text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition-colors"
           >
             <FileText className="w-4 h-4 text-emerald-400" />
-            <span>Export PDF</span>
+            <span style={{ color: '#ffffff' }} className="!text-white">Export PDF</span>
           </button>
 
           {/* THREE ICON BUTTONS */}
@@ -589,14 +595,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
+              style={isActive ? { color: '#ffffff' } : {}}
               className={`px-4 py-2 rounded-full font-bold transition-all flex items-center gap-2 shrink-0 ${
                 isActive
-                  ? 'bg-slate-900 text-white shadow-sm'
+                  ? 'bg-slate-900 !text-white shadow-sm'
                   : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
               }`}
             >
-              <IconComp className={`w-3.5 h-3.5 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
-              <span>{t.label}</span>
+              <IconComp className={`w-3.5 h-3.5 ${isActive ? '!text-white' : 'text-slate-400'}`} style={isActive ? { color: '#ffffff' } : {}} />
+              <span style={isActive ? { color: '#ffffff' } : {}} className={isActive ? '!text-white' : ''}>{t.label}</span>
             </button>
           );
         })}
