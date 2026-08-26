@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import ProductInsightsView from './ProductInsightsView';
 import {
   FileText,
   Clock,
@@ -808,6 +809,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </WidgetCard>
 
         </div>
+      )}
+
+      {/* ---------------- PHASE 42: PRODUCT INSIGHTS TAB VIEW ---------------- */}
+      {activeTab === 'product-insights' && (
+        <ProductInsightsView />
       )}
 
       {/* FULLSCREEN EXPANDED WIDGET MODAL OVERLAY */}
