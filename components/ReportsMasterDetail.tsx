@@ -104,6 +104,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
+  const [period, setPeriod] = useState<string>('This Month');
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>('');
+  const [selectedBranch, setSelectedBranch] = useState<string>('All Branches');
+  const [invoiceFilter, setInvoiceFilter] = useState<string>('All Invoices');
+
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
     "Internal Control": true,
@@ -133,6 +139,18 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setSelectedReport(item);
     setIsReportListOpen(false);
   };
+
+  const handleResetFilters = () => {
+    setPeriod('This Month');
+    setFromDate('');
+    setToDate('');
+    setSelectedBranch('All Branches');
+    setInvoiceFilter('All Invoices');
+  };
+
+  const showInvoiceFilter = selectedReport
+    ? !['void', 'refund', 'attendance', 'list', 'log', 'meter', 'no sale'].some(keyword => selectedReport.toLowerCase().includes(keyword))
+    : false;
 
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
@@ -383,37 +401,72 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <button className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer">
                       Filter Report
                     </button>
-                    <button className="w-32 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white py-2 rounded text-sm block text-center font-medium transition-colors cursor-pointer">
+                    <button
+                      onClick={handleResetFilters}
+                      className="w-32 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white py-2 rounded text-sm block text-center font-medium transition-colors cursor-pointer"
+                    >
                       Reset Filters
                     </button>
                   </div>
                 </div>
 
                 {/* INPUTS AREA */}
-                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
+                <div className="p-4 flex flex-wrap gap-4 items-end">
+                  <div className="min-w-[150px] flex-1">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Period</label>
-                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
-                      <option>This Month</option>
+                    <select
+                      value={period}
+                      onChange={(e) => setPeriod(e.target.value)}
+                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
                       <option>Today</option>
+                      <option>This Month</option>
                       <option>This Quarter</option>
                       <option>This Year</option>
+                      <option>Date Range</option>
                     </select>
                   </div>
 
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
-                    <input
-                      type="text"
-                      value="Aug, 2026"
-                      readOnly
-                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-slate-50 focus:outline-none"
-                    />
-                  </div>
+                  {period === 'Date Range' ? (
+                    <div className="flex gap-2 w-full min-w-[240px] flex-1">
+                      <div className="flex-1">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">From Date</label>
+                        <input
+                          type="date"
+                          value={fromDate}
+                          onChange={(e) => setFromDate(e.target.value)}
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">To Date</label>
+                        <input
+                          type="date"
+                          value={toDate}
+                          onChange={(e) => setToDate(e.target.value)}
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="min-w-[150px] flex-1">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
+                      <input
+                        type="text"
+                        value="Aug, 2026"
+                        readOnly
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full bg-slate-50 text-slate-500 font-medium cursor-not-allowed"
+                      />
+                    </div>
+                  )}
 
-                  <div>
+                  <div className="min-w-[150px] flex-1">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Branch</label>
-                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
+                    <select
+                      value={selectedBranch}
+                      onChange={(e) => setSelectedBranch(e.target.value)}
+                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
                       <option>All Branches</option>
                       <option>Beirut Central Branch</option>
                       <option>Choueifat Press Branch</option>
@@ -421,14 +474,20 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </select>
                   </div>
 
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Invoices</label>
-                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
-                      <option>All Invoices</option>
-                      <option>Paid Invoices Only</option>
-                      <option>Credit & Pending Invoices</option>
-                    </select>
-                  </div>
+                  {showInvoiceFilter && (
+                    <div className="min-w-[150px] flex-1">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Invoices</label>
+                      <select
+                        value={invoiceFilter}
+                        onChange={(e) => setInvoiceFilter(e.target.value)}
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                      >
+                        <option>All Invoices</option>
+                        <option>Paid Invoices Only</option>
+                        <option>Credit & Pending Invoices</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
 
