@@ -1172,87 +1172,100 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
-                        Profit by Item Summary
+                        Theoretical Profit By Item
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
                         <div>27-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
-                        <div>Page 1 of 1</div>
+                        <div>From Date: 01-Aug-2026</div>
+                        <div>To Date: 28-Aug-2026</div>
+                        <div>Page 1 of 8</div>
                       </div>
 
-                      {/* Main Table Header */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
-                          <div>Description</div>
+                      {/* Main Table Header (Thin lines) */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] text-[11px] font-bold text-black w-full">
+                          <div>Product Desc</div>
                           <div className="text-right">Qty</div>
-                          <div className="text-right">Amount</div>
+                          <div className="text-right">Total Price</div>
                           <div className="text-right">Total Cost</div>
-                          <div className="text-right">Profit</div>
-                          <div className="text-right">% Profit Margin</div>
+                          <div className="text-right">Total Cost %</div>
+                          <div className="text-right">Total Profit</div>
+                          <div className="text-right">Total Profit %</div>
                         </div>
                       </div>
 
-                      {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                      {/* Data Section (Strictly packed, normal font for numbers) */}
+                      <div className="text-[11px] leading-tight w-full">
+                        <div className="font-bold underline">Southern Olive Oil S.A.R.L</div>
+                        <div className="font-bold">MAIN DEPARTMENT</div>
+                        <div className="font-bold">Raw Materials</div>
+                        <div className="font-bold">Plastic</div>
+
+                        <div className="font-bold text-center w-full mt-1">SOOL</div>
+                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                          <div className="font-bold">P Blue Gallon 10 Liters</div>
+                          <div className="text-right font-normal">23.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">5,175,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">-5,175,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                        </div>
+
+                        <div className="font-bold text-center w-full mt-1">SOOL</div>
+                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                          <div className="font-bold">P Blue Gallon 20 Litres</div>
+                          <div className="text-right font-normal">47.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">12,690,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">-12,690,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                        </div>
+
+                        <div className="border-t border-dashed border-black grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mt-1 pt-0.5">
+                          <div className="font-bold">Total By Division:</div>
+                          <div className="text-right font-normal">70.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">17,865,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">-17,865,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                        </div>
                         
-                        {/* Data Group 1: MAIN DEPARTMENT */}
-                        <div className="font-bold mb-1 mt-2">Supplier : MAIN DEPARTMENT</div>
-                        
-                        {/* Item 1 */}
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>عدس احمر ناعم 1 كغ</div>
-                          <div className="text-right">2.0</div>
-                          <div className="text-right">180,000.00</div>
-                          <div className="text-right">120,000.00</div>
-                          <div className="text-right">60,000.00</div>
-                          <div className="text-right">33.33</div>
+                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div className="font-bold">Total By Category:</div>
+                          <div className="text-right font-normal">70.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">17,865,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">-17,865,000.00</div>
+                          <div className="text-right font-normal">0.00</div>
                         </div>
 
-                        {/* Item 2 */}
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>فول عريض 1 كغ</div>
-                          <div className="text-right">5.0</div>
-                          <div className="text-right">500,000.00</div>
-                          <div className="text-right">350,000.00</div>
-                          <div className="text-right">150,000.00</div>
-                          <div className="text-right">30.00</div>
+                        <div className="font-bold mt-1">جملة</div>
+                        <div className="font-bold">مكعزلة جملة</div>
+
+                        <div className="font-bold text-center w-full mt-1">SOOL</div>
+                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                          <div className="font-bold">صندوق لبنة معزة مكعزلة سادة</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
                         </div>
 
-                        {/* Group 1 Totals */}
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-4 w-full font-bold">
-                          <div>Total for MAIN DEPARTMENT:</div>
-                          <div className="text-right">7.0</div>
-                          <div className="text-right">680,000.00</div>
-                          <div className="text-right">470,000.00</div>
-                          <div className="text-right">210,000.00</div>
-                          <div className="text-right">30.88</div>
-                        </div>
-
-                        {/* Data Group 2: جملة */}
-                        <div className="font-bold mb-1 mt-2">Supplier : جملة</div>
-
-                        {/* Item 3 */}
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>زيت زيتون خضير 16 ليتر</div>
-                          <div className="text-right">10.0</div>
-                          <div className="text-right">16,000,000.00</div>
-                          <div className="text-right">12,800,000.00</div>
-                          <div className="text-right">3,200,000.00</div>
-                          <div className="text-right">20.00</div>
-                        </div>
-
-                        {/* Group 2 Totals */}
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-8 w-full font-bold">
-                          <div>Total for جملة:</div>
-                          <div className="text-right">10.0</div>
-                          <div className="text-right">16,000,000.00</div>
-                          <div className="text-right">12,800,000.00</div>
-                          <div className="text-right">3,200,000.00</div>
-                          <div className="text-right">20.00</div>
+                        <div className="border-t border-dashed border-black grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mt-1 pt-0.5 mb-16">
+                          <div className="font-bold">Total By Division:</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
+                          <div className="text-right font-normal">0.00</div>
                         </div>
                       </div>
 
