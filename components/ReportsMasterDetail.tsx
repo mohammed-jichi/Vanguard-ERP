@@ -1688,7 +1688,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Zeit w zaytoun ljanoub
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -1697,7 +1697,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
                         <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 1,2,3</div>
+                        <div>Year: 2026 - Month: 8</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -1712,12 +1712,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <td className="border border-black p-1.5 text-center w-[180px]">Total Discount</td>
                           </tr>
                           <tr>
-                            <td className="border border-black p-1.5 pl-2">Southern Olive and Oil Products</td>
-                            <td className="border border-black p-1.5 text-right pr-2">4,534,098.00</td>
+                            <td className="border border-black p-1.5 pl-2">Zeit w zaytoun ljanoub</td>
+                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
                           </tr>
                           <tr className="bg-[#cce5ff]">
                             <td className="border border-black p-1.5 pl-2">Total</td>
-                            <td className="border border-black p-1.5 text-right pr-2">4,534,098.00</td>
+                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
                           </tr>
                         </tbody>
                       </table>
