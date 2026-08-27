@@ -411,77 +411,65 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 </div>
 
                 {/* INPUTS AREA */}
-                <div className="p-4 flex flex-wrap gap-4 items-end">
-                  <div className="min-w-[150px] flex-1">
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Period</label>
-                    <select
-                      value={period}
-                      onChange={(e) => setPeriod(e.target.value)}
-                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
-                    >
-                      <option value="Today" className="!text-slate-900 bg-white">Today</option>
-                      <option value="This Month" className="!text-slate-900 bg-white">This Month</option>
-                      <option value="This Quarter" className="!text-slate-900 bg-white">This Quarter</option>
-                      <option value="This Year" className="!text-slate-900 bg-white">This Year</option>
-                      <option value="Date Range" className="!text-slate-900 bg-white">Date Range</option>
-                    </select>
-                  </div>
+                <div className="p-4 flex flex-wrap gap-4 items-center">
+                  <select
+                    value={period}
+                    onChange={(e) => setPeriod(e.target.value)}
+                    className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                  >
+                    <option value="Today" className="!text-slate-900 bg-white">Today</option>
+                    <option value="This Month" className="!text-slate-900 bg-white">This Month</option>
+                    <option value="This Quarter" className="!text-slate-900 bg-white">This Quarter</option>
+                    <option value="This Year" className="!text-slate-900 bg-white">This Year</option>
+                    <option value="Date Range" className="!text-slate-900 bg-white">Date Range</option>
+                  </select>
 
-                  <div className="min-w-[150px] flex-1">
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
-                    {period === 'Date Range' ? (
-                      <div className="flex flex-row items-center gap-2 min-w-[300px] flex-2">
-                        <input 
-                          type="date" 
-                          value={fromDate} 
-                          onChange={(e) => setFromDate(e.target.value)} 
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
-                        />
-                        <span className="text-slate-500 font-bold">-</span>
-                        <input 
-                          type="date" 
-                          value={toDate} 
-                          onChange={(e) => setToDate(e.target.value)} 
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
-                        />
-                      </div>
-                    ) : (
+                  {period === 'Date Range' ? (
+                    <div className="flex flex-row items-center gap-2 w-64">
                       <input 
-                        type="text" 
-                        value="Aug, 2026" 
-                        readOnly 
-                        className="border border-slate-200 rounded p-1.5 text-sm min-w-[150px] flex-1 !bg-slate-100 !text-slate-500 cursor-not-allowed select-none" 
+                        type="date" 
+                        value={fromDate} 
+                        onChange={(e) => setFromDate(e.target.value)} 
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
                       />
-                    )}
-                  </div>
+                      <span className="text-slate-500 font-bold">-</span>
+                      <input 
+                        type="date" 
+                        value={toDate} 
+                        onChange={(e) => setToDate(e.target.value)} 
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
+                      />
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      value="Aug, 2026" 
+                      readOnly 
+                      className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-slate-100 !text-slate-800 font-semibold cursor-not-allowed outline-none select-none shadow-2xs" 
+                    />
+                  )}
 
-                  <div className="min-w-[150px] flex-1">
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Branch</label>
-                    <select
-                      value={selectedBranch}
-                      onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
-                    >
-                      <option className="!text-slate-900 bg-white">All Branches</option>
-                      <option className="!text-slate-900 bg-white">Beirut Central Branch</option>
-                      <option className="!text-slate-900 bg-white">Choueifat Press Branch</option>
-                      <option className="!text-slate-900 bg-white">Jbaa Hub</option>
-                    </select>
-                  </div>
+                  <select
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                  >
+                    <option className="!text-slate-900 bg-white">All Branches</option>
+                    <option className="!text-slate-900 bg-white">Beirut Central Branch</option>
+                    <option className="!text-slate-900 bg-white">Choueifat Press Branch</option>
+                    <option className="!text-slate-900 bg-white">Jbaa Hub</option>
+                  </select>
 
                   {showInvoiceFilter && (
-                    <div className="min-w-[150px] flex-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Invoices</label>
-                      <select
-                        value={invoiceFilter}
-                        onChange={(e) => setInvoiceFilter(e.target.value)}
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
-                      >
-                        <option className="!text-slate-900 bg-white">All Invoices</option>
-                        <option className="!text-slate-900 bg-white">Paid Invoices Only</option>
-                        <option className="!text-slate-900 bg-white">Credit & Pending Invoices</option>
-                      </select>
-                    </div>
+                    <select
+                      value={invoiceFilter}
+                      onChange={(e) => setInvoiceFilter(e.target.value)}
+                      className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                    >
+                      <option className="!text-slate-900 bg-white">All Invoices</option>
+                      <option className="!text-slate-900 bg-white">Paid Invoices Only</option>
+                      <option className="!text-slate-900 bg-white">Credit & Pending Invoices</option>
+                    </select>
                   )}
                 </div>
               </div>
