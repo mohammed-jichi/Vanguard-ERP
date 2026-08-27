@@ -476,6 +476,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       Show Rate
                     </label>
                   )}
+
+                  {selectedReport === 'Statistics by Workstation' && (
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
+                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Real Date
+                    </label>
+                  )}
                 </div>
               </div>
 
@@ -503,7 +510,129 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Sales Summary' ? (
+                  {selectedReport === 'Statistics by Workstation' ? (
+                    /* STATISTICS BY WORKSTATION REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Statistics by Workstation
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-4">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Mode 1</div>
+                          <div className="text-right">Mode 2</div>
+                          <div className="text-right">Mode 3</div>
+                          <div className="text-right">Mode 4</div>
+                          <div className="text-right">Total</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Title Underlined */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Workstation: 1 */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Workstation: 1
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">1,316,032,050.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,316,032,050.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">53,380,450.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">53,380,450.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">1,262,651,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,262,651,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">1,262,651,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,262,651,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-2 font-medium">
+                        <div>Number of Customers</div><div className="text-right">291</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">291</div>
+                      </div>
+
+                      {/* Dashed Separator */}
+                      <div className="border-t border-dashed border-black my-3"></div>
+
+                      {/* Workstation: 2000 */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Workstation: 2000
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-2 font-medium">
+                        <div>Number of Customers</div><div className="text-right">1</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">1</div>
+                      </div>
+
+                      {/* Dashed Separator */}
+                      <div className="border-t border-dashed border-black my-3"></div>
+
+                      {/* Consolidation by branch */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Consolidation by branch
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">1,564,432,050.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,564,432,050.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">53,380,450.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">53,380,450.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">1,511,051,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,511,051,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">1,511,051,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,511,051,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
+                        <div>Number of Customers</div><div className="text-right">292</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">292</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Sales Summary' ? (
                     /* SALES SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
