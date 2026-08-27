@@ -495,13 +495,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 </div>
 
                 {/* BODY AREA */}
-                <div className="flex-1 bg-white p-6 relative flex flex-col justify-between min-h-[300px]">
-                  <div className="w-full space-y-4 text-left">
-                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                      <span className="font-bold text-slate-700">Ledger Statement: {selectedReport}</span>
-                      <span className="font-bold text-[#195a96]">Southern Olive Oil SARL (Lebanon)</span>
+                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
+                  {/* Top Header Area */}
+                  <div className="relative mb-6">
+                    {/* Company Name (Top Left, Blue) */}
+                    <div className="text-blue-700 font-bold text-[15px] absolute top-0 left-0">
+                      Southern Olive and Oil Products (SARL)
                     </div>
+                    
+                    {/* Report Title (Center) */}
+                    <div className="text-center font-bold text-[15px] w-full pt-4">
+                      {selectedReport || "Summary of voids"}
+                    </div>
+                    
+                    {/* Prepared By (Right side, slightly lower) */}
+                    <div className="text-right text-[13px] absolute top-8 right-0">
+                      Prepared By: Mohammed
+                    </div>
+                  </div>
 
+                  {/* Meta Information Line */}
+                  <div className="flex justify-between items-center text-[13px] mb-4 font-medium border-b border-slate-200 pb-2">
+                    <div>27-Aug-26</div>
+                    <div className="flex gap-16">
+                      <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                      <span>To Date: {toDate || '27-Aug-2026'}</span>
+                    </div>
+                    <div>Page 1 of 1</div>
+                  </div>
+
+                  {/* ACTIVE REPORT DEMO DATA TABLE */}
+                  <div className="w-full space-y-4 text-left mt-6">
                     <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
                       <table className="w-full text-left font-sans">
                         <thead className="bg-[#475569] text-white font-bold uppercase text-[11px] tracking-wider">
@@ -538,11 +562,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </tbody>
                       </table>
                     </div>
-                  </div>
-
-                  <div className="border-t border-slate-100 pt-3 mt-6 flex items-center justify-between text-xs text-slate-400 font-medium">
-                    <span>Vanguard ERP Executive Reporting Engine</span>
-                    <span>Page 1 of 1</span>
                   </div>
                 </div>
               </div>
