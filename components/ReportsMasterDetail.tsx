@@ -589,43 +589,77 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* ACTIVE REPORT DEMO DATA TABLE */}
-                      <div className="w-full space-y-4 text-left mt-6">
-                        <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                          <table className="w-full text-left font-sans">
-                            <thead className="bg-[#475569] text-white font-bold uppercase text-[11px] tracking-wider">
-                              <tr>
-                                <th className="py-3 px-4">Record Ref</th>
-                                <th className="py-3 px-4">Module / Entity</th>
-                                <th className="py-3 px-4 text-center">Date</th>
-                                <th className="py-3 px-4 text-right">Value (LL)</th>
-                                <th className="py-3 px-4 text-center">Status</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                              <tr className="hover:bg-slate-50 transition-colors">
-                                <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-081</td>
-                                <td className="py-3 px-4 font-bold">Beirut Central Branch POS</td>
-                                <td className="py-3 px-4 text-center font-mono">Aug 27, 2026</td>
-                                <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,969,200,000 LL</td>
-                                <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                              </tr>
-                              <tr className="hover:bg-slate-50 transition-colors">
-                                <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-080</td>
-                                <td className="py-3 px-4 font-bold">Choueifat Press Production</td>
-                                <td className="py-3 px-4 text-center font-mono">Aug 26, 2026</td>
-                                <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">8,856,000,000 LL</td>
-                                <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                              </tr>
-                              <tr className="hover:bg-slate-50 transition-colors">
-                                <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-079</td>
-                                <td className="py-3 px-4 font-bold">Jbaa Olive Hub Wholesale</td>
-                                <td className="py-3 px-4 text-center font-mono">Aug 25, 2026</td>
-                                <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">6,858,000,000 LL</td>
-                                <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                              </tr>
-                            </tbody>
-                          </table>
+                      {/* OMEGA COLUMN HEADERS */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-4">
+                        <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] font-bold text-black px-2">
+                          <div>Date</div>
+                          <div>Order Date</div>
+                          <div>Server</div>
+                          <div>Invoice</div>
+                          <div>Description</div>
+                          <div className="text-center">QTY</div>
+                          <div className="text-right">Value</div>
+                          <div className="pl-4">Reason</div>
+                        </div>
+                      </div>
+
+                      {/* BRANCH & REASON GROUPING */}
+                      <div className="text-[12px] font-bold underline mb-4 px-2">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      <div className="text-[11px] font-bold text-center mb-2">تعداد خاطئ</div>
+
+                      {/* Row 1 */}
+                      <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] text-black px-2 mb-1">
+                        <div>22-Aug-2026 5.31 PM</div>
+                        <div>22-Aug-2026 5.31 PM</div>
+                        <div>Hiba Aloulou</div>
+                        <div>103225</div>
+                        <div>عرض العطاء جديد</div>
+                        <div className="text-center">1.00</div>
+                        <div className="text-right">9,000,000.00</div>
+                        <div className="pl-4">تعداد خاطئ</div>
+                      </div>
+
+                      {/* Row 2 */}
+                      <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] text-black px-2 mb-1">
+                        <div>13-Aug-2026 6.58 PM</div>
+                        <div>13-Aug-2026 6.58 PM</div>
+                        <div>Hiba Aloulou</div>
+                        <div>103125</div>
+                        <div>ألفية زيت زيتون خضير بلدي 1000 مل</div>
+                        <div className="text-center">1.00</div>
+                        <div className="text-right">990,000.00</div>
+                        <div className="pl-4">تعداد خاطئ</div>
+                      </div>
+
+                      {/* Row 3 */}
+                      <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] text-black px-2 mb-1">
+                        <div>13-Aug-2026 6.58 PM</div>
+                        <div>13-Aug-2026 6.58 PM</div>
+                        <div>Hiba Aloulou</div>
+                        <div>103125</div>
+                        <div>حبوب اللقاح 360غ</div>
+                        <div className="text-center">1.00</div>
+                        <div className="text-right">900,000.00</div>
+                        <div className="pl-4">تعداد خاطئ</div>
+                      </div>
+
+                      {/* TOTALS SECTION */}
+                      <div className="mt-6 flex justify-end pr-[100px]">
+                        <div className="grid grid-cols-[100px_50px_90px] gap-2 text-[11px] font-bold text-black text-right items-center">
+                          <div>Total Voids:</div>
+                          <div className="text-center">5.30</div>
+                          <div>14,062,500.00</div>
+
+                          <div>Total Qty:</div>
+                          <div className="text-center">5.30</div>
+                          <div></div>
+
+                          <div>Total:</div>
+                          <div></div>
+                          <div>14,062,500.00</div>
                         </div>
                       </div>
                     </>
