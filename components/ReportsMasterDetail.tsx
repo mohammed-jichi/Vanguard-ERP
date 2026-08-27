@@ -419,46 +419,41 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       onChange={(e) => setPeriod(e.target.value)}
                       className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
                     >
-                      <option className="!text-slate-900 bg-white">Today</option>
-                      <option className="!text-slate-900 bg-white">This Month</option>
-                      <option className="!text-slate-900 bg-white">This Quarter</option>
-                      <option className="!text-slate-900 bg-white">This Year</option>
-                      <option className="!text-slate-900 bg-white">Date Range</option>
+                      <option value="Today" className="!text-slate-900 bg-white">Today</option>
+                      <option value="This Month" className="!text-slate-900 bg-white">This Month</option>
+                      <option value="This Quarter" className="!text-slate-900 bg-white">This Quarter</option>
+                      <option value="This Year" className="!text-slate-900 bg-white">This Year</option>
+                      <option value="Date Range" className="!text-slate-900 bg-white">Date Range</option>
                     </select>
                   </div>
 
-                  {period === 'Date Range' ? (
-                    <div className="flex gap-2 w-full min-w-[240px] flex-1">
-                      <div className="flex-1">
-                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">From Date</label>
-                        <input
-                          type="date"
-                          value={fromDate}
-                          onChange={(e) => setFromDate(e.target.value)}
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] shadow-2xs"
+                  <div className="min-w-[150px] flex-1">
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
+                    {period === 'Date Range' ? (
+                      <div className="flex flex-row items-center gap-2 min-w-[300px] flex-2">
+                        <input 
+                          type="date" 
+                          value={fromDate} 
+                          onChange={(e) => setFromDate(e.target.value)} 
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
+                        />
+                        <span className="text-slate-500 font-bold">-</span>
+                        <input 
+                          type="date" 
+                          value={toDate} 
+                          onChange={(e) => setToDate(e.target.value)} 
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
                         />
                       </div>
-                      <div className="flex-1">
-                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">To Date</label>
-                        <input
-                          type="date"
-                          value={toDate}
-                          onChange={(e) => setToDate(e.target.value)}
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] shadow-2xs"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="min-w-[150px] flex-1">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
-                      <input
-                        type="text"
-                        value="Aug, 2026"
-                        readOnly
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-slate-100 !text-slate-600 font-bold cursor-not-allowed shadow-2xs"
+                    ) : (
+                      <input 
+                        type="text" 
+                        value="Aug, 2026" 
+                        readOnly 
+                        className="border border-slate-200 rounded p-1.5 text-sm min-w-[150px] flex-1 !bg-slate-100 !text-slate-500 cursor-not-allowed select-none" 
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <div className="min-w-[150px] flex-1">
                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Branch</label>
