@@ -266,18 +266,18 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const monthKeys = [
-    { key: 'jan', name: 'January', color: '#10b981' },
-    { key: 'feb', name: 'February', color: '#06b6d4' },
-    { key: 'mar', name: 'March', color: '#3b82f6' },
-    { key: 'apr', name: 'April', color: '#6366f1' },
-    { key: 'may', name: 'May', color: '#8b5cf6' },
-    { key: 'jun', name: 'June', color: '#d946ef' },
-    { key: 'jul', name: 'July', color: '#ec4899' },
-    { key: 'aug', name: 'August', color: '#f43f5e' },
-    { key: 'sep', name: 'September', color: '#ef4444' },
-    { key: 'oct', name: 'October', color: '#f97316' },
-    { key: 'nov', name: 'November', color: '#f59e0b' },
-    { key: 'dec', name: 'December', color: '#84cc16' }
+    { key: 'jan', name: 'January', color: '#1e3a8a' },
+    { key: 'feb', name: 'February', color: '#0f766e' },
+    { key: 'mar', name: 'March', color: '#475569' },
+    { key: 'apr', name: 'April', color: '#854d0e' },
+    { key: 'may', name: 'May', color: '#4c1d95' },
+    { key: 'jun', name: 'June', color: '#166534' },
+    { key: 'jul', name: 'July', color: '#991b1b' },
+    { key: 'aug', name: 'August', color: '#374151' },
+    { key: 'sep', name: 'September', color: '#1e3a8a' },
+    { key: 'oct', name: 'October', color: '#0f766e' },
+    { key: 'nov', name: 'November', color: '#475569' },
+    { key: 'dec', name: 'December', color: '#854d0e' }
   ];
 
   const comparativeVoidSummaryRows = [
@@ -1052,7 +1052,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<MonthlyRevenueTooltip />} />
-                    <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#1e3a8a" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1073,66 +1073,34 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             {/* WIDGET 6: DISCOUNT SUMMARY */}
             <RenderPieWidget id="discount-summary" title="Discount Summary" data={discountSummaryData} />
 
-            {/* WIDGET 7: DISCOUNT BY CATEGORY SUMMARY (DATA TABLE ONLY) */}
+            {/* WIDGET 7: DISCOUNT BY CATEGORY SUMMARY */}
             <WidgetCard id="discount-by-category" title="Discount By Category Summary">
-              <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
-                <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
-                    <tr>
-                      <th className="py-3.5 px-4">Discount Type</th>
-                      <th className="py-3.5 px-4 text-right">Raw Materials</th>
-                      <th className="py-3.5 px-4 text-right">مفرق</th>
-                      <th className="py-3.5 px-4 text-right">عروض</th>
-                      <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
-                    {discountByCategoryData.map((r) => (
-                      <tr key={r.type} className={r.isTotal ? 'bg-amber-50 font-semibold text-amber-950 border-t-2 border-amber-300' : 'hover:bg-slate-50'}>
-                        <td className="py-3.5 px-4 font-medium">{r.type}</td>
-                        <td className="py-3.5 px-4 text-right font-mono text-slate-600">{r.raw}</td>
-                        <td className="py-3.5 px-4 text-right font-mono text-blue-700">{r.retail}</td>
-                        <td className="py-3.5 px-4 text-right font-mono text-amber-700">{r.promo}</td>
-                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-rose-700">{r.total}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </WidgetCard>
-
-            {/* WIDGET 8: VOID SUMMARY */}
-            <WidgetCard id="void-summary" title="Void Summary">
-              <div className="flex flex-col space-y-4">
-                <div className="h-52 w-full">
-                  {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).length > 0 ? (
+              <div className="flex flex-col space-y-5">
+                <div className="h-80 w-full">
+                  {discountSummaryData.filter((item) => !hiddenPieItems.includes(item.name)).length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason))}
+                          data={discountSummaryData.filter((item) => !hiddenPieItems.includes(item.name))}
                           cx="50%"
                           cy="50%"
-                          outerRadius={75}
-                          paddingAngle={2}
+                          outerRadius={120}
+                          paddingAngle={3}
                           dataKey="value"
-                          nameKey="reason"
+                          nameKey="name"
+                          isAnimationActive={false}
                         >
-                          {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
+                          {discountSummaryData
+                            .filter((item) => !hiddenPieItems.includes(item.name))
+                            .map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
                         </Pie>
-                        <Tooltip content={<PieSliceTooltip />} />
-                        <Legend
-                          onClick={(e: any) => {
-                            const key = e.value || e.name || (e.payload && (e.payload.reason || e.payload.name));
-                            if (key && typeof key === 'string') handleTogglePieItem(key);
-                          }}
-                          wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
-                        />
+                        <Tooltip content={<PieSliceTooltip />} cursor={{ fill: 'transparent' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic">
+                    <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
                       All slices hidden. Click table rows below to restore.
                     </div>
                   )}
@@ -1140,35 +1108,103 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
                 <div className="border border-slate-200 rounded-xl overflow-hidden text-base">
                   <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
+                    <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
                       <tr>
-                        <th className="py-3.5 px-4">Reason</th>
-                        <th className="py-3.5 px-4 text-right">Amount</th>
-                        <th className="py-3.5 px-4 text-right">Count</th>
+                        <th className="py-3 px-4">Discount Type</th>
+                        <th className="py-3 px-4 text-right">Raw Materials</th>
+                        <th className="py-3 px-4 text-right">مفرق</th>
+                        <th className="py-3 px-4 text-right">عروض</th>
+                        <th className="py-3 px-4 text-right">Total</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
-                      {voidSummaryData.map((v) => {
-                        const key = v.reason;
-                        const isHidden = hiddenPieItems.includes(key);
+                    <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                      {discountByCategoryData.map((r, idx) => (
+                        <tr
+                          key={r.type}
+                          className={`transition-colors duration-150 cursor-pointer ${
+                            r.isTotal ? 'bg-amber-50/80 font-bold text-amber-950 border-t-2 border-amber-300' : (idx % 2 === 1 ? 'bg-slate-50/50 hover:bg-slate-100' : 'bg-white hover:bg-slate-100')
+                          }`}
+                        >
+                          <td className="py-3 px-4 font-medium text-slate-900">{r.type}</td>
+                          <td className="py-3 px-4 text-right font-mono text-slate-600">{r.raw}</td>
+                          <td className="py-3 px-4 text-right font-mono text-blue-700">{r.retail}</td>
+                          <td className="py-3 px-4 text-right font-mono text-amber-700">{r.promo}</td>
+                          <td className="py-3 px-4 text-right font-mono font-semibold text-rose-700">{r.total}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </WidgetCard>
+
+            {/* WIDGET 8: VOID SUMMARY */}
+            <WidgetCard id="void-summary" title="Void Summary">
+              <div className="flex flex-col space-y-5">
+                <div className="h-80 w-full">
+                  {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason))}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={120}
+                          paddingAngle={3}
+                          dataKey="value"
+                          nameKey="reason"
+                          isAnimationActive={false}
+                        >
+                          {voidSummaryData
+                            .filter((item) => !hiddenPieItems.includes(item.reason))
+                            .map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                        </Pie>
+                        <Tooltip content={<PieSliceTooltip />} cursor={{ fill: 'transparent' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
+                      All slices hidden. Click table rows below to restore.
+                    </div>
+                  )}
+                </div>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left font-sans">
+                    <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
+                      <tr>
+                        <th className="py-3 px-4">Reason</th>
+                        <th className="py-3 px-4 text-center">Count</th>
+                        <th className="py-3 px-4 text-right">Amount</th>
+                        <th className="py-3 px-4 text-right">Share %</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                      {voidSummaryData.map((row: any, idx: number) => {
+                        const isHidden = hiddenPieItems.includes(row.reason);
                         return (
                           <tr
-                            key={key}
-                            onClick={() => handleTogglePieItem(key)}
-                            className={`cursor-pointer transition-all ${
-                              isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
+                            key={row.reason}
+                            onClick={() => handleTogglePieItem(row.reason)}
+                            className={`transition-colors duration-150 cursor-pointer ${
+                              idx % 2 === 1 ? 'bg-slate-50/50' : 'bg-white'
+                            } ${
+                              isHidden ? 'opacity-40 grayscale line-through' : 'hover:bg-slate-100'
                             }`}
                             title="Click to toggle slice on/off"
                           >
-                            <td className="py-3.5 px-4 flex items-center gap-2">
+                            <td className="py-3 px-4 flex items-center gap-2.5 font-normal">
                               <span
-                                className="w-2.5 h-2.5 rounded-full shrink-0"
-                                style={{ backgroundColor: isHidden ? '#94a3b8' : v.color }}
+                                className="w-3 h-3 rounded-full shrink-0"
+                                style={{ backgroundColor: isHidden ? '#94a3b8' : row.color }}
                               ></span>
-                              <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
+                              <span className={isHidden ? 'text-slate-400 line-through' : ''}>{row.reason}</span>
                             </td>
-                            <td className={`py-3.5 px-4 text-right font-mono ${isHidden ? 'text-slate-400' : 'text-rose-700'}`}>{v.amount}</td>
-                            <td className={`py-3.5 px-4 text-right font-medium ${isHidden ? 'text-slate-400' : 'text-slate-700'}`}>{v.count} voids</td>
+                            <td className="py-3 px-4 text-center font-mono font-medium">{row.count}</td>
+                            <td className={`py-3 px-4 text-right font-mono font-medium ${isHidden ? 'text-slate-400' : 'text-slate-800'}`}>{row.amount}</td>
+                            <td className={`py-3 px-4 text-right font-mono font-medium ${isHidden ? 'text-slate-400' : 'text-amber-700'}`}>{row.value}%</td>
                           </tr>
                         );
                       })}
@@ -1500,12 +1536,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<EmployeeComparisonTooltip />} />
                     <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
-                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
-                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
-                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
-                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#ec4899" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
-                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#8b5cf6" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
-                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
+                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#1e3a8a" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
+                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#0f766e" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
+                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#475569" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
+                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#854d0e" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
+                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#4c1d95" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
+                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#166534" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1573,19 +1609,18 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       {activeTab === 'customers' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           
-          {/* SECTION 1: CUSTOMERS STATISTICS (3-COLUMN GRID) */}
-          <div className="border border-slate-200 rounded-xl bg-white shadow-2xs overflow-hidden">
-            {/* Header */}
-            <div className="bg-slate-100 border-b border-slate-200 py-2.5 px-4 text-center">
+          {/* SECTION 1: CUSTOMERS STATISTICS (3-COLUMN GRID WITH DISTINCT ROUNDED CARDS) */}
+          <div className="space-y-4">
+            <div className="bg-slate-100 border border-slate-200 rounded-xl py-3 px-4 text-center shadow-xs">
               <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">
                 Customers Statistics
               </h2>
             </div>
 
-            <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* COLUMN 1: STATS TABLES (LEFT) */}
-              <div className="space-y-4">
+              <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md space-y-4">
                 
                 {/* Table 1: Customers */}
                 <div className="border border-slate-200 rounded-lg overflow-hidden">
@@ -1665,8 +1700,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
               </div>
 
-              {/* COLUMN 2: TOP CUSTOMERS LIST (MIDDLE) */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between bg-white">
+              {/* COLUMN 2: TOP CUSTOMERS LIST (MIDDLE CARD) */}
+              <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md flex flex-col justify-between">
                 <div>
                   {/* Table Header Controls */}
                   <div className="bg-slate-50 border-b border-slate-200 p-2 flex items-center justify-between gap-2 flex-wrap text-xs">
@@ -1744,8 +1779,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 </div>
               </div>
 
-              {/* COLUMN 3: DEMOGRAPHICS (RIGHT) */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between bg-white">
+              {/* COLUMN 3: DEMOGRAPHICS (RIGHT CARD) */}
+              <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md flex flex-col justify-between">
                 <div>
                   <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
                     <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Demographics</h3>
@@ -1830,8 +1865,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
             <div className="p-6 flex flex-col items-center justify-center space-y-6">
               
-              {/* Solid Pie Chart (innerRadius = 0) */}
-              <div className="w-full max-w-sm h-64 flex items-center justify-center">
+              {/* Solid Pie Chart (innerRadius = 0, Enlarged outerRadius = 120) */}
+              <div className="w-full max-w-md h-80 flex items-center justify-center">
                 {salesByGroupPieData.filter((i) => !hiddenPieItems.includes(i.name)).length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1840,7 +1875,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         cx="50%"
                         cy="50%"
                         innerRadius={0}
-                        outerRadius={95}
+                        outerRadius={120}
                         dataKey="value"
                         nameKey="name"
                         stroke="#ffffff"
@@ -1858,7 +1893,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-300 rounded-xl p-8 text-center">
-                    All slices hidden. Click chips or table row below to restore.
+                    All slices hidden. Click table row below to restore.
                   </div>
                 )}
               </div>
