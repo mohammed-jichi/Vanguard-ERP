@@ -523,7 +523,77 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Sales by Supplier' ? (
+                  {selectedReport === 'Delivery Orders by Date and Branch' ? (
+                    /* DELIVERY ORDERS BY DATE AND BRANCH REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Orders Summary By Branch By Date
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
+                        <div className="grid grid-cols-[60px_60px_130px_110px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Brand ID</div>
+                          <div>Branch ID</div>
+                          <div>Branch Name</div>
+                          <div>Order Date</div>
+                          <div className="text-right">Dine IN</div>
+                          <div className="text-right">Quick</div>
+                          <div className="text-right">Delivery</div>
+                          <div className="text-right">Pickup</div>
+                          <div className="text-right">Drive</div>
+                        </div>
+                      </div>
+
+                      {/* Data Rows mapped from reference image */}
+                      {[
+                        { date: 'August 01, 2026', dineIn: '21.00' },
+                        { date: 'August 02, 2026', dineIn: '5.00' },
+                        { date: 'August 03, 2026', dineIn: '10.00' },
+                        { date: 'August 04, 2026', dineIn: '12.00' },
+                        { date: 'August 05, 2026', dineIn: '19.00' },
+                        { date: 'August 06, 2026', dineIn: '9.00' },
+                        { date: 'August 07, 2026', dineIn: '8.00' },
+                        { date: 'August 08, 2026', dineIn: '15.00' },
+                        { date: 'August 10, 2026', dineIn: '13.00' },
+                        { date: 'August 11, 2026', dineIn: '16.00' },
+                        { date: 'August 12, 2026', dineIn: '13.00' },
+                        { date: 'August 13, 2026', dineIn: '15.00' },
+                        { date: 'August 14, 2026', dineIn: '11.00' },
+                        { date: 'August 15, 2026', dineIn: '8.00' },
+                        { date: 'August 16, 2026', dineIn: '11.00' },
+                        { date: 'August 17, 2026', dineIn: '12.00' },
+                        { date: 'August 18, 2026', dineIn: '11.00' },
+                        { date: 'August 19, 2026', dineIn: '14.00' }
+                      ].map((row, idx) => (
+                        <div key={idx} className="grid grid-cols-[60px_60px_130px_110px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-2 font-medium items-start">
+                          <div>9606</div>
+                          <div>1</div>
+                          <div className="leading-tight">Southern Olive and Oil Products</div>
+                          <div>{row.date}</div>
+                          <div className="text-right">{row.dineIn}</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : selectedReport === 'Sales by Supplier' ? (
                     /* SALES BY SUPPLIER REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
