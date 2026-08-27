@@ -2137,23 +2137,34 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 90: TODAY TAB VIEW (LIVE DAILY SHIFT & PAYMENTS) ---------------- */}
+      {/* ---------------- PHASE 91: TODAY TAB VIEW (LIVE DAILY SHIFT & PAYMENTS - LL CURRENCY) ---------------- */}
       {activeTab === 'today' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-400" /> Live Daily Shift & Today Sales Operations
-              </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Real-time transaction log, active cashier terminals, and payment method distribution for today.
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 shrink-0">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  Daily Shift & Operations Dashboard
+                  <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">
+                    Shift #0482 Active
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                  Real-time transaction log, active cashier terminals, and payment method distribution for today.
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3 py-1 rounded-full font-mono font-bold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Shift #0482 Active
-              </span>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setIsEodModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Clock className="w-4 h-4" />
+                <span>View Z-Report Status</span>
+              </button>
             </div>
           </div>
 
@@ -2174,7 +2185,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr>
                       <th className="py-3 px-4">Payment Method</th>
                       <th className="py-3 px-4 text-center">Transactions</th>
-                      <th className="py-3 px-4 text-right">Amount ($)</th>
+                      <th className="py-3 px-4 text-right">Amount (LL)</th>
                       <th className="py-3 px-4 text-right">Share %</th>
                     </tr>
                   </thead>
@@ -2185,7 +2196,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         <span className="font-bold">Cash in Drawer</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">102</td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$14,850.00</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,336,500,000 LL</td>
                       <td className="py-3 px-4 text-right font-bold text-emerald-700">67.9%</td>
                     </tr>
                     <tr className="hover:bg-slate-50 transition-colors">
@@ -2194,7 +2205,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         <span className="font-bold">Credit / Debit Card</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">31</td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$4,320.00</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">388,800,000 LL</td>
                       <td className="py-3 px-4 text-right font-bold text-blue-700">19.7%</td>
                     </tr>
                     <tr className="hover:bg-slate-50 transition-colors">
@@ -2203,7 +2214,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         <span className="font-bold">Customer Receivables (A/R)</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">11</td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$1,850.00</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">166,500,000 LL</td>
                       <td className="py-3 px-4 text-right font-bold text-amber-700">8.5%</td>
                     </tr>
                     <tr className="hover:bg-slate-50 transition-colors">
@@ -2212,7 +2223,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         <span className="font-bold">Mobile / Online Payment</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">4</td>
-                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$860.00</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">77,400,000 LL</td>
                       <td className="py-3 px-4 text-right font-bold text-purple-700">3.9%</td>
                     </tr>
                   </tbody>
@@ -2220,7 +2231,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr>
                       <td className="py-3 px-4">Total Shift Receipts</td>
                       <td className="py-3 px-4 text-center font-mono">148</td>
-                      <td className="py-3 px-4 text-right font-mono text-blue-700">$21,880.00</td>
+                      <td className="py-3 px-4 text-right font-mono text-blue-700">1,969,200,000 LL</td>
                       <td className="py-3 px-4 text-right font-mono">100.0%</td>
                     </tr>
                   </tfoot>
@@ -2251,7 +2262,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-500 font-semibold block text-[11px]">Daily Order Volume</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">148 Orders</span>
-                  <span className="text-[10px] text-blue-600 font-bold">Avg $147.84 / Order</span>
+                  <span className="text-[10px] text-blue-600 font-bold">Avg 13,305,405 LL / Order</span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
@@ -2282,22 +2293,25 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 90: GEOGRAPHICS TAB VIEW (REGIONAL DENSITY) ---------------- */}
+      {/* ---------------- PHASE 91: GEOGRAPHICS TAB VIEW (TERRITORIAL SALES DISTRIBUTION - LL CURRENCY) ---------------- */}
       {activeTab === 'geographics' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <Globe className="w-5 h-5 text-blue-400" /> Geographics & Territory Sales Distribution
-              </h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Regional revenue density, customer account concentration, and territorial performance across Lebanon.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs px-3 py-1 rounded-full font-bold">
-                6 Active Territories
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 shrink-0">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  Territorial Sales Distribution
+                  <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                    6 Active Territories
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                  Regional revenue density, customer account concentration, and territorial performance across Lebanon.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -2318,18 +2332,18 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr>
                       <th className="py-3 px-4">Territory / Region</th>
                       <th className="py-3 px-4 text-center">Accounts</th>
-                      <th className="py-3 px-4 text-right">Revenue ($)</th>
+                      <th className="py-3 px-4 text-right">Revenue (LL)</th>
                       <th className="py-3 px-4 text-right">Share %</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
                     {[
-                      { region: 'Beirut Central & Capital', accounts: 48, revenue: '$142,500', share: '34.5%', color: '#3b82f6' },
-                      { region: 'Choueifat Industrial Zone', accounts: 32, revenue: '$98,400', share: '23.8%', color: '#8b5cf6' },
-                      { region: 'Jbaa & South Olive Hub', accounts: 26, revenue: '$76,200', share: '18.4%', color: '#ec4899' },
-                      { region: 'Sidon Coastal District', accounts: 19, revenue: '$45,100', share: '10.9%', color: '#f97316' },
-                      { region: 'Tyre Harbor & Coast', accounts: 14, revenue: '$31,800', share: '7.7%', color: '#10b981' },
-                      { region: 'Nabatieh Valley', accounts: 9, revenue: '$19,000', share: '4.7%', color: '#06b6d4' }
+                      { region: 'Beirut Central & Capital', accounts: 48, revenue: '12,825,000,000 LL', share: '34.5%', color: '#3b82f6' },
+                      { region: 'Choueifat Industrial Zone', accounts: 32, revenue: '8,856,000,000 LL', share: '23.8%', color: '#8b5cf6' },
+                      { region: 'Jbaa & South Olive Hub', accounts: 26, revenue: '6,858,000,000 LL', share: '18.4%', color: '#ec4899' },
+                      { region: 'Sidon Coastal District', accounts: 19, revenue: '4,059,000,000 LL', share: '10.9%', color: '#f97316' },
+                      { region: 'Tyre Harbor & Coast', accounts: 14, revenue: '2,862,000,000 LL', share: '7.7%', color: '#10b981' },
+                      { region: 'Nabatieh Valley', accounts: 9, revenue: '1,710,000,000 LL', share: '4.7%', color: '#06b6d4' }
                     ].map((row, idx) => (
                       <tr key={idx} className="hover:bg-slate-50 transition-colors">
                         <td className="py-3 px-4 flex items-center gap-2.5">
@@ -2346,7 +2360,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr>
                       <td className="py-3 px-4">Total Territorial Coverage</td>
                       <td className="py-3 px-4 text-center font-mono">148</td>
-                      <td className="py-3 px-4 text-right font-mono text-blue-700">$413,000.00</td>
+                      <td className="py-3 px-4 text-right font-mono text-blue-700">37,170,000,000 LL</td>
                       <td className="py-3 px-4 text-right font-mono">100.0%</td>
                     </tr>
                   </tfoot>
@@ -2358,7 +2372,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <BarChart2 className="w-4 h-4 text-blue-600" /> Territorial Revenue Density ($)
+                  <BarChart2 className="w-4 h-4 text-blue-600" /> Territorial Revenue Density (LL)
                 </h3>
                 <span className="text-xs text-slate-500 font-bold">Distribution</span>
               </div>
@@ -2367,20 +2381,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={[
-                      { region: 'Beirut', revenue: 142500, fill: '#3b82f6' },
-                      { region: 'Choueifat', revenue: 98400, fill: '#8b5cf6' },
-                      { region: 'Jbaa', revenue: 76200, fill: '#ec4899' },
-                      { region: 'Sidon', revenue: 45100, fill: '#f97316' },
-                      { region: 'Tyre', revenue: 31800, fill: '#10b981' },
-                      { region: 'Nabatieh', revenue: 19000, fill: '#06b6d4' }
+                      { region: 'Beirut', revenue: 12825000000, fill: '#3b82f6' },
+                      { region: 'Choueifat', revenue: 8856000000, fill: '#8b5cf6' },
+                      { region: 'Jbaa', revenue: 6858000000, fill: '#ec4899' },
+                      { region: 'Sidon', revenue: 4059000000, fill: '#f97316' },
+                      { region: 'Tyre', revenue: 2862000000, fill: '#10b981' },
+                      { region: 'Nabatieh', revenue: 1710000000, fill: '#06b6d4' }
                     ]}
                     margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                     <XAxis dataKey="region" tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }} />
-                    <YAxis tick={{ fontSize: 11, fill: '#475569' }} tickFormatter={val => `$${val / 1000}k`} />
+                    <YAxis tick={{ fontSize: 11, fill: '#475569' }} tickFormatter={val => `${(val / 1000000000).toFixed(1)}B LL`} />
                     <Tooltip
-                      formatter={(val: any) => [`$${Number(val).toLocaleString()}`, 'Revenue']}
+                      formatter={(val: any) => [`${Number(val).toLocaleString()} LL`, 'Revenue']}
                       contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px', border: 'none' }}
                     />
                     <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
