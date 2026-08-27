@@ -688,9 +688,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Header - Expanded to full width */}
+                      {/* Main Table Header - Fixed Overflow */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[40%_40%_20%] gap-4 text-[11px] font-bold text-black w-full">
+                        <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 text-[11px] font-bold text-black w-full">
                           <div>Employee Name</div>
                           <div>Date</div>
                           <div className="text-right">Workstation</div>
@@ -702,23 +702,23 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="mb-2">Branch Name: Southern Olive Oil S.A.R.L</div>
                         
                         {/* 01-Jan-26 */}
-                        <div className="mb-1 pl-12 font-bold">EOD Date:01-Jan-26</div>
+                        <div className="mb-1 pl-12">EOD Date:01-Jan-26</div>
                         
-                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-1">
+                        <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 mb-1">
                           <div>Ricky</div>
                           <div>01/01/2026 6.23 PM</div>
                           <div className="text-right">1</div>
                         </div>
-                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-4">
+                        <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 mb-4">
                           <div>Cashier R</div>
                           <div>01/01/2026 4.00 PM</div>
                           <div className="text-right">1</div>
                         </div>
 
                         {/* 24-Feb-26 */}
-                        <div className="mb-1 pl-12 font-bold">EOD Date:24-Feb-26</div>
+                        <div className="mb-1 pl-12">EOD Date:24-Feb-26</div>
                         
-                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-8">
+                        <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 mb-8">
                           <div>Cashier N2</div>
                           <div>24/02/2026 1.15 PM</div>
                           <div className="text-right">1</div>
