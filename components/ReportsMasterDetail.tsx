@@ -425,28 +425,26 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   </select>
 
                   {period === 'Date Range' ? (
-                    <div className="flex flex-row items-center gap-2 w-64">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-slate-700">From</span>
                       <input 
                         type="date" 
                         value={fromDate} 
                         onChange={(e) => setFromDate(e.target.value)} 
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
+                        className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" 
                       />
-                      <span className="text-slate-500 font-bold">-</span>
+                      <span className="text-sm font-bold text-slate-700">To</span>
                       <input 
                         type="date" 
                         value={toDate} 
                         onChange={(e) => setToDate(e.target.value)} 
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-white !text-slate-900 font-medium shadow-sm outline-none focus:ring-2 focus:ring-[#195a96]" 
+                        className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" 
                       />
                     </div>
                   ) : (
-                    <input 
-                      type="text" 
-                      value="Aug, 2026" 
-                      readOnly 
-                      className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-slate-100 !text-slate-800 font-semibold cursor-not-allowed outline-none select-none shadow-2xs" 
-                    />
+                    <div className="border border-slate-300 rounded p-1.5 text-sm min-w-[200px] bg-slate-100 text-slate-900 font-bold flex items-center cursor-not-allowed select-none">
+                      Aug 1 - Aug 31, 2026
+                    </div>
                   )}
 
                   <select
