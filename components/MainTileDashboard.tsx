@@ -687,7 +687,7 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           </div>
         ) : activeScreen === 'sales-dash' || activeScreen === 'sc-dashboard' ? (
           <SalesDashboard onSelectScreen={(screen) => setActiveScreen(screen)} />
-        ) : (activeScreen === 'sales-reports' || activeScreen === 'reports') ? (
+        ) : (activeScreen === 'sales-reports' || activeScreen === 'reports' || activeScreen === 'sc-reports' || activeScreen === 'sales-reports-billing') ? (
           <ReportsMasterDetail onBack={() => setActiveScreen('grid-dash')} />
         ) : activeScreen !== 'grid-dash' ? (
           <div className="w-full font-sans">
