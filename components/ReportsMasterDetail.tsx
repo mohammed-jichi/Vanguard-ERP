@@ -1282,86 +1282,109 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                      <div className="text-blue-700 font-bold text-[12px] mb-6">
                         Southern Olive Oil S.A.R.L
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
-                        Profit by Invoices Summary
+                      <div className="text-center font-bold text-[12px] mb-6">
+                        Profit By Invoice
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
                         <div>27-Aug-26</div>
-                        <div>From Date: 01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
+                        <div>Invoice # :103070</div>
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Header */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
-                          <div>Customer Name</div>
-                          <div>Type</div>
-                          <div>Receipt #</div>
-                          <div>Date</div>
-                          <div className="text-right">Amount</div>
+                      {/* Main Table Header (Thin lines) */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold text-black w-full">
+                          <div>Product Description</div>
+                          <div className="text-right">Qty</div>
                           <div className="text-right">Total Cost</div>
-                          <div className="text-right">Profit</div>
-                          <div className="text-right">% Profit Margin</div>
+                          <div className="text-right">% Cost</div>
+                          <div className="text-right">Total Price</div>
+                          <div className="text-right">% Profit</div>
+                          <div className="text-right">R. Profit</div>
+                          <div className="text-right">R. % Profit</div>
                         </div>
                       </div>
 
-                      {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                      {/* Data Section (Strictly normal font, tightly packed) */}
+                      <div className="text-[11px] leading-tight w-full mb-1">
+                        <div>Branch Name: Southern Olive Oil S.A.R.L</div>
+                        <div>Customer Name:</div>
+                        <div className="flex gap-4">
+                          <div>Date:</div>
+                          <div>10/08/2026 11.07.58</div>
+                        </div>
+                      </div>
+
+                      {/* Data Rows */}
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-normal w-full">
+                        <div>P Blue Gallon 20 Litres</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">270000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">-3.00</div>
+                        <div className="text-right">-270000.00</div>
+                        <div className="text-right">-100.00</div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-normal w-full">
+                        <div>تنكة زيت زيتون فرجن بلدي 17.5 ليتر</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">5125230.00</div>
+                        <div className="text-right">56.95</div>
+                        <div className="text-right">9000000.00</div>
+                        <div className="text-right">43.05</div>
+                        <div className="text-right">3874770.00</div>
+                        <div className="text-right">75.60</div>
+                      </div>
+
+                      {/* Summary Block */}
+                      <div className="border-t border-black pt-0.5 mt-1 mb-1">
                         
-                        {/* Data Row 1 */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>Charbel Zgheib</div>
-                          <div>Invoice</div>
-                          <div>103070</div>
-                          <div>13/02/2026</div>
-                          <div className="text-right">9000000.0</div>
-                          <div className="text-right">5395230.0</div>
-                          <div className="text-right">2704770.0</div>
-                          <div className="text-right">50.13261714514</div>
+                        {/* Total including Discount */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
+                          <div className="col-span-2">Total including Discount :</div>
+                          <div className="text-right">5395230.00</div>
+                          <div className="text-right">59.95</div>
+                          <div className="text-right">9000000.00</div>
+                          <div className="text-right">40.05</div>
+                          <div className="text-right">3604770.00</div>
+                          <div className="text-right">66.81</div>
                         </div>
                         
-                        <div className="border-t border-black my-2 w-full"></div>
-
-                        {/* Summary Block */}
-                        {/* Amount */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
-                          <div className="col-span-4 text-right pr-2">Amount :</div>
+                        {/* Subtotals aligned exactly to Omega's weird offset offset */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
+                          <div className="col-span-5 text-right pr-2">Amount :</div>
                           <div className="text-right">9000000.0</div>
-                          <div className="col-span-3"></div>
+                          <div className="col-span-2"></div>
                         </div>
-
-                        {/* Tax */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
-                          <div className="col-span-4 text-right pr-2">Tax :</div>
+                        
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
+                          <div className="col-span-5 text-right pr-2">Tax :</div>
                           <div className="text-right">0.0</div>
-                          <div className="col-span-3"></div>
+                          <div className="col-span-2"></div>
                         </div>
-
-                        {/* Discount */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
-                          <div className="col-span-4 text-right pr-2">Discount :</div>
+                        
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
+                          <div className="col-span-5 text-right pr-2">Discount :</div>
                           <div className="text-right">900000.0</div>
-                          <div className="col-span-3"></div>
+                          <div className="col-span-2"></div>
                         </div>
-
-                        {/* Net Sales */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
-                          <div className="col-span-4 text-right pr-2">Net Sales :</div>
+                        
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
+                          <div className="col-span-5 text-right pr-2">Net Sales :</div>
                           <div className="text-right">8100000.0</div>
-                          <div className="col-span-3"></div>
+                          <div className="col-span-2"></div>
                         </div>
-
+                        
                         {/* Total Excluding Discount */}
-                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-8">
-                          <div className="col-span-4 text-right pr-2">Total Excluding Discount :</div>
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full mb-16">
+                          <div className="col-span-5 text-right pr-2">Total Excluding Discount :</div>
                           <div className="text-right">8100000.0</div>
-                          <div></div>
                           <div className="text-right">2704770.0</div>
                           <div className="text-right">50.13261714514</div>
                         </div>
