@@ -2784,6 +2784,19 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
         </div>
 
+        {/* GLOBAL OMEGA COPYRIGHT FOOTER */}
+        <div className="w-full flex justify-center items-center text-[11px] text-[#666666] py-6 mt-8">
+          <span>© 2026 Omega Software All rights reserved.</span>
+          <span className="mx-2">|</span>
+          <a href="#" className="hover:underline">Privacy Policy</a>
+          <span className="mx-2">|</span>
+          <a href="#" className="hover:underline">Terms and Conditions</a>
+          <span className="mx-2">|</span>
+          <a href="#" className="hover:underline">Support</a>
+          <span className="mx-2">|</span>
+          <a href="#" className="hover:underline">Feedback</a>
+        </div>
+
       </div>
     </div>
   );
