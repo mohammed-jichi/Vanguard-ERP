@@ -604,62 +604,105 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Zeit w zaytoun ljanoub
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
-                        Summary of Payment by Department
+                        Summary of payment by department
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
                         </div>
                         <div>Page 1 of 1</div>
                       </div>
 
                       {/* Table Header with thick borders */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
-                        <div className="grid grid-cols-[140px_1fr_140px] gap-2 text-[11px] font-bold text-black">
-                          <div>Code</div>
-                          <div>Payment Method</div>
-                          <div className="text-right">Amount</div>
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Mode 1</div>
+                          <div className="text-right">Mode 2</div>
+                          <div className="text-right">Mode 3</div>
+                          <div className="text-right">Mode 4</div>
+                          <div className="text-right">Total</div>
                         </div>
                       </div>
 
                       {/* Branch Info */}
-                      <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Zeit w zaytoun ljanoub
                       </div>
 
                       {/* MAIN DEPARTMENT */}
-                      <div className="text-[11px] mb-1 font-bold pl-2">
-                        Department: MAIN DEPARTMENT
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        MAIN DEPARTMENT
                       </div>
-                      <div className="grid grid-cols-[140px_1fr_140px] gap-2 text-[11px] mb-3 font-medium pl-4">
-                        <div>1</div>
-                        <div>Cash</div>
+
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                      </div>
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">13,500,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">13,500,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-bold">
+                        <div>Total by Department: MAIN DEPARTMENT</div>
+                        <div className="text-right">1,262,651,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
                         <div className="text-right">1,262,651,600.00</div>
                       </div>
 
                       {/* Showroom */}
-                      <div className="text-[11px] mb-1 font-bold pl-2">
-                        Department: Showroom
-                      </div>
-                      <div className="grid grid-cols-[140px_1fr_140px] gap-2 text-[11px] mb-3 font-medium pl-4">
-                        <div>1</div>
-                        <div>Cash</div>
-                        <div className="text-right">248,400,000.00</div>
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        Showroom
                       </div>
 
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Total by Department: Showroom</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
                       {/* Total By Branch */}
-                      <div className="border-t border-black pt-1">
-                        <div className="grid grid-cols-[140px_1fr_140px] gap-2 text-[11px] font-bold">
-                          <div className="col-span-2">Total By Branch:</div>
-                          <div className="text-right">1,511,051,600.00</div>
-                        </div>
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold mt-1">
+                        <div>Total By Branch:</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,511,051,600.00</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Discount Summary' ? (
