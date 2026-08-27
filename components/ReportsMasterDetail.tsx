@@ -515,7 +515,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </>
                   )}
 
-                  {(selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment' || selectedReport === 'Summary of Payment by Department') && (
+                  {(selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment' || selectedReport === 'Summary of Payment by Department' || selectedReport === 'Summary of payment by workstation') && (
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
                       <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
                       Real Date
@@ -548,7 +548,219 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {(selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment') ? (
+                  {selectedReport === 'Summary of payment by workstation' ? (
+                    /* SUMMARY OF PAYMENT BY WORKSTATION REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of payment by workstation
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Mode 1</div>
+                          <div className="text-right">Mode 2</div>
+                          <div className="text-right">Mode 3</div>
+                          <div className="text-right">Mode 4</div>
+                          <div className="text-right">Total</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Info */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Zeit w zaytoun ljanoub
+                      </div>
+
+                      {/* Workstation 1 */}
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        Workstation 1
+                      </div>
+
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                      </div>
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">13,500,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">13,500,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-bold">
+                        <div>Total by workstation 1</div>
+                        <div className="text-right">1,262,651,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,262,651,600.00</div>
+                      </div>
+
+                      {/* Workstation 2000 */}
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        Workstation 2000
+                      </div>
+
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Total by workstation 2000</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
+                      {/* Total By Branch */}
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold mt-1">
+                        <div>Total By Branch:</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Summary of Payment by Department' ? (
+                    /* SUMMARY OF PAYMENT BY DEPARTMENT REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of payment by department
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Mode 1</div>
+                          <div className="text-right">Mode 2</div>
+                          <div className="text-right">Mode 3</div>
+                          <div className="text-right">Mode 4</div>
+                          <div className="text-right">Total</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Info */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Zeit w zaytoun ljanoub
+                      </div>
+
+                      {/* MAIN DEPARTMENT */}
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        MAIN DEPARTMENT
+                      </div>
+
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,249,151,600.00</div>
+                      </div>
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">13,500,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">13,500,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-bold">
+                        <div>Total by Department: MAIN DEPARTMENT</div>
+                        <div className="text-right">1,262,651,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,262,651,600.00</div>
+                      </div>
+
+                      {/* Showroom */}
+                      <div className="text-[11px] mb-2 font-bold underline text-center">
+                        Showroom
+                      </div>
+
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>CASH USD</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Total by Department: Showroom</div>
+                        <div className="text-right">248,400,000.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">248,400,000.00</div>
+                      </div>
+                      
+                      {/* Total By Branch */}
+                      <div className="grid grid-cols-[250px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold mt-1">
+                        <div>Total By Branch:</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                      </div>
+                    </div>
+                  ) : (selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment') ? (
                     /* SUMMARY OF PAYMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
