@@ -592,7 +592,71 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Meter Report' ? (
+                  {selectedReport === 'No Sale' ? (
+                    /* NO SALE REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        No Sale Report
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>From Date: 01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header - Expanded to full width */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[40%_40%_20%] gap-4 text-[11px] font-bold text-black w-full">
+                          <div>Employee Name</div>
+                          <div>Date</div>
+                          <div className="text-right">Workstation</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-medium leading-tight w-full">
+                        <div className="mb-2">Branch Name: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* 01-Jan-26 */}
+                        <div className="mb-1 pl-12 font-bold">EOD Date:01-Jan-26</div>
+                        
+                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-1">
+                          <div>Ricky</div>
+                          <div>01/01/2026 6.23 PM</div>
+                          <div className="text-right">1</div>
+                        </div>
+                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-4">
+                          <div>Cashier R</div>
+                          <div>01/01/2026 4.00 PM</div>
+                          <div className="text-right">1</div>
+                        </div>
+
+                        {/* 24-Feb-26 */}
+                        <div className="mb-1 pl-12 font-bold">EOD Date:24-Feb-26</div>
+                        
+                        <div className="grid grid-cols-[40%_40%_20%] gap-4 mb-8">
+                          <div>Cashier N2</div>
+                          <div>24/02/2026 1.15 PM</div>
+                          <div className="text-right">1</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Meter Report' ? (
                     /* METER REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
