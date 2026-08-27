@@ -721,120 +721,146 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Profit By Invoices
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
                         <div>27-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
-                        <div>Page 1 of 1</div>
+                        <div className="flex justify-center flex-1">From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>Page 1 of 131</div>
                       </div>
 
                       {/* Main Table Header */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
-                          <div>BarCode</div>
-                          <div>Description</div>
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
+                          <div>Product Description</div>
                           <div className="text-right">Qty</div>
-                          <div className="text-right">Unit Price</div>
-                          <div className="text-right">Dis %</div>
-                          <div className="text-right">Net Amount</div>
                           <div className="text-right">Total Cost</div>
-                          <div className="text-right">Profit</div>
-                          <div className="text-right">% Profit Margin</div>
+                          <div className="text-right">% Cost</div>
+                          <div className="text-right">Total Price</div>
+                          <div className="text-right">% Profit</div>
+                          <div className="text-right">R. Profit</div>
                         </div>
                       </div>
 
                       {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
-                        
-                        {/* Invoice 102971 */}
-                        <div className="font-bold mb-1 mt-2">Invoicenumber: 102971 Date: 01-08-2026 Customer Name : Customer POS</div>
-                        
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>200002</div>
-                          <div>زيت زيتون خضير 16 ليتر</div>
-                          <div className="text-right">1.0</div>
-                          <div className="text-right">1600000.0</div>
-                          <div className="text-right">0.0</div>
-                          <div className="text-right">1600000.0</div>
-                          <div className="text-right">1280000.0</div>
-                          <div className="text-right">320000.0</div>
-                          <div className="text-right">20.0</div>
-                        </div>
+                      <div className="text-[11px] font-bold leading-tight w-full mb-2">
+                        <div>Branch Name: Southern Olive Oil S.A.R.L</div>
+                      </div>
 
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>null</div>
-                          <div>null</div>
-                          <div className="text-right">1.0</div>
-                          <div className="text-right">180000.0</div>
-                          <div className="text-right">0.0</div>
-                          <div className="text-right">180000.0</div>
-                          <div className="text-right">120000.0</div>
-                          <div className="text-right">60000.0</div>
-                          <div className="text-right">33.333333333333336</div>
-                        </div>
+                      {/* Invoice 102971 */}
+                      <div className="text-[11px] font-bold leading-tight w-full mb-1">
+                        Customer Name: null null
+                      </div>
+                      
+                      {/* Corrected Date/Invoice Alignment */}
+                      <div className="grid grid-cols-[3fr_1fr_4.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="text-right pr-4">Date:</div>
+                        <div className="text-right">01/08/2026</div>
+                        <div className="text-left pl-4">Invoicenumber:102971</div>
+                      </div>
 
-                        <div className="border-b border-dotted border-gray-400 my-1 w-full"></div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-medium mb-1 w-full">
+                        <div>زيت زيتون فرجن 1 ليتر</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">640,653.75</div>
+                        <div className="text-right">50.85</div>
+                        <div className="text-right">1,260,000.00</div>
+                        <div className="text-right">49.15</div>
+                        <div className="text-right">619,346.25</div>
+                      </div>
 
-                        {/* Subtotals 102971 */}
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
-                          <div className="col-span-2 text-right pr-2">Subtotal :</div>
-                          <div className="text-right">2.0</div>
-                          <div></div>
-                          <div></div>
-                          <div className="text-right">1780000.0</div>
-                          <div className="text-right">1400000.0</div>
-                          <div className="text-right">380000.0</div>
-                          <div className="text-right">21.34831460674157</div>
-                        </div>
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
-                          <div className="col-span-5 text-right pr-2">Discount :</div>
-                          <div className="text-right">0.0</div>
-                          <div className="col-span-3"></div>
-                        </div>
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-4 w-full font-bold">
-                          <div className="col-span-5 text-right pr-2">Net Amount :</div>
-                          <div className="text-right">1780000.0</div>
-                          <div className="col-span-3"></div>
-                        </div>
+                      {/* Corrected Subtotals 102971 */}
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="text-right pr-2 underline">Total Including Discount:</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">640,653.75</div>
+                        <div className="text-right">50.85</div>
+                        <div className="text-right">1,260,000.00</div>
+                        <div className="text-right">49.15</div>
+                        <div className="text-right">619,346.25</div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Amount:</div>
+                        <div className="text-right">1,260,000.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Tax:</div>
+                        <div className="text-right">0.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Discount:</div>
+                        <div className="text-right">0.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Net Sale:</div>
+                        <div className="text-right">1,260,000.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-6">
+                        <div className="col-span-4 text-right pr-2">Total Excluding Discount:</div>
+                        <div className="text-right">1,260,000.00</div>
+                        <div></div>
+                        <div className="text-right">619,346.25</div>
+                      </div>
 
-                        {/* Invoice 102972 */}
-                        <div className="font-bold mb-1 mt-2">Invoicenumber: 102972 Date: 01-08-2026 Customer Name : Customer POS</div>
+                      {/* Invoice 102972 */}
+                      <div className="text-[11px] font-bold leading-tight w-full mb-1">
+                        Customer Name: null null
+                      </div>
+                      
+                      {/* Corrected Date/Invoice Alignment */}
+                      <div className="grid grid-cols-[3fr_1fr_4.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="text-right pr-4">Date:</div>
+                        <div className="text-right">01/08/2026</div>
+                        <div className="text-left pl-4">Invoicenumber:102972</div>
+                      </div>
 
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>200003</div>
-                          <div>فول عريض 1 كغ</div>
-                          <div className="text-right">5.0</div>
-                          <div className="text-right">100000.0</div>
-                          <div className="text-right">0.0</div>
-                          <div className="text-right">500000.0</div>
-                          <div className="text-right">350000.0</div>
-                          <div className="text-right">150000.0</div>
-                          <div className="text-right">30.0</div>
-                        </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-medium mb-1 w-full">
+                        <div>زيت زيتون خضير بلدي 1 ليتر</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">979,000.00</div>
+                        <div className="text-right">60.43</div>
+                        <div className="text-right">1,620,000.00</div>
+                        <div className="text-right">39.57</div>
+                        <div className="text-right">641,000.00</div>
+                      </div>
 
-                        <div className="border-b border-dotted border-gray-400 my-1 w-full"></div>
-
-                        {/* Subtotals 102972 */}
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
-                          <div className="col-span-2 text-right pr-2">Subtotal :</div>
-                          <div className="text-right">5.0</div>
-                          <div></div>
-                          <div></div>
-                          <div className="text-right">500000.0</div>
-                          <div className="text-right">350000.0</div>
-                          <div className="text-right">150000.0</div>
-                          <div className="text-right">30.0</div>
-                        </div>
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
-                          <div className="col-span-5 text-right pr-2">Discount :</div>
-                          <div className="text-right">0.0</div>
-                          <div className="col-span-3"></div>
-                        </div>
-                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-8 w-full font-bold">
-                          <div className="col-span-5 text-right pr-2">Net Amount :</div>
-                          <div className="text-right">500000.0</div>
-                          <div className="col-span-3"></div>
-                        </div>
+                      {/* Corrected Subtotals 102972 */}
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="text-right pr-2 underline">Total Including Discount:</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">979,000.00</div>
+                        <div className="text-right">60.43</div>
+                        <div className="text-right">1,620,000.00</div>
+                        <div className="text-right">39.57</div>
+                        <div className="text-right">641,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Amount:</div>
+                        <div className="text-right">1,620,000.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Tax:</div>
+                        <div className="text-right">0.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Discount:</div>
+                        <div className="text-right">0.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                        <div className="col-span-4 text-right pr-2">Net Sale:</div>
+                        <div className="text-right">1,620,000.00</div>
+                        <div className="col-span-2"></div>
+                      </div>
+                      <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-8">
+                        <div className="col-span-4 text-right pr-2">Total Excluding Discount:</div>
+                        <div className="text-right">1,620,000.00</div>
+                        <div></div>
+                        <div className="text-right">641,000.00</div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
@@ -858,99 +884,104 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Profit by Category by Department
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                        <div>27-Aug-2026</div>
+                        <div>Years:2026 Month:8</div>
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Header */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 text-[11px] font-bold text-black w-full">
-                          <div>Category Name</div>
-                          <div className="text-right">Quantity Sold</div>
-                          <div className="text-right">Sales Total</div>
-                          <div className="text-right">Cost</div>
-                          <div className="text-right">% Cost</div>
-                          <div className="text-right">Gross Profit</div>
-                          <div className="text-right">% Gross Profit Margin</div>
+                      {/* Main Table Header (Thin lines) */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] text-[11px] font-bold text-black w-full">
+                          <div>Division</div>
+                          <div className="text-right">Quantity</div>
+                          <div className="text-right">Total Price</div>
+                          <div className="text-right">Total Cost</div>
+                          <div className="text-right">Total Cost %</div>
+                          <div className="text-right">Total Profit</div>
+                          <div className="text-right">Total Profit %</div>
                         </div>
                       </div>
 
-                      {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                      {/* Data Section (Strictly normal font weight for labels and rows, tightly packed) */}
+                      <div className="text-[11px] font-normal leading-tight w-full">
+                        <div>Branch: Southern Olive Oil S.A.R.L</div>
+                        <div>Department: MAIN DEPARTMENT</div>
+                        <div>Category Name: Raw Materials</div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>Plastic</div>
+                          <div className="text-right">70.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">17,865,000.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">-17,865,000.00</div>
+                          <div className="text-right">0.00</div>
+                        </div>
                         
-                        {/* Raw Materials Group */}
-                        <div className="font-bold mb-1 mt-2">Department Name: Raw Materials</div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
-                          <div>Raw Materials</div>
-                          <div className="text-right">7.0</div>
-                          <div className="text-right">680,000.00</div>
-                          <div className="text-right">470,000.00</div>
-                          <div className="text-right">69.12</div>
-                          <div className="text-right">210,000.00</div>
-                          <div className="text-right">30.88</div>
-                        </div>
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
-                          <div>Total for Department Raw Materials:</div>
-                          <div className="text-right">7.0</div>
-                          <div className="text-right">680,000.00</div>
-                          <div className="text-right">470,000.00</div>
-                          <div className="text-right">69.12</div>
-                          <div className="text-right">210,000.00</div>
-                          <div className="text-right">30.88</div>
+                        {/* Subtotal (Bold, with top border) */}
+                        <div className="border-t border-black grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] font-bold w-full mt-0.5 mb-0.5">
+                          <div>Total By Category:</div>
+                          <div className="text-right">70.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">17,865,000.</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">-17,865,000.0</div>
+                          <div className="text-right">0.00</div>
                         </div>
 
-                        {/* جملة Group */}
-                        <div className="font-bold mb-1 mt-2">Department Name: جملة</div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
-                          <div>جملة</div>
-                          <div className="text-right">10.0</div>
-                          <div className="text-right">16,000,000.00</div>
-                          <div className="text-right">12,800,000.00</div>
-                          <div className="text-right">80.00</div>
-                          <div className="text-right">3,200,000.00</div>
-                          <div className="text-right">20.00</div>
-                        </div>
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
-                          <div>Total for Department جملة:</div>
-                          <div className="text-right">10.0</div>
-                          <div className="text-right">16,000,000.00</div>
-                          <div className="text-right">12,800,000.00</div>
-                          <div className="text-right">80.00</div>
-                          <div className="text-right">3,200,000.00</div>
-                          <div className="text-right">20.00</div>
+                        <div>Category Name: جملة</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>مكعزلة جملة</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
                         </div>
 
-                        {/* عروض Group */}
-                        <div className="font-bold mb-1 mt-2">Department Name: عروض</div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                        <div className="border-t border-black grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] font-bold w-full mt-0.5 mb-0.5">
+                          <div>Total By Category:</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                        </div>
+
+                        <div>Category Name: عروض</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
                           <div>عروض</div>
-                          <div className="text-right">2.0</div>
-                          <div className="text-right">1,500,000.00</div>
-                          <div className="text-right">900,000.00</div>
-                          <div className="text-right">60.00</div>
-                          <div className="text-right">600,000.00</div>
-                          <div className="text-right">40.00</div>
-                        </div>
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
-                          <div>Total for Department عروض:</div>
-                          <div className="text-right">2.0</div>
-                          <div className="text-right">1,500,000.00</div>
-                          <div className="text-right">900,000.00</div>
-                          <div className="text-right">60.00</div>
-                          <div className="text-right">600,000.00</div>
-                          <div className="text-right">40.00</div>
+                          <div className="text-right">50.00</div>
+                          <div className="text-right">486,000,000</div>
+                          <div className="text-right">398,372,400.0</div>
+                          <div className="text-right">81.97</div>
+                          <div className="text-right">87,627,600.00</div>
+                          <div className="text-right">18.03</div>
                         </div>
 
-                        {/* مفرق Group */}
-                        <div className="font-bold mb-1 mt-2">Department Name: مفرق</div>
-                        
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                        <div className="border-t border-black grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] font-bold w-full mt-0.5 mb-0.5">
+                          <div>Total By Category:</div>
+                          <div className="text-right">50.00</div>
+                          <div className="text-right">486,000,000</div>
+                          <div className="text-right">398,372,400</div>
+                          <div className="text-right">81.97</div>
+                          <div className="text-right">87,627,600.00</div>
+                          <div className="text-right">18.03</div>
+                        </div>
+
+                        <div>Category Name: مفرق</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>براد</div>
+                          <div className="text-right">1.27</div>
+                          <div className="text-right">546,600.00</div>
+                          <div className="text-right">397,944.00</div>
+                          <div className="text-right">72.80</div>
+                          <div className="text-right">148,656.00</div>
+                          <div className="text-right">27.20</div>
+                          
                           <div>بهارات مفرق</div>
                           <div className="text-right">4.95</div>
                           <div className="text-right">3,570,000.0</div>
@@ -958,9 +989,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">47.43</div>
                           <div className="text-right">1,876,605.00</div>
                           <div className="text-right">52.57</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>زيوت مفرق</div>
                           <div className="text-right">246.47</div>
                           <div className="text-right">781,995,700</div>
@@ -968,9 +997,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">58.65</div>
                           <div className="text-right">323,318,209.32</div>
                           <div className="text-right">41.35</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>عسل مفرق</div>
                           <div className="text-right">6.00</div>
                           <div className="text-right">9,360,000.0</div>
@@ -978,9 +1005,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">46.52</div>
                           <div className="text-right">5,005,440.00</div>
                           <div className="text-right">53.48</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>كيلو مفرق</div>
                           <div className="text-right">37.90</div>
                           <div className="text-right">14,721,000.</div>
@@ -988,9 +1013,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">65.59</div>
                           <div className="text-right">5,065,800.00</div>
                           <div className="text-right">34.41</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>مجففات</div>
                           <div className="text-right">1.00</div>
                           <div className="text-right">725,000.00</div>
@@ -998,9 +1021,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">55.86</div>
                           <div className="text-right">320,000.00</div>
                           <div className="text-right">44.14</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>محمصة مفرق</div>
                           <div className="text-right">0.25</div>
                           <div className="text-right">393,750.00</div>
@@ -1008,9 +1029,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">71.43</div>
                           <div className="text-right">112,500.00</div>
                           <div className="text-right">28.57</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>مربيات مفرق</div>
                           <div className="text-right">4.00</div>
                           <div className="text-right">990,000.00</div>
@@ -1018,9 +1037,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">61.15</div>
                           <div className="text-right">384,595.20</div>
                           <div className="text-right">38.85</div>
-                        </div>
 
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
                           <div>مرطبان</div>
                           <div className="text-right">34.00</div>
                           <div className="text-right">11,285,000.</div>
@@ -1029,53 +1046,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">4,529,709.44</div>
                           <div className="text-right">40.14</div>
                         </div>
-
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
-                          <div>مقطرات ومدبسات مفرق</div>
-                          <div className="text-right">18.00</div>
-                          <div className="text-right">2,220,000.0</div>
-                          <div className="text-right">1,523,019.53</div>
-                          <div className="text-right">68.60</div>
-                          <div className="text-right">696,980.47</div>
-                          <div className="text-right">31.40</div>
-                        </div>
-
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
-                          <div>مونة بلدية مفرق</div>
-                          <div className="text-right">31.10</div>
-                          <div className="text-right">4,225,000.0</div>
-                          <div className="text-right">3,131,940.00</div>
-                          <div className="text-right">74.13</div>
-                          <div className="text-right">1,093,060.00</div>
-                          <div className="text-right">25.87</div>
-                        </div>
-
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
-                          <div>Total for Department مفرق:</div>
-                          <div className="text-right">383.67</div>
-                          <div className="text-right">829,485,450.00</div>
-                          <div className="text-right">487,082,550.49</div>
-                          <div className="text-right">58.72</div>
-                          <div className="text-right">342,402,899.51</div>
-                          <div className="text-right">41.28</div>
-                        </div>
-
-                        {/* Overall Branch Total */}
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-8 w-full font-bold">
-                          <div>Total By Branch:</div>
-                          <div className="text-right">402.67</div>
-                          <div className="text-right">847,665,450.00</div>
-                          <div className="text-right">501,252,550.49</div>
-                          <div className="text-right">59.13</div>
-                          <div className="text-right">346,412,899.51</div>
-                          <div className="text-right">40.87</div>
-                        </div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-12 w-full"></div>
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00247</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
