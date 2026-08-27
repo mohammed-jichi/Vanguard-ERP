@@ -413,16 +413,38 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Alerts & Notifications</span>
                 </button>
-                {/* SOLE ENTRY POINT FOR LANGUAGE SETTINGS */}
-                <button onClick={() => { setLanguage(language === 'en' ? 'ar' : 'en'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between font-semibold">
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>Language</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-mono font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
-                    {language}
+                {/* 5-LANGUAGE SELECTOR SYSTEM */}
+                <div className="p-2 border-t border-b border-gray-100 my-1 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 block px-1 mb-1">
+                    Select Language / اختر اللغة
                   </span>
-                </button>
+                  {[
+                    { code: 'en', label: 'English (US)', flag: '🇺🇸' },
+                    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+                    { code: 'es', label: 'Español', flag: '🇪🇸' },
+                    { code: 'ar', label: 'العربية (RTL)', flag: '🇸🇦' },
+                    { code: 'fa', label: 'فارسی (RTL)', flag: '🇮🇷' },
+                  ].map((item) => (
+                    <button
+                      key={item.code}
+                      onClick={() => {
+                        setLanguage(item.code as any);
+                        setIsProfileOpen(false);
+                      }}
+                      className={`w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
+                        language === item.code
+                          ? 'bg-blue-600 text-white shadow-2xs'
+                          : 'hover:bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{item.flag}</span>
+                        <span>{item.label}</span>
+                      </span>
+                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded">Active</span>}
+                    </button>
+                  ))}
+                </div>
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>My Account</span>

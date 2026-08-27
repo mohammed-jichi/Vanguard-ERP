@@ -2,18 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Settings,
   Building,
   Image as ImageIcon,
   Camera,
-  FileText,
   Save,
   X,
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
-  Upload,
   Link as LinkIcon
 } from 'lucide-react';
 
@@ -24,6 +23,7 @@ interface TenantSettingsModalProps {
 
 export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsModalProps) {
   const { currentTenant, updateTenantSettings } = useTenant();
+  const { language, dir, t } = useLanguage();
 
   const [companyName, setCompanyName] = useState<string>('');
   const [brandNameAr, setBrandNameAr] = useState<string>('');
@@ -80,7 +80,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
     if (result.success) {
       setStatusMessage({
         type: 'success',
-        text: 'تم حفظ البيانات القانونية والشعار والهوية التجارية للمؤسسة بنجاح!'
+        text: t('settings_saved_success', 'Legal details, logo, and brand identity saved successfully!')
       });
       setTimeout(() => {
         onClose();
@@ -88,16 +88,16 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
     } else {
       setStatusMessage({
         type: 'error',
-        text: result.error || 'حدث خطأ أثناء حفظ البيانات'
+        text: result.error || t('settings_save_error', 'An error occurred while saving settings.')
       });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans dir-rtl">
+    <div className={`fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans ${dir === 'rtl' ? 'dir-rtl' : 'dir-ltr'}`}>
       <div className="bg-white border border-slate-200 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden space-y-0">
         
-        {/* MODAL HEADER (CLEAN DESIGN WITHOUT JARRING ORANGE BORDERS) */}
+        {/* MODAL HEADER */}
         <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-blue-400">
@@ -105,13 +105,13 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             </div>
             <div>
               <h3 className="font-bold text-base text-white flex items-center gap-2">
-                إعدادات هوية المؤسسة والبيانات القانونية
+                <span>{t('tenant_profile_title', 'Company Identity & Legal Settings')}</span>
                 <span className="bg-blue-600/20 text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30">
                   Tenant Profile
                 </span>
               </h3>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
-                تعديل الاسم والشعار الرسمي وتضمين رقم السجل التجاري والرقم المالي للشركة
+                {t('tenant_profile_subtitle', 'Edit official name, logo, commercial registration, and tax ID.')}
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
           {/* SECTION 1: BRAND IDENTITY & LOGO */}
           <div className="space-y-4">
             <h4 className="text-xs font-black text-blue-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <Building className="w-4 h-4 text-blue-600" /> 1. الاسم التجاري والشعار الرسمي (Logo & Branding)
+              <Building className="w-4 h-4 text-blue-600" /> {t('brand_identity', '1. Brand Identity & Official Logo')}
             </h4>
 
             {/* DIRECT CLICK TO ADD PICTURE LOGO DROPZONE */}
@@ -174,15 +174,15 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                 ) : (
                   <div className="flex flex-col items-center justify-center p-2 text-center">
                     <Camera className="w-7 h-7 text-slate-400 group-hover:text-blue-500 mb-1" />
-                    <span className="text-[10px] font-bold text-slate-700 group-hover:text-blue-600">Add Picture</span>
-                    <span className="text-[9px] text-slate-400 mt-0.5">Click to upload</span>
+                    <span className="text-[10px] font-bold text-slate-700 group-hover:text-blue-600">{t('add_picture', 'Add Picture')}</span>
+                    <span className="text-[9px] text-slate-400 mt-0.5">{t('click_to_upload', 'Click to upload photo')}</span>
                   </div>
                 )}
               </label>
 
               <div className="space-y-2 flex-1 w-full">
                 <label className="text-xs font-bold text-slate-800 block">
-                  رابط الشعار الخارجي (Logo URL)
+                  {t('logo_url', 'External Logo Image URL')}
                 </label>
                 <div className="relative w-full">
                   <input
@@ -196,14 +196,14 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 </div>
                 <p className="text-[10px] text-slate-500">
-                  يمكنك النقر على المربع لتحميل صورة من جهازك، أو إدخال رابط صورة مباشر.
+                  {t('logo_help_text', 'Click the box above to upload a photo from your computer, or enter a direct image URL.')}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800">اسم الشركة / المؤسسة (بالعربي)</label>
+                <label className="text-xs font-bold text-slate-800">{t('company_name_ar', 'Company Name (Arabic)')}</label>
                 <input
                   type="text"
                   required
@@ -212,14 +212,14 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     setBrandNameAr(e.target.value);
                     setCompanyName(e.target.value);
                   }}
-                  placeholder="مثال: منتوجات زيت وزيتون الجنوب ش.م.م"
+                  placeholder="e.g. Southern Olive SARL"
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800">Enterprise Brand Name (English)</label>
+                <label className="text-xs font-bold text-slate-800">{t('company_name_en', 'Enterprise Brand Name (English)')}</label>
                 <input
                   type="text"
                   required
@@ -237,34 +237,34 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
           {/* SECTION 2: LEGAL REGISTRATION NUMBERS FOR INVOICING */}
           <div className="space-y-4 pt-2">
             <h4 className="text-xs font-black text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" /> 2. البيانات القانونية والترخيص (Legal Registration Numbers)
+              <ShieldCheck className="w-4 h-4 text-emerald-600" /> {t('legal_registration', '2. Legal Registration Numbers')}
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800">رقم السجل التجاري (Commercial Reg No.)</label>
+                <label className="text-xs font-bold text-slate-800">{t('commercial_reg', 'Commercial Registration No. (CR)')}</label>
                 <input
                   type="text"
                   value={companyRegistrationNumber}
                   onChange={e => setCompanyRegistrationNumber(e.target.value)}
-                  placeholder="مثال: CR-104928-LB"
+                  placeholder="e.g. CR-104928-LB"
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
-                <p className="text-[10px] text-slate-500">يتم ختمه تلقائياً على كافة الفواتير الصادرة</p>
+                <p className="text-[10px] text-slate-500">{t('cr_help_text', 'Printed on official tax receipts & invoices.')}</p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800">الرقم المالي MOF (Tax ID Number)</label>
+                <label className="text-xs font-bold text-slate-800">{t('tax_id', 'Tax Identification Number (MOF)')}</label>
                 <input
                   type="text"
                   value={taxIdentificationNumber}
                   onChange={e => setTaxIdentificationNumber(e.target.value)}
-                  placeholder="مثال: MOF-7489201"
+                  placeholder="e.g. MOF-7489201"
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
-                <p className="text-[10px] text-slate-500">خاص بإغلاق ضريبة TVA والإقرارات المالية</p>
+                <p className="text-[10px] text-slate-500">{t('tax_help_text', 'Required for VAT filings & official reporting.')}</p>
               </div>
             </div>
           </div>
@@ -276,7 +276,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
               onClick={onClose}
               className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors"
             >
-              إلغاء
+              {t('cancel', 'Cancel')}
             </button>
 
             <button
@@ -285,7 +285,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
               className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>{isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات الهيكلية'}</span>
+              <span>{isSaving ? t('saving', 'Saving Changes...') : t('save_changes', 'Save Changes')}</span>
             </button>
           </div>
 
