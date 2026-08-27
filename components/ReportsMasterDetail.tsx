@@ -594,7 +594,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Meter Report' ? (
                     /* METER REPORT TEMPLATE */
-                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-4">
@@ -611,9 +611,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Page 1 of 4</div>
                       </div>
 
-                      {/* Main Table Header */}
+                      {/* Main Table Header - Expanded to full width */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 text-[11px] font-bold text-black">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 text-[11px] font-bold text-black w-full">
                           <div>Branch Name</div>
                           <div>Date</div>
                           <div>By Employee</div>
@@ -622,23 +622,23 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight">
-                        <div className="mb-1 font-bold">Branch: Southern Olive Oil S.A.R.L</div>
+                      <div className="text-[11px] font-medium leading-tight w-full">
+                        <div className="mb-2 font-bold">Branch: Southern Olive Oil S.A.R.L</div>
                         
                         {/* 01-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>01-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">01-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>01-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>01-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
@@ -646,31 +646,31 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         {/* 02-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>02-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">02-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>02-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>02-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>02-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>02-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
@@ -678,25 +678,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         {/* 03-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>03-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">03-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>03-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>03-08-2026 00.00.00</div>
                           <div>Mahdi</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>03-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
@@ -704,13 +704,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         {/* 04-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>04-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">04-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>04-08-2026 00.00.00</div>
                           <div>Mahdi</div>
@@ -718,25 +718,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         {/* 05-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>05-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">05-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>05-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
                           <div>Server Hiba Aloulou</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>05-08-2026 00.00.00</div>
                           <div>Mahdi</div>
                           <div>Main Reading</div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>05-08-2026 00.00.00</div>
                           <div>Mahdi</div>
@@ -744,13 +744,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         {/* 06-Aug-2026 */}
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
-                          <div>EOD Date</div>
-                          <div>06-Aug-2026</div>
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
+                          <div className="font-bold">EOD Date</div>
+                          <div className="font-bold">06-Aug-2026</div>
                           <div></div>
                           <div></div>
                         </div>
-                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-8">
+                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-8">
                           <div>Southern Olive Oil S.A.R.L</div>
                           <div>06-08-2026 00.00.00</div>
                           <div>Hiba Aloulou</div>
