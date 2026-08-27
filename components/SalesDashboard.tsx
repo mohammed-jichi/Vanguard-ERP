@@ -589,33 +589,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     return (
       <WidgetCard id={id} title={title} className={className}>
         <div className={`flex flex-col space-y-4 ${isFullWidth ? 'items-center text-center' : ''}`}>
-          
-          {/* INTERACTIVE LEGEND TOGGLE CHIPS */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5 py-1">
-            {data.map((item) => {
-              const key = getItemKey(item, labelKey);
-              const isHidden = hiddenPieItems.includes(key);
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleTogglePieItem(key)}
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border transition-all cursor-pointer ${
-                    isHidden
-                      ? 'bg-slate-100 text-slate-400 border-slate-300 line-through opacity-50'
-                      : 'bg-white text-slate-800 border-slate-300 hover:bg-slate-50 shadow-2xs'
-                  }`}
-                  title={`Click to ${isHidden ? 'show' : 'hide'} ${key}`}
-                >
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: isHidden ? '#94a3b8' : item.color }}
-                  ></span>
-                  <span>{key}</span>
-                </button>
-              );
-            })}
-          </div>
-
           <div className={`h-52 w-full ${isFullWidth ? 'max-w-2xl mx-auto flex justify-center' : ''}`}>
             {activeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -1855,31 +1828,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
             <div className="p-6 flex flex-col items-center justify-center space-y-6">
               
-              {/* Interactive Legend Toggle Chips */}
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                {salesByGroupPieData.map((item) => {
-                  const isHidden = hiddenPieItems.includes(item.name);
-                  return (
-                    <button
-                      key={item.name}
-                      onClick={() => handleTogglePieItem(item.name)}
-                      className={`px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-1.5 border transition-all cursor-pointer ${
-                        isHidden
-                          ? 'bg-slate-100 text-slate-400 border-slate-300 line-through opacity-50'
-                          : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 shadow-2xs'
-                      }`}
-                      title={`Click to ${isHidden ? 'show' : 'hide'} ${item.name}`}
-                    >
-                      <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
-                        style={{ backgroundColor: isHidden ? '#94a3b8' : item.color }}
-                      ></span>
-                      <span>{item.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
               {/* Solid Pie Chart (innerRadius = 0) */}
               <div className="w-full max-w-sm h-64 flex items-center justify-center">
                 {salesByGroupPieData.filter((i) => !hiddenPieItems.includes(i.name)).length > 0 ? (
