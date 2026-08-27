@@ -510,7 +510,71 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Statistics by Department' ? (
+                  {selectedReport === 'Summary of Sales by Employee' ? (
+                    /* SUMMARY OF SALES BY EMPLOYEE REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of Sales by Employee
+                      </div>
+                      
+                      <div className="grid grid-cols-4 text-[11px] font-bold mb-1 items-center">
+                        <div>27-Aug-2026</div>
+                        <div className="text-center">Year: 2026 - Month: 8</div>
+                        <div className="text-center">Prepared by: Mohammed</div>
+                        <div className="text-right">Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[50px_250px_1fr_1fr_1fr_100px] gap-2 text-[11px] font-bold text-black">
+                          <div>ID</div>
+                          <div>Employee Name</div>
+                          <div className="text-right">Net Sales</div>
+                          <div className="text-right">Subtotal</div>
+                          <div className="text-right">Discount</div>
+                          <div className="text-right">Tax</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Title */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Data Rows */}
+                      <div className="grid grid-cols-[50px_250px_1fr_1fr_1fr_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10</div>
+                        <div>Hiba Aloulou</div>
+                        <div className="text-right">1,243,561,600.00</div>
+                        <div className="text-right">1,294,242,050.00</div>
+                        <div className="text-right">50,680,450.00</div>
+                        <div className="text-right">0.00</div>
+                      </div>
+                      
+                      <div className="grid grid-cols-[50px_250px_1fr_1fr_1fr_100px] gap-2 text-[11px] mb-4 font-medium">
+                        <div>1</div>
+                        <div>Mahdi</div>
+                        <div className="text-right">267,490,000.00</div>
+                        <div className="text-right">270,190,000.00</div>
+                        <div className="text-right">2,700,000.00</div>
+                        <div className="text-right">0.00</div>
+                      </div>
+
+                      {/* Total Row */}
+                      <div className="grid grid-cols-[50px_250px_1fr_1fr_1fr_100px] gap-2 text-[11px] font-bold">
+                        <div className="col-span-2">Total By Branch:</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">1,564,432,050.00</div>
+                        <div className="text-right">53,380,450.00</div>
+                        <div className="text-right">0.00</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Statistics by Department' ? (
                     /* STATISTICS BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
