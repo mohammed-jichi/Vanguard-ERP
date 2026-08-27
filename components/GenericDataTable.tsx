@@ -13,7 +13,8 @@ import {
   XCircle,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown
+  ArrowUpDown,
+  ArrowLeft
 } from 'lucide-react';
 
 export interface DataRow {
@@ -148,28 +149,31 @@ export default function GenericDataTable({
       {/* 1. HEADER TITLE BAR */}
       <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-1">
-            <span>Sales Control</span>
-            <span>/</span>
-            <span className="text-amber-600 font-bold">{title}</span>
-          </div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+            <button
+              onClick={() => typeof window !== 'undefined' && window.history.back()}
+              className="p-1 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
             {title}
             <span className="bg-amber-100 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">
               {rows.length} Records
             </span>
           </h2>
-          <p className="text-xs text-gray-500 font-medium mt-1">
-            {description || `Manage and configure ${title} records for Vanguard ERP Sales Control.`}
-          </p>
+          {description && (
+             <p className="text-xs text-gray-500 font-medium mt-1 ml-9">
+               {description}
+             </p>
+          )}
         </div>
 
         {/* PRIMARY ACTION BUTTON */}
         <button
           onClick={handleCreateNew}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all shrink-0"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all shrink-0"
         >
-          <Plus className="w-4 h-4 text-amber-400" />
+          <Plus className="w-4 h-4" />
           <span>Add New {title.split(' ')[0]}</span>
         </button>
       </div>

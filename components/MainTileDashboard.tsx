@@ -547,19 +547,23 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           <div className="p-3 md:p-6 space-y-5 flex-1 overflow-y-auto">
 
       {/* 3. DYNAMIC SCREEN ROUTER */}
+      {/* 3. DYNAMIC SCREEN ROUTER */}
       {
         activeScreen === 'oil-pressing' ? (
           <div className="space-y-4">
-            <div className="bg-white border border-gray-200 rounded-xl p-3 flex items-center justify-between shadow-sm">
-              <h2 className="text-sm font-black text-amber-600 flex items-center gap-2">
-                <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
-              </h2>
-              <button
-                onClick={() => setActiveScreen('grid-dash')}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-xs font-bold border border-gray-200"
-              >
-                ← العودة للشبكة الرئيسية
-              </button>
+            <div className="bg-white border border-gray-200 rounded-xl p-3.5 flex items-center justify-between shadow-xs">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveScreen('grid-dash')}
+                  title="Return to Grid Dashboard"
+                  className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Droplets className="w-5 h-5 text-emerald-600" /> مركز الاستلام والإنتاج والمعاصر -- {tenantName || "Vanguard ERP System"}
+                </h2>
+              </div>
             </div>
             <ReceiveAndProductionMaster />
           </div>
@@ -568,37 +572,35 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         ) : (activeScreen === 'sales-pos' || activeScreen === 'sales-dash' || activeScreen === 'sales') ? (
           /* FULL SALES CONTROL & POS TERMINAL MODULE */
           <div className="space-y-6">
-            {/* MODULE HEADER */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* CLEAN MODULE HEADER */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm">
-                  <ShoppingCart className="w-6 h-6" />
+                <button
+                  onClick={() => setActiveScreen('grid-dash')}
+                  title="Return to Grid Dashboard"
+                  className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div className="w-10 h-10 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-center text-emerald-600 shadow-2xs">
+                  <ShoppingCart className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     نقطة البيع وإدارة المبيعات (POS & Sales Control)
                     <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                      مباشر - مباشر
+                      Live POS
                     </span>
                   </h2>
-                  <p className="text-xs text-gray-500 font-bold mt-0.5">
-                    سجل الفواتير المباشرة وحركات المبيعات لـ {tenantName || "منتوجات زيت وزيتون الجنوب"}
-                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => typeof window !== 'undefined' && (window as any).openReportModal?.('sales_summary', 'تقرير المبيعات الصندوقي')}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
                 >
                   <FileText className="w-4 h-4" /> تقرير المبيعات الصندوقي
-                </button>
-                <button
-                  onClick={() => setActiveScreen('grid-dash')}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs border border-gray-200"
-                >
-                  ← العودة للشبكة الرئيسية
                 </button>
               </div>
             </div>
@@ -686,36 +688,24 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           <SalesDashboard onSelectScreen={(screen) => setActiveScreen(screen)} />
         ) : activeScreen !== 'grid-dash' ? (
           <div className="space-y-6 dir-rtl font-sans">
-            {/* SECTION HEADER CARD */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
-                  <Layers className="w-6 h-6" />
-                </div>
+            {/* CLEAN SECTION HEADER CARD */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveScreen('grid-dash')}
+                  title="Return to Grid Dashboard"
+                  className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-1">
-                    <span>Vanguard ERP</span>
-                    <span>/</span>
-                    <span>{getSectionMetadata(activeScreen).module}</span>
-                    <span>/</span>
-                    <span className="text-amber-600 font-black">{getSectionMetadata(activeScreen).titleAr}</span>
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     {getSectionMetadata(activeScreen).titleAr}
-                    <span className="text-xs font-mono font-bold bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full border border-gray-200">
+                    <span className="text-xs font-mono font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
                       {getSectionMetadata(activeScreen).titleEn}
                     </span>
                   </h2>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveScreen('grid-dash')}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all border border-gray-200"
-                >
-                  ← العودة للمربعات الرئيسية
-                </button>
               </div>
             </div>
 
