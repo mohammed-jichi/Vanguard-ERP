@@ -597,6 +597,45 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                       </div>
                     </div>
+                  ) : selectedReport === 'Discount Summary' ? (
+                    /* DISCOUNT SUMMARY REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Discount Summary
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div>Year: 2026 - Month: 8</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Separator Line */}
+                      <div className="border-b-[1.5px] border-black mb-4"></div>
+
+                      {/* Data Table */}
+                      <table className="w-[400px] border-collapse border border-black text-[11px] font-bold text-black">
+                        <tbody>
+                          <tr>
+                            <td className="border border-black p-1.5 w-[220px]"></td>
+                            <td className="border border-black p-1.5 text-center w-[180px]">Total Discount</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5 pl-2">Zeit w zaytoun ljanoub</td>
+                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5 pl-2">Total</td>
+                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   ) : selectedReport === 'Summary of Discount By Items Amount' ? (
                     /* SUMMARY OF DISCOUNT GROUPED BY ITEMS TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
@@ -1738,45 +1777,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
                         <div>Number of Customers</div><div className="text-right">292</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">292</div>
                       </div>
-                    </div>
-                  ) : selectedReport === 'Discount Summary' ? (
-                    /* DISCOUNT SUMMARY REPORT TEMPLATE */
-                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
-                      </div>
-                      
-                      <div className="text-center font-bold text-[12px] mb-4">
-                        Discount Summary
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 8</div>
-                        <div>Page 1 of 1</div>
-                      </div>
-
-                      {/* Main Separator Line */}
-                      <div className="border-b-[1.5px] border-black mb-4"></div>
-
-                      {/* Data Table */}
-                      <table className="w-[400px] border-collapse border border-black text-[11px] font-bold text-black">
-                        <tbody>
-                          <tr>
-                            <td className="border border-black p-1.5 w-[220px]"></td>
-                            <td className="border border-black p-1.5 text-center w-[180px]">Total Discount</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-black p-1.5 pl-2">Zeit w zaytoun ljanoub</td>
-                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
-                          </tr>
-                          <tr className="bg-[#cce5ff]">
-                            <td className="border border-black p-1.5 pl-2">Total</td>
-                            <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
-                          </tr>
-                        </tbody>
-                      </table>
                     </div>
                   ) : selectedReport === 'User Log Report' ? (
                     /* USER LOG REPORT TEMPLATE */
