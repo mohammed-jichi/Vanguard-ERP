@@ -592,7 +592,181 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'List of Pending Invoices with Advance Payment' ? (
+                  {selectedReport === 'Meter Report' ? (
+                    /* METER REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Meter Report
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>Page 1 of 4</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Branch Name</div>
+                          <div>Date</div>
+                          <div>By Employee</div>
+                          <div>To Employee</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-medium leading-tight">
+                        <div className="mb-1 font-bold">Branch: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* 01-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>01-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>01-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>01-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+
+                        {/* 02-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>02-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>02-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>02-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>02-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>02-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+
+                        {/* 03-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>03-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>03-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>03-08-2026 00.00.00</div>
+                          <div>Mahdi</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>03-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+
+                        {/* 04-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>04-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>04-08-2026 00.00.00</div>
+                          <div>Mahdi</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+
+                        {/* 05-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>05-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>05-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>05-08-2026 00.00.00</div>
+                          <div>Mahdi</div>
+                          <div>Main Reading</div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>05-08-2026 00.00.00</div>
+                          <div>Mahdi</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+
+                        {/* 06-Aug-2026 */}
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-1 font-bold">
+                          <div>EOD Date</div>
+                          <div>06-Aug-2026</div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                        <div className="grid grid-cols-[220px_200px_180px_1fr] gap-2 mb-8">
+                          <div>Southern Olive Oil S.A.R.L</div>
+                          <div>06-08-2026 00.00.00</div>
+                          <div>Hiba Aloulou</div>
+                          <div>Server Hiba Aloulou</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'List of Pending Invoices with Advance Payment' ? (
                     /* LIST OF PENDING INVOICES WITH ADVANCE PAYMENT REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
