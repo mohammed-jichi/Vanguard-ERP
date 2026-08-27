@@ -184,8 +184,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             onClick={() => setSelectedReport(item)}
                             className={`px-4 py-1.5 text-[13px] font-medium transition-all cursor-pointer ${
                               isSelected
-                                ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600'
-                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                ? 'bg-slate-50 text-[#195a96] font-bold border-l-4 border-[#195a96]'
+                                : 'text-slate-600 hover:text-[#195a96] hover:bg-slate-50'
                             }`}
                           >
                             {item}
@@ -219,13 +219,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div key={group.name}>
                           <div
                             onClick={() => toggleGroup(group.name)}
-                            className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50"
+                            className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-[#195a96] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
                           >
                             <span>{group.name}</span>
                             <ChevronDown
                               size={14}
                               className={`text-slate-400 transition-transform ${
-                                isExpanded ? 'rotate-180 text-blue-600' : ''
+                                isExpanded ? 'rotate-180 text-[#195a96]' : ''
                               }`}
                             />
                           </div>
@@ -240,8 +240,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                     onClick={() => setSelectedReport(item)}
                                     className={`pl-8 pr-4 py-1.5 text-[12px] font-medium cursor-pointer transition-all ${
                                       isSelected
-                                        ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600'
-                                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                        ? 'bg-slate-50 text-[#195a96] font-bold border-l-4 border-[#195a96]'
+                                        : 'text-slate-500 hover:text-[#195a96] hover:bg-slate-50'
                                     }`}
                                   >
                                     {item}
