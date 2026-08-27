@@ -541,7 +541,60 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Discount By Description by Employee' ? (
+                  {selectedReport === 'Summary of Discount By Items Amount' ? (
+                    /* SUMMARY OF DISCOUNT GROUPED BY ITEMS TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of Discount Grouped by Items
+                      </div>
+                      
+                      <div className="grid grid-cols-3 text-[11px] font-bold mb-1 items-center">
+                        <div>27-Aug-2026</div>
+                        <div className="text-center">
+                          <span className="mr-6">From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div className="text-right">Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
+                        <div className="grid grid-cols-[100px_1fr_150px_150px] gap-2 text-[11px] font-bold text-black">
+                          <div>Invoice</div>
+                          <div>Product Description</div>
+                          <div>Discount Amount</div>
+                          <div>Employee Name</div>
+                        </div>
+                      </div>
+
+                      {/* Groupings */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+                      <div className="text-[11px] mb-1 font-bold">
+                        Category: عروض
+                      </div>
+                      <div className="text-[11px] mb-1 font-bold">
+                        Division: عروض
+                      </div>
+                      <div className="text-[11px] mb-2 font-bold">
+                        Group: عروض
+                      </div>
+
+                      {/* Data Row */}
+                      <div className="grid grid-cols-[100px_1fr_150px_150px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>4000034</div>
+                        <div>Fixed Offer</div>
+                        <div></div>
+                        <div>Mahdi</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Discount By Description by Employee' ? (
                     /* DISCOUNT BY DESCRIPTION BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
