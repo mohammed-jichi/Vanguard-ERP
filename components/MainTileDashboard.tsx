@@ -17,6 +17,7 @@ import VanguardGlobalHeader from './VanguardGlobalHeader';
 import VanguardSubHeader from './VanguardSubHeader';
 import GenericDataTable from './GenericDataTable';
 import SalesDashboard from './SalesDashboard';
+import ReportsMasterDetail from './ReportsMasterDetail';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -686,6 +687,8 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           </div>
         ) : activeScreen === 'sales-dash' || activeScreen === 'sc-dashboard' ? (
           <SalesDashboard onSelectScreen={(screen) => setActiveScreen(screen)} />
+        ) : (activeScreen === 'sales-reports' || activeScreen === 'reports') ? (
+          <ReportsMasterDetail onBack={() => setActiveScreen('grid-dash')} />
         ) : activeScreen !== 'grid-dash' ? (
           <div className="w-full font-sans">
             <GenericDataTable
