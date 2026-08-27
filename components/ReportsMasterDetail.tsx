@@ -503,7 +503,81 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'No Sale' ? (
+                  {selectedReport === 'Transactions on Hold' ? (
+                    /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        History of Transactions on Hold
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-4">
+                          <span>From Date :01-Jan-2026</span>
+                          <span>To Date: 31-Mar-2026</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Workstation Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-4 grid grid-cols-2 text-[11px] font-bold">
+                        <div className="text-right pr-8">Workstation :</div>
+                        <div className="text-left pl-8">1 Showroom 1</div>
+                      </div>
+
+                      {/* Date Header */}
+                      <div className="text-[11px] font-bold mb-2">
+                        09 January 2026
+                      </div>
+
+                      {/* Employee Info */}
+                      <div className="text-[11px] font-bold mb-6">
+                        <div className="grid grid-cols-[120px_1fr] mb-1">
+                          <div>Employee ID :</div>
+                          <div>1</div>
+                        </div>
+                        <div className="grid grid-cols-[120px_1fr]">
+                          <div>Employee Name:</div>
+                          <div>Mahdi</div>
+                        </div>
+                      </div>
+
+                      {/* Columns Header */}
+                      <div className="grid grid-cols-[140px_40px_1fr_100px_100px] gap-2 text-[11px] font-bold mb-2">
+                        <div>Date</div>
+                        <div>Qty</div>
+                        <div>Description</div>
+                        <div className="text-right">Unit Price</div>
+                        <div className="text-right pr-2">Unit Price</div>
+                      </div>
+
+                      {/* Item Row */}
+                      <div className="grid grid-cols-[140px_40px_1fr_100px_100px] gap-2 text-[11px] font-bold mb-2">
+                        <div>09/01/2026 12.16.10</div>
+                        <div>-1.0</div>
+                        <div>قرفة سيجار مرطبان</div>
+                        <div className="text-right">200000.0</div>
+                        <div className="text-right pr-2">-200000.0</div>
+                      </div>
+
+                      {/* Total Amount */}
+                      <div className="grid grid-cols-[140px_40px_1fr_100px_100px] gap-2 text-[11px] font-bold mb-2">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div className="text-right">Amount :</div>
+                        <div className="text-right pr-2">-200000.0</div>
+                      </div>
+
+                      {/* Bottom Line */}
+                      <div className="border-b border-black mt-2"></div>
+                    </div>
+                  ) : selectedReport === 'No Sale' ? (
                     /* NO SALE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
