@@ -17,7 +17,8 @@ import {
   Filter,
   Layers,
   ArrowUpRight,
-  CheckCircle2
+  CheckCircle2,
+  Menu
 } from 'lucide-react';
 
 interface ReportItem {
@@ -82,6 +83,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [selectedCategory, setSelectedCategory] = useState<string>('recently-viewed');
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
 
   const reportsList = MOCK_REPORTS[selectedCategory] || [];
   const filteredReports = reportsList.filter(rep =>
@@ -118,96 +120,107 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
       {/* 2. TWO-COLUMN MASTER-DETAIL GRID */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12 mt-6">
         
-        {/* LEFT PANEL (REPORT CATEGORIES & SUB-REPORTS - col-span-3) */}
-        <div className="col-span-12 md:col-span-3 bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col">
-          
-          {/* SEARCH HEADER */}
-          <div className="p-3 border-b border-slate-100 bg-slate-50/60 relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search reports..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-900 placeholder-slate-400 font-medium"
-            />
-          </div>
+        {/* LEFT PANEL (REPORT CATEGORIES & SUB-REPORTS - CONDITIONAL TOGGLE) */}
+        {isReportListOpen && (
+          <div className="col-span-12 md:col-span-3 bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col transition-all duration-300">
+            
+            {/* SEARCH HEADER */}
+            <div className="p-3 border-b border-slate-100 bg-slate-50/60 relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search reports..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-900 placeholder-slate-400 font-medium"
+              />
+            </div>
 
-          {/* CATEGORY LIST */}
-          <div className="divide-y divide-slate-100 overflow-y-auto max-h-[580px]">
-            {CATEGORIES.map((cat) => {
-              const isSelected = selectedCategory === cat.id;
-              const Icon = cat.icon;
-              return (
-                <div key={cat.id}>
-                  <div
-                    onClick={() => {
-                      setSelectedCategory(cat.id);
-                      setSelectedReport(null);
-                    }}
-                    className={`p-4 text-sm font-semibold cursor-pointer transition-all flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-blue-50/70 text-blue-700 font-bold border-l-4 border-l-blue-600'
-                        : 'text-blue-600 hover:bg-slate-50 hover:text-blue-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
-                      <span>{cat.label}</span>
+            {/* CATEGORY LIST */}
+            <div className="divide-y divide-slate-100 overflow-y-auto max-h-[580px]">
+              {CATEGORIES.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                const Icon = cat.icon;
+                return (
+                  <div key={cat.id}>
+                    <div
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        setSelectedReport(null);
+                      }}
+                      className={`p-4 text-sm font-semibold cursor-pointer transition-all flex items-center justify-between ${
+                        isSelected
+                          ? 'bg-blue-50/70 text-blue-700 font-bold border-l-4 border-l-blue-600'
+                          : 'text-blue-600 hover:bg-slate-50 hover:text-blue-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                        <span>{cat.label}</span>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-slate-300'}`} />
                     </div>
-                    <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-slate-300'}`} />
-                  </div>
 
-                  {/* SUB-REPORTS UNDER ACTIVE CATEGORY */}
-                  {isSelected && (
-                    <div className="bg-slate-50/80 px-3 py-2 space-y-1 border-b border-slate-100">
-                      {filteredReports.length === 0 ? (
-                        <p className="text-xs text-slate-400 italic px-3 py-2">No matching reports</p>
-                      ) : (
-                        filteredReports.map((rep) => {
-                          const isRepSelected = selectedReport?.id === rep.id;
-                          return (
-                            <div
-                              key={rep.id}
-                              onClick={() => setSelectedReport(rep)}
-                              className={`p-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center justify-between ${
-                                isRepSelected
-                                  ? 'bg-white text-slate-900 shadow-2xs font-bold border border-blue-200'
-                                  : 'text-slate-600 hover:bg-white hover:text-slate-900'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2 truncate pr-2">
-                                <FileText className={`w-3.5 h-3.5 shrink-0 ${isRepSelected ? 'text-blue-600' : 'text-slate-400'}`} />
-                                <span className="truncate">{rep.name}</span>
+                    {/* SUB-REPORTS UNDER ACTIVE CATEGORY */}
+                    {isSelected && (
+                      <div className="bg-slate-50/80 px-3 py-2 space-y-1 border-b border-slate-100">
+                        {filteredReports.length === 0 ? (
+                          <p className="text-xs text-slate-400 italic px-3 py-2">No matching reports</p>
+                        ) : (
+                          filteredReports.map((rep) => {
+                            const isRepSelected = selectedReport?.id === rep.id;
+                            return (
+                              <div
+                                key={rep.id}
+                                onClick={() => setSelectedReport(rep)}
+                                className={`p-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center justify-between ${
+                                  isRepSelected
+                                    ? 'bg-white text-slate-900 shadow-2xs font-bold border border-blue-200'
+                                    : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 truncate pr-2">
+                                  <FileText className={`w-3.5 h-3.5 shrink-0 ${isRepSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                                  <span className="truncate">{rep.name}</span>
+                                </div>
+                                {isRepSelected && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />}
                               </div>
-                              {isRepSelected && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />}
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                            );
+                          })
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* RIGHT PANEL (REPORT VIEWER - col-span-9) */}
-        <div className="col-span-12 md:col-span-9 bg-white border border-slate-200 rounded-xl shadow-xs min-h-[600px] p-6 relative flex flex-col justify-between overflow-hidden">
+        {/* RIGHT PANEL (REPORT VIEWER - DYNAMIC SPAN: col-span-9 or col-span-12) */}
+        <div className={`col-span-12 ${isReportListOpen ? 'md:col-span-9' : 'md:col-span-12'} bg-white border border-slate-200 rounded-xl shadow-xs min-h-[600px] p-6 relative flex flex-col justify-between overflow-hidden transition-all duration-300`}>
           
-          {/* VIEWER HEADER */}
+          {/* VIEWER HEADER WITH INTERNAL HAMBURGER TOGGLE */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                {selectedReport ? selectedReport.name : 'No Report Selected'}
-              </h3>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsReportListOpen(!isReportListOpen)}
+                  title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
+                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+                  {selectedReport ? selectedReport.name : 'No Report Selected'}
+                </h3>
+              </div>
               {selectedReport ? (
-                <p className="text-xs text-slate-500 font-medium mt-1">
+                <p className="text-xs text-slate-500 font-medium mt-1 ml-9">
                   {selectedReport.description} &bull; <span className="text-slate-400">Last executed: {selectedReport.lastRun}</span>
                 </p>
               ) : (
-                <p className="text-xs text-slate-400 font-medium mt-1">
+                <p className="text-xs text-slate-400 font-medium mt-1 ml-9">
                   Choose a report category from the left panel to load live system analytics.
                 </p>
               )}
