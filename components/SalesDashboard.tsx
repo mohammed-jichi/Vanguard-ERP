@@ -29,7 +29,11 @@ import {
   CreditCard,
   Ban,
   User,
-  Info
+  Info,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  ArrowUpDown
 } from 'lucide-react';
 import {
   BarChart,
@@ -63,6 +67,41 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Widget Expand Modal State
   const [expandedWidget, setExpandedWidget] = useState<string | null>(null);
+
+  // Phase 75: Customers Tab States & Data
+  const [topNCount, setTopNCount] = useState<number>(10);
+  const [customerSearchQuery, setCustomerSearchQuery] = useState<string>('');
+  const [isDemographicsExpanded, setIsDemographicsExpanded] = useState<boolean>(true);
+  const [isGroupByGroupExpanded, setIsGroupByGroupExpanded] = useState<boolean>(true);
+  const [sortField, setSortField] = useState<'orders' | 'name' | 'value'>('orders');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const topCustomersData = [
+    { name: 'Colonel Mahmoud Abboud Colonel Abboud', orders: 2, value: '0 LL', rawValue: 0 },
+    { name: 'مطعم وريزورت شمس الجنوب', orders: 42, value: 'LBP 1,450,000,000', rawValue: 1450000000 },
+    { name: 'شركة البركة للمواد الغذائية', orders: 18, value: 'LBP 420,000,000', rawValue: 420000000 },
+    { name: 'مؤسسة الجنوب لتجارة الزيت', orders: 15, value: 'LBP 310,000,000', rawValue: 310000000 },
+    { name: 'سوبرماركت الهناء - بيروت', orders: 12, value: 'LBP 185,000,000', rawValue: 185000000 },
+    { name: 'محل الزهراء للمواد التموينية', orders: 9, value: 'LBP 115,000,000', rawValue: 115000000 },
+    { name: 'خالد المحمود', orders: 7, value: 'LBP 95,000,000', rawValue: 95000000 },
+    { name: 'حسان السيد', orders: 5, value: 'LBP 65,000,000', rawValue: 65000000 },
+    { name: 'مؤسسة النور التجاري', orders: 4, value: 'LBP 48,000,000', rawValue: 48000000 },
+    { name: 'محمد علي الحاج', orders: 3, value: 'LBP 35,000,000', rawValue: 35000000 },
+  ];
+
+  const demographicsCitiesData = [
+    { city: 'Bourj Albarajne', count: 1, percent: '14.29%' },
+    { city: 'Choueifat', count: 1, percent: '14.29%' },
+    { city: 'Dbaye', count: 1, percent: '14.29%' },
+    { city: 'Jebaa', count: 1, percent: '14.29%' },
+    { city: 'JEITA', count: 1, percent: '14.29%' },
+    { city: 'البقاع', count: 1, percent: '14.29%' },
+    { city: 'الشويفات العمروسية', count: 1, percent: '14.29%' },
+  ];
+
+  const salesByGroupPieData = [
+    { name: 'Clients', value: 248400000, color: '#10b981', percentage: '100.00%' }
+  ];
 
   // --- LIVE DATA: SUMMARY TAB ---
   const monthlyRevenueData = [
@@ -1532,6 +1571,338 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       {/* ---------------- PHASE 42: PRODUCT INSIGHTS TAB VIEW ---------------- */}
       {activeTab === 'product-insights' && (
         <ProductInsightsView />
+      )}
+
+      {/* ---------------- PHASE 75: CUSTOMERS TAB VIEW (IN-PLACE RENDER) ---------------- */}
+      {activeTab === 'customers' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          
+          {/* SECTION 1: CUSTOMERS STATISTICS (3-COLUMN GRID) */}
+          <div className="border border-slate-200 rounded-xl bg-white shadow-2xs overflow-hidden">
+            {/* Header */}
+            <div className="bg-slate-100 border-b border-slate-200 py-2.5 px-4 text-center">
+              <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">
+                Customers Statistics
+              </h2>
+            </div>
+
+            <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-5">
+              
+              {/* COLUMN 1: STATS TABLES (LEFT) */}
+              <div className="space-y-4">
+                
+                {/* Table 1: Customers */}
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Customers</h3>
+                  </div>
+                  <div className="divide-y divide-slate-100 text-xs font-sans">
+                    <div className="flex justify-between py-2 px-3 bg-white">
+                      <span className="text-slate-600 font-medium">Total Number of Customers</span>
+                      <span className="font-mono font-bold text-slate-900">33</span>
+                    </div>
+                    <div className="flex justify-between py-2 px-3 bg-slate-50/50">
+                      <span className="text-slate-600 font-medium">New Customers (August)</span>
+                      <span className="font-mono font-bold text-slate-900">0</span>
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-slate-200 bg-white">
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">MTD</span>
+                        <span className="font-mono font-bold text-slate-900">0</span>
+                      </div>
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">YTD</span>
+                        <span className="font-mono font-bold text-slate-900">31</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-slate-200 bg-slate-50/50">
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">LMTD</span>
+                        <span className="font-mono font-bold text-slate-900">1</span>
+                      </div>
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">LYTD</span>
+                        <span className="font-mono font-bold text-slate-900">33</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-slate-200 bg-white">
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">LM</span>
+                        <span className="font-mono font-bold text-slate-900">1</span>
+                      </div>
+                      <div className="flex justify-between py-2 px-3">
+                        <span className="text-slate-500 font-medium">LY</span>
+                        <span className="font-mono font-bold text-slate-900">2</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between py-2 px-3 bg-slate-50/50">
+                      <span className="text-slate-600 font-medium">Not Active Customers</span>
+                      <span className="font-mono font-bold text-amber-600">2</span>
+                    </div>
+                    <div className="flex justify-between py-2 px-3 bg-white">
+                      <span className="text-slate-600 font-medium">Repeated Customers Rate</span>
+                      <span className="font-mono font-bold text-emerald-600">100%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Table 2: Delivery Orders */}
+                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                  <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Delivery Orders</h3>
+                  </div>
+                  <div className="divide-y divide-slate-100 text-xs font-sans">
+                    <div className="flex justify-between py-2 px-3 bg-white">
+                      <span className="text-slate-600 font-medium">Total Number of Delivery Orders</span>
+                      <span className="font-mono font-bold text-slate-900">0</span>
+                    </div>
+                    <div className="flex justify-between py-2 px-3 bg-slate-50/50">
+                      <span className="text-slate-600 font-medium">Delivery Orders Value</span>
+                      <span className="font-mono font-bold text-slate-900">0 LL</span>
+                    </div>
+                    <div className="flex justify-between py-2 px-3 bg-white">
+                      <span className="text-slate-600 font-medium">Average Delivery Value</span>
+                      <span className="font-mono font-bold text-slate-900">0 LL</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* COLUMN 2: TOP CUSTOMERS LIST (MIDDLE) */}
+              <div className="border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between bg-white">
+                <div>
+                  {/* Table Header Controls */}
+                  <div className="bg-slate-50 border-b border-slate-200 p-2 flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-700 font-bold">
+                      <span>Customer</span>
+                      <button
+                        onClick={() => {
+                          setSortField('name');
+                          setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                        }}
+                        className="p-1 hover:bg-slate-200 rounded transition-colors"
+                        title="Sort by Customer Name"
+                      >
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-600 font-medium">Top:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={topNCount}
+                        onChange={(e) => setTopNCount(Math.max(1, parseInt(e.target.value) || 10))}
+                        className="w-12 px-1.5 py-0.5 bg-white border border-slate-300 rounded text-center text-xs font-mono font-bold text-slate-800"
+                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={customerSearchQuery}
+                          onChange={(e) => setCustomerSearchQuery(e.target.value)}
+                          className="w-24 pl-6 pr-1.5 py-0.5 bg-white border border-slate-300 rounded text-xs font-sans text-slate-800"
+                        />
+                        <Search className="w-3 h-3 text-slate-400 absolute left-1.5 top-1.5 pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Customer Data Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-sans">
+                      <thead className="bg-slate-100 text-slate-600 font-semibold uppercase text-[10px] tracking-wide border-b border-slate-200">
+                        <tr>
+                          <th className="py-2 px-3">CUSTOMER</th>
+                          <th className="py-2 px-2 text-center">ORDERS</th>
+                          <th className="py-2 px-3 text-right">VALUE</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-800">
+                        {topCustomersData
+                          .filter((c) => c.name.toLowerCase().includes(customerSearchQuery.toLowerCase()))
+                          .slice(0, topNCount)
+                          .map((cust, idx) => (
+                            <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/60 hover:bg-slate-100/80'}>
+                              <td className="py-2 px-3 font-medium text-slate-900 truncate max-w-[160px]" title={cust.name}>
+                                {cust.name}
+                              </td>
+                              <td className="py-2 px-2 text-center font-mono font-bold text-slate-700">
+                                {cust.orders}
+                              </td>
+                              <td className="py-2 px-3 text-right font-mono font-bold text-emerald-700">
+                                {cust.value}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 border-t border-slate-200 py-1.5 px-3 text-[11px] text-slate-500 font-semibold text-right">
+                  Showing top {topNCount} customers
+                </div>
+              </div>
+
+              {/* COLUMN 3: DEMOGRAPHICS (RIGHT) */}
+              <div className="border border-slate-200 rounded-lg overflow-hidden flex flex-col justify-between bg-white">
+                <div>
+                  <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Demographics</h3>
+                  </div>
+
+                  {/* Collapsible Group Header: Lebanon */}
+                  <div
+                    onClick={() => setIsDemographicsExpanded(!isDemographicsExpanded)}
+                    className="bg-slate-100 border-b border-slate-200 py-2 px-3 flex items-center justify-between cursor-pointer hover:bg-slate-200/70 transition-colors"
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800">
+                      {isDemographicsExpanded ? (
+                        <ChevronDown className="w-4 h-4 text-slate-600" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-slate-600" />
+                      )}
+                      <span>Lebanon</span>
+                    </div>
+                    <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-300 px-2 py-0.5 rounded-full">
+                      Total: 7
+                    </span>
+                  </div>
+
+                  {/* Demographics Data Table */}
+                  {isDemographicsExpanded && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead className="bg-slate-50 text-slate-600 font-semibold uppercase text-[10px] tracking-wide border-b border-slate-200">
+                          <tr>
+                            <th className="py-2 px-3">CITY</th>
+                            <th className="py-2 px-3 text-center">TOTAL</th>
+                            <th className="py-2 px-3 text-right">%</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-slate-800">
+                          {demographicsCitiesData.map((d, idx) => (
+                            <tr key={idx} className={idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/60 hover:bg-slate-100/80'}>
+                              <td className="py-2 px-3 font-medium text-slate-900">{d.city}</td>
+                              <td className="py-2 px-3 text-center font-mono font-bold text-slate-700">{d.count}</td>
+                              <td className="py-2 px-3 text-right font-mono font-semibold text-indigo-600">{d.percent}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-slate-50 border-t border-slate-200 py-1.5 px-3 text-[11px] text-slate-500 font-semibold text-right">
+                  7 Lebanese regions mapped
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* SECTION 2: SALES BY CUSTOMER BY GROUP */}
+          <div className="border border-slate-200 rounded-xl bg-white shadow-2xs overflow-hidden">
+            {/* Header */}
+            <div className="bg-slate-100 border-b border-slate-200 py-2.5 px-4 flex items-center justify-between">
+              <span className="w-8"></span>
+              <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide text-center">
+                Sales By Customer By Group
+              </h2>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setExpandedWidget('sales-by-customer-by-group')}
+                  title="Expand Fullscreen"
+                  className="p-1 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => alert('Options for Sales By Customer By Group')}
+                  title="Options"
+                  className="p-1 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 flex flex-col items-center justify-center space-y-6">
+              
+              {/* Solid Pie Chart (innerRadius = 0) */}
+              <div className="w-full max-w-sm h-64 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={salesByGroupPieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={0}
+                      outerRadius={95}
+                      dataKey="value"
+                      stroke="#ffffff"
+                      strokeWidth={2}
+                    >
+                      {salesByGroupPieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(val: any) => [`LBP ${val.toLocaleString()}`, 'Total Sales']}
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '13px' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legend & Data Table Below Chart */}
+              <div className="w-full max-w-xl border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                {/* Collapsible Header Row: All Groups */}
+                <div
+                  onClick={() => setIsGroupByGroupExpanded(!isGroupByGroupExpanded)}
+                  className="bg-slate-100 border-b border-slate-200 py-2.5 px-4 flex items-center justify-between cursor-pointer hover:bg-slate-200/70 transition-colors"
+                >
+                  <div className="flex items-center gap-2 font-bold text-xs text-slate-800">
+                    {isGroupByGroupExpanded ? (
+                      <ChevronDown className="w-4 h-4 text-slate-600" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-slate-600" />
+                    )}
+                    <span>All Groups</span>
+                  </div>
+                  <span className="font-mono text-xs font-bold text-emerald-700 bg-white border border-slate-300 px-3 py-1 rounded-full">
+                    Total Value: 248,400,000 LL
+                  </span>
+                </div>
+
+                {/* Data Rows */}
+                {isGroupByGroupExpanded && (
+                  <div className="divide-y divide-slate-100 text-xs font-sans bg-white">
+                    <div className="flex items-center justify-between py-3 px-4 hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-2.5 font-medium text-slate-900">
+                        <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 inline-block border border-emerald-600"></span>
+                        <span>Clients</span>
+                      </div>
+                      <div className="flex items-center gap-6 font-mono">
+                        <span className="font-bold text-slate-900">248,400,000 LL</span>
+                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                          100.00%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+        </div>
       )}
 
       {/* FULLSCREEN EXPANDED WIDGET MODAL OVERLAY */}
