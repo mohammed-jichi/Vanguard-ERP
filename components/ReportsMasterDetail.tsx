@@ -523,7 +523,127 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Sales by Employee by Category' ? (
+                  {selectedReport === 'Sales by Supplier' ? (
+                    /* SALES BY SUPPLIER REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Sales By Supplier
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>Year: 2026 - Month: 8</div>
+                        <div>Page 1 of 4</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] font-bold text-black">
+                          <div>Barcode</div>
+                          <div>Description</div>
+                          <div className="text-right">Qty</div>
+                          <div className="text-right">Total</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Info */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Branch Name: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Supplier 1 */}
+                      <div className="text-[11px] font-bold mb-1">Supplier :Abbas & Hussein Dirani</div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>11262</div>
+                        <div>مرطبان مربى تين معقود مع سمسم و جوز 800غ</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">360,000.00</div>
+                      </div>
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-4 font-bold">
+                        <div className="col-span-2">Abbas & Hussein Dirani</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">360,000.00</div>
+                      </div>
+
+                      {/* Supplier 2 */}
+                      <div className="text-[11px] font-bold mb-1">Supplier :C-Way Trading</div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10706</div>
+                        <div>برغل اسمر خشن</div>
+                        <div className="text-right">7.60</div>
+                        <div className="text-right">760,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10707</div>
+                        <div>برغل اسمر ناعم</div>
+                        <div className="text-right">6.00</div>
+                        <div className="text-right">720,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10746</div>
+                        <div>كيوي حامض</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">725,000.00</div>
+                      </div>
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-4 font-bold">
+                        <div className="col-span-2">C-Way Trading</div>
+                        <div className="text-right">14.60</div>
+                        <div className="text-right">2,205,000.00</div>
+                      </div>
+
+                      {/* Supplier 3 */}
+                      <div className="text-[11px] font-bold mb-1">Supplier :Clatchy</div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>11276</div>
+                        <div>لوز صنوبري</div>
+                        <div className="text-right">0.25</div>
+                        <div className="text-right">393,750.00</div>
+                      </div>
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-4 font-bold">
+                        <div className="col-span-2">Clatchy</div>
+                        <div className="text-right">0.25</div>
+                        <div className="text-right">393,750.00</div>
+                      </div>
+
+                      {/* Supplier 4 */}
+                      <div className="text-[11px] font-bold mb-1">Supplier :Ezzeddin</div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10661</div>
+                        <div>أرز أمريكي</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">180,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>10675</div>
+                        <div>شعيرية</div>
+                        <div className="text-right">2.00</div>
+                        <div className="text-right">180,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>5601001120503</div>
+                        <div>نستله حليب مكثف محلى 370 غرام</div>
+                        <div className="text-right">1.00</div>
+                        <div className="text-right">300,000.00</div>
+                      </div>
+                      <div className="border-b border-dashed border-black mb-1"></div>
+                      <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-4 font-bold">
+                        <div className="col-span-2">Ezzeddin</div>
+                        <div className="text-right">5.00</div>
+                        <div className="text-right">660,000.00</div>
+                      </div>
+
+                      {/* Supplier 5 */}
+                      <div className="text-[11px] font-bold mb-1">Supplier :Mrs Randa</div>
+                    </div>
+                  ) : selectedReport === 'Sales by Employee by Category' ? (
                     /* SALES BY EMPLOYEE BY CATEGORY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
