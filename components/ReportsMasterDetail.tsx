@@ -503,7 +503,46 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'User Log Report' ? (
+                  {selectedReport === 'Discount Summary' ? (
+                    /* DISCOUNT SUMMARY REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Discount Summary
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div>Year: 2026 - Month: 1,2,3</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Separator Line */}
+                      <div className="border-b-[1.5px] border-black mb-4"></div>
+
+                      {/* Data Table */}
+                      <table className="w-[400px] border-collapse border border-black text-[11px] font-bold text-black">
+                        <tbody>
+                          <tr>
+                            <td className="border border-black p-1.5 w-[220px]"></td>
+                            <td className="border border-black p-1.5 text-center w-[180px]">Total Discount</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5 pl-2">Southern Olive and Oil Products</td>
+                            <td className="border border-black p-1.5 text-right pr-2">4,534,098.00</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5 pl-2">Total</td>
+                            <td className="border border-black p-1.5 text-right pr-2">4,534,098.00</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : selectedReport === 'User Log Report' ? (
                     /* USER LOG REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
