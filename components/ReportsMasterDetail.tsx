@@ -510,7 +510,120 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Statistics by Workstation' ? (
+                  {selectedReport === 'Statistics by Department' ? (
+                    /* STATISTICS BY DEPARTMENT REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Statistics by Department
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div>Year: 2026 - Month: 8</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Separator Line */}
+                      <div className="border-b-[1.5px] border-black mb-4"></div>
+
+                      {/* Data Table */}
+                      <table className="w-[650px] border-collapse border border-black text-[11px] font-bold text-black">
+                        <thead>
+                          <tr className="bg-[#cce5ff]">
+                            <th className="border border-black p-1.5 w-[110px]"></th>
+                            <th className="border border-black p-1.5 w-[100px]"></th>
+                            <th className="border border-black p-1.5 text-left w-[140px]">MAIN<br/>DEPARTME</th>
+                            <th className="border border-black p-1.5 text-left w-[140px]">Showroom</th>
+                            <th className="border border-black p-1.5 text-left w-[140px]">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Main Branch Data */}
+                          <tr>
+                            <td className="border border-black p-1.5 align-top" rowSpan={6}>Southern Olive and Oil Products</td>
+                            <td className="border border-black p-1.5">Amount</td>
+                            <td className="border border-black p-1.5">1,316,032,050</td>
+                            <td className="border border-black p-1.5">248,400,000.0</td>
+                            <td className="border border-black p-1.5">1,564,432,050</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5">Tax</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5">Service</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5">Subtotal</td>
+                            <td className="border border-black p-1.5">1,316,032,050</td>
+                            <td className="border border-black p-1.5">248,400,000.0</td>
+                            <td className="border border-black p-1.5">1,564,432,050</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5">Discount</td>
+                            <td className="border border-black p-1.5">53,380,450.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">53,380,450.00</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1.5">Net Total</td>
+                            <td className="border border-black p-1.5">1,262,651,600</td>
+                            <td className="border border-black p-1.5">248,400,000.0</td>
+                            <td className="border border-black p-1.5">1,511,051,600</td>
+                          </tr>
+
+                          {/* Totals Section (Blue Background) */}
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5" rowSpan={6}></td>
+                            <td className="border border-black p-1.5">Amount</td>
+                            <td className="border border-black p-1.5">1,316,032,05</td>
+                            <td className="border border-black p-1.5">248,400,000.</td>
+                            <td className="border border-black p-1.5">1,564,432,050</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5">Tax</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5">Service</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5">Subtotal</td>
+                            <td className="border border-black p-1.5">1,316,032,05</td>
+                            <td className="border border-black p-1.5">248,400,000.</td>
+                            <td className="border border-black p-1.5">1,564,432,050</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5">Discount</td>
+                            <td className="border border-black p-1.5">53,380,450.0</td>
+                            <td className="border border-black p-1.5">0.00</td>
+                            <td className="border border-black p-1.5">53,380,450.00</td>
+                          </tr>
+                          <tr className="bg-[#cce5ff]">
+                            <td className="border border-black p-1.5">Net Total</td>
+                            <td className="border border-black p-1.5">1,262,651,60</td>
+                            <td className="border border-black p-1.5">248,400,000.</td>
+                            <td className="border border-black p-1.5">1,511,051,600</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : selectedReport === 'Statistics by Workstation' ? (
                     /* STATISTICS BY WORKSTATION REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
