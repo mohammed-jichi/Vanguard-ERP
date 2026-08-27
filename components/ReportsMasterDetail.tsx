@@ -613,55 +613,51 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Main Table Header */}
                       <div className="border-t-[2px] border-b-[2px] border-black flex text-[11px] font-bold py-1 mb-2 bg-gray-50">
-                        <div className="w-[12%] px-2">Date</div>
-                        <div className="w-[13%]">Ticket #</div>
-                        <div className="w-[20%]">Customer</div>
-                        <div className="w-[15%] text-right">Total Amount</div>
-                        <div className="w-[15%] text-right">Paid</div>
-                        <div className="w-[15%] text-right pr-2">Balance</div>
-                        <div className="w-[10%] text-center">Status</div>
+                        <div className="w-[15%] px-2">Date</div>
+                        <div className="w-[15%]">Ticket #</div>
+                        <div className="w-[25%]">Customer</div>
+                        <div className="w-[15%]">Action</div>
+                        <div className="w-[15%] text-right">Amount</div>
+                        <div className="w-[15%] text-right pr-2">Ticket Balance</div>
                       </div>
 
                       {/* Record 1 */}
-                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
-                        <div className="w-[12%] px-2 font-bold">22/08/2026</div>
-                        <div className="w-[13%] font-bold">LAY-0001</div>
-                        <div className="w-[20%] font-bold">Colonel Mahmoud</div>
-                        <div className="w-[15%] text-right font-medium">248,400,000.00</div>
-                        <div className="w-[15%] text-right font-medium text-green-700">48,400,000.00</div>
-                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">200,000,000.00</div>
-                        <div className="w-[10%] text-center font-bold text-amber-700">Active</div>
+                      <div className="flex text-[11px] font-medium mt-2">
+                        <div className="w-[15%] px-2">15/08/2026</div>
+                        <div className="w-[15%]">LAY-0005</div>
+                        <div className="w-[25%] font-bold">Yehya Kassem</div>
+                        <div className="w-[15%]">Initial Deposit</div>
+                        <div className="w-[15%] text-right text-green-700">10,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">40,000,000.00</div>
                       </div>
-
+                      
                       {/* Record 2 */}
-                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
-                        <div className="w-[12%] px-2 font-bold">25/08/2026</div>
-                        <div className="w-[13%] font-bold">LAY-0002</div>
-                        <div className="w-[20%] font-bold">Hussein Deek</div>
-                        <div className="w-[15%] text-right font-medium">15,000,000.00</div>
-                        <div className="w-[15%] text-right font-medium text-green-700">5,000,000.00</div>
-                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">10,000,000.00</div>
-                        <div className="w-[10%] text-center font-bold text-amber-700">Active</div>
+                      <div className="flex text-[11px] font-medium mt-2 mb-2">
+                        <div className="w-[15%] px-2">20/08/2026</div>
+                        <div className="w-[15%]">LAY-0005</div>
+                        <div className="w-[25%] font-bold">Yehya Kassem</div>
+                        <div className="w-[15%]">Partial Payment</div>
+                        <div className="w-[15%] text-right text-green-700">20,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">20,000,000.00</div>
                       </div>
+                      
+                      <div className="border-b border-dotted border-gray-400 mb-2 w-full"></div>
 
                       {/* Record 3 */}
-                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
-                        <div className="w-[12%] px-2 font-bold">10/08/2026</div>
-                        <div className="w-[13%] font-bold">LAY-0000</div>
-                        <div className="w-[20%] font-bold">Mr. Dayek</div>
-                        <div className="w-[15%] text-right font-medium">50,000,000.00</div>
-                        <div className="w-[15%] text-right font-medium text-green-700">50,000,000.00</div>
-                        <div className="w-[15%] text-right pr-2 font-bold text-emerald-700">0.00</div>
-                        <div className="w-[10%] text-center font-bold text-green-700">Completed</div>
+                      <div className="flex text-[11px] font-medium mt-2 mb-4">
+                        <div className="w-[15%] px-2">25/08/2026</div>
+                        <div className="w-[15%]">LAY-0006</div>
+                        <div className="w-[25%] font-bold">Jichi Hussien</div>
+                        <div className="w-[15%]">Initial Deposit</div>
+                        <div className="w-[15%] text-right text-green-700">5,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">15,000,000.00</div>
                       </div>
                       
                       {/* Grand Totals */}
                       <div className="border-t-[2px] border-black pt-1 flex text-[11px] font-bold mb-12 mt-4">
-                        <div className="w-[45%] text-right pr-4">Grand Total:</div>
-                        <div className="w-[15%] text-right">313,400,000.00</div>
-                        <div className="w-[15%] text-right">103,400,000.00</div>
-                        <div className="w-[15%] text-right pr-2">210,000,000.00</div>
-                        <div className="w-[10%]"></div>
+                        <div className="w-[70%] text-right pr-4">Total Collected (Period):</div>
+                        <div className="w-[15%] text-right text-green-700">35,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2"></div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
