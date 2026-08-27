@@ -637,10 +637,10 @@ export default function CustomerInsightsPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800">
                       {displayedBuyers.map((b, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50">
-                          <td className="py-2 px-3 font-medium text-slate-900 truncate max-w-[130px]">{b.name}</td>
-                          <td className="py-2 px-3 font-mono font-bold text-emerald-600">{b.ltv}</td>
-                          <td className="py-2 px-3 font-mono text-slate-600">{b.avgTicket}</td>
+                        <tr key={idx} className="even:bg-slate-50/50 hover:bg-slate-100 transition-colors duration-150 cursor-pointer">
+                          <td className="py-2.5 px-3 font-normal text-slate-900 truncate max-w-[130px]">{b.name}</td>
+                          <td className="py-2.5 px-3 font-mono font-medium text-emerald-600">{b.ltv}</td>
+                          <td className="py-2.5 px-3 font-mono text-slate-600">{b.avgTicket}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -879,8 +879,8 @@ export default function CustomerInsightsPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {behaviorTrends.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-4 font-bold text-slate-900">{row.month}</td>
+                      <tr key={idx} className="even:bg-slate-50/50 hover:bg-slate-100 transition-colors duration-150 cursor-pointer">
+                        <td className="py-3.5 px-4 font-semibold text-slate-900">{row.month}</td>
                         <td className="py-3.5 px-4 font-mono font-medium text-slate-700">{row.active} Accounts</td>
                         <td className="py-3.5 px-4 font-mono font-medium text-emerald-600">+{row.newAcc}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-600 font-normal">{row.aov}</td>
@@ -914,8 +914,8 @@ export default function CustomerInsightsPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {topBuyersData.slice(0, 5).map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-4 font-medium text-slate-900">{row.name}</td>
+                      <tr key={idx} className="even:bg-slate-50/50 hover:bg-slate-100 transition-colors duration-150 cursor-pointer">
+                        <td className="py-3.5 px-4 font-normal text-slate-900">{row.name}</td>
                         <td className="py-3.5 px-4">
                           <span className="bg-purple-50 text-purple-700 border border-purple-200 text-xs px-2.5 py-0.5 rounded-full font-medium">
                             {row.category}

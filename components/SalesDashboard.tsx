@@ -120,35 +120,35 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const categorySalesData = [
-    { name: 'Extra Virgin Olive Oil', value: 45, amount: 'LBP 91,035,000', color: '#10b981' },
-    { name: 'Bottled Oil & Jars', value: 30, amount: 'LBP 60,690,000', color: '#3b82f6' },
-    { name: 'Pressing Services', value: 15, amount: 'LBP 30,345,000', color: '#f59e0b' },
-    { name: 'Soaps & Byproducts', value: 10, amount: 'LBP 20,230,000', color: '#8b5cf6' }
+    { name: 'Extra Virgin Olive Oil', value: 45, amount: 'LBP 91,035,000', color: '#1e3a8a' },
+    { name: 'Bottled Oil & Jars', value: 30, amount: 'LBP 60,690,000', color: '#0f766e' },
+    { name: 'Pressing Services', value: 15, amount: 'LBP 30,345,000', color: '#854d0e' },
+    { name: 'Soaps & Byproducts', value: 10, amount: 'LBP 20,230,000', color: '#4c1d95' }
   ];
 
   const divisionSalesData = [
-    { name: 'Retail Olive Oil (زيت مفرق)', value: 52, amount: 'LBP 322.4M', color: '#10b981' },
-    { name: 'Wholesale Drums (براميل جملة)', value: 25, amount: 'LBP 155.0M', color: '#3b82f6' },
-    { name: 'Extraction & Pressing (عصر الزيتون)', value: 15, amount: 'LBP 93.0M', color: '#f59e0b' },
-    { name: 'Organic Soaps (صابون بلدي)', value: 8, amount: 'LBP 49.6M', color: '#8b5cf6' }
+    { name: 'Retail Olive Oil (زيت مفرق)', value: 52, amount: 'LBP 322.4M', color: '#1e3a8a' },
+    { name: 'Wholesale Drums (براميل جملة)', value: 25, amount: 'LBP 155.0M', color: '#475569' },
+    { name: 'Extraction & Pressing (عصر الزيتون)', value: 15, amount: 'LBP 93.0M', color: '#0f766e' },
+    { name: 'Organic Soaps (صابون بلدي)', value: 8, amount: 'LBP 49.6M', color: '#854d0e' }
   ];
 
   const groupSalesData = [
-    { name: 'Glass Bottles', value: 40, amount: 'LBP 248.0M', color: '#06b6d4' },
-    { name: 'Tin Cans 16L', value: 35, amount: 'LBP 217.0M', color: '#ec4899' },
-    { name: 'Plastic Containers', value: 15, amount: 'LBP 93.0M', color: '#f97316' },
-    { name: 'Loose Bulk', value: 10, amount: 'LBP 62.0M', color: '#64748b' }
+    { name: 'Glass Bottles', value: 40, amount: 'LBP 248.0M', color: '#0f766e' },
+    { name: 'Tin Cans 16L', value: 35, amount: 'LBP 217.0M', color: '#1e3a8a' },
+    { name: 'Plastic Containers', value: 15, amount: 'LBP 93.0M', color: '#854d0e' },
+    { name: 'Loose Bulk', value: 10, amount: 'LBP 62.0M', color: '#475569' }
   ];
 
   const departmentSalesData = [
-    { name: 'MAIN DEPARTMENT', value: 68, amount: 'LBP 421.6M', color: '#3b82f6' },
-    { name: 'Showroom', value: 22, amount: 'LBP 136.4M', color: '#10b981' },
-    { name: 'Direct Delivery', value: 10, amount: 'LBP 62.0M', color: '#f59e0b' }
+    { name: 'MAIN DEPARTMENT', value: 68, amount: 'LBP 421.6M', color: '#1e3a8a' },
+    { name: 'Showroom', value: 22, amount: 'LBP 136.4M', color: '#0f766e' },
+    { name: 'Direct Delivery', value: 10, amount: 'LBP 62.0M', color: '#854d0e' }
   ];
 
   const discountSummaryData = [
-    { name: 'AMOUNT DISCOUNT', value: 65, amount: 'LBP 1,625,000', color: '#ef4444' },
-    { name: 'PERCENTAGE DISCOUNT', value: 35, amount: 'LBP 875,000', color: '#8b5cf6' }
+    { name: 'AMOUNT DISCOUNT', value: 65, amount: 'LBP 1,625,000', color: '#1e3a8a' },
+    { name: 'PERCENTAGE DISCOUNT', value: 35, amount: 'LBP 875,000', color: '#4c1d95' }
   ];
 
   const discountByCategoryData = [
@@ -158,22 +158,22 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const voidSummaryData = [
-    { reason: 'Price Correction', value: 50, amount: 'LBP 1,200,000', count: 6, color: '#f59e0b' },
-    { reason: 'Customer Cancellation', value: 30, amount: 'LBP 720,000', count: 4, color: '#ef4444' },
-    { reason: 'Cashier Error', value: 20, amount: 'LBP 480,000', count: 2, color: '#64748b' }
+    { reason: 'Price Correction', value: 50, amount: 'LBP 1,200,000', count: 6, color: '#854d0e' },
+    { reason: 'Customer Cancellation', value: 30, amount: 'LBP 720,000', count: 4, color: '#4c1d95' },
+    { reason: 'Cashier Error', value: 20, amount: 'LBP 480,000', count: 2, color: '#475569' }
   ];
 
   const userSummaryData = [
-    { user: 'Hiba Aloulou', value: 30, amount: 'LBP 186.0M', color: '#ec4899' },
-    { user: 'Mahdi', value: 25, amount: 'LBP 155.0M', color: '#8b5cf6' },
-    { user: 'Cashier N2', value: 23, amount: 'LBP 142.6M', color: '#10b981' },
-    { user: 'Nour Yazbeck', value: 22, amount: 'LBP 136.4M', color: '#06b6d4' }
+    { user: 'Hiba Aloulou', value: 30, amount: 'LBP 186.0M', color: '#4c1d95' },
+    { user: 'Mahdi', value: 25, amount: 'LBP 155.0M', color: '#1e3a8a' },
+    { user: 'Cashier N2', value: 23, amount: 'LBP 142.6M', color: '#0f766e' },
+    { user: 'Nour Yazbeck', value: 22, amount: 'LBP 136.4M', color: '#475569' }
   ];
 
   const paymentSummaryData = [
-    { method: 'CASH LBP', value: 70, amount: 'LBP 434.0M', color: '#10b981' },
-    { method: 'CASH USD', value: 25, amount: 'LBP 155.0M', color: '#3b82f6' },
-    { method: 'Credit Card', value: 5, amount: 'LBP 31.0M', color: '#8b5cf6' }
+    { method: 'CASH LBP', value: 70, amount: 'LBP 434.0M', color: '#0f766e' },
+    { method: 'CASH USD', value: 25, amount: 'LBP 155.0M', color: '#1e3a8a' },
+    { method: 'Credit Card', value: 5, amount: 'LBP 31.0M', color: '#4c1d95' }
   ];
 
   const employeeByCategoryData = [
@@ -489,16 +489,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
-  // Reusable Widget Card Component (Centered Title Header)
+  // Reusable Widget Card Component (Centered Title Header with Hover Lift)
   const WidgetCard = ({ id, title, className = '', children }: { id: string; title: string; className?: string; children: React.ReactNode }) => {
     return (
-      <div className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between ${className}`}>
-        <div className="relative flex items-center justify-center border-b border-slate-100 pb-3 mb-4">
-          <h3 className="font-extrabold text-slate-800 text-sm flex items-center justify-center gap-2 text-center">
-            <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0" />
+      <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md flex flex-col justify-between ${className}`}>
+        <div className="relative flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <h3 className="font-semibold text-lg text-slate-800 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-indigo-600 shrink-0" />
             <span>{title}</span>
           </h3>
-          <div className="absolute right-0 flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setExpandedWidget(id)}
               title="Expand Chart Fullscreen"
@@ -565,7 +565,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   const CustomTooltip = PieSliceTooltip;
 
-  // Helper PieChart Widget Renderer (Solid Pies, Dynamic Filtering & Proper NameKey Legends)
+  // Helper PieChart Widget Renderer (Enlarged OuterRadius, Enterprise Palette & Zebra Tables)
   const RenderPieWidget = ({
     id,
     title,
@@ -588,8 +588,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
     return (
       <WidgetCard id={id} title={title} className={className}>
-        <div className={`flex flex-col space-y-4 ${isFullWidth ? 'items-center text-center' : ''}`}>
-          <div className={`h-52 w-full ${isFullWidth ? 'max-w-2xl mx-auto flex justify-center' : ''}`}>
+        <div className={`flex flex-col space-y-5 ${isFullWidth ? 'items-center text-center' : ''}`}>
+          <div className={`h-80 w-full ${isFullWidth ? 'max-w-2xl mx-auto flex justify-center' : ''}`}>
             {activeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -597,8 +597,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     data={activeData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={75}
-                    paddingAngle={2}
+                    outerRadius={120}
+                    paddingAngle={3}
                     dataKey="value"
                     nameKey={labelKey}
                     isAnimationActive={false}
@@ -612,42 +612,44 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
-                All slices hidden. Click chips above or table rows below to restore.
+                All slices hidden. Click table rows below to restore.
               </div>
             )}
           </div>
 
-          <div className={`border border-slate-200 rounded-xl overflow-hidden text-base w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
+          <div className={`border border-slate-200 rounded-xl overflow-hidden w-full ${isFullWidth ? 'max-w-4xl mx-auto' : ''}`}>
             <table className="w-full text-left font-sans">
-              <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
+              <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-3.5 px-4">Name</th>
-                  <th className="py-3.5 px-4 text-right">Amount</th>
-                  <th className="py-3.5 px-4 text-right">Share</th>
+                  <th className="py-3 px-4">Name</th>
+                  <th className="py-3 px-4 text-right">Amount</th>
+                  <th className="py-3 px-4 text-right">Share</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
-                {data.map((row: any) => {
+              <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                {data.map((row: any, idx: number) => {
                   const key = getItemKey(row, labelKey);
                   const isHidden = hiddenPieItems.includes(key);
                   return (
                     <tr
                       key={key}
                       onClick={() => handleTogglePieItem(key)}
-                      className={`cursor-pointer transition-all ${
-                        isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
+                      className={`transition-colors duration-150 cursor-pointer ${
+                        idx % 2 === 1 ? 'bg-slate-50/50' : 'bg-white'
+                      } ${
+                        isHidden ? 'opacity-40 grayscale line-through' : 'hover:bg-slate-100'
                       }`}
                       title="Click to toggle slice on/off"
                     >
-                      <td className="py-3.5 px-4 flex items-center gap-2">
+                      <td className="py-3 px-4 flex items-center gap-2.5 font-normal">
                         <span
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          className="w-3 h-3 rounded-full shrink-0"
                           style={{ backgroundColor: isHidden ? '#94a3b8' : row.color }}
                         ></span>
-                        <span className={isHidden ? 'text-slate-400 font-normal line-through' : ''}>{key}</span>
+                        <span className={isHidden ? 'text-slate-400 line-through' : ''}>{key}</span>
                       </td>
-                      <td className={`py-3.5 px-4 text-right font-mono ${isHidden ? 'text-slate-400' : ''}`}>{row.amount}</td>
-                      <td className={`py-3.5 px-4 text-right font-medium ${isHidden ? 'text-slate-400' : 'text-emerald-700'}`}>{row.value}%</td>
+                      <td className={`py-3 px-4 text-right font-mono font-medium ${isHidden ? 'text-slate-400' : 'text-slate-800'}`}>{row.amount}</td>
+                      <td className={`py-3 px-4 text-right font-mono font-medium ${isHidden ? 'text-slate-400' : 'text-emerald-700'}`}>{row.value}%</td>
                     </tr>
                   );
                 })}
