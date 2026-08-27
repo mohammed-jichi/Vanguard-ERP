@@ -588,7 +588,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -619,7 +619,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Header */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* Paid Ins Section */}
@@ -675,7 +675,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -741,7 +741,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -767,7 +767,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* 01-Aug-26 Group */}
@@ -839,7 +839,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -869,7 +869,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* Workstation 1 */}
@@ -954,7 +954,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -984,7 +984,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* MAIN DEPARTMENT */}
@@ -1069,7 +1069,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -1092,7 +1092,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Zeit w zaytoun ljanoub
+                        Branch: Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* Data Rows */}
@@ -1129,7 +1129,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -1159,7 +1159,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
 
                       {/* MAIN DEPARTMENT */}
@@ -1235,7 +1235,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Zeit w zaytoun ljanoub
+                        Southern Olive Oil S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -1259,7 +1259,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <td className="border border-black p-1.5 text-center w-[180px]">Total Discount</td>
                           </tr>
                           <tr>
-                            <td className="border border-black p-1.5 pl-2">Zeit w zaytoun ljanoub</td>
+                            <td className="border border-black p-1.5 pl-2">Southern Olive Oil S.A.R.L</td>
                             <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
                           </tr>
                           <tr className="bg-[#cce5ff]">
