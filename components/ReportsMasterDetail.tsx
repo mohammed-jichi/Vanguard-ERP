@@ -592,7 +592,72 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {(selectedReport === 'Layaway History' || selectedReport === 'Layaway History.') ? (
+                  {selectedReport === 'List of Pending Invoices with Advance Payment' ? (
+                    /* LIST OF PENDING INVOICES WITH ADVANCE PAYMENT REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[13px] underline mb-4">
+                        List of Pending Invoices with Advance Payment
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-4">
+                        <div>27/08/2026</div>
+                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black flex text-[11px] font-bold py-1 mb-2 bg-gray-50">
+                        <div className="w-[15%] px-2">Date</div>
+                        <div className="w-[15%]">Invoice #</div>
+                        <div className="w-[25%]">Customer</div>
+                        <div className="w-[15%] text-right">Invoice Amount</div>
+                        <div className="w-[15%] text-right">Advance Paid</div>
+                        <div className="w-[15%] text-right pr-2">Pending Balance</div>
+                      </div>
+
+                      {/* Record 1 */}
+                      <div className="flex text-[11px] font-medium mt-2 mb-2">
+                        <div className="w-[15%] px-2">05/08/2026</div>
+                        <div className="w-[15%]">INV-2026-115</div>
+                        <div className="w-[25%] font-bold">Yehya Kassem</div>
+                        <div className="w-[15%] text-right">80,000,000.00</div>
+                        <div className="w-[15%] text-right text-green-700">20,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">60,000,000.00</div>
+                      </div>
+                      
+                      {/* Record 2 */}
+                      <div className="flex text-[11px] font-medium mt-2 mb-4">
+                        <div className="w-[15%] px-2">18/08/2026</div>
+                        <div className="w-[15%]">INV-2026-128</div>
+                        <div className="w-[25%] font-bold">Jichi Hussien</div>
+                        <div className="w-[15%] text-right">120,000,000.00</div>
+                        <div className="w-[15%] text-right text-green-700">50,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">70,000,000.00</div>
+                      </div>
+                      
+                      {/* Grand Totals */}
+                      <div className="border-t-[2px] border-black pt-1 flex text-[11px] font-bold mb-12 mt-4">
+                        <div className="w-[55%] text-right pr-4">Grand Total:</div>
+                        <div className="w-[15%] text-right">200,000,000.00</div>
+                        <div className="w-[15%] text-right text-green-700">70,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 text-red-600">130,000,000.00</div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : (selectedReport === 'Layaway History' || selectedReport === 'Layaway History.') ? (
                     /* LAYAWAY HISTORY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
