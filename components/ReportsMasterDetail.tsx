@@ -102,12 +102,26 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    "Recently Viewed": true,
+    "Internal Control": true,
+    "Financial": true,
+    "Product Sales": true,
+    "Customer Sales": true,
+    "Today's & History": true,
+    "Time & Attendance": true,
+    "Lists": true
+  });
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     "Statistics": true,
     "Product Sales": true,
     "Payments": true,
     "Today's Sales": true
   });
+
+  const toggleCategory = (catName: string) => {
+    setExpandedCategories(prev => ({ ...prev, [catName]: !prev[catName] }));
+  };
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev => ({ ...prev, [groupName]: !prev[groupName] }));
@@ -164,6 +178,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 const matchesSearch = (itemStr: string) =>
                   itemStr.toLowerCase().includes(searchQuery.toLowerCase());
 
+                const isCatExpanded = !!expandedCategories[section.category] || !!searchQuery;
+
                 if (section.type === 'flat') {
                   const filteredItems = searchQuery
                     ? section.items.filter(matchesSearch)
@@ -173,25 +189,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                   return (
                     <div key={section.category} className="py-1">
-                      <h4 className="text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
-                        {section.category}
-                      </h4>
-                      {filteredItems.map((item) => {
-                        const isSelected = selectedReport === item;
-                        return (
-                          <div
-                            key={item}
-                            onClick={() => setSelectedReport(item)}
-                            className={`px-4 py-1.5 text-[13px] font-medium transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-slate-50 text-[#195a96] font-bold border-l-4 border-[#195a96]'
-                                : 'text-slate-600 hover:text-[#195a96] hover:bg-slate-50'
-                            }`}
-                          >
-                            {item}
-                          </div>
-                        );
-                      })}
+                      <div
+                        onClick={() => toggleCategory(section.category)}
+                        className="text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                      >
+                        <span>{section.category}</span>
+                        <ChevronDown
+                          size={16}
+                          className={`text-[#195a96] transition-transform duration-200 ${
+                            isCatExpanded ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </div>
+
+                      {isCatExpanded && (
+                        <div className="category-content">
+                          {filteredItems.map((item) => {
+                            const isSelected = selectedReport === item;
+                            return (
+                              <div
+                                key={item}
+                                onClick={() => setSelectedReport(item)}
+                                className={`block w-full text-left px-4 py-2 text-[13px] font-medium transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
+                                    : 'text-slate-600 hover:!text-[#195a96] hover:bg-slate-50'
+                                }`}
+                              >
+                                {item}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 }
@@ -210,49 +240,63 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 return (
                   <div key={section.category} className="py-1">
-                    <h4 className="text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
-                      {section.category}
-                    </h4>
-                    {filteredGroups.map((group) => {
-                      const isExpanded = !!expandedGroups[group.name] || !!searchQuery;
-                      return (
-                        <div key={group.name}>
-                          <div
-                            onClick={() => toggleGroup(group.name)}
-                            className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-[#195a96] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
-                          >
-                            <span>{group.name}</span>
-                            <ChevronDown
-                              size={14}
-                              className={`text-slate-400 transition-transform ${
-                                isExpanded ? 'rotate-180 text-[#195a96]' : ''
-                              }`}
-                            />
-                          </div>
+                    <div
+                      onClick={() => toggleCategory(section.category)}
+                      className="text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                    >
+                      <span>{section.category}</span>
+                      <ChevronDown
+                        size={16}
+                        className={`text-[#195a96] transition-transform duration-200 ${
+                          isCatExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </div>
 
-                          {isExpanded && (
-                            <div className="bg-slate-50/40">
-                              {group.items.map((item) => {
-                                const isSelected = selectedReport === item;
-                                return (
-                                  <div
-                                    key={item}
-                                    onClick={() => setSelectedReport(item)}
-                                    className={`pl-8 pr-4 py-1.5 text-[12px] font-medium cursor-pointer transition-all ${
-                                      isSelected
-                                        ? 'bg-slate-50 text-[#195a96] font-bold border-l-4 border-[#195a96]'
-                                        : 'text-slate-500 hover:text-[#195a96] hover:bg-slate-50'
-                                    }`}
-                                  >
-                                    {item}
-                                  </div>
-                                );
-                              })}
+                    {isCatExpanded && (
+                      <div className="category-content">
+                        {filteredGroups.map((group) => {
+                          const isExpanded = !!expandedGroups[group.name] || !!searchQuery;
+                          return (
+                            <div key={group.name}>
+                              <div
+                                onClick={() => toggleGroup(group.name)}
+                                className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:!text-[#195a96] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
+                              >
+                                <span>{group.name}</span>
+                                <ChevronDown
+                                  size={14}
+                                  className={`text-slate-400 transition-transform ${
+                                    isExpanded ? 'rotate-180 text-[#195a96]' : ''
+                                  }`}
+                                />
+                              </div>
+
+                              {isExpanded && (
+                                <div className="bg-slate-50/40">
+                                  {group.items.map((item) => {
+                                    const isSelected = selectedReport === item;
+                                    return (
+                                      <div
+                                        key={item}
+                                        onClick={() => setSelectedReport(item)}
+                                        className={`block w-full text-left pl-8 pr-4 py-2 text-[12px] font-medium transition-colors cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
+                                            : 'text-slate-500 hover:!text-[#195a96] hover:bg-slate-50'
+                                        }`}
+                                      >
+                                        {item}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 );
               })}
