@@ -417,13 +417,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <select
                       value={period}
                       onChange={(e) => setPeriod(e.target.value)}
-                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
                     >
-                      <option>Today</option>
-                      <option>This Month</option>
-                      <option>This Quarter</option>
-                      <option>This Year</option>
-                      <option>Date Range</option>
+                      <option className="!text-slate-900 bg-white">Today</option>
+                      <option className="!text-slate-900 bg-white">This Month</option>
+                      <option className="!text-slate-900 bg-white">This Quarter</option>
+                      <option className="!text-slate-900 bg-white">This Year</option>
+                      <option className="!text-slate-900 bg-white">Date Range</option>
                     </select>
                   </div>
 
@@ -435,7 +435,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           type="date"
                           value={fromDate}
                           onChange={(e) => setFromDate(e.target.value)}
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500"
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] shadow-2xs"
                         />
                       </div>
                       <div className="flex-1">
@@ -444,7 +444,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           type="date"
                           value={toDate}
                           onChange={(e) => setToDate(e.target.value)}
-                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500"
+                          className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] shadow-2xs"
                         />
                       </div>
                     </div>
@@ -455,7 +455,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         type="text"
                         value="Aug, 2026"
                         readOnly
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full bg-slate-50 text-slate-500 font-medium cursor-not-allowed"
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full !bg-slate-100 !text-slate-600 font-bold cursor-not-allowed shadow-2xs"
                       />
                     </div>
                   )}
@@ -465,12 +465,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <select
                       value={selectedBranch}
                       onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
                     >
-                      <option>All Branches</option>
-                      <option>Beirut Central Branch</option>
-                      <option>Choueifat Press Branch</option>
-                      <option>Jbaa Hub</option>
+                      <option className="!text-slate-900 bg-white">All Branches</option>
+                      <option className="!text-slate-900 bg-white">Beirut Central Branch</option>
+                      <option className="!text-slate-900 bg-white">Choueifat Press Branch</option>
+                      <option className="!text-slate-900 bg-white">Jbaa Hub</option>
                     </select>
                   </div>
 
@@ -480,11 +480,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <select
                         value={invoiceFilter}
                         onChange={(e) => setInvoiceFilter(e.target.value)}
-                        className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                        className="border border-slate-300 rounded p-1.5 text-sm w-full font-bold !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] focus:border-[#195a96] cursor-pointer shadow-2xs"
                       >
-                        <option>All Invoices</option>
-                        <option>Paid Invoices Only</option>
-                        <option>Credit & Pending Invoices</option>
+                        <option className="!text-slate-900 bg-white">All Invoices</option>
+                        <option className="!text-slate-900 bg-white">Paid Invoices Only</option>
+                        <option className="!text-slate-900 bg-white">Credit & Pending Invoices</option>
                       </select>
                     </div>
                   )}
