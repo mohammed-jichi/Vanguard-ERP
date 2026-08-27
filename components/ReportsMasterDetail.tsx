@@ -565,6 +565,17 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </div>
                   )}
+
+                  {selectedReport === 'Profit by Invoices Summary' && (
+                    <div className="flex flex-col gap-2 w-full mt-2">
+                      <div className="flex gap-4">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
+                          <option>All Branches</option>
+                        </select>
+                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]" defaultValue="103070" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -592,7 +603,105 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Transactions on Hold' ? (
+                  {selectedReport === 'Profit by Invoices Summary' ? (
+                    /* PROFIT BY INVOICES SUMMARY REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Profit by Invoices Summary
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>From Date: 01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
+                          <div>Customer Name</div>
+                          <div>Type</div>
+                          <div>Receipt #</div>
+                          <div>Date</div>
+                          <div className="text-right">Amount</div>
+                          <div className="text-right">Total Cost</div>
+                          <div className="text-right">Profit</div>
+                          <div className="text-right">% Profit Margin</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-medium leading-tight w-full">
+                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* Data Row 1 */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
+                          <div>Charbel Zgheib</div>
+                          <div>Invoice</div>
+                          <div>103070</div>
+                          <div>13/02/2026</div>
+                          <div className="text-right">9000000.0</div>
+                          <div className="text-right">5395230.0</div>
+                          <div className="text-right">2704770.0</div>
+                          <div className="text-right">50.13261714514</div>
+                        </div>
+                        
+                        <div className="border-t border-black my-2 w-full"></div>
+
+                        {/* Summary Block */}
+                        {/* Amount */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                          <div className="col-span-4 text-right pr-2">Amount :</div>
+                          <div className="text-right">9000000.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+
+                        {/* Tax */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                          <div className="col-span-4 text-right pr-2">Tax :</div>
+                          <div className="text-right">0.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+
+                        {/* Discount */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                          <div className="col-span-4 text-right pr-2">Discount :</div>
+                          <div className="text-right">900000.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+
+                        {/* Net Sales */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-1">
+                          <div className="col-span-4 text-right pr-2">Net Sales :</div>
+                          <div className="text-right">8100000.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+
+                        {/* Total Excluding Discount */}
+                        <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold w-full mb-8">
+                          <div className="col-span-4 text-right pr-2">Total Excluding Discount :</div>
+                          <div className="text-right">8100000.0</div>
+                          <div></div>
+                          <div className="text-right">2704770.0</div>
+                          <div className="text-right">50.13261714514</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00357</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Transactions on Hold' ? (
                     /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
