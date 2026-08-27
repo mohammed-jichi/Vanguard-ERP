@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Bell, CheckSquare, Video, Edit2 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import EndOfMonthModal from './EndOfMonthModal';
@@ -13,7 +14,14 @@ interface VanguardSubHeaderProps {
 }
 
 export default function VanguardSubHeader({ activeScreen, onSelectScreen }: VanguardSubHeaderProps) {
+  const pathname = usePathname();
   const { language } = useLanguage();
+
+  // ONLY render top sub-header action bar on the root landing page or backoffice dashboard!
+  const isDashboardPage = pathname === '/' || pathname === '/backoffice/dashboard' || pathname === '/backoffice';
+  if (!isDashboardPage) {
+    return null;
+  }
   const [recentlyVisited, setRecentlyVisited] = useState<Array<{ key: string; titleEn: string; titleAr: string }>>([
     { key: 'grid-dash', titleEn: 'Overview', titleAr: 'الرئيسية' },
     { key: 'sales-pos', titleEn: 'POS Touch Terminal', titleAr: 'نقطة البيع الكاشير' },

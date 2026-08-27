@@ -33,7 +33,11 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
-  ArrowUpDown
+  ArrowUpDown,
+  Activity,
+  CheckCircle2,
+  MapPin,
+  BarChart2
 } from 'lucide-react';
 import {
   BarChart,
@@ -47,7 +51,8 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
+  CartesianGrid
 } from 'recharts';
 
 interface SalesDashboardProps {
@@ -2128,6 +2133,273 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ---------------- PHASE 90: TODAY TAB VIEW (LIVE DAILY SHIFT & PAYMENTS) ---------------- */}
+      {activeTab === 'today' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-400" /> Live Daily Shift & Today Sales Operations
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Real-time transaction log, active cashier terminals, and payment method distribution for today.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3 py-1 rounded-full font-mono font-bold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Shift #0482 Active
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* COLUMN 1: PAYMENT SUMMARY TABLE */}
+            <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-blue-600" /> Payment Summary (Today)
+                </h3>
+                <span className="text-xs text-slate-500 font-mono font-bold">Aug 27, 2026</span>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                <table className="w-full text-left font-sans">
+                  <thead className="bg-slate-900 text-white font-bold uppercase text-[11px] tracking-wider">
+                    <tr>
+                      <th className="py-3 px-4">Payment Method</th>
+                      <th className="py-3 px-4 text-center">Transactions</th>
+                      <th className="py-3 px-4 text-right">Amount ($)</th>
+                      <th className="py-3 px-4 text-right">Share %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <span className="font-bold">Cash in Drawer</span>
+                      </td>
+                      <td className="py-3 px-4 text-center font-mono font-bold">102</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$14,850.00</td>
+                      <td className="py-3 px-4 text-right font-bold text-emerald-700">67.9%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                        <span className="font-bold">Credit / Debit Card</span>
+                      </td>
+                      <td className="py-3 px-4 text-center font-mono font-bold">31</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$4,320.00</td>
+                      <td className="py-3 px-4 text-right font-bold text-blue-700">19.7%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                        <span className="font-bold">Customer Receivables (A/R)</span>
+                      </td>
+                      <td className="py-3 px-4 text-center font-mono font-bold">11</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$1,850.00</td>
+                      <td className="py-3 px-4 text-right font-bold text-amber-700">8.5%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                        <span className="font-bold">Mobile / Online Payment</span>
+                      </td>
+                      <td className="py-3 px-4 text-center font-mono font-bold">4</td>
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">$860.00</td>
+                      <td className="py-3 px-4 text-right font-bold text-purple-700">3.9%</td>
+                    </tr>
+                  </tbody>
+                  <tfoot className="bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900 text-xs">
+                    <tr>
+                      <td className="py-3 px-4">Total Shift Receipts</td>
+                      <td className="py-3 px-4 text-center font-mono">148</td>
+                      <td className="py-3 px-4 text-right font-mono text-blue-700">$21,880.00</td>
+                      <td className="py-3 px-4 text-right font-mono">100.0%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            {/* COLUMN 2: LIVE OPERATIONS CARD */}
+            <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-600" /> Live Operations Status
+                </h3>
+                <span className="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-md border border-blue-200">
+                  Real-time Sync
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
+                  <span className="text-slate-500 font-semibold block text-[11px]">Active Terminals</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">4 / 4 POS</span>
+                  <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> All Online
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
+                  <span className="text-slate-500 font-semibold block text-[11px]">Daily Order Volume</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">148 Orders</span>
+                  <span className="text-[10px] text-blue-600 font-bold">Avg $147.84 / Order</span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
+                  <span className="text-slate-500 font-semibold block text-[11px]">Pending Fleet Deliveries</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">12 Shipments</span>
+                  <span className="text-[10px] text-amber-600 font-bold">SuperSonic Active</span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
+                  <span className="text-slate-500 font-semibold block text-[11px]">Active Cashiers</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">3 Officers</span>
+                  <span className="text-[10px] text-slate-600 font-medium">Cashier NK, Cashier R, Hiba</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-blue-50/60 border border-blue-200/80 rounded-xl flex items-center justify-between text-xs text-blue-900 font-bold">
+                <span>Shift opened at 08:00 AM by Cashier NK</span>
+                <button
+                  onClick={() => setIsEodModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                >
+                  View Z-Report Status
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ---------------- PHASE 90: GEOGRAPHICS TAB VIEW (REGIONAL DENSITY) ---------------- */}
+      {activeTab === 'geographics' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <Globe className="w-5 h-5 text-blue-400" /> Geographics & Territory Sales Distribution
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Regional revenue density, customer account concentration, and territorial performance across Lebanon.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs px-3 py-1 rounded-full font-bold">
+                6 Active Territories
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* LEFT PANEL: REGIONAL SALES TABLE */}
+            <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-blue-600" /> Sales by Region & Territory
+                </h3>
+                <span className="text-xs text-slate-500 font-bold">YTD 2026</span>
+              </div>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                <table className="w-full text-left font-sans">
+                  <thead className="bg-slate-900 text-white font-bold uppercase text-[11px] tracking-wider">
+                    <tr>
+                      <th className="py-3 px-4">Territory / Region</th>
+                      <th className="py-3 px-4 text-center">Accounts</th>
+                      <th className="py-3 px-4 text-right">Revenue ($)</th>
+                      <th className="py-3 px-4 text-right">Share %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                    {[
+                      { region: 'Beirut Central & Capital', accounts: 48, revenue: '$142,500', share: '34.5%', color: '#3b82f6' },
+                      { region: 'Choueifat Industrial Zone', accounts: 32, revenue: '$98,400', share: '23.8%', color: '#8b5cf6' },
+                      { region: 'Jbaa & South Olive Hub', accounts: 26, revenue: '$76,200', share: '18.4%', color: '#ec4899' },
+                      { region: 'Sidon Coastal District', accounts: 19, revenue: '$45,100', share: '10.9%', color: '#f97316' },
+                      { region: 'Tyre Harbor & Coast', accounts: 14, revenue: '$31,800', share: '7.7%', color: '#10b981' },
+                      { region: 'Nabatieh Valley', accounts: 9, revenue: '$19,000', share: '4.7%', color: '#06b6d4' }
+                    ].map((row, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-4 flex items-center gap-2.5">
+                          <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: row.color }}></span>
+                          <span className="font-bold">{row.region}</span>
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono font-bold">{row.accounts}</td>
+                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">{row.revenue}</td>
+                        <td className="py-3 px-4 text-right font-bold text-blue-700">{row.share}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900 text-xs">
+                    <tr>
+                      <td className="py-3 px-4">Total Territorial Coverage</td>
+                      <td className="py-3 px-4 text-center font-mono">148</td>
+                      <td className="py-3 px-4 text-right font-mono text-blue-700">$413,000.00</td>
+                      <td className="py-3 px-4 text-right font-mono">100.0%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            {/* RIGHT PANEL: REGIONAL DENSITY BAR CHART */}
+            <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4 text-blue-600" /> Territorial Revenue Density ($)
+                </h3>
+                <span className="text-xs text-slate-500 font-bold">Distribution</span>
+              </div>
+
+              <div className="h-72 w-full pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      { region: 'Beirut', revenue: 142500, fill: '#3b82f6' },
+                      { region: 'Choueifat', revenue: 98400, fill: '#8b5cf6' },
+                      { region: 'Jbaa', revenue: 76200, fill: '#ec4899' },
+                      { region: 'Sidon', revenue: 45100, fill: '#f97316' },
+                      { region: 'Tyre', revenue: 31800, fill: '#10b981' },
+                      { region: 'Nabatieh', revenue: 19000, fill: '#06b6d4' }
+                    ]}
+                    margin={{ top: 10, right: 10, left: 10, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                    <XAxis dataKey="region" tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }} />
+                    <YAxis tick={{ fontSize: 11, fill: '#475569' }} tickFormatter={val => `$${val / 1000}k`} />
+                    <Tooltip
+                      formatter={(val: any) => [`$${Number(val).toLocaleString()}`, 'Revenue']}
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px', border: 'none' }}
+                    />
+                    <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
+                      {[
+                        { region: 'Beirut', fill: '#3b82f6' },
+                        { region: 'Choueifat', fill: '#8b5cf6' },
+                        { region: 'Jbaa', fill: '#ec4899' },
+                        { region: 'Sidon', fill: '#f97316' },
+                        { region: 'Tyre', fill: '#10b981' },
+                        { region: 'Nabatieh', fill: '#06b6d4' }
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
