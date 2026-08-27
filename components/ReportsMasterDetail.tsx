@@ -173,7 +173,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                   return (
                     <div key={section.category} className="py-1">
-                      <h4 className="text-[#195a96] font-bold text-sm px-4 py-2.5 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
+                      <h4 className="text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
                         {section.category}
                       </h4>
                       {filteredItems.map((item) => {
@@ -210,7 +210,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 return (
                   <div key={section.category} className="py-1">
-                    <h4 className="text-[#195a96] font-bold text-sm px-4 py-2.5 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
+                    <h4 className="text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
                       {section.category}
                     </h4>
                     {filteredGroups.map((group) => {
@@ -219,7 +219,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div key={group.name}>
                           <div
                             onClick={() => toggleGroup(group.name)}
-                            className="flex justify-between items-center px-4 py-2 text-[13px] font-semibold text-[#2c3e50] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50"
+                            className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50"
                           >
                             <span>{group.name}</span>
                             <ChevronDown
