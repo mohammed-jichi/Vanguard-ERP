@@ -530,7 +530,87 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Tax Summary Comparative' ? (
+                  {selectedReport === 'Summary of Discount by Divisions' ? (
+                    /* SUMMARY OF DISCOUNT BY DIVISIONS REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of Discount by Divisions
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[1fr_120px] text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Branch & Department Info */}
+                      <div className="text-[11px] mb-1 font-medium">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+                      <div className="text-[11px] mb-2 font-medium">
+                        Department: MAIN DEPARTMENT
+                      </div>
+
+                      {/* Data Rows */}
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: Plastic</div><div className="text-right">0.00</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: بهارات مفرق</div><div className="text-right">14,232.73</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: زيوت مفرق</div><div className="text-right">52,866,758.13</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: عروض</div><div className="text-right">1,537,687.50</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: كيلو مفرق</div><div className="text-right">341,379.31</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: مربيات مفرق</div><div className="text-right">180,000.00</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: مرطبان</div><div className="text-right">1,014,995.92</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
+                        <div>Division: مقطرات ومدبسات مفرق</div><div className="text-right">85,396.38</div>
+                      </div>
+                      <div className="grid grid-cols-[1fr_120px] text-[11px] mb-2 font-medium">
+                        <div>Division: مونة بلدية مفرق</div><div className="text-right">40,000.00</div>
+                      </div>
+
+                      {/* Totals */}
+                      <div className="border-t border-black mt-2 pt-1 flex justify-end">
+                        <div className="grid grid-cols-[150px_120px] text-[11px] font-bold mb-1">
+                          <div className="text-right pr-2">Total By Department:</div>
+                          <div className="text-right">56,080,449.97</div>
+                        </div>
+                      </div>
+                      <div className="border-b border-black pb-1 flex justify-end">
+                        <div className="grid grid-cols-[150px_120px] text-[11px] font-bold">
+                          <div className="text-right pr-2">Total By Branch:</div>
+                          <div className="text-right">56,080,449.97</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Tax Summary Comparative' ? (
                     /* TAX SUMMARY COMPARATIVE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
