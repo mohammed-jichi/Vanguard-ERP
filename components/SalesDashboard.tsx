@@ -522,19 +522,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     );
   };
 
-  // Custom Dark Tooltip for All Pie Slices (Category, Division, Group, Department, Discount, Void, User, Payment)
+  // Custom Dark Tooltip for All Pie Slices (Category, Division, Group, Department, Discount, Void, User, Payment, Customers)
   const PieSliceTooltip = ({ active, payload }: any) => {
     if (!active || !payload || !payload.length) return null;
     const item = payload[0];
     if (!item) return null;
     const dataObj = item.payload || {};
     const nameLabel = item.name || dataObj.name || dataObj.reason || dataObj.method || dataObj.user || dataObj.type || dataObj.label || 'Slice';
-    const amountVal = dataObj.amount || null;
+    const amountVal = dataObj.amount || (dataObj.value ? (typeof dataObj.value === 'number' ? `LBP ${dataObj.value.toLocaleString()}` : dataObj.value) : null);
     const countVal = dataObj.count !== undefined && dataObj.count !== null ? dataObj.count : null;
-    const shareVal = item.value !== undefined ? item.value : null;
+    const shareVal = dataObj.percentage || (dataObj.value !== undefined && typeof dataObj.value === 'number' ? `${dataObj.value}%` : (item.value !== undefined ? `${item.value}%` : null));
 
     return (
-      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-2xl text-xs space-y-1.5 font-sans min-w-[170px] pointer-events-none z-50" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
+      <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-2xl text-xs space-y-1.5 font-sans min-w-[180px] pointer-events-none z-50" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2 border-b border-slate-800 pb-1.5">
           <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color || item.fill || dataObj.color || '#10b981' }}></span>
           <p className="font-extrabold !text-white text-white text-sm" style={{ color: '#ffffff' }}>
@@ -543,7 +543,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
         {amountVal && (
           <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
-            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Amount:</span>
+            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Value / Net:</span>
             <span className="font-mono font-bold !text-emerald-400 text-emerald-400" style={{ color: '#34d399' }}>{amountVal}</span>
           </div>
         )}
@@ -553,10 +553,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <span className="font-mono font-bold !text-amber-400 text-amber-400" style={{ color: '#fbbf24' }}>{countVal}</span>
           </div>
         )}
-        {shareVal !== null && (
+        {shareVal && (
           <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
             <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Share:</span>
-            <span className="font-mono font-bold !text-white text-white" style={{ color: '#ffffff' }}>{shareVal}%</span>
+            <span className="font-mono font-bold !text-white text-white" style={{ color: '#ffffff' }}>{shareVal}</span>
           </div>
         )}
       </div>
@@ -1836,28 +1836,41 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               
               {/* Solid Pie Chart (innerRadius = 0) */}
               <div className="w-full max-w-sm h-64 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={salesByGroupPieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={0}
-                      outerRadius={95}
-                      dataKey="value"
-                      stroke="#ffffff"
-                      strokeWidth={2}
-                    >
-                      {salesByGroupPieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(val: any) => [`LBP ${val.toLocaleString()}`, 'Total Sales']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '13px' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                {salesByGroupPieData.filter((i) => !hiddenPieItems.includes(i.name)).length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={salesByGroupPieData.filter((i) => !hiddenPieItems.includes(i.name))}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={0}
+                        outerRadius={95}
+                        dataKey="value"
+                        nameKey="name"
+                        stroke="#ffffff"
+                        strokeWidth={2}
+                      >
+                        {salesByGroupPieData
+                          .filter((i) => !hiddenPieItems.includes(i.name))
+                          .map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                      </Pie>
+                      <Tooltip content={<PieSliceTooltip />} />
+                      <Legend
+                        onClick={(e: any) => {
+                          const key = e.value || e.name;
+                          if (key) handleTogglePieItem(key);
+                        }}
+                        wrapperStyle={{ cursor: 'pointer', fontSize: '12px', color: '#334155' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-300 rounded-xl p-8 text-center">
+                    All slices hidden. Click table row below to restore.
+                  </div>
+                )}
               </div>
 
               {/* Legend & Data Table Below Chart */}
@@ -1883,18 +1896,44 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 {/* Data Rows */}
                 {isGroupByGroupExpanded && (
                   <div className="divide-y divide-slate-100 text-xs font-sans bg-white">
-                    <div className="flex items-center justify-between py-3 px-4 hover:bg-slate-50 transition-colors">
-                      <div className="flex items-center gap-2.5 font-medium text-slate-900">
-                        <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 inline-block border border-emerald-600"></span>
-                        <span>Clients</span>
-                      </div>
-                      <div className="flex items-center gap-6 font-mono">
-                        <span className="font-bold text-slate-900">248,400,000 LL</span>
-                        <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                          100.00%
-                        </span>
-                      </div>
-                    </div>
+                    {salesByGroupPieData.map((item) => {
+                      const isHidden = hiddenPieItems.includes(item.name);
+                      return (
+                        <div
+                          key={item.name}
+                          onClick={() => handleTogglePieItem(item.name)}
+                          className={`flex items-center justify-between py-3 px-4 transition-all cursor-pointer ${
+                            isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
+                          }`}
+                          title="Click to toggle slice on/off"
+                        >
+                          <div className="flex items-center gap-2.5 font-medium text-slate-900">
+                            <span
+                              className="w-3.5 h-3.5 rounded-sm inline-block border"
+                              style={{
+                                backgroundColor: isHidden ? '#94a3b8' : item.color,
+                                borderColor: isHidden ? '#64748b' : item.color
+                              }}
+                            ></span>
+                            <span className={isHidden ? 'line-through text-slate-400 font-normal' : ''}>{item.name}</span>
+                          </div>
+                          <div className="flex items-center gap-6 font-mono">
+                            <span className={`font-bold ${isHidden ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                              248,400,000 LL
+                            </span>
+                            <span
+                              className={`font-bold px-2.5 py-0.5 rounded-full border ${
+                                isHidden
+                                  ? 'bg-slate-200 text-slate-400 border-slate-300 line-through'
+                                  : 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                              }`}
+                            >
+                              {item.percentage}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
