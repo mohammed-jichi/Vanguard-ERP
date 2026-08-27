@@ -539,6 +539,23 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </div>
                   )}
+
+                  {selectedReport === 'Paid In/Out' && (
+                    <div className="flex flex-col gap-2 w-full">
+                      <div className="flex gap-4">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
+                          <option>All Servers</option>
+                        </select>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
+                          <option>All Servers</option>
+                        </select>
+                      </div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer mt-1">
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                        All Dates
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -566,7 +583,94 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {(selectedReport === 'Advanced payment History' || selectedReport === 'Advanced Payment History') ? (
+                  {selectedReport === 'Paid In/Out' ? (
+                    /* PAID IN/OUT REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Paid In / Out Report
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[80px_90px_100px_100px_1fr_100px_100px] gap-2 text-[11px] font-bold text-black">
+                          <div>Ref #</div>
+                          <div>Date</div>
+                          <div>Server</div>
+                          <div>Workstation</div>
+                          <div>Reason</div>
+                          <div>Pay Mode</div>
+                          <div className="text-right">Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Header */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Zeit w zaytoun ljanoub
+                      </div>
+
+                      {/* Paid Ins Section */}
+                      <div className="text-[11px] font-bold mb-1">PAID IN</div>
+                      <div className="grid grid-cols-[80px_90px_100px_100px_1fr_100px_100px] gap-2 text-[11px] mb-1 font-medium pl-2">
+                        <div>1001</div>
+                        <div>05-Aug-26</div>
+                        <div>Mahdi</div>
+                        <div>1</div>
+                        <div>Opening Float</div>
+                        <div>CASH</div>
+                        <div className="text-right">500,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-3 pl-2 border-t border-dashed border-black pt-1">
+                        <div>Total Paid In</div>
+                        <div>500,000.00</div>
+                      </div>
+
+                      {/* Paid Outs Section */}
+                      <div className="text-[11px] font-bold mb-1">PAID OUT</div>
+                      <div className="grid grid-cols-[80px_90px_100px_100px_1fr_100px_100px] gap-2 text-[11px] mb-1 font-medium pl-2">
+                        <div>2001</div>
+                        <div>12-Aug-26</div>
+                        <div>Hiba Aloulou</div>
+                        <div>1</div>
+                        <div>Supplies Expense</div>
+                        <div>CASH</div>
+                        <div className="text-right">150,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-4 pl-2 border-t border-dashed border-black pt-1">
+                        <div>Total Paid Out</div>
+                        <div>150,000.00</div>
+                      </div>
+
+                      {/* Grand Total Footer */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
+                      <div className="flex justify-between text-[11px] font-bold">
+                        <div>Net Paid In / Out:</div>
+                        <div>350,000.00</div>
+                      </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (selectedReport === 'Advanced payment History' || selectedReport === 'Advanced Payment History') ? (
                     /* ADVANCED PAYMENT HISTORY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
@@ -621,6 +725,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] font-bold">
                         <div className="col-span-4">Total</div>
                         <div className="text-right">51,780.00</div>
+                      </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Employee' ? (
@@ -710,6 +823,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="flex justify-between text-[11px] font-bold">
                         <div>Total</div>
                         <div>1,511,051,600.00</div>
+                      </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of payment by workstation' ? (
@@ -817,6 +939,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">0.00</div>
                         <div className="text-right">1,511,051,600.00</div>
                       </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Department' ? (
                     /* SUMMARY OF PAYMENT BY DEPARTMENT REPORT TEMPLATE */
@@ -923,6 +1054,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">0.00</div>
                         <div className="text-right">1,511,051,600.00</div>
                       </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
+                      </div>
                     </div>
                   ) : (selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment') ? (
                     /* SUMMARY OF PAYMENT REPORT TEMPLATE */
@@ -973,6 +1113,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="flex justify-between text-[11px] font-bold">
                         <div>Total:</div>
                         <div>1,511,051,600.00</div>
+                      </div>
+
+                      {/* PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>© 2026 Omega Software | All rights reserved</div>
+                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Department' ? (
