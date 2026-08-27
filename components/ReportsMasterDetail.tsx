@@ -592,7 +592,87 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'List of Layaway Sales' ? (
+                  {(selectedReport === 'Layaway History' || selectedReport === 'Layaway History.') ? (
+                    /* LAYAWAY HISTORY REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[13px] underline mb-4">
+                        Layaway History
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-4">
+                        <div>27/08/2026</div>
+                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black flex text-[11px] font-bold py-1 mb-2 bg-gray-50">
+                        <div className="w-[12%] px-2">Date</div>
+                        <div className="w-[13%]">Ticket #</div>
+                        <div className="w-[20%]">Customer</div>
+                        <div className="w-[15%] text-right">Total Amount</div>
+                        <div className="w-[15%] text-right">Paid</div>
+                        <div className="w-[15%] text-right pr-2">Balance</div>
+                        <div className="w-[10%] text-center">Status</div>
+                      </div>
+
+                      {/* Record 1 */}
+                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
+                        <div className="w-[12%] px-2 font-bold">22/08/2026</div>
+                        <div className="w-[13%] font-bold">LAY-0001</div>
+                        <div className="w-[20%] font-bold">Colonel Mahmoud</div>
+                        <div className="w-[15%] text-right font-medium">248,400,000.00</div>
+                        <div className="w-[15%] text-right font-medium text-green-700">48,400,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">200,000,000.00</div>
+                        <div className="w-[10%] text-center font-bold text-amber-700">Active</div>
+                      </div>
+
+                      {/* Record 2 */}
+                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
+                        <div className="w-[12%] px-2 font-bold">25/08/2026</div>
+                        <div className="w-[13%] font-bold">LAY-0002</div>
+                        <div className="w-[20%] font-bold">Hussein Deek</div>
+                        <div className="w-[15%] text-right font-medium">15,000,000.00</div>
+                        <div className="w-[15%] text-right font-medium text-green-700">5,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-red-600">10,000,000.00</div>
+                        <div className="w-[10%] text-center font-bold text-amber-700">Active</div>
+                      </div>
+
+                      {/* Record 3 */}
+                      <div className="flex text-[11px] font-medium py-1 border-b border-gray-200 items-center">
+                        <div className="w-[12%] px-2 font-bold">10/08/2026</div>
+                        <div className="w-[13%] font-bold">LAY-0000</div>
+                        <div className="w-[20%] font-bold">Mr. Dayek</div>
+                        <div className="w-[15%] text-right font-medium">50,000,000.00</div>
+                        <div className="w-[15%] text-right font-medium text-green-700">50,000,000.00</div>
+                        <div className="w-[15%] text-right pr-2 font-bold text-emerald-700">0.00</div>
+                        <div className="w-[10%] text-center font-bold text-green-700">Completed</div>
+                      </div>
+                      
+                      {/* Grand Totals */}
+                      <div className="border-t-[2px] border-black pt-1 flex text-[11px] font-bold mb-12 mt-4">
+                        <div className="w-[45%] text-right pr-4">Grand Total:</div>
+                        <div className="w-[15%] text-right">313,400,000.00</div>
+                        <div className="w-[15%] text-right">103,400,000.00</div>
+                        <div className="w-[15%] text-right pr-2">210,000,000.00</div>
+                        <div className="w-[10%]"></div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'List of Layaway Sales' ? (
                     /* LIST OF LAYAWAY SALES REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
