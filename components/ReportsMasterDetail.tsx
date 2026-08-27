@@ -496,6 +496,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </>
                   )}
+
+                  {selectedReport === 'Tax Summary' && (
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
+                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Real Date
+                    </label>
+                  )}
                 </div>
               </div>
 
@@ -523,7 +530,69 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Delivery Orders by Date and Branch' ? (
+                  {selectedReport === 'Tax Summary' ? (
+                    /* TAX SUMMARY REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Tax Summary
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-4">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
+                        <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] font-bold text-black">
+                          <div>Tax Code</div>
+                          <div>Description</div>
+                          <div className="text-right">Rate %</div>
+                          <div className="text-right">Excl. Amt</div>
+                          <div className="text-right">Tax Amt</div>
+                          <div className="text-right">Incl. Amt</div>
+                          <div className="text-right">Total Net Sales</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Title */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Zero Tax Row */}
+                      <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>VAT 0%</div>
+                        <div>Non Taxable / Exempted</div>
+                        <div className="text-right">0.00%</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                      </div>
+
+                      <div className="border-t border-black my-2"></div>
+
+                      {/* Total Row */}
+                      <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] font-bold">
+                        <div className="col-span-2">Total Branch:</div>
+                        <div className="text-right">0.00%</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">0.00</div>
+                        <div className="text-right">1,511,051,600.00</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Delivery Orders by Date and Branch' ? (
                     /* DELIVERY ORDERS BY DATE AND BRANCH REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
