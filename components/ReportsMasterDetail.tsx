@@ -556,6 +556,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </div>
                   )}
+
+                  {selectedReport === 'Customer Payments' && (
+                    <div className="flex flex-col gap-2 w-full mt-2">
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
+                        Grouped By Server
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -583,7 +592,108 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Paid In/Out' ? (
+                  {selectedReport === 'Customer Payments' ? (
+                    /* CUSTOMER PAYMENTS (GROUPED BY SERVER) REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Customer Payments
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[100px_90px_90px_100px_90px_120px_60px_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Receipt #</div>
+                          <div>Date</div>
+                          <div>Type</div>
+                          <div>Server</div>
+                          <div>Workstation</div>
+                          <div className="text-right">Amount</div>
+                          <div>Currency</div>
+                          <div className="text-right">Equivalent Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Header */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+
+                      {/* Employee Group: Mahdi */}
+                      <div className="text-[11px] font-bold mb-1">Mahdi</div>
+
+                      {/* Customer Name Row */}
+                      <div className="text-[11px] font-bold mb-1 pl-2 underline">Hiba Aloulou</div>
+
+                      {/* Data Row */}
+                      <div className="grid grid-cols-[100px_90px_90px_100px_90px_120px_60px_1fr] gap-2 text-[11px] mb-1 font-medium pl-2">
+                        <div>100325</div>
+                        <div>25-Aug-26</div>
+                        <div>INV</div>
+                        <div>Mahdi</div>
+                        <div>2000</div>
+                        <div className="text-right">-2.484E8</div>
+                        <div>L.L.</div>
+                        <div className="text-right">-248,400,000.00</div>
+                      </div>
+
+                      {/* Dotted border separator */}
+                      <div className="border-t border-dashed border-black pt-1 mb-1"></div>
+
+                      {/* Subtotal for Hiba Aloulou */}
+                      <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-1">
+                        <div>Total for Hiba Aloulou:</div>
+                        <div>-248,400,000.00</div>
+                      </div>
+
+                      {/* Date Subtotal */}
+                      <div className="flex justify-between text-[11px] font-bold text-slate-900 mb-4">
+                        <div>25-Aug-2026:</div>
+                        <div>-248,400,000.00</div>
+                      </div>
+
+                      {/* Server Subtotal */}
+                      <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-4">
+                        <div>Total for Mahdi:</div>
+                        <div>-248,400,000.00</div>
+                      </div>
+
+                      {/* Branch Subtotal */}
+                      <div className="flex justify-between text-[11px] font-bold text-slate-900 mb-4">
+                        <div>Total for Southern Olive Oil S.A.R.L:</div>
+                        <div>-248,400,000.00</div>
+                      </div>
+
+                      {/* Grand Total Footer */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
+                      <div className="flex justify-between text-[11px] font-bold">
+                        <div>Total:</div>
+                        <div>-248,400,000.00</div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
+                        <div className="flex justify-between items-center font-mono">
+                          <div>REP_S_00247</div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Paid In/Out' ? (
                     /* PAID IN/OUT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
