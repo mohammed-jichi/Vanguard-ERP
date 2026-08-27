@@ -665,8 +665,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -731,8 +731,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -829,8 +829,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -944,8 +944,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -1059,8 +1059,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -1119,8 +1119,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
                         <div className="flex justify-between items-center font-mono">
                           <div>REP_S_00247</div>
-                          <div>© 2026 Omega Software | All rights reserved</div>
-                          <div><a href="https://www.omegapos.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.omegapos.com</a></div>
+                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
                         </div>
                       </div>
                     </div>
@@ -2990,9 +2990,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
         </div>
 
-        {/* GLOBAL OMEGA COPYRIGHT FOOTER */}
+        {/* GLOBAL VANGUARD ERP COPYRIGHT FOOTER */}
         <div className="w-full flex justify-center items-center text-[11px] text-[#666666] py-6 mt-8">
-          <span>© 2026 Omega Software All rights reserved.</span>
+          <span>© 2026 Vanguard ERP All rights reserved.</span>
           <span className="mx-2">|</span>
           <a href="#" className="hover:underline">Privacy Policy</a>
           <span className="mx-2">|</span>
