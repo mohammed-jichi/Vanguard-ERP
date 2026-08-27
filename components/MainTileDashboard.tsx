@@ -687,42 +687,19 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
         ) : activeScreen === 'sales-dash' || activeScreen === 'sc-dashboard' ? (
           <SalesDashboard onSelectScreen={(screen) => setActiveScreen(screen)} />
         ) : activeScreen !== 'grid-dash' ? (
-          <div className="space-y-6 dir-rtl font-sans">
-            {/* CLEAN SECTION HEADER CARD */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setActiveScreen('grid-dash')}
-                  title="Return to Grid Dashboard"
-                  className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 hover:text-blue-600 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    {getSectionMetadata(activeScreen).titleAr}
-                    <span className="text-xs font-mono font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">
-                      {getSectionMetadata(activeScreen).titleEn}
-                    </span>
-                  </h2>
-                </div>
-              </div>
-            </div>
-
-            {/* WORKSPACE DATA CARD / DATA TABLE VIEW */}
-            <div className="w-full">
-              <GenericDataTable
-                title={
-                  SALES_CONTROL_TITLES[activeScreen] ||
-                  getSectionMetadata(activeScreen).titleEn ||
-                  activeScreen
-                }
-                description={`View, create, and manage records for ${
-                  SALES_CONTROL_TITLES[activeScreen] ||
-                  getSectionMetadata(activeScreen).titleEn
-                }.`}
-              />
-            </div>
+          <div className="w-full font-sans">
+            <GenericDataTable
+              title={
+                SALES_CONTROL_TITLES[activeScreen] ||
+                getSectionMetadata(activeScreen).titleEn ||
+                activeScreen
+              }
+              description={`View, create, and manage records for ${
+                SALES_CONTROL_TITLES[activeScreen] ||
+                getSectionMetadata(activeScreen).titleEn
+              }.`}
+              onBack={() => setActiveScreen('grid-dash')}
+            />
           </div>
         ) : (
           /* MAIN VANGUARD ERP CLEAN SQUARE TILE GRID DASHBOARD */

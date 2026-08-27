@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
-  ArrowLeft
+  ArrowLeft,
+  RotateCcw
 } from 'lucide-react';
 
 export interface DataRow {
@@ -33,6 +34,7 @@ interface GenericDataTableProps {
   onAddNew?: () => void;
   onEdit?: (row: DataRow) => void;
   onDelete?: (rowId: string) => void;
+  onBack?: () => void;
 }
 
 const DEFAULT_MOCK_ROWS: Record<string, DataRow[]> = {
@@ -101,7 +103,8 @@ export default function GenericDataTable({
   initialData,
   onAddNew,
   onEdit,
-  onDelete
+  onDelete,
+  onBack
 }: GenericDataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [rows, setRows] = useState<DataRow[]>(
@@ -147,35 +150,42 @@ export default function GenericDataTable({
   return (
     <div className="w-full space-y-4 font-sans dir-ltr">
       {/* 1. HEADER TITLE BAR */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
-            <button
-              onClick={() => typeof window !== 'undefined' && window.history.back()}
-              className="p-1 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
             {title}
-            <span className="bg-amber-100 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">
+            <span className="bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
               {rows.length} Records
             </span>
           </h2>
           {description && (
-             <p className="text-xs text-gray-500 font-medium mt-1 ml-9">
-               {description}
-             </p>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              {description}
+            </p>
           )}
         </div>
 
-        {/* PRIMARY ACTION BUTTON */}
-        <button
-          onClick={handleCreateNew}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New {title.split(' ')[0]}</span>
-        </button>
+        {/* FAR RIGHT ACTION BUTTONS */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleCreateNew}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New {title.split(' ')[0]}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (onBack) onBack();
+              else if (typeof window !== 'undefined') window.history.back();
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm font-bold transition-all ml-auto cursor-pointer border border-slate-300 shadow-sm shrink-0"
+          >
+            <RotateCcw className="w-4 h-4 text-slate-600" />
+            <span>Return to Hub</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. DATA TABLE TOOLBAR & SEARCH */}
