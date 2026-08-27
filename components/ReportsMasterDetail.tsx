@@ -665,6 +665,22 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   )}
+
+                  {selectedReport === 'Profit By Invoices' && (
+                    <div className="flex flex-col gap-2 w-full mt-2">
+                      <div className="flex gap-4">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]">
+                          <option>This Month</option>
+                        </select>
+                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]" defaultValue="Aug, 2026" />
+                      </div>
+                      <div className="flex gap-4 mt-1">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]">
+                          <option>All Branches</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -692,7 +708,144 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Profit by category by department' ? (
+                  {selectedReport === 'Profit By Invoices' ? (
+                    /* PROFIT BY INVOICES REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Profit By Invoices
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
+                          <div>BarCode</div>
+                          <div>Description</div>
+                          <div className="text-right">Qty</div>
+                          <div className="text-right">Unit Price</div>
+                          <div className="text-right">Dis %</div>
+                          <div className="text-right">Net Amount</div>
+                          <div className="text-right">Total Cost</div>
+                          <div className="text-right">Profit</div>
+                          <div className="text-right">% Profit Margin</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-medium leading-tight w-full">
+                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* Invoice 102971 */}
+                        <div className="font-bold mb-1 mt-2">Invoicenumber: 102971 Date: 01-08-2026 Customer Name : Customer POS</div>
+                        
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
+                          <div>200002</div>
+                          <div>زيت زيتون خضير 16 ليتر</div>
+                          <div className="text-right">1.0</div>
+                          <div className="text-right">1600000.0</div>
+                          <div className="text-right">0.0</div>
+                          <div className="text-right">1600000.0</div>
+                          <div className="text-right">1280000.0</div>
+                          <div className="text-right">320000.0</div>
+                          <div className="text-right">20.0</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
+                          <div>null</div>
+                          <div>null</div>
+                          <div className="text-right">1.0</div>
+                          <div className="text-right">180000.0</div>
+                          <div className="text-right">0.0</div>
+                          <div className="text-right">180000.0</div>
+                          <div className="text-right">120000.0</div>
+                          <div className="text-right">60000.0</div>
+                          <div className="text-right">33.333333333333336</div>
+                        </div>
+
+                        <div className="border-b border-dotted border-gray-400 my-1 w-full"></div>
+
+                        {/* Subtotals 102971 */}
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
+                          <div className="col-span-2 text-right pr-2">Subtotal :</div>
+                          <div className="text-right">2.0</div>
+                          <div></div>
+                          <div></div>
+                          <div className="text-right">1780000.0</div>
+                          <div className="text-right">1400000.0</div>
+                          <div className="text-right">380000.0</div>
+                          <div className="text-right">21.34831460674157</div>
+                        </div>
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
+                          <div className="col-span-5 text-right pr-2">Discount :</div>
+                          <div className="text-right">0.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-4 w-full font-bold">
+                          <div className="col-span-5 text-right pr-2">Net Amount :</div>
+                          <div className="text-right">1780000.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+
+                        {/* Invoice 102972 */}
+                        <div className="font-bold mb-1 mt-2">Invoicenumber: 102972 Date: 01-08-2026 Customer Name : Customer POS</div>
+
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
+                          <div>200003</div>
+                          <div>فول عريض 1 كغ</div>
+                          <div className="text-right">5.0</div>
+                          <div className="text-right">100000.0</div>
+                          <div className="text-right">0.0</div>
+                          <div className="text-right">500000.0</div>
+                          <div className="text-right">350000.0</div>
+                          <div className="text-right">150000.0</div>
+                          <div className="text-right">30.0</div>
+                        </div>
+
+                        <div className="border-b border-dotted border-gray-400 my-1 w-full"></div>
+
+                        {/* Subtotals 102972 */}
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
+                          <div className="col-span-2 text-right pr-2">Subtotal :</div>
+                          <div className="text-right">5.0</div>
+                          <div></div>
+                          <div></div>
+                          <div className="text-right">500000.0</div>
+                          <div className="text-right">350000.0</div>
+                          <div className="text-right">150000.0</div>
+                          <div className="text-right">30.0</div>
+                        </div>
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-0.5 w-full font-bold">
+                          <div className="col-span-5 text-right pr-2">Discount :</div>
+                          <div className="text-right">0.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+                        <div className="grid grid-cols-[1.5fr_2.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-8 w-full font-bold">
+                          <div className="col-span-5 text-right pr-2">Net Amount :</div>
+                          <div className="text-right">500000.0</div>
+                          <div className="col-span-3"></div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Profit by category by department' ? (
                     /* PROFIT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
