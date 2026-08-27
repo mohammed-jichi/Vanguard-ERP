@@ -566,7 +566,64 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Summary of Payment by Employee' ? (
+                  {(selectedReport === 'Advanced payment History' || selectedReport === 'Advanced Payment History') ? (
+                    /* ADVANCED PAYMENT HISTORY REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Advanced payment History
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] font-bold text-black">
+                          <div>Date</div>
+                          <div>Receipt #</div>
+                          <div>Customer</div>
+                          <div>Payment Mode</div>
+                          <div className="text-right">Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Sample Data Row 1 */}
+                      <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>27-Aug-26</div>
+                        <div>RCPT-1001</div>
+                        <div>Hussein Deek</div>
+                        <div>CASH USD</div>
+                        <div className="text-right">20.00</div>
+                      </div>
+
+                      {/* Sample Data Row 2 */}
+                      <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] mb-8 font-medium">
+                        <div>27-Aug-26</div>
+                        <div>RCPT-1002</div>
+                        <div>Mr. Dayek</div>
+                        <div>CASH</div>
+                        <div className="text-right">50,000.00</div>
+                      </div>
+
+                      {/* Grand Total Footer */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
+                      <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] font-bold">
+                        <div className="col-span-4">Total</div>
+                        <div className="text-right">51,780.00</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Summary of Payment by Employee' ? (
                     /* SUMMARY OF PAYMENT BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
