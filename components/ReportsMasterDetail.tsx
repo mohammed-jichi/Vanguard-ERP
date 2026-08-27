@@ -643,6 +643,28 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   )}
+
+                  {selectedReport === 'Profit by category by department' && (
+                    <div className="flex flex-col gap-3 w-full mt-2">
+                      {/* Row 1 */}
+                      <div className="flex gap-4">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
+                          <option>This Month</option>
+                        </select>
+                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]" defaultValue="Aug, 2026" />
+                      </div>
+                      {/* Row 2 */}
+                      <div className="flex gap-4 items-center mt-1">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
+                          <option>All Branches</option>
+                        </select>
+                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                          Use Unit Cost
+                        </label>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -670,7 +692,244 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Profit by category summary' ? (
+                  {selectedReport === 'Profit by category by department' ? (
+                    /* PROFIT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Profit by Category by Department
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 text-[11px] font-bold text-black w-full">
+                          <div>Category Name</div>
+                          <div className="text-right">Quantity Sold</div>
+                          <div className="text-right">Sales Total</div>
+                          <div className="text-right">Cost</div>
+                          <div className="text-right">% Cost</div>
+                          <div className="text-right">Gross Profit</div>
+                          <div className="text-right">% Gross Profit Margin</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-medium leading-tight w-full">
+                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* Raw Materials Group */}
+                        <div className="font-bold mb-1 mt-2">Department Name: Raw Materials</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>Raw Materials</div>
+                          <div className="text-right">7.0</div>
+                          <div className="text-right">680,000.00</div>
+                          <div className="text-right">470,000.00</div>
+                          <div className="text-right">69.12</div>
+                          <div className="text-right">210,000.00</div>
+                          <div className="text-right">30.88</div>
+                        </div>
+                        <div className="border-t border-black my-1 w-full"></div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
+                          <div>Total for Department Raw Materials:</div>
+                          <div className="text-right">7.0</div>
+                          <div className="text-right">680,000.00</div>
+                          <div className="text-right">470,000.00</div>
+                          <div className="text-right">69.12</div>
+                          <div className="text-right">210,000.00</div>
+                          <div className="text-right">30.88</div>
+                        </div>
+
+                        {/* جملة Group */}
+                        <div className="font-bold mb-1 mt-2">Department Name: جملة</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>جملة</div>
+                          <div className="text-right">10.0</div>
+                          <div className="text-right">16,000,000.00</div>
+                          <div className="text-right">12,800,000.00</div>
+                          <div className="text-right">80.00</div>
+                          <div className="text-right">3,200,000.00</div>
+                          <div className="text-right">20.00</div>
+                        </div>
+                        <div className="border-t border-black my-1 w-full"></div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
+                          <div>Total for Department جملة:</div>
+                          <div className="text-right">10.0</div>
+                          <div className="text-right">16,000,000.00</div>
+                          <div className="text-right">12,800,000.00</div>
+                          <div className="text-right">80.00</div>
+                          <div className="text-right">3,200,000.00</div>
+                          <div className="text-right">20.00</div>
+                        </div>
+
+                        {/* عروض Group */}
+                        <div className="font-bold mb-1 mt-2">Department Name: عروض</div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>عروض</div>
+                          <div className="text-right">2.0</div>
+                          <div className="text-right">1,500,000.00</div>
+                          <div className="text-right">900,000.00</div>
+                          <div className="text-right">60.00</div>
+                          <div className="text-right">600,000.00</div>
+                          <div className="text-right">40.00</div>
+                        </div>
+                        <div className="border-t border-black my-1 w-full"></div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
+                          <div>Total for Department عروض:</div>
+                          <div className="text-right">2.0</div>
+                          <div className="text-right">1,500,000.00</div>
+                          <div className="text-right">900,000.00</div>
+                          <div className="text-right">60.00</div>
+                          <div className="text-right">600,000.00</div>
+                          <div className="text-right">40.00</div>
+                        </div>
+
+                        {/* مفرق Group */}
+                        <div className="font-bold mb-1 mt-2">Department Name: مفرق</div>
+                        
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>بهارات مفرق</div>
+                          <div className="text-right">4.95</div>
+                          <div className="text-right">3,570,000.0</div>
+                          <div className="text-right">1,693,395.00</div>
+                          <div className="text-right">47.43</div>
+                          <div className="text-right">1,876,605.00</div>
+                          <div className="text-right">52.57</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>زيوت مفرق</div>
+                          <div className="text-right">246.47</div>
+                          <div className="text-right">781,995,700</div>
+                          <div className="text-right">458,677,490.6</div>
+                          <div className="text-right">58.65</div>
+                          <div className="text-right">323,318,209.32</div>
+                          <div className="text-right">41.35</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>عسل مفرق</div>
+                          <div className="text-right">6.00</div>
+                          <div className="text-right">9,360,000.0</div>
+                          <div className="text-right">4,354,560.00</div>
+                          <div className="text-right">46.52</div>
+                          <div className="text-right">5,005,440.00</div>
+                          <div className="text-right">53.48</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>كيلو مفرق</div>
+                          <div className="text-right">37.90</div>
+                          <div className="text-right">14,721,000.</div>
+                          <div className="text-right">9,655,200.00</div>
+                          <div className="text-right">65.59</div>
+                          <div className="text-right">5,065,800.00</div>
+                          <div className="text-right">34.41</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>مجففات</div>
+                          <div className="text-right">1.00</div>
+                          <div className="text-right">725,000.00</div>
+                          <div className="text-right">405,000.00</div>
+                          <div className="text-right">55.86</div>
+                          <div className="text-right">320,000.00</div>
+                          <div className="text-right">44.14</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>محمصة مفرق</div>
+                          <div className="text-right">0.25</div>
+                          <div className="text-right">393,750.00</div>
+                          <div className="text-right">281,250.00</div>
+                          <div className="text-right">71.43</div>
+                          <div className="text-right">112,500.00</div>
+                          <div className="text-right">28.57</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>مربيات مفرق</div>
+                          <div className="text-right">4.00</div>
+                          <div className="text-right">990,000.00</div>
+                          <div className="text-right">605,404.80</div>
+                          <div className="text-right">61.15</div>
+                          <div className="text-right">384,595.20</div>
+                          <div className="text-right">38.85</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>مرطبان</div>
+                          <div className="text-right">34.00</div>
+                          <div className="text-right">11,285,000.</div>
+                          <div className="text-right">6,755,290.56</div>
+                          <div className="text-right">59.86</div>
+                          <div className="text-right">4,529,709.44</div>
+                          <div className="text-right">40.14</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>مقطرات ومدبسات مفرق</div>
+                          <div className="text-right">18.00</div>
+                          <div className="text-right">2,220,000.0</div>
+                          <div className="text-right">1,523,019.53</div>
+                          <div className="text-right">68.60</div>
+                          <div className="text-right">696,980.47</div>
+                          <div className="text-right">31.40</div>
+                        </div>
+
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-1 w-full font-bold">
+                          <div>مونة بلدية مفرق</div>
+                          <div className="text-right">31.10</div>
+                          <div className="text-right">4,225,000.0</div>
+                          <div className="text-right">3,131,940.00</div>
+                          <div className="text-right">74.13</div>
+                          <div className="text-right">1,093,060.00</div>
+                          <div className="text-right">25.87</div>
+                        </div>
+
+                        <div className="border-t border-black my-1 w-full"></div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-4 w-full font-bold">
+                          <div>Total for Department مفرق:</div>
+                          <div className="text-right">383.67</div>
+                          <div className="text-right">829,485,450.00</div>
+                          <div className="text-right">487,082,550.49</div>
+                          <div className="text-right">58.72</div>
+                          <div className="text-right">342,402,899.51</div>
+                          <div className="text-right">41.28</div>
+                        </div>
+
+                        {/* Overall Branch Total */}
+                        <div className="border-t border-black my-1 w-full"></div>
+                        <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] gap-2 mb-8 w-full font-bold">
+                          <div>Total By Branch:</div>
+                          <div className="text-right">402.67</div>
+                          <div className="text-right">847,665,450.00</div>
+                          <div className="text-right">501,252,550.49</div>
+                          <div className="text-right">59.13</div>
+                          <div className="text-right">346,412,899.51</div>
+                          <div className="text-right">40.87</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Profit by category summary' ? (
                     /* PROFIT BY CATEGORY SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
