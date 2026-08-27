@@ -247,7 +247,7 @@ export default function Sidebar({
                     return (
                       <a
                         key={item.id}
-                        href="/sales/pos"
+                        href="/pos"
                         target="_blank"
                         rel="noreferrer"
                         className="w-full flex items-center justify-between p-1.5 text-amber-700 hover:text-amber-800 hover:bg-amber-50 rounded font-bold transition-colors"

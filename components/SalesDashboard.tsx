@@ -893,7 +893,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             return (
               <a
                 key={t.id}
-                href="/product-insights"
+                href="/backoffice/products"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-gray-100 hover:text-gray-900 border border-gray-200 shadow-sm"
@@ -907,7 +907,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             return (
               <a
                 key={t.id}
-                href="/customer-insights"
+                href="/backoffice/customers"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-gray-100 hover:text-gray-900 border border-gray-200 shadow-sm"

@@ -1,5 +1,5 @@
-import MainTileDashboard from '@/components/MainTileDashboard';
+import { redirect } from 'next/navigation';
 
 export default function RootPage() {
-  return <MainTileDashboard />;
+  redirect('/backoffice/dashboard');
 }
