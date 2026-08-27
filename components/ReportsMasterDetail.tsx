@@ -1066,60 +1066,91 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
-                        Profit by Category Summary
+                        Theoretical Profit By Category
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                        <div>27-Aug-2026</div>
+                        <div>Years:2026 Month:8</div>
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Header */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 text-[11px] font-bold text-black w-full">
-                          <div>Category Name</div>
-                          <div className="text-right">Qty</div>
-                          <div className="text-right">Amount</div>
+                      {/* Main Table Header (Thin lines, tightly packed) */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] text-[11px] font-bold text-black w-full">
+                          <div>Category</div>
+                          <div className="text-right">Quantity</div>
+                          <div className="text-right">Total Price</div>
                           <div className="text-right">Total Cost</div>
-                          <div className="text-right">Profit</div>
-                          <div className="text-right">% Profit Margin</div>
+                          <div className="text-right">Total Cost %</div>
+                          <div className="text-right">Total Profit</div>
+                          <div className="text-right">Total Profit %</div>
                         </div>
                       </div>
 
-                      {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch Name: Southern Olive Oil S.A.R.L</div>
+                      {/* Data Section (Strictly normal font weight, tightly packed) */}
+                      <div className="text-[11px] font-normal leading-tight w-full">
+                        <div>Branch: Southern Olive Oil S.A.R.L</div>
+
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>Raw Materials</div>
+                          <div className="text-right">70.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">17,865,000.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">-17,865,000.00</div>
+                          <div className="text-right">0.00</div>
+                        </div>
                         
-                        {/* Data Row 1 */}
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>حبوب فلت</div>
-                          <div className="text-right">7.0</div>
-                          <div className="text-right">680,000.00</div>
-                          <div className="text-right">470,000.00</div>
-                          <div className="text-right">210,000.00</div>
-                          <div className="text-right">30.88</div>
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>جملة</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                        </div>
+                        
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>عروض</div>
+                          <div className="text-right">50.00</div>
+                          <div className="text-right">486,000,000.0</div>
+                          <div className="text-right">398,372,400.00</div>
+                          <div className="text-right">81.97</div>
+                          <div className="text-right">87,627,600.00</div>
+                          <div className="text-right">18.03</div>
+                        </div>
+                        
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                          <div>مفرق</div>
+                          <div className="text-right">384.94</div>
+                          <div className="text-right">830,032,050.0</div>
+                          <div className="text-right">487,480,494.57</div>
+                          <div className="text-right">58.73</div>
+                          <div className="text-right">342,551,555.43</div>
+                          <div className="text-right">41.27</div>
+                        </div>
+                        
+                        <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mb-1">
+                          <div>عروض</div>
+                          <div className="text-right">24.00</div>
+                          <div className="text-right">248,400,000.0</div>
+                          <div className="text-right">219,318,140.16</div>
+                          <div className="text-right">88.29</div>
+                          <div className="text-right">29,081,859.84</div>
+                          <div className="text-right">11.71</div>
                         </div>
 
-                        {/* Data Row 2 */}
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-1 w-full font-bold">
-                          <div>زيت زيتون خضير مفرق</div>
-                          <div className="text-right">10.0</div>
-                          <div className="text-right">16,000,000.00</div>
-                          <div className="text-right">12,800,000.00</div>
-                          <div className="text-right">3,200,000.00</div>
-                          <div className="text-right">20.00</div>
-                        </div>
-
-                        {/* Total By Branch */}
-                        <div className="border-t border-black my-1 w-full"></div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1.5fr_1.5fr] gap-2 mb-8 w-full font-bold">
+                        {/* Total By Branch (Bold, Thin Borders) */}
+                        <div className="border-t border-b border-black py-0.5 grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] font-bold w-full mb-8">
                           <div>Total By Branch:</div>
-                          <div className="text-right">17.0</div>
-                          <div className="text-right">16,680,000.00</div>
-                          <div className="text-right">13,270,000.00</div>
-                          <div className="text-right">3,410,000.00</div>
-                          <div className="text-right">20.44</div>
+                          <div className="text-right">528.94</div>
+                          <div className="text-right">1,564,432,050</div>
+                          <div className="text-right">1,123,036,034.7</div>
+                          <div className="text-right">71.79</div>
+                          <div className="text-right">441,396,015.27</div>
+                          <div className="text-right">28.21</div>
                         </div>
                       </div>
 
