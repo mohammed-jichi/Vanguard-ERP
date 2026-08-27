@@ -2137,27 +2137,28 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 91: TODAY TAB VIEW (LIVE DAILY SHIFT & PAYMENTS - LL CURRENCY) ---------------- */}
+      {/* ---------------- PHASE 92: TODAY TAB VIEW (CONTRAST, ALIGNMENT & BANNER FIXES) ---------------- */}
       {activeTab === 'today' && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 shrink-0">
+          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-3.5">
+              <div className="bg-blue-500/20 text-blue-400 p-2.5 rounded-lg border border-blue-500/30 shrink-0">
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <h2 className="text-base font-bold text-white">
                   Daily Shift & Operations Dashboard
-                  <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">
-                    Shift #0482 Active
-                  </span>
                 </h2>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                <p className="text-slate-300 mt-1 text-sm font-normal">
                   Real-time transaction log, active cashier terminals, and payment method distribution for today.
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-3 shrink-0 ml-auto md:ml-0">
+              <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 font-mono">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Shift #0482 Active
+              </span>
               <button
                 onClick={() => setIsEodModalOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
@@ -2293,25 +2294,27 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 91: GEOGRAPHICS TAB VIEW (TERRITORIAL SALES DISTRIBUTION - LL CURRENCY) ---------------- */}
+      {/* ---------------- PHASE 92: GEOGRAPHICS TAB VIEW (CONTRAST, ALIGNMENT & BANNER FIXES) ---------------- */}
       {activeTab === 'geographics' && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 shrink-0">
+          <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-3.5">
+              <div className="bg-purple-500/20 text-purple-400 p-2.5 rounded-lg border border-purple-500/30 shrink-0">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <h2 className="text-base font-bold text-white">
                   Territorial Sales Distribution
-                  <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                    6 Active Territories
-                  </span>
                 </h2>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                <p className="text-slate-300 mt-1 text-sm font-normal">
                   Regional revenue density, customer account concentration, and territorial performance across Lebanon.
                 </p>
               </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0 ml-auto md:ml-0">
+              <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-sm font-medium font-mono">
+                6 Active Territories
+              </span>
             </div>
           </div>
 

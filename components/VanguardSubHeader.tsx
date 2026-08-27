@@ -17,11 +17,8 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
   const pathname = usePathname();
   const { language } = useLanguage();
 
-  // ONLY render top sub-header action bar on the absolute root dashboard & grid-dash!
-  const isDashboardRoute = pathname === '/' || pathname === '/backoffice/dashboard' || pathname === '/backoffice';
-  const isGridDashScreen = !activeScreen || activeScreen === 'grid-dash';
-
-  if (!isDashboardRoute || !isGridDashScreen) {
+  // STRICT REQUIREMENT: ONLY render top sub-header action bar on the absolute root path ('/')
+  if (pathname !== '/') {
     return null;
   }
   const [recentlyVisited, setRecentlyVisited] = useState<Array<{ key: string; titleEn: string; titleAr: string }>>([
