@@ -530,7 +530,73 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Summary of Discount by Divisions' ? (
+                  {selectedReport === 'Discount By Category by Department' ? (
+                    /* DISCOUNT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Discount by Category by Department
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-4">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Separator Line */}
+                      <div className="border-b-[1.5px] border-black mb-4"></div>
+
+                      {/* Data Table */}
+                      <div className="flex justify-center">
+                        <table className="w-[600px] border-collapse border border-black text-[11px] font-bold text-black text-center">
+                          <thead>
+                            <tr>
+                              <th className="border border-black p-1.5 w-[150px]" colSpan={2}></th>
+                              <th className="border border-black p-1.5 w-[150px]">MAIN<br/>DEPARTMENT</th>
+                              <th className="border border-black p-1.5 w-[150px] bg-[#cce5ff]">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {/* Row 1 */}
+                            <tr>
+                              <td className="border border-black p-1.5" rowSpan={3}>
+                                Southern Olive and Oil<br/>Products
+                              </td>
+                              <td className="border border-black p-1.5">مفرق</td>
+                              <td className="border border-black p-1.5">54,542,762.47</td>
+                              <td className="border border-black p-1.5 bg-[#cce5ff]">54,542,762.47</td>
+                            </tr>
+                            {/* Row 2 */}
+                            <tr>
+                              <td className="border border-black p-1.5">عروض</td>
+                              <td className="border border-black p-1.5">1,537,687.50</td>
+                              <td className="border border-black p-1.5 bg-[#cce5ff]">1,537,687.50</td>
+                            </tr>
+                            {/* Row 3 */}
+                            <tr>
+                              <td className="border border-black p-1.5">Raw Materials</td>
+                              <td className="border border-black p-1.5">0.00</td>
+                              <td className="border border-black p-1.5 bg-[#cce5ff]">0.00</td>
+                            </tr>
+                            {/* Total Row */}
+                            <tr className="bg-[#cce5ff]">
+                              <td className="border border-black p-1.5 text-center" colSpan={2}>Total</td>
+                              <td className="border border-black p-1.5">56,080,449.97</td>
+                              <td className="border border-black p-1.5">56,080,449.97</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Summary of Discount by Divisions' ? (
                     /* SUMMARY OF DISCOUNT BY DIVISIONS REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
