@@ -521,6 +521,24 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       Real Date
                     </label>
                   )}
+
+                  {selectedReport === 'Summary of Payment by Employee' && (
+                    <div className="flex flex-col gap-2 w-full">
+                      <div className="flex items-center gap-4">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
+                          <option>All Invoices</option>
+                        </select>
+                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                          Real Date
+                        </label>
+                      </div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer mt-1">
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                        Summary
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -548,7 +566,54 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Summary of payment by workstation' ? (
+                  {selectedReport === 'Summary of Payment by Employee' ? (
+                    /* SUMMARY OF PAYMENT BY EMPLOYEE REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black text-[11px]">
+                      {/* Data Block - Replicated exactly from the image top portion */}
+                      <div className="font-bold mb-1">Mahdi</div>
+                      <div className="flex justify-between font-medium mb-1">
+                        <div>CASH</div>
+                        <div>-11,130,000.00</div>
+                      </div>
+                      <div className="flex justify-between font-medium mb-1">
+                        <div>CASH USD</div>
+                        <div>13,500,000.00</div>
+                      </div>
+                      <div className="flex justify-between font-bold mb-4">
+                        <div>Total for Mahdi</div>
+                        <div>2,370,000.00</div>
+                      </div>
+
+                      <div className="flex justify-between font-bold mb-4">
+                        <div>25-Aug-2026</div>
+                        <div>63,301,500.00</div>
+                      </div>
+
+                      <div className="flex justify-between font-bold mb-4">
+                        <div>Total for Zeit w zaytoun ljanoub</div>
+                        <div>1,511,051,600.00</div>
+                      </div>
+
+                      {/* Footer/Header Line (Page 5 of 5) */}
+                      <div className="flex justify-between items-center font-bold mb-2">
+                        <div>27-Aug-26</div>
+                        <div className="flex gap-16">
+                          <span>From Date: 01-Aug-2026</span>
+                          <span>To Date: 27-Aug-2026</span>
+                        </div>
+                        <div>Page 5 of 5</div>
+                      </div>
+
+                      {/* Double Border Separator */}
+                      <div className="border-t-[3px] border-b-[3px] border-black py-1.5 mb-3"></div>
+
+                      {/* Grand Total */}
+                      <div className="flex justify-between font-bold text-[12px]">
+                        <div>Total:</div>
+                        <div>1,511,051,600.00</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Summary of payment by workstation' ? (
                     /* SUMMARY OF PAYMENT BY WORKSTATION REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
