@@ -5,91 +5,113 @@ import {
   RotateCcw,
   Search,
   FileText,
-  TrendingUp,
-  BarChart3,
-  Calendar,
-  Users,
-  CreditCard,
-  Clock,
-  ChevronRight,
+  ChevronDown,
   Download,
   Printer,
-  Filter,
-  Layers,
-  ArrowUpRight,
+  Menu,
   CheckCircle2,
-  Menu
+  Filter
 } from 'lucide-react';
 
-interface ReportItem {
-  id: string;
-  name: string;
+type ReportMenuItemFlat = {
   category: string;
-  description: string;
-  lastRun?: string;
-}
+  type: 'flat';
+  items: string[];
+};
+
+type ReportMenuItemNested = {
+  category: string;
+  type: 'nested';
+  groups: {
+    name: string;
+    items: string[];
+  }[];
+};
+
+type ReportMenuItem = ReportMenuItemFlat | ReportMenuItemNested;
+
+const reportMenuData: ReportMenuItem[] = [
+  {
+    category: "Recently Viewed",
+    type: "flat",
+    items: ["Customer List Standard", "Summary of voids", "Main Reading History", "Summary of refunds", "Today's Statistics"]
+  },
+  {
+    category: "Internal Control",
+    type: "flat",
+    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary"]
+  },
+  {
+    category: "Financial",
+    type: "nested",
+    groups: [
+      { name: "Statistics", items: ["Sales Summary", "Statistics by Workstation", "Statistics by Department", "Summary of Sales by Employee", "Sales by Employee by Category", "Sales by Supplier", "Delivery Orders by Date and Branch"] },
+      { name: "Tax Reports", items: ["Tax Summary", "Tax Summary Comparative"] },
+      { name: "Discount Reports", items: ["Summary of Discount by Divisions", "Discount By Category by Department", "Summary of Discount", "Discount By Description by Employee", "Summary of Discount By Items Amount", "Discount Summary"] },
+      { name: "Payments", items: ["Summary of Payment", "Summary of Payment by Department", "Summary of payment by workstation", "Summary of Payment by Employee", "Advanced Payment History", "Paid In/Out", "Customer Payments", "List of Layaway Sales", "Layaway History", "List of Pending Invoices with Advance Payment"] },
+      { name: "Internal Control", items: ["Meter Report", "No Sale", "Transactions on Hold", "User Log Report"] },
+      { name: "Profit Summary", items: ["Profit by Invoices Summary", "Profit by item summary", "Profit by category summary", "Profit by category by department", "Profit By Invoices"] },
+      { name: "Comparative", items: ["Sales summary by day", "Daily Sales", "Comparative Yearly Sales", "Comparative Monthly Sales", "Comparative Monthly Sales by Employee"] },
+      { name: "Transaction Summary", items: ["Transactions by Date", "Credit Sales", "Credit Card Report", "Electronic Journal"] },
+      { name: "Time sales analysis", items: ["Timer Report Group by transaction count", "Time report by date", "Time report - Average Check", "Time report By EOD date", "Transaction Report by Time"] }
+    ]
+  },
+  {
+    category: "Product Sales",
+    type: "nested",
+    groups: [
+      { name: "Product Sales", items: ["Summary of Sales By Items", "Sales by Items", "Sales details for one sales item", "Sales By Customer By Items", "Daily Sales By Items", "Sales By Categories", "Sales By Divisions", "Sales Items by Transaction", "Not Sold Items", "Sold Serial Numbers"] },
+      { name: "Comparative By Branch", items: ["Sales By Category", "Sales By Division", "Sales By Groups", "Sales By Items"] },
+      { name: "Top Performers", items: ["Top N sold by Quantity", "Top N sold by Amount"] },
+      { name: "Voids & Refunds", items: ["Summary of voids", "Summary of refunds", "Details of refunds"] }
+    ]
+  },
+  {
+    category: "Customer Sales",
+    type: "nested",
+    groups: [
+      { name: "Top Performers", items: ["Top N Customers by Amount"] },
+      { name: "Customers & Delivery", items: ["Sales by customer In Detail", "Sales by zone", "Delivery Sales Summary", "Drivers History"] }
+    ]
+  },
+  {
+    category: "Today's & History",
+    type: "nested",
+    groups: [
+      { name: "Today's Sales", items: ["Today's Statistics", "Today's Summary of payment", "Today's summary by Employee", "Today's Transactions"] },
+      { name: "History", items: ["Preview Older Sales", "Main Reading History"] }
+    ]
+  },
+  {
+    category: "Time & Attendance",
+    type: "flat",
+    items: ["Employee attendance", "Time And Attendance", "Labor Cost"]
+  },
+  {
+    category: "Lists",
+    type: "flat",
+    items: ["Customer List Standard", "Not Active Customers", "New Customers", "Black List Customers"]
+  }
+];
 
 interface ReportsMasterDetailProps {
   onBack?: () => void;
 }
 
-const CATEGORIES = [
-  { id: 'recently-viewed', label: 'Recently Viewed', icon: Clock },
-  { id: 'internal-control', label: 'Internal Control', icon: Layers },
-  { id: 'financial', label: 'Financial', icon: CreditCard },
-  { id: 'product-sales', label: 'Product Sales', icon: BarChart3 },
-  { id: 'customer-sales', label: 'Customer Sales', icon: Users },
-  { id: 'todays-history', label: "Today's & History", icon: Calendar },
-  { id: 'time-attendance', label: 'Time & Attendance', icon: Clock },
-  { id: 'lists', label: 'Lists', icon: FileText }
-];
-
-const MOCK_REPORTS: Record<string, ReportItem[]> = {
-  'recently-viewed': [
-    { id: 'REP-001', name: 'Daily Cashier Shift Balance & Z-Report', category: 'Financial', description: 'Real-time shift log, cash drawer Reconciliation, and card terminal batch summaries.', lastRun: 'Today 12:45 PM' },
-    { id: 'REP-002', name: 'Product Profit Margin & Revenue Matrix', category: 'Product Sales', description: 'Itemized net revenue, cost of goods sold (COGS), and net margin percentage.', lastRun: 'Aug 26, 2026' }
-  ],
-  'internal-control': [
-    { id: 'REP-101', name: 'Cashier Void & Refund Audit Log', category: 'Internal Control', description: 'Tracks modified invoices, line-item deletions, manual overrides, and cash drawer opens.', lastRun: 'Aug 25, 2026' },
-    { id: 'REP-102', name: 'Inventory Shrinkage & Loss Register', category: 'Internal Control', description: 'Audit log of damaged goods, pressing losses, and stock adjustment variances.', lastRun: 'Aug 24, 2026' }
-  ],
-  'financial': [
-    { id: 'REP-201', name: 'Daily Cashier Shift Balance & Z-Report', category: 'Financial', description: 'Detailed breakdown of receipts by cash (LBP/USD), credit card, and receivables.', lastRun: 'Today 12:45 PM' },
-    { id: 'REP-202', name: 'Accounts Receivable (A/R) Aging Summary', category: 'Financial', description: 'Outstanding customer debt balances grouped by 30, 60, and 90+ days aging.', lastRun: 'Aug 26, 2026' },
-    { id: 'REP-203', name: 'Territorial Tax & MOF VAT Ledger', category: 'Financial', description: 'Official tax declaration statement for Lebanese Ministry of Finance (MOF).', lastRun: 'Aug 20, 2026' }
-  ],
-  'product-sales': [
-    { id: 'REP-301', name: 'Product Sales Volume & Revenue Ranking', category: 'Product Sales', description: 'Ranked list of top-selling olive oil SKU packages, tin sizes, and retail bottles.', lastRun: 'Aug 27, 2026' },
-    { id: 'REP-302', name: 'Fast vs Slow Stock Movement Analysis', category: 'Product Sales', description: 'Velocity report measuring inventory turnover rates across retail branches.', lastRun: 'Aug 22, 2026' }
-  ],
-  'customer-sales': [
-    { id: 'REP-401', name: 'Top Tier Key Customer Revenue Ranking', category: 'Customer Sales', description: 'Revenue contribution per commercial client, wholesaler, and retail distributor.', lastRun: 'Aug 26, 2026' },
-    { id: 'REP-402', name: 'Territorial Sales Distribution (Lebanon)', category: 'Customer Sales', description: 'Geographic sales density across Beirut, Choueifat, Jbaa, Sidon, and Tyre.', lastRun: 'Aug 25, 2026' }
-  ],
-  'todays-history': [
-    { id: 'REP-501', name: 'Live Operations Shift Log', category: "Today's & History", description: 'Hourly transaction velocity and active terminal cashier metrics.', lastRun: 'Just now' },
-    { id: 'REP-502', name: 'Historical Monthly Revenue Trend (2024-2026)', category: "Today's & History", description: 'Multi-year comparative sales performance and seasonal growth velocity.', lastRun: 'Aug 15, 2026' }
-  ],
-  'time-attendance': [
-    { id: 'REP-601', name: 'Cashier & Press Worker Biometric Attendance Log', category: 'Time & Attendance', description: 'Clock-in, clock-out timestamps, overtime hours, and shift compliance register.', lastRun: 'Aug 27, 2026' }
-  ],
-  'lists': [
-    { id: 'REP-701', name: 'Master Commercial Customer Directory', category: 'Lists', description: 'Complete listing of all corporate accounts, contact details, and credit limits.', lastRun: 'Aug 20, 2026' },
-    { id: 'REP-702', name: 'Active Product Catalog & Price Matrix', category: 'Lists', description: 'Exportable master price list for all active inventory SKUs and unit rates.', lastRun: 'Aug 20, 2026' }
-  ]
-};
-
 export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('recently-viewed');
-  const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    "Statistics": true,
+    "Product Sales": true,
+    "Payments": true,
+    "Today's Sales": true
+  });
 
-  const reportsList = MOCK_REPORTS[selectedCategory] || [];
-  const filteredReports = reportsList.filter(rep =>
-    rep.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    rep.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const toggleGroup = (groupName: string) => {
+    setExpandedGroups(prev => ({ ...prev, [groupName]: !prev[groupName] }));
+  };
 
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
@@ -120,7 +142,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
       {/* 2. TWO-COLUMN MASTER-DETAIL GRID */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12 mt-6">
         
-        {/* LEFT PANEL (REPORT CATEGORIES & SUB-REPORTS - CONDITIONAL TOGGLE) */}
+        {/* LEFT PANEL (REPORT CATEGORIES & ACCORDION MENU) */}
         {isReportListOpen && (
           <div className="col-span-12 md:col-span-3 bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col transition-all duration-300">
             
@@ -136,60 +158,101 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               />
             </div>
 
-            {/* CATEGORY LIST */}
-            <div className="divide-y divide-slate-100 overflow-y-auto max-h-[580px]">
-              {CATEGORIES.map((cat) => {
-                const isSelected = selectedCategory === cat.id;
-                const Icon = cat.icon;
-                return (
-                  <div key={cat.id}>
-                    <div
-                      onClick={() => {
-                        setSelectedCategory(cat.id);
-                        setSelectedReport(null);
-                      }}
-                      className={`p-4 text-sm font-semibold cursor-pointer transition-all flex items-center justify-between ${
-                        isSelected
-                          ? 'bg-blue-50/70 text-blue-700 font-bold border-l-4 border-l-blue-600'
-                          : 'text-blue-600 hover:bg-slate-50 hover:text-blue-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
-                        <span>{cat.label}</span>
-                      </div>
-                      <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-blue-600' : 'text-slate-300'}`} />
-                    </div>
+            {/* ACCORDION MENU LIST */}
+            <div className="overflow-y-auto max-h-[620px] bg-white divide-y divide-slate-100">
+              {reportMenuData.map((section) => {
+                const matchesSearch = (itemStr: string) =>
+                  itemStr.toLowerCase().includes(searchQuery.toLowerCase());
 
-                    {/* SUB-REPORTS UNDER ACTIVE CATEGORY */}
-                    {isSelected && (
-                      <div className="bg-slate-50/80 px-3 py-2 space-y-1 border-b border-slate-100">
-                        {filteredReports.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic px-3 py-2">No matching reports</p>
-                        ) : (
-                          filteredReports.map((rep) => {
-                            const isRepSelected = selectedReport?.id === rep.id;
-                            return (
-                              <div
-                                key={rep.id}
-                                onClick={() => setSelectedReport(rep)}
-                                className={`p-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center justify-between ${
-                                  isRepSelected
-                                    ? 'bg-white text-slate-900 shadow-2xs font-bold border border-blue-200'
-                                    : 'text-slate-600 hover:bg-white hover:text-slate-900'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2 truncate pr-2">
-                                  <FileText className={`w-3.5 h-3.5 shrink-0 ${isRepSelected ? 'text-blue-600' : 'text-slate-400'}`} />
-                                  <span className="truncate">{rep.name}</span>
-                                </div>
-                                {isRepSelected && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />}
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    )}
+                if (section.type === 'flat') {
+                  const filteredItems = searchQuery
+                    ? section.items.filter(matchesSearch)
+                    : section.items;
+
+                  if (searchQuery && filteredItems.length === 0) return null;
+
+                  return (
+                    <div key={section.category} className="py-1">
+                      <h4 className="text-[#195a96] font-bold text-sm px-4 py-2.5 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
+                        {section.category}
+                      </h4>
+                      {filteredItems.map((item) => {
+                        const isSelected = selectedReport === item;
+                        return (
+                          <div
+                            key={item}
+                            onClick={() => setSelectedReport(item)}
+                            className={`px-4 py-1.5 text-[13px] font-medium transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600'
+                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            {item}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
+                // NESTED GROUPS
+                const filteredGroups = section.groups
+                  .map(group => ({
+                    ...group,
+                    items: searchQuery
+                      ? group.items.filter(matchesSearch)
+                      : group.items
+                  }))
+                  .filter(group => !searchQuery || group.items.length > 0 || group.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+                if (searchQuery && filteredGroups.length === 0) return null;
+
+                return (
+                  <div key={section.category} className="py-1">
+                    <h4 className="text-[#195a96] font-bold text-sm px-4 py-2.5 border-b border-slate-100 bg-white sticky top-0 z-10 select-none">
+                      {section.category}
+                    </h4>
+                    {filteredGroups.map((group) => {
+                      const isExpanded = !!expandedGroups[group.name] || !!searchQuery;
+                      return (
+                        <div key={group.name}>
+                          <div
+                            onClick={() => toggleGroup(group.name)}
+                            className="flex justify-between items-center px-4 py-2 text-[13px] font-semibold text-[#2c3e50] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50"
+                          >
+                            <span>{group.name}</span>
+                            <ChevronDown
+                              size={14}
+                              className={`text-slate-400 transition-transform ${
+                                isExpanded ? 'rotate-180 text-blue-600' : ''
+                              }`}
+                            />
+                          </div>
+
+                          {isExpanded && (
+                            <div className="bg-slate-50/40">
+                              {group.items.map((item) => {
+                                const isSelected = selectedReport === item;
+                                return (
+                                  <div
+                                    key={item}
+                                    onClick={() => setSelectedReport(item)}
+                                    className={`pl-8 pr-4 py-1.5 text-[12px] font-medium cursor-pointer transition-all ${
+                                      isSelected
+                                        ? 'bg-blue-50 text-blue-700 font-bold border-l-4 border-l-blue-600'
+                                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                    }`}
+                                  >
+                                    {item}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}
@@ -212,12 +275,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <Menu className="w-5 h-5" />
                 </button>
                 <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                  {selectedReport ? selectedReport.name : 'No Report Selected'}
+                  {selectedReport || 'No Report Selected'}
                 </h3>
               </div>
               {selectedReport ? (
                 <p className="text-xs text-slate-500 font-medium mt-1 ml-9">
-                  {selectedReport.description} &bull; <span className="text-slate-400">Last executed: {selectedReport.lastRun}</span>
+                  Live Executive Ledger Report &bull; <span className="text-slate-400">Southern Olive Oil SARL</span>
                 </p>
               ) : (
                 <p className="text-xs text-slate-400 font-medium mt-1 ml-9">
@@ -228,10 +291,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
             {selectedReport && (
               <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-all">
+                <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-all cursor-pointer">
                   <Download className="w-3.5 h-3.5" /> Export PDF
                 </button>
-                <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-2xs">
+                <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer">
                   <Printer className="w-3.5 h-3.5" /> Print Ledger
                 </button>
               </div>
@@ -239,7 +302,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
 
           {/* VIEWER BODY (DEFAULT WATERMARK STATE vs SELECTED REPORT PREVIEW) */}
-          <div className="my-auto py-12 flex flex-col items-center justify-center text-center relative w-full">
+          <div className="my-auto py-8 flex flex-col items-center justify-center text-center relative w-full">
             {!selectedReport ? (
               <div className="space-y-4 max-w-md mx-auto">
                 {/* SUBTLE FAINT WATERMARK SVG PATTERN */}
@@ -251,16 +314,16 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <circle cx="390" cy="40" r="4" fill="#cbd5e1" />
                   </svg>
                 </div>
-                <h4 className="font-bold text-slate-700 text-base">Select a Report Category</h4>
+                <h4 className="font-bold text-slate-700 text-base">No Report Selected</h4>
                 <p className="text-slate-400 text-xs font-medium leading-relaxed">
-                  Click any category on the left panel to inspect detailed transaction records, financial audits, and sales metrics.
+                  Select a report item from the Left Panel list to view detailed transaction logs, financial breakdowns, and inventory performance statistics.
                 </p>
               </div>
             ) : (
               /* ACTIVE REPORT DEMO DATA PREVIEW TABLE */
               <div className="w-full space-y-4 text-left">
                 <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                  <span className="font-bold text-slate-700">Filter Range: YTD 2026</span>
+                  <span className="font-bold text-slate-700">Report: {selectedReport}</span>
                   <span className="font-bold text-blue-600">Branch: Southern Olive Oil SARL</span>
                 </div>
 
@@ -277,25 +340,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
                       <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">AUD-2026-081</td>
+                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-081</td>
                         <td className="py-3 px-4 font-bold">Beirut Central Branch POS</td>
                         <td className="py-3 px-4 text-center font-mono">Aug 27, 2026</td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,969,200,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Reconciled</span></td>
+                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
                       </tr>
                       <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">AUD-2026-080</td>
+                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-080</td>
                         <td className="py-3 px-4 font-bold">Choueifat Press Production</td>
                         <td className="py-3 px-4 text-center font-mono">Aug 26, 2026</td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">8,856,000,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Reconciled</span></td>
+                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
                       </tr>
                       <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">AUD-2026-079</td>
+                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-079</td>
                         <td className="py-3 px-4 font-bold">Jbaa Olive Hub Wholesale</td>
                         <td className="py-3 px-4 text-center font-mono">Aug 25, 2026</td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">6,858,000,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Reconciled</span></td>
+                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
                       </tr>
                     </tbody>
                   </table>
