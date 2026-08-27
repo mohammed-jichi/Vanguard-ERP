@@ -503,6 +503,17 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       Real Date
                     </label>
                   )}
+
+                  {selectedReport === 'Discount By Description by Employee' && (
+                    <>
+                      <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 font-bold bg-white">
+                        <option>All Types</option>
+                      </select>
+                      <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 font-bold bg-white">
+                        <option>All Discounts</option>
+                      </select>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -530,7 +541,78 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Summary of Discount' ? (
+                  {selectedReport === 'Discount By Description by Employee' ? (
+                    /* DISCOUNT BY DESCRIPTION BY EMPLOYEE REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Discount by Description by Employee
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-4">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
+                        <div className="grid grid-cols-[120px_1fr_120px_120px] gap-2 text-[11px] font-bold text-black">
+                          <div>Employee ID</div>
+                          <div>Employee Name</div>
+                          <div className="text-right">Discount %</div>
+                          <div className="text-right">Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Grouping: Branch */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Grouping: Description */}
+                      <div className="text-[11px] mb-1 font-bold pl-2">
+                        Description: Discount
+                      </div>
+
+                      {/* Employee 1: Mahdi */}
+                      <div className="grid grid-cols-[120px_1fr_120px_120px] gap-2 text-[11px] mb-1 font-medium pl-4">
+                        <div>1</div>
+                        <div>Mahdi</div>
+                        <div className="text-right">0.00%</div>
+                        <div className="text-right">2,700,000.00</div>
+                      </div>
+
+                      {/* Employee 2: Hiba Aloulou */}
+                      <div className="grid grid-cols-[120px_1fr_120px_120px] gap-2 text-[11px] mb-2 font-medium pl-4">
+                        <div>10</div>
+                        <div>Hiba Aloulou</div>
+                        <div className="text-right">0.00%</div>
+                        <div className="text-right">42,000,000.00</div>
+                      </div>
+
+                      {/* Total By Discount */}
+                      <div className="border-t border-black pt-1 mb-3">
+                        <div className="grid grid-cols-[120px_1fr_120px_120px] gap-2 text-[11px] font-bold">
+                          <div className="col-span-2">Total By Discount:</div>
+                          <div className="text-right">0.00%</div>
+                          <div className="text-right">44,700,000.00</div>
+                        </div>
+                      </div>
+
+                      {/* Next Grouping */}
+                      <div className="text-[11px] font-bold pl-2">
+                        Description: AMOUNT DISCOUNT
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Summary of Discount' ? (
                     /* SUMMARY OF DISCOUNT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
