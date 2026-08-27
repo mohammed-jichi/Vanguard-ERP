@@ -503,7 +503,120 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Discount Summary' ? (
+                  {selectedReport === 'Sales Summary' ? (
+                    /* SALES SUMMARY REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Statistics Summary Report
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div>Year: 2026 - Month: 8</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] font-bold text-black">
+                          <div>Description</div>
+                          <div className="text-right">Mode 1</div>
+                          <div className="text-right">Mode 2</div>
+                          <div className="text-right">Mode 3</div>
+                          <div className="text-right">Mode 4</div>
+                          <div className="text-right">Total</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Title */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Branch: Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Department: MAIN DEPARTMENT */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Department: MAIN DEPARTMENT
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">1,316,032,050.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,316,032,050.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">53,380,450.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">53,380,450.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">1,262,651,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,262,651,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">1,262,651,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,262,651,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
+                        <div>Number of Customers</div><div className="text-right">291</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">291</div>
+                      </div>
+
+                      {/* Department: Showroom */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Department: Showroom
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">248,400,000.00</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">248,400,000.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
+                        <div>Number of Customers</div><div className="text-right">1</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">1</div>
+                      </div>
+
+                      {/* Consolidation by branch */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Consolidation by branch
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Gross Sales</div><div className="text-right">1,564,432,050.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,564,432,050.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Tax</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Service</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-medium">
+                        <div>Discount</div><div className="text-right">53,380,450.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">53,380,450.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Revenue</div><div className="text-right">1,511,051,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,511,051,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Net Sales</div><div className="text-right">1,511,051,600.0</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">0.000</div><div className="text-right">1,511,051,600.000</div>
+                      </div>
+                      <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
+                        <div>Number of Customers</div><div className="text-right">292</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">292</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Discount Summary' ? (
                     /* DISCOUNT SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
