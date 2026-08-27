@@ -635,13 +635,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     ))}
                   </Pie>
                   <Tooltip content={<PieSliceTooltip />} cursor={{ fill: 'transparent' }} />
-                  <Legend
-                    onClick={(e: any) => {
-                      const key = e.value || e.name || (e.payload && (e.payload[labelKey] || e.payload.name || e.payload.user || e.payload.method || e.payload.reason));
-                      if (key && typeof key === 'string') handleTogglePieItem(key);
-                    }}
-                    wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }}
-                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -1911,13 +1904,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                           ))}
                       </Pie>
                       <Tooltip content={<PieSliceTooltip />} cursor={{ fill: 'transparent' }} />
-                      <Legend
-                        onClick={(e: any) => {
-                          const key = e.value || e.name;
-                          if (key) handleTogglePieItem(key);
-                        }}
-                        wrapperStyle={{ cursor: 'pointer', fontSize: '12px', color: '#334155' }}
-                      />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -2121,8 +2107,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip content={<PieSliceTooltip />} />
-                    <Legend wrapperStyle={{ fontSize: '13px', color: '#334155' }} />
+                    <Tooltip content={<PieSliceTooltip />} cursor={{ fill: 'transparent' }} />
                   </PieChart>
                 </ResponsiveContainer>
 
