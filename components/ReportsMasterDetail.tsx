@@ -503,7 +503,102 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Transactions on Hold' ? (
+                  {selectedReport === 'User Log Report' ? (
+                    /* USER LOG REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive and Oil Products (SARL)
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        User Log Report
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-2026</div>
+                        <div className="flex gap-4">
+                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
+                          <span>To Date: {toDate || '27-Aug-2026'}</span>
+                        </div>
+                        <div>Page 1 of 29</div>
+                      </div>
+
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] font-bold text-black">
+                          <div>User</div>
+                          <div>Date</div>
+                          <div>Module</div>
+                          <div>Action</div>
+                          <div>Computer Name</div>
+                          <div>Reference</div>
+                        </div>
+                      </div>
+
+                      {/* Branch Title */}
+                      <div className="text-[11px] mb-1 font-bold">
+                        Branch : Southern Olive and Oil Products (SARL)
+                      </div>
+
+                      {/* Module Group: Adjustment */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Module : Adjustment
+                      </div>
+
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>41</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>40</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>40</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>39</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>38</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>37</div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-4 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Adjustment</div><div>Save & Post</div><div></div><div>36</div>
+                      </div>
+
+                      {/* Module Group: Inventory Ing */}
+                      <div className="text-[11px] mb-2 font-bold">
+                        Module : Inventory Ing
+                      </div>
+
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>22-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Fixed Offer</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان شطة حارة بلدي 1000ع</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE صندوق زيتون اسود مقطع 650ع*12</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اسود بلدي 230ع</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE زيتون اسود أول</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اخضر مقطع 350ع</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اخضر مشوي 230ع</div><div></div><div></div>
+                      </div>
+                      <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE صندوق زيتون اخضر محشي ايزونا 350ع*12</div><div></div><div></div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Transactions on Hold' ? (
                     /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
