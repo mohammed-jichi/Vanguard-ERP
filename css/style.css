@@ -3280,6 +3280,39 @@ input[class*="mode-time-input"] {
   box-shadow: none !important;
 }
 
+/* Explicit WebKit & Date Input Visibility Overrides */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: invert(0.2) !important;
+  cursor: pointer !important;
+  background-color: transparent !important;
+}
+
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #0f172a !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+
 /* Force Visibility of Save Buttons */
 .btn-dark,
 [onclick*="saveModes"],
