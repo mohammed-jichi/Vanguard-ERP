@@ -164,9 +164,7 @@ export default function CustomerInsightsPage() {
 
         <div className="flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto">
           <div
-            className={`w-full max-w-screen-2xl mx-auto py-6 transition-all duration-300 space-y-8 ${
-              isSidebarOpen ? 'px-6 lg:px-8 xl:px-10' : 'px-12 lg:px-16 xl:px-24'
-            }`}
+            className="w-full py-6 px-4 sm:px-6 lg:px-8 transition-all duration-300 space-y-8"
           >
             {/* 1. BREADCRUMBS & TOP HEADER CARD */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">

@@ -316,11 +316,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
   ];
 
   const employeeTableRows = [
-    { name: 'Cashier N2', color: '#10b981', jan: '80M', feb: '75M', mar: '95M', apr: '90M', may: '105M', jun: '115M', jul: '125M', aug: '135M', sep: '110M', oct: '100M', nov: '85M', dec: '130M', total: '1,245M', avg: '103.7M' },
-    { name: 'Cashier NK', color: '#3b82f6', jan: '65M', feb: '60M', mar: '80M', apr: '75M', may: '90M', jun: '98M', jul: '110M', aug: '120M', sep: '95M', oct: '85M', nov: '70M', dec: '115M', total: '1,068M', avg: '89.0M' },
-    { name: 'Cashier R', color: '#f59e0b', jan: '90M', feb: '85M', mar: '110M', apr: '100M', may: '120M', jun: '130M', jul: '145M', aug: '155M', sep: '125M', oct: '115M', nov: '95M', dec: '150M', total: '1,420M', avg: '118.3M' },
-    { name: 'Hiba Aloulou', color: '#ec4899', jan: '70M', feb: '65M', mar: '85M', apr: '80M', may: '95M', jun: '105M', jul: '115M', aug: '125M', sep: '100M', oct: '90M', nov: '75M', dec: '120M', total: '1,125M', avg: '93.7M' },
-    { name: 'Mahdi', color: '#8b5cf6', jan: '55M', feb: '50M', mar: '70M', apr: '65M', may: '80M', jun: '88M', jul: '95M', aug: '105M', sep: '85M', oct: '75M', nov: '60M', dec: '100M', total: '928M', avg: '77.3M' },
+    { name: 'Cashier N2', color: '#3b82f6', jan: '80M', feb: '75M', mar: '95M', apr: '90M', may: '105M', jun: '115M', jul: '125M', aug: '135M', sep: '110M', oct: '100M', nov: '85M', dec: '130M', total: '1,245M', avg: '103.7M' },
+    { name: 'Cashier NK', color: '#8b5cf6', jan: '65M', feb: '60M', mar: '80M', apr: '75M', may: '90M', jun: '98M', jul: '110M', aug: '120M', sep: '95M', oct: '85M', nov: '70M', dec: '115M', total: '1,068M', avg: '89.0M' },
+    { name: 'Cashier R', color: '#ec4899', jan: '90M', feb: '85M', mar: '110M', apr: '100M', may: '120M', jun: '130M', jul: '145M', aug: '155M', sep: '125M', oct: '115M', nov: '95M', dec: '150M', total: '1,420M', avg: '118.3M' },
+    { name: 'Hiba Aloulou', color: '#f97316', jan: '70M', feb: '65M', mar: '85M', apr: '80M', may: '95M', jun: '105M', jul: '115M', aug: '125M', sep: '100M', oct: '90M', nov: '75M', dec: '120M', total: '1,125M', avg: '93.7M' },
+    { name: 'Mahdi', color: '#10b981', jan: '55M', feb: '50M', mar: '70M', apr: '65M', may: '80M', jun: '88M', jul: '95M', aug: '105M', sep: '85M', oct: '75M', nov: '60M', dec: '100M', total: '928M', avg: '77.3M' },
     { name: 'Nour Yazbeck', color: '#06b6d4', jan: '60M', feb: '45M', mar: '70M', apr: '80M', may: '90M', jun: '84M', jul: '100M', aug: '110M', sep: '95M', oct: '85M', nov: '65M', dec: '95M', total: '979M', avg: '81.5M' }
   ];
 
@@ -627,17 +627,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                {data.map((row: any, idx: number) => {
+                {data.map((row: any) => {
                   const key = getItemKey(row, labelKey);
                   const isHidden = hiddenPieItems.includes(key);
                   return (
                     <tr
                       key={key}
                       onClick={() => handleTogglePieItem(key)}
-                      className={`transition-colors duration-150 cursor-pointer ${
-                        idx % 2 === 1 ? 'bg-slate-50/50' : 'bg-white'
-                      } ${
-                        isHidden ? 'opacity-40 grayscale line-through' : 'hover:bg-slate-100'
+                      className={`even:bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer ${
+                        isHidden ? 'opacity-40 grayscale line-through' : ''
                       }`}
                       title="Click to toggle slice on/off"
                     >
@@ -1536,12 +1534,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<EmployeeComparisonTooltip />} />
                     <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
-                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#1e3a8a" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
-                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#0f766e" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
-                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#475569" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
-                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#854d0e" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
-                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#4c1d95" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
-                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#166534" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
+                    <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
+                    <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#8b5cf6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
+                    <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#ec4899" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
+                    <Bar dataKey="hiba" name="Hiba Aloulou" stackId="emp" fill="#f97316" hide={!!hiddenSeries['hiba'] || !!hiddenSeries['Hiba Aloulou']} />
+                    <Bar dataKey="mahdi" name="Mahdi" stackId="emp" fill="#10b981" hide={!!hiddenSeries['mahdi'] || !!hiddenSeries['Mahdi']} />
+                    <Bar dataKey="nour" name="Nour Yazbeck" stackId="emp" fill="#06b6d4" radius={[4, 4, 0, 0]} hide={!!hiddenSeries['nour'] || !!hiddenSeries['Nour Yazbeck']} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1570,7 +1568,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {employeeTableRows.map((emp) => (
-                      <tr key={emp.name} className="hover:bg-slate-50">
+                      <tr key={emp.name} className="even:bg-slate-50 hover:bg-slate-100 transition-colors">
                         <td className="py-3.5 px-4 font-medium text-slate-900 flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: emp.color }}></span>
                           <span>{emp.name}</span>
