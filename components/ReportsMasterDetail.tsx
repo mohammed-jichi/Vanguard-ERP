@@ -592,7 +592,84 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'No Sale' ? (
+                  {selectedReport === 'Transactions on Hold' ? (
+                    /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        History of Transactions on Hold
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                        <div>27-Aug-26</div>
+                        <div>From Date :01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
+                        <div>Page 1 of1</div>
+                      </div>
+
+                      {/* Workstation Header */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
+                        <div className="flex text-[11px] font-bold w-full">
+                          <div className="w-[30%] text-right pr-4">Workstation :</div>
+                          <div className="w-[70%]">1 Showroom 1</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] leading-tight w-full">
+                        {/* Group Date */}
+                        <div className="font-bold mb-1 mt-2">09 January 2026</div>
+                        
+                        {/* Employee Info */}
+                        <div className="flex flex-col font-bold mb-4">
+                          <div className="grid grid-cols-[100px_1fr]">
+                            <div>Employee ID :</div>
+                            <div>1</div>
+                          </div>
+                          <div className="grid grid-cols-[100px_1fr]">
+                            <div>Employee Name:</div>
+                            <div>Mahdi</div>
+                          </div>
+                        </div>
+
+                        {/* Table Headers (Replicating the exact Omega typo: Unit Price twice) */}
+                        <div className="grid grid-cols-[20%_10%_30%_20%_20%] font-bold mb-2 w-full">
+                          <div>Date</div>
+                          <div>Qty</div>
+                          <div>Description</div>
+                          <div className="text-center">Unit Price</div>
+                          <div className="text-right">Unit Price</div>
+                        </div>
+
+                        {/* Table Row */}
+                        <div className="grid grid-cols-[20%_10%_30%_20%_20%] font-bold mb-1 w-full">
+                          <div>09/01/2026 12.16.10</div>
+                          <div>-1.0</div>
+                          <div>قرفة سيجار مرطبان</div>
+                          <div className="text-center">200000.0</div>
+                          <div className="text-right">-200000.0</div>
+                        </div>
+
+                        {/* Group Footer */}
+                        <div className="border-t border-black mt-2 pt-1 flex justify-end font-bold mb-8">
+                          <div className="mr-8">Amount :</div>
+                          <div>-200000.0</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'No Sale' ? (
                     /* NO SALE REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
