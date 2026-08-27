@@ -6,6 +6,7 @@ import {
   Settings,
   Building,
   Image as ImageIcon,
+  Camera,
   FileText,
   Save,
   X,
@@ -47,6 +48,19 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
 
   if (!isOpen) return null;
 
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setLogoUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -81,30 +95,31 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans dir-rtl">
-      <div className="bg-white border border-gray-200 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden space-y-0">
+      <div className="bg-white border border-slate-200 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden space-y-0">
         
-        {/* MODAL HEADER */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-amber-500/40">
+        {/* MODAL HEADER (CLEAN DESIGN WITHOUT JARRING ORANGE BORDERS) */}
+        <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500/20 border border-amber-500/40 rounded-xl flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-blue-400">
               <Settings className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-black text-base flex items-center gap-2">
+              <h3 className="font-bold text-base text-white flex items-center gap-2">
                 إعدادات هوية المؤسسة والبيانات القانونية
-                <span className="bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full border border-amber-500/30">
+                <span className="bg-blue-600/20 text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30">
                   Tenant Profile
                 </span>
               </h3>
-              <p className="text-xs text-slate-400 font-medium">
-                تعديل الاسم الشعار الرسمي وتضمين رقم السجل التجاري والرقم المالي للشركة
+              <p className="text-xs text-slate-400 font-medium mt-0.5">
+                تعديل الاسم والشعار الرسمي وتضمين رقم السجل التجاري والرقم المالي للشركة
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors"
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            title="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -128,13 +143,67 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
 
           {/* SECTION 1: BRAND IDENTITY & LOGO */}
           <div className="space-y-4">
-            <h4 className="text-xs font-black text-amber-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
-              <Building className="w-4 h-4 text-amber-600" /> 1. الاسم التجاري والشعار الرسمي (Logo & Branding)
+            <h4 className="text-xs font-black text-blue-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
+              <Building className="w-4 h-4 text-blue-600" /> 1. الاسم التجاري والشعار الرسمي (Logo & Branding)
             </h4>
+
+            {/* DIRECT CLICK TO ADD PICTURE LOGO DROPZONE */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50 p-4 border border-slate-200 rounded-2xl">
+              <label className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl cursor-pointer bg-white hover:bg-blue-50/50 transition-all text-slate-500 hover:text-blue-600 relative overflow-hidden group shrink-0 shadow-2xs">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoFileUpload}
+                  className="hidden"
+                />
+                {logoUrl ? (
+                  <>
+                    <img
+                      src={logoUrl}
+                      alt="Company Logo Preview"
+                      className="w-full h-full object-contain p-1.5 rounded-xl"
+                      onError={e => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
+                      <Camera className="w-6 h-6 mb-1" />
+                      <span className="text-[10px] font-bold">Change Photo</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-2 text-center">
+                    <Camera className="w-7 h-7 text-slate-400 group-hover:text-blue-500 mb-1" />
+                    <span className="text-[10px] font-bold text-slate-700 group-hover:text-blue-600">Add Picture</span>
+                    <span className="text-[9px] text-slate-400 mt-0.5">Click to upload</span>
+                  </div>
+                )}
+              </label>
+
+              <div className="space-y-2 flex-1 w-full">
+                <label className="text-xs font-bold text-slate-800 block">
+                  رابط الشعار الخارجي (Logo URL)
+                </label>
+                <div className="relative w-full">
+                  <input
+                    type="url"
+                    value={logoUrl}
+                    onChange={e => setLogoUrl(e.target.value)}
+                    placeholder="https://example.com/company-logo.png"
+                    style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                    className="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-left ltr"
+                  />
+                  <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                </div>
+                <p className="text-[10px] text-slate-500">
+                  يمكنك النقر على المربع لتحميل صورة من جهازك، أو إدخال رابط صورة مباشر.
+                </p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">اسم الشركة / المؤسسة (بالعربي)</label>
+                <label className="text-xs font-bold text-slate-800">اسم الشركة / المؤسسة (بالعربي)</label>
                 <input
                   type="text"
                   required
@@ -144,100 +213,68 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     setCompanyName(e.target.value);
                   }}
                   placeholder="مثال: منتوجات زيت وزيتون الجنوب ش.م.م"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:bg-white focus:border-amber-500 focus:outline-none"
+                  style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">Enterprise Brand Name (English)</label>
+                <label className="text-xs font-bold text-slate-800">Enterprise Brand Name (English)</label>
                 <input
                   type="text"
                   required
                   value={brandNameEn}
                   onChange={e => setBrandNameEn(e.target.value)}
                   placeholder="e.g. Southern Olive & Oil Products SARL"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:bg-white focus:border-amber-500 focus:outline-none"
+                  style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* EXTERNAL LOGO URL INPUT & PREVIEW */}
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-bold text-gray-700 flex items-center justify-between">
-                <span>رابط الشعار الخارجي (External Logo Image URL)</span>
-                <span className="text-[10px] text-gray-400">يدعم روابط HTTP / HTTPS والصور المباشرة</span>
-              </label>
-
-              <div className="flex gap-3 items-center">
-                <div className="relative flex-1">
-                  <input
-                    type="url"
-                    value={logoUrl}
-                    onChange={e => setLogoUrl(e.target.value)}
-                    placeholder="https://example.com/company-logo.png"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:bg-white focus:border-amber-500 focus:outline-none ltr text-left"
-                  />
-                  <LinkIcon className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                </div>
-
-                {/* LIVE LOGO PREVIEW BOX */}
-                <div className="w-12 h-12 bg-slate-900 border-2 border-amber-500 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm p-1">
-                  {logoUrl ? (
-                    <img
-                      src={logoUrl}
-                      alt="Company Logo Preview"
-                      className="w-full h-full object-cover rounded-xl"
-                      onError={e => {
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <ImageIcon className="w-5 h-5 text-amber-500" />
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* SECTION 2: LEGAL REGISTRATION NUMBERS FOR INVOICING */}
           <div className="space-y-4 pt-2">
-            <h4 className="text-xs font-black text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+            <h4 className="text-xs font-black text-emerald-700 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" /> 2. البيانات القانونية والترخيص (Legal Registration Numbers)
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">رقم السجل التجاري (Commercial Reg No.)</label>
+                <label className="text-xs font-bold text-slate-800">رقم السجل التجاري (Commercial Reg No.)</label>
                 <input
                   type="text"
                   value={companyRegistrationNumber}
                   onChange={e => setCompanyRegistrationNumber(e.target.value)}
                   placeholder="مثال: CR-104928-LB"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:bg-white focus:border-emerald-500 focus:outline-none"
+                  style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
-                <p className="text-[10px] text-gray-400">يتم ختمه تلقائياً على كافة الفواتير الصادرة</p>
+                <p className="text-[10px] text-slate-500">يتم ختمه تلقائياً على كافة الفواتير الصادرة</p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">الرقم المالي MOF (Tax ID Number)</label>
+                <label className="text-xs font-bold text-slate-800">الرقم المالي MOF (Tax ID Number)</label>
                 <input
                   type="text"
                   value={taxIdentificationNumber}
                   onChange={e => setTaxIdentificationNumber(e.target.value)}
                   placeholder="مثال: MOF-7489201"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:bg-white focus:border-emerald-500 focus:outline-none"
+                  style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
-                <p className="text-[10px] text-gray-400">خاص بإغلاق ضريبة TVA والإقرارات المالية</p>
+                <p className="text-[10px] text-slate-500">خاص بإغلاق ضريبة TVA والإقرارات المالية</p>
               </div>
             </div>
           </div>
 
           {/* FOOTER ACTIONS */}
-          <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-bold hover:bg-gray-100 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors"
             >
               إلغاء
             </button>
@@ -245,7 +282,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               <Save className="w-4 h-4" />
               <span>{isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات الهيكلية'}</span>
