@@ -10,7 +10,9 @@ import {
   Printer,
   Menu,
   CheckCircle2,
-  Filter
+  Filter,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
 
 type ReportMenuItemFlat = {
@@ -127,6 +129,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setExpandedGroups(prev => ({ ...prev, [groupName]: !prev[groupName] }));
   };
 
+  const handleSelectReportItem = (item: string) => {
+    setSelectedReport(item);
+    setIsReportListOpen(false);
+  };
+
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
       {/* 1. CLEAN TOP PAGE HEADER */}
@@ -134,7 +141,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
             <span>Sales Reports</span>
-            <span className="bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
+            <span className="bg-blue-50 text-[#195a96] border border-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
               Executive Master-Detail
             </span>
           </h2>
@@ -209,7 +216,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             return (
                               <div
                                 key={item}
-                                onClick={() => setSelectedReport(item)}
+                                onClick={() => handleSelectReportItem(item)}
                                 className={`block w-full text-left px-4 py-2 text-[13px] font-medium transition-colors cursor-pointer ${
                                   isSelected
                                     ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
@@ -279,7 +286,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                     return (
                                       <div
                                         key={item}
-                                        onClick={() => setSelectedReport(item)}
+                                        onClick={() => handleSelectReportItem(item)}
                                         className={`block w-full text-left pl-8 pr-4 py-2 text-[12px] font-medium transition-colors cursor-pointer ${
                                           isSelected
                                             ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
@@ -305,117 +312,203 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         )}
 
         {/* RIGHT PANEL (REPORT VIEWER - DYNAMIC SPAN: col-span-9 or col-span-12) */}
-        <div className={`col-span-12 ${isReportListOpen ? 'md:col-span-9' : 'md:col-span-12'} bg-white border border-slate-200 rounded-xl shadow-xs min-h-[600px] p-6 relative flex flex-col justify-between overflow-hidden transition-all duration-300`}>
+        <div className={`col-span-12 ${isReportListOpen ? 'md:col-span-9' : 'md:col-span-12'} transition-all duration-300`}>
           
-          {/* VIEWER HEADER WITH INTERNAL HAMBURGER TOGGLE */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsReportListOpen(!isReportListOpen)}
-                  title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
-                >
-                  <Menu className="w-5 h-5" />
-                </button>
-                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                  {selectedReport || 'No Report Selected'}
-                </h3>
+          {!selectedReport ? (
+            /* DEFAULT "NO REPORT SELECTED" WATERMARK SCREEN */
+            <div className="bg-white border border-slate-200 rounded-xl shadow-xs min-h-[600px] p-6 relative flex flex-col justify-between overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setIsReportListOpen(!isReportListOpen)}
+                    title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
+                    className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">No Report Selected</h3>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">
+                      Choose a report category from the left panel to load live system analytics.
+                    </p>
+                  </div>
+                </div>
               </div>
-              {selectedReport ? (
-                <p className="text-xs text-slate-500 font-medium mt-1 ml-9">
-                  Live Executive Ledger Report &bull; <span className="text-slate-400">Southern Olive Oil SARL</span>
-                </p>
-              ) : (
-                <p className="text-xs text-slate-400 font-medium mt-1 ml-9">
-                  Choose a report category from the left panel to load live system analytics.
-                </p>
-              )}
+
+              <div className="my-auto py-8 flex flex-col items-center justify-center text-center relative w-full">
+                <div className="space-y-4 max-w-md mx-auto">
+                  <div className="relative flex justify-center py-4">
+                    <svg className="w-80 h-44 text-slate-100 stroke-current opacity-90 mx-auto" viewBox="0 0 400 200" fill="none" strokeWidth="2.5">
+                      <path d="M10 150 Q 60 120, 110 160 T 210 80 T 310 120 T 390 40" stroke="currentColor" />
+                      <path d="M10 180 Q 80 140, 150 170 T 250 110 T 350 150 T 390 90" stroke="currentColor" strokeDasharray="6 6" opacity="0.6" />
+                      <circle cx="210" cy="80" r="4" fill="#cbd5e1" />
+                      <circle cx="390" cy="40" r="4" fill="#cbd5e1" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-slate-700 text-base">No Report Selected</h4>
+                  <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                    Select a report item from the Left Panel list to view detailed transaction logs, financial breakdowns, and inventory performance statistics.
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-xs text-slate-400 font-medium">
+                <span>Vanguard ERP Executive Reporting Engine</span>
+                <span>Page 1 of 1</span>
+              </div>
             </div>
+          ) : (
+            /* ACTIVE REPORT DETAILED VIEW: TWO-CARD LAYOUT */
+            <div className="w-full space-y-6">
+              
+              {/* CARD 1: THE FILTERS CARD (TOP) */}
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full">
+                {/* HEADER AREA */}
+                <div className="flex justify-between items-start p-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setIsReportListOpen(true)}
+                      title="Show Reports Menu"
+                      className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
+                    >
+                      <Menu className="w-5 h-5" />
+                    </button>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-sm">Filters</h4>
+                      <span className="text-xs text-slate-500 block mt-0.5">{selectedReport}</span>
+                    </div>
+                  </div>
 
-            {selectedReport && (
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1.5 transition-all cursor-pointer">
-                  <Download className="w-3.5 h-3.5" /> Export PDF
-                </button>
-                <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer">
-                  <Printer className="w-3.5 h-3.5" /> Print Ledger
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* VIEWER BODY (DEFAULT WATERMARK STATE vs SELECTED REPORT PREVIEW) */}
-          <div className="my-auto py-8 flex flex-col items-center justify-center text-center relative w-full">
-            {!selectedReport ? (
-              <div className="space-y-4 max-w-md mx-auto">
-                {/* SUBTLE FAINT WATERMARK SVG PATTERN */}
-                <div className="relative flex justify-center py-4">
-                  <svg className="w-80 h-44 text-slate-100 stroke-current opacity-90 mx-auto" viewBox="0 0 400 200" fill="none" strokeWidth="2.5">
-                    <path d="M10 150 Q 60 120, 110 160 T 210 80 T 310 120 T 390 40" stroke="currentColor" />
-                    <path d="M10 180 Q 80 140, 150 170 T 250 110 T 350 150 T 390 90" stroke="currentColor" strokeDasharray="6 6" opacity="0.6" />
-                    <circle cx="210" cy="80" r="4" fill="#cbd5e1" />
-                    <circle cx="390" cy="40" r="4" fill="#cbd5e1" />
-                  </svg>
-                </div>
-                <h4 className="font-bold text-slate-700 text-base">No Report Selected</h4>
-                <p className="text-slate-400 text-xs font-medium leading-relaxed">
-                  Select a report item from the Left Panel list to view detailed transaction logs, financial breakdowns, and inventory performance statistics.
-                </p>
-              </div>
-            ) : (
-              /* ACTIVE REPORT DEMO DATA PREVIEW TABLE */
-              <div className="w-full space-y-4 text-left">
-                <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                  <span className="font-bold text-slate-700">Report: {selectedReport}</span>
-                  <span className="font-bold text-blue-600">Branch: Southern Olive Oil SARL</span>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <button className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer">
+                      Filter Report
+                    </button>
+                    <button className="w-32 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white py-2 rounded text-sm block text-center font-medium transition-colors cursor-pointer">
+                      Reset Filters
+                    </button>
+                  </div>
                 </div>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-                  <table className="w-full text-left font-sans">
-                    <thead className="bg-slate-900 text-white font-bold uppercase text-[11px] tracking-wider">
-                      <tr>
-                        <th className="py-3 px-4">Record Ref</th>
-                        <th className="py-3 px-4">Module / Entity</th>
-                        <th className="py-3 px-4 text-center">Date</th>
-                        <th className="py-3 px-4 text-right">Value (LL)</th>
-                        <th className="py-3 px-4 text-center">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-081</td>
-                        <td className="py-3 px-4 font-bold">Beirut Central Branch POS</td>
-                        <td className="py-3 px-4 text-center font-mono">Aug 27, 2026</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,969,200,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-080</td>
-                        <td className="py-3 px-4 font-bold">Choueifat Press Production</td>
-                        <td className="py-3 px-4 text-center font-mono">Aug 26, 2026</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">8,856,000,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                      </tr>
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">REC-2026-079</td>
-                        <td className="py-3 px-4 font-bold">Jbaa Olive Hub Wholesale</td>
-                        <td className="py-3 px-4 text-center font-mono">Aug 25, 2026</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">6,858,000,000 LL</td>
-                        <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                {/* INPUTS AREA */}
+                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Period</label>
+                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
+                      <option>This Month</option>
+                      <option>Today</option>
+                      <option>This Quarter</option>
+                      <option>This Year</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Date Range</label>
+                    <input
+                      type="text"
+                      value="Aug, 2026"
+                      readOnly
+                      className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-slate-50 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Branch</label>
+                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
+                      <option>All Branches</option>
+                      <option>Beirut Central Branch</option>
+                      <option>Choueifat Press Branch</option>
+                      <option>Jbaa Hub</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Invoices</label>
+                    <select className="border border-slate-300 rounded p-1.5 text-sm w-full font-medium text-slate-700 bg-white focus:outline-none focus:border-blue-500">
+                      <option>All Invoices</option>
+                      <option>Paid Invoices Only</option>
+                      <option>Credit & Pending Invoices</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* VIEWER FOOTER */}
-          <div className="border-t border-slate-100 pt-3 flex items-center justify-between text-xs text-slate-400 font-medium">
-            <span>Vanguard ERP Executive Reporting Engine</span>
-            <span>Page 1 of 1</span>
-          </div>
+              {/* CARD 2: THE REPORT DATA CARD (BOTTOM) */}
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm min-h-[400px] flex flex-col w-full">
+                {/* HEADER AREA */}
+                <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+                  <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
+
+                  <div className="flex items-center gap-2">
+                    <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+                      <ZoomIn size={16} />
+                    </button>
+                    <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+                      <ZoomOut size={16} />
+                    </button>
+                    <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                      <Printer size={15} /> Print Report
+                    </button>
+                    <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                      <Download size={15} /> Export Report
+                    </button>
+                  </div>
+                </div>
+
+                {/* BODY AREA */}
+                <div className="flex-1 bg-white p-6 relative flex flex-col justify-between min-h-[300px]">
+                  <div className="w-full space-y-4 text-left">
+                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
+                      <span className="font-bold text-slate-700">Ledger Statement: {selectedReport}</span>
+                      <span className="font-bold text-[#195a96]">Southern Olive Oil SARL (Lebanon)</span>
+                    </div>
+
+                    <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                      <table className="w-full text-left font-sans">
+                        <thead className="bg-[#475569] text-white font-bold uppercase text-[11px] tracking-wider">
+                          <tr>
+                            <th className="py-3 px-4">Record Ref</th>
+                            <th className="py-3 px-4">Module / Entity</th>
+                            <th className="py-3 px-4 text-center">Date</th>
+                            <th className="py-3 px-4 text-right">Value (LL)</th>
+                            <th className="py-3 px-4 text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                          <tr className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-081</td>
+                            <td className="py-3 px-4 font-bold">Beirut Central Branch POS</td>
+                            <td className="py-3 px-4 text-center font-mono">Aug 27, 2026</td>
+                            <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,969,200,000 LL</td>
+                            <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
+                          </tr>
+                          <tr className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-080</td>
+                            <td className="py-3 px-4 font-bold">Choueifat Press Production</td>
+                            <td className="py-3 px-4 text-center font-mono">Aug 26, 2026</td>
+                            <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">8,856,000,000 LL</td>
+                            <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
+                          </tr>
+                          <tr className="hover:bg-slate-50 transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-[#195a96]">REC-2026-079</td>
+                            <td className="py-3 px-4 font-bold">Jbaa Olive Hub Wholesale</td>
+                            <td className="py-3 px-4 text-center font-mono">Aug 25, 2026</td>
+                            <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">6,858,000,000 LL</td>
+                            <td className="py-3 px-4 text-center"><span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold">Verified</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-3 mt-6 flex items-center justify-between text-xs text-slate-400 font-medium">
+                    <span>Vanguard ERP Executive Reporting Engine</span>
+                    <span>Page 1 of 1</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
 
         </div>
 
