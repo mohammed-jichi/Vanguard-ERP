@@ -2137,31 +2137,31 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 92: TODAY TAB VIEW (CONTRAST, ALIGNMENT & BANNER FIXES) ---------------- */}
+      {/* ---------------- PHASE 93: TODAY TAB VIEW (WHITE THEME BANNERS & AGGRESSIVE CONTRAST) ---------------- */}
       {activeTab === 'today' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 w-full">
             <div className="flex items-center gap-3.5">
-              <div className="bg-blue-500/20 text-blue-400 p-2.5 rounded-lg border border-blue-500/30 shrink-0">
+              <div className="bg-white text-slate-900 p-2.5 rounded-lg border-2 border-white shadow-sm flex items-center justify-center shrink-0">
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-base font-bold text-white">
                   Daily Shift & Operations Dashboard
                 </h2>
-                <p className="text-slate-300 mt-1 text-sm font-normal">
+                <p className="text-white opacity-90 mt-1 text-sm block">
                   Real-time transaction log, active cashier terminals, and payment method distribution for today.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0 ml-auto md:ml-0">
-              <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 font-mono">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="bg-white text-slate-900 border-2 border-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm ml-auto flex items-center gap-1.5 font-mono">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 Shift #0482 Active
               </span>
               <button
                 onClick={() => setIsEodModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
               >
                 <Clock className="w-4 h-4" />
                 <span>View Z-Report Status</span>
@@ -2294,25 +2294,25 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
       )}
 
-      {/* ---------------- PHASE 92: GEOGRAPHICS TAB VIEW (CONTRAST, ALIGNMENT & BANNER FIXES) ---------------- */}
+      {/* ---------------- PHASE 93: GEOGRAPHICS TAB VIEW (WHITE THEME BANNERS & LIGHT TOOLTIP) ---------------- */}
       {activeTab === 'geographics' && (
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 w-full">
             <div className="flex items-center gap-3.5">
-              <div className="bg-purple-500/20 text-purple-400 p-2.5 rounded-lg border border-purple-500/30 shrink-0">
+              <div className="bg-white text-slate-900 p-2.5 rounded-lg border-2 border-white shadow-sm flex items-center justify-center shrink-0">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-base font-bold text-white">
                   Territorial Sales Distribution
                 </h2>
-                <p className="text-slate-300 mt-1 text-sm font-normal">
+                <p className="text-white opacity-90 mt-1 text-sm block">
                   Regional revenue density, customer account concentration, and territorial performance across Lebanon.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0 ml-auto md:ml-0">
-              <span className="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-sm font-medium font-mono">
+              <span className="bg-white text-slate-900 border-2 border-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm ml-auto font-mono">
                 6 Active Territories
               </span>
             </div>
@@ -2397,8 +2397,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="region" tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }} />
                     <YAxis tick={{ fontSize: 11, fill: '#475569' }} tickFormatter={val => `${(val / 1000000000).toFixed(1)}B LL`} />
                     <Tooltip
+                      contentStyle={{ backgroundColor: '#ffffff', color: '#0f172a', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      itemStyle={{ color: '#0f172a', fontWeight: 'bold' }}
+                      cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                       formatter={(val: any) => [`${Number(val).toLocaleString()} LL`, 'Revenue']}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px', border: 'none' }}
                     />
                     <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
                       {[
