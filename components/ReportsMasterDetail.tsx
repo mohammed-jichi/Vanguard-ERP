@@ -568,48 +568,90 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Summary of Payment by Employee' ? (
                     /* SUMMARY OF PAYMENT BY EMPLOYEE REPORT TEMPLATE */
-                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black text-[11px]">
-                      {/* Data Block - Replicated exactly from the image top portion */}
-                      <div className="font-bold mb-1">Mahdi</div>
-                      <div className="flex justify-between font-medium mb-1">
-                        <div>CASH</div>
-                        <div>-11,130,000.00</div>
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Zeit w zaytoun ljanoub
                       </div>
-                      <div className="flex justify-between font-medium mb-1">
-                        <div>CASH USD</div>
-                        <div>13,500,000.00</div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Summary of payment by Salesman
                       </div>
-                      <div className="flex justify-between font-bold mb-4">
-                        <div>Total for Mahdi</div>
-                        <div>2,370,000.00</div>
-                      </div>
-
-                      <div className="flex justify-between font-bold mb-4">
-                        <div>25-Aug-2026</div>
-                        <div>63,301,500.00</div>
-                      </div>
-
-                      <div className="flex justify-between font-bold mb-4">
-                        <div>Total for Zeit w zaytoun ljanoub</div>
-                        <div>1,511,051,600.00</div>
-                      </div>
-
-                      {/* Footer/Header Line (Page 5 of 5) */}
-                      <div className="flex justify-between items-center font-bold mb-2">
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
                         <div>27-Aug-26</div>
                         <div className="flex gap-16">
                           <span>From Date: 01-Aug-2026</span>
                           <span>To Date: 27-Aug-2026</span>
                         </div>
-                        <div>Page 5 of 5</div>
+                        <div>Page 1 of 5</div>
                       </div>
 
-                      {/* Double Border Separator */}
-                      <div className="border-t-[3px] border-b-[3px] border-black py-1.5 mb-3"></div>
+                      {/* Table Header with thick borders */}
+                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
+                        <div className="flex justify-between text-[11px] font-bold text-black">
+                          <div>Payment Type</div>
+                          <div>Amount</div>
+                        </div>
+                      </div>
 
-                      {/* Grand Total */}
-                      <div className="flex justify-between font-bold text-[12px]">
-                        <div>Total:</div>
+                      {/* Branch Info */}
+                      <div className="text-[11px] mb-2 font-bold underline">
+                        Zeit w zaytoun ljanoub
+                      </div>
+
+                      {/* 01-Aug-26 Group */}
+                      <div className="text-[11px] font-bold mb-1">01-Aug-26</div>
+                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                      <div className="flex justify-between text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div>157,490,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-1">
+                        <div>Total for Hiba Aloulou</div>
+                        <div>157,490,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-4">
+                        <div>01-Aug-2026</div>
+                        <div>157,490,000.00</div>
+                      </div>
+
+                      {/* 02-Aug-26 Group */}
+                      <div className="text-[11px] font-bold mb-1">02-Aug-26</div>
+                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                      <div className="flex justify-between text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div>11,520,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-1">
+                        <div>Total for Hiba Aloulou</div>
+                        <div>11,520,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-4">
+                        <div>02-Aug-2026</div>
+                        <div>11,520,000.00</div>
+                      </div>
+
+                      {/* 03-Aug-26 Group */}
+                      <div className="text-[11px] font-bold mb-1">03-Aug-26</div>
+                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                      <div className="flex justify-between text-[11px] mb-1 font-medium">
+                        <div>CASH</div>
+                        <div>102,455,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-1">
+                        <div>Total for Hiba Aloulou</div>
+                        <div>102,455,000.00</div>
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold mb-8">
+                        <div>03-Aug-2026</div>
+                        <div>102,455,000.00</div>
+                      </div>
+
+                      {/* Grand Total Footer */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
+                      <div className="flex justify-between text-[11px] font-bold">
+                        <div>Total</div>
                         <div>1,511,051,600.00</div>
                       </div>
                     </div>
