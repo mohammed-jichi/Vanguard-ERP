@@ -31,6 +31,7 @@ import { TransactionsByDateTemplate } from './reports/transactions/TransactionsB
 import { TransactionsByInvoiceNumberTemplate } from './reports/transactions/TransactionsByInvoiceNumberTemplate';
 import { CreditSalesTemplate } from './reports/transactions/CreditSalesTemplate';
 import { OmnichannelPaymentsReportTemplate } from './reports/transactions/OmnichannelPaymentsReportTemplate';
+import { ElectronicJournalTemplate } from './reports/transactions/ElectronicJournalTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -62,7 +63,7 @@ const reportMenuData: ReportMenuItem[] = [
   {
     category: "Internal Control",
     type: "flat",
-    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary"]
+    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary", "Electronic Journal"]
   },
   {
     category: "Financial",
@@ -136,7 +137,10 @@ const complexTransactionReports = [
   'Omnichannel Report',
   'Omnichannel Payments Report',
   'Omnichannel Payments & Sales Source',
-  'Omnichannel Payments & Sales Source Report'
+  'Omnichannel Payments & Sales Source Report',
+  'Electronic Journal',
+  'Electronic journal',
+  'Terminal Electronic Journal'
 ];
 
 interface ReportsMasterDetailProps {
@@ -973,6 +977,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <CreditSalesTemplate />
                   ) : selectedReport === 'Credit Card Report' || selectedReport === 'Omnichannel Report' || selectedReport === 'Omnichannel Payments Report' ? (
                     <OmnichannelPaymentsReportTemplate />
+                  ) : selectedReport === 'Electronic Journal' || selectedReport === 'Electronic journal' || selectedReport === 'Terminal Electronic Journal' ? (
+                    <ElectronicJournalTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
