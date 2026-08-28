@@ -199,6 +199,48 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
+      <style>{`
+        @media print {
+          /* 1. Force the browser to automatically scale content to fit the paper */
+          @page {
+            size: auto; 
+            margin: 10mm;
+          }
+
+          /* 2. Strip ALL scrollbars globally during print */
+          * {
+            overflow: visible !important;
+          }
+
+          ::-webkit-scrollbar {
+            display: none !important;
+          }
+
+          /* 3. Force table wrappers to expand so the browser scales them naturally */
+          .overflow-x-auto, .overflow-y-auto, .overflow-auto {
+            overflow: visible !important;
+            max-width: none !important;
+            width: 100% !important;
+          }
+
+          /* 4. Ensure the table doesn't get cut off by flex containers */
+          table {
+            page-break-inside: auto;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+
+          /* 5. Hide the settings modal or any open popups if print is triggered */
+          .fixed.inset-0.z-50, .fixed.inset-0.z-\\[60\\] {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* 1. CLEAN TOP PAGE HEADER */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 shadow-xs flex items-center justify-between gap-4 w-full print:hidden">
         <div>
@@ -794,7 +836,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* Strict Native Table Implementation - NO WRAP */}
-                      <div className="w-full mt-1 overflow-x-auto pb-4">
+                      <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
                         <table className="w-full min-w-[1200px] border-collapse text-[10px] whitespace-nowrap">
                           <thead>
                             <tr className="font-bold text-black text-center bg-white">
