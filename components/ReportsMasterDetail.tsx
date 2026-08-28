@@ -622,6 +622,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </div>
                   )}
+
+                  {selectedReport === 'Sales summary by day' && (
+                    <div className="w-full flex items-center gap-4 mt-1">
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                        Summary
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -649,7 +658,305 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Profit By Invoices' ? (
+                  {selectedReport === 'Sales summary by day' ? (
+                    /* SALES SUMMARY BY DAY REPORT TEMPLATE */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Sales summary by day
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                        <div>27-Aug-2026</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>Page 1 of 2</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] text-[11px] font-bold text-black w-full">
+                          <div>Date</div>
+                          <div className="text-right">Subtotal</div>
+                          <div className="text-right">Net Amount</div>
+                          <div className="text-right">Total Cost</div>
+                          <div className="text-right">Gross Profit</div>
+                          <div className="text-right">% Gross Profit Margin</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] font-normal leading-tight w-full">
+                        <div className="font-bold mb-1">Branch Name: Southern Olive Oil S.A.R.L</div>
+                        
+                        {/* Daily Sales Rows Merged across Pages 1 & 2 */}
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>01/08/2026</div>
+                          <div className="text-right">2,280,000.00</div>
+                          <div className="text-right">2,280,000.00</div>
+                          <div className="text-right">1,750,000.00</div>
+                          <div className="text-right">530,000.00</div>
+                          <div className="text-right">23.25</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>02/08/2026</div>
+                          <div className="text-right">1,450,000.00</div>
+                          <div className="text-right">1,450,000.00</div>
+                          <div className="text-right">1,020,000.00</div>
+                          <div className="text-right">430,000.00</div>
+                          <div className="text-right">29.66</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>03/08/2026</div>
+                          <div className="text-right">3,120,000.00</div>
+                          <div className="text-right">3,120,000.00</div>
+                          <div className="text-right">2,180,000.00</div>
+                          <div className="text-right">940,000.00</div>
+                          <div className="text-right">30.13</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>04/08/2026</div>
+                          <div className="text-right">1,890,000.00</div>
+                          <div className="text-right">1,890,000.00</div>
+                          <div className="text-right">1,310,000.00</div>
+                          <div className="text-right">580,000.00</div>
+                          <div className="text-right">30.69</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>05/08/2026</div>
+                          <div className="text-right">4,250,000.00</div>
+                          <div className="text-right">4,250,000.00</div>
+                          <div className="text-right">2,950,000.00</div>
+                          <div className="text-right">1,300,000.00</div>
+                          <div className="text-right">30.59</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>06/08/2026</div>
+                          <div className="text-right">2,780,000.00</div>
+                          <div className="text-right">2,780,000.00</div>
+                          <div className="text-right">1,920,000.00</div>
+                          <div className="text-right">860,000.00</div>
+                          <div className="text-right">30.94</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>07/08/2026</div>
+                          <div className="text-right">5,600,000.00</div>
+                          <div className="text-right">5,600,000.00</div>
+                          <div className="text-right">3,890,000.00</div>
+                          <div className="text-right">1,710,000.00</div>
+                          <div className="text-right">30.54</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>08/08/2026</div>
+                          <div className="text-right">3,410,000.00</div>
+                          <div className="text-right">3,410,000.00</div>
+                          <div className="text-right">2,350,000.00</div>
+                          <div className="text-right">1,060,000.00</div>
+                          <div className="text-right">31.09</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>09/08/2026</div>
+                          <div className="text-right">1,950,000.00</div>
+                          <div className="text-right">1,950,000.00</div>
+                          <div className="text-right">1,340,000.00</div>
+                          <div className="text-right">610,000.00</div>
+                          <div className="text-right">31.28</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>10/08/2026</div>
+                          <div className="text-right">9,000,000.00</div>
+                          <div className="text-right">8,100,000.00</div>
+                          <div className="text-right">5,395,230.00</div>
+                          <div className="text-right">2,704,770.00</div>
+                          <div className="text-right">33.39</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>11/08/2026</div>
+                          <div className="text-right">4,120,000.00</div>
+                          <div className="text-right">4,120,000.00</div>
+                          <div className="text-right">2,840,000.00</div>
+                          <div className="text-right">1,280,000.00</div>
+                          <div className="text-right">31.07</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>12/08/2026</div>
+                          <div className="text-right">2,670,000.00</div>
+                          <div className="text-right">2,670,000.00</div>
+                          <div className="text-right">1,830,000.00</div>
+                          <div className="text-right">840,000.00</div>
+                          <div className="text-right">31.46</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>13/08/2026</div>
+                          <div className="text-right">6,890,000.00</div>
+                          <div className="text-right">6,890,000.00</div>
+                          <div className="text-right">4,760,000.00</div>
+                          <div className="text-right">2,130,000.00</div>
+                          <div className="text-right">30.91</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>14/08/2026</div>
+                          <div className="text-right">3,540,000.00</div>
+                          <div className="text-right">3,540,000.00</div>
+                          <div className="text-right">2,430,000.00</div>
+                          <div className="text-right">1,110,000.00</div>
+                          <div className="text-right">31.36</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>15/08/2026</div>
+                          <div className="text-right">8,120,000.00</div>
+                          <div className="text-right">8,120,000.00</div>
+                          <div className="text-right">5,610,000.00</div>
+                          <div className="text-right">2,510,000.00</div>
+                          <div className="text-right">30.91</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>16/08/2026</div>
+                          <div className="text-right">2,340,000.00</div>
+                          <div className="text-right">2,340,000.00</div>
+                          <div className="text-right">1,610,000.00</div>
+                          <div className="text-right">730,000.00</div>
+                          <div className="text-right">31.20</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>17/08/2026</div>
+                          <div className="text-right">5,180,000.00</div>
+                          <div className="text-right">5,180,000.00</div>
+                          <div className="text-right">3,570,000.00</div>
+                          <div className="text-right">1,610,000.00</div>
+                          <div className="text-right">31.08</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>18/08/2026</div>
+                          <div className="text-right">3,890,000.00</div>
+                          <div className="text-right">3,890,000.00</div>
+                          <div className="text-right">2,680,000.00</div>
+                          <div className="text-right">1,210,000.00</div>
+                          <div className="text-right">31.11</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>19/08/2026</div>
+                          <div className="text-right">4,760,000.00</div>
+                          <div className="text-right">4,760,000.00</div>
+                          <div className="text-right">3,280,000.00</div>
+                          <div className="text-right">1,480,000.00</div>
+                          <div className="text-right">31.09</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>20/08/2026</div>
+                          <div className="text-right">7,230,000.00</div>
+                          <div className="text-right">7,230,000.00</div>
+                          <div className="text-right">4,990,000.00</div>
+                          <div className="text-right">2,240,000.00</div>
+                          <div className="text-right">30.98</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>21/08/2026</div>
+                          <div className="text-right">2,980,000.00</div>
+                          <div className="text-right">2,980,000.00</div>
+                          <div className="text-right">2,050,000.00</div>
+                          <div className="text-right">930,000.00</div>
+                          <div className="text-right">31.21</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>22/08/2026</div>
+                          <div className="text-right">6,120,000.00</div>
+                          <div className="text-right">6,120,000.00</div>
+                          <div className="text-right">4,220,000.00</div>
+                          <div className="text-right">1,900,000.00</div>
+                          <div className="text-right">31.05</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>23/08/2026</div>
+                          <div className="text-right">3,450,000.00</div>
+                          <div className="text-right">3,450,000.00</div>
+                          <div className="text-right">2,380,000.00</div>
+                          <div className="text-right">1,070,000.00</div>
+                          <div className="text-right">31.01</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>24/08/2026</div>
+                          <div className="text-right">5,890,000.00</div>
+                          <div className="text-right">5,890,000.00</div>
+                          <div className="text-right">4,060,000.00</div>
+                          <div className="text-right">1,830,000.00</div>
+                          <div className="text-right">31.07</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>25/08/2026</div>
+                          <div className="text-right">4,320,000.00</div>
+                          <div className="text-right">4,320,000.00</div>
+                          <div className="text-right">2,980,000.00</div>
+                          <div className="text-right">1,340,000.00</div>
+                          <div className="text-right">31.02</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
+                          <div>26/08/2026</div>
+                          <div className="text-right">8,950,000.00</div>
+                          <div className="text-right">8,950,000.00</div>
+                          <div className="text-right">6,170,000.00</div>
+                          <div className="text-right">2,780,000.00</div>
+                          <div className="text-right">31.06</div>
+                        </div>
+
+                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5 mb-1">
+                          <div>27/08/2026</div>
+                          <div className="text-right">6,430,000.00</div>
+                          <div className="text-right">6,430,000.00</div>
+                          <div className="text-right">4,430,000.00</div>
+                          <div className="text-right">2,000,000.00</div>
+                          <div className="text-right">31.10</div>
+                        </div>
+
+                        {/* Grand Totals */}
+                        <div className="border-t border-b border-black py-0.5 grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] font-bold w-full mt-1 mb-8">
+                          <div>Total By Branch:</div>
+                          <div className="text-right">120,590,000.00</div>
+                          <div className="text-right">119,690,000.00</div>
+                          <div className="text-right">82,625,230.00</div>
+                          <div className="text-right">37,064,770.00</div>
+                          <div className="text-right">30.97</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Profit By Invoices' ? (
                     /* PROFIT BY INVOICES REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
