@@ -110,6 +110,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [toDate, setToDate] = useState<string>('');
   const [selectedBranch, setSelectedBranch] = useState<string>('All Branches');
   const [invoiceFilter, setInvoiceFilter] = useState<string>('All Invoices');
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
@@ -683,9 +685,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
 
                   <div className="flex items-center gap-2">
-                    <button className="bg-[#475569] hover:bg-[#334155] text-white p-1.5 rounded transition-colors cursor-pointer" title="Report Settings">
-                      <Settings size={16} />
-                    </button>
                     <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
                       <ZoomIn size={16} />
                     </button>
@@ -697,6 +696,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </button>
                     <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
                       <Download size={15} /> Export Report
+                    </button>
+                    <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
+                      ⚙️
                     </button>
                   </div>
                 </div>
@@ -5626,6 +5628,105 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           <span className="mx-2">|</span>
           <a href="#" className="hover:underline">Feedback</a>
         </div>
+
+        {/* SETTINGS MODAL COMPONENT */}
+        {isSettingsOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col">
+              {/* Modal Header */}
+              <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                <h2 className="text-[16px] font-bold text-slate-800">Settings</h2>
+                <button onClick={() => setIsSettingsOpen(false)} className="text-gray-500 hover:text-gray-700 font-bold text-lg cursor-pointer">×</button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-4 bg-gray-50 flex flex-col gap-4 overflow-y-auto max-h-[80vh]">
+                
+                {/* Default Date Range Selection */}
+                <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-4">
+                  <div className="flex justify-between items-center w-full">
+                    <h3 className="text-[13px] font-bold text-slate-800">Default Date Range Selection</h3>
+                    <button className="px-4 py-1.5 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Save</button>
+                  </div>
+                  <select className="border border-slate-300 rounded p-2 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                    <option>This Month</option>
+                    <option>EOD date</option>
+                  </select>
+                </div>
+
+                {/* Toolbar Categories */}
+                <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-3">
+                  <div className="flex justify-between items-start w-full mb-2">
+                    <div>
+                      <h3 className="text-[13px] font-bold text-slate-800">Toolbar Categories</h3>
+                      <p className="text-[11px] text-slate-500">You can include up to 8 categories in the toolbar</p>
+                    </div>
+                    <button onClick={() => setIsCustomCategoryOpen(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Custom Category</button>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="relative w-full">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                    <input type="text" placeholder="Search..." className="w-full border border-slate-300 rounded p-2 pl-8 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  </div>
+
+                  {/* Category List Items */}
+                  {[
+                    { label: 'Recently Viewed', checked: false, hasButton: false },
+                    { label: 'Internal Control', checked: false, hasButton: false },
+                    { label: 'Financial', checked: false, hasButton: true },
+                    { label: 'Product Sales', checked: false, hasButton: true },
+                    { label: 'Customer Sales', checked: false, hasButton: true },
+                    { label: "Today's & History", checked: false, hasButton: true },
+                    { label: 'Time & Attendance', checked: false, hasButton: true },
+                    { label: 'Lists', checked: false, hasButton: true }
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center border border-slate-200 rounded p-3">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" defaultChecked={item.checked} className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <span className="text-[13px] text-slate-700">{item.label}</span>
+                      </label>
+                      {item.hasButton && (
+                        <button className="border border-slate-300 rounded px-2 py-0.5 text-slate-500 hover:bg-slate-50 text-xs cursor-pointer">«</button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CUSTOM CATEGORY MODAL */}
+        {isCustomCategoryOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg flex flex-col">
+              {/* Custom Category Header */}
+              <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                <h2 className="text-[16px] font-bold text-slate-800">Custom Category</h2>
+                <button onClick={() => setIsCustomCategoryOpen(false)} className="text-gray-500 hover:text-gray-700 font-bold text-lg cursor-pointer">×</button>
+              </div>
+
+              {/* Custom Category Body */}
+              <div className="p-4 bg-gray-50 flex flex-col gap-4">
+                <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-4">
+                  <div className="flex flex-col gap-2 w-full">
+                    <label className="text-[13px] font-bold text-slate-800">Category Name</label>
+                    <div className="flex gap-2">
+                      <input type="text" className="flex-1 border border-slate-300 rounded p-2 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                      <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Save</button>
+                    </div>
+                  </div>
+                  
+                  <div className="relative w-full mt-2 border-t border-gray-100 pt-4">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 top-4 text-slate-400">🔍</span>
+                    <input type="text" placeholder="Search Report" className="w-full border border-slate-300 rounded p-2 pl-8 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
