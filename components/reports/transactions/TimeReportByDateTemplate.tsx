@@ -12,13 +12,14 @@ export const TimeReportByDateTemplate = () => {
   const times = ['10.57.50 AM', '11.42.15 AM', '11.45.25 AM', '11.50.43 AM', '12.08.17 PM', '12.09.26 PM', '12.21.33 PM'];
 
   // ==========================================
-  // 2. CHUNKING ALGORITHM (Max 5 columns per table)
+  // 2. CHUNKING ALGORITHM (Strictly 5 columns)
   // ==========================================
   const chunkedDates = [];
   for (let i = 0; i < allDates.length; i += 5) {
     chunkedDates.push(allDates.slice(i, i + 5));
   }
 
+  // Mock Generators
   const getVal = () => "0.00";
   const getDailyTotal = () => "11,520,000.00";
   const getRowGrandTotal = () => "1,260,000.00";
@@ -52,6 +53,7 @@ export const TimeReportByDateTemplate = () => {
             <option value="EOD Date">EOD Date</option>
           </select>
 
+          {/* Conditional Input Rendering based on Dropdown */}
           {filterPeriod === 'Date Range' ? (
             <div className="flex items-center gap-2">
               <input type="date" defaultValue="2026-08-01" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
@@ -68,8 +70,8 @@ export const TimeReportByDateTemplate = () => {
           </select>
           
           <div className="flex items-center gap-2 ml-2">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
           </div>
         </div>
         
@@ -82,7 +84,11 @@ export const TimeReportByDateTemplate = () => {
           </button>
           <button onClick={() => window.print()} className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-            Print
+            Print Report
+          </button>
+          <button className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            Export Report
           </button>
         </div>
       </div>
@@ -93,7 +99,7 @@ export const TimeReportByDateTemplate = () => {
           {!isFiltered ? (
             <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
                <div className="text-[40px] mb-3 opacity-40">📅</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the Time report by date.</p>
+               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Time report by date.</p>
             </div>
           ) : (
             <div className="bg-white p-4">
@@ -117,6 +123,7 @@ export const TimeReportByDateTemplate = () => {
                 </div>
               </div>
 
+              {/* 3. DYNAMIC RENDERING ENGINE */}
               {chunkedDates.map((chunk, chunkIdx) => {
                 const isLastChunk = chunkIdx === chunkedDates.length - 1;
                 
@@ -124,18 +131,23 @@ export const TimeReportByDateTemplate = () => {
                   <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
                     <table className="w-full border-collapse text-[11px] border border-black">
                       <thead>
+                        {/* HEADER ROW 1 */}
                         <tr>
+                          {/* Empty Corner Cell */}
                           <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
-                          <th colSpan={chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
+                          
+                          {/* Branch Name (Spans dates + Light Blue total if last chunk) */}
+                          <th colSpan={isLastChunk ? chunk.length + 1 : chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
                             Southern Olive Oil Products S.A.R.L
                           </th>
+
+                          {/* Deep Blue Total Header (Only on last chunk) */}
                           {isLastChunk && (
-                            <>
-                              <th className="border border-black p-1 bg-white"></th>
-                              <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
-                            </>
+                            <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
                           )}
                         </tr>
+                        
+                        {/* HEADER ROW 2 (Dates & Light Blue Total) */}
                         <tr>
                           {chunk.map(date => (
                             <th key={date} className="border border-black p-1.5 text-center font-bold bg-white">{date}</th>
@@ -147,6 +159,7 @@ export const TimeReportByDateTemplate = () => {
                       </thead>
                       <tbody>
                         
+                        {/* TOP TOTAL ROW (Light Blue completely) */}
                         <tr>
                           <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
                           {chunk.map(date => (
@@ -162,6 +175,7 @@ export const TimeReportByDateTemplate = () => {
                           )}
                         </tr>
 
+                        {/* TIME ROWS */}
                         {times.map(time => (
                           <tr key={time}>
                             <td className="border border-black p-1.5 text-center font-bold bg-white">{time}</td>
@@ -185,6 +199,7 @@ export const TimeReportByDateTemplate = () => {
                 );
               })}
               
+              {/* PRINT FOOTER */}
               <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
                 <div className="text-left w-1/3">REP_TR_00312</div>
                 <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
