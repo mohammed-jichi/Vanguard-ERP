@@ -3322,27 +3322,33 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   opacity: 1 !important;
 }
 
-/* Global Standard for all Report Filters & Inputs (Phase 222) */
+/* Global Standard for all Report Filters & Inputs (Phase 224 Brute-Force Anti-Ghosting) */
 .filters-container select,
 .filters-container input,
 .filters-container input[type="text"],
-.filters-container input[type="date"] {
-  color: #0f172a !important; /* text-slate-900 */
+.filters-container input[type="date"],
+select.report-filter,
+input.report-filter {
+  color: #000000 !important; /* text-black */
   background-color: #ffffff !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
   font-size: 13px !important;
   opacity: 1 !important;
-  border-color: #cbd5e1 !important;
+  border-color: #94a3b8 !important; /* slate-400 */
 }
 
-.filters-container select option {
-  color: #0f172a !important;
+.filters-container select option,
+select.report-filter option {
+  color: #000000 !important;
   background-color: #ffffff !important;
-  font-weight: 500 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
 }
 
 .filters-container select:focus,
-.filters-container input:focus {
-  border-color: #3b82f6 !important;
+.filters-container input:focus,
+select.report-filter:focus,
+input.report-filter:focus {
+  border-color: #2563eb !important;
   outline: none !important;
 }

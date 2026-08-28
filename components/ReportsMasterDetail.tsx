@@ -315,16 +315,16 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           }
         }
 
-        /* Standardize all filter inputs, selects, and textareas across Vanguard (Phase 222 Global Anti-Ghosting) */
+        /* Standardize all filter inputs, selects, and textareas across Vanguard (Phase 224 Brute-Force Anti-Ghosting) */
         .filters-container select, 
         .filters-container input[type="text"],
         .filters-container input[type="date"],
         .filters-container input {
           background-color: #ffffff !important;
-          border: 1px solid #cbd5e1 !important; /* slate-300 */
-          color: #0f172a !important; /* slate-900 */
+          border: 1px solid #94a3b8 !important; /* slate-400 */
+          color: #000000 !important; /* text-black */
           font-size: 13px !important;
-          font-weight: 500 !important;
+          font-weight: 700 !important;
           padding: 6px 8px !important;
           border-radius: 4px !important;
           opacity: 1 !important;
@@ -332,17 +332,20 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         }
         
         .filters-container select option {
-          color: #0f172a !important;
+          color: #000000 !important;
           background-color: #ffffff !important;
-          font-weight: 500 !important;
+          font-weight: 700 !important;
+          opacity: 1 !important;
         }
 
         .filters-container select:focus, 
         .filters-container input[type="text"]:focus,
         .filters-container input[type="date"]:focus,
         .filters-container input:focus {
-          border-color: #3b82f6 !important; /* blue-500 */
+          border-color: #2563eb !important; /* blue-600 */
           outline: none !important;
+          box-shadow: 0 0 0 1px #2563eb !important;
+        }
           box-shadow: 0 0 0 1px #3b82f6 !important;
         }
 
@@ -604,20 +607,20 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <select
                     value={period}
                     onChange={(e) => setPeriod(e.target.value)}
-                    className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                    className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
                   >
-                    <option value="Today" className="!text-slate-900 bg-white">Today</option>
-                    <option value="Yesterday" className="!text-slate-900 bg-white">Yesterday</option>
-                    <option value="This Month" className="!text-slate-900 bg-white">This Month</option>
-                    <option value="Last Month" className="!text-slate-900 bg-white">Last Month</option>
-                    <option value="First Quarter" className="!text-slate-900 bg-white">First Quarter</option>
-                    <option value="Second Quarter" className="!text-slate-900 bg-white">Second Quarter</option>
-                    <option value="Third Quarter" className="!text-slate-900 bg-white">Third Quarter</option>
-                    <option value="Fourth Quarter" className="!text-slate-900 bg-white">Fourth Quarter</option>
-                    <option value="This Year" className="!text-slate-900 bg-white">This Year</option>
-                    <option value="Last Year" className="!text-slate-900 bg-white">Last Year</option>
-                    <option value="Date Range" className="!text-slate-900 bg-white">Date Range</option>
-                    <option value="EOD Date" className="!text-slate-900 bg-white">EOD Date</option>
+                    <option value="Today" className="!text-black !font-bold bg-white">Today</option>
+                    <option value="Yesterday" className="!text-black !font-bold bg-white">Yesterday</option>
+                    <option value="This Month" className="!text-black !font-bold bg-white">This Month</option>
+                    <option value="Last Month" className="!text-black !font-bold bg-white">Last Month</option>
+                    <option value="First Quarter" className="!text-black !font-bold bg-white">First Quarter</option>
+                    <option value="Second Quarter" className="!text-black !font-bold bg-white">Second Quarter</option>
+                    <option value="Third Quarter" className="!text-black !font-bold bg-white">Third Quarter</option>
+                    <option value="Fourth Quarter" className="!text-black !font-bold bg-white">Fourth Quarter</option>
+                    <option value="This Year" className="!text-black !font-bold bg-white">This Year</option>
+                    <option value="Last Year" className="!text-black !font-bold bg-white">Last Year</option>
+                    <option value="Date Range" className="!text-black !font-bold bg-white">Date Range</option>
+                    <option value="EOD Date" className="!text-black !font-bold bg-white">EOD Date</option>
                   </select>
 
                   {period === 'Date Range' ? (
@@ -627,18 +630,18 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         type="date" 
                         value={fromDate} 
                         onChange={(e) => setFromDate(e.target.value)} 
-                        className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" 
+                        className="border border-slate-400 rounded p-1.5 text-[13px] w-36 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm" 
                       />
                       <span className="text-sm font-bold text-slate-700">To</span>
                       <input 
                         type="date" 
                         value={toDate} 
                         onChange={(e) => setToDate(e.target.value)} 
-                        className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" 
+                        className="border border-slate-400 rounded p-1.5 text-[13px] w-36 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm" 
                       />
                     </div>
                   ) : (
-                    <div className="border border-slate-300 rounded p-1.5 text-sm min-w-[200px] bg-slate-100 text-slate-900 font-bold flex items-center cursor-not-allowed select-none">
+                    <div className="border border-slate-400 rounded p-1.5 text-[13px] min-w-[200px] bg-slate-100 !text-black font-bold flex items-center cursor-not-allowed select-none shadow-sm">
                       Aug 1 - Aug 31, 2026
                     </div>
                   )}
@@ -646,23 +649,23 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
-                    className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                    className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
                   >
-                    <option className="!text-slate-900 bg-white">All Branches</option>
-                    <option className="!text-slate-900 bg-white">Beirut Central Branch</option>
-                    <option className="!text-slate-900 bg-white">Choueifat Press Branch</option>
-                    <option className="!text-slate-900 bg-white">Jbaa Hub</option>
+                    <option className="!text-black !font-bold bg-white">All Branches</option>
+                    <option className="!text-black !font-bold bg-white">Beirut Central Branch</option>
+                    <option className="!text-black !font-bold bg-white">Choueifat Press Branch</option>
+                    <option className="!text-black !font-bold bg-white">Jbaa Hub</option>
                   </select>
 
                   {showInvoiceFilter && !['Profit by category summary', 'Profit by category by department', 'Profit by item summary', 'Profit by Invoices Summary', 'Profit By Invoices'].includes(selectedReport || '') && (
                     <select
                       value={invoiceFilter}
                       onChange={(e) => setInvoiceFilter(e.target.value)}
-                      className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
+                      className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
                     >
-                      <option className="!text-slate-900 bg-white">All Invoices</option>
-                      <option className="!text-slate-900 bg-white">Paid Invoices Only</option>
-                      <option className="!text-slate-900 bg-white">Credit & Pending Invoices</option>
+                      <option className="!text-black !font-bold bg-white">All Invoices</option>
+                      <option className="!text-black !font-bold bg-white">Paid Invoices Only</option>
+                      <option className="!text-black !font-bold bg-white">Credit & Pending Invoices</option>
                     </select>
                   )}
 
@@ -837,13 +840,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-16 mt-2 w-full">
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
                           <option>All Branches</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
                           <option>All Years</option>
                         </select>
                       </div>
@@ -854,13 +857,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-16 mt-2 w-full">
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
                           <option>All Branches</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
                           <option>2026</option>
                           <option>2025</option>
                           <option>All Years</option>
@@ -873,14 +876,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-4 mt-2 w-full">
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
                           <option>All Branches</option>
                           <option>Southern Olive Oil S.A.R.L</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
                           <option>2026</option>
                           <option>2025</option>
                           <option>All Years</option>
@@ -888,7 +891,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Employee</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
+                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
                           <option>All Employees</option>
                           <option>Cashier N2</option>
                           <option>Cashier NK</option>

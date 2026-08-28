@@ -17,7 +17,7 @@ export const TransactionsByEmployeesTemplate = () => {
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
             <select 
-              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full lg:col-span-2 border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
               defaultValue="Transactions by Employees"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -39,7 +39,7 @@ export const TransactionsByEmployeesTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
               <option>Today</option>
               <option>Yesterday</option>
               <option>This Month</option>
@@ -53,11 +53,11 @@ export const TransactionsByEmployeesTemplate = () => {
               <option>Date Range</option>
               <option>EOD Date</option>
             </select>
-            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm" />
             
             <div className="flex flex-col gap-1 w-full mt-2 lg:col-span-2">
               <label className="text-[11px] font-bold text-slate-700">Server</label>
-              <select className="w-full md:w-[340px] border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+              <select className="w-full md:w-[340px] border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
                 <option>All Servers</option>
                 <option>Cashier N2</option>
                 <option>Cashier NK</option>
@@ -70,7 +70,7 @@ export const TransactionsByEmployeesTemplate = () => {
               </label>
             </div>
 
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>Southern Olive Oil S.A.R.L</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Southern Olive Oil S.A.R.L</option></select>
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                 <input type="checkbox" checked={uiRealDate} onChange={(e) => setUiRealDate(e.target.checked)} className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" />

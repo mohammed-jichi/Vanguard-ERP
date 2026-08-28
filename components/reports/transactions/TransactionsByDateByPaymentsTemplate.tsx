@@ -16,7 +16,7 @@ export const TransactionsByDateByPaymentsTemplate = () => {
             
             {/* FULL 13-ITEM DROPDOWN */}
             <select 
-              className="w-full lg:col-span-3 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+              className="w-full lg:col-span-3 border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer" 
               defaultValue="Transactions by Date by Payments"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -39,7 +39,7 @@ export const TransactionsByDateByPaymentsTemplate = () => {
               <option>Transactions By Source</option>
             </select>
 
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
               <option>Today</option>
               <option>Yesterday</option>
               <option>This Month</option>
@@ -54,21 +54,21 @@ export const TransactionsByDateByPaymentsTemplate = () => {
               <option>EOD Date</option>
             </select>
             
-            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm" />
             <div className="hidden lg:block"></div>
             
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
               <option>All Branches</option>
             </select>
             
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
               <option>All Invoices</option>
               <option>Inventory Invoices</option>
               <option>POS Invoices</option>
               <option>Training Invoices</option>
             </select>
             
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
               <option>All Payment Types</option>
               <option>CASH</option>
               <option>CREDIT</option>
