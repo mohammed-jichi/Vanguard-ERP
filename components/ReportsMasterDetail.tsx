@@ -342,13 +342,22 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
       `}</style>
       {/* 1. CLEAN TOP PAGE HEADER */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 shadow-xs flex items-center justify-between gap-4 w-full print:hidden">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
-            <span>Sales Reports</span>
-            <span className="bg-blue-50 text-[#195a96] border border-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-              Executive Master-Detail
-            </span>
-          </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsReportListOpen(!isReportListOpen)}
+            title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
+            className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+              <span>Sales Reports</span>
+              <span className="bg-blue-50 text-[#195a96] border border-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                Executive Master-Detail
+              </span>
+            </h2>
+          </div>
         </div>
 
         {/* RIGHT-ALIGNED PROFESSIONAL RETURN BUTTON */}
@@ -563,25 +572,44 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             </div>
           ) : (
             /* ACTIVE REPORT DETAILED VIEW: TWO-CARD LAYOUT */
-            <div className="w-full space-y-6">
+            <div className="w-full space-y-4">
               
+              {/* UNCONDITIONAL PERSISTENT SIDEBAR TOGGLE & STATUS BAR */}
+              <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-2.5 shadow-xs print:hidden">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setIsReportListOpen(!isReportListOpen)}
+                    title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
+                    className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0 flex items-center gap-2 text-xs font-bold"
+                  >
+                    <Menu className="w-4 h-4" />
+                    <span>{isReportListOpen ? "Hide Menu" : "Show Report Categories"}</span>
+                  </button>
+                  <div className="h-4 w-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-400 font-medium hidden sm:inline">Active Report:</span>
+                    <span className="text-xs font-bold text-[#195a96] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{selectedReport}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSelectedReport(null)}
+                    className="text-xs text-slate-500 hover:text-slate-800 font-medium px-2 py-1 hover:bg-slate-50 rounded transition-colors cursor-pointer"
+                  >
+                    Close Report
+                  </button>
+                </div>
+              </div>
+
               {/* CARD 1: THE FILTERS CARD (TOP) - Suppressed for complex self-contained reports */}
               {!complexTransactionReports.includes(selectedReport || '') && (
                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full filters-container print:hidden">
                   {/* HEADER AREA */}
                   <div className="flex justify-between items-start p-4 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => setIsReportListOpen(!isReportListOpen)}
-                        title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
-                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
-                      >
-                        <Menu className="w-5 h-5" />
-                      </button>
-                      <div>
-                        <h4 className="font-bold text-slate-800 text-sm">Filters</h4>
-                        <span className="text-xs text-slate-500 block mt-0.5">{selectedReport}</span>
-                      </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-sm">Filters</h4>
+                      <span className="text-xs text-slate-500 block mt-0.5">{selectedReport}</span>
                     </div>
 
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
