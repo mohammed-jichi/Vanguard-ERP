@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Filter,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Settings
 } from 'lucide-react';
 
 type ReportMenuItemFlat = {
@@ -653,6 +654,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   )}
+
+                  {selectedReport === 'Comparative Monthly Sales' && (
+                    <div className="flex gap-16 mt-2 w-full">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                          <option>All Branches</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[12px] font-bold text-slate-700">Year</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                          <option>2026</option>
+                          <option>2025</option>
+                          <option>All Years</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -663,6 +683,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
 
                   <div className="flex items-center gap-2">
+                    <button className="bg-[#475569] hover:bg-[#334155] text-white p-1.5 rounded transition-colors cursor-pointer" title="Report Settings">
+                      <Settings size={16} />
+                    </button>
                     <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
                       <ZoomIn size={16} />
                     </button>
@@ -680,7 +703,110 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Comparative Yearly Sales' ? (
+                  {selectedReport === 'Comparative Monthly Sales' ? (
+                    /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE */
+                    <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Comparative Monthly Sales
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-2 w-full">
+                        <div>28-Aug-26</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Grid with Full Borders */}
+                      <div className="w-full border border-black text-[10px]">
+                        {/* Table Header */}
+                        <div className="flex w-full font-bold text-black border-b border-black bg-slate-100">
+                          <div className="w-[8%] p-1.5 border-r border-black">Year</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">January</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">February</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">March</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">April</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">May</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">June</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">July</div>
+                          <div className="w-[10%] p-1.5 border-r border-black text-right">August</div>
+                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">Total By Year</div>
+                        </div>
+
+                        {/* Branch Title */}
+                        <div className="p-1.5 font-bold border-b border-black bg-slate-50">
+                          Southern Olive Oil S.A.R.L
+                        </div>
+
+                        {/* Data Rows */}
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[8%] p-1.5 border-r border-black font-bold">2025</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
+                          <div className="w-[10%] p-1.5 border-r border-black text-right">153,913,400.00</div>
+                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">153,913,400.00</div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[8%] p-1.5 border-r border-black font-bold">2026</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
+                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,037,698,995.00</div>
+                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">10,433,028,995.00</div>
+                        </div>
+
+                        {/* Branch Subtotal Row */}
+                        <div className="flex w-full border-b border-black font-bold bg-[#dbeafe]">
+                          <div className="w-[8%] p-1.5 border-r border-black text-[9px]">Total by Branch :</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
+                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,191,612,395.00</div>
+                          <div className="w-[19%] p-1.5 text-right bg-[#bfdbfe]">10,586,942,395.00</div>
+                        </div>
+
+                        {/* Grand Total Row */}
+                        <div className="flex w-full font-bold bg-[#bfdbfe]">
+                          <div className="w-[8%] p-1.5 border-r border-black">Grand Total:</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
+                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
+                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,191,612,395.00</div>
+                          <div className="w-[19%] p-1.5 text-right bg-[#93c5fd] font-extrabold">10,586,942,395.00</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-12 w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00134</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Comparative Yearly Sales' ? (
                     /* COMPARATIVE YEARLY SALES REPORT TEMPLATE (EXACT OMEGA REPLICA) */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
