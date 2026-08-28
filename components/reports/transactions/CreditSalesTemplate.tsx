@@ -31,7 +31,7 @@ export const CreditSalesTemplate = () => {
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
         {/* Left side: Filters */}
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
-          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
+          <select defaultValue="This Month" className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>Today</option>
             <option>Yesterday</option>
             <option>This Month</option>
@@ -47,7 +47,7 @@ export const CreditSalesTemplate = () => {
           </select>
           <input 
             type="text" 
-            defaultValue="2025" 
+            defaultValue="Aug 2026" 
             className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" 
           />
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
@@ -118,7 +118,7 @@ export const CreditSalesTemplate = () => {
               
               <div className="flex justify-between items-end text-[11px] font-bold w-full border-b border-black pb-1 mb-1">
                 <div>28-Aug-26</div>
-                <div className="text-center flex-1">From Date: 01-Jan-2025 To Date: 31-Dec-2025</div>
+                <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
                 <div>Page 1 of 1</div>
               </div>
 
