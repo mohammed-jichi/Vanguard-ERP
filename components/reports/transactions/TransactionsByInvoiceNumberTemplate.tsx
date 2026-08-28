@@ -11,13 +11,13 @@ export const TransactionsByInvoiceNumberTemplate = () => {
 
   const handleFilter = () => {
     setActiveShowZeroTax(uiShowZeroTax);
-    setIsFiltered(true); // Shows the table
+    setIsFiltered(true);
   };
 
   const handleReset = () => {
     setUiShowZeroTax(false);
     setActiveShowZeroTax(false);
-    setIsFiltered(false); // Hides the table
+    setIsFiltered(false);
   };
 
   // Sample data (Standard Invoice Data)
@@ -29,96 +29,122 @@ export const TransactionsByInvoiceNumberTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* 1. FILTERS BLOCK - ALWAYS VISIBLE */}
-      <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
-        <div className="flex justify-between items-start gap-6">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
-            
-            {/* Column 1 */}
-            <div className="flex flex-col gap-3">
-              <select 
-                className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium" 
-                defaultValue="Transactions by Invoice Number"
-                onChange={(e) => {
-                  if ((window as any).setSelectedReport) {
-                    (window as any).setSelectedReport(e.target.value);
-                  }
-                }}
-              >
-                <option>Transactions by Salesman</option>
-                <option>Transactions by Date</option>
-                <option>Transactions by Employees by Payment</option>
-                <option>Transactions by Customers by Employee</option>
-                <option>Transactions by Invoice Number</option>
-                <option>Duplicate Invoices</option>
-                <option>Transactions by Date by Payments</option>
-                <option>Transactions by Customers</option>
-                <option>Transactions by Customers by Groups</option>
-                <option>Transactions by Customers details</option>
-                <option>Transactions by Workstation</option>
-                <option>Transactions by Employees</option>
-                <option>Transactions By Source</option>
-              </select>
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-slate-700">To Invoice Number</label>
-                <input type="text" defaultValue="103080" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" />
-              </div>
-              <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer mt-1">
-                <input type="checkbox" checked={uiShowZeroTax} onChange={(e) => setUiShowZeroTax(e.target.checked)} className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" />
-                Show Zero Tax
-              </label>
-            </div>
-
-            {/* Column 2 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-slate-700">Branch</label>
-                <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium">
-                  <option>All Branches</option>
-                  <option>Southern Olive Oil S.A.R.L</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Column 3 */}
-            <div className="flex flex-col gap-3">
-               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-slate-700">From Invoice Number</label>
-                <input type="text" defaultValue="103070" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" />
-              </div>
-            </div>
-
-          </div>
+      {/* SINGLE COMPACT FILTER & ACTION BAR */}
+      <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-4 gap-3 print:hidden w-full max-w-[1400px]">
+        {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
+        <div className="flex flex-wrap items-center gap-2 flex-1">
+          <select 
+            className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs" 
+            defaultValue="Transactions by Invoice Number"
+            onChange={(e) => {
+              if ((window as any).setSelectedReport) {
+                (window as any).setSelectedReport(e.target.value);
+              }
+            }}
+          >
+            <option>Transactions by Salesman</option>
+            <option>Transactions by Date</option>
+            <option>Transactions by Employees by Payment</option>
+            <option>Transactions by Customers by Employee</option>
+            <option>Transactions by Invoice Number</option>
+            <option>Duplicate Invoices</option>
+            <option>Transactions by Date by Payments</option>
+            <option>Transactions by Customers</option>
+            <option>Transactions by Customers by Groups</option>
+            <option>Transactions by Customers details</option>
+            <option>Transactions by Workstation</option>
+            <option>Transactions by Employees</option>
+            <option>Transactions By Source</option>
+          </select>
           
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-2 min-w-[150px]">
-            <button onClick={handleFilter} className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
-            <button onClick={handleReset} className="px-4 py-2 bg-[#5e3b3b] text-white rounded text-[13px] font-bold hover:bg-red-900 w-full transition-colors cursor-pointer">Reset Filters</button>
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-bold text-slate-600">From:</span>
+            <input 
+              type="text" 
+              defaultValue="103070" 
+              className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-20 shadow-2xs" 
+            />
           </div>
+
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] font-bold text-slate-600">To:</span>
+            <input 
+              type="text" 
+              defaultValue="103080" 
+              className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-20 shadow-2xs" 
+            />
+          </div>
+
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+            <option>All Branches</option>
+            <option>Southern Olive Oil S.A.R.L</option>
+          </select>
+
+          <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              checked={uiShowZeroTax} 
+              onChange={(e) => setUiShowZeroTax(e.target.checked)} 
+              className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
+            />
+            <span>Zero Tax</span>
+          </label>
+
+          <div className="flex items-center gap-1.5">
+            <button 
+              onClick={handleFilter} 
+              className="px-3 py-1.5 bg-[#475569] text-white rounded text-xs font-bold hover:bg-slate-700 transition-colors cursor-pointer"
+            >
+              Filter
+            </button>
+            <button 
+              onClick={handleReset} 
+              className="px-3 py-1.5 bg-[#5e3b3b] text-white rounded text-xs font-bold hover:bg-red-900 transition-colors cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Right side: Action Toolbar */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button 
+            onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
+            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            title="Zoom In"
+          >
+            <ZoomIn size={15} />
+          </button>
+          <button 
+            onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} 
+            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            title="Zoom Out"
+          >
+            <ZoomOut size={15} />
+          </button>
+          <button 
+            onClick={() => window.print()} 
+            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Printer size={14} /> Print
+          </button>
+          <button 
+            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Download size={14} /> Export
+          </button>
+          <button 
+            onClick={() => (window as any).setIsSettingsOpen && (window as any).setIsSettingsOpen(true)} 
+            className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs cursor-pointer" 
+            title="Settings"
+          >
+            <Settings size={14} />
+          </button>
         </div>
       </div>
 
-      {/* 2. REPORT BODY - CONDITIONAL */}
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
-            <ZoomIn size={16} />
-          </button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
-            <ZoomOut size={16} />
-          </button>
-          <button onClick={() => window.print()} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-            <Printer size={15} /> Print Report
-          </button>
-          <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-            <Download size={15} /> Export Report
-          </button>
-          <button onClick={() => (window as any).setIsSettingsOpen && (window as any).setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
-            <Settings size={15} />
-          </button>
-        </div>
-
+      {/* REPORT BODY */}
+      <div className="w-full max-w-[1400px] bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 font-sans text-black overflow-auto min-h-[500px]">
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
@@ -126,7 +152,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <p className="text-slate-500 font-bold text-[14px]">Please select your invoice range and click "Filter Report" to view data.</p>
+               <p className="text-slate-500 font-bold text-[14px]">Please select your invoice range and click "Filter" to view data.</p>
             </div>
           ) : (
             <>

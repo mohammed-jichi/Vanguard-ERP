@@ -41,101 +41,107 @@ export const OmnichannelPaymentsReportTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* FILTERS BLOCK */}
-      <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
-        <div className="mb-4">
-          <h3 className="text-[14px] font-bold text-slate-800">Filters</h3>
-          <p className="text-[12px] text-slate-500">Omnichannel Payments & Sales Source</p>
+      {/* SINGLE COMPACT FILTER & ACTION BAR */}
+      <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-4 gap-3 print:hidden w-full max-w-[1400px]">
+        {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
+        <div className="flex flex-wrap items-center gap-2 flex-1">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+            <option>Today</option>
+            <option>Yesterday</option>
+            <option>This Month</option>
+            <option>Last Month</option>
+            <option>First Quarter</option>
+            <option>Second Quarter</option>
+            <option>Third Quarter</option>
+            <option>Fourth Quarter</option>
+            <option>This Year</option>
+            <option>Last Year</option>
+            <option>Date Range</option>
+            <option>EOD Date</option>
+          </select>
+          <input 
+            type="text" 
+            defaultValue="Aug 2026" 
+            className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-24 shadow-2xs" 
+          />
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+            <option>All Traffic Sources</option>
+            <option>Facebook Ads</option>
+            <option>Instagram</option>
+            <option>TikTok</option>
+            <option>Direct Walk-in</option>
+          </select>
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+            <option>All Sales Channels</option>
+            <option>Landing Page Checkout</option>
+            <option>WhatsApp (All Reps)</option>
+            <option>WhatsApp - Rep 1 (70-111222)</option>
+            <option>WhatsApp - Rep 2 (71-333444)</option>
+          </select>
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+            <option>All Payment Providers & Couriers</option>
+            <option>Online: Tap Payments / Paymob</option>
+            <option>Fintech: Whish Money / OMT / BOB Finance</option>
+            <option>COD: Supersonic (Primary)</option>
+            <option>COD: Wakilni / Aramex / LibanPost</option>
+            <option>POS: Visa / Mastercard</option>
+          </select>
+
+          <div className="flex items-center gap-1.5">
+            <button 
+              onClick={handleFilter} 
+              className="px-3 py-1.5 bg-[#475569] text-white rounded text-xs font-bold hover:bg-slate-700 transition-colors cursor-pointer"
+            >
+              Filter
+            </button>
+            <button 
+              onClick={handleReset} 
+              className="px-3 py-1.5 bg-[#5e3b3b] text-white rounded text-xs font-bold hover:bg-red-900 transition-colors cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
         </div>
-        <div className="flex justify-between items-start gap-6">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[950px]">
-            
-            {/* Column 1: Dates */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold text-slate-700">Period & Date</label>
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>Today</option>
-                <option>Yesterday</option>
-                <option>This Month</option>
-                <option>Last Month</option>
-                <option>First Quarter</option>
-                <option>Second Quarter</option>
-                <option>Third Quarter</option>
-                <option>Fourth Quarter</option>
-                <option>This Year</option>
-                <option>Last Year</option>
-                <option>Date Range</option>
-                <option>EOD Date</option>
-              </select>
-              <input type="text" defaultValue="Aug 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" />
-            </div>
 
-            {/* Column 2: Sources & Reps */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold text-slate-700">Traffic Source & Channel</label>
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>All Traffic Sources</option>
-                <option>Facebook Ads</option>
-                <option>Instagram</option>
-                <option>TikTok</option>
-                <option>Direct Walk-in</option>
-              </select>
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>All Sales Channels</option>
-                <option>Landing Page Checkout</option>
-                <option>WhatsApp (All Reps)</option>
-                <option>WhatsApp - Rep 1 (70-111222)</option>
-                <option>WhatsApp - Rep 2 (71-333444)</option>
-              </select>
-            </div>
-
-            {/* Column 3: Payment Providers */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[11px] font-bold text-slate-700">Providers & Couriers</label>
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>All Payment Providers & Couriers</option>
-                <option>Online: Tap Payments / Paymob</option>
-                <option>Fintech: Whish Money / OMT / BOB Finance</option>
-                <option>COD: Supersonic (Primary)</option>
-                <option>COD: Wakilni / Aramex / LibanPost</option>
-                <option>POS: Visa / Mastercard</option>
-              </select>
-            </div>
-
-          </div>
-          
-          <div className="flex flex-col gap-2 min-w-[150px]">
-            <button onClick={handleFilter} className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
-            <button onClick={handleReset} className="px-4 py-2 bg-[#5e3b3b] text-white rounded text-[13px] font-bold hover:bg-red-900 w-full transition-colors cursor-pointer">Reset Filters</button>
-          </div>
+        {/* Right side: Action Toolbar */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button 
+            onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
+            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            title="Zoom In"
+          >
+            <ZoomIn size={15} />
+          </button>
+          <button 
+            onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} 
+            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            title="Zoom Out"
+          >
+            <ZoomOut size={15} />
+          </button>
+          <button 
+            onClick={() => window.print()} 
+            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Printer size={14} /> Print
+          </button>
+          <button 
+            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Download size={14} /> Export
+          </button>
         </div>
       </div>
 
       {/* REPORT BODY */}
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
-            <ZoomIn size={16} />
-          </button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
-            <ZoomOut size={16} />
-          </button>
-          <button onClick={() => window.print()} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-            <Printer size={15} /> Print Report
-          </button>
-          <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-            <Download size={15} /> Export Report
-          </button>
-        </div>
-
+      <div className="w-full max-w-[1400px] bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 font-sans text-black overflow-auto min-h-[500px]">
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
           <div className="text-blue-700 font-bold text-[12px] mb-6">Omnichannel Retail & E-Commerce</div>
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter Report" to view omnichannel sales.</p>
+               <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter" to view omnichannel sales.</p>
             </div>
           ) : (
             <>
