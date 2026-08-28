@@ -5745,19 +5745,20 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           )}
 
         </div>
+      </div>
 
-        {/* GLOBAL VANGUARD ERP COPYRIGHT FOOTER */}
-        <div className="w-full flex justify-center items-center text-[11px] text-[#666666] py-6 mt-8">
-          <span>© 2026 Vanguard ERP All rights reserved.</span>
-          <span className="mx-2">|</span>
-          <a href="#" className="hover:underline">Privacy Policy</a>
-          <span className="mx-2">|</span>
-          <a href="#" className="hover:underline">Terms and Conditions</a>
-          <span className="mx-2">|</span>
-          <a href="#" className="hover:underline">Support</a>
-          <span className="mx-2">|</span>
-          <a href="#" className="hover:underline">Feedback</a>
-        </div>
+      {/* GLOBAL VANGUARD ERP COPYRIGHT FOOTER */}
+      <div className="w-full mt-12 py-4 flex flex-wrap justify-center items-center gap-2 sm:gap-4 text-[12px] text-slate-500 print:hidden">
+        <span>© 2026 Vanguard ERP. All rights reserved.</span>
+        <span className="hidden sm:inline opacity-50">|</span>
+        <a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a>
+        <span className="hidden sm:inline opacity-50">|</span>
+        <a href="#" className="hover:text-blue-600 transition-colors">Terms and Conditions</a>
+        <span className="hidden sm:inline opacity-50">|</span>
+        <a href="#" className="hover:text-blue-600 transition-colors">Support</a>
+        <span className="hidden sm:inline opacity-50">|</span>
+        <a href="#" className="hover:text-blue-600 transition-colors">Feedback</a>
+      </div>
 
         {/* SETTINGS MODAL COMPONENT */}
         {isSettingsOpen && (
@@ -5873,7 +5874,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
         )}
 
-      </div>
     </div>
   );
 }
