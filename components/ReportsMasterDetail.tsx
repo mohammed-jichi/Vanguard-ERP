@@ -707,81 +707,74 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Comparative Monthly Sales' ? (
-                    /* COMPARATIVE MONTHLY SALES NATIVE HTML TABLE (For perfect alignment) */
+                    /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE (CLEANED DEDUPLICATED) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      <div className="flex justify-end items-center gap-2 mb-4">
-                        <button className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">🔍</button>
-                        <button className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">🔍</button>
-                        <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-                        <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-                        <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-                      </div>
-
+                      {/* Title & Pagination Info (Toolbar removed to prevent double rendering) */}
                       <div className="text-center font-bold text-[13px] mb-4">
                         Comparative Monthly Sales
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full min-w-[1000px]">
                         <div>28-Aug-26</div>
                         <div className="pl-16">Year: 2026</div>
                         <div>Page 1 of 1</div>
                       </div>
 
                       {/* Strict Native Table Implementation */}
-                      <div className="w-full mt-1 overflow-x-auto">
-                        <table className="w-full border-collapse border-t border-l border-r border-black text-[11px]">
+                      <div className="w-full mt-1 overflow-x-auto pb-4">
+                        <table className="w-full min-w-[1000px] border-collapse border-t border-l border-r border-black text-[11px]">
                           <thead>
-                            <tr className="font-bold text-black text-center bg-slate-50">
-                              <th className="border-b border-r border-black py-1.5 w-[5%]"></th>
-                              <th className="border-b border-r border-black py-1.5 w-[11%]"></th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">January</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">February</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">March</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">April</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">May</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">June</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">July</th>
-                              <th className="border-b border-r border-black py-1.5 w-[9%]">August</th>
-                              <th className="border-b border-black py-1.5 w-[12%] bg-[#cce5ff]">Total By Year</th>
+                            <tr className="font-bold text-black text-center bg-white">
+                              <th className="border-b border-r border-black py-2.5 w-[5%]"></th>
+                              <th className="border-b border-r border-black py-2.5 w-[11%]"></th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">JANUARY</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">FEBRUARY</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">MARCH</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">APRIL</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">MAY</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">JUNE</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">JULY</th>
+                              <th className="border-b border-r border-black py-2.5 w-[9%]">AUGUST</th>
+                              <th className="border-b border-black py-2.5 w-[12%]">TOTAL BY YEAR</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="font-normal bg-white">
                               <td rowSpan={2} className="border-b border-r border-black font-bold text-center w-[5%] align-middle">2026</td>
-                              <td className="border-b border-r border-black p-1.5 text-center w-[11%] font-medium">Southern Olive Oil S.A.R.L</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">3,108,541,520.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">2,101,815,950.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">332,743,800.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">648,713,550.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">192,590,050.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">665,865,750.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,818,326,325.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,564,432,050.00</td>
-                              <td className="border-b border-black text-right pr-1 py-1.5 w-[12%] font-bold bg-[#cce5ff]">10,433,028,995.00</td>
+                              <td className="border-b border-r border-black p-2 text-center w-[11%] font-medium">Southern Olive Oil S.A.R.L</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">3,108,541,520.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">2,101,815,950.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">332,743,800.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">648,713,550.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">192,590,050.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">665,865,750.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">1,818,326,325.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">1,564,432,050.00</td>
+                              <td className="border-b border-black text-right pr-2 py-2 w-[12%] font-normal">10,433,028,995.00</td>
                             </tr>
-                            <tr className="font-bold bg-[#cce5ff]">
-                              <td className="border-b border-r border-black p-1.5 text-center w-[11%]">Total</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">3,108,541,520.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">2,101,815,950.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">332,743,800.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">648,713,550.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">192,590,050.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">665,865,750.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,818,326,325.00</td>
-                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,564,432,050.00</td>
-                              <td className="border-b border-black text-right pr-1 py-1.5 w-[12%]">10,433,028,995.00</td>
+                            <tr className="font-bold bg-white">
+                              <td className="border-b border-r border-black p-2 text-center w-[11%]">Total</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">3,108,541,520.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">2,101,815,950.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">332,743,800.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">648,713,550.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">192,590,050.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">665,865,750.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">1,818,326,325.00</td>
+                              <td className="border-b border-r border-black text-right pr-2 py-2 w-[9%]">1,564,432,050.00</td>
+                              <td className="border-b border-black text-right pr-2 py-2 w-[12%]">10,433,028,995.00</td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full min-w-[1000px]"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold min-w-[1000px]">
                         <div className="text-black text-left">REP_S_00134</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right"><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="hover:underline">www.vanguarderp.com</a></div>
+                        <div className="text-black text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-black text-right">www.vanguarderp.com</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Comparative Yearly Sales' ? (
