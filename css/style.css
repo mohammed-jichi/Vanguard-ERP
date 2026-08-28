@@ -3329,8 +3329,10 @@ input[type="date"]::-webkit-datetime-edit-year-field {
 .filters-container input[type="date"],
 select.report-filter,
 input.report-filter,
-input[type="text"].report-filter {
+input[type="text"].report-filter,
+.force-black {
   color: #000000 !important; /* text-black */
+  -webkit-text-fill-color: #000000 !important;
   background-color: #ffffff !important;
   font-weight: 700 !important;
   font-size: 13px !important;
@@ -3339,8 +3341,10 @@ input[type="text"].report-filter {
 }
 
 .filters-container select option,
-select.report-filter option {
+select.report-filter option,
+.force-black option {
   color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
   background-color: #ffffff !important;
   font-weight: 700 !important;
   opacity: 1 !important;
@@ -3351,9 +3355,11 @@ select.report-filter option {
 .filters-container input[type="text"]:focus,
 .filters-container input[type="date"]:focus,
 select.report-filter:focus,
-input.report-filter:focus {
+input.report-filter:focus,
+.force-black:focus {
   background-color: #ffffff !important;
   color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
   border-color: #2563eb !important;
   outline: none !important;
   box-shadow: 0 0 0 1px #2563eb !important;

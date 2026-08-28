@@ -4,36 +4,50 @@ export const OmnichannelPaymentsReportTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Mock data integrating Supersonic, Gateways, and POS
   const reportData = [
-    {
-      methodType: 'ONLINE GATEWAYS (LANDING PAGE DIRECT)',
+    { 
+      methodType: 'ONLINE GATEWAYS (LANDING PAGE DIRECT)', 
       rows: [
         { date: '28-Aug-26', invoice: '103125', client: 'Online Client 1', source: 'Facebook (Main Page)', channel: 'Landing Page Checkout', provider: 'Tap Payments', auth: 'ONL-9911', amount: '850,000.00' },
-      ],
-      total: '850,000.00'
+      ], 
+      total: '850,000.00' 
     },
-    {
-      methodType: 'CASH ON DELIVERY (COD)',
+    { 
+      methodType: 'CASH ON DELIVERY (COD)', 
       rows: [
         { date: '28-Aug-26', invoice: '103128', client: 'Online Client 4', source: 'Instagram (Rep 2 Page)', channel: 'WhatsApp (71-333444)', provider: 'Supersonic (Primary)', auth: 'SUP-AWB-11', amount: '700,000.00' }
-      ],
-      total: '700,000.00'
+      ], 
+      total: '700,000.00' 
     }
   ];
-
+  
   const grandTotal = '1,550,000.00';
 
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
+      
+      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .force-black {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+          opacity: 1 !important;
+          -webkit-text-fill-color: #000000 !important; 
+          font-weight: 700 !important;
+        }
+        .force-black option {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+        }
+      `}} />
 
-      {/* 1. COMPACT FILTER & ACTION TOOLBAR (ONE ROW) */}
-      <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
-
-        {/* LEFT SIDE: FILTERS */}
-        <div className="flex flex-wrap items-center gap-2 flex-1">
+      {/* 1. COMPACT FILTER & ACTION TOOLBAR */}
+      <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
+        
+        {/* LEFT SIDE: FILTERS (Flex wrap with proper spacing) */}
+        <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
           
-          <select className="border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 min-w-[120px] shadow-sm" style={{ color: '#000000', backgroundColor: '#ffffff', opacity: 1, fontWeight: 'bold' }}>
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>Today</option>
             <option>Yesterday</option>
             <option>This Month</option>
@@ -48,22 +62,22 @@ export const OmnichannelPaymentsReportTemplate = () => {
             <option>EOD Date</option>
           </select>
           
-          <input type="text" defaultValue="Aug 2026" className="border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 min-w-[90px] shadow-sm" style={{ color: '#000000', backgroundColor: '#ffffff', opacity: 1, fontWeight: 'bold' }} />
+          <input type="text" defaultValue="Aug 2026" className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" />
           
-          <select className="border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 min-w-[140px] shadow-sm" style={{ color: '#000000', backgroundColor: '#ffffff', opacity: 1, fontWeight: 'bold' }}>
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>All Traffic Sources</option>
             <option>Facebook Ads</option>
             <option>Instagram</option>
             <option>TikTok</option>
           </select>
 
-          <select className="border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 min-w-[140px] shadow-sm" style={{ color: '#000000', backgroundColor: '#ffffff', opacity: 1, fontWeight: 'bold' }}>
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>All Sales Channels</option>
             <option>Landing Page Checkout</option>
             <option>WhatsApp (All Reps)</option>
           </select>
 
-          <select className="border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 min-w-[190px] shadow-sm" style={{ color: '#000000', backgroundColor: '#ffffff', opacity: 1, fontWeight: 'bold' }}>
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>All Payment Providers & Couriers</option>
             <option>COD: Supersonic (Primary)</option>
             <option>Online: Tap Payments / Paymob</option>
@@ -71,15 +85,15 @@ export const OmnichannelPaymentsReportTemplate = () => {
             <option>POS: Visa / Mastercard</option>
           </select>
 
-          {/* Grouped Buttons to prevent separation */}
+          {/* Grouped Buttons */}
           <div className="flex items-center gap-2">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 transition-colors shadow-sm whitespace-nowrap">Filter</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 transition-colors shadow-sm whitespace-nowrap">Reset</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 transition-colors shadow-sm text-[13px]">Filter</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 transition-colors shadow-sm text-[13px]">Reset</button>
           </div>
         </div>
 
-        {/* RIGHT SIDE: ACTION BUTTONS WITH PROPER ICONS */}
-        <div className="flex items-center gap-2">
+        {/* RIGHT SIDE: ACTION BUTTONS */}
+        <div className="flex items-center gap-2 shrink-0">
           <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 shadow-sm" title="Zoom In">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
           </button>
@@ -100,16 +114,16 @@ export const OmnichannelPaymentsReportTemplate = () => {
       {/* 2. REPORT BODY */}
       <div className="w-full max-w-[1400px] font-sans text-black overflow-x-auto print:overflow-visible">
         <div className="report-wrapper transition-transform duration-200 origin-top w-full min-w-[1000px]" style={{ transform: `scale(${zoomLevel})` }}>
-
+          
           {!isFiltered ? (
             <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
-              <div className="text-[40px] mb-3 opacity-40">📊</div>
-              <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the report.</p>
+               <div className="text-[40px] mb-3 opacity-40">📊</div>
+               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the report.</p>
             </div>
           ) : (
             <div className="bg-white p-4">
               <div className="text-left font-bold text-[15px] mb-6">Omnichannel Payments & Sales Source Report</div>
-
+              
               <div className="flex justify-between items-end text-[12px] font-bold w-full border-b-2 border-black pb-2 mb-2">
                 <div>Date: 28-Aug-2026</div>
                 <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
@@ -133,7 +147,7 @@ export const OmnichannelPaymentsReportTemplate = () => {
                   <tr className="font-bold">
                     <td colSpan={8} className="py-2 px-1 underline text-blue-900">Consolidated Omnichannel View</td>
                   </tr>
-
+                  
                   {reportData.map((group, gIdx) => (
                     <React.Fragment key={gIdx}>
                       <tr className="font-bold">
@@ -164,7 +178,7 @@ export const OmnichannelPaymentsReportTemplate = () => {
                   </tr>
                 </tbody>
               </table>
-
+              
               <div className="text-[10px] font-bold w-full mt-12 border-t border-black pt-2">
                 REP_S_00250
               </div>
