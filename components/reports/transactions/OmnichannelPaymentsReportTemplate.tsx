@@ -21,7 +21,7 @@ export const OmnichannelPaymentsReportTemplate = () => {
       methodType: 'WHATSAPP ORDERS (REPS)', 
       rows: [
         { date: '28-Aug-26', invoice: '103127', client: 'Online Client 3', source: 'Instagram (Rep 1 Page)', channel: 'WhatsApp (70-111222)', provider: 'Whish Money (Link)', auth: 'WH-554', amount: '1,500,000.00' },
-        { date: '28-Aug-26', invoice: '103128', client: 'Online Client 4', source: 'Facebook (Rep 2 Page)', channel: 'WhatsApp (71-333444)', provider: 'Wakilni (COD)', auth: 'AWB-887', amount: '700,000.00' }
+        { date: '28-Aug-26', invoice: '103128', client: 'Online Client 4', source: 'Facebook (Rep 2 Page)', channel: 'WhatsApp (71-333444)', provider: 'Supersonic', auth: 'SUP-AWB-11', amount: '700,000.00' }
       ], 
       total: '2,200,000.00' 
     },
@@ -89,11 +89,12 @@ export const OmnichannelPaymentsReportTemplate = () => {
             {/* Column 3: Payment Providers */}
             <div className="flex flex-col gap-3">
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>All Payment Providers</option>
-                <option>Tap Payments / Paymob</option>
-                <option>Whish Money / OMT</option>
-                <option>Cash on Delivery (Wakilni/Drivers)</option>
-                <option>POS (Visa/Mastercard)</option>
+                <option>All Payment Providers & Couriers</option>
+                <option>Online: Tap Payments / Paymob</option>
+                <option>Fintech: Whish Money / OMT / BOB Finance</option>
+                <option>COD: Supersonic (Primary)</option>
+                <option>COD: Wakilni / Aramex / LibanPost</option>
+                <option>POS: Visa / Mastercard</option>
               </select>
             </div>
 
