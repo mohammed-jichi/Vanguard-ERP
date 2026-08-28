@@ -4,14 +4,14 @@ export const ElectronicJournalTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Predicted Mock Data for an Electronic Journal (Chronological log of all terminal events)
+  // Fully English Mock Data
   const journalData = [
     { time: '08:00:12 AM', eventType: 'SYSTEM', operator: 'Mohammed', terminal: 'POS-01', ref: 'SYS-IN', details: 'Operator Login Successful', amount: '-' },
     { time: '08:05:00 AM', eventType: 'CASH MANAGEMENT', operator: 'Mohammed', terminal: 'POS-01', ref: 'FLOAT', details: 'Starting Cash Float Declared: 5,000,000 LBP', amount: '5,000,000' },
-    { time: '09:15:33 AM', eventType: 'SALE', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104420', details: '1x زيت زيتون بكر ممتاز 1000 مل @ 990,000 | 2x فحم سنديان @ 450,000', amount: '1,890,000' },
+    { time: '09:15:33 AM', eventType: 'SALE', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104420', details: '1x Extra Virgin Olive Oil 1000ml @ 990,000 | 2x Oak Charcoal @ 450,000', amount: '1,890,000' },
     { time: '09:16:01 AM', eventType: 'PAYMENT', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104420', details: 'Tendered: CASH | Change: 110,000', amount: '2,000,000' },
-    { time: '10:30:14 AM', eventType: 'SALE', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104421', details: '3x ورق عنب محشي لبنة @ 350,000', amount: '1,050,000' },
-    { time: '10:32:45 AM', eventType: 'VOID ITEM', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104421', details: 'ITEM VOID: 1x ورق عنب محشي لبنة (Customer Changed Mind)', amount: '(350,000)' },
+    { time: '10:30:14 AM', eventType: 'SALE', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104421', details: '3x Stuffed Vine Leaves with Labneh @ 350,000', amount: '1,050,000' },
+    { time: '10:32:45 AM', eventType: 'VOID ITEM', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104421', details: 'ITEM VOID: 1x Stuffed Vine Leaves with Labneh (Customer Changed Mind)', amount: '(350,000)' },
     { time: '10:35:10 AM', eventType: 'PAYMENT', operator: 'Mohammed', terminal: 'POS-01', ref: 'INV-104421', details: 'Tendered: VISA (Tap Payments) | Auth: 88412', amount: '700,000' },
     { time: '11:45:00 AM', eventType: 'NO SALE', operator: 'Mohammed', terminal: 'POS-01', ref: 'NS-01', details: 'Cash Drawer Opened manually', amount: '-' },
     { time: '12:20:15 PM', eventType: 'DISPATCH RECEIPT', operator: 'Mohammed', terminal: 'POS-01', ref: 'SUP-AWB-109', details: 'COD Received from Supersonic Driver (Ali)', amount: '4,500,000' },
@@ -21,7 +21,7 @@ export const ElectronicJournalTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
       
-      {/* ☢️ CSS Override for absolute visibility (The Nuclear Fix) */}
+      {/* ☢️ CSS Override for absolute visibility */}
       <style dangerouslySetInnerHTML={{__html: `
         .force-black {
           color: #000000 !important;
@@ -42,8 +42,8 @@ export const ElectronicJournalTemplate = () => {
         {/* LEFT SIDE: FILTERS */}
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
           
-          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0 min-w-[200px]">
-            <option>Branch: Zeit w zaytoun ljanoub</option>
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0 min-w-[240px]">
+            <option>Branch: Southern Olive and Oil Products</option>
             <option>Branch: Beirut Warehouse</option>
           </select>
 
@@ -103,7 +103,7 @@ export const ElectronicJournalTemplate = () => {
               
               {/* Report Header */}
               <div className="text-center mb-6 border-b-2 border-black pb-4">
-                <h2 className="font-bold text-[18px] uppercase tracking-wider">منتجات زيت وزيتون الجنوب</h2>
+                <h2 className="font-bold text-[18px] uppercase tracking-wider">Southern Olive and Oil Products (SARL)</h2>
                 <h3 className="font-bold text-[14px] text-slate-700 mt-1">Terminal Electronic Journal</h3>
                 <div className="flex justify-between items-end text-[12px] font-bold w-full mt-4">
                   <div>Printed: 28-Aug-2026</div>
@@ -125,7 +125,7 @@ export const ElectronicJournalTemplate = () => {
                     <th className="py-2 px-2 text-right w-[100px]">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="font-mono text-[11px]"> {/* Monospace font for that receipt/terminal feel */}
+                <tbody className="font-mono text-[11px]"> 
                   {journalData.map((log, index) => (
                     <tr key={index} className="border-b border-slate-200 hover:bg-slate-50">
                       <td className="py-2 px-2 whitespace-nowrap text-slate-600">{log.time}</td>
@@ -144,8 +144,40 @@ export const ElectronicJournalTemplate = () => {
                   ))}
                 </tbody>
               </table>
+
+              {/* FINANCIAL SUMMARY FOOTER */}
+              <div className="w-full mt-6 border-t-2 border-black pt-4 flex flex-col items-end text-[12px]">
+                <div className="w-[350px] bg-slate-50 p-3 rounded border border-slate-200">
+                  <h4 className="font-bold text-center mb-2 border-b border-slate-300 pb-1">Terminal Session Summary</h4>
+                  <div className="flex justify-between mb-1">
+                    <span className="font-bold text-slate-600">Gross Sales:</span>
+                    <span>2,940,000</span>
+                  </div>
+                  <div className="flex justify-between mb-1 text-red-600">
+                    <span className="font-bold">Total Voids:</span>
+                    <span>(350,000)</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="font-bold text-slate-600">Net Sales:</span>
+                    <span className="font-bold">2,590,000</span>
+                  </div>
+                  <div className="flex justify-between mb-1 mt-2">
+                    <span className="font-bold text-slate-600">POS Payments Collected:</span>
+                    <span>2,700,000</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="font-bold text-slate-600">Dispatch COD Received:</span>
+                    <span>4,500,000</span>
+                  </div>
+                  <div className="flex justify-between mt-2 pt-2 border-t border-black font-bold text-[13px]">
+                    <span>Expected Drawer Cash:</span>
+                    <span>12,200,000</span>
+                  </div>
+                </div>
+              </div>
               
-              <div className="text-[10px] font-bold w-full mt-12 border-t border-black pt-2 flex justify-between">
+              {/* Document Reference Footer */}
+              <div className="text-[10px] font-bold w-full mt-6 border-t border-slate-300 pt-2 flex justify-between">
                 <span>REP_EJ_00455</span>
                 <span>END OF JOURNAL</span>
               </div>
@@ -154,7 +186,7 @@ export const ElectronicJournalTemplate = () => {
         </div>
       </div>
 
-      {/* CENTERED GLOBAL FOOTER */}
+      {/* CENTERED GLOBAL FOOTER (Hidden on print) */}
       <div className="w-full mt-auto py-8 flex flex-wrap justify-center items-center gap-3 text-[11px] font-bold text-slate-600 print:hidden">
         <span>© 2026 Vanguard ERP All rights reserved.</span>
         <span className="hidden sm:inline opacity-40">|</span>
