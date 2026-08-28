@@ -113,6 +113,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
@@ -144,12 +145,52 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setIsReportListOpen(false);
   };
 
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 2));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 0.4));
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportCSV = () => {
+    const table = document.querySelector('table');
+    if (!table) {
+      alert('No table data found to export.');
+      return;
+    }
+    
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+      let rowData = [];
+      const cols = rows[i].querySelectorAll('td, th');
+      for (let j = 0; j < cols.length; j++) {
+        let data = (cols[j] as HTMLElement).innerText.replace(/"/g, '""').replace(/\n/g, ' ');
+        rowData.push('"' + data + '"');
+      }
+      csv.push(rowData.join(','));
+    }
+    
+    const csvFile = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const downloadLink = document.createElement('a');
+    downloadLink.download = `Vanguard_Report_${new Date().getTime()}.csv`;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = 'none';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   const handleResetFilters = () => {
     setPeriod('This Month');
     setFromDate('');
     setToDate('');
     setSelectedBranch('All Branches');
     setInvoiceFilter('All Invoices');
+    document.querySelectorAll('.filters-container select').forEach(el => (el as HTMLSelectElement).selectedIndex = 0);
+    document.querySelectorAll('.filters-container input[type="text"]').forEach(el => (el as HTMLInputElement).value = '');
+    document.querySelectorAll('.filters-container input[type="checkbox"]').forEach(el => (el as HTMLInputElement).checked = false);
   };
 
   const showInvoiceFilter = selectedReport
@@ -159,7 +200,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
       {/* 1. CLEAN TOP PAGE HEADER */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 shadow-xs flex items-center justify-between gap-4 w-full">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 shadow-xs flex items-center justify-between gap-4 w-full print:hidden">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
             <span>Sales Reports</span>
@@ -187,7 +228,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         
         {/* LEFT PANEL (REPORT CATEGORIES & ACCORDION MENU) */}
         {isReportListOpen && (
-          <div className="col-span-12 md:col-span-3 bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col transition-all duration-300">
+          <div className="col-span-12 md:col-span-3 bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col transition-all duration-300 print:hidden">
             
             {/* SEARCH HEADER */}
             <div className="p-3 border-b border-slate-100 bg-slate-50/60 relative">
@@ -384,7 +425,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             <div className="w-full space-y-6">
               
               {/* CARD 1: THE FILTERS CARD (TOP) */}
-              <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full">
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full filters-container print:hidden">
                 {/* HEADER AREA */}
                 <div className="flex justify-between items-start p-4 border-b border-slate-100">
                   <div className="flex items-center gap-3">
@@ -714,20 +755,20 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               {/* CARD 2: THE REPORT DATA CARD (BOTTOM) */}
               <div className="bg-white border border-slate-200 rounded-xl shadow-sm min-h-[400px] flex flex-col w-full">
                 {/* HEADER AREA */}
-                <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl">
+                <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl print:hidden">
                   <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
 
                   <div className="flex items-center gap-2">
-                    <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+                    <button onClick={handleZoomIn} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
                       <ZoomIn size={16} />
                     </button>
-                    <button className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+                    <button onClick={handleZoomOut} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
                       <ZoomOut size={16} />
                     </button>
-                    <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                    <button onClick={handlePrint} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
                       <Printer size={15} /> Print Report
                     </button>
-                    <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                    <button onClick={handleExportCSV} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
                       <Download size={15} /> Export Report
                     </button>
                     <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
@@ -737,7 +778,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 </div>
 
                 {/* BODY AREA */}
-                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
+                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
                   {selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
