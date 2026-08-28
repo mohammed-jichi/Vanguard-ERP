@@ -549,24 +549,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    <button
-                      onClick={handleFilterReport}
-                      className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer"
-                    >
-                      Filter Report
-                    </button>
-                    <button
-                      onClick={handleResetFilters}
-                      className="w-32 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white py-2 rounded text-sm block text-center font-medium transition-colors cursor-pointer"
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
+                  {!['Transactions by Salesman', 'Transactions by Employees by Payment', 'Transactions by Customers by Employee', 'Duplicate Invoices', 'Transactions by Customers', 'Transactions by Customers by Groups', 'Transactions by Customers details', 'Transactions by Workstation', 'Transactions by Employees', 'Transactions By Source'].includes(selectedReport || '') && (
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <button
+                        onClick={handleFilterReport}
+                        className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer"
+                      >
+                        Filter Report
+                      </button>
+                      <button
+                        onClick={handleResetFilters}
+                        className="w-32 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white py-2 rounded text-sm block text-center font-medium transition-colors cursor-pointer"
+                      >
+                        Reset Filters
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* INPUTS AREA */}
-                <div className="p-4 flex flex-wrap gap-4 items-center">
+                {!['Transactions by Salesman', 'Transactions by Employees by Payment', 'Transactions by Customers by Employee', 'Duplicate Invoices', 'Transactions by Customers', 'Transactions by Customers by Groups', 'Transactions by Customers details', 'Transactions by Workstation', 'Transactions by Employees', 'Transactions By Source'].includes(selectedReport || '') && (
+                  <div className="p-4 flex flex-wrap gap-4 items-center">
                   <select
                     value={period}
                     onChange={(e) => setPeriod(e.target.value)}
@@ -963,6 +966,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </div>
                   )}
                 </div>
+              )}
               </div>
 
               {/* CARD 2: THE REPORT DATA CARD (BOTTOM) */}
@@ -6258,7 +6262,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 // 1. Transactions By Salesman
 // ==========================================
 export const TransactionsBySalesmanTemplate = () => {
-  const [zoomLevel, setZoomLevel] = useState(1);
   const [currentPage] = useState(1);
   const [totalPages] = useState(9);
 
@@ -6289,16 +6292,7 @@ export const TransactionsBySalesmanTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        {/* Global Toolbar */}
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Salesman</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6352,7 +6346,6 @@ export const TransactionsBySalesmanTemplate = () => {
 export const TransactionsByEmployeesByPaymentTemplate = () => {
   const [uiRealDate, setUiRealDate] = useState(false);
   const [activeRealDate, setActiveRealDate] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setActiveRealDate(uiRealDate);
 
@@ -6382,14 +6375,7 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Employees by Payment</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6430,8 +6416,6 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
 // 3. Transactions by Customers by Employee
 // ==========================================
 export const TransactionsByCustomersByEmployeeTemplate = () => {
-  const [zoomLevel, setZoomLevel] = useState(1);
-
   return (
     <div className="w-full flex flex-col items-center">
       {/* Filters (Transactions by Customers by Employee layout) */}
@@ -6451,14 +6435,7 @@ export const TransactionsByCustomersByEmployeeTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers by Employee</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6507,7 +6484,6 @@ export const TransactionsByCustomersByEmployeeTemplate = () => {
 export const DuplicateInvoicesTemplate = () => {
   const [uiShowRate, setUiShowRate] = useState(false);
   const [activeShowRate, setActiveShowRate] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setActiveShowRate(uiShowRate);
 
@@ -6537,14 +6513,7 @@ export const DuplicateInvoicesTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Duplicate Invoices Report</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6588,8 +6557,6 @@ export const DuplicateInvoicesTemplate = () => {
 // 1. Transactions By Customers
 // ==========================================
 export const TransactionsByCustomersTemplate = () => {
-  const [zoomLevel, setZoomLevel] = useState(1);
-
   return (
     <div className="w-full flex flex-col items-center">
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
@@ -6618,15 +6585,7 @@ export const TransactionsByCustomersTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6716,8 +6675,6 @@ export const TransactionsByCustomersTemplate = () => {
 // 2. Transactions by Customers by Groups
 // ==========================================
 export const TransactionsByCustomersByGroupsTemplate = () => {
-  const [zoomLevel, setZoomLevel] = useState(1);
-
   return (
     <div className="w-full flex flex-col items-center">
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
@@ -6737,15 +6694,7 @@ export const TransactionsByCustomersByGroupsTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers by Groups</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6791,7 +6740,6 @@ export const TransactionsByCustomersByGroupsTemplate = () => {
 export const TransactionsByCustomersDetailsTemplate = () => {
   const [uiSummary, setUiSummary] = useState(true);
   const [activeSummary, setActiveSummary] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setActiveSummary(uiSummary);
 
@@ -6822,15 +6770,7 @@ export const TransactionsByCustomersDetailsTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers Details</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -6904,7 +6844,6 @@ export const TransactionsByCustomersDetailsTemplate = () => {
 export const TransactionsByWorkstationTemplate = () => {
   const [uiRealDate, setUiRealDate] = useState(false);
   const [activeRealDate, setActiveRealDate] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setActiveRealDate(uiRealDate);
 
@@ -6933,15 +6872,7 @@ export const TransactionsByWorkstationTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Workstation</div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
             <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
@@ -6967,7 +6898,6 @@ export const TransactionsByEmployeesTemplate = () => {
   const [uiRealDate, setUiRealDate] = useState(false);
   const [activeGroupedByServer, setActiveGroupedByServer] = useState(false);
   const [activeRealDate, setActiveRealDate] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => {
     setActiveGroupedByServer(uiGroupedByServer);
@@ -7014,15 +6944,7 @@ export const TransactionsByEmployeesTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Employees</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -7193,7 +7115,6 @@ export const TransactionsByEmployeesTemplate = () => {
 export const TransactionsBySourceTemplate = () => {
   const [uiGroupedByDate, setUiGroupedByDate] = useState(true);
   const [activeGroupedByDate, setActiveGroupedByDate] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setActiveGroupedByDate(uiGroupedByDate);
 
@@ -7232,15 +7153,7 @@ export const TransactionsBySourceTemplate = () => {
       </div>
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('open-settings-modal'))} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
-        </div>
-
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+        <div className="report-wrapper transition-transform duration-200 origin-top">
           <div className="text-center font-bold text-[12px] mb-4">Transactions By Source</div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
             <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
