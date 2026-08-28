@@ -33,6 +33,23 @@ export const TimerReportTemplate = () => {
           color: #000000 !important;
           background-color: #ffffff !important;
         }
+        /* Force Matrix Colors */
+        .matrix-total-cell {
+          background-color: #dbeafe !important;
+          font-weight: bold !important;
+        }
+        .matrix-grand-total {
+          background-color: #0056b3 !important;
+          color: #ffffff !important;
+          font-weight: bold !important;
+        }
+        /* Ensure backgrounds render when printing */
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+        }
       `}} />
 
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
@@ -106,28 +123,66 @@ export const TimerReportTemplate = () => {
               </div>
 
               {/* Table */}
-              <table className="w-full border-collapse text-[11.5px]">
+              <table className="w-full border-collapse text-[11px] border border-black">
                 <thead>
-                  <tr className="bg-slate-100 border-y border-black font-bold">
-                    <th className="py-2 px-2 text-left w-[140px]">Time</th>
+                  <tr>
+                    <th className="border border-black p-1 bg-white w-[150px]"></th>
+                    <th className="border border-black p-1 bg-white w-[100px]"></th>
                     {columns.map((col, idx) => (
-                      <th key={idx} className="py-2 px-2 text-right">{col}</th>
+                      <th key={idx} className={`border border-black p-1.5 text-right font-bold ${col === 'Total' ? 'matrix-total-cell' : 'bg-white'}`}>
+                        {col === 'Total' ? 'Total' : `${col} 12:00 AM`}
+                      </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="font-mono text-[11px]">
-                  {rows.map((row, index) => (
-                    <tr key={index} className="border-b border-slate-200 hover:bg-slate-50">
-                      <td className="py-2 px-2 whitespace-nowrap font-bold text-slate-700">{row.time}</td>
-                      {row.vals.map((v, i) => (
-                        <td key={i} className="py-2 px-2 text-right whitespace-nowrap">{v}</td>
-                      ))}
+                <tbody>
+                  {rows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      {rIdx === 0 ? (
+                        <td rowSpan={rows.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
+                          Southern Olive Oil Products S.A.R.L
+                        </td>
+                      ) : null}
+                      
+                      <td className="border border-black p-1.5 font-bold text-center whitespace-nowrap bg-white">
+                        {row.time}
+                      </td>
+
+                      {row.vals.map((val, vIdx) => {
+                        const isTotalColumn = vIdx === row.vals.length - 1;
+                        return (
+                          <td key={vIdx} className={`border border-black p-1 text-right whitespace-nowrap ${isTotalColumn ? 'matrix-total-cell' : 'bg-white'}`}>
+                            <div className="leading-tight">{val}</div>
+                            <div className="leading-tight">{val}</div>
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
-                  <tr className="font-bold border-t-2 border-black bg-slate-50">
-                    <td className="py-2 px-2 text-left uppercase">Sub Total / Total:</td>
-                    {subTotals.map((tot, idx) => (
-                      <td key={idx} className="py-2 px-2 text-right whitespace-nowrap">{tot}</td>
+
+                  {/* SUBTOTAL ROW */}
+                  <tr>
+                    <td colSpan={2} className="border border-black p-2 font-bold text-center matrix-total-cell">
+                      Total
+                    </td>
+                    {subTotals.map((val, vIdx) => (
+                      <td key={vIdx} className="border border-black p-1 text-right matrix-total-cell">
+                        <div className="leading-tight">{val}</div>
+                        <div className="leading-tight">{val}</div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* GRAND TOTAL ROW */}
+                  <tr>
+                    <td colSpan={2} className="border border-black p-2 font-bold text-center matrix-grand-total">
+                      Total
+                    </td>
+                    {subTotals.map((val, vIdx) => (
+                      <td key={vIdx} className="border border-black p-1 text-right matrix-grand-total">
+                        <div className="leading-tight">{val}</div>
+                        <div className="leading-tight">{val}</div>
+                      </td>
                     ))}
                   </tr>
                 </tbody>
