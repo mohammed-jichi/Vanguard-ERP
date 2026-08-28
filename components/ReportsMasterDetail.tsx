@@ -33,6 +33,7 @@ import { CreditSalesTemplate } from './reports/transactions/CreditSalesTemplate'
 import { OmnichannelPaymentsReportTemplate } from './reports/transactions/OmnichannelPaymentsReportTemplate';
 import { ElectronicJournalTemplate } from './reports/transactions/ElectronicJournalTemplate';
 import { TimerReportTemplate } from './reports/transactions/TimerReportTemplate';
+import { TimeReportByDateTemplate } from './reports/transactions/TimeReportByDateTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -985,7 +986,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <OmnichannelPaymentsReportTemplate />
                   ) : selectedReport === 'Electronic Journal' || selectedReport === 'Electronic journal' || selectedReport === 'Terminal Electronic Journal' ? (
                     <ElectronicJournalTemplate />
-                  ) : selectedReport === 'Timer Report Group by transaction count' || selectedReport === 'Time report by date' || selectedReport === 'Time report - Average Check' || selectedReport === 'Time report By EOD date' || selectedReport === 'Transaction Report by Time' ? (
+                  ) : selectedReport === 'Time report by date' ? (
+                    <TimeReportByDateTemplate />
+                  ) : selectedReport === 'Timer Report Group by transaction count' || selectedReport === 'Time report - Average Check' || selectedReport === 'Time report By EOD date' || selectedReport === 'Transaction Report by Time' ? (
                     <TimerReportTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
