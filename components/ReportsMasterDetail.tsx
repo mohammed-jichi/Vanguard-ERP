@@ -636,6 +636,23 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-4 items-center mt-2">
                     </div>
                   )}
+
+                  {selectedReport === 'Comparative Yearly Sales' && (
+                    <div className="flex gap-16 mt-2 w-full">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                          <option>All Branches</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[12px] font-bold text-slate-700">Year</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                          <option>All Years</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -663,7 +680,96 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Daily Sales' ? (
+                  {selectedReport === 'Comparative Yearly Sales' ? (
+                    /* COMPARATIVE YEARLY SALES REPORT TEMPLATE */
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Comparative Yearly Sales
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                        <div>28-Aug-26</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Main Table Header */}
+                      <div className="border-t border-b border-black py-0.5 mb-1">
+                        <div className="grid grid-cols-[4fr_2fr_3fr] text-[11px] font-bold text-black w-full">
+                          <div>Branch Name</div>
+                          <div className="text-right">Year</div>
+                          <div className="text-right">Total Amount</div>
+                        </div>
+                      </div>
+
+                      {/* Data Section */}
+                      <div className="text-[11px] leading-tight w-full">
+                        {/* Branch 1 */}
+                        <div className="font-bold my-1">Southern Olive Oil S.A.R.L</div>
+                        
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-0.5 font-normal">
+                          <div></div>
+                          <div className="text-right">2024</div>
+                          <div className="text-right">450,230,000.00</div>
+                        </div>
+
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-0.5 font-normal">
+                          <div></div>
+                          <div className="text-right">2025</div>
+                          <div className="text-right">1,280,950,000.00</div>
+                        </div>
+
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-0.5 font-normal">
+                          <div></div>
+                          <div className="text-right">2026</div>
+                          <div className="text-right">1,637,716,600.00</div>
+                        </div>
+
+                        {/* Branch 1 Subtotal */}
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-1 font-bold border-t border-slate-200 mt-0.5">
+                          <div>Total for Southern Olive Oil S.A.R.L:</div>
+                          <div></div>
+                          <div className="text-right">3,368,896,600.00</div>
+                        </div>
+
+                        {/* Branch 2 */}
+                        <div className="font-bold mt-4 mb-1">Beirut Central Branch</div>
+
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-0.5 font-normal">
+                          <div></div>
+                          <div className="text-right">2026</div>
+                          <div className="text-right">1,637,716,600.00</div>
+                        </div>
+
+                        {/* Branch 2 Subtotal */}
+                        <div className="grid grid-cols-[4fr_2fr_3fr] w-full py-1 font-bold border-t border-slate-200 mt-0.5">
+                          <div>Total for Beirut Central Branch:</div>
+                          <div></div>
+                          <div className="text-right">1,637,716,600.00</div>
+                        </div>
+
+                        {/* Grand Total */}
+                        <div className="border-t border-b border-black py-0.5 grid grid-cols-[4fr_2fr_3fr] font-bold w-full mt-4 mb-12">
+                          <div>Grand Total:</div>
+                          <div></div>
+                          <div className="text-right">5,006,613,200.00</div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00334</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Daily Sales' ? (
                     /* DAILY SALES REPORT TEMPLATE (WITH BLUE TOTAL COLUMN AND GRIDLINES) */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
