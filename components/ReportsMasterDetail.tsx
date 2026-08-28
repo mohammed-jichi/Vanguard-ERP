@@ -7683,6 +7683,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
   
   // Controls table visibility
   const [isFiltered, setIsFiltered] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => {
     setActiveShowZeroTax(uiShowZeroTax);
@@ -7704,7 +7705,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* 1. FILTERS BLOCK - MUST BE OUTSIDE CONDITIONAL RENDERING */}
+      {/* 1. FILTERS BLOCK - ALWAYS VISIBLE */}
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
@@ -7715,9 +7716,9 @@ export const TransactionsByInvoiceNumberTemplate = () => {
                 className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" 
                 defaultValue="Transactions by Invoice Number"
                 onChange={(e) => {
-                   if ((window as any).setSelectedReport) {
-                     (window as any).setSelectedReport(e.target.value);
-                   }
+                  if ((window as any).setSelectedReport) {
+                    (window as any).setSelectedReport(e.target.value);
+                  }
                 }}
               >
                 <option>Transactions by Salesman</option>
@@ -7773,15 +7774,22 @@ export const TransactionsByInvoiceNumberTemplate = () => {
         </div>
       </div>
 
-      {/* 2. REPORT BODY */}
+      {/* 2. REPORT BODY - CONDITIONAL */}
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+        
+        <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
+          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➕</button>
+          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➖</button>
+          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Print Report</button>
+          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Export Report</button>
+          <button onClick={() => (window as any).setIsSettingsOpen && (window as any).setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2">⚙️</button>
+        </div>
+
+        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
-          {/* Always visible headers */}
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Invoice Number</div>
           
-          {/* Conditional Rendering logic strictly wraps the TABLE, not the filters */}
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
                <div className="text-[40px] mb-2 opacity-30">📊</div>
