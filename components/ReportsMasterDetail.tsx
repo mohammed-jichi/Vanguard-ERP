@@ -201,43 +201,51 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     <div className="w-full space-y-6 font-sans dir-ltr">
       <style>{`
         @media print {
-          /* 1. Force the browser to automatically scale content to fit the paper */
+          /* 1. Maximize paper usage */
           @page {
             size: auto; 
-            margin: 10mm;
+            margin: 5mm; 
           }
 
-          /* 2. Strip ALL scrollbars globally during print */
+          /* 2. DESTROY all hardcoded screen widths and scrollbars during print */
           * {
+            min-width: 0 !important;
             overflow: visible !important;
           }
-
+          
           ::-webkit-scrollbar {
             display: none !important;
           }
 
-          /* 3. Force table wrappers to expand so the browser scales them naturally */
-          .overflow-x-auto, .overflow-y-auto, .overflow-auto {
-            overflow: visible !important;
-            max-width: none !important;
-            width: 100% !important;
-          }
-
-          /* 4. Ensure the table doesn't get cut off by flex containers */
-          table {
-            page-break-inside: auto;
+          /* 3. Force tables and wrappers to perfectly fit the paper width */
+          .report-wrapper, table {
             width: 100% !important;
             max-width: 100% !important;
+            table-layout: auto !important;
           }
 
-          tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
+          /* 4. Micro-typography for print: Shrink text so wide tables fit without wrapping */
+          table th, table td {
+            font-size: 8px !important; 
+            padding: 2px 4px !important;
+            line-height: 1.2 !important;
           }
 
-          /* 5. Hide the settings modal or any open popups if print is triggered */
-          .fixed.inset-0.z-50, .fixed.inset-0.z-\\[60\\] {
+          /* 5. Hide ALL system UI, Modals, and Global App Footers */
+          .fixed.inset-0, 
+          header, 
+          nav, 
+          aside, 
+          .sidebar, 
+          .global-footer, 
+          #app-footer {
             display: none !important;
+          }
+
+          /* 6. Ensure the specific Vanguard Report footer prints correctly */
+          .report-footer {
+            display: flex !important;
+            page-break-inside: avoid;
           }
         }
       `}</style>
@@ -820,7 +828,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 </div>
 
                 {/* BODY AREA */}
-                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
+                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top report-wrapper" style={{ transform: `scale(${zoomLevel})` }}>
                   {selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
@@ -955,11 +963,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* VANGUARD PRINT FOOTER WITH CLICKABLE LINK */}
                       <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full min-w-[1000px]"></div>
-                      <div className="flex justify-between items-center text-[10px] font-bold w-full min-w-[1000px]">
+                      <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full min-w-[1000px]">
                         <div className="text-black">REP_S_00134</div>
                         <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-[#195a96] text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
                         </div>
                       </div>
                     </div>
