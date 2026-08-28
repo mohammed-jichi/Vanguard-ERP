@@ -114,6 +114,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [showRate, setShowRate] = useState<boolean>(true);
+  const [groupByDate, setGroupByDate] = useState<boolean>(true);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
@@ -817,6 +819,108 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   )}
+
+                  {selectedReport === 'Transactions by Date' && (
+                    <div className="w-full flex flex-col gap-3 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                        {/* Row 1 */}
+                        <div className="lg:col-span-3">
+                          <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full md:w-[350px] bg-white">
+                            <option>Transactions by Date</option>
+                            <option>Transactions by Salesman</option>
+                            <option>Transactions by Employees by Payment</option>
+                            <option>Transactions by Customers by Employee</option>
+                            <option>Transactions by Invoice Number</option>
+                            <option>Duplicate Invoices</option>
+                            <option>Transactions by Date by Payments</option>
+                            <option>Transactions by Customers</option>
+                            <option>Transactions by Customers by Groups</option>
+                            <option>Transactions by Customers details</option>
+                            <option>Transactions by Workstation</option>
+                            <option>Transactions by Employees</option>
+                            <option>Transactions By Source</option>
+                          </select>
+                        </div>
+
+                        {/* Row 2 */}
+                        <select value={period} onChange={(e) => setPeriod(e.target.value)} className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                          <option>This Month</option>
+                          <option>Today</option>
+                          <option>Yesterday</option>
+                          <option>Last Month</option>
+                          <option>1st Quarter</option>
+                          <option>2nd Quarter</option>
+                          <option>3rd Quarter</option>
+                          <option>4th Quarter</option>
+                          <option>This Year</option>
+                          <option>Last Year</option>
+                          <option>Date Range</option>
+                          <option>EOD Date</option>
+                        </select>
+                        <input type="text" defaultValue="Aug, 2026" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white" />
+                        <div className="flex flex-col gap-1 w-full">
+                          <label className="text-[11px] font-bold text-slate-700">Select Department</label>
+                          <div className="flex items-center gap-2 border border-slate-300 rounded p-1 min-h-[34px] bg-white">
+                            <span className="bg-gray-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">Local</span>
+                            <span className="bg-gray-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">International</span>
+                            <span className="text-slate-400 text-xs ml-auto">▼</span>
+                          </div>
+                        </div>
+
+                        {/* Row 3 */}
+                        <select value={selectedBranch} onChange={(e) => setSelectedBranch(e.target.value)} className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                          <option>All Branches</option>
+                          <option>Southern Olive Oil S.A.R.L</option>
+                        </select>
+                        <select value={invoiceFilter} onChange={(e) => setInvoiceFilter(e.target.value)} className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                          <option>All Invoices</option>
+                          <option>Inventory Invoices</option>
+                          <option>POS Invoices</option>
+                          <option>Training Invoices</option>
+                        </select>
+                        <div className="hidden lg:block"></div>
+
+                        {/* Row 4 */}
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                          <option>All Payment Types</option>
+                          <option>CASH</option>
+                          <option>CREDIT</option>
+                          <option>CASH USD</option>
+                          <option>CREDIT CARD</option>
+                          <option>CREDIT CARD USD</option>
+                        </select>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                          <option>Show Top 10 Invoices By Amount</option>
+                          <option>Filters</option>
+                          <option>Show Refund</option>
+                          <option>Show Zero Invoices</option>
+                          <option>Show Discount</option>
+                          <option>Show Zero Tax</option>
+                        </select>
+                        
+                        <div className="flex items-center gap-6 mt-2 lg:mt-0">
+                          <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={showRate} 
+                              onChange={() => setShowRate(!showRate)} 
+                              className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
+                            />
+                            Show Rate
+                          </label>
+                          <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={groupByDate} 
+                              onChange={() => setGroupByDate(!groupByDate)} 
+                              className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
+                            />
+                            Group By Date
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -847,7 +951,93 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top report-wrapper" style={{ transform: `scale(${zoomLevel})` }}>
-                  {selectedReport === 'Comparative Monthly Sales by Employee' ? (
+                  {selectedReport === 'Transactions by Date' ? (
+                    /* TRANSACTIONS BY DATE REPORT TEMPLATE */
+                    <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Transactions by Date
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold w-full min-w-[1000px] mb-1">
+                        <div>28-Aug-2026</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                        <div>Page 1 of 14</div>
+                      </div>
+
+                      {/* Table Container - Strict whitespace-nowrap */}
+                      <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
+                        <table className="w-full min-w-[1000px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+                          <thead>
+                            <tr className="font-bold text-black border-b border-black">
+                              <th className="py-1 px-1 text-left">Date</th>
+                              <th className="py-1 px-1 text-left">Time</th>
+                              <th className="py-1 px-1 text-left">Invoice #</th>
+                              <th className="py-1 px-1 text-left">Cust_ID</th>
+                              <th className="py-1 px-1 text-left">Customer Name</th>
+                              <th className="py-1 px-1 text-right">Order #</th>
+                              <th className="py-1 px-1 text-right">Print#</th>
+                              <th className="py-1 px-1 text-right">SubTotal</th>
+                              <th className="py-1 px-1 text-right">Discount</th>
+                              <th className="py-1 px-1 text-right">Tax</th>
+                              <th className="py-1 px-1 text-left pl-2">Pay Type</th>
+                              <th className="py-1 px-1 text-right">Total</th>
+                              
+                              {/* Dynamic Columns based on Checkbox */}
+                              {showRate && <th className="py-1 px-1 text-center">Currency</th>}
+                              {showRate && <th className="py-1 px-1 text-right">Rate</th>}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="font-bold">
+                              <td colSpan={showRate ? 14 : 12} className="py-1 px-1">Branch : Southern Olive Oil S.A.R.L</td>
+                            </tr>
+                            {[
+                              { date: '22-Aug-2026', time: '09:35', invoice: '4000034', custId: '33', customer: 'Colonel Mahmoud Abboud Colonel Abboud', order: '', print: '', subTotal: '248,400,000.00', discount: '0.00', tax: '0.00', payType: 'CASH USD', total: '248,400,000.00', currency: 'USD', rate: '90,000.00' },
+                              { date: '01-Aug-2026', time: '16:03', invoice: '102986', custId: '', customer: '', order: '1', print: '', subTotal: '90,000,000.00', discount: '13,500,000.00', tax: '0.00', payType: 'CASH', total: '76,500,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '03-Aug-2026', time: '15:08', invoice: '103002', custId: '', customer: '', order: '2', print: '', subTotal: '48,600,000.00', discount: '900,000.00', tax: '0.00', payType: 'CASH', total: '47,700,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '05-Aug-2026', time: '14:03', invoice: '103024', custId: '', customer: '', order: '2', print: '', subTotal: '45,000,000.00', discount: '0.00', tax: '0.00', payType: 'CASH', total: '45,000,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '10-Aug-2026', time: '17:48', invoice: '103080', custId: '', customer: '', order: '2', print: '', subTotal: '45,000,000.00', discount: '4,500,000.00', tax: '0.00', payType: 'CASH', total: '40,500,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '19-Aug-2026', time: '14:35', invoice: '103184', custId: '', customer: '', order: '2', print: '', subTotal: '36,000,000.00', discount: '3,600,000.00', tax: '0.00', payType: 'CASH', total: '32,400,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '03-Aug-2026', time: '15:22', invoice: '103003', custId: '', customer: '', order: '2', print: '', subTotal: '31,500,000.00', discount: '0.00', tax: '0.00', payType: 'CASH', total: '31,500,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '13-Aug-2026', time: '11:45', invoice: '103113', custId: '', customer: '', order: '2', print: '', subTotal: '27,000,000.00', discount: '0.00', tax: '0.00', payType: 'CASH', total: '27,000,000.00', currency: 'LBP', rate: '90,000.00' },
+                              { date: '27-Aug-2026', time: '18:33', invoice: '103287', custId: '', customer: '', order: '2', print: '', subTotal: '27,000,000.00', discount: '4,050,000.00', tax: '0.00', payType: 'CASH', total: '22,950,000.00', currency: 'LBP', rate: '90,000.00' }
+                            ].map((row, idx) => (
+                              <tr key={idx} className="font-normal hover:bg-slate-50">
+                                <td className="py-1 px-1">{row.date}</td>
+                                <td className="py-1 px-1">{row.time}</td>
+                                <td className="py-1 px-1">{row.invoice}</td>
+                                <td className="py-1 px-1">{row.custId}</td>
+                                <td className="py-1 px-1">{row.customer}</td>
+                                <td className="py-1 px-1 text-right">{row.order}</td>
+                                <td className="py-1 px-1 text-right">{row.print}</td>
+                                <td className="py-1 px-1 text-right">{row.subTotal}</td>
+                                <td className="py-1 px-1 text-right">{row.discount}</td>
+                                <td className="py-1 px-1 text-right">{row.tax}</td>
+                                <td className="py-1 px-1 text-left pl-2">{row.payType}</td>
+                                <td className="py-1 px-1 text-right">{row.total}</td>
+                                
+                                {showRate && <td className="py-1 px-1 text-center">{row.currency}</td>}
+                                {showRate && <td className="py-1 px-1 text-right">{row.rate}</td>}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Vanguard Standard Footer */}
+                      <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full mt-12 border-t border-black pt-1 min-w-[1000px]">
+                        <div className="text-black">REP_S_00247</div>
+                        <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
                       
