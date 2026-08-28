@@ -199,19 +199,6 @@ export const TimerReportTemplate = () => {
         </div>
       </div>
 
-      {/* CENTERED GLOBAL FOOTER (Hidden on print) */}
-      <div className="w-full mt-auto py-8 flex flex-wrap justify-center items-center gap-3 text-[11px] font-bold text-slate-600 print:hidden">
-        <span>© 2026 Vanguard ERP All rights reserved.</span>
-        <span className="hidden sm:inline opacity-40">|</span>
-        <a href="#" className="hover:text-blue-700 transition-colors">Privacy Policy</a>
-        <span className="hidden sm:inline opacity-40">|</span>
-        <a href="#" className="hover:text-blue-700 transition-colors">Terms and Conditions</a>
-        <span className="hidden sm:inline opacity-40">|</span>
-        <a href="#" className="hover:text-blue-700 transition-colors">Support</a>
-        <span className="hidden sm:inline opacity-40">|</span>
-        <a href="#" className="hover:text-blue-700 transition-colors">Feedback</a>
-      </div>
-
     </div>
   );
 };
