@@ -631,6 +631,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </label>
                     </div>
                   )}
+
+                  {selectedReport === 'Daily Sales' && (
+                    <div className="flex gap-4 items-center mt-2">
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -658,7 +663,608 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Sales summary by day' ? (
+                  {selectedReport === 'Daily Sales' ? (
+                    /* DAILY SALES REPORT TEMPLATE (WITH BLUE TOTAL COLUMN AND GRIDLINES) */
+                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-4">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Daily Sales
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-2 w-full">
+                        <div>28-Aug-26</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                        <div>Page 1 of 2</div>
+                      </div>
+
+                      {/* Main Table Grid with Borders & Light Blue Total Column */}
+                      <div className="w-full border border-black text-[11px]">
+                        {/* Table Header */}
+                        <div className="flex w-full font-bold text-black border-b border-black bg-slate-100">
+                          <div className="w-[20%] p-1.5 border-r border-black">Date / Branch</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-center">Beirut Central Branch</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-center">Choueifat Press Branch</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-center">Jbaa Hub</div>
+                          <div className="w-[20%] p-1.5 text-center bg-[#dbeafe]">Total</div>
+                        </div>
+
+                        {/* Data Rows with Double-Stacked Values */}
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Saturday 01 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>157,490,000.00</div>
+                            <div className="text-slate-600 text-[10px]">2,280,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>157,490,000.00</div>
+                            <div className="text-slate-700 text-[10px]">2,280,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Sunday 02 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>11,520,000.00</div>
+                            <div className="text-slate-600 text-[10px]">1,450,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>11,520,000.00</div>
+                            <div className="text-slate-700 text-[10px]">1,450,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Monday 03 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>102,455,000.00</div>
+                            <div className="text-slate-600 text-[10px]">3,120,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>102,455,000.00</div>
+                            <div className="text-slate-700 text-[10px]">3,120,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Tuesday 04 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>44,089,500.00</div>
+                            <div className="text-slate-600 text-[10px]">1,890,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>44,089,500.00</div>
+                            <div className="text-slate-700 text-[10px]">1,890,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Wednesday 05 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>119,597,000.00</div>
+                            <div className="text-slate-600 text-[10px]">4,250,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>119,597,000.00</div>
+                            <div className="text-slate-700 text-[10px]">4,250,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Thursday 06 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>29,942,600.00</div>
+                            <div className="text-slate-600 text-[10px]">2,780,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>29,942,600.00</div>
+                            <div className="text-slate-700 text-[10px]">2,780,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Friday 07 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>23,835,000.00</div>
+                            <div className="text-slate-600 text-[10px]">5,600,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>23,835,000.00</div>
+                            <div className="text-slate-700 text-[10px]">5,600,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Saturday 08 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>73,787,500.00</div>
+                            <div className="text-slate-600 text-[10px]">3,410,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>73,787,500.00</div>
+                            <div className="text-slate-700 text-[10px]">3,410,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Monday 10 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>84,784,000.00</div>
+                            <div className="text-slate-600 text-[10px]">9,000,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>84,784,000.00</div>
+                            <div className="text-slate-700 text-[10px]">9,000,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Tuesday 11 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>31,143,000.00</div>
+                            <div className="text-slate-600 text-[10px]">4,120,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>31,143,000.00</div>
+                            <div className="text-slate-700 text-[10px]">4,120,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Wednesday 12 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>27,168,000.00</div>
+                            <div className="text-slate-600 text-[10px]">2,670,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>27,168,000.00</div>
+                            <div className="text-slate-700 text-[10px]">2,670,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Thursday 13 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>44,536,200.00</div>
+                            <div className="text-slate-600 text-[10px]">6,890,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>44,536,200.00</div>
+                            <div className="text-slate-700 text-[10px]">6,890,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Friday 14 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>41,485,000.00</div>
+                            <div className="text-slate-600 text-[10px]">3,540,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>41,485,000.00</div>
+                            <div className="text-slate-700 text-[10px]">3,540,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Saturday 15 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>19,116,000.00</div>
+                            <div className="text-slate-600 text-[10px]">8,120,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>19,116,000.00</div>
+                            <div className="text-slate-700 text-[10px]">8,120,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Sunday 16 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>36,294,000.00</div>
+                            <div className="text-slate-600 text-[10px]">2,340,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>36,294,000.00</div>
+                            <div className="text-slate-700 text-[10px]">2,340,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Monday 17 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>50,099,550.00</div>
+                            <div className="text-slate-600 text-[10px]">5,180,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>50,099,550.00</div>
+                            <div className="text-slate-700 text-[10px]">5,180,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Tuesday 18 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>53,415,000.00</div>
+                            <div className="text-slate-600 text-[10px]">3,890,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>53,415,000.00</div>
+                            <div className="text-slate-700 text-[10px]">3,890,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Wednesday 19 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>92,846,250.00</div>
+                            <div className="text-slate-600 text-[10px]">4,760,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>92,846,250.00</div>
+                            <div className="text-slate-700 text-[10px]">4,760,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Thursday 20 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>36,345,000.00</div>
+                            <div className="text-slate-600 text-[10px]">7,230,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>36,345,000.00</div>
+                            <div className="text-slate-700 text-[10px]">7,230,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Friday 21 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>48,766,500.00</div>
+                            <div className="text-slate-600 text-[10px]">2,980,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>48,766,500.00</div>
+                            <div className="text-slate-700 text-[10px]">2,980,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Saturday 22 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>277,330,000.00</div>
+                            <div className="text-slate-600 text-[10px]">6,120,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>277,330,000.00</div>
+                            <div className="text-slate-700 text-[10px]">6,120,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Sunday 23 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>21,100,000.00</div>
+                            <div className="text-slate-600 text-[10px]">3,450,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>21,100,000.00</div>
+                            <div className="text-slate-700 text-[10px]">3,450,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Monday 24 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>20,605,000.00</div>
+                            <div className="text-slate-600 text-[10px]">5,890,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>20,605,000.00</div>
+                            <div className="text-slate-700 text-[10px]">5,890,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Tuesday 25 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>63,301,500.00</div>
+                            <div className="text-slate-600 text-[10px]">4,320,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>63,301,500.00</div>
+                            <div className="text-slate-700 text-[10px]">4,320,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Wednesday 26 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>61,970,000.00</div>
+                            <div className="text-slate-600 text-[10px]">8,950,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>61,970,000.00</div>
+                            <div className="text-slate-700 text-[10px]">8,950,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Thursday 27 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>64,695,000.00</div>
+                            <div className="text-slate-600 text-[10px]">6,430,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>64,695,000.00</div>
+                            <div className="text-slate-700 text-[10px]">6,430,000.00</div>
+                          </div>
+                        </div>
+
+                        <div className="flex w-full border-b border-black font-normal">
+                          <div className="w-[20%] p-1.5 border-r border-black font-bold">Friday 28 08 2026</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-600 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                            <div>0.00</div>
+                            <div className="text-slate-700 text-[10px]">0.00</div>
+                          </div>
+                        </div>
+
+                        {/* Grand Totals Row */}
+                        <div className="flex w-full font-bold bg-slate-100">
+                          <div className="w-[20%] p-1.5 border-r border-black">Total:</div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>1,637,716,600.00</div>
+                            <div className="text-slate-700 text-[10px]">120,590,000.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-700 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 border-r border-black text-right">
+                            <div>0.00</div>
+                            <div className="text-slate-700 text-[10px]">0.00</div>
+                          </div>
+                          <div className="w-[20%] p-1.5 text-right bg-[#bfdbfe]">
+                            <div>1,637,716,600.00</div>
+                            <div className="text-slate-900 text-[10px]">120,590,000.00</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-8 w-full"></div>
+                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
+                        <div className="text-black text-left">REP_S_00042</div>
+                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Sales summary by day' ? (
                     /* SALES SUMMARY BY DAY REPORT TEMPLATE (FAILSAFE 9-COLUMN FLEXBOX) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
