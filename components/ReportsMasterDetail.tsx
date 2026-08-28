@@ -659,8 +659,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Sales summary by day' ? (
-                    /* SALES SUMMARY BY DAY REPORT TEMPLATE */
-                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
+                    /* SALES SUMMARY BY DAY REPORT TEMPLATE (FAILSAFE 9-COLUMN FLEXBOX) */
+                    <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-4">
@@ -668,290 +668,394 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
-                        Sales summary by day
+                        Daily sales summary
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-2026</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>28-Aug-26</div>
+                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
                         <div>Page 1 of 2</div>
                       </div>
 
-                      {/* Main Table Header */}
-                      <div className="border-t border-b border-black py-0.5 mb-1">
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] text-[11px] font-bold text-black w-full">
-                          <div>Date</div>
-                          <div className="text-right">Subtotal</div>
-                          <div className="text-right">Net Amount</div>
-                          <div className="text-right">Total Cost</div>
-                          <div className="text-right">Gross Profit</div>
-                          <div className="text-right">% Gross Profit Margin</div>
-                        </div>
+                      {/* Main Table Header (Strict Flexbox, 9 Columns) */}
+                      <div className="flex w-full border-t border-b border-black py-0.5 mb-1 text-[11px] font-bold text-black">
+                        <div className="w-[16%]">Date</div>
+                        <div className="w-[12%] text-right">Sub Total</div>
+                        <div className="w-[12%] text-right">Discount</div>
+                        <div className="w-[8.8%] text-right">Tax 1</div>
+                        <div className="w-[8.8%] text-right">Tax 2</div>
+                        <div className="w-[8.8%] text-right">Tax 3</div>
+                        <div className="w-[8.8%] text-right">Tax 4</div>
+                        <div className="w-[8.8%] text-right">Tax 5</div>
+                        <div className="w-[16%] text-right">Total</div>
                       </div>
 
                       {/* Data Section */}
-                      <div className="text-[11px] font-normal leading-tight w-full">
-                        <div className="font-bold mb-1">Branch Name: Southern Olive Oil S.A.R.L</div>
+                      <div className="text-[11px] leading-tight w-full">
+                        <div className="font-bold underline mb-0.5">Southern Olive Oil S.A.R.L</div>
+
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Saturday 01 08 2026</div>
+                          <div className="w-[12%] text-right">171,890,000.</div>
+                          <div className="w-[12%] text-right">14,400,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">157,490,000.000</div>
+                        </div>
                         
-                        {/* Daily Sales Rows Merged across Pages 1 & 2 */}
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>01/08/2026</div>
-                          <div className="text-right">2,280,000.00</div>
-                          <div className="text-right">2,280,000.00</div>
-                          <div className="text-right">1,750,000.00</div>
-                          <div className="text-right">530,000.00</div>
-                          <div className="text-right">23.25</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Sunday 02 08 2026</div>
+                          <div className="w-[12%] text-right">11,520,000.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">11,520,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>02/08/2026</div>
-                          <div className="text-right">1,450,000.00</div>
-                          <div className="text-right">1,450,000.00</div>
-                          <div className="text-right">1,020,000.00</div>
-                          <div className="text-right">430,000.00</div>
-                          <div className="text-right">29.66</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Monday 03 08 2026</div>
+                          <div className="w-[12%] text-right">103,355,000.</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">102,455,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>03/08/2026</div>
-                          <div className="text-right">3,120,000.00</div>
-                          <div className="text-right">3,120,000.00</div>
-                          <div className="text-right">2,180,000.00</div>
-                          <div className="text-right">940,000.00</div>
-                          <div className="text-right">30.13</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Tuesday 04 08 2026</div>
+                          <div className="w-[12%] text-right">44,989,500.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">44,089,500.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>04/08/2026</div>
-                          <div className="text-right">1,890,000.00</div>
-                          <div className="text-right">1,890,000.00</div>
-                          <div className="text-right">1,310,000.00</div>
-                          <div className="text-right">580,000.00</div>
-                          <div className="text-right">30.69</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Wednesday 05 08<br/>2026</div>
+                          <div className="w-[12%] text-right">124,097,000.</div>
+                          <div className="w-[12%] text-right">4,500,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">119,597,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>05/08/2026</div>
-                          <div className="text-right">4,250,000.00</div>
-                          <div className="text-right">4,250,000.00</div>
-                          <div className="text-right">2,950,000.00</div>
-                          <div className="text-right">1,300,000.00</div>
-                          <div className="text-right">30.59</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Thursday 06 08 2026</div>
+                          <div className="w-[12%] text-right">30,842,600.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">29,942,600.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>06/08/2026</div>
-                          <div className="text-right">2,780,000.00</div>
-                          <div className="text-right">2,780,000.00</div>
-                          <div className="text-right">1,920,000.00</div>
-                          <div className="text-right">860,000.00</div>
-                          <div className="text-right">30.94</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Friday 07 08 2026</div>
+                          <div className="w-[12%] text-right">23,835,000.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">23,835,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>07/08/2026</div>
-                          <div className="text-right">5,600,000.00</div>
-                          <div className="text-right">5,600,000.00</div>
-                          <div className="text-right">3,890,000.00</div>
-                          <div className="text-right">1,710,000.00</div>
-                          <div className="text-right">30.54</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Saturday 08 08 2026</div>
+                          <div className="w-[12%] text-right">77,877,500.0</div>
+                          <div className="w-[12%] text-right">4,090,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">73,787,500.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>08/08/2026</div>
-                          <div className="text-right">3,410,000.00</div>
-                          <div className="text-right">3,410,000.00</div>
-                          <div className="text-right">2,350,000.00</div>
-                          <div className="text-right">1,060,000.00</div>
-                          <div className="text-right">31.09</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Monday 10 08 2026</div>
+                          <div className="w-[12%] text-right">90,184,000.0</div>
+                          <div className="w-[12%] text-right">5,400,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">84,784,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>09/08/2026</div>
-                          <div className="text-right">1,950,000.00</div>
-                          <div className="text-right">1,950,000.00</div>
-                          <div className="text-right">1,340,000.00</div>
-                          <div className="text-right">610,000.00</div>
-                          <div className="text-right">31.28</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Tuesday 11 08 2026</div>
+                          <div className="w-[12%] text-right">32,043,000.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">31,143,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>10/08/2026</div>
-                          <div className="text-right">9,000,000.00</div>
-                          <div className="text-right">8,100,000.00</div>
-                          <div className="text-right">5,395,230.00</div>
-                          <div className="text-right">2,704,770.00</div>
-                          <div className="text-right">33.39</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Wednesday 12 08<br/>2026</div>
+                          <div className="w-[12%] text-right">28,068,000.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">27,168,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>11/08/2026</div>
-                          <div className="text-right">4,120,000.00</div>
-                          <div className="text-right">4,120,000.00</div>
-                          <div className="text-right">2,840,000.00</div>
-                          <div className="text-right">1,280,000.00</div>
-                          <div className="text-right">31.07</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Thursday 13 08 2026</div>
+                          <div className="w-[12%] text-right">44,536,200.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">44,536,200.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>12/08/2026</div>
-                          <div className="text-right">2,670,000.00</div>
-                          <div className="text-right">2,670,000.00</div>
-                          <div className="text-right">1,830,000.00</div>
-                          <div className="text-right">840,000.00</div>
-                          <div className="text-right">31.46</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Friday 14 08 2026</div>
+                          <div className="w-[12%] text-right">45,235,000.0</div>
+                          <div className="w-[12%] text-right">3,750,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">41,485,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>13/08/2026</div>
-                          <div className="text-right">6,890,000.00</div>
-                          <div className="text-right">6,890,000.00</div>
-                          <div className="text-right">4,760,000.00</div>
-                          <div className="text-right">2,130,000.00</div>
-                          <div className="text-right">30.91</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Saturday 15 08 2026</div>
+                          <div className="w-[12%] text-right">19,116,000.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">19,116,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>14/08/2026</div>
-                          <div className="text-right">3,540,000.00</div>
-                          <div className="text-right">3,540,000.00</div>
-                          <div className="text-right">2,430,000.00</div>
-                          <div className="text-right">1,110,000.00</div>
-                          <div className="text-right">31.36</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Sunday 16 08 2026</div>
+                          <div className="w-[12%] text-right">37,194,000.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">36,294,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>15/08/2026</div>
-                          <div className="text-right">8,120,000.00</div>
-                          <div className="text-right">8,120,000.00</div>
-                          <div className="text-right">5,610,000.00</div>
-                          <div className="text-right">2,510,000.00</div>
-                          <div className="text-right">30.91</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Monday 17 08 2026</div>
+                          <div className="w-[12%] text-right">50,550,000.0</div>
+                          <div className="w-[12%] text-right">450,450.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">50,099,550.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>16/08/2026</div>
-                          <div className="text-right">2,340,000.00</div>
-                          <div className="text-right">2,340,000.00</div>
-                          <div className="text-right">1,610,000.00</div>
-                          <div className="text-right">730,000.00</div>
-                          <div className="text-right">31.20</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Tuesday 18 08 2026</div>
+                          <div className="w-[12%] text-right">59,715,000.0</div>
+                          <div className="w-[12%] text-right">6,300,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">53,415,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>17/08/2026</div>
-                          <div className="text-right">5,180,000.00</div>
-                          <div className="text-right">5,180,000.00</div>
-                          <div className="text-right">3,570,000.00</div>
-                          <div className="text-right">1,610,000.00</div>
-                          <div className="text-right">31.08</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Wednesday 19 08<br/>2026</div>
+                          <div className="w-[12%] text-right">98,246,250.0</div>
+                          <div className="w-[12%] text-right">5,400,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">92,846,250.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>18/08/2026</div>
-                          <div className="text-right">3,890,000.00</div>
-                          <div className="text-right">3,890,000.00</div>
-                          <div className="text-right">2,680,000.00</div>
-                          <div className="text-right">1,210,000.00</div>
-                          <div className="text-right">31.11</div>
+                        <div className="flex w-full font-normal mb-1">
+                          <div className="w-[16%]">Thursday 20 08 2026</div>
+                          <div className="w-[12%] text-right">36,345,000.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">36,345,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>19/08/2026</div>
-                          <div className="text-right">4,760,000.00</div>
-                          <div className="text-right">4,760,000.00</div>
-                          <div className="text-right">3,280,000.00</div>
-                          <div className="text-right">1,480,000.00</div>
-                          <div className="text-right">31.09</div>
+                        {/* PAGE 2 HEADER */}
+                        <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full mt-8">
+                          <div>28-Aug-26</div>
+                          <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                          <div>Page 2 of 2</div>
+                        </div>
+                        
+                        <div className="flex w-full border-t border-b border-black py-0.5 mb-1 mt-1 text-[11px] font-bold text-black">
+                          <div className="w-[16%]">Date</div>
+                          <div className="w-[12%] text-right">Sub Total</div>
+                          <div className="w-[12%] text-right">Discount</div>
+                          <div className="w-[8.8%] text-right">Tax 1</div>
+                          <div className="w-[8.8%] text-right">Tax 2</div>
+                          <div className="w-[8.8%] text-right">Tax 3</div>
+                          <div className="w-[8.8%] text-right">Tax 4</div>
+                          <div className="w-[8.8%] text-right">Tax 5</div>
+                          <div className="w-[16%] text-right">Total</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>20/08/2026</div>
-                          <div className="text-right">7,230,000.00</div>
-                          <div className="text-right">7,230,000.00</div>
-                          <div className="text-right">4,990,000.00</div>
-                          <div className="text-right">2,240,000.00</div>
-                          <div className="text-right">30.98</div>
+                        {/* Page 2 Data */}
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Friday 21 08 2026</div>
+                          <div className="w-[12%] text-right">49,756,500.0</div>
+                          <div className="w-[12%] text-right">990,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">48,766,500.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>21/08/2026</div>
-                          <div className="text-right">2,980,000.00</div>
-                          <div className="text-right">2,980,000.00</div>
-                          <div className="text-right">2,050,000.00</div>
-                          <div className="text-right">930,000.00</div>
-                          <div className="text-right">31.21</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Saturday 22 08 2026</div>
+                          <div className="w-[12%] text-right">278,230,000.</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">277,330,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>22/08/2026</div>
-                          <div className="text-right">6,120,000.00</div>
-                          <div className="text-right">6,120,000.00</div>
-                          <div className="text-right">4,220,000.00</div>
-                          <div className="text-right">1,900,000.00</div>
-                          <div className="text-right">31.05</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Sunday 23 08 2026</div>
+                          <div className="w-[12%] text-right">21,100,000.0</div>
+                          <div className="w-[12%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">21,100,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>23/08/2026</div>
-                          <div className="text-right">3,450,000.00</div>
-                          <div className="text-right">3,450,000.00</div>
-                          <div className="text-right">2,380,000.00</div>
-                          <div className="text-right">1,070,000.00</div>
-                          <div className="text-right">31.01</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Monday 24 08 2026</div>
+                          <div className="w-[12%] text-right">21,505,000.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">20,605,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>24/08/2026</div>
-                          <div className="text-right">5,890,000.00</div>
-                          <div className="text-right">5,890,000.00</div>
-                          <div className="text-right">4,060,000.00</div>
-                          <div className="text-right">1,830,000.00</div>
-                          <div className="text-right">31.07</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Tuesday 25 08 2026</div>
+                          <div className="w-[12%] text-right">64,201,500.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">63,301,500.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>25/08/2026</div>
-                          <div className="text-right">4,320,000.00</div>
-                          <div className="text-right">4,320,000.00</div>
-                          <div className="text-right">2,980,000.00</div>
-                          <div className="text-right">1,340,000.00</div>
-                          <div className="text-right">31.02</div>
+                        <div className="flex w-full font-normal">
+                          <div className="w-[16%]">Wednesday 26 08<br/>2026</div>
+                          <div className="w-[12%] text-right">62,870,000.0</div>
+                          <div className="w-[12%] text-right">900,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">61,970,000.000</div>
                         </div>
 
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5">
-                          <div>26/08/2026</div>
-                          <div className="text-right">8,950,000.00</div>
-                          <div className="text-right">8,950,000.00</div>
-                          <div className="text-right">6,170,000.00</div>
-                          <div className="text-right">2,780,000.00</div>
-                          <div className="text-right">31.06</div>
-                        </div>
-
-                        <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] w-full py-0.5 mb-1">
-                          <div>27/08/2026</div>
-                          <div className="text-right">6,430,000.00</div>
-                          <div className="text-right">6,430,000.00</div>
-                          <div className="text-right">4,430,000.00</div>
-                          <div className="text-right">2,000,000.00</div>
-                          <div className="text-right">31.10</div>
+                        <div className="flex w-full font-normal mb-1">
+                          <div className="w-[16%]">Thursday 27 08 2026</div>
+                          <div className="w-[12%] text-right">68,745,000.0</div>
+                          <div className="w-[12%] text-right">4,050,000.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">64,695,000.000</div>
                         </div>
 
                         {/* Grand Totals */}
-                        <div className="border-t border-b border-black py-0.5 grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_1.5fr_1.5fr] font-bold w-full mt-1 mb-8">
-                          <div>Total By Branch:</div>
-                          <div className="text-right">120,590,000.00</div>
-                          <div className="text-right">119,690,000.00</div>
-                          <div className="text-right">82,625,230.00</div>
-                          <div className="text-right">37,064,770.00</div>
-                          <div className="text-right">30.97</div>
+                        <div className="flex w-full font-bold">
+                          <div className="w-[16%]">Total Branch:</div>
+                          <div className="w-[12%] text-right">1,696,047,05</div>
+                          <div className="w-[12%] text-right">58,330,450.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">1,637,716,600.000</div>
+                        </div>
+                        
+                        <div className="flex w-full font-bold mb-12">
+                          <div className="w-[16%]">Total:</div>
+                          <div className="w-[12%] text-right">1,696,047,05</div>
+                          <div className="w-[12%] text-right">58,330,450.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[8.8%] text-right">0.000</div>
+                          <div className="w-[16%] text-right">1,637,716,600.000</div>
                         </div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
                       <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
+                        <div className="text-black text-left">REP_S_00193</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-blue-700 text-right">www.vanguarderp.com</div>
                       </div>
