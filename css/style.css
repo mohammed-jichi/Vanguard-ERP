@@ -3321,3 +3321,28 @@ input[type="date"]::-webkit-datetime-edit-year-field {
   color: #ffffff !important;
   opacity: 1 !important;
 }
+
+/* Global Standard for all Report Filters & Inputs (Phase 222) */
+.filters-container select,
+.filters-container input,
+.filters-container input[type="text"],
+.filters-container input[type="date"] {
+  color: #0f172a !important; /* text-slate-900 */
+  background-color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  opacity: 1 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.filters-container select option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.filters-container select:focus,
+.filters-container input:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+}

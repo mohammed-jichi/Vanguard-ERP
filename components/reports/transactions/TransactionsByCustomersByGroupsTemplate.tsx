@@ -7,7 +7,7 @@ export const TransactionsByCustomersByGroupsTemplate = () => {
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
             <select 
-              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               defaultValue="Transactions by Customers by Groups"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -29,10 +29,10 @@ export const TransactionsByCustomersByGroupsTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full"><option>This Month</option></select>
-            <input type="text" defaultValue="Aug, 2026" className="w-full" />
-            <select className="w-full"><option>All Branches</option></select>
-            <select className="w-full"><option>All Invoices</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>This Month</option></select>
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>All Branches</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>All Invoices</option></select>
           </div>
           <div className="flex flex-col gap-2 min-w-[150px]">
             <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>

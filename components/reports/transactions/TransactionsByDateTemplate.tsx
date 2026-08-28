@@ -69,7 +69,7 @@ export const TransactionsByDateTemplate = () => {
             <option>Transactions By Source</option>
           </select>
 
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>This Month</option>
             <option>Today</option>
             <option>Yesterday</option>
@@ -87,15 +87,15 @@ export const TransactionsByDateTemplate = () => {
           <input 
             type="text" 
             defaultValue="Aug, 2026" 
-            className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-24 shadow-2xs" 
+            className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-24 shadow-2xs" 
           />
 
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>Southern Olive Oil S.A.R.L</option>
             <option>All Branches</option>
           </select>
 
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>All Invoices</option>
             <option>Inventory Invoices</option>
             <option>POS Invoices</option>

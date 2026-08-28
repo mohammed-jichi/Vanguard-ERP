@@ -34,7 +34,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
         {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
         <div className="flex flex-wrap items-center gap-2 flex-1">
           <select 
-            className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs" 
+            className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs" 
             defaultValue="Transactions by Invoice Number"
             onChange={(e) => {
               if ((window as any).setSelectedReport) {
@@ -58,24 +58,24 @@ export const TransactionsByInvoiceNumberTemplate = () => {
           </select>
           
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-slate-600">From:</span>
+            <span className="text-[11px] font-bold text-slate-700">From:</span>
             <input 
               type="text" 
               defaultValue="103070" 
-              className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-20 shadow-2xs" 
+              className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-20 shadow-2xs" 
             />
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[11px] font-bold text-slate-600">To:</span>
+            <span className="text-[11px] font-bold text-slate-700">To:</span>
             <input 
               type="text" 
               defaultValue="103080" 
-              className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-20 shadow-2xs" 
+              className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-20 shadow-2xs" 
             />
           </div>
 
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>All Branches</option>
             <option>Southern Olive Oil S.A.R.L</option>
           </select>

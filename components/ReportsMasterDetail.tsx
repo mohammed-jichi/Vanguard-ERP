@@ -315,23 +315,35 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           }
         }
 
-        /* Standardize all filter inputs, selects, and textareas across Vanguard */
+        /* Standardize all filter inputs, selects, and textareas across Vanguard (Phase 222 Global Anti-Ghosting) */
         .filters-container select, 
-        .filters-container input[type="text"] {
+        .filters-container input[type="text"],
+        .filters-container input[type="date"],
+        .filters-container input {
           background-color: #ffffff !important;
           border: 1px solid #cbd5e1 !important; /* slate-300 */
-          color: #334155 !important; /* slate-700 */
+          color: #0f172a !important; /* slate-900 */
           font-size: 13px !important;
+          font-weight: 500 !important;
           padding: 6px 8px !important;
           border-radius: 4px !important;
           opacity: 1 !important;
           box-shadow: none !important;
         }
         
+        .filters-container select option {
+          color: #0f172a !important;
+          background-color: #ffffff !important;
+          font-weight: 500 !important;
+        }
+
         .filters-container select:focus, 
-        .filters-container input[type="text"]:focus {
+        .filters-container input[type="text"]:focus,
+        .filters-container input[type="date"]:focus,
+        .filters-container input:focus {
           border-color: #3b82f6 !important; /* blue-500 */
           outline: none !important;
+          box-shadow: 0 0 0 1px #3b82f6 !important;
         }
 
         /* Hide the redundant/ghost empty filter rows dynamically injected by error */
@@ -818,13 +830,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-16 mt-2 w-full">
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
                           <option>All Branches</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
                           <option>All Years</option>
                         </select>
                       </div>
@@ -835,13 +847,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-16 mt-2 w-full">
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
                           <option>All Branches</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-[250px] bg-white">
                           <option>2026</option>
                           <option>2025</option>
                           <option>All Years</option>
@@ -854,14 +866,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="flex gap-4 mt-2 w-full">
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
                           <option>All Branches</option>
                           <option>Southern Olive Oil S.A.R.L</option>
                         </select>
                       </div>
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
                           <option>2026</option>
                           <option>2025</option>
                           <option>All Years</option>
@@ -869,7 +881,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       <div className="flex flex-col gap-2 w-1/3">
                         <label className="text-[12px] font-bold text-slate-700">Employee</label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white w-full">
                           <option>All Employees</option>
                           <option>Cashier N2</option>
                           <option>Cashier NK</option>

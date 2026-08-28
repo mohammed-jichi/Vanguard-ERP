@@ -13,7 +13,7 @@ export const DuplicateInvoicesTemplate = () => {
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
             <select 
-              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               defaultValue="Duplicate Invoices"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -35,10 +35,10 @@ export const DuplicateInvoicesTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full"><option>This Month</option></select>
-            <input type="text" defaultValue="Aug, 2026" className="w-full" />
-            <select className="w-full"><option>All Branches</option></select>
-            <select className="w-full"><option>All Invoices</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>This Month</option></select>
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>All Branches</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>All Invoices</option></select>
             <div className="flex items-center gap-2 mt-2">
               <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                 <input type="checkbox" checked={uiShowRate} onChange={(e) => setUiShowRate(e.target.checked)} className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" />

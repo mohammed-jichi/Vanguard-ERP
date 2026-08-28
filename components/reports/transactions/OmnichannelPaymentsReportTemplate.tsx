@@ -45,7 +45,7 @@ export const OmnichannelPaymentsReportTemplate = () => {
       <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-4 gap-3 print:hidden w-full max-w-[1400px]">
         {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
         <div className="flex flex-wrap items-center gap-2 flex-1">
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>Today</option>
             <option>Yesterday</option>
             <option>This Month</option>
@@ -62,23 +62,23 @@ export const OmnichannelPaymentsReportTemplate = () => {
           <input 
             type="text" 
             defaultValue="Aug 2026" 
-            className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium w-24 shadow-2xs" 
+            className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-24 shadow-2xs" 
           />
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>All Traffic Sources</option>
             <option>Facebook Ads</option>
             <option>Instagram</option>
             <option>TikTok</option>
             <option>Direct Walk-in</option>
           </select>
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>All Sales Channels</option>
             <option>Landing Page Checkout</option>
             <option>WhatsApp (All Reps)</option>
             <option>WhatsApp - Rep 1 (70-111222)</option>
             <option>WhatsApp - Rep 2 (71-333444)</option>
           </select>
-          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium shadow-2xs">
+          <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
             <option>All Payment Providers & Couriers</option>
             <option>Online: Tap Payments / Paymob</option>
             <option>Fintech: Whish Money / OMT / BOB Finance</option>

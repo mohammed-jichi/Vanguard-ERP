@@ -16,7 +16,7 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
             
             {/* FULL 13-ITEM DROPDOWN */}
             <select 
-              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
               defaultValue="Transactions by Employees by Payment"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -39,7 +39,7 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
               <option>Transactions By Source</option>
             </select>
 
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 bg-white">
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
               <option>This Month</option>
               <option>Today</option>
               <option>Yesterday</option>
@@ -54,13 +54,13 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
               <option>EOD Date</option>
             </select>
             
-            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 bg-white" />
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 bg-white">
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
               <option>All Branches</option>
             </select>
             
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 bg-white">
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
               <option>All Invoices</option>
               <option>Inventory Invoices</option>
               <option>POS Invoices</option>

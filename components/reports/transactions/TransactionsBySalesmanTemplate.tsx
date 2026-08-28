@@ -19,7 +19,7 @@ export const TransactionsBySalesmanTemplate = () => {
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
             <select 
-              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               defaultValue="Transactions by Salesman"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -41,9 +41,9 @@ export const TransactionsBySalesmanTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full"><option>This Month</option></select>
-            <input type="text" defaultValue="Aug, 2026" className="w-full" />
-            <select className="w-full"><option>All Branches</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>This Month</option></select>
+            <input type="text" defaultValue="Aug, 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>All Branches</option></select>
           </div>
           <div className="flex flex-col gap-2 min-w-[150px]">
             <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
@@ -58,42 +58,72 @@ export const TransactionsBySalesmanTemplate = () => {
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Salesman</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
             <div>28-Aug-2026</div>
-            <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+            <div>From Date: 01-Aug-2026 To Date: 28-Aug-2026</div>
             <div>Page {currentPage} of {totalPages}</div>
           </div>
+
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
             <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
               <thead>
                 <tr className="font-bold text-black border-b border-black">
-                  <th className="py-1 px-1 text-left">Invoice Number</th>
+                  <th className="py-1 px-1 text-left">Invoice #</th>
                   <th className="py-1 px-1 text-left">Date</th>
                   <th className="py-1 px-1 text-right">Amount</th>
                   <th className="py-1 px-1 text-right">Discount</th>
                   <th className="py-1 px-1 text-right">Tax</th>
-                  <th className="py-1 px-1 text-right">Total Price</th>
+                  <th className="py-1 px-1 text-right">Total</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={6} className="py-1 px-1">Branch: Southern Olive Oil S.A.R.L</td></tr>
-                <tr className="font-bold"><td colSpan={6} className="py-1 px-1">Employee: Hiba Aloulou</td></tr>
+                <tr className="font-bold">
+                  <td colSpan={6} className="py-1 px-1">Branch: Southern Olive Oil S.A.R.L</td>
+                </tr>
+                <tr className="font-bold">
+                  <td colSpan={6} className="py-1 px-1 pl-4">Salesman: Nour Yazbeck</td>
+                </tr>
                 {reportData.map((row, idx) => (
                   <tr key={idx} className="font-normal hover:bg-slate-50">
-                    <td className="py-1 px-1 text-left">{row.invoice}</td>
-                    <td className="py-1 px-1 text-left">{row.date}</td>
+                    <td className="py-1 px-1">{row.invoice}</td>
+                    <td className="py-1 px-1">{row.date}</td>
                     <td className="py-1 px-1 text-right">{row.amount}</td>
                     <td className="py-1 px-1 text-right">{row.discount}</td>
                     <td className="py-1 px-1 text-right">{row.tax}</td>
                     <td className="py-1 px-1 text-right">{row.total}</td>
                   </tr>
                 ))}
+                <tr className="font-bold border-t border-black">
+                  <td colSpan={2} className="py-1 px-1 text-right">Salesman Total:</td>
+                  <td className="py-1 px-1 text-right">12,285,000.00</td>
+                  <td className="py-1 px-1 text-right">900,000.00</td>
+                  <td className="py-1 px-1 text-right">0.00</td>
+                  <td className="py-1 px-1 text-right">11,385,000.00</td>
+                </tr>
+                <tr className="font-bold border-t border-black">
+                  <td colSpan={2} className="py-1 px-1 text-right">Branch Total:</td>
+                  <td className="py-1 px-1 text-right">12,285,000.00</td>
+                  <td className="py-1 px-1 text-right">900,000.00</td>
+                  <td className="py-1 px-1 text-right">0.00</td>
+                  <td className="py-1 px-1 text-right">11,385,000.00</td>
+                </tr>
+                <tr className="font-bold border-t border-double border-black">
+                  <td colSpan={2} className="py-1 px-1 text-right">Grand Total:</td>
+                  <td className="py-1 px-1 text-right">12,285,000.00</td>
+                  <td className="py-1 px-1 text-right">900,000.00</td>
+                  <td className="py-1 px-1 text-right">0.00</td>
+                  <td className="py-1 px-1 text-right">11,385,000.00</td>
+                </tr>
               </tbody>
             </table>
           </div>
+
           <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full mt-12 border-t border-black pt-1">
-            <div className="text-black">REP_S_00134</div>
+            <div className="text-black">REP_S_00247</div>
             <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-            <div className="text-right"><a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a></div>
+            <div className="text-right">
+              <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
