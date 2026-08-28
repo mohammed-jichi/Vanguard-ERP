@@ -62,7 +62,8 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             <input 
               type="text" 
               defaultValue="103070" 
-              className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm w-20" 
+              className="w-20 border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
             />
           </div>
 
@@ -71,7 +72,8 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             <input 
               type="text" 
               defaultValue="103080" 
-              className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm w-20" 
+              className="w-20 border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
             />
           </div>
 
