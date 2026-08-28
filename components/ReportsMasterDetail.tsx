@@ -458,7 +458,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <option className="!text-slate-900 bg-white">Jbaa Hub</option>
                   </select>
 
-                  {showInvoiceFilter && (
+                  {showInvoiceFilter && !['Profit by category summary', 'Profit by category by department', 'Profit by item summary', 'Profit by Invoices Summary', 'Profit By Invoices'].includes(selectedReport || '') && (
                     <select
                       value={invoiceFilter}
                       onChange={(e) => setInvoiceFilter(e.target.value)}
@@ -558,52 +558,32 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   )}
 
                   {selectedReport === 'Customer Payments' && (
-                    <div className="flex flex-col gap-2 w-full mt-2">
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
-                        Grouped By Server
-                      </label>
-                    </div>
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
+                      Grouped By Server
+                    </label>
                   )}
 
                   {selectedReport === 'Profit by Invoices Summary' && (
-                    <div className="flex flex-col gap-2 w-full mt-2">
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
-                          <option>All Branches</option>
-                        </select>
-                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]" defaultValue="103070" />
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-700">Invoice #:</span>
+                      <input type="text" className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" defaultValue="103070" />
                     </div>
                   )}
 
                   {selectedReport === 'Profit by item summary' && (
-                    <div className="flex flex-col gap-3 w-full mt-2">
-                      {/* Row 1 */}
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>This Month</option>
-                        </select>
-                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]" defaultValue="Aug, 2026" />
-                      </div>
-                      {/* Row 2 */}
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Branches</option>
-                        </select>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Groups</option>
-                          <option>حبوب فلت</option>
-                          <option>زيت زيتون خضير مفرق</option>
-                        </select>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Categories</option>
-                          <option>Raw Materials</option>
-                          <option>جملة</option>
-                        </select>
-                      </div>
-                      {/* Row 3 */}
-                      <div className="flex gap-16 items-center mt-1">
+                    <>
+                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
+                        <option>All Groups</option>
+                        <option>حبوب فلت</option>
+                        <option>زيت زيتون خضير مفرق</option>
+                      </select>
+                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
+                        <option>All Categories</option>
+                        <option>Raw Materials</option>
+                        <option>جملة</option>
+                      </select>
+                      <div className="w-full flex flex-wrap gap-6 items-center mt-1">
                         <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                           <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
                           Use Unit Cost
@@ -612,73 +592,34 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
                           Group by supplier by location
                         </label>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Invoices</option>
-                        </select>
                       </div>
-                    </div>
+                    </>
                   )}
 
                   {selectedReport === 'Profit by category summary' && (
-                    <div className="flex flex-col gap-3 w-full mt-2">
-                      {/* Row 1 */}
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>This Month</option>
-                        </select>
-                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]" defaultValue="Aug, 2026" />
-                      </div>
-                      {/* Row 2 */}
-                      <div className="flex gap-4 items-center mt-1">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Branches</option>
-                        </select>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px]">
-                          <option>All Categories</option>
-                        </select>
-                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer ml-4">
-                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                          Use Unit Cost
-                        </label>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedReport === 'Profit by category by department' && (
-                    <div className="flex flex-col gap-3 w-full mt-2">
-                      {/* Row 1 */}
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
-                          <option>This Month</option>
-                        </select>
-                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]" defaultValue="Aug, 2026" />
-                      </div>
-                      {/* Row 2 */}
-                      <div className="flex gap-4 items-center mt-1">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px]">
-                          <option>All Branches</option>
-                        </select>
+                    <>
+                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
+                        <option>All Categories</option>
+                        <option>Raw Materials</option>
+                        <option>جملة</option>
+                        <option>عروض</option>
+                        <option>مفرق</option>
+                      </select>
+                      <div className="w-full flex items-center gap-4 mt-1">
                         <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                           <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
                           Use Unit Cost
                         </label>
                       </div>
-                    </div>
+                    </>
                   )}
 
-                  {selectedReport === 'Profit By Invoices' && (
-                    <div className="flex flex-col gap-2 w-full mt-2">
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]">
-                          <option>This Month</option>
-                        </select>
-                        <input type="text" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]" defaultValue="Aug, 2026" />
-                      </div>
-                      <div className="flex gap-4 mt-1">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[300px]">
-                          <option>All Branches</option>
-                        </select>
-                      </div>
+                  {selectedReport === 'Profit by category by department' && (
+                    <div className="w-full flex items-center gap-4 mt-1">
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                        Use Unit Cost
+                      </label>
                     </div>
                   )}
                 </div>
