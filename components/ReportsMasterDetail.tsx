@@ -168,22 +168,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activeGroupByDate, setActiveGroupByDate] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
-    "Recently Viewed": true,
-    "Internal Control": true,
-    "Financial": true,
-    "Product Sales": true,
-    "Customer Sales": true,
-    "Today's & History": true,
-    "Time & Attendance": true,
-    "Lists": true
-  });
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    "Statistics": true,
-    "Product Sales": true,
-    "Payments": true,
-    "Today's Sales": true
-  });
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (catName: string) => {
     setExpandedCategories(prev => ({ ...prev, [catName]: !prev[catName] }));
