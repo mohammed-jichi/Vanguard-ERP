@@ -114,8 +114,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [showRate, setShowRate] = useState<boolean>(false);
-  const [groupByDate, setGroupByDate] = useState<boolean>(true);
+  const [uiShowRate, setUiShowRate] = useState<boolean>(false);
+  const [uiGroupByDate, setUiGroupByDate] = useState<boolean>(true);
+  const [activeShowRate, setActiveShowRate] = useState<boolean>(false);
+  const [activeGroupByDate, setActiveGroupByDate] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
@@ -185,12 +187,21 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     document.body.removeChild(downloadLink);
   };
 
+  const handleFilterReport = () => {
+    setActiveShowRate(uiShowRate);
+    setActiveGroupByDate(uiGroupByDate);
+  };
+
   const handleResetFilters = () => {
     setPeriod('This Month');
     setFromDate('');
     setToDate('');
     setSelectedBranch('All Branches');
     setInvoiceFilter('All Invoices');
+    setUiShowRate(false);
+    setUiGroupByDate(false);
+    setActiveShowRate(false);
+    setActiveGroupByDate(false);
     document.querySelectorAll('.filters-container select').forEach(el => (el as HTMLSelectElement).selectedIndex = 0);
     document.querySelectorAll('.filters-container input[type="text"]').forEach(el => (el as HTMLInputElement).value = '');
     document.querySelectorAll('.filters-container input[type="checkbox"]').forEach(el => (el as HTMLInputElement).checked = false);
@@ -539,7 +550,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   </div>
 
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    <button className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer">
+                    <button
+                      onClick={handleFilterReport}
+                      className="w-32 bg-[#475569] hover:bg-[#334155] text-white py-2 rounded text-sm font-medium block text-center transition-colors cursor-pointer"
+                    >
                       Filter Report
                     </button>
                     <button
@@ -929,8 +943,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                             <input 
                               type="checkbox" 
-                              checked={showRate} 
-                              onChange={(e) => setShowRate(e.target.checked)} 
+                              checked={uiShowRate} 
+                              onChange={(e) => setUiShowRate(e.target.checked)} 
                               className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
                             />
                             Show Rate
@@ -938,8 +952,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                             <input 
                               type="checkbox" 
-                              checked={groupByDate} 
-                              onChange={(e) => setGroupByDate(e.target.checked)} 
+                              checked={uiGroupByDate} 
+                              onChange={(e) => setUiGroupByDate(e.target.checked)} 
                               className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
                             />
                             Group By Date
@@ -1013,14 +1027,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <th className="py-1 px-1 text-left pl-2">Pay Type</th>
                               <th className="py-1 px-1 text-right">Total</th>
                               
-                              {/* Dynamic Columns based on Checkbox */}
-                              {showRate && <th className="py-1 px-1 text-center">Currency</th>}
-                              {showRate && <th className="py-1 px-1 text-right">Rate</th>}
+                              {/* Dynamic Columns driven by ACTIVE state, not UI state */}
+                              {activeShowRate && <th className="py-1 px-1 text-center">Currency</th>}
+                              {activeShowRate && <th className="py-1 px-1 text-right">Rate</th>}
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="font-bold">
-                              <td colSpan={showRate ? 14 : 12} className="py-1 px-1">Branch : Southern Olive Oil S.A.R.L</td>
+                              <td colSpan={activeShowRate ? 14 : 12} className="py-1 px-1">Branch : Southern Olive Oil S.A.R.L</td>
                             </tr>
                             {[
                               { date: '22-Aug-2026', time: '09:35', invoice: '4000034', custId: '33', customer: 'Colonel Mahmoud Abboud Colonel Abboud', order: '', print: '', subTotal: '248,400,000.00', discount: '0.00', tax: '0.00', payType: 'CASH USD', total: '248,400,000.00', currency: 'USD', rate: '90,000.00' },
@@ -1047,8 +1061,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                 <td className="py-1 px-1 text-left pl-2">{row.payType}</td>
                                 <td className="py-1 px-1 text-right">{row.total}</td>
                                 
-                                {showRate && <td className="py-1 px-1 text-center">{row.currency}</td>}
-                                {showRate && <td className="py-1 px-1 text-right">{row.rate}</td>}
+                                {activeShowRate && <td className="py-1 px-1 text-center">{row.currency}</td>}
+                                {activeShowRate && <td className="py-1 px-1 text-right">{row.rate}</td>}
                               </tr>
                             ))}
                           </tbody>
