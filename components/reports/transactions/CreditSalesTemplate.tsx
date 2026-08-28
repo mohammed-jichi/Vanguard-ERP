@@ -10,13 +10,28 @@ export const CreditSalesTemplate = () => {
   const handleReset = () => setIsFiltered(false);
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center bg-white min-h-screen">
       
-      {/* SINGLE COMPACT FILTER & ACTION BAR */}
-      <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-2.5 mb-4 gap-3 print:hidden w-full max-w-[1400px]">
-        {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
-        <div className="flex flex-wrap items-center gap-2 flex-1">
-          <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
+      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .force-black {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+          opacity: 1 !important;
+          -webkit-text-fill-color: #000000 !important; 
+          font-weight: 700 !important;
+        }
+        .force-black option {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+        }
+      `}} />
+
+      {/* 1. COMPACT FILTER & ACTION TOOLBAR */}
+      <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
+        {/* Left side: Filters */}
+        <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>Today</option>
             <option>Yesterday</option>
             <option>This Month</option>
@@ -33,24 +48,24 @@ export const CreditSalesTemplate = () => {
           <input 
             type="text" 
             defaultValue="2025" 
-            className="w-24 border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-            style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
+            className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" 
           />
-          <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
+          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
             <option>Zeit w zaytoun ljanoub</option>
             <option>All Branches</option>
           </select>
 
-          <div className="flex items-center gap-1.5">
+          {/* Grouped Buttons */}
+          <div className="flex items-center gap-2 whitespace-nowrap">
             <button 
               onClick={handleFilter} 
-              className="px-3 py-1.5 bg-[#475569] text-white rounded text-xs font-bold hover:bg-slate-700 transition-colors cursor-pointer"
+              className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 transition-colors shadow-sm text-[13px] whitespace-nowrap"
             >
               Filter
             </button>
             <button 
               onClick={handleReset} 
-              className="px-3 py-1.5 bg-[#5e3b3b] text-white rounded text-xs font-bold hover:bg-red-900 transition-colors cursor-pointer"
+              className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 transition-colors shadow-sm text-[13px] whitespace-nowrap"
             >
               Reset
             </button>
@@ -58,31 +73,31 @@ export const CreditSalesTemplate = () => {
         </div>
 
         {/* Right side: Action Toolbar */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button 
             onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
-            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 shadow-sm" 
             title="Zoom In"
           >
-            <ZoomIn size={15} />
+            <ZoomIn size={16} />
           </button>
           <button 
             onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} 
-            className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" 
+            className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 shadow-sm" 
             title="Zoom Out"
           >
-            <ZoomOut size={15} />
+            <ZoomOut size={16} />
           </button>
           <button 
             onClick={() => window.print()} 
-            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+            className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-slate-800"
           >
-            <Printer size={14} /> Print
+            <Printer size={15} /> Print
           </button>
           <button 
-            className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+            className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-slate-800"
           >
-            <Download size={14} /> Export
+            <Download size={15} /> Export
           </button>
         </div>
       </div>

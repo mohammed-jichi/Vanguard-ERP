@@ -13,13 +13,29 @@ export const TransactionsBySalesmanTemplate = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center bg-white min-h-screen">
+      
+      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .force-black {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+          opacity: 1 !important;
+          -webkit-text-fill-color: #000000 !important; 
+          font-weight: 700 !important;
+        }
+        .force-black option {
+          color: #000000 !important;
+          background-color: #ffffff !important;
+        }
+      `}} />
+
       {/* Filters (Transactions by Salesman layout) */}
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
             <select 
-              className="w-full lg:col-span-2 border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
+              className="force-black w-full lg:col-span-2 border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm cursor-pointer"
               defaultValue="Transactions by Salesman"
               onChange={(e) => {
                  if ((window as any).setSelectedReport) {
@@ -41,7 +57,7 @@ export const TransactionsBySalesmanTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
+            <select className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm cursor-pointer">
               <option>Today</option>
               <option>Yesterday</option>
               <option>This Month</option>
@@ -58,10 +74,9 @@ export const TransactionsBySalesmanTemplate = () => {
             <input 
               type="text" 
               defaultValue="Aug, 2026" 
-              className="w-full border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
+              className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm text-center" 
             />
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
+            <select className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
           </div>
           <div className="flex flex-col gap-2 min-w-[150px]">
             <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
