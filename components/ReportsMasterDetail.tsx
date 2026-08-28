@@ -7411,19 +7411,24 @@ export const TransactionsByDateByPaymentsTemplate = () => {
 // Transactions by Date Template
 // ==========================================
 export const TransactionsByDateTemplate = () => {
-  // UI States (Draft)
+  // UI States (Drafts - do not affect report yet)
   const [uiShowRate, setUiShowRate] = useState(false);
-  const [uiGroupByDate, setUiGroupByDate] = useState(true); // Default checked as per image
+  const [uiGroupByDate, setUiGroupByDate] = useState(true);
   
-  // Active States (Applied to table)
+  // Active States (Applied to table after click)
   const [activeShowRate, setActiveShowRate] = useState(false);
   const [activeGroupByDate, setActiveGroupByDate] = useState(false);
   
+  // Core Visibility State (Hides table until filtered)
+  const [isFiltered, setIsFiltered] = useState(false);
+  
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleFilter = () => {
     setActiveShowRate(uiShowRate);
     setActiveGroupByDate(uiGroupByDate);
+    setIsFiltered(true); // <--- Triggers table rendering
   };
 
   const handleReset = () => {
@@ -7431,9 +7436,10 @@ export const TransactionsByDateTemplate = () => {
     setUiGroupByDate(false);
     setActiveShowRate(false);
     setActiveGroupByDate(false);
+    setIsFiltered(false); // <--- Hides table again
   };
 
-  // Sample data to fill the table
+  // Sample data
   const reportData = [
     { date: '01-Aug-2026', time: '10:57', invoice: '102971', custId: '', customer: '', order: '2', print: '', subTotal: '1,260,000.00', discount: '0.00', tax: '0.00', payType: 'CASH', total: '1,260,000.00', currency: 'LBP', rate: '90,000.00' },
     { date: '01-Aug-2026', time: '11:42', invoice: '102972', custId: '', customer: '', order: '2', print: '', subTotal: '1,620,000.00', discount: '0.00', tax: '0.00', payType: 'CASH', total: '1,620,000.00', currency: 'LBP', rate: '90,000.00' },
@@ -7444,19 +7450,11 @@ export const TransactionsByDateTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* CSS to forcefully hide the parent global filters if they are bleeding through */}
-      <style>{`
-        /* Target and hide the generic top filter row if injected by a parent wrapper */
-        .global-default-filters { display: none !important; }
-      `}</style>
-
-      {/* 1. EXACT FILTERS SECTION (Matching image_a73cdc.png) */}
+      {/* EXACT CUSTOM FILTERS SECTION */}
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
-          
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
             
-            {/* Row 1 */}
             <div className="lg:col-span-1">
               <select 
                 className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" 
@@ -7482,10 +7480,9 @@ export const TransactionsByDateTemplate = () => {
                 <option>Transactions By Source</option>
               </select>
             </div>
-            <div className="lg:col-span-1"></div> {/* Empty space */}
-            <div className="lg:col-span-1"></div> {/* Empty space */}
+            <div className="lg:col-span-1"></div>
+            <div className="lg:col-span-1"></div>
 
-            {/* Row 2 */}
             <div className="lg:col-span-1">
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>This Month</option>
@@ -7515,7 +7512,6 @@ export const TransactionsByDateTemplate = () => {
               </select>
             </div>
 
-            {/* Row 3 */}
             <div className="lg:col-span-1">
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>Southern Olive Oil S.A.R.L</option>
@@ -7541,7 +7537,6 @@ export const TransactionsByDateTemplate = () => {
               </label>
             </div>
 
-            {/* Row 4 */}
             <div className="lg:col-span-1">
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>All Payment Types</option>
@@ -7573,9 +7568,9 @@ export const TransactionsByDateTemplate = () => {
         </div>
       </div>
 
-      {/* 2. REPORT TEMPLATE */}
+      {/* REPORT CONTAINER */}
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
           <div className="text-blue-700 font-bold text-[12px] mb-2">
             Southern Olive Oil S.A.R.L
@@ -7585,58 +7580,67 @@ export const TransactionsByDateTemplate = () => {
             Transactions by Date
           </div>
           
-          <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>28-Aug-2026</div>
-            <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
-            <div>Page {currentPage} of 14</div>
-          </div>
+          {/* Conditional Rendering: Show message if NOT filtered, show table if FILTERED */}
+          {!isFiltered ? (
+            <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
+               <div className="text-[40px] mb-2 opacity-30">📊</div>
+               <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter Report" to view data.</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between items-center text-[11px] font-bold w-full">
+                <div>28-Aug-2026</div>
+                <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                <div>Page {currentPage} of 14</div>
+              </div>
 
-          <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full min-w-[1000px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
-              <thead>
-                <tr className="font-bold text-black border-b border-black uppercase">
-                  <th className="py-1 px-1 text-left">Date</th>
-                  <th className="py-1 px-1 text-left">Time</th>
-                  <th className="py-1 px-1 text-left">Invoice #</th>
-                  <th className="py-1 px-1 text-left">Cust_ID</th>
-                  <th className="py-1 px-1 text-left">Customer Name</th>
-                  <th className="py-1 px-1 text-right">Order #</th>
-                  <th className="py-1 px-1 text-right">Print#</th>
-                  <th className="py-1 px-1 text-right">SubTotal</th>
-                  <th className="py-1 px-1 text-right">Discount</th>
-                  <th className="py-1 px-1 text-right">Tax</th>
-                  <th className="py-1 px-1 text-left pl-2">Pay Type</th>
-                  <th className="py-1 px-1 text-right">Total</th>
-                  {/* Conditionally rendered based on ACTIVE state */}
-                  {activeShowRate && <th className="py-1 px-1 text-center">Currency</th>}
-                  {activeShowRate && <th className="py-1 px-1 text-right">Rate</th>}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="font-bold">
-                  <td colSpan={activeShowRate ? 14 : 12} className="py-1 px-1">Branch : Southern Olive Oil S.A.R.L</td>
-                </tr>
-                {reportData.map((row, idx) => (
-                  <tr key={idx} className="font-normal hover:bg-slate-50">
-                    <td className="py-1 px-1">{row.date}</td>
-                    <td className="py-1 px-1">{row.time}</td>
-                    <td className="py-1 px-1">{row.invoice}</td>
-                    <td className="py-1 px-1">{row.custId}</td>
-                    <td className="py-1 px-1">{row.customer}</td>
-                    <td className="py-1 px-1 text-right">{row.order}</td>
-                    <td className="py-1 px-1 text-right">{row.print}</td>
-                    <td className="py-1 px-1 text-right">{row.subTotal}</td>
-                    <td className="py-1 px-1 text-right">{row.discount}</td>
-                    <td className="py-1 px-1 text-right">{row.tax}</td>
-                    <td className="py-1 px-1 text-left pl-2">{row.payType}</td>
-                    <td className="py-1 px-1 text-right">{row.total}</td>
-                    {activeShowRate && <td className="py-1 px-1 text-center">{row.currency}</td>}
-                    {activeShowRate && <td className="py-1 px-1 text-right">{row.rate}</td>}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
+                <table className="w-full min-w-[1000px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+                  <thead>
+                    <tr className="font-bold text-black border-b border-black uppercase">
+                      <th className="py-1 px-1 text-left">Date</th>
+                      <th className="py-1 px-1 text-left">Time</th>
+                      <th className="py-1 px-1 text-left">Invoice #</th>
+                      <th className="py-1 px-1 text-left">Cust_ID</th>
+                      <th className="py-1 px-1 text-left">Customer Name</th>
+                      <th className="py-1 px-1 text-right">Order #</th>
+                      <th className="py-1 px-1 text-right">Print#</th>
+                      <th className="py-1 px-1 text-right">SubTotal</th>
+                      <th className="py-1 px-1 text-right">Discount</th>
+                      <th className="py-1 px-1 text-right">Tax</th>
+                      <th className="py-1 px-1 text-left pl-2">Pay Type</th>
+                      <th className="py-1 px-1 text-right">Total</th>
+                      {activeShowRate && <th className="py-1 px-1 text-center">Currency</th>}
+                      {activeShowRate && <th className="py-1 px-1 text-right">Rate</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="font-bold">
+                      <td colSpan={activeShowRate ? 14 : 12} className="py-1 px-1">Branch : Southern Olive Oil S.A.R.L</td>
+                    </tr>
+                    {reportData.map((row, idx) => (
+                      <tr key={idx} className="font-normal hover:bg-slate-50">
+                        <td className="py-1 px-1">{row.date}</td>
+                        <td className="py-1 px-1">{row.time}</td>
+                        <td className="py-1 px-1">{row.invoice}</td>
+                        <td className="py-1 px-1">{row.custId}</td>
+                        <td className="py-1 px-1">{row.customer}</td>
+                        <td className="py-1 px-1 text-right">{row.order}</td>
+                        <td className="py-1 px-1 text-right">{row.print}</td>
+                        <td className="py-1 px-1 text-right">{row.subTotal}</td>
+                        <td className="py-1 px-1 text-right">{row.discount}</td>
+                        <td className="py-1 px-1 text-right">{row.tax}</td>
+                        <td className="py-1 px-1 text-left pl-2">{row.payType}</td>
+                        <td className="py-1 px-1 text-right">{row.total}</td>
+                        {activeShowRate && <td className="py-1 px-1 text-center">{row.currency}</td>}
+                        {activeShowRate && <td className="py-1 px-1 text-right">{row.rate}</td>}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
 
           <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full mt-12 border-t border-black pt-1">
             <div className="text-black">REP_S_00247</div>
