@@ -10,7 +10,7 @@ export const InlineDuplicateInvoices: React.FC<InlineDuplicateInvoicesProps> = (
     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
       {/* Header */}
       <div className="text-blue-700 font-bold text-[13px] mb-2">
-        Southern Olive and Oil Products (SARL)
+        Southern Olive Oil Products S.A.R.L
       </div>
       
       <div className="text-center font-bold text-[13px] mb-4">
@@ -44,7 +44,7 @@ export const InlineDuplicateInvoices: React.FC<InlineDuplicateInvoicesProps> = (
 
       {/* Branch Info */}
       <div className="text-[11px] font-bold mb-4">
-        Branch: Southern Olive and Oil Products (SARL)
+        Branch: Southern Olive Oil Products S.A.R.L
       </div>
 
       {/* Group 1 Header */}

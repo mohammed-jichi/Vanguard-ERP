@@ -75,7 +75,7 @@ export const TransactionsByEmployeesTemplate = () => {
               </label>
             </div>
 
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Southern Olive Oil S.A.R.L</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Southern Olive Oil Products S.A.R.L</option></select>
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                 <input type="checkbox" checked={uiRealDate} onChange={(e) => setUiRealDate(e.target.checked)} className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" />
@@ -92,7 +92,7 @@ export const TransactionsByEmployeesTemplate = () => {
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
         <div className="report-wrapper transition-transform duration-200 origin-top">
-          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
+          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Employees</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
             <div>28-Aug-26</div>
@@ -116,7 +116,7 @@ export const TransactionsByEmployeesTemplate = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={10} className="py-1 px-1">Southern Olive Oil S.A.R.L</td></tr>
+                <tr className="font-bold"><td colSpan={10} className="py-1 px-1">Southern Olive Oil Products S.A.R.L</td></tr>
                 <tr className="font-bold"><td colSpan={10} className="py-1 px-1">Hiba Aloulou</td></tr>
                 <tr>
                     <td className="py-1 px-1">102971</td>

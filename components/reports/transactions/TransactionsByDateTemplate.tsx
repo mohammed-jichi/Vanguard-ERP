@@ -106,7 +106,7 @@ export const TransactionsByDateTemplate = () => {
           />
 
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>Southern Olive Oil S.A.R.L</option>
+            <option>Southern Olive Oil Products S.A.R.L</option>
             <option>All Branches</option>
           </select>
 
@@ -189,7 +189,7 @@ export const TransactionsByDateTemplate = () => {
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
           <div className="text-blue-700 font-bold text-[12px] mb-2">
-            Southern Olive Oil S.A.R.L
+            Southern Olive Oil Products S.A.R.L
           </div>
           
           <div className="text-center font-bold text-[12px] mb-4">
@@ -232,7 +232,7 @@ export const TransactionsByDateTemplate = () => {
                   </thead>
                   <tbody>
                     <tr className="font-bold">
-                      <td colSpan={14} className="py-1 px-1">Branch: Southern Olive Oil S.A.R.L</td>
+                      <td colSpan={14} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
                     </tr>
                     {activeGroupByDate && (
                       <tr className="font-bold">

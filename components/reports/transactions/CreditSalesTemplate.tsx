@@ -51,7 +51,7 @@ export const CreditSalesTemplate = () => {
             className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" 
           />
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>Zeit w zaytoun ljanoub</option>
+            <option>Southern Olive Oil Products S.A.R.L</option>
             <option>All Branches</option>
           </select>
 
@@ -106,7 +106,7 @@ export const CreditSalesTemplate = () => {
       <div className="w-full max-w-[1400px] bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 font-sans text-black overflow-auto min-h-[500px]">
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
           
-          <div className="text-blue-700 font-bold text-[12px] mb-6">Zeit w zaytoun ljanoub</div>
+          <div className="text-blue-700 font-bold text-[12px] mb-6">Southern Olive Oil Products S.A.R.L</div>
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
@@ -136,7 +136,7 @@ export const CreditSalesTemplate = () => {
                   </thead>
                   <tbody>
                     <tr className="font-bold">
-                      <td colSpan={6} className="py-1 px-1 underline">Branch: Zeit w zaytoun ljanoub</td>
+                      <td colSpan={6} className="py-1 px-1 underline">Branch: Southern Olive Oil Products S.A.R.L</td>
                     </tr>
                     <tr className="font-bold">
                       <td colSpan={6} className="py-1 px-1">GENERAL</td>

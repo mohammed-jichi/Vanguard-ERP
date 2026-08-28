@@ -43,7 +43,7 @@ export const ElectronicJournalTemplate = () => {
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
           
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0 min-w-[240px]">
-            <option>Branch: Southern Olive and Oil Products</option>
+            <option>Branch: Southern Olive Oil Products S.A.R.L</option>
             <option>Branch: Beirut Warehouse</option>
           </select>
 
@@ -103,7 +103,7 @@ export const ElectronicJournalTemplate = () => {
               
               {/* Report Header */}
               <div className="text-center mb-6 border-b-2 border-black pb-4">
-                <h2 className="font-bold text-[18px] uppercase tracking-wider">Southern Olive and Oil Products (SARL)</h2>
+                <h2 className="font-bold text-[18px] uppercase tracking-wider">Southern Olive Oil Products S.A.R.L</h2>
                 <h3 className="font-bold text-[14px] text-slate-700 mt-1">Terminal Electronic Journal</h3>
                 <div className="flex justify-between items-end text-[12px] font-bold w-full mt-4">
                   <div>Printed: 28-Aug-2026</div>

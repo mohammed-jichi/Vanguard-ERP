@@ -10,7 +10,7 @@ export const FallbackNoSale: React.FC<FallbackNoSaleProps> = ({ fromDate, toDate
     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
       {/* Header Section */}
       <div className="text-blue-700 font-bold text-[12px] mb-4">
-        Southern Olive and Oil Products (SARL)
+        Southern Olive Oil Products S.A.R.L
       </div>
       
       <div className="text-center font-bold text-[12px] mb-4">
@@ -37,7 +37,7 @@ export const FallbackNoSale: React.FC<FallbackNoSaleProps> = ({ fromDate, toDate
 
       {/* Main Branch Title */}
       <div className="text-[11px] mb-2 font-bold">
-        Branch Name: Southern Olive and Oil Products (SARL)
+        Branch Name: Southern Olive Oil Products S.A.R.L
       </div>
 
       {/* EOD Group: 01-Jan-26 */}

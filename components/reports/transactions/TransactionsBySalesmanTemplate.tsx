@@ -87,7 +87,7 @@ export const TransactionsBySalesmanTemplate = () => {
 
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
         <div className="report-wrapper transition-transform duration-200 origin-top">
-          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil S.A.R.L</div>
+          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Salesman</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
             <div>28-Aug-2026</div>
@@ -109,7 +109,7 @@ export const TransactionsBySalesmanTemplate = () => {
               </thead>
               <tbody>
                 <tr className="font-bold">
-                  <td colSpan={6} className="py-1 px-1">Branch: Southern Olive Oil S.A.R.L</td>
+                  <td colSpan={6} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
                 </tr>
                 <tr className="font-bold">
                   <td colSpan={6} className="py-1 px-1 pl-4">Salesman: Nour Yazbeck</td>
