@@ -231,18 +231,36 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             line-height: 1.2 !important;
           }
 
-          /* 5. Hide ALL system UI, Modals, and Global App Footers */
+          /* 5. Hide ALL system UI, Modals, and Lingering Global App Footers */
           .fixed.inset-0, 
           header, 
           nav, 
           aside, 
           .sidebar, 
           .global-footer, 
-          #app-footer {
+          #app-footer,
+          footer,
+          [class*="footer"]:not(.report-footer),
+          [class*="Footer"]:not(.report-footer),
+          .copyright-section {
             display: none !important;
           }
 
-          /* 6. Ensure the specific Vanguard Report footer prints correctly */
+          /* 6. Prevent phantom blank pages caused by full-height app wrappers */
+          html, body, #__next, #root, .min-h-screen, .h-screen {
+            height: auto !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          /* 7. Ensure the report wrapper doesn't push extra margins at the bottom */
+          .report-wrapper {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+          }
+
+          /* 8. Ensure the specific Vanguard Report footer prints correctly */
           .report-footer {
             display: flex !important;
             page-break-inside: avoid;
