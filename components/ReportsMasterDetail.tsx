@@ -29,6 +29,7 @@ import { TransactionsBySourceTemplate } from './reports/transactions/Transaction
 import { TransactionsByDateByPaymentsTemplate } from './reports/transactions/TransactionsByDateByPaymentsTemplate';
 import { TransactionsByDateTemplate } from './reports/transactions/TransactionsByDateTemplate';
 import { TransactionsByInvoiceNumberTemplate } from './reports/transactions/TransactionsByInvoiceNumberTemplate';
+import { CreditSalesTemplate } from './reports/transactions/CreditSalesTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -128,7 +129,8 @@ const complexTransactionReports = [
   'Transactions by Customers details',
   'Transactions by Workstation',
   'Transactions by Employees',
-  'Transactions By Source'
+  'Transactions By Source',
+  'Credit Sales'
 ];
 
 interface ReportsMasterDetailProps {
@@ -961,6 +963,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <TransactionsByEmployeesTemplate />
                   ) : selectedReport === 'Transactions By Source' ? (
                     <TransactionsBySourceTemplate />
+                  ) : selectedReport === 'Credit Sales' ? (
+                    <CreditSalesTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
