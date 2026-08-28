@@ -3,24 +3,24 @@ import React, { useState } from 'react';
 export const TimeReportByDateTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  
+  // NEW STATE: Tracks the selected dropdown filter to change UI dynamically
+  const [filterPeriod, setFilterPeriod] = useState('This Month');
 
   // ==========================================
   // 1. THE LOGIC ENGINE (Dynamic Data Generation)
   // ==========================================
-  // Simulating a full month of dynamic dates
   const allDates = Array.from({length: 28}, (_, i) => `${(i+1).toString().padStart(2, '0')}-Aug-2026`);
   const times = ['10.57.50 AM', '11.42.15 AM', '12.08.17 PM', '01.20.48 PM', '04.03.00 PM', '05.36.19 PM'];
 
   // ==========================================
   // 2. HORIZONTAL CHUNKING ALGORITHM 
-  // Splitting dates into chunks of max 5 columns
   // ==========================================
   const chunkedDates = [];
   for (let i = 0; i < allDates.length; i += 5) {
     chunkedDates.push(allDates.slice(i, i + 5));
   }
 
-  // Mock value generators to simulate DB calculations
   const getVal = () => "1,260,000.00";
   const getDailyTotal = () => "35,280,000.00";
   const getRowGrandTotal = () => "141,120,000.00";
@@ -37,17 +37,46 @@ export const TimeReportByDateTemplate = () => {
         @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
       `}} />
 
-      {/* FILTER TOOLBAR */}
+      {/* DYNAMIC FILTER TOOLBAR */}
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
         <div className="flex flex-wrap items-center gap-3 flex-1 w-full">
-          <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[120px]"><option>This Month</option></select>
-          <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
-          <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]"><option>Southern Olive Oil Products S.A.R.L</option></select>
+          
+          {/* 1. Dynamic Dropdown */}
+          <select 
+            className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[140px]"
+            value={filterPeriod}
+            onChange={(e) => setFilterPeriod(e.target.value)}
+          >
+            <option value="Today">Today</option>
+            <option value="Yesterday">Yesterday</option>
+            <option value="This Month">This Month</option>
+            <option value="Last Month">Last Month</option>
+            <option value="Date Range">Date Range</option>
+            <option value="EOD Date">EOD Date</option>
+          </select>
+
+          {/* 2. Conditional Inputs Engine */}
+          {filterPeriod === 'Date Range' ? (
+            <div className="flex items-center gap-2">
+              <input type="date" defaultValue="2026-08-28" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
+              <input type="date" defaultValue="2026-08-28" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
+            </div>
+          ) : filterPeriod === 'EOD Date' || filterPeriod === 'Today' || filterPeriod === 'Yesterday' ? (
+            <input type="date" defaultValue="2026-08-28" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
+          ) : (
+            <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
+          )}
+
+          <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
+            <option>Southern Olive Oil Products S.A.R.L</option>
+          </select>
+          
           <div className="flex items-center gap-2 ml-2">
             <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter</button>
             <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset</button>
           </div>
         </div>
+        
         <div className="flex items-center gap-2 shrink-0">
           <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800" title="Zoom In">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
@@ -73,7 +102,6 @@ export const TimeReportByDateTemplate = () => {
           ) : (
             <div className="bg-white p-4">
               
-              {/* Report Header */}
               <div className="w-full relative mb-2">
                 <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
                 <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
@@ -93,7 +121,6 @@ export const TimeReportByDateTemplate = () => {
                 </div>
               </div>
 
-              {/* 3. DYNAMIC RENDERING: Looping through chunks to create matrices */}
               {chunkedDates.map((chunk, chunkIdx) => {
                 const isLastChunk = chunkIdx === chunkedDates.length - 1;
                 
@@ -101,7 +128,6 @@ export const TimeReportByDateTemplate = () => {
                   <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
                     <table className="w-full border-collapse text-[11px] border border-black">
                       <thead>
-                        {/* HEADER ROW 1 */}
                         <tr>
                           <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
                           <th colSpan={chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
@@ -109,13 +135,11 @@ export const TimeReportByDateTemplate = () => {
                           </th>
                           {isLastChunk && (
                             <>
-                              {/* The Empty White Cell above the Light Blue Total */}
                               <th className="border border-black p-1 bg-white"></th>
                               <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
                             </>
                           )}
                         </tr>
-                        {/* HEADER ROW 2 */}
                         <tr>
                           {chunk.map(date => (
                             <th key={date} className="border border-black p-1.5 text-center font-bold bg-white">{date}</th>
@@ -127,7 +151,6 @@ export const TimeReportByDateTemplate = () => {
                       </thead>
                       <tbody>
                         
-                        {/* DAILY TOTALS ROW (Top Row) */}
                         <tr>
                           <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
                           {chunk.map(date => (
@@ -143,7 +166,6 @@ export const TimeReportByDateTemplate = () => {
                           )}
                         </tr>
 
-                        {/* TRANSACTION TIME ROWS */}
                         {times.map(time => (
                           <tr key={time}>
                             <td className="border border-black p-1.5 text-center font-bold bg-white">{time}</td>
