@@ -607,10 +607,17 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs"
                   >
                     <option value="Today" className="!text-slate-900 bg-white">Today</option>
+                    <option value="Yesterday" className="!text-slate-900 bg-white">Yesterday</option>
                     <option value="This Month" className="!text-slate-900 bg-white">This Month</option>
-                    <option value="This Quarter" className="!text-slate-900 bg-white">This Quarter</option>
+                    <option value="Last Month" className="!text-slate-900 bg-white">Last Month</option>
+                    <option value="First Quarter" className="!text-slate-900 bg-white">First Quarter</option>
+                    <option value="Second Quarter" className="!text-slate-900 bg-white">Second Quarter</option>
+                    <option value="Third Quarter" className="!text-slate-900 bg-white">Third Quarter</option>
+                    <option value="Fourth Quarter" className="!text-slate-900 bg-white">Fourth Quarter</option>
                     <option value="This Year" className="!text-slate-900 bg-white">This Year</option>
+                    <option value="Last Year" className="!text-slate-900 bg-white">Last Year</option>
                     <option value="Date Range" className="!text-slate-900 bg-white">Date Range</option>
+                    <option value="EOD Date" className="!text-slate-900 bg-white">EOD Date</option>
                   </select>
 
                   {period === 'Date Range' ? (

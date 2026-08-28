@@ -17,9 +17,18 @@ export const CreditSalesTemplate = () => {
         {/* Left side: Filters (Inputs + Filter/Reset Buttons) */}
         <div className="flex flex-wrap items-center gap-2 flex-1">
           <select className="border border-slate-300 rounded p-1.5 text-xs text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-2xs">
-            <option>Last Year</option>
-            <option>This Year</option>
+            <option>Today</option>
+            <option>Yesterday</option>
             <option>This Month</option>
+            <option>Last Month</option>
+            <option>First Quarter</option>
+            <option>Second Quarter</option>
+            <option>Third Quarter</option>
+            <option>Fourth Quarter</option>
+            <option>This Year</option>
+            <option>Last Year</option>
+            <option>Date Range</option>
+            <option>EOD Date</option>
           </select>
           <input 
             type="text" 

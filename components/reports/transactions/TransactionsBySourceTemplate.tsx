@@ -34,7 +34,20 @@ export const TransactionsBySourceTemplate = () => {
               <option>Transactions by Employees</option>
               <option>Transactions By Source</option>
             </select>
-            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>Date Range</option></select>
+            <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+              <option>Today</option>
+              <option>Yesterday</option>
+              <option>This Month</option>
+              <option>Last Month</option>
+              <option>First Quarter</option>
+              <option>Second Quarter</option>
+              <option>Third Quarter</option>
+              <option>Fourth Quarter</option>
+              <option>This Year</option>
+              <option>Last Year</option>
+              <option>Date Range</option>
+              <option>EOD Date</option>
+            </select>
             <input type="text" defaultValue="28-Aug-2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             <input type="text" defaultValue="28-Aug-2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
             <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"><option>Southern Olive Oil S.A.R.L</option></select>

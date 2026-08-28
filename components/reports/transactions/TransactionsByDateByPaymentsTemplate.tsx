@@ -40,14 +40,14 @@ export const TransactionsByDateByPaymentsTemplate = () => {
             </select>
 
             <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-900 font-medium bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-              <option>This Month</option>
               <option>Today</option>
               <option>Yesterday</option>
+              <option>This Month</option>
               <option>Last Month</option>
-              <option>1st Quarter</option>
-              <option>2nd Quarter</option>
-              <option>3rd Quarter</option>
-              <option>4th Quarter</option>
+              <option>First Quarter</option>
+              <option>Second Quarter</option>
+              <option>Third Quarter</option>
+              <option>Fourth Quarter</option>
               <option>This Year</option>
               <option>Last Year</option>
               <option>Date Range</option>
