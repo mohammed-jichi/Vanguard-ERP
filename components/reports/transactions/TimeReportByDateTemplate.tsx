@@ -117,26 +117,31 @@ export const TimeReportByDateTemplate = () => {
                 </div>
               </div>
 
-              {/* MATRIX TABLE */}
               <table className="w-full border-collapse text-[11px] border border-black">
                 <thead>
+                  {/* HEADER ROW 1: Branch Name & Grand Total Header */}
                   <tr>
-                    <th className="border border-black p-1 bg-white w-[150px]"></th>
-                    <th className="border border-black p-1 bg-white w-[100px]"></th>
+                    <th className="border border-black p-1 bg-white min-w-[120px]"></th>
+                    <th colSpan={3} className="border border-black p-1.5 text-left font-bold bg-white">
+                      Southern Olive Oil Products S.A.R.L
+                    </th>
+                    <th rowSpan={2} className="border border-black p-1.5 text-center matrix-grand-total align-bottom">
+                      Total
+                    </th>
+                  </tr>
+                  {/* HEADER ROW 2: Dates & Subtotal Header */}
+                  <tr>
+                    <th className="border border-black p-1 bg-white"></th>
                     <th className="border border-black p-1.5 text-center font-bold bg-white">27-Aug-2026</th>
                     <th className="border border-black p-1.5 text-center font-bold bg-white">28-Aug-2026</th>
-                    <th className="border border-black p-1.5 text-center matrix-total-cell">Total</th>
-                    <th className="border border-black p-1.5 text-center matrix-grand-total">Total</th>
+                    <th className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   
-                  {/* TOP TOTAL ROW (Specific to this report) */}
+                  {/* TOP TOTAL ROW */}
                   <tr>
-                    <td rowSpan={rows.length + 1} className="border border-black p-2 font-bold text-center align-top bg-white w-[150px]">
-                      Southern Olive Oil Products S.A.R.L
-                    </td>
-                    <td className="border border-black p-1.5 text-center matrix-total-cell">
+                    <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">
                       Total
                     </td>
                     <td className="border border-black p-1 text-right matrix-total-cell">64,695,000.00</td>
@@ -154,7 +159,7 @@ export const TimeReportByDateTemplate = () => {
                       <td className="border border-black p-1 text-right whitespace-nowrap bg-white">{row.v1}</td>
                       <td className="border border-black p-1 text-right whitespace-nowrap bg-white">{row.v2}</td>
                       <td className="border border-black p-1 text-right whitespace-nowrap matrix-total-cell">{row.sub}</td>
-                      <td className="border border-black p-1 text-right whitespace-nowrap matrix-total-cell">{row.grand}</td>
+                      <td className="border border-black p-1 text-right whitespace-nowrap matrix-grand-total">{row.grand}</td>
                     </tr>
                   ))}
                   
