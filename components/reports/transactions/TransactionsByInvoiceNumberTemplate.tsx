@@ -218,12 +218,10 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             </>
           )}
 
-          <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full mt-12 border-t border-black pt-1">
-            <div className="text-black">REP_S_00247</div>
-            <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-            <div className="text-right">
-              <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
-            </div>
+          <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+            <div className="text-left w-1/3">REP_S_00247</div>
+            <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+            <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
           </div>
 
         </div>

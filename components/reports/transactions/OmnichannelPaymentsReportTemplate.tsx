@@ -179,8 +179,10 @@ export const OmnichannelPaymentsReportTemplate = () => {
                 </tbody>
               </table>
               
-              <div className="text-[10px] font-bold w-full mt-12 border-t border-black pt-2">
-                REP_S_00250
+              <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+                <div className="text-left w-1/3">REP_S_00250</div>
+                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
               </div>
             </div>
           )}

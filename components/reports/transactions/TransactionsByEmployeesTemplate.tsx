@@ -223,15 +223,6 @@ export const TransactionsByEmployeesTemplate = () => {
             </table>
           </div>
 
-           {/* Matching the exact footer block from image_a576fc.png */}
-          <div className="w-full mt-8">
-            <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 w-full"></div>
-            <div className="flex justify-between items-center text-[10px] font-bold w-full">
-              <div className="text-black">REP_S_00004</div>
-              <div className="text-blue-700 text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right"><a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a></div>
-            </div>
-            
             <div className="mt-8 text-[11px] font-bold">
                <div className="flex w-full">
                   <div className="w-[30%]">Total</div>
@@ -248,7 +239,13 @@ export const TransactionsByEmployeesTemplate = () => {
                <div className="flex w-full"><div className="w-[30%]">Total Discount:</div><div className="w-[70%] pl-8">55,630,450.00</div></div>
                <div className="flex w-full"><div className="w-[30%]">Net Sales:</div><div className="w-[70%] pl-8">1,370,226,600.00</div></div>
             </div>
-          </div>
+
+            {/* Standardized Document Footer */}
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_S_00004</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+            </div>
 
         </div>
       </div>
