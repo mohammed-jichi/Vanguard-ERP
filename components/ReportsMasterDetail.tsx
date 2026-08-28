@@ -676,6 +676,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   )}
+
+                  {selectedReport === 'Comparative Monthly Sales by Employee' && (
+                    <div className="flex gap-4 mt-2 w-full">
+                      <div className="flex flex-col gap-2 w-1/3">
+                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                          <option>All Branches</option>
+                          <option>Southern Olive Oil S.A.R.L</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-2 w-1/3">
+                        <label className="text-[12px] font-bold text-slate-700">Year</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                          <option>2026</option>
+                          <option>2025</option>
+                          <option>All Years</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-2 w-1/3">
+                        <label className="text-[12px] font-bold text-slate-700">Employee</label>
+                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-slate-50 w-full">
+                          <option>All Employees</option>
+                          <option>Cashier N2</option>
+                          <option>Cashier NK</option>
+                          <option>Cashier R</option>
+                          <option>Hiba Aloulou</option>
+                          <option>Mahdi</option>
+                          <option>Nour Yazbeck</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -706,7 +738,151 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
-                  {selectedReport === 'Comparative Monthly Sales' ? (
+                  {selectedReport === 'Comparative Monthly Sales by Employee' ? (
+                    /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
+                    <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
+                      
+                      {/* Header Section */}
+                      <div className="text-blue-700 font-bold text-[12px] mb-2">
+                        Southern Olive Oil S.A.R.L
+                      </div>
+                      
+                      <div className="text-center font-bold text-[12px] mb-4">
+                        Comparative Monthly Net Sales By Employee
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                        <div>28-08-2026</div>
+                        <div>Page 1 of 1</div>
+                      </div>
+
+                      {/* Strict Native Table Implementation */}
+                      <div className="w-full mt-1 overflow-x-auto pb-4">
+                        <table className="w-full border-collapse border-t border-l border-r border-black text-[11px] break-all">
+                          <thead>
+                            <tr className="font-bold text-black text-center bg-white">
+                              <th colSpan={3} className="border-none bg-transparent"></th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">January</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">February</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">March</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">April</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">May</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">June</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">July</th>
+                              <th className="border border-black py-1.5 px-1 w-[7%]">August</th>
+                              <th className="border border-black py-1.5 px-1 w-[8%] bg-[#cce5ff]">Total By Year</th>
+                              <th className="border border-black py-1.5 px-1 w-[8%] bg-[#cce5ff]">Monthly Average</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="font-normal bg-white text-center">
+                              <td rowSpan={7} className="border border-black font-bold p-1 w-[8%] align-middle">Southern Olive Oil S.A.R.L</td>
+                              <td rowSpan={7} className="border border-black font-bold p-1 w-[4%] align-middle">2026</td>
+                              <td className="border border-black p-1 w-[7%]">Cashier N2</td>
+                              <td className="border border-black p-1">74,960,900.00</td>
+                              <td className="border border-black p-1">177,901,600.00</td>
+                              <td className="border border-black p-1">226,406,100.00</td>
+                              <td className="border border-black p-1">322,850,450.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">802,119,050.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">66,843,254.17</td>
+                            </tr>
+                            <tr className="font-normal bg-white text-center">
+                              <td className="border border-black p-1">Cashier NK</td>
+                              <td className="border border-black p-1">498,835,400.00</td>
+                              <td className="border border-black p-1">439,413,800.00</td>
+                              <td className="border border-black p-1">458,850.00</td>
+                              <td className="border border-black p-1">142,402,450.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">1,081,110,500.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">90,092,541.67</td>
+                            </tr>
+                            <tr className="font-normal bg-white text-center">
+                              <td className="border border-black p-1">Cashier R</td>
+                              <td className="border border-black p-1">386,491,050.00</td>
+                              <td className="border border-black p-1">587,849,542.00</td>
+                              <td className="border border-black p-1">59,943,850.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">1,034,284,442.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">86,190,370.17</td>
+                            </tr>
+                            <tr className="font-normal bg-white text-center">
+                              <td className="border border-black p-1">Hiba Aloulou</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">381,671,600.00</td>
+                              <td className="border border-black p-1">1,493,219,324.78</td>
+                              <td className="border border-black p-1">1,243,561,600.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">3,118,452,524.78</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">259,871,043.73</td>
+                            </tr>
+                            <tr className="font-normal bg-white text-center">
+                              <td className="border border-black p-1">Mahdi</td>
+                              <td className="border border-black p-1">2,144,645,080.00</td>
+                              <td className="border border-black p-1">895,931,000.00</td>
+                              <td className="border border-black p-1">45,935,000.00</td>
+                              <td className="border border-black p-1">182,596,650.00</td>
+                              <td className="border border-black p-1">187,758,050.00</td>
+                              <td className="border border-black p-1">257,090,350.00</td>
+                              <td className="border border-black p-1">291,091,990.00</td>
+                              <td className="border border-black p-1">267,490,000.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">4,272,538,120.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">356,044,843.33</td>
+                            </tr>
+                            <tr className="font-normal bg-white text-center">
+                              <td className="border border-black p-1">Nour Yazbeck</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">4,832,000.00</td>
+                              <td className="border border-black p-1">24,083,800.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1">0.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">28,915,800.00</td>
+                              <td className="border border-black p-1 bg-[#cce5ff]">2,409,650.00</td>
+                            </tr>
+                            <tr className="font-bold bg-[#cce5ff] text-center">
+                              <td className="border border-black p-1">Total By Employee</td>
+                              <td className="border border-black p-1">3,104,932,430.00</td>
+                              <td className="border border-black p-1">2,101,095,942.00</td>
+                              <td className="border border-black p-1">332,743,800.00</td>
+                              <td className="border border-black p-1">647,849,550.00</td>
+                              <td className="border border-black p-1">192,590,050.00</td>
+                              <td className="border border-black p-1">662,845,750.00</td>
+                              <td className="border border-black p-1">1,784,311,314.78</td>
+                              <td className="border border-black p-1">1,511,051,600.00</td>
+                              <td className="border border-black p-1">10,337,420,436.78</td>
+                              <td className="border border-black p-1">861,451,703.06</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* VANGUARD PRINT FOOTER WITH CLICKABLE LINK */}
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full"></div>
+                      <div className="flex justify-between items-center text-[10px] font-bold w-full">
+                        <div className="text-black">REP_S_00134</div>
+                        <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
+                        </div>
+                      </div>
+                    </div>
+                  ) : selectedReport === 'Comparative Monthly Sales' ? (
                     /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE (CLEANED DEDUPLICATED) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
