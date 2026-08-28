@@ -4,35 +4,27 @@ export const TimeReportByDateTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Dynamic Array of Table Blocks to simulate Horizontal Pagination
-  const tableBlocks = [
-    {
-      id: 1,
-      dates: ['01-Aug-2026', '02-Aug-2026', '03-Aug-2026', '04-Aug-2026', '05-Aug-2026'],
-      hasTotals: false,
-      topTotals: ['157,490,000.00', '11,520,000.00', '102,455,000.00', '44,089,500.00', '119,597,000.00'],
-      grandTotals: [],
-      rows: [
-        { time: '10.57.50 AM', vals: ['1,260,000.00', '0.00', '0.00', '0.00', '0.00'], totals: [] },
-        { time: '11.42.15 AM', vals: ['1,620,000.00', '0.00', '0.00', '0.00', '0.00'], totals: [] },
-        { time: '11.45.25 AM', vals: ['90,000.00', '0.00', '0.00', '0.00', '0.00'], totals: [] },
-        { time: '11.50.43 AM', vals: ['8,100,000.00', '0.00', '0.00', '0.00', '0.00'], totals: [] },
-      ]
-    },
-    {
-      id: 2,
-      dates: ['27-Aug-2026', '28-Aug-2026'],
-      hasTotals: true,
-      topTotals: ['64,695,000.00', '60,001,200.00'],
-      grandTotals: ['1,697,717,800.00', '1,697,717,800.00'], // Light Blue, Deep Blue
-      rows: [
-        { time: '10.57.50 AM', vals: ['0.00', '0.00'], totals: ['1,260,000.00', '1,260,000.00'] },
-        { time: '11.42.15 AM', vals: ['0.00', '0.00'], totals: ['1,620,000.00', '1,620,000.00'] },
-        { time: '11.45.25 AM', vals: ['0.00', '0.00'], totals: ['90,000.00', '90,000.00'] },
-        { time: '11.50.43 AM', vals: ['0.00', '0.00'], totals: ['8,100,000.00', '8,100,000.00'] },
-      ]
-    }
-  ];
+  // ==========================================
+  // 1. THE LOGIC ENGINE (Dynamic Data Generation)
+  // ==========================================
+  // Simulating a full month of dynamic dates
+  const allDates = Array.from({length: 28}, (_, i) => `${(i+1).toString().padStart(2, '0')}-Aug-2026`);
+  const times = ['10.57.50 AM', '11.42.15 AM', '12.08.17 PM', '01.20.48 PM', '04.03.00 PM', '05.36.19 PM'];
+
+  // ==========================================
+  // 2. HORIZONTAL CHUNKING ALGORITHM 
+  // Splitting dates into chunks of max 5 columns
+  // ==========================================
+  const chunkedDates = [];
+  for (let i = 0; i < allDates.length; i += 5) {
+    chunkedDates.push(allDates.slice(i, i + 5));
+  }
+
+  // Mock value generators to simulate DB calculations
+  const getVal = () => "1,260,000.00";
+  const getDailyTotal = () => "35,280,000.00";
+  const getRowGrandTotal = () => "141,120,000.00";
+  const getMatrixGrandTotal = () => "1,697,717,800.00";
 
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
@@ -40,7 +32,7 @@ export const TimeReportByDateTemplate = () => {
       <style dangerouslySetInnerHTML={{__html: `
         .force-black { color: #000000 !important; background-color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #000000 !important; font-weight: 700 !important; }
         .force-black option { color: #000000 !important; background-color: #ffffff !important; }
-        .matrix-total-cell { background-color: #dbeafe !important; font-weight: bold !important; }
+        .matrix-total-cell { background-color: #dbeafe !important; font-weight: bold !important; color: #000000 !important; }
         .matrix-grand-total { background-color: #0056b3 !important; color: #ffffff !important; font-weight: bold !important; }
         @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
       `}} />
@@ -89,10 +81,10 @@ export const TimeReportByDateTemplate = () => {
                 <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
                   <div className="w-[150px] text-left">28-Aug-2026</div>
                   <div className="flex-1 flex justify-center gap-16">
-                     <span>From Date: 01-Aug-2026</span>
-                     <span>To Date: 29-Aug-2026</span>
+                     <span>From Date: {allDates[0]}</span>
+                     <span>To Date: {allDates[allDates.length - 1]}</span>
                   </div>
-                  <div className="w-[150px] text-right">Page 1 of 1</div>
+                  <div className="w-[150px] text-right">Page 1 of 72</div>
                 </div>
                 
                 <div className="text-left font-bold text-[11px] mt-1 mb-6 leading-tight">
@@ -101,63 +93,79 @@ export const TimeReportByDateTemplate = () => {
                 </div>
               </div>
 
-              {/* DYNAMIC TABLE BLOCKS */}
-              {tableBlocks.map((block) => (
-                <div key={block.id} className="mb-8">
-                  <table className="w-full border-collapse text-[11px] border border-black">
-                    <thead>
-                      <tr>
-                        <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
-                        <th colSpan={block.dates.length} className="border border-black p-1.5 text-left font-bold bg-white">
-                          Southern Olive Oil Products S.A.R.L
-                        </th>
-                        {block.hasTotals && (
-                          <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
-                        )}
-                      </tr>
-                      <tr>
-                        {block.dates.map((d, i) => (
-                          <th key={i} className="border border-black p-1.5 text-center font-bold bg-white">{d}</th>
-                        ))}
-                        {block.hasTotals && (
-                          <th className="border border-black p-1.5 text-right font-bold matrix-total-cell align-bottom">Total</th>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* TOP TOTAL ROW */}
-                      <tr>
-                        <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
-                        {block.topTotals.map((t, i) => (
-                          <td key={i} className="border border-black p-1 text-right matrix-total-cell">{t}</td>
-                        ))}
-                        {block.hasTotals && (
-                          <>
-                            <td className="border border-black p-1 text-right matrix-total-cell">{block.grandTotals[0]}</td>
-                            <td className="border border-black p-1 text-right matrix-grand-total">{block.grandTotals[1]}</td>
-                          </>
-                        )}
-                      </tr>
-
-                      {/* DATA ROWS */}
-                      {block.rows.map((row, rIdx) => (
-                        <tr key={rIdx}>
-                          <td className="border border-black p-1.5 font-bold text-center whitespace-nowrap bg-white">{row.time}</td>
-                          {row.vals.map((v, vIdx) => (
-                            <td key={vIdx} className="border border-black p-1 text-right whitespace-nowrap bg-white">{v}</td>
-                          ))}
-                          {block.hasTotals && (
+              {/* 3. DYNAMIC RENDERING: Looping through chunks to create matrices */}
+              {chunkedDates.map((chunk, chunkIdx) => {
+                const isLastChunk = chunkIdx === chunkedDates.length - 1;
+                
+                return (
+                  <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
+                    <table className="w-full border-collapse text-[11px] border border-black">
+                      <thead>
+                        {/* HEADER ROW 1 */}
+                        <tr>
+                          <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
+                          <th colSpan={chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
+                            Southern Olive Oil Products S.A.R.L
+                          </th>
+                          {isLastChunk && (
                             <>
-                              <td className="border border-black p-1 text-right whitespace-nowrap matrix-total-cell">{row.totals[0]}</td>
-                              <td className="border border-black p-1 text-right whitespace-nowrap matrix-grand-total">{row.totals[1]}</td>
+                              {/* The Empty White Cell above the Light Blue Total */}
+                              <th className="border border-black p-1 bg-white"></th>
+                              <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
                             </>
                           )}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
+                        {/* HEADER ROW 2 */}
+                        <tr>
+                          {chunk.map(date => (
+                            <th key={date} className="border border-black p-1.5 text-center font-bold bg-white">{date}</th>
+                          ))}
+                          {isLastChunk && (
+                            <th className="border border-black p-1.5 text-right font-bold bg-white">Total</th>
+                          )}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        
+                        {/* DAILY TOTALS ROW (Top Row) */}
+                        <tr>
+                          <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
+                          {chunk.map(date => (
+                            <td key={`total-${date}`} className="border border-black p-1 text-right font-bold matrix-total-cell">
+                              {getDailyTotal()}
+                            </td>
+                          ))}
+                          {isLastChunk && (
+                            <>
+                              <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getMatrixGrandTotal()}</td>
+                              <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getMatrixGrandTotal()}</td>
+                            </>
+                          )}
+                        </tr>
+
+                        {/* TRANSACTION TIME ROWS */}
+                        {times.map(time => (
+                          <tr key={time}>
+                            <td className="border border-black p-1.5 text-center font-bold bg-white">{time}</td>
+                            {chunk.map(date => (
+                              <td key={`${time}-${date}`} className="border border-black p-1 text-right bg-white">
+                                {getVal()}
+                              </td>
+                            ))}
+                            {isLastChunk && (
+                              <>
+                                <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getRowGrandTotal()}</td>
+                                <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getRowGrandTotal()}</td>
+                              </>
+                            )}
+                          </tr>
+                        ))}
+
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
               
               <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
                 <div className="text-left w-1/3">REP_TR_00312</div>
