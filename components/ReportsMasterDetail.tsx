@@ -114,8 +114,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [showRate, setShowRate] = useState<boolean>(true);
+  const [showRate, setShowRate] = useState<boolean>(false);
   const [groupByDate, setGroupByDate] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
@@ -267,6 +268,31 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             display: flex !important;
             page-break-inside: avoid;
           }
+        }
+
+        /* Standardize all filter inputs, selects, and textareas across Vanguard */
+        .filters-container select, 
+        .filters-container input[type="text"] {
+          background-color: #ffffff !important;
+          border: 1px solid #cbd5e1 !important; /* slate-300 */
+          color: #334155 !important; /* slate-700 */
+          font-size: 13px !important;
+          padding: 6px 8px !important;
+          border-radius: 4px !important;
+          opacity: 1 !important;
+          box-shadow: none !important;
+        }
+        
+        .filters-container select:focus, 
+        .filters-container input[type="text"]:focus {
+          border-color: #3b82f6 !important; /* blue-500 */
+          outline: none !important;
+        }
+
+        /* Hide the redundant/ghost empty filter rows dynamically injected by error */
+        .filters-container .opacity-50,
+        .filters-container .bg-transparent.border-transparent {
+          display: none !important;
         }
       `}</style>
       {/* 1. CLEAN TOP PAGE HEADER */}
@@ -860,11 +886,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <input type="text" defaultValue="Aug, 2026" className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white" />
                         <div className="flex flex-col gap-1 w-full">
                           <label className="text-[11px] font-bold text-slate-700">Select Department</label>
-                          <div className="flex items-center gap-2 border border-slate-300 rounded p-1 min-h-[34px] bg-white">
-                            <span className="bg-gray-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">Local</span>
-                            <span className="bg-gray-200 text-slate-700 px-2 py-0.5 rounded text-[11px]">International</span>
-                            <span className="text-slate-400 text-xs ml-auto">▼</span>
-                          </div>
+                          <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-full bg-white">
+                            <option>Show All</option>
+                            <option>Local</option>
+                            <option>International</option>
+                            <option>Online</option>
+                          </select>
                         </div>
 
                         {/* Row 3 */}
@@ -903,7 +930,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <input 
                               type="checkbox" 
                               checked={showRate} 
-                              onChange={() => setShowRate(!showRate)} 
+                              onChange={(e) => setShowRate(e.target.checked)} 
                               className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
                             />
                             Show Rate
@@ -912,7 +939,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <input 
                               type="checkbox" 
                               checked={groupByDate} 
-                              onChange={() => setGroupByDate(!groupByDate)} 
+                              onChange={(e) => setGroupByDate(e.target.checked)} 
                               className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" 
                             />
                             Group By Date
@@ -965,14 +992,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="flex justify-between items-center text-[11px] font-bold w-full min-w-[1000px] mb-1">
                         <div>28-Aug-2026</div>
                         <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
-                        <div>Page 1 of 14</div>
+                        <div>Page {currentPage} of {Math.max(1, Math.ceil(9 / 20))}</div>
                       </div>
 
                       {/* Table Container - Strict whitespace-nowrap */}
                       <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
                         <table className="w-full min-w-[1000px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
                           <thead>
-                            <tr className="font-bold text-black border-b border-black">
+                            <tr className="font-bold text-black border-b border-black uppercase">
                               <th className="py-1 px-1 text-left">Date</th>
                               <th className="py-1 px-1 text-left">Time</th>
                               <th className="py-1 px-1 text-left">Invoice #</th>
