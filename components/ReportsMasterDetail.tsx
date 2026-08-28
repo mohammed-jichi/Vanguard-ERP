@@ -704,7 +704,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Comparative Monthly Sales' ? (
-                    /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE */
+                    /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE (EXACT OMEGA REPLICA) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
@@ -721,85 +721,82 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Grid with Full Borders */}
+                      {/* Main Table Container (Full Grid Borders) */}
                       <div className="w-full border border-black text-[10px]">
                         {/* Table Header */}
-                        <div className="flex w-full font-bold text-black border-b border-black bg-slate-100">
-                          <div className="w-[8%] p-1.5 border-r border-black">Year</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">January</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">February</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">March</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">April</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">May</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">June</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">July</div>
-                          <div className="w-[10%] p-1.5 border-r border-black text-right">August</div>
-                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">Total By Year</div>
+                        <div className="flex w-full border-b border-black font-bold text-black text-center bg-slate-50">
+                          <div className="w-[8%] border-r border-black py-1"></div>
+                          <div className="w-[12%] border-r border-black py-1">January</div>
+                          <div className="w-[11%] border-r border-black py-1">February</div>
+                          <div className="w-[11%] border-r border-black py-1">March</div>
+                          <div className="w-[11%] border-r border-black py-1">April</div>
+                          <div className="w-[11%] border-r border-black py-1">May</div>
+                          <div className="w-[11%] border-r border-black py-1">June</div>
+                          <div className="w-[11%] border-r border-black py-1">July</div>
+                          <div className="w-[12%] border-r border-black py-1">August</div>
+                          <div className="w-[12%] py-1 bg-[#cce5ff]">Total By Year</div>
                         </div>
 
-                        {/* Branch Title */}
-                        <div className="p-1.5 font-bold border-b border-black bg-slate-50">
-                          Southern Olive Oil S.A.R.L
-                        </div>
-
-                        {/* Data Rows */}
+                        {/* Row Group 2026 */}
                         <div className="flex w-full border-b border-black font-normal">
-                          <div className="w-[8%] p-1.5 border-r border-black font-bold">2025</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">0.00</div>
-                          <div className="w-[10%] p-1.5 border-r border-black text-right">153,913,400.00</div>
-                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">153,913,400.00</div>
-                        </div>
+                          <div className="w-[8%] border-r border-black flex items-center justify-center font-bold bg-white">2026</div>
+                          
+                          {/* Branch Sub-column */}
+                          <div className="w-[12%] border-r border-black flex flex-col">
+                            <div className="border-b border-black p-1 text-center font-medium bg-white">Southern Olive Oil S.A.R.L</div>
+                            <div className="p-1 text-center font-bold bg-[#cce5ff]">Total</div>
+                          </div>
 
-                        <div className="flex w-full border-b border-black font-normal">
-                          <div className="w-[8%] p-1.5 border-r border-black font-bold">2026</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
-                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,037,698,995.00</div>
-                          <div className="w-[19%] p-1.5 text-right bg-[#dbeafe]">10,433,028,995.00</div>
-                        </div>
+                          {/* Months Data (Normal vs Total Blue) */}
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">3,108,541,520.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">3,108,541,520.00</div>
+                          </div>
+                          
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">2,101,815,950.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">2,101,815,950.00</div>
+                          </div>
 
-                        {/* Branch Subtotal Row */}
-                        <div className="flex w-full border-b border-black font-bold bg-[#dbeafe]">
-                          <div className="w-[8%] p-1.5 border-r border-black text-[9px]">Total by Branch :</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
-                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,191,612,395.00</div>
-                          <div className="w-[19%] p-1.5 text-right bg-[#bfdbfe]">10,586,942,395.00</div>
-                        </div>
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">332,743,800.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">332,743,800.00</div>
+                          </div>
 
-                        {/* Grand Total Row */}
-                        <div className="flex w-full font-bold bg-[#bfdbfe]">
-                          <div className="w-[8%] p-1.5 border-r border-black">Grand Total:</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,120,450,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">980,230,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,450,120,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,210,000,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,680,430,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,520,100,000.00</div>
-                          <div className="w-[9%] p-1.5 border-r border-black text-right">1,434,000,000.00</div>
-                          <div className="w-[10%] p-1.5 border-r border-black text-right">1,191,612,395.00</div>
-                          <div className="w-[19%] p-1.5 text-right bg-[#93c5fd] font-extrabold">10,586,942,395.00</div>
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">648,713,550.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">648,713,550.00</div>
+                          </div>
+
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">192,590,050.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">192,590,050.00</div>
+                          </div>
+
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">665,865,750.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">665,865,750.00</div>
+                          </div>
+
+                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">1,818,326,325.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">1,818,326,325.00</div>
+                          </div>
+
+                          <div className="w-[12%] border-r border-black flex flex-col justify-between text-right pr-1">
+                            <div className="border-b border-black py-1">1,564,432,050.00</div>
+                            <div className="py-1 font-bold bg-[#cce5ff]">1,564,432,050.00</div>
+                          </div>
+
+                          <div className="w-[12%] flex flex-col justify-between text-right pr-1 bg-[#cce5ff] font-bold">
+                            <div className="border-b border-black py-1">10,433,028,995.00</div>
+                            <div className="py-1">10,433,028,995.00</div>
+                          </div>
                         </div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-12 w-full"></div>
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-16 w-full"></div>
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00134</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
