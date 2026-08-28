@@ -3,32 +3,21 @@ import React, { useState } from 'react';
 export const TimerReportTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [filterPeriod, setFilterPeriod] = useState('This Month');
 
-  // ==========================================
-  // 1. DATA GENERATION
-  // ==========================================
-  // Generating a series of dates formatted like Omega: "8/1/26 12:00 AM"
-  const allDates = Array.from({length: 28}, (_, i) => `8/${i+1}/26 12:00 AM`);
-  const allColumns = [...allDates, 'Total'];
-
-  const times = [
-    '10.57.50 AM', '11.42.15 AM', '11.45.25 AM', '11.50.43 AM', 
-    '12.08.17 PM', '12.09.26 PM', '12.21.33 PM', '12.45.25 PM', '12.46.39 PM'
+  // Clean data structure
+  const columns = ['8/26/26', '8/27/26', '8/28/26', 'Total'];
+  
+  const rows = [
+    { time: '11.07.49 AM', vals: ['0.00', '1.00', '0.00', '1.00'] },
+    { time: '11.58.59 AM', vals: ['0.00', '1.00', '0.00', '1.00'] },
+    { time: '12.07.38 PM', vals: ['0.00', '1.00', '0.00', '1.00'] },
+    { time: '3.27.28 PM', vals: ['0.00', '1.00', '0.00', '1.00'] },
+    { time: '5.09.05 PM', vals: ['0.00', '1.00', '0.00', '1.00'] },
+    { time: '5.19.33 PM', vals: ['0.00', '0.00', '1.00', '1.00'] },
+    { time: '5.58.56 PM', vals: ['0.00', '0.00', '1.00', '1.00'] },
   ];
 
-  // ==========================================
-  // 2. CHUNKING ALGORITHM (Strictly 4 columns)
-  // ==========================================
-  const chunkedColumns = [];
-  for (let i = 0; i < allColumns.length; i += 4) {
-    chunkedColumns.push(allColumns.slice(i, i + 4));
-  }
-
-  // Mock Generators for stacked values
-  const getVal = () => "0.00";
-  const getSubTotal = () => "8.00";
-  const getGrandTotal = () => "334.00";
+  const subTotals = ['18.00', '8.00', '16.00', '334.00'];
 
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
@@ -44,31 +33,22 @@ export const TimerReportTemplate = () => {
       {/* FILTER TOOLBAR */}
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
         <div className="flex flex-wrap items-center gap-3 flex-1 w-full">
-          
-          <select 
-            className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[140px]"
-            value={filterPeriod}
-            onChange={(e) => setFilterPeriod(e.target.value)}
-          >
-            <option value="This Month">This Month</option>
-            <option value="Date Range">Date Range</option>
-            <option value="Today">Today</option>
+          <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[140px]">
+            <option>This Month</option>
+            <option>Date Range</option>
+            <option>Today</option>
           </select>
-
           <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
-
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
             <option>Southern Olive Oil Products S.A.R.L</option>
           </select>
-
           <label className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800 cursor-pointer ml-2">
             <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-400" />
             Real Date
           </label>
-          
           <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset</button>
           </div>
         </div>
         
@@ -81,11 +61,7 @@ export const TimerReportTemplate = () => {
           </button>
           <button onClick={() => window.print()} className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-            Print Report
-          </button>
-          <button className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            Export Report
+            Print
           </button>
         </div>
       </div>
@@ -96,7 +72,7 @@ export const TimerReportTemplate = () => {
           {!isFiltered ? (
             <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
                <div className="text-[40px] mb-3 opacity-40">⏱️</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Timer Report.</p>
+               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the Timer Report.</p>
             </div>
           ) : (
             <div className="bg-white p-4">
@@ -105,83 +81,84 @@ export const TimerReportTemplate = () => {
                 <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
                 <h3 className="font-bold text-[14px] text-black text-center mt-4">Timer Report Group by transaction count</h3>
                 
-                <div className="flex justify-between items-end text-[11px] font-bold w-full mt-2 border-b border-black pb-1">
+                <div className="flex justify-between items-end text-[11px] font-bold w-full mt-2 border-b-2 border-black pb-1">
                   <div className="w-[150px] text-left">28-Aug-26</div>
                   <div className="flex-1 flex justify-center gap-16">
                      <span>From Date: 01-Aug-2026</span>
                      <span>To Date: 29-Aug-2026</span>
                   </div>
-                  <div className="w-[150px] text-right">Page 1 of 137</div>
+                  <div className="w-[150px] text-right">Page 1 of 1</div>
                 </div>
               </div>
 
-              {/* 3. DYNAMIC RENDERING ENGINE (4 Columns per Chunk) */}
-              {chunkedColumns.map((chunk, chunkIdx) => (
-                <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
-                  <table className="w-full border-collapse text-[11px] border border-black">
-                    <thead>
-                      <tr>
-                        <th className="border border-black p-1 bg-white min-w-[120px]"></th>
-                        <th className="border border-black p-1 bg-white min-w-[100px]"></th>
-                        {chunk.map((col, i) => (
-                          <th key={i} className={`border border-black p-1.5 text-right font-bold ${col === 'Total' ? 'matrix-total-cell' : 'bg-white'}`}>
-                            {col}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
+              {/* EXACT TABLE LOGIC IMPLEMENTATION */}
+              <table className="w-full border-collapse text-[11px] border border-black">
+                <thead>
+                  <tr>
+                    <th className="border border-black p-1 bg-white w-[150px]"></th>
+                    <th className="border border-black p-1 bg-white w-[100px]"></th>
+                    {columns.map((col, idx) => (
+                      <th key={idx} className={`border border-black p-1.5 text-right font-bold ${col === 'Total' ? 'matrix-total-cell' : 'bg-white'}`}>
+                        {col === 'Total' ? 'Total' : `${col} 12:00 AM`}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                  {/* DATA ROWS */}
+                  {rows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      {rIdx === 0 && (
+                        <td rowSpan={rows.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
+                          Southern Olive Oil Products S.A.R.L
+                        </td>
+                      )}
                       
-                      {/* TIME ROWS */}
-                      {times.map((time, rIdx) => (
-                        <tr key={time}>
-                          {/* Vertical Branch Name (Spans all time rows) */}
-                          {rIdx === 0 && (
-                            <td rowSpan={times.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[120px]">
-                              Southern Olive Oil Products S.A.R.L
-                            </td>
-                          )}
-                          
-                          <td className="border border-black p-1.5 text-center font-bold bg-white w-[100px] whitespace-nowrap">{time}</td>
-                          
-                          {/* Stacked Data Cells */}
-                          {chunk.map((col, i) => (
-                            <td key={`${time}-${i}`} className={`border border-black p-1 text-right ${col === 'Total' ? 'matrix-total-cell font-bold' : 'bg-white'}`}>
-                              <div className="leading-tight">{col === 'Total' ? '1.00' : getVal()}</div>
-                              <div className="leading-tight">{col === 'Total' ? '1.00' : getVal()}</div>
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
+                      <td className="border border-black p-1.5 font-bold text-center whitespace-nowrap bg-white">
+                        {row.time}
+                      </td>
 
-                      {/* BOTTOM TOTAL ROWS (Printed per chunk) */}
-                      {/* Subtotal - Light Blue */}
-                      <tr>
-                        <td colSpan={2} className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
-                        {chunk.map((col, i) => (
-                          <td key={`subtotal-${i}`} className="border border-black p-1 text-right font-bold matrix-total-cell">
-                            <div className="leading-tight">{col === 'Total' ? getGrandTotal() : getSubTotal()}</div>
-                            <div className="leading-tight">{col === 'Total' ? getGrandTotal() : getSubTotal()}</div>
+                      {row.vals.map((val, vIdx) => {
+                        const isTotalColumn = vIdx === row.vals.length - 1;
+                        return (
+                          <td key={vIdx} className={`border border-black p-1 text-right whitespace-nowrap ${isTotalColumn ? 'matrix-total-cell font-bold' : 'bg-white'}`}>
+                            <div className="leading-tight">{val}</div>
+                            <div className="leading-tight">{val}</div>
                           </td>
-                        ))}
-                      </tr>
-                      {/* Grand Total - Deep Blue */}
-                      <tr>
-                        <td colSpan={2} className="border border-black p-1.5 text-center font-bold matrix-grand-total">Total</td>
-                        {chunk.map((col, i) => (
-                          <td key={`grandtotal-${i}`} className="border border-black p-1 text-right font-bold matrix-grand-total">
-                            <div className="leading-tight">{col === 'Total' ? getGrandTotal() : getSubTotal()}</div>
-                            <div className="leading-tight">{col === 'Total' ? getGrandTotal() : getSubTotal()}</div>
-                          </td>
-                        ))}
-                      </tr>
+                        );
+                      })}
+                    </tr>
+                  ))}
 
-                    </tbody>
-                  </table>
-                </div>
-              ))}
+                  {/* BOTTOM TOTAL ROWS LOGIC */}
+                  
+                  {/* 1. Light Blue Subtotal (Cell 1 is EMPTY, Cell 2 is 'Total') */}
+                  <tr>
+                    <td className="border border-black p-1.5 matrix-total-cell"></td>
+                    <td className="border border-black p-1.5 font-bold text-center matrix-total-cell">Total</td>
+                    {subTotals.map((val, vIdx) => (
+                      <td key={vIdx} className="border border-black p-1 text-right font-bold matrix-total-cell">
+                        <div className="leading-tight">{val}</div>
+                        <div className="leading-tight">{val}</div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 2. Deep Blue Grand Total (Cell 1 and 2 are MERGED colSpan=2) */}
+                  <tr>
+                    <td colSpan={2} className="border border-black p-1.5 font-bold text-center matrix-grand-total">Total</td>
+                    {subTotals.map((val, vIdx) => (
+                      <td key={vIdx} className="border border-black p-1 text-right font-bold matrix-grand-total">
+                        <div className="leading-tight">{val}</div>
+                        <div className="leading-tight">{val}</div>
+                      </td>
+                    ))}
+                  </tr>
+
+                </tbody>
+              </table>
               
-              {/* PRINT FOOTER */}
               <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
                 <div className="text-left w-1/3">REP_S_00200</div>
                 <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
