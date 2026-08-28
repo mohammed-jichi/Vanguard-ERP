@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ZoomIn, ZoomOut, Printer, Download, Settings } from 'lucide-react';
 
 export const TransactionsByInvoiceNumberTemplate = () => {
   const [uiShowZeroTax, setUiShowZeroTax] = useState(false);
@@ -36,7 +37,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             {/* Column 1 */}
             <div className="flex flex-col gap-3">
               <select 
-                className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" 
+                className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium" 
                 defaultValue="Transactions by Invoice Number"
                 onChange={(e) => {
                   if ((window as any).setSelectedReport) {
@@ -72,7 +73,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-[11px] font-bold text-slate-700">Branch</label>
-                <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
+                <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium">
                   <option>All Branches</option>
                   <option>Southern Olive Oil S.A.R.L</option>
                 </select>
@@ -101,11 +102,21 @@ export const TransactionsByInvoiceNumberTemplate = () => {
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
         
         <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Export Report</button>
-          <button onClick={() => (window as any).setIsSettingsOpen && (window as any).setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2">⚙️</button>
+          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+            <ZoomIn size={16} />
+          </button>
+          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+            <ZoomOut size={16} />
+          </button>
+          <button onClick={() => window.print()} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Printer size={15} /> Print Report
+          </button>
+          <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Download size={15} /> Export Report
+          </button>
+          <button onClick={() => (window as any).setIsSettingsOpen && (window as any).setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
+            <Settings size={15} />
+          </button>
         </div>
 
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
@@ -115,7 +126,6 @@ export const TransactionsByInvoiceNumberTemplate = () => {
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <div className="text-[40px] mb-2 opacity-30">📊</div>
                <p className="text-slate-500 font-bold text-[14px]">Please select your invoice range and click "Filter Report" to view data.</p>
             </div>
           ) : (

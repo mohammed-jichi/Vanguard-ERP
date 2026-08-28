@@ -935,7 +935,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <Download size={15} /> Export Report
                       </button>
                       <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
-                        ⚙️
+                        <Settings size={15} />
                       </button>
                     </div>
                   </div>

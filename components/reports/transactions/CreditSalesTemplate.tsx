@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
 
 export const CreditSalesTemplate = () => {
   // Controls table visibility
@@ -18,26 +19,30 @@ export const CreditSalesTemplate = () => {
           <p className="text-[12px] text-slate-500">Credit Sales</p>
         </div>
         <div className="flex justify-between items-start gap-6">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-[600px]">
+          <div className="flex-1 max-w-[650px] flex flex-col gap-3">
             
-            {/* Row 1 */}
-            <div className="lg:col-span-1">
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>Last Year</option>
-                <option>This Year</option>
-                <option>This Month</option>
-              </select>
-            </div>
-            <div className="lg:col-span-1">
-              <input type="text" defaultValue="2025" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" />
+            {/* Row 1: Period & Year */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium">
+                  <option>Last Year</option>
+                  <option>This Year</option>
+                  <option>This Month</option>
+                </select>
+              </div>
+              <div>
+                <input type="text" defaultValue="2025" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium" />
+              </div>
             </div>
 
-            {/* Row 2 */}
-            <div className="lg:col-span-1">
-              <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
-                <option>Zeit w zaytoun ljanoub</option>
-                <option>All Branches</option>
-              </select>
+            {/* Row 2: Branch */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white font-medium">
+                  <option>Zeit w zaytoun ljanoub</option>
+                  <option>All Branches</option>
+                </select>
+              </div>
             </div>
           </div>
           
@@ -54,10 +59,18 @@ export const CreditSalesTemplate = () => {
         
         {/* Toolbar */}
         <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Export Report</button>
+          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+            <ZoomIn size={16} />
+          </button>
+          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+            <ZoomOut size={16} />
+          </button>
+          <button onClick={() => window.print()} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Printer size={15} /> Print Report
+          </button>
+          <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Download size={15} /> Export Report
+          </button>
         </div>
 
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
@@ -66,7 +79,6 @@ export const CreditSalesTemplate = () => {
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <div className="text-[40px] mb-2 opacity-30">💳</div>
                <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter Report" to view credit sales.</p>
             </div>
           ) : (

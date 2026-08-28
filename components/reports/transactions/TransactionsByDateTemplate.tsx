@@ -173,7 +173,6 @@ export const TransactionsByDateTemplate = () => {
           {/* Conditional Rendering: Show message if NOT filtered, show table if FILTERED */}
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <div className="text-[40px] mb-2 opacity-30">📊</div>
                <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter Report" to view data.</p>
             </div>
           ) : (

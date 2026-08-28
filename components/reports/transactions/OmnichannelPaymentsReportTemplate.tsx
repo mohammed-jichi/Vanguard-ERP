@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
 
 export const OmnichannelPaymentsReportTemplate = () => {
   const [isFiltered, setIsFiltered] = useState(false);
@@ -47,10 +48,11 @@ export const OmnichannelPaymentsReportTemplate = () => {
           <p className="text-[12px] text-slate-500">Omnichannel Payments & Sales Source</p>
         </div>
         <div className="flex justify-between items-start gap-6">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[900px]">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[950px]">
             
             {/* Column 1: Dates */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+              <label className="text-[11px] font-bold text-slate-700">Period & Date</label>
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>Today</option>
                 <option>Yesterday</option>
@@ -69,7 +71,8 @@ export const OmnichannelPaymentsReportTemplate = () => {
             </div>
 
             {/* Column 2: Sources & Reps */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+              <label className="text-[11px] font-bold text-slate-700">Traffic Source & Channel</label>
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>All Traffic Sources</option>
                 <option>Facebook Ads</option>
@@ -87,7 +90,8 @@ export const OmnichannelPaymentsReportTemplate = () => {
             </div>
 
             {/* Column 3: Payment Providers */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+              <label className="text-[11px] font-bold text-slate-700">Providers & Couriers</label>
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
                 <option>All Payment Providers & Couriers</option>
                 <option>Online: Tap Payments / Paymob</option>
@@ -111,10 +115,18 @@ export const OmnichannelPaymentsReportTemplate = () => {
       <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
         
         <div className="flex justify-end items-center gap-2 mb-4 print:hidden">
-          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➕</button>
-          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs">➖</button>
-          <button onClick={() => window.print()} className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Print Report</button>
-          <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold">Export Report</button>
+          <button onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+            <ZoomIn size={16} />
+          </button>
+          <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+            <ZoomOut size={16} />
+          </button>
+          <button onClick={() => window.print()} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Printer size={15} /> Print Report
+          </button>
+          <button className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+            <Download size={15} /> Export Report
+          </button>
         </div>
 
         <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
@@ -123,7 +135,6 @@ export const OmnichannelPaymentsReportTemplate = () => {
           
           {!isFiltered ? (
             <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <div className="text-[40px] mb-2 opacity-30">📱</div>
                <p className="text-slate-500 font-bold text-[14px]">Please select your filters and click "Filter Report" to view omnichannel sales.</p>
             </div>
           ) : (
