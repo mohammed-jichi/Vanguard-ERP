@@ -97,6 +97,22 @@ const reportMenuData: ReportMenuItem[] = [
   }
 ];
 
+const complexTransactionReports = [
+  'Transactions by Salesman',
+  'Transactions by Date',
+  'Transactions by Employees by Payment',
+  'Transactions by Customers by Employee',
+  'Transactions by Invoice Number',
+  'Duplicate Invoices',
+  'Transactions by Date by Payments',
+  'Transactions by Customers',
+  'Transactions by Customers by Groups',
+  'Transactions by Customers details',
+  'Transactions by Workstation',
+  'Transactions by Employees',
+  'Transactions By Source'
+];
+
 interface ReportsMasterDetailProps {
   onBack?: () => void;
 }
@@ -540,7 +556,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               {/* CARD 1: THE FILTERS CARD (TOP) */}
               <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full filters-container print:hidden">
                 {/* HEADER AREA */}
-                <div className="flex justify-between items-start p-4 border-b border-slate-100">
+                <div className={`flex justify-between items-start p-4 ${!complexTransactionReports.includes(selectedReport || '') ? 'border-b border-slate-100' : ''}`}>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setIsReportListOpen(!isReportListOpen)}
@@ -555,7 +571,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </div>
                   </div>
 
-                  {!['Transactions by Date', 'Transactions by Salesman', 'Transactions by Employees by Payment', 'Transactions by Customers by Employee', 'Transactions by Date by Payments', 'Duplicate Invoices', 'Transactions by Customers', 'Transactions by Customers by Groups', 'Transactions by Customers details', 'Transactions by Workstation', 'Transactions by Employees', 'Transactions By Source'].includes(selectedReport || '') && (
+                  {!complexTransactionReports.includes(selectedReport || '') && (
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       <button
                         onClick={handleFilterReport}
@@ -574,7 +590,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 </div>
 
                 {/* INPUTS AREA */}
-                {!['Transactions by Salesman', 'Transactions by Employees by Payment', 'Transactions by Customers by Employee', 'Duplicate Invoices', 'Transactions by Customers', 'Transactions by Customers by Groups', 'Transactions by Customers details', 'Transactions by Workstation', 'Transactions by Employees', 'Transactions By Source'].includes(selectedReport || '') && (
+                {!complexTransactionReports.includes(selectedReport || '') && (
                   <div className="p-4 flex flex-wrap gap-4 items-center">
                   <select
                     value={period}
