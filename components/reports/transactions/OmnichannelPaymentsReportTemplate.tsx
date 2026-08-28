@@ -52,9 +52,18 @@ export const OmnichannelPaymentsReportTemplate = () => {
             {/* Column 1: Dates */}
             <div className="flex flex-col gap-3">
               <select className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white">
+                <option>Today</option>
+                <option>Yesterday</option>
                 <option>This Month</option>
                 <option>Last Month</option>
+                <option>First Quarter</option>
+                <option>Second Quarter</option>
+                <option>Third Quarter</option>
+                <option>Fourth Quarter</option>
                 <option>This Year</option>
+                <option>Last Year</option>
+                <option>Date Range</option>
+                <option>EOD Date</option>
               </select>
               <input type="text" defaultValue="Aug 2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white" />
             </div>
