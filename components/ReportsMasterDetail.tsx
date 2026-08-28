@@ -112,6 +112,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [invoiceFilter, setInvoiceFilter] = useState<string>('All Invoices');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "Recently Viewed": true,
@@ -706,103 +707,81 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                 {/* BODY AREA */}
                 <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px]">
                   {selectedReport === 'Comparative Monthly Sales' ? (
-                    /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE (EXACT OMEGA REPLICA) */
+                    /* COMPARATIVE MONTHLY SALES NATIVE HTML TABLE (For perfect alignment) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil S.A.R.L
+                      <div className="flex justify-end items-center gap-2 mb-4">
+                        <button className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">🔍</button>
+                        <button className="p-1.5 bg-emerald-700 text-white rounded hover:bg-emerald-800 text-xs cursor-pointer">🔍</button>
+                        <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Print Report</button>
+                        <button className="px-3 py-1.5 bg-slate-700 text-white rounded text-[11px] font-bold cursor-pointer">Export Report</button>
+                        <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer">⚙️</button>
                       </div>
-                      
-                      <div className="text-center font-bold text-[12px] mb-4">
+
+                      <div className="text-center font-bold text-[13px] mb-4">
                         Comparative Monthly Sales
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-2 w-full">
+                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
                         <div>28-Aug-26</div>
+                        <div className="pl-16">Year: 2026</div>
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* Main Table Container (Full Grid Borders) */}
-                      <div className="w-full border border-black text-[10px]">
-                        {/* Table Header */}
-                        <div className="flex w-full border-b border-black font-bold text-black text-center bg-slate-50">
-                          <div className="w-[8%] border-r border-black py-1"></div>
-                          <div className="w-[12%] border-r border-black py-1">January</div>
-                          <div className="w-[11%] border-r border-black py-1">February</div>
-                          <div className="w-[11%] border-r border-black py-1">March</div>
-                          <div className="w-[11%] border-r border-black py-1">April</div>
-                          <div className="w-[11%] border-r border-black py-1">May</div>
-                          <div className="w-[11%] border-r border-black py-1">June</div>
-                          <div className="w-[11%] border-r border-black py-1">July</div>
-                          <div className="w-[12%] border-r border-black py-1">August</div>
-                          <div className="w-[12%] py-1 bg-[#cce5ff]">Total By Year</div>
-                        </div>
-
-                        {/* Row Group 2026 */}
-                        <div className="flex w-full border-b border-black font-normal">
-                          <div className="w-[8%] border-r border-black flex items-center justify-center font-bold bg-white">2026</div>
-                          
-                          {/* Branch Sub-column */}
-                          <div className="w-[12%] border-r border-black flex flex-col">
-                            <div className="border-b border-black p-1 text-center font-medium bg-white">Southern Olive Oil S.A.R.L</div>
-                            <div className="p-1 text-center font-bold bg-[#cce5ff]">Total</div>
-                          </div>
-
-                          {/* Months Data (Normal vs Total Blue) */}
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">3,108,541,520.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">3,108,541,520.00</div>
-                          </div>
-                          
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">2,101,815,950.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">2,101,815,950.00</div>
-                          </div>
-
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">332,743,800.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">332,743,800.00</div>
-                          </div>
-
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">648,713,550.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">648,713,550.00</div>
-                          </div>
-
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">192,590,050.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">192,590,050.00</div>
-                          </div>
-
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">665,865,750.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">665,865,750.00</div>
-                          </div>
-
-                          <div className="w-[11%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">1,818,326,325.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">1,818,326,325.00</div>
-                          </div>
-
-                          <div className="w-[12%] border-r border-black flex flex-col justify-between text-right pr-1">
-                            <div className="border-b border-black py-1">1,564,432,050.00</div>
-                            <div className="py-1 font-bold bg-[#cce5ff]">1,564,432,050.00</div>
-                          </div>
-
-                          <div className="w-[12%] flex flex-col justify-between text-right pr-1 bg-[#cce5ff] font-bold">
-                            <div className="border-b border-black py-1">10,433,028,995.00</div>
-                            <div className="py-1">10,433,028,995.00</div>
-                          </div>
-                        </div>
+                      {/* Strict Native Table Implementation */}
+                      <div className="w-full mt-1 overflow-x-auto">
+                        <table className="w-full border-collapse border-t border-l border-r border-black text-[11px]">
+                          <thead>
+                            <tr className="font-bold text-black text-center bg-slate-50">
+                              <th className="border-b border-r border-black py-1.5 w-[5%]"></th>
+                              <th className="border-b border-r border-black py-1.5 w-[11%]"></th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">January</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">February</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">March</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">April</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">May</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">June</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">July</th>
+                              <th className="border-b border-r border-black py-1.5 w-[9%]">August</th>
+                              <th className="border-b border-black py-1.5 w-[12%] bg-[#cce5ff]">Total By Year</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="font-normal bg-white">
+                              <td rowSpan={2} className="border-b border-r border-black font-bold text-center w-[5%] align-middle">2026</td>
+                              <td className="border-b border-r border-black p-1.5 text-center w-[11%] font-medium">Southern Olive Oil S.A.R.L</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">3,108,541,520.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">2,101,815,950.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">332,743,800.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">648,713,550.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">192,590,050.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">665,865,750.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,818,326,325.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,564,432,050.00</td>
+                              <td className="border-b border-black text-right pr-1 py-1.5 w-[12%] font-bold bg-[#cce5ff]">10,433,028,995.00</td>
+                            </tr>
+                            <tr className="font-bold bg-[#cce5ff]">
+                              <td className="border-b border-r border-black p-1.5 text-center w-[11%]">Total</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">3,108,541,520.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">2,101,815,950.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">332,743,800.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">648,713,550.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">192,590,050.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">665,865,750.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,818,326,325.00</td>
+                              <td className="border-b border-r border-black text-right pr-1 py-1.5 w-[9%]">1,564,432,050.00</td>
+                              <td className="border-b border-black text-right pr-1 py-1.5 w-[12%]">10,433,028,995.00</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-16 w-full"></div>
+                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full"></div>
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00134</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right"><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="hover:underline">www.vanguarderp.com</a></div>
                       </div>
                     </div>
                   ) : selectedReport === 'Comparative Yearly Sales' ? (
@@ -5632,29 +5611,26 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         {/* SETTINGS MODAL COMPONENT */}
         {isSettingsOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col">
-              {/* Modal Header */}
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col my-8">
               <div className="flex justify-between items-center p-4 border-b border-gray-200">
                 <h2 className="text-[16px] font-bold text-slate-800">Settings</h2>
                 <button onClick={() => setIsSettingsOpen(false)} className="text-gray-500 hover:text-gray-700 font-bold text-lg cursor-pointer">×</button>
               </div>
 
-              {/* Modal Body */}
-              <div className="p-4 bg-gray-50 flex flex-col gap-4 overflow-y-auto max-h-[80vh]">
+              <div className="p-4 bg-gray-50 flex flex-col gap-4 overflow-y-auto max-h-[75vh]">
                 
-                {/* Default Date Range Selection */}
                 <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-4">
                   <div className="flex justify-between items-center w-full">
                     <h3 className="text-[13px] font-bold text-slate-800">Default Date Range Selection</h3>
                     <button className="px-4 py-1.5 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Save</button>
                   </div>
-                  <select className="border border-slate-300 rounded p-2 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-slate-50">
-                    <option>This Month</option>
-                    <option>EOD date</option>
+                  <select className="border border-slate-300 rounded p-2 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[250px] bg-white h-[38px]">
+                    <option value="">Select Option...</option>
+                    <option value="This Month">This Month</option>
+                    <option value="EOD date">EOD date</option>
                   </select>
                 </div>
 
-                {/* Toolbar Categories */}
                 <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-3">
                   <div className="flex justify-between items-start w-full mb-2">
                     <div>
@@ -5664,33 +5640,51 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <button onClick={() => setIsCustomCategoryOpen(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Custom Category</button>
                   </div>
 
-                  {/* Search Bar */}
                   <div className="relative w-full">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
                     <input type="text" placeholder="Search..." className="w-full border border-slate-300 rounded p-2 pl-8 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
                   </div>
 
-                  {/* Category List Items */}
-                  {[
-                    { label: 'Recently Viewed', checked: false, hasButton: false },
-                    { label: 'Internal Control', checked: false, hasButton: false },
-                    { label: 'Financial', checked: false, hasButton: true },
-                    { label: 'Product Sales', checked: false, hasButton: true },
-                    { label: 'Customer Sales', checked: false, hasButton: true },
-                    { label: "Today's & History", checked: false, hasButton: true },
-                    { label: 'Time & Attendance', checked: false, hasButton: true },
-                    { label: 'Lists', checked: false, hasButton: true }
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center border border-slate-200 rounded p-3">
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" defaultChecked={item.checked} className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                        <span className="text-[13px] text-slate-700">{item.label}</span>
-                      </label>
-                      {item.hasButton && (
-                        <button className="border border-slate-300 rounded px-2 py-0.5 text-slate-500 hover:bg-slate-50 text-xs cursor-pointer">«</button>
-                      )}
-                    </div>
-                  ))}
+                  <div className="flex flex-col gap-2 mt-2">
+                    {[
+                      { label: 'Recently Viewed', checked: false, hasButton: false },
+                      { label: 'Internal Control', checked: false, hasButton: false },
+                      { label: 'Financial', checked: false, hasButton: true, subReports: ['Profit By Invoices', 'Comparative Monthly Sales'] },
+                      { label: 'Product Sales', checked: false, hasButton: true, subReports: ['Sales summary by day', 'Profit by item summary'] },
+                      { label: 'Customer Sales', checked: false, hasButton: true, subReports: ['Customer Statement'] },
+                      { label: "Today's & History", checked: false, hasButton: true, subReports: ['Transactions on Hold'] },
+                      { label: 'Time & Attendance', checked: false, hasButton: true, subReports: ['Attendance List'] },
+                      { label: 'Lists', checked: false, hasButton: true, subReports: ['System Lists'] }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex flex-col border border-slate-200 rounded">
+                        <div className="flex justify-between items-center p-3 bg-white rounded">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" defaultChecked={item.checked} className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <span className="text-[13px] text-slate-700">{item.label}</span>
+                          </label>
+                          {item.hasButton && (
+                            <button 
+                              onClick={() => setExpandedCategory(expandedCategory === item.label ? null : item.label)} 
+                              className="border border-slate-300 rounded px-2 py-0.5 text-slate-500 hover:bg-slate-100 text-xs transition-colors cursor-pointer"
+                            >
+                              «
+                            </button>
+                          )}
+                        </div>
+                        {/* Accordion Dropdown for Sub-reports */}
+                        {expandedCategory === item.label && item.subReports && (
+                          <div className="flex flex-col gap-2 p-3 border-t border-slate-200 bg-slate-50">
+                            {item.subReports.map((report, rIdx) => (
+                              <label key={rIdx} className="flex items-center gap-3 cursor-pointer pl-7">
+                                <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <span className="text-[12px] text-slate-600">{report}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
