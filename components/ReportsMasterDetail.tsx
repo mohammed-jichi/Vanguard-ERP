@@ -134,7 +134,9 @@ const complexTransactionReports = [
   'Credit Sales',
   'Credit Card Report',
   'Omnichannel Report',
-  'Omnichannel Payments Report'
+  'Omnichannel Payments Report',
+  'Omnichannel Payments & Sales Source',
+  'Omnichannel Payments & Sales Source Report'
 ];
 
 interface ReportsMasterDetailProps {
@@ -577,25 +579,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             /* ACTIVE REPORT DETAILED VIEW: TWO-CARD LAYOUT */
             <div className="w-full space-y-6">
               
-              {/* CARD 1: THE FILTERS CARD (TOP) */}
-              <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full filters-container print:hidden">
-                {/* HEADER AREA */}
-                <div className={`flex justify-between items-start p-4 ${!complexTransactionReports.includes(selectedReport || '') ? 'border-b border-slate-100' : ''}`}>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setIsReportListOpen(!isReportListOpen)}
-                      title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
-                      className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
-                    >
-                      <Menu className="w-5 h-5" />
-                    </button>
-                    <div>
-                      <h4 className="font-bold text-slate-800 text-sm">Filters</h4>
-                      <span className="text-xs text-slate-500 block mt-0.5">{selectedReport}</span>
+              {/* CARD 1: THE FILTERS CARD (TOP) - Suppressed for complex self-contained reports */}
+              {!complexTransactionReports.includes(selectedReport || '') && (
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm w-full filters-container print:hidden">
+                  {/* HEADER AREA */}
+                  <div className="flex justify-between items-start p-4 border-b border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setIsReportListOpen(!isReportListOpen)}
+                        title={isReportListOpen ? "Hide Report Categories" : "Show Report Categories"}
+                        className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0"
+                      >
+                        <Menu className="w-5 h-5" />
+                      </button>
+                      <div>
+                        <h4 className="font-bold text-slate-800 text-sm">Filters</h4>
+                        <span className="text-xs text-slate-500 block mt-0.5">{selectedReport}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  {!complexTransactionReports.includes(selectedReport || '') && (
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                       <button
                         onClick={handleFilterReport}
@@ -610,11 +612,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Reset Filters
                       </button>
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* INPUTS AREA */}
-                {!complexTransactionReports.includes(selectedReport || '') && (
+                  {/* INPUTS AREA */}
                   <div className="p-4 flex flex-wrap gap-4 items-center">
                   <select
                     value={period}
@@ -910,37 +910,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   )}
 
                   {/* Custom report inline filters cleaned up for decoupled template components */}
-                </div>
-              )}
-              </div>
-
-              {/* CARD 2: THE REPORT DATA CARD (BOTTOM) */}
-              <div className="bg-white border border-slate-200 rounded-xl shadow-sm min-h-[400px] flex flex-col w-full">
-                {/* HEADER AREA */}
-                <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl print:hidden">
-                  <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
-
-                  <div className="flex items-center gap-2">
-                    <button onClick={handleZoomIn} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
-                      <ZoomIn size={16} />
-                    </button>
-                    <button onClick={handleZoomOut} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
-                      <ZoomOut size={16} />
-                    </button>
-                    <button onClick={handlePrint} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-                      <Printer size={15} /> Print Report
-                    </button>
-                    <button onClick={handleExportCSV} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
-                      <Download size={15} /> Export Report
-                    </button>
-                    <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
-                      ⚙️
-                    </button>
                   </div>
                 </div>
+              )}
+
+              {/* CARD 2: THE REPORT DATA CARD (BOTTOM) */}
+              <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full flex flex-col items-center" : "bg-white border border-slate-200 rounded-xl shadow-sm min-h-[400px] flex flex-col w-full"}>
+                {/* HEADER AREA - Suppressed for complex self-contained reports */}
+                {!complexTransactionReports.includes(selectedReport || '') && (
+                  <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-xl print:hidden">
+                    <h3 className="font-bold text-slate-900 text-sm">{selectedReport}</h3>
+
+                    <div className="flex items-center gap-2">
+                      <button onClick={handleZoomIn} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+                        <ZoomIn size={16} />
+                      </button>
+                      <button onClick={handleZoomOut} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+                        <ZoomOut size={16} />
+                      </button>
+                      <button onClick={handlePrint} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                        <Printer size={15} /> Print Report
+                      </button>
+                      <button onClick={handleExportCSV} className="bg-[#475569] hover:bg-[#334155] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5">
+                        <Download size={15} /> Export Report
+                      </button>
+                      <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs ml-2 cursor-pointer" title="Settings">
+                        ⚙️
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* BODY AREA */}
-                <div className="flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top report-wrapper" style={{ transform: `scale(${zoomLevel})` }}>
+                <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "flex-1 bg-white p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top report-wrapper"} style={!complexTransactionReports.includes(selectedReport || '') ? { transform: `scale(${zoomLevel})` } : undefined}>
                   {selectedReport === 'Transactions by Date' ? (
                     <TransactionsByDateTemplate />
                   ) : selectedReport === 'Transactions by Salesman' ? (
