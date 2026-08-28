@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   RotateCcw,
   Search,
@@ -103,6 +103,12 @@ interface ReportsMasterDetailProps {
 
 export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps) {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
+
+  useEffect(() => {
+    (window as any).setSelectedReport = (reportName: string) => {
+      setSelectedReport(reportName);
+    };
+  }, []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
   const [period, setPeriod] = useState<string>('This Month');
@@ -6279,7 +6285,29 @@ export const TransactionsBySalesmanTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Salesman</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Salesman"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6338,9 +6366,6 @@ export const TransactionsBySalesmanTemplate = () => {
     </div>
   );
 };
-
-
-// ==========================================
 // 2. Transactions by Employees by Payment
 // ==========================================
 export const TransactionsByEmployeesByPaymentTemplate = () => {
@@ -6355,7 +6380,29 @@ export const TransactionsByEmployeesByPaymentTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Employees by Payment</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Employees by Payment"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6422,7 +6469,29 @@ export const TransactionsByCustomersByEmployeeTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Customers by Employee</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Customers by Employee"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6493,7 +6562,29 @@ export const DuplicateInvoicesTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Duplicate Invoices</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Duplicate Invoices"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6562,7 +6653,29 @@ export const TransactionsByCustomersTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Customers</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Customers"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6650,10 +6763,6 @@ export const TransactionsByCustomersTemplate = () => {
                     <td colSpan={7} className="py-1 px-1 text-right">0.00</td>
                 </tr>
                 <tr className="font-bold">
-                    <td colSpan={2} className="py-1 px-1">Net Revenue:</td>
-                    <td colSpan={7} className="py-1 px-1 text-right">248,400,000.00</td>
-                </tr>
-                <tr className="font-bold">
                     <td colSpan={2} className="py-1 px-1">Net Sales:</td>
                     <td colSpan={7} className="py-1 px-1 text-right">248,400,000.00</td>
                 </tr>
@@ -6680,7 +6789,29 @@ export const TransactionsByCustomersByGroupsTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Customers by Groups</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Customers by Groups"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>All Branches</option></select>
@@ -6748,7 +6879,29 @@ export const TransactionsByCustomersDetailsTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
-            <select className="w-full lg:col-span-3"><option>Transactions by Customers details</option></select>
+            <select 
+              className="w-full lg:col-span-3 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Customers details"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Year</option></select>
             <input type="text" defaultValue="2026" className="w-full" />
             <div className="hidden lg:block"></div>
@@ -6852,7 +7005,29 @@ export const TransactionsByWorkstationTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Workstation</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Workstation"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             <select className="w-full"><option>Southern Olive Oil S.A.R.L</option></select>
@@ -6909,7 +7084,29 @@ export const TransactionsByEmployeesTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
-            <select className="w-full lg:col-span-2"><option>Transactions by Employees</option></select>
+            <select 
+              className="w-full lg:col-span-2 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions by Employees"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>This Month</option></select>
             <input type="text" defaultValue="Aug, 2026" className="w-full" />
             
@@ -7123,7 +7320,29 @@ export const TransactionsBySourceTemplate = () => {
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
-            <select className="w-full lg:col-span-3"><option>Transactions By Source</option></select>
+            <select 
+              className="w-full lg:col-span-3 border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 bg-white"
+              defaultValue="Transactions By Source"
+              onChange={(e) => {
+                 if ((window as any).setSelectedReport) {
+                   (window as any).setSelectedReport(e.target.value);
+                 }
+              }}
+            >
+              <option>Transactions by Salesman</option>
+              <option>Transactions by Date</option>
+              <option>Transactions by Employees by Payment</option>
+              <option>Transactions by Customers by Employee</option>
+              <option>Transactions by Invoice Number</option>
+              <option>Duplicate Invoices</option>
+              <option>Transactions by Date by Payments</option>
+              <option>Transactions by Customers</option>
+              <option>Transactions by Customers by Groups</option>
+              <option>Transactions by Customers details</option>
+              <option>Transactions by Workstation</option>
+              <option>Transactions by Employees</option>
+              <option>Transactions By Source</option>
+            </select>
             <select className="w-full"><option>Date Range</option></select>
             <input type="text" defaultValue="28-Aug-2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px]" />
             <input type="text" defaultValue="28-Aug-2026" className="w-full border border-slate-300 rounded p-1.5 text-[13px]" />
