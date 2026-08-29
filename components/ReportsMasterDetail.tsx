@@ -34,6 +34,7 @@ import { OmnichannelPaymentsReportTemplate } from './reports/transactions/Omnich
 import { ElectronicJournalTemplate } from './reports/transactions/ElectronicJournalTemplate';
 import { TimerReportTemplate } from './reports/transactions/TimerReportTemplate';
 import { TimeReportByDateTemplate } from './reports/transactions/TimeReportByDateTemplate';
+import { SummaryOfSalesByItemsTemplate } from './reports/sales/SummaryOfSalesByItemsTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -147,7 +148,8 @@ const complexTransactionReports = [
   'Time report by date',
   'Time report - Average Check',
   'Time report By EOD date',
-  'Transaction Report by Time'
+  'Transaction Report by Time',
+  'Summary of Sales By Items'
 ];
 
 interface ReportsMasterDetailProps {
@@ -991,6 +993,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <TimeReportByDateTemplate />
                   ) : selectedReport === 'Timer Report Group by transaction count' || selectedReport === 'Time report - Average Check' || selectedReport === 'Time report By EOD date' || selectedReport === 'Transaction Report by Time' ? (
                     <TimerReportTemplate />
+                  ) : selectedReport === 'Summary of Sales By Items' ? (
+                    <SummaryOfSalesByItemsTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
