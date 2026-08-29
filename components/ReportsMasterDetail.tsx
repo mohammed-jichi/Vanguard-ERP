@@ -156,7 +156,13 @@ const complexTransactionReports = [
   'Sales by Items By Group',
   'Sales by Items by Group',
   'Sales details for one sales item',
-  'Sales Details for One Sales Item'
+  'Sales Details for One Sales Item',
+  'Sales by Items',
+  'Sales by Items (Group by Mode)',
+  'Sales by Item by Salesman',
+  'Sales By Items (service items only)',
+  'Sales by Items by Customer',
+  'Sales by Item by Size by Color'
 ];
 
 interface ReportsMasterDetailProps {
