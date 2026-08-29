@@ -1,0 +1,254 @@
+<!-- ========================================================================= -->
+<!-- VANGUARD ERP - UNIFIED SIDEBAR & NAVIGATION WORKSPACE                     -->
+<!-- Company: Southern Olive Oil Products S.A.R.L                             -->
+<!-- ========================================================================= -->
+
+<!-- 1. Top Context & Header Bar -->
+<header id="vanguardHeader" class="w-full bg-[#1e232d] border-b border-slate-700/60 px-4 py-2 flex items-center justify-between text-slate-200 sticky top-0 z-50">
+  <div class="flex items-center gap-3">
+    <!-- Sidebar Toggle Button -->
+    <button onclick="toggleSouthernSidebar()" class="p-1.5 rounded hover:bg-slate-700 text-slate-300 transition-colors" title="Toggle Navigation">
+      <i class="fa-solid fa-bars text-base"></i>
+    </button>
+
+    <!-- Company Branding & Active Branch -->
+    <div class="flex items-center gap-2">
+      <span class="font-bold text-sm text-white tracking-wide">Southern Olive Oil Products S.A.R.L</span>
+      <span class="text-slate-500">|</span>
+      
+      <!-- Branch Selector Dropdown -->
+      <div class="relative inline-block">
+        <select id="branchSelector" onchange="handleBranchChange(this.value)" class="bg-slate-800 text-xs text-amber-400 font-semibold border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-amber-500 cursor-pointer">
+          <option value="choueifat" selected>فرع الشويفات (الرئيسي)</option>
+          <option value="beirut">فرع بيروت</option>
+          <option value="pressing_plant">المعصرة والإنتاج المركزي</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Breadcrumbs & Status -->
+  <div class="flex items-center gap-3 text-xs">
+    <nav id="vanguardBreadcrumbs" class="flex items-center gap-1.5 text-slate-400">
+      <span>Home</span>
+      <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+      <span class="text-white font-medium" id="currentModuleBreadcrumb">Operations & Pressing Center</span>
+      <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+      <span class="text-amber-400" id="currentScreenBreadcrumb">Olive Pressing & Production</span>
+    </nav>
+    <div class="h-4 w-px bg-slate-700"></div>
+    <div class="flex items-center gap-1.5 text-emerald-400 font-medium">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>System Live</span>
+    </div>
+  </div>
+</header>
+
+<!-- 2. Vanguard ERP Main Sidebar -->
+<aside id="southernSidebar" class="w-64 bg-[#141820] text-slate-300 border-r border-slate-800/80 flex flex-col h-[calc(100vh-45px)] select-none transition-all duration-200">
+  
+  <!-- Navigation Modules List -->
+  <div class="flex-1 overflow-y-auto py-3 px-2 space-y-1 custom-scrollbar">
+    
+    <!-- 1. Sales Control & POS -->
+    <div class="nav-item">
+      <button onclick="switchSouthernScreen('pos', '1. Sales Control & POS', 'POS Terminal')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-cart-shopping text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
+          <span>1. Sales Control & POS</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+      </button>
+    </div>
+
+    <!-- 2. SuperSonic Fleet Management (Locked Status) -->
+    <div class="nav-item">
+      <button class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:bg-slate-800/40 transition-colors cursor-not-allowed group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-truck-fast text-slate-500 text-sm w-4 text-center"></i>
+          <span>2. SuperSonic Fleet Management</span>
+        </div>
+        <!-- Status Indicator at the End -->
+        <span title="Coming Soon / Restricted" class="text-slate-500 text-xs px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700/50">
+          <i class="fa-solid fa-lock text-[10px]"></i>
+        </span>
+      </button>
+    </div>
+
+    <!-- 3. Social CRM & Support (ENT - Locked Status) -->
+    <div class="nav-item">
+      <button class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:bg-slate-800/40 transition-colors cursor-not-allowed group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-share-nodes text-slate-500 text-sm w-4 text-center"></i>
+          <span>3. Social CRM & Support</span>
+        </div>
+        <!-- Enterprise Badge & Lock on the Right -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">ENT</span>
+          <i class="fa-solid fa-lock text-[10px] text-slate-500"></i>
+        </div>
+      </button>
+    </div>
+
+    <!-- 4. Operations & Pressing Center (Expandable Accordion) -->
+    <div class="nav-item" id="accordionGroup-operations">
+      <button onclick="toggleAccordion('accordionGroup-operations')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-semibold bg-slate-800/90 text-amber-400 border-l-2 border-amber-500 transition-colors group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-chart-line text-amber-400 text-sm w-4 text-center"></i>
+          <span>4. Operations & Pressing Center</span>
+        </div>
+        <i class="fa-solid fa-chevron-down text-[10px] text-amber-400 transition-transform duration-200 accordion-arrow"></i>
+      </button>
+
+      <!-- Sub-Items Tree -->
+      <div class="accordion-content pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-700/50 ml-4 mt-1">
+        <button onclick="switchSouthernScreen('ops-dash', '4. Operations & Pressing Center', 'Dashboard')" class="subnav-btn w-full text-left px-2.5 py-1.5 rounded text-[12.5px] text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-gauge-high text-xs w-3.5 text-center text-slate-500"></i>
+          <span>Operations Center Dashboard</span>
+        </button>
+
+        <button onclick="switchSouthernScreen('olive-pressing', '4. Operations & Pressing Center', 'Olive Pressing & Production')" class="subnav-btn active-subnav w-full text-left px-2.5 py-1.5 rounded text-[12.5px] font-medium text-amber-300 bg-amber-500/10 transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-droplet text-xs w-3.5 text-center text-amber-400"></i>
+          <span>Olive Pressing & Production</span>
+        </button>
+
+        <button onclick="switchSouthernScreen('ops-reports', '4. Operations & Pressing Center', 'Reports')" class="subnav-btn w-full text-left px-2.5 py-1.5 rounded text-[12.5px] text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-file-lines text-xs w-3.5 text-center text-slate-500"></i>
+          <span>Operations & Pressing Reports</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. Customer Management & AR -->
+    <div class="nav-item">
+      <button onclick="switchSouthernScreen('customers', '5. Customer Management & AR', 'Customer Directory')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-users text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
+          <span>5. Customer Management & AR</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+      </button>
+    </div>
+
+    <!-- 6. Accounting & Finance -->
+    <div class="nav-item">
+      <button onclick="switchSouthernScreen('accounting', '6. Accounting & Finance', 'General Ledger')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-calculator text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
+          <span>6. Accounting & Finance</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+      </button>
+    </div>
+
+    <!-- 7. HR & Payroll Management -->
+    <div class="nav-item">
+      <button onclick="switchSouthernScreen('hr', '7. HR & Payroll Management', 'Employee Directory')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-id-card-clip text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
+          <span>7. HR & Payroll Management</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Sidebar Footer: System ID & Version -->
+  <div class="p-3 bg-[#0f1218] border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
+    <span>Vanguard ERP v2.6</span>
+    <span class="text-slate-400 font-mono">SO-SARL</span>
+  </div>
+</aside>
+
+<!-- ========================================================================= -->
+<!-- JAVASCRIPT CONTROLLERS & EVENT HANDLERS                                   -->
+<!-- ========================================================================= -->
+<script>
+  /**
+   * Toggles the main Sidebar open/close state
+   */
+  function toggleSouthernSidebar() {
+    const sidebar = document.getElementById("southernSidebar");
+    if (sidebar) {
+      sidebar.classList.toggle("hidden");
+    }
+  }
+
+  /**
+   * Toggles Accordion groups in the Sidebar
+   */
+  function toggleAccordion(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    
+    const content = group.querySelector(".accordion-content");
+    const arrow = group.querySelector(".accordion-arrow");
+    
+    if (content) {
+      const isHidden = content.classList.toggle("hidden");
+      if (arrow) {
+        arrow.style.transform = isHidden ? "rotate(-90deg)" : "rotate(0deg)";
+      }
+    }
+  }
+
+  /**
+   * Switches screens and automatically synchronizes Breadcrumbs and active states
+   */
+  function switchSouthernScreen(screenKey, moduleName, subScreenName) {
+    // 1. Update Breadcrumbs in Header
+    const modBreadcrumb = document.getElementById("currentModuleBreadcrumb");
+    const scrBreadcrumb = document.getElementById("currentScreenBreadcrumb");
+    
+    if (modBreadcrumb && moduleName) modBreadcrumb.textContent = moduleName;
+    if (scrBreadcrumb && subScreenName) scrBreadcrumb.textContent = subScreenName;
+
+    // 2. Hide all workspace page views and display target screen
+    const allViews = document.querySelectorAll(".vanguard-screen-view");
+    allViews.forEach(view => {
+      view.classList.add("hidden");
+      view.classList.remove("active");
+    });
+
+    const targetView = document.getElementById("view-" + screenKey);
+    if (targetView) {
+      targetView.classList.remove("hidden");
+      targetView.classList.add("active");
+    }
+
+    // 3. Update Subnav Active Styling
+    const allSubnavs = document.querySelectorAll(".subnav-btn");
+    allSubnavs.forEach(btn => {
+      btn.classList.remove("active-subnav", "text-amber-300", "bg-amber-500/10", "font-medium");
+      btn.classList.add("text-slate-400");
+    });
+
+    if (event && event.currentTarget && event.currentTarget.classList.contains("subnav-btn")) {
+      const current = event.currentTarget;
+      current.classList.add("active-subnav", "text-amber-300", "bg-amber-500/10", "font-medium");
+      current.classList.remove("text-slate-400");
+    }
+
+    console.log(`[Vanguard ERP] Switched to module: ${moduleName} -> ${subScreenName}`);
+  }
+
+  /**
+   * Handles switching the active company branch
+   */
+  function handleBranchChange(selectedBranch) {
+    localStorage.setItem("vanguard_active_branch", selectedBranch);
+    console.log(`[Vanguard ERP] Active branch updated to: ${selectedBranch}`);
+    // Optional: trigger branch data refresh event across active modules
+    window.dispatchEvent(new CustomEvent("vanguardBranchChanged", { detail: { branch: selectedBranch } }));
+  }
+
+  // Restore active branch on initial load
+  document.addEventListener("DOMContentLoaded", function () {
+    const savedBranch = localStorage.getItem("vanguard_active_branch");
+    const branchSelector = document.getElementById("branchSelector");
+    if (savedBranch && branchSelector) {
+      branchSelector.value = savedBranch;
+    }
+  });
+</script>
