@@ -373,6 +373,16 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         .filters-container .bg-transparent.border-transparent {
           display: none !important;
         }
+
+        /* Force Omega Blue on all Category Header text and icons */
+        .omega-category-title,
+        .report-category-header,
+        .report-category-header span,
+        [class*="sticky"] span,
+        [class*="sticky"] svg {
+          color: #195a96 !important;
+          stroke: #195a96 !important;
+        }
       `}</style>
       {/* 1. PRIMARY PAGE HEADER (CONSOLIDATED & PROMOTED) */}
       <div className="bg-white border border-slate-200 rounded-xl px-4 py-3.5 shadow-xs flex items-center justify-between gap-4 w-full print:hidden">
@@ -464,11 +474,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div key={section.category} className="py-1">
                       <div
                         onClick={() => toggleCategory(section.category)}
-                        className="text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                        style={{ color: '#195a96' }}
+                        className="report-category-header text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
                       >
-                        <span>{section.category}</span>
+                        <span style={{ color: '#195a96' }}>{section.category}</span>
                         <ChevronDown
                           size={16}
+                          style={{ color: '#195a96', stroke: '#195a96' }}
                           className={`text-[#195a96] transition-transform duration-200 ${
                             isCatExpanded ? 'rotate-180' : ''
                           }`}
@@ -515,11 +527,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <div key={section.category} className="py-1">
                     <div
                       onClick={() => toggleCategory(section.category)}
-                      className="text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                      style={{ color: '#195a96' }}
+                      className="report-category-header text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
                     >
-                      <span>{section.category}</span>
+                      <span style={{ color: '#195a96' }}>{section.category}</span>
                       <ChevronDown
                         size={16}
+                        style={{ color: '#195a96', stroke: '#195a96' }}
                         className={`text-[#195a96] transition-transform duration-200 ${
                           isCatExpanded ? 'rotate-180' : ''
                         }`}

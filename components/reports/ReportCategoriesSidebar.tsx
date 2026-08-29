@@ -55,15 +55,13 @@ export default function ReportCategoriesSidebar({
       
       {/* 1. Global CSS Override for Report Category Titles */}
       <style dangerouslySetInnerHTML={{ __html: `
-        /* Force Omega Blue on all Category Header text and icons */
+        .omega-category-title,
         .report-category-header,
         .report-category-header span,
-        div[class*="overflow-y-auto"] .sticky,
-        div[class*="overflow-y-auto"] .sticky span,
-        div[class*="overflow-y-auto"] .sticky svg {
+        [class*="sticky"] span,
+        [class*="sticky"] svg {
           color: #195a96 !important;
           stroke: #195a96 !important;
-          fill: none !important;
         }
       `}} />
 
