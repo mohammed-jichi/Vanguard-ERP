@@ -61,8 +61,8 @@ export default function ReportCategoriesSidebar({
           </svg>
         </div>
         <h2 
-          style={{ color: '#1a629b' }} 
-          className="text-[15px] font-bold tracking-tight text-[#1a629b]"
+          style={{ color: '#195a96' }} 
+          className="text-[15px] font-bold tracking-tight text-[#195a96]"
         >
           Search Reports
         </h2>
@@ -83,7 +83,7 @@ export default function ReportCategoriesSidebar({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search reports..."
-          className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b] transition-all"
+          className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#195a96] focus:ring-1 focus:ring-[#195a96] transition-all"
         />
       </div>
 
@@ -93,32 +93,31 @@ export default function ReportCategoriesSidebar({
           const isOpen = openCategoryId === category.id;
           return (
             <div key={category.id} className="border-b border-slate-200">
-              <button
-                type="button"
+              <div 
+                style={{ color: '#195a96' }}
                 onClick={() => toggleCategory(category.id)}
-                className="w-full flex items-center justify-between py-2.5 px-2 hover:bg-blue-50/40 rounded transition-colors text-left group"
+                className="font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
               >
-                {/* Title in Omega Blue */}
-                <span
-                  style={{ color: '#1a629b' }}
-                  className="text-[13.5px] font-bold text-[#1a629b] group-hover:text-[#0c3e66] transition-colors"
-                >
-                  {category.name}
+                <span style={{ color: '#195a96' }}>
+                  {category.name || 'Recently Viewed'}
                 </span>
 
-                {/* Chevron Icon in Omega Blue */}
-                <svg
-                  style={{ color: '#1a629b' }}
-                  className={`w-3.5 h-3.5 text-[#1a629b] transition-transform duration-200 ${
-                    isOpen ? 'transform rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <svg 
+                  style={{ color: '#195a96' }}
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className={`lucide lucide-chevron-down transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-              </button>
+              </div>
 
               {/* Sub-Reports List if Accordion is Open */}
               {isOpen && category.reports && category.reports.length > 0 && (
@@ -132,8 +131,8 @@ export default function ReportCategoriesSidebar({
                         onClick={() => onSelectReport && onSelectReport(report)}
                         className={`w-full text-left py-1 px-2 rounded text-xs transition-colors ${
                           isSelected
-                            ? 'bg-[#1a629b] text-white font-medium'
-                            : 'text-slate-600 hover:text-[#1a629b] hover:bg-white'
+                            ? 'bg-[#195a96] text-white font-medium'
+                            : 'text-slate-600 hover:text-[#195a96] hover:bg-white'
                         }`}
                       >
                         {report.title}
