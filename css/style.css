@@ -3364,3 +3364,38 @@ input.report-filter:focus,
   outline: none !important;
   box-shadow: 0 0 0 1px #2563eb !important;
 }
+
+/* =========================================================
+   VANGUARD ERP: GLOBAL REPORT TABLE STYLING (OMEGA STYLE)
+   Forces compact spacing, Arial font, and normal-case headers
+   on ALL reports past, present, and future.
+   ========================================================= */
+.report-wrapper table {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 11px !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+/* Table Headers: Title case, bold, tight padding, thin bottom border */
+.report-wrapper th {
+  text-transform: none !important;
+  font-weight: bold !important;
+  padding: 4px 4px !important;
+  border-bottom: 1px solid black !important;
+  color: black !important;
+}
+
+/* Table Data Rows: Normal weight, extremely tight padding, tight line-height */
+.report-wrapper td {
+  font-weight: normal !important;
+  padding: 2px 4px !important;
+  line-height: 1.1 !important;
+  color: black !important;
+}
+
+/* Ensure any sub-divs inside tds also inherit tight spacing */
+.report-wrapper td div {
+  line-height: 1.1 !important;
+  margin: 0 !important;
+}
