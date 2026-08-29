@@ -94,7 +94,7 @@ export const TimerReportTemplate = () => {
       </div>
 
       {/* Background wrapper to center the paper on screen */}
-      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
         {!isFiltered ? (
           <div className="w-full max-w-[794px] py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
              <div className="text-[40px] mb-3 opacity-40">⏱️</div>

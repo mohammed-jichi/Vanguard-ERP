@@ -86,7 +86,7 @@ export const TransactionsBySourceTemplate = () => {
       </div>
 
       {/* Background wrapper to center the paper on screen */}
-      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
         {/* The A4 Paper Simulator (794px width) */}
         <div 
           className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 

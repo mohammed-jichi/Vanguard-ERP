@@ -953,7 +953,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               )}
 
               {/* REPORT DATA BODY */}
-              <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 font-sans text-black overflow-auto min-h-[500px] transition-transform duration-200 origin-top report-wrapper"} style={!complexTransactionReports.includes(selectedReport || '') ? { transform: `scale(${zoomLevel})` } : undefined}>
+              <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center"}>
+                <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px] overflow-auto"} style={!complexTransactionReports.includes(selectedReport || '') ? { transform: `scale(${zoomLevel})` } : undefined}>
                   {selectedReport === 'Transactions by Date' ? (
                     <TransactionsByDateTemplate />
                   ) : selectedReport === 'Transactions by Salesman' ? (
@@ -5779,6 +5780,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </>
                   )}
                 </div>
+              </div>
 
             </div>
           )}
