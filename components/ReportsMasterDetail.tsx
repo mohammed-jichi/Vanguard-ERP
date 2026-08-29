@@ -89,7 +89,7 @@ const reportMenuData: ReportMenuItem[] = [
     category: "Product Sales",
     type: "nested",
     groups: [
-      { name: "Product Sales", items: ["Summary of Sales By Items", "Sales by Items By Group", "Sales by Items", "Sales details for one sales item", "Sales By Customer By Items", "Daily Sales By Items", "Sales By Categories", "Sales By Divisions", "Sales Items by Transaction", "Not Sold Items", "Sold Serial Numbers"] },
+      { name: "Product Sales", items: ["Summary of Sales By Items", "Sales by Items", "Sales details for one sales item", "Sales By Customer By Items", "Daily Sales By Items", "Sales By Categories", "Sales By Divisions", "Sales Items by Transaction", "Not Sold Items", "Sold Serial Numbers"] },
       { name: "Comparative By Branch", items: ["Sales By Category", "Sales By Division", "Sales By Groups", "Sales By Items"] },
       { name: "Top Performers", items: ["Top N sold by Quantity", "Top N sold by Amount"] },
       { name: "Voids & Refunds", items: ["Summary of voids", "Summary of refunds", "Details of refunds"] }
