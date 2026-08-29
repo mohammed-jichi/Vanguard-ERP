@@ -2,105 +2,93 @@
 
 import React, { useState } from 'react';
 
-interface ReportsSidebarProps {
-  activeCategory?: string;
-  onSelectCategory?: (key: string, name: string) => void;
-}
+export const OMEGA_CATEGORIES = [
+  { id: 'recently-viewed', title: 'Recently Viewed' },
+  { id: 'internal-control', title: 'Internal Control' },
+  { id: 'financial', title: 'Financial' },
+  { id: 'product-sales', title: 'Product Sales' },
+  { id: 'customer-sales', title: 'Customer Sales' },
+  { id: 'todays-history', title: "Today's & History" },
+  { id: 'time-attendance', title: 'Time & Attendance' },
+  { id: 'lists', title: 'Lists' },
+];
 
-export const ReportsSidebar: React.FC<ReportsSidebarProps> = ({
-  activeCategory = 'Product Sales',
-  onSelectCategory
-}) => {
+export function OmegaReportsSidebar({ onSelectCategory }: { onSelectCategory?: (id: string) => void }) {
+  const [activeCategory, setActiveCategory] = useState('recently-viewed');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTitle, setSelectedTitle] = useState(activeCategory);
 
-  const categories = [
-    'Recently Viewed',
-    'Internal Control',
-    'Financial',
-    'Product Sales',
-    'Customer Sales',
-    "Today's & History",
-    'Time & Attendance',
-    'Lists',
-  ];
-
-  const filteredCategories = categories.filter(cat =>
-    cat.toLowerCase().includes(searchQuery.toLowerCase().trim())
+  const filteredCategories = OMEGA_CATEGORIES.filter((cat) =>
+    cat.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
   );
 
-  const handleSelect = (categoryTitle: string) => {
-    setSelectedTitle(categoryTitle);
+  const handleCategoryClick = (id: string) => {
+    setActiveCategory(id);
     if (onSelectCategory) {
-      const key = categoryTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      onSelectCategory(key, categoryTitle);
-    }
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('omegaReportCategoryChanged', {
-        detail: { name: categoryTitle }
-      }));
+      onSelectCategory(id);
     }
   };
 
   return (
-    <div className="omega-reports-wrapper" style={{ padding: '20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      
-      {/* Page Header */}
-      <div style={{ marginBottom: '18px' }}>
-        <h1 className="omega-page-title text-[22px] font-bold text-[#2c3e50] mb-[2px]">Sales Reports</h1>
-        <div className="omega-breadcrumb text-[13px] font-medium text-[#4a779d]">Home / Sales Reports</div>
+    <div className="w-full max-w-[280px] select-none p-2">
+      {/* 1. Page Header */}
+      <div className="mb-4">
+        <h1 className="text-[22px] font-bold text-[#1e293b] leading-tight">Sales Reports</h1>
+        <div className="flex items-center gap-1.5 text-xs text-[#527a9e] mt-1 font-medium">
+          <span>Home</span>
+          <span className="text-slate-400">/</span>
+          <span className="text-[#527a9e]">Sales Reports</span>
+        </div>
       </div>
 
-      {/* Main Card */}
-      <div 
-        className="omega-reports-card bg-white rounded-[18px] border border-[#e2e8f0] shadow-[0_4px_12px_rgba(0,0,0,0.03)] w-full max-w-[290px] p-[18px] select-none"
-        style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif' }}
-      >
+      {/* 2. Omega Card Container */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] p-4">
         
-        {/* Top Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-          <div className="omega-menu-icon-btn w-[38px] h-[38px] rounded-[12px] border border-[#e2e8f0] bg-white text-[#334155] flex items-center justify-center shadow-sm">
-            <i className="fa-solid fa-bars" style={{ fontSize: '14px' }}></i>
+        {/* Card Header */}
+        <div className="flex items-center gap-3 mb-3.5">
+          <div className="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-700 shadow-sm">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </div>
-          <div className="omega-search-header-title text-[15.5px] font-bold text-[#1a629b] tracking-[-0.2px]">Search Reports</div>
+          <h2 className="text-[15px] font-bold text-[#1a629b] tracking-tight">Search Reports</h2>
         </div>
 
         {/* Search Box */}
-        <div style={{ position: 'relative', marginBottom: '12px' }}>
-          <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '10px', top: '10px', fontSize: '12px', color: '#94a3b8' }}></i>
-          <input 
-            type="text" 
+        <div className="relative mb-3">
+          <svg
+            className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="omega-search-input border border-[#cbd5e1] rounded-[6px] py-[7px] pr-[10px] pl-[32px] text-[13px] text-[#334155] bg-white w-full outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b]" 
-            placeholder="Search..." 
+            placeholder="Search..."
+            className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b] transition-all"
           />
         </div>
 
         {/* Categories List */}
-        <ul id="omegaCategoriesContainer" style={{ padding: 0, margin: 0, listStyle: 'none' }}>
-          {filteredCategories.map((cat, idx) => {
-            const isActive = selectedTitle === cat;
+        <ul className="divide-y divide-slate-200 border-t border-slate-200">
+          {filteredCategories.map((cat) => {
+            const isActive = activeCategory === cat.id;
             return (
-              <li 
-                key={cat} 
-                className="omega-cat-item border-b border-[#e2e8f0]"
-                style={idx === 0 ? { borderTop: '1px solid #e2e8f0' } : {}}
-              >
-                <button 
-                  onClick={() => handleSelect(cat)} 
-                  className={`omega-cat-btn w-full text-left py-[10px] px-[6px] text-[14px] font-bold rounded-[6px] transition-all cursor-pointer block ${
-                    isActive 
-                      ? 'active text-[#0c3e66] bg-[rgba(26,98,155,0.08)] pl-[10px]' 
-                      : 'text-[#1a629b] hover:text-[#0c3e66] hover:bg-[rgba(26,98,155,0.05)] hover:pl-[10px]'
+              <li key={cat.id}>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryClick(cat.id)}
+                  style={{ color: '#1a629b' }}
+                  className={`w-full text-left py-2.5 px-2 text-[13.5px] font-bold transition-all rounded block ${
+                    isActive
+                      ? 'bg-blue-50/80 text-[#0d3f66] pl-3'
+                      : 'hover:bg-slate-50 hover:text-[#0d3f66] hover:pl-3'
                   }`}
-                  style={{
-                    color: isActive ? '#0c3e66' : '#1a629b',
-                    background: isActive ? 'rgba(26, 98, 155, 0.08)' : 'transparent',
-                    border: 'none'
-                  }}
                 >
-                  {cat}
+                  {cat.title}
                 </button>
               </li>
             );
@@ -110,6 +98,7 @@ export const ReportsSidebar: React.FC<ReportsSidebarProps> = ({
       </div>
     </div>
   );
-};
+}
 
-export default ReportsSidebar;
+export const ReportsSidebar = OmegaReportsSidebar;
+export default OmegaReportsSidebar;
