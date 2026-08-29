@@ -36,6 +36,7 @@ import { TimerReportTemplate } from './reports/transactions/TimerReportTemplate'
 import { TimeReportByDateTemplate } from './reports/transactions/TimeReportByDateTemplate';
 import { SummaryOfSalesByItemsTemplate } from './reports/sales/SummaryOfSalesByItemsTemplate';
 import { SalesByItemsByGroupTemplate } from './reports/sales/SalesByItemsByGroupTemplate';
+import { SalesDetailsForOneSalesItemTemplate } from './reports/sales/SalesDetailsForOneSalesItemTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -152,7 +153,9 @@ const complexTransactionReports = [
   'Transaction Report by Time',
   'Summary of Sales By Items',
   'Sales by Items By Group',
-  'Sales by Items by Group'
+  'Sales by Items by Group',
+  'Sales details for one sales item',
+  'Sales Details for One Sales Item'
 ];
 
 interface ReportsMasterDetailProps {
@@ -1000,6 +1003,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <SummaryOfSalesByItemsTemplate />
                   ) : selectedReport === 'Sales by Items By Group' || selectedReport === 'Sales by Items by Group' ? (
                     <SalesByItemsByGroupTemplate />
+                  ) : selectedReport === 'Sales details for one sales item' || selectedReport === 'Sales Details for One Sales Item' ? (
+                    <SalesDetailsForOneSalesItemTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
