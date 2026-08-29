@@ -1,0 +1,169 @@
+<!-- ========================================================================= -->
+<!-- VANGUARD ERP - OMEGA LEGACY SALES REPORTS SIDEBAR                         -->
+<!-- Company: Southern Olive Oil Products S.A.R.L                             -->
+<!-- ========================================================================= -->
+
+<div class="reports-module-wrapper p-6 bg-[#f8fafc] min-h-screen">
+  
+  <!-- 1. Top Section Header & Breadcrumbs (Omega Style) -->
+  <div class="mb-5">
+    <h1 class="text-[22px] font-bold text-[#1e293b] leading-tight tracking-tight">Sales Reports</h1>
+    <nav class="flex items-center gap-1.5 text-xs text-[#527a9e] mt-1 font-medium">
+      <a href="#" class="hover:underline text-[#527a9e]">Home</a>
+      <span class="text-slate-400">/</span>
+      <span class="text-[#527a9e]">Sales Reports</span>
+    </nav>
+  </div>
+
+  <!-- 2. Omega Reports Sidebar Card -->
+  <aside class="w-full max-w-[280px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-4 select-none">
+    
+    <!-- Card Header: Menu Button + Title -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-700 shadow-sm hover:bg-slate-50 cursor-pointer transition-colors">
+        <i class="fa-solid fa-bars text-sm"></i>
+      </div>
+      <h2 class="text-[15px] font-bold text-[#1a629b] tracking-tight">Search Reports</h2>
+    </div>
+
+    <!-- Search Input Box -->
+    <div class="relative mb-3">
+      <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+      </div>
+      <input 
+        type="text" 
+        id="omegaReportSearch" 
+        oninput="filterReportCategories(this.value)" 
+        placeholder="Search..." 
+        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b] transition-all"
+      />
+    </div>
+
+    <!-- Reports Categories List (Exact Omega Blue & Dividers) -->
+    <ul id="omegaReportCategoriesList" class="divide-y divide-slate-200/70 border-t border-slate-200/70 text-left">
+      
+      <!-- 1. Recently Viewed -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('recently-viewed', 'Recently Viewed', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Recently Viewed</span>
+        </button>
+      </li>
+
+      <!-- 2. Internal Control -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('internal-control', 'Internal Control', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Internal Control</span>
+        </button>
+      </li>
+
+      <!-- 3. Financial -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('financial', 'Financial', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Financial</span>
+        </button>
+      </li>
+
+      <!-- 4. Product Sales -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('product-sales', 'Product Sales', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Product Sales</span>
+        </button>
+      </li>
+
+      <!-- 5. Customer Sales -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('customer-sales', 'Customer Sales', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Customer Sales</span>
+        </button>
+      </li>
+
+      <!-- 6. Today's & History -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('todays-history', 'Today\'s & History', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Today's & History</span>
+        </button>
+      </li>
+
+      <!-- 7. Time & Attendance -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('time-attendance', 'Time & Attendance', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Time & Attendance</span>
+        </button>
+      </li>
+
+      <!-- 8. Lists -->
+      <li class="report-cat-item">
+        <button 
+          onclick="selectReportCategory('lists', 'Lists', this)" 
+          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
+          <span>Lists</span>
+        </button>
+      </li>
+
+    </ul>
+
+  </aside>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- JAVASCRIPT CONTROLLERS                                                    -->
+<!-- ========================================================================= -->
+<script>
+  /**
+   * Handles Category selection and dispatches event to render specific reports list
+   */
+  function selectReportCategory(categoryKey, categoryName, element) {
+    // Remove active styles from all buttons
+    const buttons = document.querySelectorAll(".report-cat-btn");
+    buttons.forEach(btn => {
+      btn.classList.remove("bg-blue-50/60", "text-[#0d3f66]", "pl-2.5");
+      btn.classList.add("text-[#1a629b]");
+    });
+
+    // Add active styling to clicked button
+    if (element) {
+      element.classList.add("bg-blue-50/60", "text-[#0d3f66]", "pl-2.5");
+      element.classList.remove("text-[#1a629b]");
+    }
+
+    console.log(`[Omega Reports] Category selected: ${categoryName} (${categoryKey})`);
+
+    // Dispatch global event for the Reports Content Area to load corresponding reports
+    window.dispatchEvent(new CustomEvent("omegaReportCategoryChanged", {
+      detail: { key: categoryKey, name: categoryName }
+    }));
+  }
+
+  /**
+   * Live filter report category headers based on search query
+   */
+  function filterReportCategories(query) {
+    const filter = query.toLowerCase().trim();
+    const items = document.querySelectorAll("#omegaReportCategoriesList .report-cat-item");
+
+    items.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      if (text.includes(filter)) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  }
+</script>
