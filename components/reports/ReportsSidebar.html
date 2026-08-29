@@ -1,168 +1,205 @@
 <!-- ========================================================================= -->
-<!-- VANGUARD ERP - OMEGA LEGACY SALES REPORTS SIDEBAR                         -->
-<!-- Company: Southern Olive Oil Products S.A.R.L                             -->
+<!-- 1. DEDICATED OMEGA BLUE CSS RULES (FORCED OVERRIDES)                      -->
 <!-- ========================================================================= -->
+<style>
+  /* Base Card Container */
+  .omega-reports-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+    width: 100% !important;
+    max-width: 290px !important;
+    padding: 18px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+  }
 
-<div class="reports-module-wrapper p-6 bg-[#f8fafc] min-h-screen">
+  /* Breadcrumb & Main Titles */
+  .omega-page-title {
+    color: #2c3e50 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    margin-bottom: 2px !important;
+  }
+  .omega-breadcrumb {
+    color: #4a779d !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
+
+  /* Card Header: Search Reports */
+  .omega-search-header-title {
+    color: #1a629b !important;
+    font-size: 15.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+  }
+  .omega-menu-icon-btn {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Search Input Field */
+  .omega-search-input {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 7px 10px 7px 32px !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    background-color: #ffffff !important;
+    width: 100% !important;
+    outline: none !important;
+  }
+  .omega-search-input:focus {
+    border-color: #1a629b !important;
+    box-shadow: 0 0 0 2px rgba(26, 98, 155, 0.15) !important;
+  }
+
+  /* Report Category Links (Strict Omega Blue) */
+  .omega-cat-item {
+    border-bottom: 1px solid #e2e8f0 !important;
+    list-style: none !important;
+  }
+  .omega-cat-item:first-child {
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  .omega-cat-btn {
+    color: #1a629b !important; /* EXACT OMEGA BLUE */
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    padding: 10px 6px !important;
+    width: 100% !important;
+    text-align: left !important;
+    background: transparent !important;
+    border: none !important;
+    display: block !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease-in-out !important;
+    text-decoration: none !important;
+  }
+
+  /* Hover & Active States */
+  .omega-cat-btn:hover {
+    color: #0c3e66 !important;
+    background-color: rgba(26, 98, 155, 0.05) !important;
+    border-radius: 6px !important;
+    padding-left: 10px !important;
+  }
+
+  .omega-cat-btn.active {
+    color: #0c3e66 !important;
+    background-color: rgba(26, 98, 155, 0.08) !important;
+    border-radius: 6px !important;
+    padding-left: 10px !important;
+  }
+</style>
+
+<!-- ========================================================================= -->
+<!-- 2. OMEGA REPORTS SIDEBAR HTML STRUCTURE                                   -->
+<!-- ========================================================================= -->
+<div class="omega-reports-wrapper" style="padding: 20px; background-color: #f8fafc; min-height: 100vh;">
   
-  <!-- 1. Top Section Header & Breadcrumbs (Omega Style) -->
-  <div class="mb-5">
-    <h1 class="text-[22px] font-bold text-[#1e293b] leading-tight tracking-tight">Sales Reports</h1>
-    <nav class="flex items-center gap-1.5 text-xs text-[#527a9e] mt-1 font-medium">
-      <a href="#" class="hover:underline text-[#527a9e]">Home</a>
-      <span class="text-slate-400">/</span>
-      <span class="text-[#527a9e]">Sales Reports</span>
-    </nav>
+  <!-- Page Header -->
+  <div style="margin-bottom: 18px;">
+    <h1 class="omega-page-title">Sales Reports</h1>
+    <div class="omega-breadcrumb">Home / Sales Reports</div>
   </div>
 
-  <!-- 2. Omega Reports Sidebar Card -->
-  <aside class="w-full max-w-[280px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-4 select-none">
+  <!-- Main Card -->
+  <div class="omega-reports-card">
     
-    <!-- Card Header: Menu Button + Title -->
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-700 shadow-sm hover:bg-slate-50 cursor-pointer transition-colors">
-        <i class="fa-solid fa-bars text-sm"></i>
+    <!-- Top Header -->
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+      <div class="omega-menu-icon-btn">
+        <i class="fa-solid fa-bars" style="font-size: 14px;"></i>
       </div>
-      <h2 class="text-[15px] font-bold text-[#1a629b] tracking-tight">Search Reports</h2>
+      <div class="omega-search-header-title">Search Reports</div>
     </div>
 
-    <!-- Search Input Box -->
-    <div class="relative mb-3">
-      <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-        <i class="fa-solid fa-magnifying-glass text-xs"></i>
-      </div>
+    <!-- Search Box -->
+    <div style="position: relative; margin-bottom: 12px;">
+      <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 10px; font-size: 12px; color: #94a3b8;"></i>
       <input 
         type="text" 
-        id="omegaReportSearch" 
-        oninput="filterReportCategories(this.value)" 
+        id="omegaSearchInput"
+        class="omega-search-input" 
         placeholder="Search..." 
-        class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b] transition-all"
+        oninput="handleOmegaCategorySearch(this.value)"
       />
     </div>
 
-    <!-- Reports Categories List (Exact Omega Blue & Dividers) -->
-    <ul id="omegaReportCategoriesList" class="divide-y divide-slate-200/70 border-t border-slate-200/70 text-left">
+    <!-- Categories List -->
+    <ul id="omegaCategoriesContainer" style="padding: 0; margin: 0;">
       
-      <!-- 1. Recently Viewed -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('recently-viewed', 'Recently Viewed', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Recently Viewed</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Recently Viewed')" class="omega-cat-btn">Recently Viewed</button>
       </li>
 
-      <!-- 2. Internal Control -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('internal-control', 'Internal Control', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Internal Control</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Internal Control')" class="omega-cat-btn">Internal Control</button>
       </li>
 
-      <!-- 3. Financial -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('financial', 'Financial', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Financial</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Financial')" class="omega-cat-btn">Financial</button>
       </li>
 
-      <!-- 4. Product Sales -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('product-sales', 'Product Sales', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Product Sales</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Product Sales')" class="omega-cat-btn">Product Sales</button>
       </li>
 
-      <!-- 5. Customer Sales -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('customer-sales', 'Customer Sales', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Customer Sales</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Customer Sales')" class="omega-cat-btn">Customer Sales</button>
       </li>
 
-      <!-- 6. Today's & History -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('todays-history', 'Today\'s & History', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Today's & History</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Today\'s & History')" class="omega-cat-btn">Today's & History</button>
       </li>
 
-      <!-- 7. Time & Attendance -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('time-attendance', 'Time & Attendance', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Time & Attendance</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Time & Attendance')" class="omega-cat-btn">Time & Attendance</button>
       </li>
 
-      <!-- 8. Lists -->
-      <li class="report-cat-item">
-        <button 
-          onclick="selectReportCategory('lists', 'Lists', this)" 
-          class="report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80 rounded transition-colors flex items-center justify-between group">
-          <span>Lists</span>
-        </button>
+      <li class="omega-cat-item">
+        <button onclick="handleOmegaCatClick(this, 'Lists')" class="omega-cat-btn">Lists</button>
       </li>
 
     </ul>
 
-  </aside>
-
+  </div>
 </div>
 
 <!-- ========================================================================= -->
-<!-- JAVASCRIPT CONTROLLERS                                                    -->
+<!-- 3. JAVASCRIPT CONTROLLERS                                                 -->
 <!-- ========================================================================= -->
 <script>
-  /**
-   * Handles Category selection and dispatches event to render specific reports list
-   */
-  function selectReportCategory(categoryKey, categoryName, element) {
-    // Remove active styles from all buttons
-    const buttons = document.querySelectorAll(".report-cat-btn");
-    buttons.forEach(btn => {
-      btn.classList.remove("bg-blue-50/60", "text-[#0d3f66]", "pl-2.5");
-      btn.classList.add("text-[#1a629b]");
-    });
+  function handleOmegaCatClick(buttonElement, categoryTitle) {
+    // Reset all buttons
+    const allButtons = document.querySelectorAll(".omega-cat-btn");
+    allButtons.forEach(btn => btn.classList.remove("active"));
 
-    // Add active styling to clicked button
-    if (element) {
-      element.classList.add("bg-blue-50/60", "text-[#0d3f66]", "pl-2.5");
-      element.classList.remove("text-[#1a629b]");
-    }
-
-    console.log(`[Omega Reports] Category selected: ${categoryName} (${categoryKey})`);
-
-    // Dispatch global event for the Reports Content Area to load corresponding reports
-    window.dispatchEvent(new CustomEvent("omegaReportCategoryChanged", {
-      detail: { key: categoryKey, name: categoryName }
-    }));
+    // Set active class
+    buttonElement.classList.add("active");
+    console.log("[Omega Reports] Active Category:", categoryTitle);
   }
 
-  /**
-   * Live filter report category headers based on search query
-   */
-  function filterReportCategories(query) {
-    const filter = query.toLowerCase().trim();
-    const items = document.querySelectorAll("#omegaReportCategoriesList .report-cat-item");
+  function handleOmegaCategorySearch(queryText) {
+    const searchVal = queryText.toLowerCase().trim();
+    const items = document.querySelectorAll(".omega-cat-item");
 
     items.forEach(item => {
-      const text = item.textContent.toLowerCase();
-      if (text.includes(filter)) {
-        item.style.display = "";
+      const btnText = item.querySelector(".omega-cat-btn").textContent.toLowerCase();
+      if (btnText.includes(searchVal)) {
+        item.style.setProperty("display", "block", "important");
       } else {
-        item.style.display = "none";
+        item.style.setProperty("display", "none", "important");
       }
     });
   }

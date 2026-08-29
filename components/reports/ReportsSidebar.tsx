@@ -8,100 +8,106 @@ interface ReportsSidebarProps {
 }
 
 export const ReportsSidebar: React.FC<ReportsSidebarProps> = ({
-  activeCategory = 'product-sales',
+  activeCategory = 'Product Sales',
   onSelectCategory
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedKey, setSelectedKey] = useState(activeCategory);
+  const [selectedTitle, setSelectedTitle] = useState(activeCategory);
 
   const categories = [
-    { key: 'recently-viewed', name: 'Recently Viewed' },
-    { key: 'internal-control', name: 'Internal Control' },
-    { key: 'financial', name: 'Financial' },
-    { key: 'product-sales', name: 'Product Sales' },
-    { key: 'customer-sales', name: 'Customer Sales' },
-    { key: 'todays-history', name: "Today's & History" },
-    { key: 'time-attendance', name: 'Time & Attendance' },
-    { key: 'lists', name: 'Lists' },
+    'Recently Viewed',
+    'Internal Control',
+    'Financial',
+    'Product Sales',
+    'Customer Sales',
+    "Today's & History",
+    'Time & Attendance',
+    'Lists',
   ];
 
   const filteredCategories = categories.filter(cat =>
-    cat.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    cat.toLowerCase().includes(searchQuery.toLowerCase().trim())
   );
 
-  const handleSelect = (key: string, name: string) => {
-    setSelectedKey(key);
+  const handleSelect = (categoryTitle: string) => {
+    setSelectedTitle(categoryTitle);
     if (onSelectCategory) {
-      onSelectCategory(key, name);
+      const key = categoryTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      onSelectCategory(key, categoryTitle);
     }
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('omegaReportCategoryChanged', {
-        detail: { key, name }
+        detail: { name: categoryTitle }
       }));
     }
   };
 
   return (
-    <div className="reports-module-wrapper p-6 bg-[#f8fafc] min-h-screen">
+    <div className="omega-reports-wrapper" style={{ padding: '20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       
-      {/* 1. Top Section Header & Breadcrumbs (Omega Style) */}
-      <div className="mb-5">
-        <h1 className="text-[22px] font-bold text-[#1e293b] leading-tight tracking-tight">Sales Reports</h1>
-        <nav className="flex items-center gap-1.5 text-xs text-[#527a9e] mt-1 font-medium">
-          <a href="#" className="hover:underline text-[#527a9e]">Home</a>
-          <span className="text-slate-400">/</span>
-          <span className="text-[#527a9e]">Sales Reports</span>
-        </nav>
+      {/* Page Header */}
+      <div style={{ marginBottom: '18px' }}>
+        <h1 className="omega-page-title text-[22px] font-bold text-[#2c3e50] mb-[2px]">Sales Reports</h1>
+        <div className="omega-breadcrumb text-[13px] font-medium text-[#4a779d]">Home / Sales Reports</div>
       </div>
 
-      {/* 2. Omega Reports Sidebar Card */}
-      <aside className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-4 select-none">
+      {/* Main Card */}
+      <div 
+        className="omega-reports-card bg-white rounded-[18px] border border-[#e2e8f0] shadow-[0_4px_12px_rgba(0,0,0,0.03)] w-full max-w-[290px] p-[18px] select-none"
+        style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif' }}
+      >
         
-        {/* Card Header: Menu Button + Title */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-700 shadow-sm hover:bg-slate-50 cursor-pointer transition-colors">
-            <i className="fa-solid fa-bars text-sm"></i>
+        {/* Top Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+          <div className="omega-menu-icon-btn w-[38px] h-[38px] rounded-[12px] border border-[#e2e8f0] bg-white text-[#334155] flex items-center justify-center shadow-sm">
+            <i className="fa-solid fa-bars" style={{ fontSize: '14px' }}></i>
           </div>
-          <h2 className="text-[15px] font-bold text-[#1a629b] tracking-tight">Search Reports</h2>
+          <div className="omega-search-header-title text-[15.5px] font-bold text-[#1a629b] tracking-[-0.2px]">Search Reports</div>
         </div>
 
-        {/* Search Input Box */}
-        <div className="relative mb-3">
-          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-            <i className="fa-solid fa-magnifying-glass text-xs"></i>
-          </div>
+        {/* Search Box */}
+        <div style={{ position: 'relative', marginBottom: '12px' }}>
+          <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '10px', top: '10px', fontSize: '12px', color: '#94a3b8' }}></i>
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="omega-search-input border border-[#cbd5e1] rounded-[6px] py-[7px] pr-[10px] pl-[32px] text-[13px] text-[#334155] bg-white w-full outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b]" 
             placeholder="Search..." 
-            className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-md text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#1a629b] focus:ring-1 focus:ring-[#1a629b] transition-all"
           />
         </div>
 
-        {/* Reports Categories List (Exact Omega Blue & Dividers) */}
-        <ul className="divide-y divide-slate-200/70 border-t border-slate-200/70 text-left">
-          {filteredCategories.map((cat) => {
-            const isActive = selectedKey === cat.key;
+        {/* Categories List */}
+        <ul id="omegaCategoriesContainer" style={{ padding: 0, margin: 0, listStyle: 'none' }}>
+          {filteredCategories.map((cat, idx) => {
+            const isActive = selectedTitle === cat;
             return (
-              <li key={cat.key} className="report-cat-item">
+              <li 
+                key={cat} 
+                className="omega-cat-item border-b border-[#e2e8f0]"
+                style={idx === 0 ? { borderTop: '1px solid #e2e8f0' } : {}}
+              >
                 <button 
-                  onClick={() => handleSelect(cat.key, cat.name)} 
-                  className={`report-cat-btn w-full text-left py-2.5 px-1.5 text-[13.5px] font-bold rounded transition-colors flex items-center justify-between group ${
+                  onClick={() => handleSelect(cat)} 
+                  className={`omega-cat-btn w-full text-left py-[10px] px-[6px] text-[14px] font-bold rounded-[6px] transition-all cursor-pointer block ${
                     isActive 
-                      ? 'bg-blue-50/60 text-[#0d3f66] pl-2.5' 
-                      : 'text-[#1a629b] hover:text-[#0f446e] hover:bg-slate-50/80'
+                      ? 'active text-[#0c3e66] bg-[rgba(26,98,155,0.08)] pl-[10px]' 
+                      : 'text-[#1a629b] hover:text-[#0c3e66] hover:bg-[rgba(26,98,155,0.05)] hover:pl-[10px]'
                   }`}
+                  style={{
+                    color: isActive ? '#0c3e66' : '#1a629b',
+                    background: isActive ? 'rgba(26, 98, 155, 0.08)' : 'transparent',
+                    border: 'none'
+                  }}
                 >
-                  <span>{cat.name}</span>
+                  {cat}
                 </button>
               </li>
             );
           })}
         </ul>
 
-      </aside>
-
+      </div>
     </div>
   );
 };
