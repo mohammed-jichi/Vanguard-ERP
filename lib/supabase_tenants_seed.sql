@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.tenants (
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
-    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive & Oil Products',
+    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive Oil Products S.A.R.L',
     owner_email TEXT NOT NULL DEFAULT 'khadeer@vanguard-erp.com',
     logo_url TEXT DEFAULT '/assets/images/logo.png',
     subscription_tier TEXT NOT NULL DEFAULT 'ENTERPRISE' CHECK (subscription_tier IN ('STARTER', 'PRO', 'ENTERPRISE')),
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.companies (
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
-    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive & Oil Products',
+    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive Oil Products S.A.R.L',
     logo_url TEXT DEFAULT '/assets/images/logo.png',
     subscription_tier TEXT NOT NULL DEFAULT 'ENTERPRISE',
     subscription_status TEXT NOT NULL DEFAULT 'ACTIVE',
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.companies (
 -- 3. SEED TENANT #1: 'منتوجات زيت وزيتون الجنوب' (KHADEER OWNER)
 INSERT INTO public.tenants (id, name, slug, brand_name_ar, brand_name_en, owner_email, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive & Oil Products', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO UPDATE SET 
   name = EXCLUDED.name,
   brand_name_ar = EXCLUDED.brand_name_ar,
@@ -45,7 +45,7 @@ ON CONFLICT (id) DO UPDATE SET
 
 INSERT INTO public.companies (id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive & Oil Products', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. CREATE USER PROFILES TABLE WITH TENANT_ID AND KHADEER AS OWNER

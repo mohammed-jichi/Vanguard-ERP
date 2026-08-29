@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Southern Olive & Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
+ * Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
  * SuperSonic Dispatch & Fleet Management Component (<SuperSonicFleetManager />)
  * 
  * High-End Omega POS Style Fleet & Delivery Logistics Control Center

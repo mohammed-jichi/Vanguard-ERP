@@ -649,7 +649,7 @@ window.SouthernOliveAI = (function () {
           return {
             found: true,
             lang: 'en',
-            replyAr: `The Vanguard platform is an all-in-one ERP management suite built for Southern Olive & Oil:\n\n• Sales & POS: Create sales invoices and process cash in USD & LBP.\n• Inventory & Bottling: Track olive oil tanks, bottles, and stock.\n• Oil Press & 2000L Water Plant: Monitor press lines and water purification.\n• Fleet Shipping & Delivery: Batch orders for drivers with WhatsApp tracking.\n• Dual-Currency Accounting: Generate P&L statements and general ledger.\n\nWhich section would you like to open first?`
+            replyAr: `The Vanguard platform is an all-in-one ERP management suite built for Southern Olive Oil Products S.A.R.L:\n\n• Sales & POS: Create sales invoices and process cash in USD & LBP.\n• Inventory & Bottling: Track olive oil tanks, bottles, and stock.\n• Oil Press & 2000L Water Plant: Monitor press lines and water purification.\n• Fleet Shipping & Delivery: Batch orders for drivers with WhatsApp tracking.\n• Dual-Currency Accounting: Generate P&L statements and general ledger.\n\nWhich section would you like to open first?`
           };
         }
       }

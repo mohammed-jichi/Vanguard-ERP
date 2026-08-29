@@ -225,7 +225,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   required
                   value={brandNameEn}
                   onChange={e => setBrandNameEn(e.target.value)}
-                  placeholder="e.g. Southern Olive & Oil Products SARL"
+                  placeholder="e.g. Southern Olive Oil Products S.A.R.L"
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />

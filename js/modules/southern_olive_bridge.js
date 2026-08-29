@@ -1,5 +1,5 @@
 /**
- * Southern Olive & Oil Products SARL - DATA INTEGRATION & MIGRATION BRIDGE
+ * Southern Olive Oil Products S.A.R.L - DATA INTEGRATION & MIGRATION BRIDGE
  * 
  * Interoperability, Parsing, & Migration Engine for Vanguard ERP V2.
  * 
@@ -330,7 +330,7 @@
 
       return {
         reportType: "Z-REPORT (DAILY CLOSURE)",
-        company: "Southern Olive & Oil Products SARL",
+        company: "Southern Olive Oil Products S.A.R.L",
         softwareSource: "Vanguard ERP Compatible",
         date: targetDate,
         totalInvoices: daySales.length,

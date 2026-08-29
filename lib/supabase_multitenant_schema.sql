@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.companies (
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
-    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive & Oil Products',
+    brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive Oil Products S.A.R.L',
     logo_url TEXT DEFAULT '/assets/images/logo.png',
     subscription_tier TEXT NOT NULL DEFAULT 'PRO' CHECK (subscription_tier IN ('STARTER', 'PRO', 'ENTERPRISE')),
     subscription_status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (subscription_status IN ('ACTIVE', 'PAST_DUE', 'CANCELLED', 'TRIAL')),
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- 3. INSERT DEFAULT MASTER SUPER ADMIN COMPANY
 INSERT INTO public.companies (id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'Vanguard Master Enterprise', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive & Oil Products', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 'Vanguard Master Enterprise', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. ADD company_id TO ALL CORE TABLES

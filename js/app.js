@@ -1,5 +1,5 @@
 /**
- * Southern Olive & Oil Products SARL - PORTAL CONTROLLER
+ * Southern Olive Oil Products S.A.R.L - PORTAL CONTROLLER
  * Handles views, forms, authentication flow, notifications, and language toggling.
  */
 
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Translations
   const i18n = {
     en: {
-      brandNameEn: "Southern Olive & Oil Products SARL",
+      brandNameEn: "Southern Olive Oil Products S.A.R.L",
       brandNameAr: "منتوجات زيت وزيتون الجنوب ش.م.م",
       heroBadge: "Unified ERP System",
       heroTitle: "Vanguard ERP",
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
       thAction: "الإجراءات"
     },
     fr: {
-      brandNameEn: "Southern Olive & Oil Products SARL",
+      brandNameEn: "Southern Olive Oil Products S.A.R.L",
       brandNameAr: "منتوجات زيت وزيتون الجنوب ش.م.م",
       heroBadge: "Système ERP Unifié",
       heroTitle: "Vanguard ERP",
@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast("Warning", "Please enter your security answer.", 'warning');
         return;
       }
-      showToast("Access Granted", "Welcome to Southern Olive & Oil Products SARL Portal!", 'success');
+      showToast("Access Granted", "Welcome to Southern Olive Oil Products S.A.R.L Portal!", 'success');
       setTimeout(() => {
         enterErpWorkspace('General Admin');
       }, 600);
@@ -3139,7 +3139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const items = document.getElementById('socCustItems')?.value || '2x Olive Oil 1L';
     const payment = document.getElementById('socCustPayment')?.value || 'Cash';
 
-    const msg = `Ahlan ${name}! Welcome to Southern Olive & Oil Products SARL.\nYour draft order for [${items}] has been created.\nPayment: ${payment}.\nDelivery Address & Confirmation Code: #SO-${Math.floor(1000 + Math.random() * 9000)}`;
+    const msg = `Ahlan ${name}! Welcome to Southern Olive Oil Products S.A.R.L\nYour draft order for [${items}] has been created.\nPayment: ${payment}.\nDelivery Address & Confirmation Code: #SO-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const waPayload = document.getElementById('whatsappMessagePayload');
     if (waPayload) waPayload.textContent = msg;
@@ -3188,7 +3188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sqlViewer = document.getElementById('sqlSchemaContent');
     if (!sqlViewer) return;
     sqlViewer.innerHTML = `
--- Southern Olive & Oil Products SARL - POSTGRESQL 15 + POSTGIS DDL SCHEMA
+-- Southern Olive Oil Products S.A.R.L - POSTGRESQL 15 + POSTGIS DDL SCHEMA
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
@@ -3632,7 +3632,7 @@ export class DispatchController {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Southern Olive & Oil Products SARL - Operational Report</title>
+            <title>Southern Olive Oil Products S.A.R.L - Operational Report</title>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
             <style>
               body { font-family: sans-serif; padding: 20px; color: #000; }
@@ -3643,7 +3643,7 @@ export class DispatchController {
             </style>
           </head>
           <body>
-            <h2>Southern Olive & Oil Products SARL (منتوجات زيت وزيتون الجنوب ش.م.م)</h2>
+            <h2>Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م)</h2>
             <p><strong>Generated Date:</strong> ${new Date().toLocaleString()}</p>
             <hr>
             ${parent.innerHTML}
@@ -4246,7 +4246,7 @@ export class DispatchController {
       content += `:20:PAYROLL-${Date.now()}\n`;
       content += `:23B:CRED\n`;
       content += `:32A:260831USD3020,00\n`;
-      content += `:50K:/001\nSouthern Olive & Oil Products SARL\n`;
+      content += `:50K:/001\nSouthern Olive Oil Products S.A.R.L\n`;
       payrollData.forEach(r => {
         content += `:59:/${r.iban}\n${r.name}\n:70:SALARY AUGUST 2026 - ${r.dept}\n`;
       });
@@ -4705,7 +4705,7 @@ window.provisionNewSaaSTenant = async function () {
 
 window.exportSaaSClientDatabase = function () {
   const data = [
-    { CID: 'CID-001', Company: 'Southern Olive & Oil Products SARL', Plan: 'Master Owner', Status: 'Master SuperAdmin', MRR: 'Owner' },
+    { CID: 'CID-001', Company: 'Southern Olive Oil Products S.A.R.L', Plan: 'Master Owner', Status: 'Master SuperAdmin', MRR: 'Owner' },
     { CID: 'CID-102', Company: 'Cedar Olive Mills & Bottling Co.', Plan: 'Enterprise Pro', Status: 'Active', MRR: '$450' },
     { CID: 'CID-103', Company: 'Mount Lebanon Gourmet Oils', Plan: 'Professional', Status: 'Active', MRR: '$250' }
   ];
@@ -5280,7 +5280,7 @@ window.openProductInsightsTab = function () {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Product Insights - Southern Olive & Oil</title>
+      <title>Product Insights - Southern Olive Oil Products S.A.R.L</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
       <style>body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; padding: 24px; }</style>
@@ -5305,7 +5305,7 @@ window.openCustomerInsightsTab = function () {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Customer Insights - Southern Olive & Oil</title>
+      <title>Customer Insights - Southern Olive Oil Products S.A.R.L</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
       <style>body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; padding: 24px; }</style>
@@ -5326,7 +5326,7 @@ window.showBranchesLastEODModal = function () {
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
   } else {
-    alert("Branches Last EOD Date:\n\n1. Zeit w zaytoun ljanoub: 14-Aug-2026 23:59:59\n2. Main Store - Retail: 13-Aug-2026 23:45:00");
+    alert("Branches Last EOD Date:\n\n1. Southern Olive Oil Products S.A.R.L: 14-Aug-2026 23:59:59\n2. Main Store - Retail: 13-Aug-2026 23:45:00");
   }
 };
 
@@ -5426,20 +5426,20 @@ document.addEventListener('click', function (e) {
 });
 
 window.topBuyersData = [
-  { id: 101, customer: 'Al Bustan General Trading', brand: 'Zeit w zaytoun ljanoub', group: 'Wholesale', transactions: 42, totalSpend: 148500.00, lastTx: '15-Aug-2026' },
-  { id: 104, customer: 'Golden Olive Hotel & Resort', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 38, totalSpend: 124200.00, lastTx: '14-Aug-2026' },
+  { id: 101, customer: 'Al Bustan General Trading', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Wholesale', transactions: 42, totalSpend: 148500.00, lastTx: '15-Aug-2026' },
+  { id: 104, customer: 'Golden Olive Hotel & Resort', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Hotels & Restaurants', transactions: 38, totalSpend: 124200.00, lastTx: '14-Aug-2026' },
   { id: 108, customer: 'Cedar Fine Foods S.A.L.', brand: 'Vanguard Premium', group: 'Wholesale', transactions: 31, totalSpend: 98750.00, lastTx: '12-Aug-2026' },
-  { id: 112, customer: 'Riviera Restaurant & Lounge', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 29, totalSpend: 86400.00, lastTx: '11-Aug-2026' },
+  { id: 112, customer: 'Riviera Restaurant & Lounge', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Hotels & Restaurants', transactions: 29, totalSpend: 86400.00, lastTx: '11-Aug-2026' },
   { id: 115, customer: 'Beirut Gourmet Market', brand: 'Janoub Estate', group: 'Clients', transactions: 26, totalSpend: 74100.00, lastTx: '10-Aug-2026' },
   { id: 119, customer: 'Mediterranean Delights Co', brand: 'Vanguard Premium', group: 'GENERAL', transactions: 24, totalSpend: 68900.00, lastTx: '09-Aug-2026' },
-  { id: 122, customer: 'Tannourine Catering Services', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 21, totalSpend: 59300.00, lastTx: '08-Aug-2026' },
+  { id: 122, customer: 'Tannourine Catering Services', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Hotels & Restaurants', transactions: 21, totalSpend: 59300.00, lastTx: '08-Aug-2026' },
   { id: 125, customer: 'Zahle Oils & Fine Foods', brand: 'Janoub Estate', group: 'Clients', transactions: 19, totalSpend: 51200.00, lastTx: '06-Aug-2026' },
-  { id: 129, customer: 'Baalbeck Supermarket', brand: 'Zeit w zaytoun ljanoub', group: 'GENERAL', transactions: 17, totalSpend: 44800.00, lastTx: '05-Aug-2026' },
+  { id: 129, customer: 'Baalbeck Supermarket', brand: 'Southern Olive Oil Products S.A.R.L', group: 'GENERAL', transactions: 17, totalSpend: 44800.00, lastTx: '05-Aug-2026' },
   { id: 133, customer: 'Sour Trading Co', brand: 'Vanguard Premium', group: 'Wholesale', transactions: 15, totalSpend: 39500.00, lastTx: '03-Aug-2026' },
-  { id: 137, customer: 'Byblos Food Services', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 14, totalSpend: 34100.00, lastTx: '01-Aug-2026' },
+  { id: 137, customer: 'Byblos Food Services', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Hotels & Restaurants', transactions: 14, totalSpend: 34100.00, lastTx: '01-Aug-2026' },
   { id: 140, customer: 'Tyre Specialty Market', brand: 'Janoub Estate', group: 'Clients', transactions: 12, totalSpend: 29800.00, lastTx: '28-Jul-2026' },
   { id: 144, customer: 'Tripoli Emporium', brand: 'Vanguard Premium', group: 'GENERAL', transactions: 11, totalSpend: 25400.00, lastTx: '25-Jul-2026' },
-  { id: 148, customer: 'Bhamdoun Bistro & Cafe', brand: 'Zeit w zaytoun ljanoub', group: 'Hotels & Restaurants', transactions: 9, totalSpend: 19600.00, lastTx: '20-Jul-2026' },
+  { id: 148, customer: 'Bhamdoun Bistro & Cafe', brand: 'Southern Olive Oil Products S.A.R.L', group: 'Hotels & Restaurants', transactions: 9, totalSpend: 19600.00, lastTx: '20-Jul-2026' },
   { id: 152, customer: 'Kaslik Olive Co', brand: 'Janoub Estate', group: 'VIP Accounts', transactions: 8, totalSpend: 16200.00, lastTx: '18-Jul-2026' }
 ];
 
@@ -5836,7 +5836,7 @@ window.executeEODProcess = function () {
 
   const branchSel = document.getElementById('eodBranchSelect');
   const branchVal = branchSel ? branchSel.value : 'zeit_ljanoub';
-  const branchName = branchSel ? branchSel.options[branchSel.selectedIndex].text : 'Zeit w zaytoun ljanoub';
+  const branchName = branchSel ? branchSel.options[branchSel.selectedIndex].text : 'Southern Olive Oil Products S.A.R.L';
 
   const systemDateStr = window.getSoftwareSystemDate();
   const eodInput = document.getElementById('eodLastDateInput');
@@ -6173,7 +6173,7 @@ function renderSalesReportFilters(reportName) {
         <div class="col-sm-6">
           <label class="form-label text-muted fw-bold mb-0" style="font-size: 0.72rem;">Branch</label>
           <select class="form-select form-select-sm border-secondary-subtle fw-medium" id="filterBranchSelect">
-            <option value="Zeit w zaytoun ljanoub" selected>Zeit w zaytoun ljanoub</option>
+            <option value="Southern Olive Oil Products S.A.R.L" selected>Southern Olive Oil Products S.A.R.L</option>
             <option value="All Branches">All Branches</option>
           </select>
         </div>
@@ -6216,7 +6216,7 @@ function renderSalesReportSheet(reportName) {
   if (!paperArea) return;
 
   const rNameUpper = reportName.toUpperCase();
-  const branchVal = document.getElementById('filterBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+  const branchVal = document.getElementById('filterBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
   const realDateChecked = document.getElementById('chkRealDate')?.checked ? 'Yes' : 'No';
   const showRateChecked = document.getElementById('chkShowRate')?.checked ? 'Yes' : 'No';
   const periodVal = document.getElementById('filterDateDisplay')?.value || '15-Aug-26';
@@ -6523,7 +6523,7 @@ window.confirmExportReport = function () {
 
   const fileContent =
     `===================================================\n` +
-    `Southern Olive & Oil Products - SALES CONTROL REPORT\n` +
+    `Southern Olive Oil Products S.A.R.L - SALES CONTROL REPORT\n` +
     `Report Name: ${currentActiveReportName}\n` +
     `Format: ${fmt}\n` +
     `System: Vanguard POS Software\n` +
@@ -6561,7 +6561,7 @@ window.openSalesReportSettingsModal = function () {
 };
 
 window.saveSalesReportSettings = function () {
-  const title = document.getElementById('settingCompanyTitle')?.value || 'Zeit w zaytoun ljanoub';
+  const title = document.getElementById('settingCompanyTitle')?.value || 'Southern Olive Oil Products S.A.R.L';
   const currency = document.getElementById('settingReportCurrency')?.value || 'LBP';
 
   const modalEl = document.getElementById('generalSystemSettingsModal');
@@ -8181,7 +8181,7 @@ window.VanguardSecurityEngine = {
   window.priceModesStore = JSON.parse(localStorage.getItem('so_price_modes_store') || 'null');
   if (!window.priceModesStore || typeof window.priceModesStore !== 'object') {
     window.priceModesStore = {
-      'Zeit w zaytoun ljanoub': window.createDefaultBranchModes(),
+      'Southern Olive Oil Products S.A.R.L': window.createDefaultBranchModes(),
       'Main Branch': window.createDefaultBranchModes(),
       'Factory Branch': window.createDefaultBranchModes(),
       'POS Branch': window.createDefaultBranchModes()
@@ -8193,7 +8193,7 @@ window.VanguardSecurityEngine = {
     const tbody = document.getElementById('modesTableBody');
     if (!tbody) return;
 
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     let branchData = window.priceModesStore[branch];
     if (!branchData || !Array.isArray(branchData) || branchData.length < 4) {
       branchData = window.createDefaultBranchModes();
@@ -8304,7 +8304,7 @@ window.VanguardSecurityEngine = {
   };
 
   window.saveModesCurrentBranch = function () {
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     const currentModes = window.extractCurrentModesFromUI();
     window.priceModesStore[branch] = currentModes;
     localStorage.setItem('so_price_modes_store', JSON.stringify(window.priceModesStore));
@@ -8321,7 +8321,7 @@ window.VanguardSecurityEngine = {
 
   window.executeSaveModesAllBranches = function () {
     const currentModes = window.extractCurrentModesFromUI();
-    const branches = ['Zeit w zaytoun ljanoub', 'Main Branch', 'Factory Branch', 'POS Branch'];
+    const branches = ['Southern Olive Oil Products S.A.R.L', 'Main Branch', 'Factory Branch', 'POS Branch'];
     branches.forEach(b => {
       window.priceModesStore[b] = JSON.parse(JSON.stringify(currentModes));
     });
@@ -8700,16 +8700,16 @@ window.VanguardSecurityEngine = {
   };
 
   window.loadDevicePreferencesForBranch = function () {
-    const branch = document.getElementById('devicePreferencesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('devicePreferencesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     window.renderWorkstationsTable();
     window.renderPhysicalPrintersTable();
   };
 
   // MODES SCHEDULE MATRIX CONTROLLER & DATA STORE
   window.modesData = JSON.parse(localStorage.getItem('so_modes_data') || 'null');
-  if (!window.modesData || typeof window.modesData !== 'object' || !window.modesData['Zeit w zaytoun ljanoub']) {
+  if (!window.modesData || typeof window.modesData !== 'object' || !window.modesData['Southern Olive Oil Products S.A.R.L']) {
     window.modesData = {
-      'Zeit w zaytoun ljanoub': {
+      'Southern Olive Oil Products S.A.R.L': {
         mode1: { MONDAY: '05:00 AM', TUESDAY: '04:00 AM', WEDNESDAY: '05:00 AM', THURSDAY: '05:00 AM', FRIDAY: '05:00 AM', SATURDAY: '05:00 AM', SUNDAY: '05:00 AM' },
         mode2: { MONDAY: '12:00 PM', TUESDAY: '12:00 PM', WEDNESDAY: '12:00 PM', THURSDAY: '12:00 PM', FRIDAY: '12:00 PM', SATURDAY: '12:00 PM', SUNDAY: '12:00 PM' },
         mode3: { MONDAY: '06:00 PM', TUESDAY: '06:00 PM', WEDNESDAY: '06:00 PM', THURSDAY: '06:00 PM', FRIDAY: '06:00 PM', SATURDAY: '06:00 PM', SUNDAY: '06:00 PM', disableAll: false },
@@ -8723,9 +8723,9 @@ window.VanguardSecurityEngine = {
     const tbody = document.getElementById('modesTableBody');
     if (!tbody) return;
 
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     if (!window.modesData[branch]) {
-      window.modesData[branch] = JSON.parse(JSON.stringify(window.modesData['Zeit w zaytoun ljanoub'] || {}));
+      window.modesData[branch] = JSON.parse(JSON.stringify(window.modesData['Southern Olive Oil Products S.A.R.L'] || {}));
     }
     const branchModes = window.modesData[branch];
     const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
@@ -8764,14 +8764,14 @@ window.VanguardSecurityEngine = {
   };
 
   window.updateModeTime = function (modeKey, day, val) {
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     if (!window.modesData[branch]) window.modesData[branch] = {};
     if (!window.modesData[branch][modeKey]) window.modesData[branch][modeKey] = {};
     window.modesData[branch][modeKey][day] = val;
   };
 
   window.toggleDisableMode = function (modeNum) {
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     const chk = document.getElementById(`disableMode${modeNum}`);
     if (!window.modesData[branch]) window.modesData[branch] = {};
     if (!window.modesData[branch][`mode${modeNum}`]) window.modesData[branch][`mode${modeNum}`] = {};
@@ -8780,15 +8780,15 @@ window.VanguardSecurityEngine = {
 
   window.saveModesCurrentBranch = function () {
     localStorage.setItem('so_modes_data', JSON.stringify(window.modesData));
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     showToast("Saved", `Modes schedule saved for branch "${branch}".`, "success");
   };
 
   window.confirmSaveModesAllBranches = function () {
-    const branch = document.getElementById('modesBranchSelect')?.value || 'Zeit w zaytoun ljanoub';
+    const branch = document.getElementById('modesBranchSelect')?.value || 'Southern Olive Oil Products S.A.R.L';
     const currentConfig = window.modesData[branch];
 
-    const branches = ['Zeit w zaytoun ljanoub', 'Main Branch', 'Factory Branch', 'POS Branch'];
+    const branches = ['Southern Olive Oil Products S.A.R.L', 'Main Branch', 'Factory Branch', 'POS Branch'];
     branches.forEach(b => {
       window.modesData[b] = JSON.parse(JSON.stringify(currentConfig));
     });

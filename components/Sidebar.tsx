@@ -528,7 +528,7 @@ export default function Sidebar({
         <div className="p-2.5 border-t border-gray-200 bg-gray-50 text-[10px] text-gray-500 font-medium text-center space-y-0.5">
           <p className="text-gray-700 font-bold">Vanguard ERP System</p>
           <p className="text-amber-600 font-bold">
-            {language === 'ar' ? (currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب SARL') : (currentTenant.brandNameEn || 'Southern Olive Oil & Products SARL')}
+            {language === 'ar' ? (currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب SARL') : (currentTenant.brandNameEn || 'Southern Olive Oil Products S.A.R.L & Products SARL')}
           </p>
         </div>
       )}

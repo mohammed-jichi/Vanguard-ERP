@@ -301,7 +301,7 @@
     const titleEl = document.getElementById('universalReportModalTitle');
     const subTitleEl = document.getElementById('universalReportSubtitle');
     if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-chart-line me-2"></i> ${customTitle || report.title}`;
-    if (subTitleEl) subTitleEl.textContent = `Southern Olive & Oil Products SARL — ${report.subtitle}`;
+    if (subTitleEl) subTitleEl.textContent = `Southern Olive Oil Products S.A.R.L — ${report.subtitle}`;
 
     // Reset Filter Inputs
     const searchInput = document.getElementById('universalReportSearchInput');
@@ -401,7 +401,7 @@
 
     // Header title row
     csvContent += `"${activeReportData.title}"\n`;
-    csvContent += `"Southern Olive & Oil Products SARL - System ID: southernlbpr"\n\n`;
+    csvContent += `"Southern Olive Oil Products S.A.R.L - System ID: southernlbpr"\n\n`;
 
     // Columns
     csvContent += activeReportData.columns.map(c => `"${c.replace(/"/g, '""')}"`).join(',') + '\n';
@@ -450,7 +450,7 @@
     // Trigger direct downloadable PDF file
     const blob = new Blob([
       `===================================================\n` +
-      `Southern Olive & Oil Products - OFFICIAL FINANCIAL REPORT\n` +
+      `Southern Olive Oil Products S.A.R.L - OFFICIAL FINANCIAL REPORT\n` +
       `Report: ${repTitle}\n` +
       `Date Generated: ${new Date().toLocaleString()}\n` +
       `System ID: southernlbpr\n` +
@@ -479,7 +479,7 @@
 
   // 7. WhatsApp Reminder Trigger Helper for Aged Debtors Report
   window.sendWhatsAppReminder = function (clientName, amount) {
-    const msg = `Dear ${clientName}, this is an automated billing statement from Southern Olive & Oil Products SARL. Your current pending balance is ${amount}. Please contact accounting to arrange settlement. Thank you!`;
+    const msg = `Dear ${clientName}, this is an automated billing statement from Southern Olive Oil Products S.A.R.L Your current pending balance is ${amount}. Please contact accounting to arrange settlement. Thank you!`;
     const encoded = encodeURIComponent(msg);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   };

@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Southern Olive & Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
+ * Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
  * Vanguard ERP — Products & Services Master Sub-System Component (<ProductMasterModal />)
  * 
  * Strict Technical Implementation Fulfilling All 4 Core Functional Sections:

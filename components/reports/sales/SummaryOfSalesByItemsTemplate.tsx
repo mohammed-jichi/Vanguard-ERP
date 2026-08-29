@@ -115,7 +115,7 @@ export const SummaryOfSalesByItemsTemplate = () => {
                 onChange={(e) => setBranch(e.target.value)}
               >
                 <option value="All Branches">All Branches</option>
-                <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
+                <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
               </select>
             </div>
             
@@ -163,7 +163,7 @@ export const SummaryOfSalesByItemsTemplate = () => {
               {/* Report Title */}
               {pageData.page === 1 && (
                 <div className="w-full text-center mb-4">
-                  <div className="text-blue-700 font-bold text-[12px] text-left absolute top-8 left-8">Zeit w zaytoun ljanoub</div>
+                  <div className="text-blue-700 font-bold text-[12px] text-left absolute top-8 left-8">Southern Olive Oil Products S.A.R.L</div>
                   <h3 className="font-bold text-[14px]">Summary Of Sales By Items</h3>
                 </div>
               )}
@@ -191,7 +191,7 @@ export const SummaryOfSalesByItemsTemplate = () => {
                 <tbody>
                   {pageData.page === 1 && (
                     <tr>
-                      <td colSpan={7} className="font-bold py-1 pt-2">Branch: Zeit w zaytoun ljanoub</td>
+                      <td colSpan={7} className="font-bold py-1 pt-2">Branch: Southern Olive Oil Products S.A.R.L</td>
                     </tr>
                   )}
                   {pageData.items.map((item, idx) => (

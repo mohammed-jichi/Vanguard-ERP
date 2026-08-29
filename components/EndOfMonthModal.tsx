@@ -14,7 +14,7 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
   const [isReopenMode, setIsReopenMode] = useState<boolean>(false);
 
   // Form field states
-  const [selectedBranch, setSelectedBranch] = useState<string>('Southern Olive Oil S.A.R.L');
+  const [selectedBranch, setSelectedBranch] = useState<string>('Southern Olive Oil Products S.A.R.L');
   const [selectedYear, setSelectedYear] = useState<string>('2026');
   const [selectedMonth, setSelectedMonth] = useState<string>('August');
 
@@ -93,7 +93,7 @@ export default function EndOfMonthModal({ isOpen, onClose, onWatchTutorials }: E
                 className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
               >
                 <option value="" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Select Branch</option>
-                <option value="Southern Olive Oil S.A.R.L" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive Oil S.A.R.L</option>
+                <option value="Southern Olive Oil Products S.A.R.L" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive Oil Products S.A.R.L</option>
                 <option value="Beirut Central Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
                 <option value="Saida Production Press" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Saida Production Press</option>
               </select>

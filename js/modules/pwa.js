@@ -125,7 +125,7 @@ window.shareSubApp = function (appUrl, appTitle) {
 
   if (navigator.share) {
     navigator.share({
-      title: appTitle + ' - Southern Olive & Oil Products',
+      title: appTitle + ' - Southern Olive Oil Products S.A.R.L',
       text: 'Open ' + appTitle + ' app:',
       url: fullUrl
     }).catch(err => console.log('Share canceled:', err));

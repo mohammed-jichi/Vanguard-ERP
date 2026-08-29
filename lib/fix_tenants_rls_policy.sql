@@ -1,5 +1,5 @@
 -- =========================================================
--- Southern Olive & Oil Products / VANGUARD ERP
+-- Southern Olive Oil Products S.A.R.L / VANGUARD ERP
 -- Supabase Row Level Security (RLS) Fix for Tenants Table
 -- =========================================================
 
@@ -34,7 +34,7 @@ VALUES (
   'منتوجات زيت وزيتون الجنوب',
   'southern-olive',
   'منتوجات زيت وزيتون الجنوب',
-  'Southern Olive & Oil Products',
+  'Southern Olive Oil Products S.A.R.L',
   'ENTERPRISE',
   'ACTIVE',
   0,

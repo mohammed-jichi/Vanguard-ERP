@@ -1,7 +1,7 @@
 /**
  * Lebanon Villages & Governorates Dynamic Cascade Selector Engine
  * Powered by LebanonVillage.json dataset
- * Southern Olive & Oil Products SARL (منتوجات زيت وزيتون الجنوب ش.م.م)
+ * Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م)
  */
 
 window.LebanonLocations = {

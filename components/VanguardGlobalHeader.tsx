@@ -157,7 +157,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-mono text-white font-black text-sm" style={{ color: '#ffffff' }}>001</span>
           <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
-          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>Southern Olive Oil S.A.R.L</span>
+          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>Southern Olive Oil Products S.A.R.L</span>
           <span className="text-[11px] text-white font-bold bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full shadow-2xs" style={{ color: '#ffffff' }}>
             منتوجات زيت وزيتون الجنوب
           </span>
@@ -401,7 +401,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     Mohammed
                   </p>
                   <p className="text-[10px] text-gray-500 font-medium">
-                    Southern Olive Oil S.A.R.L
+                    Southern Olive Oil Products S.A.R.L
                   </p>
                 </div>
 

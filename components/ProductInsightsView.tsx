@@ -228,7 +228,7 @@ export default function ProductInsightsView() {
         <div>
           <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Products Insights</span>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight mt-0.5">
-            منتوجات زيت وزيتون الجنوب (Southern Olive Oil and Products SARL.)
+            منتوجات زيت وزيتون الجنوب (Southern Olive Oil Products S.A.R.L and Products SARL.)
           </h1>
           <p className="text-xs font-semibold text-slate-500 mt-1">
             Product performance analysis, menu mix breakdown, weekday distribution, and cost structure engine.

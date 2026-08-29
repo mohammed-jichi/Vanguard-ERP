@@ -4303,7 +4303,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4331,7 +4331,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Groupings */}
                       <div className="text-[11px] mb-1 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
                       <div className="text-[11px] mb-1 font-bold">
                         Category: عروض
@@ -4356,7 +4356,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4384,7 +4384,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Grouping: Branch */}
                       <div className="text-[11px] mb-1 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Grouping: Description */}
@@ -4427,7 +4427,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4450,7 +4450,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Data Rows */}
@@ -4474,7 +4474,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4507,7 +4507,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             {/* Row 1 */}
                             <tr>
                               <td className="border border-black p-1.5" rowSpan={3}>
-                                Southern Olive and Oil<br/>Products
+                                Southern Olive Oil Products S.A.R.L<br/>Products
                               </td>
                               <td className="border border-black p-1.5">مفرق</td>
                               <td className="border border-black p-1.5">54,542,762.47</td>
@@ -4540,7 +4540,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4566,7 +4566,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch & Department Info */}
                       <div className="text-[11px] mb-1 font-medium">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
                       <div className="text-[11px] mb-2 font-medium">
                         Department: MAIN DEPARTMENT
@@ -4620,7 +4620,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4642,7 +4642,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <tr>
                             <td className="border border-black p-1.5 w-[100px]"></td>
                             <td className="border border-black p-1.5 text-center leading-tight w-[175px]">
-                              Southern Olive and Oil Products
+                              Southern Olive Oil Products S.A.R.L
                             </td>
                             <td className="border border-black p-1.5 text-center bg-[#cce5ff] w-[175px]">
                               Total
@@ -4663,7 +4663,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4694,7 +4694,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Zero Tax Row */}
@@ -4725,7 +4725,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4780,7 +4780,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div key={idx} className="grid grid-cols-[60px_60px_130px_110px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-2 font-medium items-start">
                           <div>9606</div>
                           <div>1</div>
-                          <div className="leading-tight">Southern Olive and Oil Products</div>
+                          <div className="leading-tight">Southern Olive Oil Products S.A.R.L</div>
                           <div>{row.date}</div>
                           <div className="text-right">{row.dineIn}</div>
                           <div className="text-right">0.00</div>
@@ -4795,7 +4795,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4820,7 +4820,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch Name: Southern Olive and Oil Products (SARL)
+                        Branch Name: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Supplier 1 */}
@@ -4915,7 +4915,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4949,7 +4949,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Employee: Hiba Aloulou */}
@@ -5033,7 +5033,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5061,7 +5061,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Data Rows */}
@@ -5097,7 +5097,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5127,7 +5127,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <tbody>
                           {/* Main Branch Data */}
                           <tr>
-                            <td className="border border-black p-1.5 align-top" rowSpan={6}>Southern Olive and Oil Products</td>
+                            <td className="border border-black p-1.5 align-top" rowSpan={6}>Southern Olive Oil Products S.A.R.L</td>
                             <td className="border border-black p-1.5">Amount</td>
                             <td className="border border-black p-1.5">1,316,032,050</td>
                             <td className="border border-black p-1.5">248,400,000.0</td>
@@ -5210,7 +5210,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5240,7 +5240,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title Underlined */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Workstation: 1 */}
@@ -5332,7 +5332,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5359,7 +5359,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Department: MAIN DEPARTMENT */}
@@ -5445,7 +5445,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5475,7 +5475,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-1 font-bold">
-                        Branch : Southern Olive and Oil Products (SARL)
+                        Branch : Southern Olive Oil Products S.A.R.L
                       </div>
 
                       {/* Module Group: Adjustment */}
@@ -5540,7 +5540,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5620,7 +5620,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-5xl mx-auto">
                       {/* Header Section */}
                       <div className="text-blue-700 font-bold text-[14px]">
-                        Southern Olive and Oil Products (SARL)
+                        Southern Olive Oil Products S.A.R.L
                       </div>
                       
                       <div className="text-center font-bold text-[14px] mt-2 mb-4">
@@ -5640,7 +5640,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[12px] font-bold space-y-2 mb-6">
                         <div className="grid grid-cols-[130px_1fr]">
                           <span className="underline">Branch Name:</span>
-                          <span className="underline">Southern Olive and Oil Products (SARL)</span>
+                          <span className="underline">Southern Olive Oil Products S.A.R.L</span>
                         </div>
                         <div className="grid grid-cols-[130px_1fr]">
                           <span>EOD Date:</span>
@@ -5684,7 +5684,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="relative mb-6">
                         {/* Company Name (Top Left, Blue) */}
                         <div className="text-blue-700 font-bold text-[15px] absolute top-0 left-0">
-                          Southern Olive and Oil Products (SARL)
+                          Southern Olive Oil Products S.A.R.L
                         </div>
                         
                         {/* Report Title (Center) */}
@@ -5724,7 +5724,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* BRANCH & REASON GROUPING */}
                       <div className="text-[12px] font-bold underline mb-4 px-2">
-                        Branch: Southern Olive and Oil Products (SARL)
+                        Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
                       <div className="text-[11px] font-bold text-center mb-2">تعداد خاطئ</div>

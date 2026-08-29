@@ -680,7 +680,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="منتجات زيت وزيتون الجنوب" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>منتجات زيت وزيتون الجنوب (Southern Olive Oil S.A.R.L)</option>
+            <option value="منتجات زيت وزيتون الجنوب" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>منتجات زيت وزيتون الجنوب (Southern Olive Oil Products S.A.R.L)</option>
             <option value="Beirut Central Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
             <option value="Saida Production Press" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Saida Production Press</option>
           </select>
