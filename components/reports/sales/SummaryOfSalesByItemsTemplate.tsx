@@ -222,8 +222,8 @@ export const SummaryOfSalesByItemsTemplate = () => {
               {pageData.page === 4 && (
                 <div className="mt-auto w-full border-t border-black pt-2 pb-4 flex justify-between items-center text-[10px] font-bold text-black">
                   <div className="text-left w-1/3">RET_S_00184</div>
-                  <div className="text-center w-1/3">Copyright © 2026 Omega Software, Inc. All Rights Reserved.</div>
-                  <div className="text-right w-1/3 text-blue-700">www.omegapos.com</div>
+                  <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                  <div className="text-right w-1/3 text-blue-700">www.vanguarderp.com</div>
                 </div>
               )}
             </div>
