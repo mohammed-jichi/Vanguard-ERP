@@ -35,6 +35,7 @@ import { ElectronicJournalTemplate } from './reports/transactions/ElectronicJour
 import { TimerReportTemplate } from './reports/transactions/TimerReportTemplate';
 import { TimeReportByDateTemplate } from './reports/transactions/TimeReportByDateTemplate';
 import { SummaryOfSalesByItemsTemplate } from './reports/sales/SummaryOfSalesByItemsTemplate';
+import { SalesByItemsByGroupTemplate } from './reports/sales/SalesByItemsByGroupTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -87,7 +88,7 @@ const reportMenuData: ReportMenuItem[] = [
     category: "Product Sales",
     type: "nested",
     groups: [
-      { name: "Product Sales", items: ["Summary of Sales By Items", "Sales by Items", "Sales details for one sales item", "Sales By Customer By Items", "Daily Sales By Items", "Sales By Categories", "Sales By Divisions", "Sales Items by Transaction", "Not Sold Items", "Sold Serial Numbers"] },
+      { name: "Product Sales", items: ["Summary of Sales By Items", "Sales by Items By Group", "Sales by Items", "Sales details for one sales item", "Sales By Customer By Items", "Daily Sales By Items", "Sales By Categories", "Sales By Divisions", "Sales Items by Transaction", "Not Sold Items", "Sold Serial Numbers"] },
       { name: "Comparative By Branch", items: ["Sales By Category", "Sales By Division", "Sales By Groups", "Sales By Items"] },
       { name: "Top Performers", items: ["Top N sold by Quantity", "Top N sold by Amount"] },
       { name: "Voids & Refunds", items: ["Summary of voids", "Summary of refunds", "Details of refunds"] }
@@ -149,7 +150,9 @@ const complexTransactionReports = [
   'Time report - Average Check',
   'Time report By EOD date',
   'Transaction Report by Time',
-  'Summary of Sales By Items'
+  'Summary of Sales By Items',
+  'Sales by Items By Group',
+  'Sales by Items by Group'
 ];
 
 interface ReportsMasterDetailProps {
@@ -995,6 +998,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <TimerReportTemplate />
                   ) : selectedReport === 'Summary of Sales By Items' ? (
                     <SummaryOfSalesByItemsTemplate />
+                  ) : selectedReport === 'Sales by Items By Group' || selectedReport === 'Sales by Items by Group' ? (
+                    <SalesByItemsByGroupTemplate />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
