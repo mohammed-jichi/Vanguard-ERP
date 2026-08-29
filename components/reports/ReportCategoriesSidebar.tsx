@@ -53,7 +53,21 @@ export default function ReportCategoriesSidebar({
   return (
     <aside className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-200 shadow-sm p-4 font-sans select-none">
       
-      {/* 1. Card Header */}
+      {/* 1. Global CSS Override for Report Category Titles */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Force Omega Blue on all Category Header text and icons */
+        .report-category-header,
+        .report-category-header span,
+        div[class*="overflow-y-auto"] .sticky,
+        div[class*="overflow-y-auto"] .sticky span,
+        div[class*="overflow-y-auto"] .sticky svg {
+          color: #195a96 !important;
+          stroke: #195a96 !important;
+          fill: none !important;
+        }
+      `}} />
+
+      {/* 2. Card Header */}
       <div className="flex items-center gap-3 mb-3.5">
         <div className="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-700 shadow-sm">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +82,7 @@ export default function ReportCategoriesSidebar({
         </h2>
       </div>
 
-      {/* 2. Search Input */}
+      {/* 3. Search Input */}
       <div className="relative mb-3">
         <svg
           className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400"
@@ -87,7 +101,7 @@ export default function ReportCategoriesSidebar({
         />
       </div>
 
-      {/* 3. Category Accordion List with FORCED OMEGA BLUE */}
+      {/* 4. Category Accordion List with FORCED OMEGA BLUE */}
       <div className="divide-y divide-slate-200 border-t border-slate-200">
         {filteredCategories.map((category) => {
           const isOpen = openCategoryId === category.id;
@@ -96,20 +110,20 @@ export default function ReportCategoriesSidebar({
               <div 
                 style={{ color: '#195a96' }}
                 onClick={() => toggleCategory(category.id)}
-                className="font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                className="report-category-header text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
               >
                 <span style={{ color: '#195a96' }}>
                   {category.name || 'Recently Viewed'}
                 </span>
 
                 <svg 
-                  style={{ color: '#195a96' }}
+                  style={{ color: '#195a96', stroke: '#195a96' }}
                   xmlns="http://www.w3.org/2000/svg" 
                   width="16" 
                   height="16" 
                   viewBox="0 0 24 24" 
                   fill="none" 
-                  stroke="currentColor" 
+                  stroke="#195a96" 
                   strokeWidth="2" 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
