@@ -2,6 +2,7 @@ import React from 'react';
 import { LiveAssistantWidget } from '@/components/voice/LiveAssistantWidget';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../css/style.css';
+import './globals.css';
 
 export const metadata = {
   title: 'Vanguard ERP',

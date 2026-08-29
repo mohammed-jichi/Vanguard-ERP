@@ -5,8 +5,8 @@ export const TransactionsByInvoiceNumberTemplate = () => {
   const [uiShowZeroTax, setUiShowZeroTax] = useState(false);
   const [activeShowZeroTax, setActiveShowZeroTax] = useState(false);
   
-  // Controls table visibility
-  const [isFiltered, setIsFiltered] = useState(false);
+  // Controls table visibility (Auto-rendered by default)
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => {

@@ -3399,3 +3399,40 @@ input.report-filter:focus,
   line-height: 1.1 !important;
   margin: 0 !important;
 }
+
+/* ========================================================================= */
+/* VANGUARD ERP - PERMANENT ANTI-GHOST & SOLID INPUT SELECT OVERRIDE        */
+/* ========================================================================= */
+
+/* 1. Force Solid Black Text & 100% Opacity on ALL Selects & Options */
+select,
+select option,
+select optgroup,
+input[type="text"],
+input[type="date"],
+input[type="search"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  opacity: 1 !important;
+  --tw-text-opacity: 1 !important;
+  background-color: #ffffff !important;
+  font-weight: 600 !important;
+  border-color: #94a3b8 !important;
+}
+
+/* 2. Ensure Disabled or Default Selected Options Remain Crisp & Visible */
+select:disabled,
+input:disabled {
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
+  opacity: 0.9 !important;
+  background-color: #f1f5f9 !important;
+}
+
+/* 3. High-Contrast Border on Focus */
+select:focus,
+input:focus {
+  border-color: #1a629b !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1.5px #1a629b !important;
+}

@@ -10,8 +10,8 @@ export const TransactionsByDateTemplate = () => {
   const [activeShowRate, setActiveShowRate] = useState(false);
   const [activeGroupByDate, setActiveGroupByDate] = useState(false);
   
-  // Core Visibility State (Hides table until filtered)
-  const [isFiltered, setIsFiltered] = useState(false);
+  // Core Visibility State (Auto-rendered by default)
+  const [isFiltered, setIsFiltered] = useState(true);
   
   const [zoomLevel, setZoomLevel] = useState(1);
   const [currentPage] = useState(1);

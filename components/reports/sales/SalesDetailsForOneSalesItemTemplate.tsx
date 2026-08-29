@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const SalesDetailsForOneSalesItemTemplate = () => {
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');
   const [branch, setBranch] = useState('Southern Olive Oil Products S.A.R.L');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const SummaryOfSalesByItemsTemplate = () => {
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');
   const [branch, setBranch] = useState('All Branches');

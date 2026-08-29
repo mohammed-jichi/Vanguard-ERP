@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const ElectronicJournalTemplate = () => {
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 
   // Fully English Mock Data

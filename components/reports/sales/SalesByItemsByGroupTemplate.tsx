@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const SalesByItemsByGroupTemplate = () => {
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [reportType, setReportType] = useState('Sales by Items');
   const [filterPeriod, setFilterPeriod] = useState('This Month');

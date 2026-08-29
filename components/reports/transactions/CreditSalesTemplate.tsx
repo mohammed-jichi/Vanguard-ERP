@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
 
 export const CreditSalesTemplate = () => {
-  // Controls table visibility
-  const [isFiltered, setIsFiltered] = useState(false);
+  // Controls table visibility (Auto-rendered by default)
+  const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const handleFilter = () => setIsFiltered(true);
