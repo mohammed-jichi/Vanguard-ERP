@@ -37,6 +37,7 @@ import { TimeReportByDateTemplate } from './reports/transactions/TimeReportByDat
 import { SummaryOfSalesByItemsTemplate } from './reports/sales/SummaryOfSalesByItemsTemplate';
 import { SalesByItemsByGroupTemplate } from './reports/sales/SalesByItemsByGroupTemplate';
 import { SalesDetailsForOneSalesItemTemplate } from './reports/sales/SalesDetailsForOneSalesItemTemplate';
+import SalesByItemsMasterReport from './modules/reports/SalesByItemsReport';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -1019,6 +1020,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <SalesByItemsByGroupTemplate />
                   ) : selectedReport === 'Sales details for one sales item' || selectedReport === 'Sales Details for One Sales Item' ? (
                     <SalesDetailsForOneSalesItemTemplate />
+                  ) : selectedReport === 'Sales by Items' || selectedReport === 'Sales by Item by Salesman' || selectedReport === 'Sales By Items (service items only)' || selectedReport === 'Sales by Items by Customer' || selectedReport === 'Sales by Item by Size by Color' ? (
+                    <SalesByItemsMasterReport />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
