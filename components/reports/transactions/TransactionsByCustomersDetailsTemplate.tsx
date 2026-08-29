@@ -77,8 +77,12 @@ export const TransactionsByCustomersDetailsTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {/* The A4 Paper Simulator (794px width) */}
+        <div 
+          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+        >
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers Details</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -87,7 +91,7 @@ export const TransactionsByCustomersDetailsTemplate = () => {
             <div>Page 1 of 2</div>
           </div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full min-w-[1000px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice</th>
@@ -108,20 +112,16 @@ export const TransactionsByCustomersDetailsTemplate = () => {
                 <tr>
                     <td className="py-1 px-1">4000022</td>
                     <td className="py-1 px-1">19-Feb-2026</td>
-                    <td className="py-1 px-1">12:52</td>
+                    <td className="py-1 px-1">10:04</td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1">Mahdi</td>
+                    <td className="py-1 px-1"></td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right"></td>
-                    <td className="py-1 px-1 text-right">706,968,000.00</td>
-                    <td className="py-1 px-1 text-right"></td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">15,800,000.00</td>
+                    <td className="py-1 px-1 text-right">صندوق زيتون اخضر بلدي 650غ*12</td>
                 </tr>
                 {!activeSummary && (
                   <>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">القنية زيت زيتون خضير بلدي 1500 مل*6</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق خل ابيض 500مل*12قنينة</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق خل تفاح بلدي 500مل*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق خل حصرم 500مل*12</td></tr>
                     <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق دبس خروب 1300غ*12</td></tr>
                     <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق دبس رمان 500 مل*12</td></tr>
                     <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق رب بندورة 650غ*12</td></tr>

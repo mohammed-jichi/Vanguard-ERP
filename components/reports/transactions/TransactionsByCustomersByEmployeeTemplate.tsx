@@ -59,8 +59,12 @@ export const TransactionsByCustomersByEmployeeTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {/* The A4 Paper Simulator (794px width) */}
+        <div 
+          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+        >
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers by Employee</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -69,7 +73,7 @@ export const TransactionsByCustomersByEmployeeTemplate = () => {
             <div>Page 1 of 1</div>
           </div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice#</th>

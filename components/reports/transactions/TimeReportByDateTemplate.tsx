@@ -93,122 +93,123 @@ export const TimeReportByDateTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] font-sans text-black overflow-x-auto print:overflow-visible">
-        <div className="report-wrapper transition-transform duration-200 origin-top w-full min-w-[1000px]" style={{ transform: `scale(${zoomLevel})` }}>
-          
-          {!isFiltered ? (
-            <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
-               <div className="text-[40px] mb-3 opacity-40">📅</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Time report by date.</p>
-            </div>
-          ) : (
-            <div className="bg-white p-4">
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {!isFiltered ? (
+          <div className="w-full max-w-[794px] py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
+             <div className="text-[40px] mb-3 opacity-40">📅</div>
+             <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Time report by date.</p>
+          </div>
+        ) : (
+          /* The A4 Paper Simulator (794px width) */
+          <div 
+            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            <div className="w-full relative mb-2">
+              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
+              <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
               
-              <div className="w-full relative mb-2">
-                <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
-                <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
-                
-                <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
-                  <div className="w-[150px] text-left">28-Aug-2026</div>
-                  <div className="flex-1 flex justify-center gap-16">
-                     <span>From Date: {allDates[0]}</span>
-                     <span>To Date: {allDates[allDates.length - 1]}</span>
-                  </div>
-                  <div className="w-[150px] text-right">Page 1 of 72</div>
+              <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
+                <div className="w-[150px] text-left">28-Aug-2026</div>
+                <div className="flex-1 flex justify-center gap-16">
+                   <span>From Date: {allDates[0]}</span>
+                   <span>To Date: {allDates[allDates.length - 1]}</span>
                 </div>
-                
-                <div className="text-left font-bold text-[11px] mt-1 mb-6 leading-tight">
-                  This report will show the transactions done by date and not by EOD date, so the Total shown is not the total sales of<br/>
-                  the day. use this report for statistics reasons only.
-                </div>
+                <div className="w-[150px] text-right">Page 1 of 72</div>
               </div>
+              
+              <div className="text-left font-bold text-[11px] mt-1 mb-6 leading-tight">
+                This report will show the transactions done by date and not by EOD date, so the Total shown is not the total sales of<br/>
+                the day. use this report for statistics reasons only.
+              </div>
+            </div>
 
-              {/* 3. DYNAMIC RENDERING ENGINE */}
-              {chunkedDates.map((chunk, chunkIdx) => {
-                const isLastChunk = chunkIdx === chunkedDates.length - 1;
-                
-                return (
-                  <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
-                    <table className="w-full border-collapse text-[11px] border border-black">
-                      <thead>
-                        {/* HEADER ROW 1 */}
-                        <tr>
-                          {/* Empty Corner Cell */}
-                          <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
-                          
-                          {/* Branch Name (Spans dates + Light Blue total if last chunk) */}
-                          <th colSpan={isLastChunk ? chunk.length + 1 : chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
-                            Southern Olive Oil Products S.A.R.L
-                          </th>
+            {/* 3. DYNAMIC RENDERING ENGINE */}
+            {chunkedDates.map((chunk, chunkIdx) => {
+              const isLastChunk = chunkIdx === chunkedDates.length - 1;
+              
+              return (
+                <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
+                  <table className="w-full border-collapse text-[11px] border border-black">
+                    <thead>
+                      {/* HEADER ROW 1 */}
+                      <tr>
+                        {/* Empty Corner Cell */}
+                        <th rowSpan={2} className="border border-black p-1 bg-white min-w-[120px]"></th>
+                        
+                        {/* Branch Name (Spans dates + Light Blue total if last chunk) */}
+                        <th colSpan={isLastChunk ? chunk.length + 1 : chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
+                          Southern Olive Oil Products S.A.R.L
+                        </th>
 
-                          {/* Deep Blue Total Header (Only on last chunk) */}
-                          {isLastChunk && (
-                            <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
-                          )}
-                        </tr>
-                        
-                        {/* HEADER ROW 2 (Dates & Light Blue Total) */}
-                        <tr>
+                        {/* Deep Blue Total Header (Only on last chunk) */}
+                        {isLastChunk && (
+                          <th rowSpan={2} className="border border-black p-1.5 text-right matrix-grand-total align-bottom">Total</th>
+                        )}
+                      </tr>
+                      
+                      {/* HEADER ROW 2 (Dates & Light Blue Total) */}
+                      <tr>
+                        {chunk.map(date => (
+                          <th key={date} className="border border-black p-1.5 text-center font-bold bg-white">{date}</th>
+                        ))}
+                        {isLastChunk && (
+                          <th className="border border-black p-1.5 text-right font-bold matrix-total-cell">Total</th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                      {/* TOP TOTAL ROW (Light Blue completely) */}
+                      <tr>
+                        <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
+                        {chunk.map(date => (
+                          <td key={`total-${date}`} className="border border-black p-1 text-right font-bold matrix-total-cell">
+                            {getDailyTotal()}
+                          </td>
+                        ))}
+                        {isLastChunk && (
+                          <>
+                            <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getMatrixGrandTotal()}</td>
+                            <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getMatrixGrandTotal()}</td>
+                          </>
+                        )}
+                      </tr>
+
+                      {/* TIME ROWS */}
+                      {times.map(time => (
+                        <tr key={time}>
+                          <td className="border border-black p-1.5 text-center font-bold bg-white">{time}</td>
                           {chunk.map(date => (
-                            <th key={date} className="border border-black p-1.5 text-center font-bold bg-white">{date}</th>
-                          ))}
-                          {isLastChunk && (
-                            <th className="border border-black p-1.5 text-right font-bold matrix-total-cell">Total</th>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        
-                        {/* TOP TOTAL ROW (Light Blue completely) */}
-                        <tr>
-                          <td className="border border-black p-1.5 text-center font-bold matrix-total-cell">Total</td>
-                          {chunk.map(date => (
-                            <td key={`total-${date}`} className="border border-black p-1 text-right font-bold matrix-total-cell">
-                              {getDailyTotal()}
+                            <td key={`${time}-${date}`} className="border border-black p-1 text-right bg-white">
+                              {getVal()}
                             </td>
                           ))}
                           {isLastChunk && (
                             <>
-                              <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getMatrixGrandTotal()}</td>
-                              <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getMatrixGrandTotal()}</td>
+                              <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getRowGrandTotal()}</td>
+                              <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getRowGrandTotal()}</td>
                             </>
                           )}
                         </tr>
+                      ))}
 
-                        {/* TIME ROWS */}
-                        {times.map(time => (
-                          <tr key={time}>
-                            <td className="border border-black p-1.5 text-center font-bold bg-white">{time}</td>
-                            {chunk.map(date => (
-                              <td key={`${time}-${date}`} className="border border-black p-1 text-right bg-white">
-                                {getVal()}
-                              </td>
-                            ))}
-                            {isLastChunk && (
-                              <>
-                                <td className="border border-black p-1 text-right font-bold matrix-total-cell">{getRowGrandTotal()}</td>
-                                <td className="border border-black p-1 text-right font-bold matrix-grand-total">{getRowGrandTotal()}</td>
-                              </>
-                            )}
-                          </tr>
-                        ))}
-
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })}
-              
-              {/* PRINT FOOTER */}
-              <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-                <div className="text-left w-1/3">REP_TR_00312</div>
-                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-              </div>
-
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
+            
+            {/* PRINT FOOTER */}
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_TR_00312</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
             </div>
-          )}
-        </div>
+
+          </div>
+        )}
       </div>
     </div>
   );

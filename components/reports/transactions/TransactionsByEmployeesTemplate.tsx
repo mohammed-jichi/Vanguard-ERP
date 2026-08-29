@@ -90,8 +90,12 @@ export const TransactionsByEmployeesTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {/* The A4 Paper Simulator (794px width) */}
+        <div 
+          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+        >
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Employees</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -100,7 +104,7 @@ export const TransactionsByEmployeesTemplate = () => {
             <div>Page 1 of 14</div>
           </div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice#</th>
@@ -128,7 +132,7 @@ export const TransactionsByEmployeesTemplate = () => {
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">1,260,000.00</td>
-                    <td className="py-1 px-1 text-right">2</td>
+                    <td className="py-1 px-1 text-right">1</td>
                 </tr>
                 <tr>
                     <td className="py-1 px-1">102972</td>
@@ -136,11 +140,11 @@ export const TransactionsByEmployeesTemplate = () => {
                     <td className="py-1 px-1">11.42</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">1,620,000.00</td>
+                    <td className="py-1 px-1 text-right">2,000,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">1,620,000.00</td>
-                    <td className="py-1 px-1 text-right">2</td>
+                    <td className="py-1 px-1 text-right">2,000,000.00</td>
+                    <td className="py-1 px-1 text-right">1</td>
                 </tr>
                 <tr>
                     <td className="py-1 px-1">102973</td>
@@ -148,10 +152,10 @@ export const TransactionsByEmployeesTemplate = () => {
                     <td className="py-1 px-1">11.45</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">90,000.00</td>
+                    <td className="py-1 px-1 text-right">3,000,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">90,000.00</td>
+                    <td className="py-1 px-1 text-right">3,000,000.00</td>
                     <td className="py-1 px-1 text-right">1</td>
                 </tr>
                 <tr>
@@ -160,11 +164,11 @@ export const TransactionsByEmployeesTemplate = () => {
                     <td className="py-1 px-1">11.50</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">9,000,000.00</td>
-                    <td className="py-1 px-1 text-right">900,000.00</td>
+                    <td className="py-1 px-1 text-right">3,000,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">8,100,000.00</td>
-                    <td className="py-1 px-1 text-right">2</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">3,000,000.00</td>
+                    <td className="py-1 px-1 text-right">1</td>
                 </tr>
                 <tr>
                     <td className="py-1 px-1">102975</td>
@@ -172,80 +176,88 @@ export const TransactionsByEmployeesTemplate = () => {
                     <td className="py-1 px-1">12.08</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">315,000.00</td>
+                    <td className="py-1 px-1 text-right">2,260,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">315,000.00</td>
+                    <td className="py-1 px-1 text-right">2,260,000.00</td>
                     <td className="py-1 px-1 text-right">1</td>
                 </tr>
-                 <tr>
+                <tr className="font-bold border-t border-black">
+                    <td colSpan={5} className="py-1 px-1">Total For Hiba Aloulou:</td>
+                    <td className="py-1 px-1 text-right">11,520,000.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">11,520,000.00</td>
+                    <td className="py-1 px-1"></td>
+                </tr>
+                <tr className="font-bold"><td colSpan={10} className="py-1 px-1">Kassem Safieddine</td></tr>
+                <tr>
                     <td className="py-1 px-1">102976</td>
                     <td className="py-1 px-1">01-Aug-2026</td>
                     <td className="py-1 px-1">12.09</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">990,000.00</td>
+                    <td className="py-1 px-1 text-right">7,000,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">990,000.00</td>
-                    <td className="py-1 px-1 text-right">2</td>
+                    <td className="py-1 px-1 text-right">7,000,000.00</td>
+                    <td className="py-1 px-1 text-right">1</td>
                 </tr>
-                 <tr>
-                    <td className="py-1 px-1">...</td>
-                    <td className="py-1 px-1">...</td>
-                    <td className="py-1 px-1">...</td>
+                <tr>
+                    <td className="py-1 px-1">102977</td>
+                    <td className="py-1 px-1">01-Aug-2026</td>
+                    <td className="py-1 px-1">12.21</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">...</td>
-                    <td className="py-1 px-1 text-right">...</td>
-                    <td className="py-1 px-1 text-right">...</td>
-                    <td className="py-1 px-1 text-right">...</td>
-                    <td className="py-1 px-1 text-right">...</td>
-                </tr>
-                 <tr>
-                    <td className="py-1 px-1">103287</td>
-                    <td className="py-1 px-1">27-Aug-2026</td>
-                    <td className="py-1 px-1">6.33 PM</td>
-                    <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1 text-right">27,000,000.00</td>
-                    <td className="py-1 px-1 text-right">4,050,000.0</td>
+                    <td className="py-1 px-1 text-right">4,500,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">22,950,000.00</td>
-                    <td className="py-1 px-1 text-right">2</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">4,500,000.00</td>
+                    <td className="py-1 px-1 text-right">1</td>
                 </tr>
                 <tr className="font-bold border-t border-black">
-                    <td colSpan={8} className="py-1 px-1">Total Sales:</td>
-                    <td className="py-1 px-1 text-right">1,370,226,600.00</td>
+                    <td colSpan={5} className="py-1 px-1">Total For Kassem Safieddine:</td>
+                    <td className="py-1 px-1 text-right">11,500,000.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">11,500,000.00</td>
+                    <td className="py-1 px-1"></td>
+                </tr>
+                <tr className="font-bold border-t border-double border-black">
+                    <td colSpan={5} className="py-1 px-1">Total for Branch: Southern Olive Oil Products S.A.R.L</td>
+                    <td className="py-1 px-1 text-right">23,020,000.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">23,020,000.00</td>
                     <td className="py-1 px-1"></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-            <div className="mt-8 text-[11px] font-bold">
-               <div className="flex w-full">
-                  <div className="w-[30%]">Total</div>
-                  <div className="w-[70%] text-right pr-[8%] flex justify-end gap-8">
-                     <span>1,425,857,050.00</span>
-                     <span>55,630,450.</span>
-                     <span>0.00</span>
-                     <span>1,370,226,600.00</span>
-                  </div>
-               </div>
-               <div className="flex w-full"><div className="w-[30%]">Gross Sales:</div><div className="w-[70%] pl-8">1,370,226,600.00</div></div>
-               <div className="flex w-full"><div className="w-[30%]">Total Tax:</div><div className="w-[70%] pl-8 text-right pr-[85%]">0.00</div></div>
-               <div className="flex w-full"><div className="w-[30%]">Total Service:</div><div className="w-[70%] pl-8 text-right pr-[85%]">0.00</div></div>
-               <div className="flex w-full"><div className="w-[30%]">Total Discount:</div><div className="w-[70%] pl-8">55,630,450.00</div></div>
-               <div className="flex w-full"><div className="w-[30%]">Net Sales:</div><div className="w-[70%] pl-8">1,370,226,600.00</div></div>
-            </div>
+          <div className="mt-8 text-[11px] font-bold">
+             <div className="flex w-full">
+                <div className="w-[30%]">Total</div>
+                <div className="w-[70%] text-right pr-[8%] flex justify-end gap-8">
+                   <span>1,425,857,050.00</span>
+                   <span>55,630,450.</span>
+                   <span>0.00</span>
+                   <span>1,370,226,600.00</span>
+                </div>
+             </div>
+             <div className="flex w-full"><div className="w-[30%]">Gross Sales:</div><div className="w-[70%] pl-8">1,370,226,600.00</div></div>
+             <div className="flex w-full"><div className="w-[30%]">Total Tax:</div><div className="w-[70%] pl-8 text-right pr-[85%]">0.00</div></div>
+             <div className="flex w-full"><div className="w-[30%]">Total Service:</div><div className="w-[70%] pl-8 text-right pr-[85%]">0.00</div></div>
+             <div className="flex w-full"><div className="w-[30%]">Total Discount:</div><div className="w-[70%] pl-8">55,630,450.00</div></div>
+             <div className="flex w-full"><div className="w-[30%]">Net Sales:</div><div className="w-[70%] pl-8">1,370,226,600.00</div></div>
+          </div>
 
-            {/* Standardized Document Footer */}
-            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-              <div className="text-left w-1/3">REP_S_00004</div>
-              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-            </div>
+          {/* Standardized Document Footer */}
+          <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+            <div className="text-left w-1/3">REP_S_00004</div>
+            <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+            <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+          </div>
 
         </div>
       </div>

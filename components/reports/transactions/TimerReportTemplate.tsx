@@ -93,119 +93,120 @@ export const TimerReportTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] font-sans text-black overflow-x-auto print:overflow-visible">
-        <div className="report-wrapper transition-transform duration-200 origin-top w-full min-w-[1000px]" style={{ transform: `scale(${zoomLevel})` }}>
-          
-          {!isFiltered ? (
-            <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
-               <div className="text-[40px] mb-3 opacity-40">⏱️</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Timer Report.</p>
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {!isFiltered ? (
+          <div className="w-full max-w-[794px] py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
+             <div className="text-[40px] mb-3 opacity-40">⏱️</div>
+             <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter Report" to view the Timer Report.</p>
+          </div>
+        ) : (
+          /* The A4 Paper Simulator (794px width) */
+          <div 
+            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            {/* Report Title */}
+            <div className="w-full relative mb-6">
+              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
+              <h3 className="font-bold text-[14px] text-black text-center mt-4">Timer Report Group by transaction count</h3>
             </div>
-          ) : (
-            <div className="bg-white p-4">
-              
-              {/* Report Title */}
-              <div className="w-full relative mb-6">
-                <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
-                <h3 className="font-bold text-[14px] text-black text-center mt-4">Timer Report Group by transaction count</h3>
-              </div>
 
-              {/* RENDER DYNAMIC BLOCKS */}
-              {reportBlocks.map((block) => (
-                <div key={block.id} className="mb-14 page-break-inside-avoid">
-                  
-                  {/* Block Pagination Header */}
-                  <div className="flex justify-between items-end text-[11px] font-bold w-full mb-1 border-b-2 border-black pb-1">
-                    <div className="w-[150px] text-left">28-Aug-26</div>
-                    <div className="flex-1 flex justify-center gap-16">
-                       <span>From Date: 01-Aug-2026</span>
-                       <span>To Date: 29-Aug-2026</span>
-                    </div>
-                    <div className="w-[150px] text-right">Page {block.page} of 137</div>
+            {/* RENDER DYNAMIC BLOCKS */}
+            {reportBlocks.map((block) => (
+              <div key={block.id} className="mb-14 page-break-inside-avoid">
+                
+                {/* Block Pagination Header */}
+                <div className="flex justify-between items-end text-[11px] font-bold w-full mb-1 border-b-2 border-black pb-1">
+                  <div className="w-[150px] text-left">28-Aug-26</div>
+                  <div className="flex-1 flex justify-center gap-16">
+                     <span>From Date: 01-Aug-2026</span>
+                     <span>To Date: 29-Aug-2026</span>
                   </div>
+                  <div className="w-[150px] text-right">Page {block.page} of 137</div>
+                </div>
 
-                  <table className="w-full border-collapse text-[11px] border border-black">
-                    <thead>
-                      <tr>
-                        <th className="border border-black p-1 bg-white w-[150px]"></th>
-                        <th className="border border-black p-1 bg-white w-[120px]"></th>
+                <table className="w-full border-collapse text-[11px] border border-black">
+                  <thead>
+                    <tr>
+                      <th className="border border-black p-1 bg-white w-[150px]"></th>
+                      <th className="border border-black p-1 bg-white w-[120px]"></th>
+                      {block.columns.map((col, i) => {
+                        const isBlueCol = block.hasRightBlueColumn && col === 'Total';
+                        return (
+                          <th key={i} className={`border border-black p-1.5 text-right font-bold ${isBlueCol ? 'matrix-total-bg matrix-total-bold' : 'bg-white'}`}>
+                            {col}
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                    {/* TIME ROWS */}
+                    {block.times.map((time, rIdx) => (
+                      <tr key={time}>
+                        {rIdx === 0 && (
+                          <td rowSpan={block.times.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
+                            Southern Olive Oil Products S.A.R.L
+                          </td>
+                        )}
+                        
+                        <td className="border border-black p-1.5 text-center font-bold bg-white w-[120px] whitespace-nowrap">{time}</td>
+                        
                         {block.columns.map((col, i) => {
                           const isBlueCol = block.hasRightBlueColumn && col === 'Total';
                           return (
-                            <th key={i} className={`border border-black p-1.5 text-right font-bold ${isBlueCol ? 'matrix-total-bg matrix-total-bold' : 'bg-white'}`}>
-                              {col}
-                            </th>
+                            <td key={`${time}-${i}`} className={`border border-black p-1 text-right ${isBlueCol ? 'matrix-total-bg' : 'bg-white'}`}>
+                              <div className="leading-tight">{getVal(col)}</div>
+                              <div className="leading-tight">{getVal(col)}</div>
+                            </td>
                           );
                         })}
                       </tr>
-                    </thead>
-                    <tbody>
-                      
-                      {/* TIME ROWS */}
-                      {block.times.map((time, rIdx) => (
-                        <tr key={time}>
-                          {rIdx === 0 && (
-                            <td rowSpan={block.times.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
-                              Southern Olive Oil Products S.A.R.L
+                    ))}
+
+                    {/* BOTTOM TOTAL ROWS (Printed ONLY if showBottomTotals is true) */}
+                    {block.showBottomTotals && (
+                      <>
+                        {/* Light Blue Subtotal */}
+                        <tr>
+                          <td className="border border-black matrix-total-bg"></td>
+                          <td className="border border-black p-1.5 text-center matrix-total-bg matrix-total-bold">Total</td>
+                          {block.columns.map((col, i) => (
+                            <td key={`subtotal-${i}`} className="border border-black p-1 text-right matrix-total-bg matrix-total-bold">
+                              <div className="leading-tight">{getSubTotal(col)}</div>
+                              <div className="leading-tight">{getSubTotal(col)}</div>
                             </td>
-                          )}
-                          
-                          <td className="border border-black p-1.5 text-center font-bold bg-white w-[120px] whitespace-nowrap">{time}</td>
-                          
-                          {block.columns.map((col, i) => {
-                            const isBlueCol = block.hasRightBlueColumn && col === 'Total';
-                            return (
-                              <td key={`${time}-${i}`} className={`border border-black p-1 text-right ${isBlueCol ? 'matrix-total-bg' : 'bg-white'}`}>
-                                <div className="leading-tight">{getVal(col)}</div>
-                                <div className="leading-tight">{getVal(col)}</div>
-                              </td>
-                            );
-                          })}
+                          ))}
                         </tr>
-                      ))}
+                        
+                        {/* Deep Blue Grand Total */}
+                        <tr>
+                          <td colSpan={2} className="border border-black p-1.5 text-center matrix-grand-total">Total</td>
+                          {block.columns.map((col, i) => (
+                            <td key={`grandtotal-${i}`} className="border border-black p-1 text-right matrix-grand-total">
+                              <div className="leading-tight">{getSubTotal(col)}</div>
+                              <div className="leading-tight">{getSubTotal(col)}</div>
+                            </td>
+                          ))}
+                        </tr>
+                      </>
+                    )}
 
-                      {/* BOTTOM TOTAL ROWS (Printed ONLY if showBottomTotals is true) */}
-                      {block.showBottomTotals && (
-                        <>
-                          {/* Light Blue Subtotal */}
-                          <tr>
-                            <td className="border border-black matrix-total-bg"></td>
-                            <td className="border border-black p-1.5 text-center matrix-total-bg matrix-total-bold">Total</td>
-                            {block.columns.map((col, i) => (
-                              <td key={`subtotal-${i}`} className="border border-black p-1 text-right matrix-total-bg matrix-total-bold">
-                                <div className="leading-tight">{getSubTotal(col)}</div>
-                                <div className="leading-tight">{getSubTotal(col)}</div>
-                              </td>
-                            ))}
-                          </tr>
-                          
-                          {/* Deep Blue Grand Total */}
-                          <tr>
-                            <td colSpan={2} className="border border-black p-1.5 text-center matrix-grand-total">Total</td>
-                            {block.columns.map((col, i) => (
-                              <td key={`grandtotal-${i}`} className="border border-black p-1 text-right matrix-grand-total">
-                                <div className="leading-tight">{getSubTotal(col)}</div>
-                                <div className="leading-tight">{getSubTotal(col)}</div>
-                              </td>
-                            ))}
-                          </tr>
-                        </>
-                      )}
-
-                    </tbody>
-                  </table>
-                </div>
-              ))}
-              
-              <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-                <div className="text-left w-1/3">REP_S_00200</div>
-                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+                  </tbody>
+                </table>
               </div>
-
+            ))}
+            
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_S_00200</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
             </div>
-          )}
-        </div>
+
+          </div>
+        )}
       </div>
     </div>
   );

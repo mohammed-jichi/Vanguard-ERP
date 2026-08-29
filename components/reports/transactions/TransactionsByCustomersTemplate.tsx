@@ -73,8 +73,12 @@ export const TransactionsByCustomersTemplate = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-[1400px] bg-white font-sans text-black mt-2">
-        <div className="report-wrapper transition-transform duration-200 origin-top">
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {/* The A4 Paper Simulator (794px width) */}
+        <div 
+          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+        >
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
@@ -83,7 +87,7 @@ export const TransactionsByCustomersTemplate = () => {
             <div>Page 1 of 1</div>
           </div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice #</th>
@@ -109,33 +113,45 @@ export const TransactionsByCustomersTemplate = () => {
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
-                    <td className="py-1 px-1 text-right">0.00 CASH USD</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                 </tr>
-                <tr>
-                    <td colSpan={5} className="py-1 px-1 font-bold">Total By Customer:</td>
+                <tr className="font-bold border-t border-black">
+                    <td colSpan={5} className="py-1 px-1 text-right">Total For Date:</td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                 </tr>
                 <tr className="font-bold border-t border-black">
-                    <td colSpan={5} className="py-1 px-1">Total:</td>
+                    <td colSpan={5} className="py-1 px-1 text-right">Total For Customer:</td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">248,400,000.00</td>
                 </tr>
+                <tr className="font-bold border-t border-double border-black">
+                    <td colSpan={5} className="py-1 px-1 text-right">Grand Total:</td>
+                    <td className="py-1 px-1 text-right">248,400,000.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">0.00</td>
+                    <td className="py-1 px-1 text-right">248,400,000.00</td>
+                </tr>
+                <tr><td colSpan={9} className="py-2"></td></tr>
                 <tr className="font-bold">
                     <td colSpan={2} className="py-1 px-1">Gross Sales:</td>
                     <td colSpan={7} className="py-1 px-1 text-right">248,400,000.00</td>
+                </tr>
+                <tr className="font-bold">
+                    <td colSpan={2} className="py-1 px-1">Total Discount:</td>
+                    <td colSpan={7} className="py-1 px-1 text-right">0.00</td>
                 </tr>
                 <tr className="font-bold">
                     <td colSpan={2} className="py-1 px-1">Total Tax:</td>
                     <td colSpan={7} className="py-1 px-1 text-right">0.00</td>
                 </tr>
                 <tr className="font-bold">
-                    <td colSpan={2} className="py-1 px-1">Total Discount:</td>
+                    <td colSpan={2} className="py-1 px-1">Total Service:</td>
                     <td colSpan={7} className="py-1 px-1 text-right">0.00</td>
                 </tr>
                 <tr className="font-bold">

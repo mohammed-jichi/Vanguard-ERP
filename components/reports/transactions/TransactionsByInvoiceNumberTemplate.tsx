@@ -160,71 +160,73 @@ export const TransactionsByInvoiceNumberTemplate = () => {
       </div>
 
       {/* REPORT BODY */}
-      <div className="w-full max-w-[1400px] bg-white border border-slate-200 rounded-xl shadow-sm p-6 md:p-8 font-sans text-black overflow-auto min-h-[500px]">
-        <div className="report-wrapper transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomLevel})` }}>
-          
-          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
-          <div className="text-center font-bold text-[12px] mb-4">Transactions by Invoice Number</div>
-          
-          {!isFiltered ? (
-            <div className="w-full py-16 mt-4 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50 print:hidden">
-               <p className="text-slate-500 font-bold text-[14px]">Please select your invoice range and click "Filter" to view data.</p>
-            </div>
-          ) : (
-            <>
-              <div className="flex justify-between items-center text-[11px] font-bold w-full">
-                <div>28-Aug-2026</div>
-                <div>From Invoice: 103070 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Invoice: 103080</div>
-                <div>Page 1 of 1</div>
-              </div>
-
-              <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-                <table className="w-full min-w-[800px] border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
-                  <thead>
-                    <tr className="font-bold text-black border-b border-black">
-                      <th className="py-1 px-1 text-left">Invoice #</th>
-                      <th className="py-1 px-1 text-left">Date</th>
-                      <th className="py-1 px-1 text-left">Time</th>
-                      <th className="py-1 px-1 text-left">Order #</th>
-                      <th className="py-1 px-1 text-left">Cust. #</th>
-                      <th className="py-1 px-1 text-right">Amount</th>
-                      <th className="py-1 px-1 text-right">Discount</th>
-                      <th className="py-1 px-1 text-left pl-2">Tax Payment</th>
-                      <th className="py-1 px-1 text-right">Total</th>
-                      <th className="py-1 px-1 text-right">Print #</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="font-bold">
-                      <td colSpan={10} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
-                    </tr>
-                    {reportData.map((row, idx) => (
-                      <tr key={idx} className="font-normal hover:bg-slate-50">
-                        <td className="py-1 px-1">{row.invoice}</td>
-                        <td className="py-1 px-1">{row.date}</td>
-                        <td className="py-1 px-1">{row.time}</td>
-                        <td className="py-1 px-1">{row.order}</td>
-                        <td className="py-1 px-1">{row.cust}</td>
-                        <td className="py-1 px-1 text-right">{row.amount}</td>
-                        <td className="py-1 px-1 text-right">{row.discount}</td>
-                        <td className="py-1 px-1 text-left pl-2">{row.taxPay}</td>
-                        <td className="py-1 px-1 text-right">{row.total}</td>
-                        <td className="py-1 px-1 text-right">{row.print}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-
-          <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-            <div className="text-left w-1/3">REP_S_00247</div>
-            <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-            <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {!isFiltered ? (
+          <div className="w-full max-w-[794px] py-16 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
+             <p className="text-slate-500 font-bold text-[14px]">Please select your invoice range and click "Filter" to view data.</p>
           </div>
+        ) : (
+          /* The A4 Paper Simulator (794px width) */
+          <div 
+            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
+            <div className="text-center font-bold text-[12px] mb-4">Transactions by Invoice Number</div>
+            
+            <div className="flex justify-between items-center text-[11px] font-bold w-full">
+              <div>28-Aug-2026</div>
+              <div>From Invoice: 103070 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Invoice: 103080</div>
+              <div>Page 1 of 1</div>
+            </div>
 
-        </div>
+            <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
+              <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+                <thead>
+                  <tr className="font-bold text-black border-b border-black">
+                    <th className="py-1 px-1 text-left">Invoice #</th>
+                    <th className="py-1 px-1 text-left">Date</th>
+                    <th className="py-1 px-1 text-left">Time</th>
+                    <th className="py-1 px-1 text-left">Order #</th>
+                    <th className="py-1 px-1 text-left">Cust. #</th>
+                    <th className="py-1 px-1 text-right">Amount</th>
+                    <th className="py-1 px-1 text-right">Discount</th>
+                    <th className="py-1 px-1 text-left pl-2">Tax Payment</th>
+                    <th className="py-1 px-1 text-right">Total</th>
+                    <th className="py-1 px-1 text-right">Print #</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="font-bold">
+                    <td colSpan={10} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
+                  </tr>
+                  {reportData.map((row, idx) => (
+                    <tr key={idx} className="font-normal hover:bg-slate-50">
+                      <td className="py-1 px-1">{row.invoice}</td>
+                      <td className="py-1 px-1">{row.date}</td>
+                      <td className="py-1 px-1">{row.time}</td>
+                      <td className="py-1 px-1">{row.order}</td>
+                      <td className="py-1 px-1">{row.cust}</td>
+                      <td className="py-1 px-1 text-right">{row.amount}</td>
+                      <td className="py-1 px-1 text-right">{row.discount}</td>
+                      <td className="py-1 px-1 text-left pl-2">{row.taxPay}</td>
+                      <td className="py-1 px-1 text-right">{row.total}</td>
+                      <td className="py-1 px-1 text-right">{row.print}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_S_00247</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+            </div>
+
+          </div>
+        )}
       </div>
     </div>
   );

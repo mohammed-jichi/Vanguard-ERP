@@ -90,101 +90,102 @@ export const ElectronicJournalTemplate = () => {
       </div>
 
       {/* REPORT BODY */}
-      <div className="w-full max-w-[1400px] font-sans text-black overflow-x-auto print:overflow-visible">
-        <div className="report-wrapper transition-transform duration-200 origin-top w-full min-w-[1000px]" style={{ transform: `scale(${zoomLevel})` }}>
-          
-          {!isFiltered ? (
-            <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
-               <div className="text-[40px] mb-3 opacity-40">🧾</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the Electronic Journal.</p>
-            </div>
-          ) : (
-            <div className="bg-white p-4">
-              
-              {/* Report Header */}
-              <div className="text-center mb-6 border-b-2 border-black pb-4">
-                <h2 className="font-bold text-[18px] uppercase tracking-wider">Southern Olive Oil Products S.A.R.L</h2>
-                <h3 className="font-bold text-[14px] text-slate-700 mt-1">Terminal Electronic Journal</h3>
-                <div className="flex justify-between items-end text-[12px] font-bold w-full mt-4">
-                  <div>Printed: 28-Aug-2026</div>
-                  <div>Report Date: 28-Jul-2026</div>
-                  <div>Page 1 of 1</div>
-                </div>
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {!isFiltered ? (
+          <div className="w-full max-w-[794px] py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
+             <div className="text-[40px] mb-3 opacity-40">🧾</div>
+             <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the Electronic Journal.</p>
+          </div>
+        ) : (
+          /* The A4 Paper Simulator (794px width) */
+          <div 
+            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            {/* Report Header */}
+            <div className="text-center mb-6 border-b-2 border-black pb-4">
+              <h2 className="font-bold text-[18px] uppercase tracking-wider">Southern Olive Oil Products S.A.R.L</h2>
+              <h3 className="font-bold text-[14px] text-slate-700 mt-1">Terminal Electronic Journal</h3>
+              <div className="flex justify-between items-end text-[12px] font-bold w-full mt-4">
+                <div>Printed: 28-Aug-2026</div>
+                <div>Report Date: 28-Jul-2026</div>
+                <div>Page 1 of 1</div>
               </div>
+            </div>
 
-              {/* Journal Table */}
-              <table className="w-full border-collapse text-[11.5px]">
-                <thead>
-                  <tr className="bg-slate-100 border-y border-black font-bold">
-                    <th className="py-2 px-2 text-left w-[100px]">Time</th>
-                    <th className="py-2 px-2 text-left w-[130px]">Event Type</th>
-                    <th className="py-2 px-2 text-left w-[100px]">Operator</th>
-                    <th className="py-2 px-2 text-left w-[80px]">Term</th>
-                    <th className="py-2 px-2 text-left w-[120px]">Reference</th>
-                    <th className="py-2 px-2 text-left">Event Details</th>
-                    <th className="py-2 px-2 text-right w-[100px]">Amount</th>
+            {/* Journal Table */}
+            <table className="w-full border-collapse text-[11.5px]">
+              <thead>
+                <tr className="bg-slate-100 border-y border-black font-bold">
+                  <th className="py-2 px-2 text-left w-[100px]">Time</th>
+                  <th className="py-2 px-2 text-left w-[130px]">Event Type</th>
+                  <th className="py-2 px-2 text-left w-[100px]">Operator</th>
+                  <th className="py-2 px-2 text-left w-[80px]">Term</th>
+                  <th className="py-2 px-2 text-left w-[120px]">Reference</th>
+                  <th className="py-2 px-2 text-left">Event Details</th>
+                  <th className="py-2 px-2 text-right w-[100px]">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="font-mono text-[11px]"> 
+                {journalData.map((log, index) => (
+                  <tr key={index} className="border-b border-slate-200 hover:bg-slate-50">
+                    <td className="py-2 px-2 whitespace-nowrap text-slate-600">{log.time}</td>
+                    <td className={`py-2 px-2 font-bold whitespace-nowrap 
+                      ${log.eventType === 'VOID ITEM' ? 'text-red-600' : 
+                        log.eventType === 'SALE' ? 'text-green-700' : 
+                        log.eventType === 'SYSTEM' ? 'text-blue-600' : 'text-slate-800'}`}>
+                      {log.eventType}
+                    </td>
+                    <td className="py-2 px-2 whitespace-nowrap">{log.operator}</td>
+                    <td className="py-2 px-2 whitespace-nowrap">{log.terminal}</td>
+                    <td className="py-2 px-2 whitespace-nowrap font-bold text-slate-700">{log.ref}</td>
+                    <td className="py-2 px-2 leading-relaxed tracking-tight text-slate-800">{log.details}</td>
+                    <td className="py-2 px-2 text-right font-bold whitespace-nowrap">{log.amount}</td>
                   </tr>
-                </thead>
-                <tbody className="font-mono text-[11px]"> 
-                  {journalData.map((log, index) => (
-                    <tr key={index} className="border-b border-slate-200 hover:bg-slate-50">
-                      <td className="py-2 px-2 whitespace-nowrap text-slate-600">{log.time}</td>
-                      <td className={`py-2 px-2 font-bold whitespace-nowrap 
-                        ${log.eventType === 'VOID ITEM' ? 'text-red-600' : 
-                          log.eventType === 'SALE' ? 'text-green-700' : 
-                          log.eventType === 'SYSTEM' ? 'text-blue-600' : 'text-slate-800'}`}>
-                        {log.eventType}
-                      </td>
-                      <td className="py-2 px-2 whitespace-nowrap">{log.operator}</td>
-                      <td className="py-2 px-2 whitespace-nowrap">{log.terminal}</td>
-                      <td className="py-2 px-2 whitespace-nowrap font-bold text-slate-700">{log.ref}</td>
-                      <td className="py-2 px-2 leading-relaxed tracking-tight text-slate-800">{log.details}</td>
-                      <td className="py-2 px-2 text-right font-bold whitespace-nowrap">{log.amount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
 
-              {/* FINANCIAL SUMMARY FOOTER */}
-              <div className="w-full mt-6 border-t-2 border-black pt-4 flex flex-col items-end text-[12px]">
-                <div className="w-[350px] bg-slate-50 p-3 rounded border border-slate-200">
-                  <h4 className="font-bold text-center mb-2 border-b border-slate-300 pb-1">Terminal Session Summary</h4>
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-slate-600">Gross Sales:</span>
-                    <span>2,940,000</span>
-                  </div>
-                  <div className="flex justify-between mb-1 text-red-600">
-                    <span className="font-bold">Total Voids:</span>
-                    <span>(350,000)</span>
-                  </div>
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-slate-600">Net Sales:</span>
-                    <span className="font-bold">2,590,000</span>
-                  </div>
-                  <div className="flex justify-between mb-1 mt-2">
-                    <span className="font-bold text-slate-600">POS Payments Collected:</span>
-                    <span>2,700,000</span>
-                  </div>
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-slate-600">Dispatch COD Received:</span>
-                    <span>4,500,000</span>
-                  </div>
-                  <div className="flex justify-between mt-2 pt-2 border-t border-black font-bold text-[13px]">
-                    <span>Expected Drawer Cash:</span>
-                    <span>12,200,000</span>
-                  </div>
+            {/* FINANCIAL SUMMARY FOOTER */}
+            <div className="w-full mt-6 border-t-2 border-black pt-4 flex flex-col items-end text-[12px]">
+              <div className="w-[350px] bg-slate-50 p-3 rounded border border-slate-200">
+                <h4 className="font-bold text-center mb-2 border-b border-slate-300 pb-1">Terminal Session Summary</h4>
+                <div className="flex justify-between mb-1">
+                  <span className="font-bold text-slate-600">Gross Sales:</span>
+                  <span>2,940,000</span>
+                </div>
+                <div className="flex justify-between mb-1 text-red-600">
+                  <span className="font-bold">Total Voids:</span>
+                  <span>(350,000)</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span className="font-bold text-slate-600">Net Sales:</span>
+                  <span className="font-bold">2,590,000</span>
+                </div>
+                <div className="flex justify-between mb-1 mt-2">
+                  <span className="font-bold text-slate-600">POS Payments Collected:</span>
+                  <span>2,700,000</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span className="font-bold text-slate-600">Dispatch COD Received:</span>
+                  <span>4,500,000</span>
+                </div>
+                <div className="flex justify-between mt-2 pt-2 border-t border-black font-bold text-[13px]">
+                  <span>Expected Drawer Cash:</span>
+                  <span>12,200,000</span>
                 </div>
               </div>
-              
-              {/* Document Reference Footer */}
-              <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-                <div className="text-left w-1/3">REP_EJ_00455</div>
-                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-              </div>
             </div>
-          )}
-        </div>
+            
+            {/* Document Reference Footer */}
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_EJ_00455</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CENTERED GLOBAL FOOTER (Hidden on print) */}

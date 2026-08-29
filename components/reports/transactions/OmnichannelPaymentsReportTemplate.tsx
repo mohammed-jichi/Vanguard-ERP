@@ -112,81 +112,83 @@ export const OmnichannelPaymentsReportTemplate = () => {
       </div>
 
       {/* 2. REPORT BODY */}
-      <div className="w-full max-w-[1400px] font-sans text-black overflow-x-auto print:overflow-visible">
-        <div className="report-wrapper transition-transform duration-200 origin-top w-full min-w-[1000px]" style={{ transform: `scale(${zoomLevel})` }}>
-          
-          {!isFiltered ? (
-            <div className="w-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
-               <div className="text-[40px] mb-3 opacity-40">📊</div>
-               <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the report.</p>
+      {/* Background wrapper to center the paper on screen */}
+      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 py-6 flex justify-center">
+        {!isFiltered ? (
+          <div className="w-full max-w-[794px] py-20 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg bg-white shadow-sm print:hidden">
+             <div className="text-[40px] mb-3 opacity-40">📊</div>
+             <p className="text-slate-600 font-bold text-[15px]">Please select your filters and click "Filter" to view the report.</p>
+          </div>
+        ) : (
+          /* The A4 Paper Simulator (794px width) */
+          <div 
+            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            style={{ transform: `scale(${zoomLevel})` }}
+          >
+            <div className="text-left font-bold text-[15px] mb-6">Omnichannel Payments & Sales Source Report</div>
+            
+            <div className="flex justify-between items-end text-[12px] font-bold w-full border-b-2 border-black pb-2 mb-2">
+              <div>Date: 28-Aug-2026</div>
+              <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
+              <div>Page 1 of 1</div>
             </div>
-          ) : (
-            <div className="bg-white p-4">
-              <div className="text-left font-bold text-[15px] mb-6">Omnichannel Payments & Sales Source Report</div>
-              
-              <div className="flex justify-between items-end text-[12px] font-bold w-full border-b-2 border-black pb-2 mb-2">
-                <div>Date: 28-Aug-2026</div>
-                <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
-                <div>Page 1 of 1</div>
-              </div>
 
-              <table className="w-full border-collapse text-[11px] whitespace-nowrap mt-4">
-                <thead>
-                  <tr className="font-bold text-black border-b border-black">
-                    <th className="py-2 px-1 text-left">Date</th>
-                    <th className="py-2 px-1 text-left">Invoice #</th>
-                    <th className="py-2 px-1 text-left">Client Name</th>
-                    <th className="py-2 px-1 text-left">Traffic Source</th>
-                    <th className="py-2 px-1 text-left">Sales Channel</th>
-                    <th className="py-2 px-1 text-left">Bank/Provider/Courier</th>
-                    <th className="py-2 px-1 text-left">Auth/AWB Code</th>
-                    <th className="py-2 px-1 text-right">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="font-bold">
-                    <td colSpan={8} className="py-2 px-1 underline text-blue-900">Consolidated Omnichannel View</td>
-                  </tr>
-                  
-                  {reportData.map((group, gIdx) => (
-                    <React.Fragment key={gIdx}>
-                      <tr className="font-bold">
-                        <td colSpan={8} className="py-2 px-1 pt-4 text-blue-800 border-b border-slate-200">Category: {group.methodType}</td>
+            <table className="w-full border-collapse text-[11px] whitespace-nowrap mt-4">
+              <thead>
+                <tr className="font-bold text-black border-b border-black">
+                  <th className="py-2 px-1 text-left">Date</th>
+                  <th className="py-2 px-1 text-left">Invoice #</th>
+                  <th className="py-2 px-1 text-left">Client Name</th>
+                  <th className="py-2 px-1 text-left">Traffic Source</th>
+                  <th className="py-2 px-1 text-left">Sales Channel</th>
+                  <th className="py-2 px-1 text-left">Bank/Provider/Courier</th>
+                  <th className="py-2 px-1 text-left">Auth/AWB Code</th>
+                  <th className="py-2 px-1 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="font-bold">
+                  <td colSpan={8} className="py-2 px-1 underline text-blue-900">Consolidated Omnichannel View</td>
+                </tr>
+                
+                {reportData.map((group, gIdx) => (
+                  <React.Fragment key={gIdx}>
+                    <tr className="font-bold">
+                      <td colSpan={8} className="py-2 px-1 pt-4 text-blue-800 border-b border-slate-200">Category: {group.methodType}</td>
+                    </tr>
+                    {group.rows.map((row, rIdx) => (
+                      <tr key={rIdx} className="hover:bg-slate-50 border-b border-slate-100">
+                        <td className="py-1.5 px-1">{row.date}</td>
+                        <td className="py-1.5 px-1">{row.invoice}</td>
+                        <td className="py-1.5 px-1">{row.client}</td>
+                        <td className="py-1.5 px-1 text-purple-700 font-medium">{row.source}</td>
+                        <td className="py-1.5 px-1 text-emerald-700 font-medium">{row.channel}</td>
+                        <td className="py-1.5 px-1">{row.provider}</td>
+                        <td className="py-1.5 px-1 text-slate-500">{row.auth}</td>
+                        <td className="py-1.5 px-1 text-right font-bold">{row.amount}</td>
                       </tr>
-                      {group.rows.map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-slate-50 border-b border-slate-100">
-                          <td className="py-1.5 px-1">{row.date}</td>
-                          <td className="py-1.5 px-1">{row.invoice}</td>
-                          <td className="py-1.5 px-1">{row.client}</td>
-                          <td className="py-1.5 px-1 text-purple-700 font-medium">{row.source}</td>
-                          <td className="py-1.5 px-1 text-emerald-700 font-medium">{row.channel}</td>
-                          <td className="py-1.5 px-1">{row.provider}</td>
-                          <td className="py-1.5 px-1 text-slate-500">{row.auth}</td>
-                          <td className="py-1.5 px-1 text-right font-bold">{row.amount}</td>
-                        </tr>
-                      ))}
-                      <tr className="font-bold">
-                        <td colSpan={7} className="py-2 px-1 text-right">Total {group.methodType}:</td>
-                        <td className="py-2 px-1 text-right text-blue-900">{group.total}</td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
+                    ))}
+                    <tr className="font-bold">
+                      <td colSpan={7} className="py-2 px-1 text-right">Total {group.methodType}:</td>
+                      <td className="py-2 px-1 text-right text-blue-900">{group.total}</td>
+                    </tr>
+                  </React.Fragment>
+                ))}
 
-                  <tr className="font-bold border-t-2 border-black mt-4">
-                    <td colSpan={7} className="py-3 px-1 text-right uppercase">Grand Total:</td>
-                    <td className="py-3 px-1 text-right text-[13px]">{grandTotal}</td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-                <div className="text-left w-1/3">REP_S_00250</div>
-                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-              </div>
+                <tr className="font-bold border-t-2 border-black mt-4">
+                  <td colSpan={7} className="py-3 px-1 text-right uppercase">Grand Total:</td>
+                  <td className="py-3 px-1 text-right text-[13px]">{grandTotal}</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
+              <div className="text-left w-1/3">REP_S_00250</div>
+              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 3. CENTERED GLOBAL FOOTER */}
