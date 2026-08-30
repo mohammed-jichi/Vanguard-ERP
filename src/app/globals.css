@@ -9,3 +9,56 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 }
+
+/* Vanguard Industrial ERP Theme Styles */
+:root {
+  --vanguard-nav-bg: #1e1e1e;
+  --vanguard-sidebar-bg: #364150;
+  --vanguard-sidebar-header: #181c24;
+  --vanguard-sidebar-sub: #161a22;
+  --vanguard-primary-blue: #1a629b;
+  --vanguard-accent-gold: #bb770f;
+  --vanguard-border: #2c3848;
+}
+
+/* Custom Scrollbar for sidebar and reports tree */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* A4 Print Layout Rules */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  .a4-print-page {
+    width: 794px !important;
+    min-height: 1123px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always !important;
+  }
+}
