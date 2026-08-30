@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 
 export default function VanguardSidebar() {
@@ -61,7 +62,7 @@ export default function VanguardSidebar() {
       <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1 custom-scrollbar text-[12.5px]">
         
         {/* 1. Sales Control & POS */}
-        <a 
+        <Link 
           href="/pos" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
@@ -70,11 +71,11 @@ export default function VanguardSidebar() {
             <span>{t('mod_sales_pos', '1. Sales Control & POS')}</span>
           </div>
           <span className="text-[10px] text-slate-500">›</span>
-        </a>
+        </Link>
 
         {/* 2. SuperSonic Fleet Management (Clean - No Lock Icon) */}
-        <a 
-          href="/fleet" 
+        <Link 
+          href="/backoffice/fleet" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
@@ -82,11 +83,11 @@ export default function VanguardSidebar() {
             <span>{t('mod_fleet', '2. SuperSonic Fleet Management')}</span>
           </div>
           <span className="text-[10px] text-slate-500">›</span>
-        </a>
+        </Link>
 
         {/* 3. Social CRM & Support (Clean - No Lock Icon) */}
-        <a 
-          href="/social-crm" 
+        <Link 
+          href="/backoffice/social-crm" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
@@ -96,7 +97,7 @@ export default function VanguardSidebar() {
           <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
             ENT
           </span>
-        </a>
+        </Link>
 
         {/* 4. Operations & Pressing Center */}
         <div className="pt-0.5">
@@ -114,22 +115,22 @@ export default function VanguardSidebar() {
 
           {operationsOpen && (
             <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-700/50 ml-4 mt-1 text-[12px]">
-              <a href="/operations/dashboard" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
+              <Link href="/backoffice/operations" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
                 {t('ops_dashboard', 'Operations Center Dashboard')}
-              </a>
-              <a href="/operations/pressing" className="w-full block py-1 px-2 rounded font-semibold text-amber-300 bg-amber-500/10 cursor-pointer">
+              </Link>
+              <Link href="/backoffice/operations" className="w-full block py-1 px-2 rounded font-semibold text-amber-300 bg-amber-500/10 cursor-pointer">
                 {t('ops_olive_pressing', 'Olive Pressing & Production')}
-              </a>
-              <a href="/operations/reports" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
+              </Link>
+              <Link href="/backoffice/reportview" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
                 {t('ops_reports', 'Operations & Pressing Reports')}
-              </a>
+              </Link>
             </div>
           )}
         </div>
 
         {/* 5. Customer Management & AR */}
-        <a 
-          href="/customers" 
+        <Link 
+          href="/backoffice/customers" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
@@ -137,11 +138,11 @@ export default function VanguardSidebar() {
             <span>{t('mod_customers_ar', '5. Customer Management & AR')}</span>
           </div>
           <span className="text-[10px] text-slate-500">›</span>
-        </a>
+        </Link>
 
         {/* 6. Accounting & Finance */}
-        <a 
-          href="/accounting" 
+        <Link 
+          href="/backoffice/accounting" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
@@ -149,11 +150,11 @@ export default function VanguardSidebar() {
             <span>{t('mod_accounting', '6. Accounting & Finance')}</span>
           </div>
           <span className="text-[10px] text-slate-500">›</span>
-        </a>
+        </Link>
 
         {/* 7. HR & Payroll Management */}
-        <a 
-          href="/hr" 
+        <Link 
+          href="/backoffice/hr" 
           className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
@@ -161,7 +162,7 @@ export default function VanguardSidebar() {
             <span>{t('mod_hr', '7. HR & Payroll Management')}</span>
           </div>
           <span className="text-[10px] text-slate-500">›</span>
-        </a>
+        </Link>
 
       </nav>
 
