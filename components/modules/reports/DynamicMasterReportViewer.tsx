@@ -15,11 +15,11 @@ export default function DynamicMasterReportViewer({
   reportTitle,
   category,
 }: DynamicMasterReportViewerProps) {
-  // Retrieve specific schema or fallback to standard Omega schema
+  // Retrieve specific schema or fallback to standard Vanguard schema
   const schema: MasterReportSchema = MASTER_REPORTS_SCHEMAS[reportCode] || {
     id: 'generic',
     code: reportCode || 'REP_GEN_001',
-    title: reportTitle || 'Standard Omega Matrix Report',
+    title: reportTitle || 'Standard Vanguard Matrix Report',
     category: category || 'General',
     filters: {
       enableBranch: true,
@@ -166,7 +166,7 @@ export default function DynamicMasterReportViewer({
       </div>
 
       {/* =================================================================== */}
-      {/* 2. STRICT OMEGA A4 PRINT MATRIX (w-[794px] min-h-[1123px])          */}
+      {/* 2. STRICT VANGUARD A4 PRINT MATRIX (w-[794px] min-h-[1123px])          */}
       {/* =================================================================== */}
       <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-sm print:border-none print:shadow-none print:m-0 print:p-6 select-none">
         

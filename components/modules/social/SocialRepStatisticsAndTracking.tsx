@@ -290,7 +290,7 @@ export default function SocialRepStatisticsAndTracking() {
 
           </div>
 
-          {/* Detailed Performance Table (Omega Style) */}
+          {/* Detailed Performance Table (Vanguard Style) */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-3">
             <h3 className="text-xs font-bold text-[#1a629b] border-b border-slate-100 pb-2">
               سجل تفصيل طلبيات المندوب وحالات التسليم

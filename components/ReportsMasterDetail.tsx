@@ -381,8 +381,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           display: none !important;
         }
 
-        /* Force Omega Blue on all Category Header text and icons */
-        .omega-category-title,
+        /* Force Vanguard Blue on all Category Header text and icons */
+        .vanguard-category-title,
         .report-category-header,
         .report-category-header span,
         [class*="sticky"] span,
@@ -1242,7 +1242,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   ) : selectedReport === 'Comparative Yearly Sales' ? (
-                    /* COMPARATIVE YEARLY SALES REPORT TEMPLATE (EXACT OMEGA REPLICA) */
+                    /* COMPARATIVE YEARLY SALES REPORT TEMPLATE (EXACT VANGUARD REPLICA) */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
@@ -2959,7 +2959,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">66.81</div>
                         </div>
                         
-                        {/* Subtotals aligned exactly to Omega's weird offset offset */}
+                        {/* Subtotals aligned exactly to Vanguard's weird offset offset */}
                         <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-bold w-full">
                           <div className="col-span-5 text-right pr-2">Amount :</div>
                           <div className="text-right">9000000.0</div>
@@ -3045,7 +3045,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </div>
                         </div>
 
-                        {/* Table Headers (Replicating the exact Omega typo: Unit Price twice) */}
+                        {/* Table Headers (Replicating the exact Vanguard typo: Unit Price twice) */}
                         <div className="grid grid-cols-[20%_10%_30%_20%_20%] font-bold mb-2 w-full">
                           <div>Date</div>
                           <div>Qty</div>
@@ -5741,7 +5741,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Page 1 of 1</div>
                       </div>
 
-                      {/* OMEGA COLUMN HEADERS */}
+                      {/* VANGUARD COLUMN HEADERS */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-4">
                         <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] font-bold text-black px-2">
                           <div>Date</div>

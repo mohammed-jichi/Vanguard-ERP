@@ -41,7 +41,7 @@ export default function UniversalReportViewer({
           outline: none !important;
           box-shadow: 0 0 0 1px #1a629b !important;
         }
-        /* Enforce Omega TH normal-case on all tables */
+        /* Enforce Vanguard TH normal-case on all tables */
         th {
           text-transform: none !important;
           font-family: Arial, Helvetica, sans-serif !important;
@@ -112,7 +112,7 @@ export default function UniversalReportViewer({
             </div>
           }
         >
-          {/* Universal Omega Table Matrix (Auto-Rendered) */}
+          {/* Universal Vanguard Table Matrix (Auto-Rendered) */}
           <table className="w-full text-left border-collapse mt-2">
             <thead>
               <tr className="border-b border-black text-black font-bold normal-case text-[11px]">

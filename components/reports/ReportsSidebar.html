@@ -1,9 +1,9 @@
 <!-- ========================================================================= -->
-<!-- 1. DEDICATED OMEGA BLUE CSS RULES (FORCED OVERRIDES)                      -->
+<!-- 1. DEDICATED VANGUARD BLUE CSS RULES (FORCED OVERRIDES)                      -->
 <!-- ========================================================================= -->
 <style>
   /* Base Card Container */
-  .omega-reports-card {
+  .vanguard-reports-card {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 18px !important;
@@ -15,26 +15,26 @@
   }
 
   /* Breadcrumb & Main Titles */
-  .omega-page-title {
+  .vanguard-page-title {
     color: #2c3e50 !important;
     font-size: 22px !important;
     font-weight: 700 !important;
     margin-bottom: 2px !important;
   }
-  .omega-breadcrumb {
+  .vanguard-breadcrumb {
     color: #4a779d !important;
     font-size: 13px !important;
     font-weight: 500 !important;
   }
 
   /* Card Header: Search Reports */
-  .omega-search-header-title {
+  .vanguard-search-header-title {
     color: #1a629b !important;
     font-size: 15.5px !important;
     font-weight: 700 !important;
     letter-spacing: -0.2px !important;
   }
-  .omega-menu-icon-btn {
+  .vanguard-menu-icon-btn {
     width: 38px !important;
     height: 38px !important;
     border-radius: 12px !important;
@@ -47,7 +47,7 @@
   }
 
   /* Search Input Field */
-  .omega-search-input {
+  .vanguard-search-input {
     border: 1px solid #cbd5e1 !important;
     border-radius: 6px !important;
     padding: 7px 10px 7px 32px !important;
@@ -57,22 +57,22 @@
     width: 100% !important;
     outline: none !important;
   }
-  .omega-search-input:focus {
+  .vanguard-search-input:focus {
     border-color: #1a629b !important;
     box-shadow: 0 0 0 2px rgba(26, 98, 155, 0.15) !important;
   }
 
-  /* Report Category Links (Strict Omega Blue) */
-  .omega-cat-item {
+  /* Report Category Links (Strict Vanguard Blue) */
+  .vanguard-cat-item {
     border-bottom: 1px solid #e2e8f0 !important;
     list-style: none !important;
   }
-  .omega-cat-item:first-child {
+  .vanguard-cat-item:first-child {
     border-top: 1px solid #e2e8f0 !important;
   }
 
-  .omega-cat-btn {
-    color: #1a629b !important; /* EXACT OMEGA BLUE */
+  .vanguard-cat-btn {
+    color: #1a629b !important; /* EXACT VANGUARD BLUE */
     font-size: 14px !important;
     font-weight: 700 !important;
     padding: 10px 6px !important;
@@ -87,14 +87,14 @@
   }
 
   /* Hover & Active States */
-  .omega-cat-btn:hover {
+  .vanguard-cat-btn:hover {
     color: #0c3e66 !important;
     background-color: rgba(26, 98, 155, 0.05) !important;
     border-radius: 6px !important;
     padding-left: 10px !important;
   }
 
-  .omega-cat-btn.active {
+  .vanguard-cat-btn.active {
     color: #0c3e66 !important;
     background-color: rgba(26, 98, 155, 0.08) !important;
     border-radius: 6px !important;
@@ -103,25 +103,25 @@
 </style>
 
 <!-- ========================================================================= -->
-<!-- 2. OMEGA REPORTS SIDEBAR HTML STRUCTURE                                   -->
+<!-- 2. VANGUARD REPORTS SIDEBAR HTML STRUCTURE                                   -->
 <!-- ========================================================================= -->
-<div class="omega-reports-wrapper" style="padding: 20px; background-color: #f8fafc; min-height: 100vh;">
+<div class="vanguard-reports-wrapper" style="padding: 20px; background-color: #f8fafc; min-height: 100vh;">
   
   <!-- Page Header -->
   <div style="margin-bottom: 18px;">
-    <h1 class="omega-page-title">Sales Reports</h1>
-    <div class="omega-breadcrumb">Home / Sales Reports</div>
+    <h1 class="vanguard-page-title">Sales Reports</h1>
+    <div class="vanguard-breadcrumb">Home / Sales Reports</div>
   </div>
 
   <!-- Main Card -->
-  <div class="omega-reports-card">
+  <div class="vanguard-reports-card">
     
     <!-- Top Header -->
     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
-      <div class="omega-menu-icon-btn">
+      <div class="vanguard-menu-icon-btn">
         <i class="fa-solid fa-bars" style="font-size: 14px;"></i>
       </div>
-      <div class="omega-search-header-title">Search Reports</div>
+      <div class="vanguard-search-header-title">Search Reports</div>
     </div>
 
     <!-- Search Box -->
@@ -129,46 +129,46 @@
       <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 10px; font-size: 12px; color: #94a3b8;"></i>
       <input 
         type="text" 
-        id="omegaSearchInput"
-        class="omega-search-input" 
+        id="vanguardSearchInput"
+        class="vanguard-search-input" 
         placeholder="Search..." 
-        oninput="handleOmegaCategorySearch(this.value)"
+        oninput="handleVanguardCategorySearch(this.value)"
       />
     </div>
 
     <!-- Categories List -->
-    <ul id="omegaCategoriesContainer" style="padding: 0; margin: 0;">
+    <ul id="vanguardCategoriesContainer" style="padding: 0; margin: 0;">
       
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Recently Viewed')" class="omega-cat-btn">Recently Viewed</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Recently Viewed')" class="vanguard-cat-btn">Recently Viewed</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Internal Control')" class="omega-cat-btn">Internal Control</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Internal Control')" class="vanguard-cat-btn">Internal Control</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Financial')" class="omega-cat-btn">Financial</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Financial')" class="vanguard-cat-btn">Financial</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Product Sales')" class="omega-cat-btn">Product Sales</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Product Sales')" class="vanguard-cat-btn">Product Sales</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Customer Sales')" class="omega-cat-btn">Customer Sales</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Customer Sales')" class="vanguard-cat-btn">Customer Sales</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Today\'s & History')" class="omega-cat-btn">Today's & History</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Today\'s & History')" class="vanguard-cat-btn">Today's & History</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Time & Attendance')" class="omega-cat-btn">Time & Attendance</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Time & Attendance')" class="vanguard-cat-btn">Time & Attendance</button>
       </li>
 
-      <li class="omega-cat-item">
-        <button onclick="handleOmegaCatClick(this, 'Lists')" class="omega-cat-btn">Lists</button>
+      <li class="vanguard-cat-item">
+        <button onclick="handleVanguardCatClick(this, 'Lists')" class="vanguard-cat-btn">Lists</button>
       </li>
 
     </ul>
@@ -180,22 +180,22 @@
 <!-- 3. JAVASCRIPT CONTROLLERS                                                 -->
 <!-- ========================================================================= -->
 <script>
-  function handleOmegaCatClick(buttonElement, categoryTitle) {
+  function handleVanguardCatClick(buttonElement, categoryTitle) {
     // Reset all buttons
-    const allButtons = document.querySelectorAll(".omega-cat-btn");
+    const allButtons = document.querySelectorAll(".vanguard-cat-btn");
     allButtons.forEach(btn => btn.classList.remove("active"));
 
     // Set active class
     buttonElement.classList.add("active");
-    console.log("[Omega Reports] Active Category:", categoryTitle);
+    console.log("[Vanguard Reports] Active Category:", categoryTitle);
   }
 
-  function handleOmegaCategorySearch(queryText) {
+  function handleVanguardCategorySearch(queryText) {
     const searchVal = queryText.toLowerCase().trim();
-    const items = document.querySelectorAll(".omega-cat-item");
+    const items = document.querySelectorAll(".vanguard-cat-item");
 
     items.forEach(item => {
-      const btnText = item.querySelector(".omega-cat-btn").textContent.toLowerCase();
+      const btnText = item.querySelector(".vanguard-cat-btn").textContent.toLowerCase();
       if (btnText.includes(searchVal)) {
         item.style.setProperty("display", "block", "important");
       } else {

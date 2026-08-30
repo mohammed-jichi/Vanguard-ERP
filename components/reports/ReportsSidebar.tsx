@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-export const OMEGA_CATEGORIES = [
+export const VANGUARD_CATEGORIES = [
   { id: 'recently-viewed', title: 'Recently Viewed' },
   { id: 'internal-control', title: 'Internal Control' },
   { id: 'financial', title: 'Financial' },
@@ -13,11 +13,11 @@ export const OMEGA_CATEGORIES = [
   { id: 'lists', title: 'Lists' },
 ];
 
-export function OmegaReportsSidebar({ onSelectCategory }: { onSelectCategory?: (id: string) => void }) {
+export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?: (id: string) => void }) {
   const [activeCategory, setActiveCategory] = useState('recently-viewed');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredCategories = OMEGA_CATEGORIES.filter((cat) =>
+  const filteredCategories = VANGUARD_CATEGORIES.filter((cat) =>
     cat.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
   );
 
@@ -40,7 +40,7 @@ export function OmegaReportsSidebar({ onSelectCategory }: { onSelectCategory?: (
         </div>
       </div>
 
-      {/* 2. Omega Card Container */}
+      {/* 2. Vanguard Card Container */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_2px_10px_rgba(0,0,0,0.04)] p-4">
         
         {/* Card Header */}
@@ -100,5 +100,5 @@ export function OmegaReportsSidebar({ onSelectCategory }: { onSelectCategory?: (
   );
 }
 
-export const ReportsSidebar = OmegaReportsSidebar;
-export default OmegaReportsSidebar;
+export const ReportsSidebar = VanguardReportsSidebar;
+export default VanguardReportsSidebar;

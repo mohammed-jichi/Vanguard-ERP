@@ -4,7 +4,7 @@
  * Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
  * SuperSonic Dispatch & Fleet Management Component (<SuperSonicFleetManager />)
  * 
- * High-End Omega POS Style Fleet & Delivery Logistics Control Center
+ * High-End Vanguard POS Style Fleet & Delivery Logistics Control Center
  * Features:
  * 1. Role-Based Access Control (RBAC) for Driver Profiles & Access Control
  * 2. Driver Shift Tracking ('Loading' -> 'On Duty' -> 'Returning to Base' -> 'Shift Ended')

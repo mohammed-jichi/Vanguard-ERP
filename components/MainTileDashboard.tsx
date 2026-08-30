@@ -4,7 +4,7 @@
  * SOUTHERN OLIVE OIL PRODUCTS S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
  * Main ERP Dashboard Component: <MainTileDashboard />
  * 
- * High-End Omega POS Style Tile Grid / Tile View Dashboard
+ * High-End Vanguard POS Style Tile Grid / Tile View Dashboard
  */
 
 import React, { useState, useEffect } from 'react';

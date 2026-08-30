@@ -23,7 +23,7 @@ interface ReportCategoriesSidebarProps {
   activeReportId?: string | null;
 }
 
-const DEFAULT_OMEGA_CATEGORIES: ReportCategory[] = [
+const DEFAULT_VANGUARD_CATEGORIES: ReportCategory[] = [
   { id: 'recently-viewed', name: 'Recently Viewed', reports: [] },
   { id: 'internal-control', name: 'Internal Control', reports: [] },
   { id: 'financial', name: 'Financial', reports: [] },
@@ -50,7 +50,7 @@ const DEFAULT_OMEGA_CATEGORIES: ReportCategory[] = [
 ];
 
 export default function ReportCategoriesSidebar({
-  categories = DEFAULT_OMEGA_CATEGORIES,
+  categories = DEFAULT_VANGUARD_CATEGORIES,
   onSelectReport,
   activeReportId = null,
 }: ReportCategoriesSidebarProps) {
@@ -70,7 +70,7 @@ export default function ReportCategoriesSidebar({
       
       {/* 1. Global CSS Override for Report Category Titles */}
       <style dangerouslySetInnerHTML={{ __html: `
-        .omega-category-title,
+        .vanguard-category-title,
         .report-category-header,
         .report-category-header span,
         [class*="sticky"] span,
@@ -114,7 +114,7 @@ export default function ReportCategoriesSidebar({
         />
       </div>
 
-      {/* 4. Category Accordion List with FORCED OMEGA BLUE */}
+      {/* 4. Category Accordion List with FORCED VANGUARD BLUE */}
       <div className="divide-y divide-slate-200 border-t border-slate-200">
         {filteredCategories.map((category) => {
           const isOpen = openCategoryId === category.id;

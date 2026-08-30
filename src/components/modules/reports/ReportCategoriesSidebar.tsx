@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 
 // ============================================================================
-// COMPLETE OMEGA REPORTS HIERARCHY TREE
+// COMPLETE VANGUARD REPORTS HIERARCHY TREE
 // Organization: Southern Olive Oil Products S.A.R.L
 // ============================================================================
 

@@ -54,7 +54,7 @@ const MASTER_DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     remove_grouping: 'Remove Grouping',
     show_remark: 'Show Remark',
 
-    // Table Headers (Omega Style Normal-Case)
+    // Table Headers (Vanguard Style Normal-Case)
     th_description: 'description',
     th_barcode: 'barcode',
     th_qty: 'qty',

@@ -294,7 +294,7 @@ export default function ReportsMasterLayout() {
           </div>
 
           {/* ================================================================= */}
-          {/* PERFECT OMEGA A4 PAPER (FIXED PROPORTIONS - NO SQUISHED TEXT)     */}
+          {/* PERFECT VANGUARD A4 PAPER (FIXED PROPORTIONS - NO SQUISHED TEXT)     */}
           {/* ================================================================= */}
           <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none">
             

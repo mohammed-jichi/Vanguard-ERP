@@ -326,7 +326,7 @@ export default function SalesByItemsReport() {
         </div>
       </div>
 
-      {/* 3. STRICT OMEGA A4 PRINT CONTAINER (NORMAL-CASE & CONDENSED) */}
+      {/* 3. STRICT VANGUARD A4 PRINT CONTAINER (NORMAL-CASE & CONDENSED) */}
       <div className="w-full overflow-x-auto flex justify-center bg-slate-200/60 p-4 md:p-6 rounded-b-xl">
         <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 shadow-md text-[11px] font-['Arial','Helvetica',sans-serif] leading-none text-black select-none">
           
