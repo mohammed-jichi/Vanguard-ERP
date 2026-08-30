@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   description: 'Enterprise Resource Planning & Production Operations System',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-[#f8fafc] text-slate-800 antialiased font-sans m-0 p-0">
