@@ -18,6 +18,7 @@ import VanguardSubHeader from './VanguardSubHeader';
 import GenericDataTable from './GenericDataTable';
 import SalesDashboard from './SalesDashboard';
 import ReportsMasterDetail from './ReportsMasterDetail';
+import SocialMediaManagementHub from './modules/social/SocialMediaManagementHub';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -689,6 +690,18 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
           <SalesDashboard onSelectScreen={(screen) => setActiveScreen(screen)} />
         ) : (activeScreen === 'sales-reports' || activeScreen === 'reports' || activeScreen === 'sc-reports' || activeScreen === 'sales-reports-billing') ? (
           <ReportsMasterDetail onBack={() => setActiveScreen('grid-dash')} />
+        ) : (activeScreen === 'social-inbox' || activeScreen === 'social-orders' || activeScreen === 'social-calendar' || activeScreen === 'social-campaigns' || activeScreen === 'social-cpl' || activeScreen === 'social-agents' || activeScreen === 'social-distributors' || activeScreen === 'social-crm' || activeScreen === 'social' || activeScreen === 'social-media-management') ? (
+          <SocialMediaManagementHub
+            initialTab={
+              activeScreen === 'social-orders' ? 'orders' :
+              activeScreen === 'social-calendar' ? 'calendar' :
+              (activeScreen === 'social-campaigns' || activeScreen === 'social-cpl') ? 'cpl' :
+              activeScreen === 'social-agents' ? 'agents' :
+              activeScreen === 'social-distributors' ? 'distributors' :
+              'inbox'
+            }
+            onBack={() => setActiveScreen('grid-dash')}
+          />
         ) : activeScreen !== 'grid-dash' ? (
           <div className="w-full font-sans">
             <GenericDataTable

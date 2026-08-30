@@ -32,7 +32,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
-import { useLanguage, LanguageCode } from '@/lib/LanguageContext';
+import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -419,16 +419,16 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     Select Language / اختر اللغة
                   </span>
                   {[
-                    { code: 'en', label: 'English (US)', flag: '🇺🇸' },
-                    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-                    { code: 'es', label: 'Español', flag: '🇪🇸' },
-                    { code: 'ar', label: 'العربية (RTL)', flag: '🇸🇦' },
-                    { code: 'fa', label: 'فارسی (RTL)', flag: '🇮🇷' },
+                    { code: 'en' as LanguageCode, label: 'English (US)', flag: '🇺🇸' },
+                    { code: 'fr' as LanguageCode, label: 'Français', flag: '🇫🇷' },
+                    { code: 'es' as LanguageCode, label: 'Español', flag: '🇪🇸' },
+                    { code: 'ar' as LanguageCode, label: 'العربية (RTL)', flag: '🇸🇦' },
+                    { code: 'fa' as LanguageCode, label: 'فارسی (RTL)', flag: '🇮🇷' },
                   ].map((item) => (
                     <button
                       key={item.code}
                       onClick={() => {
-                        setLanguage(item.code as any);
+                        setLanguage(item.code);
                         setIsProfileOpen(false);
                       }}
                       className={`w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
@@ -441,7 +441,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         <span>{item.flag}</span>
                         <span>{item.label}</span>
                       </span>
-                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded">Active</span>}
+                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">Active</span>}
                     </button>
                   ))}
                 </div>

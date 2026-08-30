@@ -305,7 +305,7 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* MODULE 2: SUPERSONIC FLEET (🔒 PRO) */}
+        {/* MODULE 2: SUPERSONIC FLEET (PRO) */}
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
@@ -318,7 +318,6 @@ export default function Sidebar({
               <Truck className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <Lock className="w-3 h-3 text-[#195a96] shrink-0" />
                   <span>{language === 'ar' ? '2. أسطول الشحن (SuperSonic)' : '2. SuperSonic Fleet Management'}</span>
                   <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
                 </span>
@@ -342,7 +341,7 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* MODULE 3: SOCIAL CRM (🔒 ENT) */}
+        {/* MODULE 3: SOCIAL CRM (ENT) */}
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('social'); }}
@@ -355,7 +354,6 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <Lock className="w-3 h-3 text-[#195a96] shrink-0" />
                   <span>{language === 'ar' ? '3. التواصل الاجتماعي (Social CRM)' : '3. Social CRM & Support'}</span>
                   <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">ENT</span>
                 </span>

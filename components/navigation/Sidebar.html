@@ -61,31 +61,28 @@
       </button>
     </div>
 
-    <!-- 2. SuperSonic Fleet Management (Locked Status) -->
+    <!-- 2. SuperSonic Fleet Management -->
     <div class="nav-item">
-      <button class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:bg-slate-800/40 transition-colors cursor-not-allowed group">
+      <button onclick="switchSouthernScreen('fleet', '2. SuperSonic Fleet Management', 'Fleet Telemetry')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
         <div class="flex items-center gap-2.5">
-          <i class="fa-solid fa-truck-fast text-slate-500 text-sm w-4 text-center"></i>
+          <i class="fa-solid fa-truck-fast text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
           <span>2. SuperSonic Fleet Management</span>
         </div>
-        <!-- Status Indicator at the End -->
-        <span title="Coming Soon / Restricted" class="text-slate-500 text-xs px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700/50">
-          <i class="fa-solid fa-lock text-[10px]"></i>
-        </span>
+        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
       </button>
     </div>
 
-    <!-- 3. Social CRM & Support (ENT - Locked Status) -->
+    <!-- 3. Social CRM & Support (ENT) -->
     <div class="nav-item">
-      <button class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:bg-slate-800/40 transition-colors cursor-not-allowed group">
+      <button onclick="switchSouthernScreen('social-crm', '3. Social CRM & Support', 'Social CRM & Support Hub')" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-medium hover:bg-slate-800/70 hover:text-white transition-colors group">
         <div class="flex items-center gap-2.5">
-          <i class="fa-solid fa-share-nodes text-slate-500 text-sm w-4 text-center"></i>
+          <i class="fa-solid fa-share-nodes text-slate-400 group-hover:text-amber-400 text-sm w-4 text-center"></i>
           <span>3. Social CRM & Support</span>
         </div>
-        <!-- Enterprise Badge & Lock on the Right -->
+        <!-- Enterprise Badge on the Right -->
         <div class="flex items-center gap-1.5">
           <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">ENT</span>
-          <i class="fa-solid fa-lock text-[10px] text-slate-500"></i>
+          <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
         </div>
       </button>
     </div>
