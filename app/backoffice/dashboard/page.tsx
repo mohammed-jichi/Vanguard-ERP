@@ -1,8 +1,10 @@
+'use client';
+
 import React from 'react';
 
 export default function BackofficeDashboardPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 select-none">
       <div className="flex items-center justify-between border-b border-slate-200 pb-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Executive Dashboard & Operations Overview</h1>
