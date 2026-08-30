@@ -35,7 +35,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (METALLIC-NAVY GRADIENT)                */}
+      {/* 1. MASTER TOP GLOBAL HEADER (EMBEDDED GOLDEN VANGUARD EMBLEM)       */}
       {/* =================================================================== */}
       <header
         style={{
@@ -43,8 +43,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         }}
         className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
-        {/* Left Side: Toggle + Vanguard Logo + Title */}
-        <div className="flex items-center gap-3.5">
+        {/* Left Side: Toggle + Pure Vector Vanguard Logo (with Hover Pop) + Title */}
+        <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -56,32 +56,53 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </svg>
           </button>
 
-          <Link href="/backoffice/dashboard" className="flex items-center gap-2.5 group">
-            <div className="relative flex items-center justify-center">
-              <img
-                src="/logo.png"
-                alt="Vanguard Logo"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  const fallback = document.getElementById('vanguard-fallback-badge-15x');
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-                className="h-8 w-auto object-contain drop-shadow-md"
-              />
-              <div
-                id="vanguard-fallback-badge-15x"
-                style={{ display: 'none' }}
-                className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c5a059] via-[#8a703b] to-slate-900 border border-amber-200/50 items-center justify-center shadow-md"
+          {/* Interactive Vanguard Logo & Title with 3D Hover Pop */}
+          <Link href="/backoffice/dashboard" className="flex items-center gap-3 group cursor-pointer">
+            
+            {/* Pure Inline Vector Vanguard Gold Emblem (Guaranteed Render) */}
+            <div className="relative flex items-center justify-center p-1.5 rounded-xl bg-gradient-to-br from-black/50 to-[#2a2418]/60 border border-amber-300/30 group-hover:border-amber-300/80 transition-all duration-300 shadow-md">
+              <svg
+                className="w-8 h-8 transition-all duration-300 ease-out transform group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:drop-shadow-[0_0_14px_rgba(212,175,55,0.7)]"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <span className="text-sm font-bold text-slate-950 font-serif">V</span>
-              </div>
+                {/* SVG Definitions for Luxury Gold Gradient */}
+                <defs>
+                  <linearGradient id="vanguardGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f7e7b4" />
+                    <stop offset="30%" stopColor="#d4af37" />
+                    <stop offset="70%" stopColor="#8a703b" />
+                    <stop offset="100%" stopColor="#c5a059" />
+                  </linearGradient>
+                  <linearGradient id="vanguardDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1e2638" />
+                    <stop offset="100%" stopColor="#0f1420" />
+                  </linearGradient>
+                </defs>
+
+                {/* Shield / Sail Emblem Shape */}
+                <path
+                  d="M24 4L40 10V22C40 32.5 33.2 42.1 24 44C14.8 42.1 8 32.5 8 22V10L24 4Z"
+                  fill="url(#vanguardDarkGrad)"
+                  stroke="url(#vanguardGoldGrad)"
+                  strokeWidth="2"
+                />
+                {/* Vanguard Stylized V / Ship Sail */}
+                <path
+                  d="M17 14L24 34L31 14H26.5L24 23.5L21.5 14H17Z"
+                  fill="url(#vanguardGoldGrad)"
+                />
+                <circle cx="24" cy="9" r="2" fill="#f7e7b4" />
+              </svg>
             </div>
 
+            {/* Scaled Vanguard ERP Typography */}
             <div className="flex flex-col">
-              <span className="font-bold text-[16px] tracking-tight text-white drop-shadow group-hover:text-amber-200 transition-colors">
+              <span className="font-extrabold text-[17px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
                 Vanguard ERP
               </span>
-              <span className="text-[9.5px] font-mono text-amber-200/80 -mt-0.5 tracking-wider uppercase">
+              <span className="text-[10px] font-mono text-amber-200/90 -mt-0.5 tracking-wider uppercase">
                 Enterprise Operations System
               </span>
             </div>
@@ -160,7 +181,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   Vanguard Reports Matrix (93)
                 </Link>
                 <div className="border-t border-slate-700/80 mt-1 pt-1">
-                  <button type="button" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-800">
+                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-800">
                     Sign Out
                   </button>
                 </div>
@@ -169,7 +190,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* 4PX THICK INVERSE ACCENT BORDER (METALLIC OVER NAVY -> NAVY OVER METALLIC) */}
+        {/* 4PX THICK INVERSE ACCENT BORDER */}
         <div
           style={{
             background: 'linear-gradient(90deg, #c5a059 0%, #d4af37 25%, #8a703b 50%, #1c263c 75%, #0f1624 100%)',
@@ -445,12 +466,12 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <span className="text-[10px] text-amber-300 font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#c5a059]/40">Live</span>
             </div>
 
-            {/* 4PX THICK INVERSE ACCENT BORDER (VERTICAL METALLIC-NAVY) */}
+            {/* 3.5PX THICK INVERSE ACCENT BORDER */}
             <div
               style={{
                 background: 'linear-gradient(180deg, #c5a059 0%, #d4af37 30%, #8a703b 60%, #1c263c 85%, #0f1624 100%)',
               }}
-              className="absolute top-0 right-0 bottom-0 w-[4px] shadow-sm"
+              className="absolute top-0 right-0 bottom-0 w-[3.5px] shadow-sm"
             />
           </aside>
         )}
