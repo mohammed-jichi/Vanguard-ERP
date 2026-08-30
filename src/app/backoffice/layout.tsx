@@ -26,8 +26,8 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex w-full min-h-screen bg-[#f8fafc] font-sans text-slate-800 text-left select-none">
       
-      {/* Dark Sidebar */}
-      <aside className="w-[270px] bg-[#1e232d] text-slate-300 flex flex-col justify-between border-r border-slate-800 print:hidden select-none shrink-0 h-screen sticky top-0">
+      {/* Master Left Sidebar Navigation */}
+      <aside className="w-[280px] bg-[#1e232d] text-slate-300 flex flex-col justify-between border-r border-slate-800 print:hidden select-none shrink-0 h-screen sticky top-0">
         <div>
           {/* Header */}
           <div className="p-3.5 border-b border-slate-800 bg-[#181c24]">
@@ -40,8 +40,8 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
             </p>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-2 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-110px)]">
+          {/* Navigation Accordion Tree (All 7 Modules & Subsections) */}
+          <nav className="p-2 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-110px)] custom-scrollbar">
             
             {/* 1. SALES CONTROL & POS */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
@@ -72,14 +72,17 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                   <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
                     End of Day (EOD) Z-Report
                   </Link>
-                  <Link href="/pos" className="flex items-center justify-between px-2.5 py-1.5 rounded text-amber-400 hover:bg-slate-800 transition-colors">
-                    <span>POS Touch Terminal ↗</span>
+                  <Link href="/backoffice/sales-setup" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/sales-setup') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    POS Pricing & Setup
                   </Link>
+                  <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-amber-400 hover:bg-slate-800 transition-colors">
+                    <span>POS Touch Terminal ↗</span>
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* 2. FLEET */}
+            {/* 2. SUPERSONIC FLEET MANAGEMENT */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -92,16 +95,26 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px]">{openSections.fleet ? '▲' : '▼'}</span>
               </button>
+
               {openSections.fleet && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/fleet" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
+                  <Link href="/backoffice/fleet" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/fleet' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
                     Live Fleet Map & Dispatch
+                  </Link>
+                  <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Vehicles & Maintenance
+                  </Link>
+                  <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Drivers Directory & History
+                  </Link>
+                  <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    COD & Cash Settlements
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* 3. SOCIAL CRM */}
+            {/* 3. SOCIAL CRM & SUPPORT */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -114,16 +127,17 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px] bg-blue-500/20 text-blue-400 px-1 rounded">ENT</span>
               </button>
+
               {openSections.social && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/social-crm" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
-                    Social Management Hub
+                  <Link href="/backoffice/social-crm" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/social-crm' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Social Management Hub (6 Pillars)
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* 4. OPERATIONS */}
+            {/* 4. OPERATIONS & PRESSING CENTER */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -136,16 +150,26 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px]">{openSections.operations ? '▲' : '▼'}</span>
               </button>
+
               {openSections.operations && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/operations" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
+                  <Link href="/backoffice/operations" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/operations' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
                     Operations Center Overview
+                  </Link>
+                  <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Olive Pressing & Oil Yield %
+                  </Link>
+                  <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Recipe Formulations & Production
+                  </Link>
+                  <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Storage Tanks & Bulk Inventory
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* 5. CUSTOMERS */}
+            {/* 5. CUSTOMER MANAGEMENT & AR */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -158,16 +182,26 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px]">{openSections.customers ? '▲' : '▼'}</span>
               </button>
+
               {openSections.customers && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/customers" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
-                    Master Directory & KYC
+                  <Link href="/backoffice/customers" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/customers' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Master Directory & KYC (PDF)
+                  </Link>
+                  <Link href="/backoffice/customers/invoices" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/customers/invoices') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Accounts Receivable & Aging Invoices
+                  </Link>
+                  <Link href="/backoffice/customers/receipts" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/customers/receipts') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Payment Receipts & Settlements
+                  </Link>
+                  <Link href="/backoffice/customers/statements" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/customers/statements') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Statements of Account (SOA A4)
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* 6. ACCOUNTING */}
+            {/* 6. ACCOUNTING & FINANCE */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -180,16 +214,26 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px]">{openSections.accounting ? '▲' : '▼'}</span>
               </button>
+
               {openSections.accounting && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/accounting" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
-                    General Ledger & COA
+                  <Link href="/backoffice/accounting" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/accounting' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Chart of Accounts (COA)
+                  </Link>
+                  <Link href="/backoffice/accounting/journal" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/accounting/journal') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Journal Entries & Vouchers
+                  </Link>
+                  <Link href="/backoffice/accounting/ledger" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/accounting/ledger') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    General Ledger & Trial Balance
+                  </Link>
+                  <Link href="/backoffice/accounting/cost-centers" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/accounting/cost-centers') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Branches & Factory Cost Centers
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* 7. HR */}
+            {/* 7. HR & PAYROLL MANAGEMENT */}
             <div className="border border-slate-800/80 rounded-lg overflow-hidden bg-slate-900/30">
               <button
                 type="button"
@@ -202,10 +246,17 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
                 </div>
                 <span className="text-[9px]">{openSections.hr ? '▲' : '▼'}</span>
               </button>
+
               {openSections.hr && (
                 <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-800 bg-[#161a22] text-[11px]">
-                  <Link href="/backoffice/hr" className="block px-2.5 py-1.5 rounded text-slate-400 hover:text-white">
-                    Employees & BLOM Payroll
+                  <Link href="/backoffice/hr" className={`block px-2.5 py-1 rounded transition-colors ${pathname === '/backoffice/hr' ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Employees Directory
+                  </Link>
+                  <Link href="/backoffice/hr/attendance" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/hr/attendance') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    Attendance Logs & Overtime
+                  </Link>
+                  <Link href="/backoffice/hr/payroll" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/hr/payroll') ? 'bg-[#1a629b] text-white font-bold' : 'text-slate-400 hover:text-white'}`}>
+                    BLOM Bank Payroll Export
                   </Link>
                 </div>
               )}
@@ -214,7 +265,7 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
           </nav>
         </div>
 
-        {/* User Footer */}
+        {/* User Identity Footer */}
         <div className="p-3 border-t border-slate-800 bg-[#161a22] text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-[#1a629b] text-white font-bold flex items-center justify-center text-[10px]">M</div>
@@ -224,7 +275,7 @@ export default function BackofficeLayout({ children }: { children: React.ReactNo
         </div>
       </aside>
 
-      {/* Main Viewport */}
+      {/* Main Content Workspace */}
       <main className="flex-1 min-w-0 overflow-y-auto h-screen bg-[#f8fafc]">
         {children}
       </main>
