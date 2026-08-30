@@ -35,75 +35,78 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (FULL-WIDTH GOLD & NAVY WAVE GRADIENT) */}
+      {/* 1. MASTER TOP GLOBAL HEADER (1.5X PROPORTIONALLY EXPANDED: 68PX)    */}
       {/* =================================================================== */}
       <header
         style={{
           background: 'linear-gradient(110deg, #101624 0%, #172238 25%, #2a261c 48%, #8a703b 68%, #d4af37 80%, #b89542 88%, #141c2c 100%)',
         }}
-        className="h-12 border-b border-amber-400/30 px-3.5 flex items-center justify-between print:hidden shrink-0 text-white z-40 shadow-sm"
+        className="h-[68px] border-b-2 border-amber-400/40 px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 shadow-md"
       >
         
-        {/* Left Side: Toggle + Official Vanguard Logo + Title */}
-        <div className="flex items-center gap-3">
+        {/* Left Side: Toggle + 1.5x Scaled Vanguard Logo + Title */}
+        <div className="flex items-center gap-3.5">
           <button
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
-            className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-amber-200 hover:text-white transition-colors border border-amber-400/20 shadow-xs"
+            className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-amber-200 hover:text-white transition-colors border border-amber-400/25 shadow-xs"
             title="Toggle Sidebar"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
 
-          {/* Vanguard Logo Asset & Title */}
-          <Link href="/backoffice/dashboard" className="flex items-center gap-2 group">
-            {/* Vanguard Official Logo with Fallback Icon */}
+          {/* Scaled Vanguard Logo & Title */}
+          <Link href="/backoffice/dashboard" className="flex items-center gap-2.5 group">
             <div className="relative flex items-center justify-center">
               <img
                 src="/logo.png"
                 alt="Vanguard Logo"
                 onError={(e) => {
-                  // Fallback to stylized metallic shield if image asset path differs
                   e.currentTarget.style.display = 'none';
-                  const fallback = document.getElementById('vanguard-fallback-badge');
+                  const fallback = document.getElementById('vanguard-fallback-badge-15x');
                   if (fallback) fallback.style.display = 'flex';
                 }}
-                className="h-6 w-auto object-contain drop-shadow"
+                className="h-8 w-auto object-contain drop-shadow-md"
               />
               <div
-                id="vanguard-fallback-badge"
+                id="vanguard-fallback-badge-15x"
                 style={{ display: 'none' }}
-                className="w-6 h-6 rounded-md bg-gradient-to-br from-amber-300 via-amber-600 to-slate-900 border border-amber-200/50 items-center justify-center shadow-xs"
+                className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-300 via-amber-600 to-slate-900 border border-amber-200/60 items-center justify-center shadow-md"
               >
-                <span className="text-[11px] font-bold text-slate-950 font-serif">V</span>
+                <span className="text-sm font-bold text-slate-950 font-serif">V</span>
               </div>
             </div>
 
-            <span className="font-bold text-[14px] tracking-tight text-white drop-shadow-sm group-hover:text-amber-200 transition-colors">
-              Vanguard ERP
-            </span>
+            <div className="flex flex-col">
+              <span className="font-bold text-[16px] tracking-tight text-white drop-shadow group-hover:text-amber-200 transition-colors">
+                Vanguard ERP
+              </span>
+              <span className="text-[9.5px] font-mono text-amber-200/80 -mt-0.5 tracking-wider uppercase">
+                Enterprise Operations System
+              </span>
+            </div>
           </Link>
         </div>
 
-        {/* Right Side: Tenant Badge + Action Icons + User Profile */}
-        <div className="flex items-center gap-3">
+        {/* Right Side: Scaled Tenant Badge + 1.5x Action Icons + Profile */}
+        <div className="flex items-center gap-3.5">
           
-          {/* Tenant 00001 Badge with Luxury Golden Border & Translucent Backdrop */}
-          <div className="hidden sm:flex items-center px-3.5 py-1 rounded-full bg-black/40 border border-amber-300/40 shadow-xs backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 mr-2 shadow-xs"></span>
-            <span className="text-[11.5px] font-bold tracking-wide text-amber-100 drop-shadow-xs">
+          {/* Scaled Tenant 00001 Badge with Rich Metallic Shimmer */}
+          <div className="hidden sm:flex items-center px-4 py-1.5 rounded-full bg-black/45 border border-amber-300/45 shadow-sm backdrop-blur-md">
+            <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 mr-2.5 shadow-xs animate-pulse"></span>
+            <span className="text-[12.5px] font-bold tracking-wide text-amber-100 drop-shadow-xs">
               00001 - Southern Olive Oil Products S.A.R.L
             </span>
           </div>
 
-          {/* Action Quick Icons */}
-          <div className="flex items-center gap-1.5 text-slate-200">
+          {/* Action Icons (Scaled to 1.5x) */}
+          <div className="flex items-center gap-2 text-slate-200">
             {/* Home Icon */}
             <Link
               href="/backoffice/dashboard"
-              className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-200 hover:text-white transition-colors border border-white/10"
+              className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10"
               title="Dashboard Home"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -111,17 +114,17 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </Link>
 
-            {/* Notification Mail Icon with Red Badge */}
+            {/* Notification Messages Icon with Red Badge */}
             <Link
               href="/backoffice/social-crm"
-              className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-200 hover:text-white transition-colors border border-white/10 relative"
+              className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10 relative"
               title="Messages & Alerts"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
               </svg>
-              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-red-600 text-white rounded-full text-[8.5px] font-bold flex items-center justify-center shadow-xs">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-xs">
                 0
               </span>
             </Link>
@@ -129,7 +132,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             {/* Help Icon */}
             <Link
               href="/backoffice/dashboard"
-              className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-200 hover:text-white transition-colors border border-white/10"
+              className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10"
               title="Help & Support"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -138,34 +141,34 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </Link>
           </div>
 
-          {/* User Profile Dropdown Button */}
+          {/* User Profile Dropdown Button (1.5x Scaled) */}
           <div className="relative">
             <button
               type="button"
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-full bg-black/30 hover:bg-black/50 border border-amber-300/30 transition-colors shadow-xs"
+              className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-full bg-black/35 hover:bg-black/55 border border-amber-300/35 transition-colors shadow-xs"
             >
-              <div className="w-5 h-5 rounded-full bg-gradient-to-r from-blue-600 to-[#1a629b] text-white font-bold flex items-center justify-center text-[10px] shadow-xs">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-[#1a629b] text-white font-bold flex items-center justify-center text-[11px] shadow-xs">
                 M
               </div>
               <span className="text-xs font-semibold text-slate-100">Jichi Mohammed</span>
-              <span className="text-[10px] text-amber-300">▾</span>
+              <span className="text-[11px] text-amber-300">▾</span>
             </button>
 
             {userDropdownOpen && (
-              <div className="absolute right-0 mt-1.5 w-52 bg-[#1a202c] border border-amber-400/30 rounded-xl shadow-2xl py-1.5 text-xs text-slate-200 z-50">
-                <div className="px-3.5 py-2 border-b border-slate-700/80 bg-slate-900/50">
-                  <div className="font-bold text-white">Jichi Mohammed</div>
+              <div className="absolute right-0 mt-2 w-56 bg-[#1a202c] border border-amber-400/30 rounded-xl shadow-2xl py-1.5 text-xs text-slate-200 z-50">
+                <div className="px-4 py-2.5 border-b border-slate-700/80 bg-slate-900/60">
+                  <div className="font-bold text-white text-[13px]">Jichi Mohammed</div>
                   <div className="text-[10.5px] text-amber-300 font-mono truncate mt-0.5">General Operations Manager</div>
                 </div>
-                <Link href="/backoffice/dashboard" className="block px-3.5 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
+                <Link href="/backoffice/dashboard" className="block px-4 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
                   Dashboard Overview
                 </Link>
-                <Link href="/backoffice/reportview" className="block px-3.5 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
+                <Link href="/backoffice/reportview" className="block px-4 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
                   Vanguard Reports Matrix (93)
                 </Link>
                 <div className="border-t border-slate-700/80 mt-1 pt-1">
-                  <button type="button" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-3.5 py-2 text-red-400 hover:bg-slate-800">
+                  <button type="button" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-800">
                     Sign Out
                   </button>
                 </div>
@@ -176,7 +179,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           {/* Apps Switcher Grid Icon */}
           <Link
             href="/backoffice/reportview"
-            className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-slate-300 hover:text-white transition-colors border border-white/10"
+            className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-300 hover:text-white transition-colors border border-white/10"
             title="App Launcher"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -194,7 +197,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         
         {/* Left Master Sidebar */}
         {sidebarVisible && (
-          <aside className="w-[275px] bg-[#1e232d] text-slate-300 flex flex-col justify-between border-r border-slate-800 print:hidden select-none shrink-0 h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
+          <aside className="w-[280px] bg-[#1e232d] text-slate-300 flex flex-col justify-between border-r border-slate-800 print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar">
             <div className="p-2 space-y-1 text-xs font-semibold">
               
               {/* 1. SALES CONTROL & POS */}
@@ -420,8 +423,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </aside>
         )}
 
-        {/* Main Viewport Workspace */}
-        <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-48px)] bg-[#f1f5f9] p-4 md:p-6 custom-scrollbar">
+        {/* Main Viewport */}
+        <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f1f5f9] p-4 md:p-6 custom-scrollbar">
           {children}
         </main>
 
