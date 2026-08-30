@@ -32,16 +32,16 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none">
+    <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (1.5X LUXURY GOLD & NAVY)               */}
+      {/* 1. MASTER TOP GLOBAL HEADER (WITH INVERSE GRADIENT ACCENT LINE)     */}
       {/* =================================================================== */}
       <header
         style={{
           background: 'linear-gradient(110deg, #101624 0%, #172238 25%, #2a261c 48%, #8a703b 68%, #d4af37 80%, #b89542 88%, #141c2c 100%)',
         }}
-        className="h-[68px] border-b-2 border-amber-400/40 px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 shadow-md"
+        className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
         {/* Left Side: Toggle + Vanguard Logo + Title */}
         <div className="flex items-center gap-3.5">
@@ -168,23 +168,31 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             )}
           </div>
         </div>
+
+        {/* INVERSE ACCENT BORDER (GOLD OVER NAVY -> NAVY OVER GOLD) */}
+        <div
+          style={{
+            background: 'linear-gradient(90deg, #d4af37 0%, #f3e5ab 20%, #8a703b 45%, #1a243a 70%, #0d131f 88%, #d4af37 100%)',
+          }}
+          className="absolute bottom-0 left-0 right-0 h-[2.5px] shadow-sm"
+        />
       </header>
 
       {/* =================================================================== */}
-      {/* 2. BODY WORKSPACE: BRONZE-GOLD METALLIC GRADIENT SIDEBAR + VIEWPORT */}
+      {/* 2. BODY WORKSPACE: BRONZE-GOLD GRADIENT SIDEBAR + INVERSE BORDER    */}
       {/* =================================================================== */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Master Sidebar with Luxury Bronze-Gold Gradient (Top to Bottom) */}
+        {/* Master Sidebar with Luxury Bronze-Gold Gradient */}
         {sidebarVisible && (
           <aside
             style={{
               background: 'linear-gradient(180deg, #181510 0%, #201a13 25%, #2e2417 50%, #423520 75%, #584729 100%)',
             }}
-            className="w-[280px] text-amber-100 flex flex-col justify-between border-r-2 border-[#b89542]/40 print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl"
+            className="w-[280px] text-amber-100 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl relative"
           >
             <div>
-              {/* Sidebar Top Header */}
+              {/* Sidebar Header */}
               <div className="p-3.5 border-b border-[#b89542]/30 bg-black/30">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-xs"></span>
@@ -192,7 +200,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               </div>
 
-              {/* Menu Search */}
+              {/* Search */}
               <div className="p-2 border-b border-[#b89542]/20 bg-black/20">
                 <input
                   type="text"
@@ -259,16 +267,16 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.fleet && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/fleet" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Live Fleet Map & Dispatch
                       </Link>
-                      <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Vehicles & Maintenance
                       </Link>
-                      <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Drivers Directory & History
                       </Link>
-                      <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         COD & Cash Settlements
                       </Link>
                     </div>
@@ -291,7 +299,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.social && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/social-crm" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/social-crm" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Social Management Hub (6 Pillars)
                       </Link>
                     </div>
@@ -314,16 +322,16 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.operations && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/operations" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Operations Center Overview
                       </Link>
-                      <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Olive Pressing & Oil Yield %
                       </Link>
-                      <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Recipe Formulations & Production
                       </Link>
-                      <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
                         Storage Tanks & Bulk Inventory
                       </Link>
                     </div>
@@ -436,6 +444,14 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </div>
               <span className="text-[10px] text-amber-300 font-mono bg-black/40 px-1.5 py-0.5 rounded border border-amber-400/30">Live</span>
             </div>
+
+            {/* SIDEBAR RIGHT INVERSE ACCENT BORDER (VERTICAL GOLD-NAVY SHIMMER) */}
+            <div
+              style={{
+                background: 'linear-gradient(180deg, #d4af37 0%, #c59d45 30%, #8a703b 60%, #1a233a 85%, #0f172a 100%)',
+              }}
+              className="absolute top-0 right-0 bottom-0 w-[2px] shadow-sm"
+            />
           </aside>
         )}
 
