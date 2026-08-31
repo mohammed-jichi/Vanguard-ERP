@@ -24,19 +24,12 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const isLinkActive = (href: string) => {
-    if (href === '/backoffice/dashboard') {
-      return pathname === '/backoffice/dashboard' || pathname === '/backoffice';
-    }
-    return pathname === href || (pathname && pathname.startsWith(href) && href !== '/backoffice');
-  };
+  const isLinkActive = (href: string) => pathname === href || (pathname && pathname.startsWith(href));
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative">
+    <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
       
-      {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (CLEAN HIGH-CONTRAST EXECUTIVE BAR)     */}
-      {/* =================================================================== */}
+      {/* 1. MASTER TOP GLOBAL HEADER (STRICTLY HIDDEN ON PRINT) */}
       <header className="h-[68px] bg-white border-b-2 border-[#1e3a2b]/20 px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
         
         {/* Left Side: Toggle + Vanguard Medallion Logo & Title */}
@@ -52,7 +45,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </svg>
           </button>
 
-          {/* Vanguard Logo & Typography */}
           <Link href="/backoffice/dashboard" className="flex items-center gap-3 group cursor-pointer">
             <div className="w-[52px] h-[52px] rounded-full overflow-hidden border-2 border-[#c5a059] shadow-md bg-black shrink-0 group-hover:scale-105 transition-all duration-300">
               <img
@@ -81,7 +73,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </Link>
         </div>
 
-        {/* Center: Prominent Centered Tenant Badge */}
+        {/* Center: Tenant Badge */}
         <div className="flex-1 flex justify-center items-center px-4">
           <div className="flex items-center px-5 py-2 rounded-full bg-[#edf2ee] border border-[#1e3a2b]/30 shadow-xs hover:border-[#1e3a2b] transition-all">
             <span className="w-2.5 h-2.5 rounded-full bg-[#1e3a2b] mr-3 shadow-xs animate-pulse"></span>
@@ -129,7 +121,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </button>
           </div>
 
-          {/* User Profile */}
           <div className="relative">
             <button
               type="button"
@@ -142,26 +133,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <span className="text-xs font-semibold text-slate-900">Jichi Mohammed</span>
               <span className="text-[11px] text-[#1e3a2b]">▾</span>
             </button>
-
-            {userDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-700 z-50">
-                <div className="px-4 py-2.5 border-b border-slate-100 bg-[#f8fafc]">
-                  <div className="font-bold text-slate-900 text-[13px]">Jichi Mohammed</div>
-                  <div className="text-[10.5px] text-[#1e3a2b] font-mono truncate mt-0.5 font-semibold">General Operations Manager</div>
-                </div>
-                <Link href="/backoffice/dashboard" className="block px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-[#1e3a2b]">
-                  Dashboard Overview
-                </Link>
-                <Link href="/backoffice/reportview" className="block px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-[#1e3a2b]">
-                  Vanguard Reports Matrix (93)
-                </Link>
-                <div className="border-t border-slate-100 mt-1 pt-1">
-                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-medium">
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -170,16 +141,14 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           style={{
             background: 'linear-gradient(90deg, #c5a059 0%, #1e3a2b 50%, #c5a059 100%)',
           }}
-          className="absolute bottom-0 left-0 right-0 h-[2.5px]"
+          className="absolute bottom-0 left-0 right-0 h-[2.5px] print:hidden"
         />
       </header>
 
-      {/* =================================================================== */}
-      {/* 2. BODY WORKSPACE: HIGH-CONTRAST SIDEBAR + CLEAR CANVAS             */}
-      {/* =================================================================== */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* 2. BODY WORKSPACE (SIDEBAR HIDDEN ON PRINT) */}
+      <div className="flex-1 flex overflow-hidden print:overflow-visible print:m-0 print:p-0">
         
-        {/* Master Left Sidebar */}
+        {/* Master Left Sidebar (Strictly hidden on print) */}
         {sidebarVisible && (
           <aside
             style={{
@@ -188,7 +157,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             className="w-[280px] text-slate-800 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar border-r border-[#1e3a2b]/20 shadow-xs"
           >
             <div>
-              {/* Header */}
               <div className="p-3.5 border-b border-[#1e3a2b]/15 bg-white/70">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#1e3a2b] shadow-xs"></span>
@@ -196,16 +164,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               </div>
 
-              {/* Menu Search */}
-              <div className="p-2 border-b border-[#1e3a2b]/10 bg-white/40">
-                <input
-                  type="text"
-                  placeholder="Search modules..."
-                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#1e3a2b]"
-                />
-              </div>
-
-              {/* Navigation Accordion Tree */}
               <nav className="p-2 space-y-1.5 text-xs font-semibold">
                 
                 {/* 1. SALES CONTROL & POS */}
@@ -237,9 +195,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
                         End of Day (EOD) Z-Report
                       </Link>
-                      <Link href="/backoffice/sales-setup" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/sales-setup') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        POS Pricing & Setup
-                      </Link>
                       <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-[#1e3a2b] font-bold hover:bg-slate-200/70 transition-colors">
                         <span>POS Touch Terminal ↗</span>
                       </a>
@@ -266,15 +221,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/fleet" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
                         Live Fleet Map & Dispatch
                       </Link>
-                      <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Vehicles & Maintenance
-                      </Link>
-                      <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Drivers Directory & History
-                      </Link>
-                      <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        COD & Cash Settlements
-                      </Link>
                     </div>
                   )}
                 </div>
@@ -296,7 +242,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   {openSections.social && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
                       <Link href="/backoffice/social-crm" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Social Management Hub (6 Pillars)
+                        Social Management Hub
                       </Link>
                     </div>
                   )}
@@ -321,15 +267,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/operations" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
                         Operations Center Overview
                       </Link>
-                      <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Olive Pressing & Oil Yield %
-                      </Link>
-                      <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Recipe Formulations & Production
-                      </Link>
-                      <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Storage Tanks & Bulk Inventory
-                      </Link>
                     </div>
                   )}
                 </div>
@@ -351,16 +288,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   {openSections.customers && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
                       <Link href="/backoffice/customers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Master Directory & KYC (PDF)
-                      </Link>
-                      <Link href="/backoffice/customers/invoices" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/invoices') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Accounts Receivable & Aging Invoices
-                      </Link>
-                      <Link href="/backoffice/customers/receipts" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/receipts') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Payment Receipts & Settlements
-                      </Link>
-                      <Link href="/backoffice/customers/statements" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/statements') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Statements of Account (SOA A4)
+                        Master Directory & KYC
                       </Link>
                     </div>
                   )}
@@ -383,16 +311,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   {openSections.accounting && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
                       <Link href="/backoffice/accounting" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Chart of Accounts (COA)
-                      </Link>
-                      <Link href="/backoffice/accounting/journal" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/journal') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Journal Entries & Vouchers
-                      </Link>
-                      <Link href="/backoffice/accounting/ledger" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/ledger') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        General Ledger & Trial Balance
-                      </Link>
-                      <Link href="/backoffice/accounting/cost-centers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/cost-centers') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Branches & Factory Cost Centers
+                        General Ledger & COA
                       </Link>
                     </div>
                   )}
@@ -415,13 +334,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   {openSections.hr && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
                       <Link href="/backoffice/hr" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Employees Directory
-                      </Link>
-                      <Link href="/backoffice/hr/attendance" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/attendance') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Attendance Logs & Overtime
-                      </Link>
-                      <Link href="/backoffice/hr/payroll" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/payroll') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        BLOM Bank Payroll Export
+                        Employees & BLOM Payroll
                       </Link>
                     </div>
                   )}
@@ -430,7 +343,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </nav>
             </div>
 
-            {/* User Footer */}
             <div className="p-3 border-t border-[#1e3a2b]/20 bg-white/70 text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-[#1e3a2b] text-white font-bold flex items-center justify-center text-[10px] shadow-xs">
@@ -444,7 +356,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         )}
 
         {/* Main Canvas Viewport */}
-        <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f3f5f8] p-4 md:p-6 custom-scrollbar">
+        <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f3f5f8] p-4 md:p-6 custom-scrollbar print:overflow-visible print:m-0 print:p-0 print:bg-white">
           {children}
         </main>
 

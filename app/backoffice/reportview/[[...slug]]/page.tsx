@@ -7,12 +7,10 @@ export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // ==========================================================================
-  // DYNAMIC ROLLING EOD DATE GENERATOR (From 10-Dec-2025 up to Live Date)
-  // ==========================================================================
+  // Rolling EOD Dates
   const eodDateOptions = useMemo(() => {
     const startDate = new Date('2025-12-10');
-    const today = new Date(); // Dynamically increments every single new day
+    const today = new Date();
     const dates: { value: string; label: string }[] = [];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -30,7 +28,6 @@ export default function MasterReportViewPage() {
     return dates;
   }, []);
 
-  // Filter States
   const [periodPreset, setPeriodPreset] = useState<'TODAY' | 'YESTERDAY' | 'THIS_MONTH' | 'LAST_MONTH' | 'DATE_RANGE' | 'EOD_DATE'>('THIS_MONTH');
   const [fromDate, setFromDate] = useState('2026-08-30');
   const [toDate, setToDate] = useState('2026-08-30');
@@ -38,14 +35,12 @@ export default function MasterReportViewPage() {
   const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
-  // Active Report State
   const [activeReport, setActiveReport] = useState({
     code: 'REP_IC_001',
     title: 'Summary of voids',
     category: 'Internal Control',
   });
 
-  // Accordion State
   const [expandedCats, setExpandedCats] = useState<string[]>([
     'internal_control',
     'financial',
@@ -87,7 +82,7 @@ export default function MasterReportViewPage() {
     );
   };
 
-  // 100% Verified 93-Report Catalog Hierarchy
+  // Verified 93-Report Hierarchy
   const masterCatalog = [
     {
       id: 'internal_control',
@@ -367,11 +362,51 @@ export default function MasterReportViewPage() {
   };
 
   return (
-    <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans">
+    <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans print:h-auto print:overflow-visible">
       
       {/* =================================================================== */}
-      {/* 1. TOP SUB-HEADER BAR (HIDDEN ON PRINT)                             */}
+      {/* INLINE BULLETPROOF CSS PRINT ISOLATION TAG                          */}
       {/* =================================================================== */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 0mm !important;
+          }
+          body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            visibility: hidden !important;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          header, aside, nav, button, input, select, .print-hidden, [class*="print:hidden"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          #isolated-a4-print-sheet, #isolated-a4-print-sheet * {
+            visibility: visible !important;
+          }
+          #isolated-a4-print-sheet {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100vw !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 12mm 15mm !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: #ffffff !important;
+            display: block !important;
+            z-index: 999999 !important;
+          }
+        }
+      `}} />
+
+      {/* 1. TOP SUB-HEADER BAR (HIDDEN ON PRINT) */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
@@ -408,14 +443,9 @@ export default function MasterReportViewPage() {
         </div>
       </div>
 
-      {/* =================================================================== */}
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON WITH LIVE ROLLING EOD DATES     */}
-      {/* =================================================================== */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (HIDDEN ON PRINT) */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
-        
-        {/* Left Inputs: Period Dropdown + Conditional Dynamic Date Area + Branches */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          
           <select
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value as any)}
@@ -429,7 +459,6 @@ export default function MasterReportViewPage() {
             <option value="EOD_DATE">EOD Date</option>
           </select>
 
-          {/* Conditional Dynamic Date Display */}
           {periodPreset === 'TODAY' && (
             <input
               type="text"
@@ -488,7 +517,6 @@ export default function MasterReportViewPage() {
             </div>
           )}
 
-          {/* REAL-TIME ROLLING EOD DATE LIST (AUTO INCREMENTS EVERY DAY) */}
           {periodPreset === 'EOD_DATE' && (
             <select
               value={eodDate}
@@ -503,7 +531,6 @@ export default function MasterReportViewPage() {
             </select>
           )}
 
-          {/* Branches Dropdown */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -536,7 +563,6 @@ export default function MasterReportViewPage() {
           </button>
         </div>
 
-        {/* Right Tools: Zoom + Print + Export + Settings */}
         <div className="flex items-center gap-1.5">
           <button
             type="button"
@@ -579,19 +605,14 @@ export default function MasterReportViewPage() {
             ⚙️
           </button>
         </div>
-
       </div>
 
-      {/* =================================================================== */}
-      {/* 3. WORKSPACE: 93-REPORTS TREE + PROPORTIONAL A4 PAPER               */}
-      {/* =================================================================== */}
+      {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree Sidebar */}
+        {/* Left 93-Reports Tree (Strictly hidden on print) */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
-            
-            {/* Search Box */}
             <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
               <input
                 type="text"
@@ -602,7 +623,6 @@ export default function MasterReportViewPage() {
               />
             </div>
 
-            {/* Complete 7-Categories Hierarchy */}
             {masterCatalog.map((cat) => (
               <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
                 <div
@@ -617,8 +637,6 @@ export default function MasterReportViewPage() {
 
                 {expandedCats.includes(cat.id) && (
                   <div className="p-1 space-y-1 bg-white">
-                    
-                    {/* Direct Reports */}
                     {cat.reports && cat.reports
                       .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                       .map((r) => (
@@ -637,7 +655,6 @@ export default function MasterReportViewPage() {
                         </button>
                       ))}
 
-                    {/* Sub-Categories */}
                     {cat.subCategories && cat.subCategories.map((sub) => (
                       <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
                         <div
@@ -663,7 +680,7 @@ export default function MasterReportViewPage() {
                                       : 'hover:bg-slate-100 text-slate-700 font-medium'
                                   }`}
                                 >
-                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
+                                  <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
                                   <span>{r.title}</span>
                                 </button>
                               ))}
@@ -671,7 +688,6 @@ export default function MasterReportViewPage() {
                         )}
                       </div>
                     ))}
-
                   </div>
                 )}
               </div>
@@ -679,11 +695,11 @@ export default function MasterReportViewPage() {
           </aside>
         )}
 
-        {/* Right Canvas: Isolated A4 Paper Container */}
+        {/* Right Canvas: ISOLATED PURE A4 PRINT CONTAINER */}
         <main className="flex-1 overflow-y-auto custom-scrollbar flex justify-center print:overflow-visible print:p-0 print:m-0">
           
           <div
-            id="printable-a4-report"
+            id="isolated-a4-print-sheet"
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
             className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none transition-transform duration-200 select-none"
           >
