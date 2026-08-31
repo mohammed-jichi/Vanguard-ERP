@@ -76,7 +76,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </div>
 
             <div className="flex flex-col">
-              <span className="font-extrabold text-[17px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
+              <span className="font-extrabold text-[17.5px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
                 Vanguard ERP
               </span>
               <span className="text-[10px] font-mono text-amber-200/90 -mt-0.5 tracking-wider uppercase">
@@ -183,33 +183,33 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
       </header>
 
       {/* =================================================================== */}
-      {/* 2. BODY WORKSPACE: BRONZE-GOLD METALLIC SIDEBAR + 4PX INVERSE BORDER*/}
+      {/* 2. BODY WORKSPACE: LIGHTER METALLIC BRONZE-GOLD GRADIENT SIDEBAR    */}
       {/* =================================================================== */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Master Sidebar */}
+        {/* Master Sidebar with Lighter Metallic Bronze-Gold Gradient */}
         {sidebarVisible && (
           <aside
             style={{
-              background: 'linear-gradient(180deg, #181510 0%, #201a13 25%, #2e2417 50%, #423520 75%, #584729 100%)',
+              background: 'linear-gradient(180deg, #241e16 0%, #30261a 25%, #423523 50%, #59472e 75%, #6f5939 100%)',
             }}
-            className="w-[280px] text-amber-100 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl relative"
+            className="w-[280px] text-amber-50 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl relative"
           >
             <div>
               {/* Sidebar Header */}
-              <div className="p-3.5 border-b border-[#b89542]/30 bg-black/30">
+              <div className="p-3.5 border-b border-[#c5a059]/40 bg-black/35">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#c5a059] animate-pulse shadow-xs"></span>
-                  <span className="font-bold text-amber-200 text-xs tracking-tight">Main Navigation Modules</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#f3e5ab] animate-pulse shadow-xs"></span>
+                  <span className="font-bold text-amber-100 text-xs tracking-tight">Main Navigation Modules</span>
                 </div>
               </div>
 
               {/* Menu Search */}
-              <div className="p-2 border-b border-[#b89542]/20 bg-black/20">
+              <div className="p-2 border-b border-[#c5a059]/30 bg-black/25">
                 <input
                   type="text"
                   placeholder="Search modules..."
-                  className="w-full px-2.5 py-1.5 bg-black/40 border border-[#b89542]/30 rounded-lg text-xs text-amber-100 placeholder-amber-200/50 focus:outline-none focus:border-[#c5a059]"
+                  className="w-full px-2.5 py-1.5 bg-black/45 border border-[#c5a059]/40 rounded-lg text-xs text-amber-50 placeholder-amber-200/60 focus:outline-none focus:border-amber-300"
                 />
               </div>
 
@@ -217,38 +217,38 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <nav className="p-2 space-y-1.5 text-xs font-semibold">
                 
                 {/* 1. SALES CONTROL & POS */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('sales')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🛒</span>
                       <span className="text-amber-100">1. Sales Control & POS</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.sales ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.sales ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.sales && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/dashboard" className={`block px-2.5 py-1.5 rounded transition-colors ${pathname === '/backoffice/dashboard' ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/dashboard" className={`block px-2.5 py-1.5 rounded transition-colors ${pathname === '/backoffice/dashboard' ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Dashboard Overview
                       </Link>
-                      <Link href="/backoffice/reportview" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/reportview') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/reportview" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/reportview') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         <span>Sales Reports Matrix</span>
-                        <span className="text-[9.5px] font-mono bg-black/50 text-amber-300 px-1.5 py-0.5 rounded border border-[#c5a059]/40">93 Rep</span>
+                        <span className="text-[9.5px] font-mono bg-black/50 text-amber-200 px-1.5 py-0.5 rounded border border-[#c5a059]/50">93 Rep</span>
                       </Link>
-                      <Link href="/backoffice/online-orders" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/online-orders') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/online-orders" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/online-orders') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Online Orders Control
                       </Link>
-                      <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         End of Day (EOD) Z-Report
                       </Link>
-                      <Link href="/backoffice/sales-setup" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/sales-setup') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/sales-setup" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/sales-setup') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         POS Pricing & Setup
                       </Link>
-                      <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-amber-300 hover:bg-black/40 transition-colors">
+                      <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-amber-200 hover:bg-black/40 transition-colors">
                         <span>POS Touch Terminal ↗</span>
                       </a>
                     </div>
@@ -256,31 +256,31 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 2. SUPERSONIC FLEET */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('fleet')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🚚</span>
                       <span>2. SuperSonic Fleet</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.fleet ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.fleet ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.fleet && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/fleet" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/fleet" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Live Fleet Map & Dispatch
                       </Link>
-                      <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/vehicles" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/vehicles') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Vehicles & Maintenance
                       </Link>
-                      <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/drivers" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/drivers') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Drivers Directory & History
                       </Link>
-                      <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/fleet/settlements" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/fleet/settlements') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         COD & Cash Settlements
                       </Link>
                     </div>
@@ -288,22 +288,22 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 3. SOCIAL CRM */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('social')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>💬</span>
                       <span>3. Social CRM & Support</span>
                     </div>
-                    <span className="text-[9px] bg-amber-400/20 text-amber-300 px-1 rounded border border-[#c5a059]/40">ENT</span>
+                    <span className="text-[9px] bg-amber-400/20 text-amber-200 px-1 rounded border border-[#c5a059]/40">ENT</span>
                   </button>
 
                   {openSections.social && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/social-crm" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/social-crm" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Social Management Hub (6 Pillars)
                       </Link>
                     </div>
@@ -311,31 +311,31 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 4. OPERATIONS */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('operations')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>⚙️</span>
                       <span>4. Operations & Pressing</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.operations ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.operations ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.operations && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/operations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/operations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Operations Center Overview
                       </Link>
-                      <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/pressing" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/pressing') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Olive Pressing & Oil Yield %
                       </Link>
-                      <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/formulations" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/formulations') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Recipe Formulations & Production
                       </Link>
-                      <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/operations/tanks" className={`block px-2.5 py-1 rounded transition-colors ${isLinkActive('/backoffice/operations/tanks') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Storage Tanks & Bulk Inventory
                       </Link>
                     </div>
@@ -343,31 +343,31 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 5. CUSTOMERS */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('customers')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>👥</span>
                       <span>5. Customer Management & AR</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.customers ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.customers ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.customers && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/customers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/customers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Master Directory & KYC (PDF)
                       </Link>
-                      <Link href="/backoffice/customers/invoices" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/invoices') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/customers/invoices" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/invoices') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Accounts Receivable & Aging Invoices
                       </Link>
-                      <Link href="/backoffice/customers/receipts" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/receipts') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/customers/receipts" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/receipts') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Payment Receipts & Settlements
                       </Link>
-                      <Link href="/backoffice/customers/statements" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/statements') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/customers/statements" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers/statements') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Statements of Account (SOA A4)
                       </Link>
                     </div>
@@ -375,31 +375,31 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 6. ACCOUNTING */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('accounting')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>📈</span>
                       <span>6. Accounting & Finance</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.accounting ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.accounting ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.accounting && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/accounting" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/accounting" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Chart of Accounts (COA)
                       </Link>
-                      <Link href="/backoffice/accounting/journal" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/journal') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/accounting/journal" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/journal') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Journal Entries & Vouchers
                       </Link>
-                      <Link href="/backoffice/accounting/ledger" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/ledger') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/accounting/ledger" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/ledger') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         General Ledger & Trial Balance
                       </Link>
-                      <Link href="/backoffice/accounting/cost-centers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/cost-centers') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/accounting/cost-centers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting/cost-centers') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Branches & Factory Cost Centers
                       </Link>
                     </div>
@@ -407,28 +407,28 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
 
                 {/* 7. HR */}
-                <div className="border border-[#b89542]/30 rounded-xl overflow-hidden bg-black/30 shadow-xs">
+                <div className="border border-[#c5a059]/35 rounded-xl overflow-hidden bg-black/35 shadow-xs">
                   <button
                     type="button"
                     onClick={() => toggleSection('hr')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#584729]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🪪</span>
                       <span>7. HR & Payroll Management</span>
                     </div>
-                    <span className="text-[9px] text-amber-300">{openSections.hr ? '▲' : '▼'}</span>
+                    <span className="text-[9px] text-amber-200">{openSections.hr ? '▲' : '▼'}</span>
                   </button>
 
                   {openSections.hr && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#b89542]/20 bg-black/40 text-[11px]">
-                      <Link href="/backoffice/hr" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-[#c5a059]/25 bg-black/45 text-[11px]">
+                      <Link href="/backoffice/hr" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Employees Directory
                       </Link>
-                      <Link href="/backoffice/hr/attendance" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/attendance') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/hr/attendance" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/attendance') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         Attendance Logs & Overtime
                       </Link>
-                      <Link href="/backoffice/hr/payroll" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/payroll') ? 'bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-200/80 hover:text-white hover:bg-black/30'}`}>
+                      <Link href="/backoffice/hr/payroll" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr/payroll') ? 'bg-gradient-to-r from-[#d4af37] to-[#8a703b] text-slate-950 font-bold shadow-xs' : 'text-amber-100/90 hover:text-white hover:bg-black/30'}`}>
                         BLOM Bank Payroll Export
                       </Link>
                     </div>
@@ -439,14 +439,14 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </div>
 
             {/* Sidebar User Identity Footer */}
-            <div className="p-3 border-t-2 border-[#b89542]/30 bg-black/40 text-xs flex items-center justify-between">
+            <div className="p-3 border-t-2 border-[#c5a059]/40 bg-black/40 text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#c5a059] to-[#8a703b] text-slate-950 font-bold flex items-center justify-center text-[10px] shadow-xs">
                   M
                 </div>
                 <span className="font-bold text-amber-100">Mohammed</span>
               </div>
-              <span className="text-[10px] text-amber-300 font-mono bg-black/40 px-1.5 py-0.5 rounded border border-[#c5a059]/40">Live</span>
+              <span className="text-[10px] text-amber-200 font-mono bg-black/45 px-1.5 py-0.5 rounded border border-[#c5a059]/45">Live</span>
             </div>
 
             {/* 3.5PX THICK INVERSE ACCENT BORDER */}
