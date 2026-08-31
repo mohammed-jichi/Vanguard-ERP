@@ -15,8 +15,9 @@ export default function MasterReportViewPage() {
   const [settingsSearch, setSettingsSearch] = useState('');
   const [customCategoryName, setCustomCategoryName] = useState('');
   const [customCategorySearch, setCustomCategorySearch] = useState('');
+  const [customCategorySelectedReports, setCustomCategorySelectedReports] = useState<string[]>([]);
   
-  // Multi-Level Toolbar Selection (Categories, Subcategories & Individual Reports)
+  // Multi-Level Toolbar Selection
   const [selectedToolbarCats, setSelectedToolbarCats] = useState<string[]>(['internal_control', 'financial', 'product_sales']);
   const [selectedToolbarSubCats, setSelectedToolbarSubCats] = useState<string[]>([]);
   const [selectedToolbarReports, setSelectedToolbarReports] = useState<string[]>([]);
@@ -49,6 +50,14 @@ export default function MasterReportViewPage() {
       setSelectedToolbarReports(selectedToolbarReports.filter((c) => c !== code));
     } else {
       setSelectedToolbarReports([...selectedToolbarReports, code]);
+    }
+  };
+
+  const toggleCustomCategoryReport = (code: string) => {
+    if (customCategorySelectedReports.includes(code)) {
+      setCustomCategorySelectedReports(customCategorySelectedReports.filter((c) => c !== code));
+    } else {
+      setCustomCategorySelectedReports([...customCategorySelectedReports, code]);
     }
   };
 
@@ -382,6 +391,22 @@ export default function MasterReportViewPage() {
       ],
     },
   ];
+
+  // Flattened reports for search inside Custom Category Modal
+  const allFlattenedReports = useMemo(() => {
+    const list: { code: string; title: string; category: string }[] = [];
+    masterCatalog.forEach((c) => {
+      if (c.reports) {
+        c.reports.forEach((r) => list.push({ ...r, category: c.title }));
+      }
+      if (c.subCategories) {
+        c.subCategories.forEach((s) => {
+          s.reports.forEach((sr) => list.push({ ...sr, category: `${c.title} - ${s.title}` }));
+        });
+      }
+    });
+    return list;
+  }, [masterCatalog]);
 
   // Sample Datasets
   const customerListRows = [
@@ -1036,7 +1061,7 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 4. SETTINGS MODAL (WITH NESTED CHECKBOXES ON EVERY REPORT & SUBCAT) */}
+      {/* 4. SETTINGS MODAL (Z-INDEX 50)                                      */}
       {/* =================================================================== */}
       {settingsModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 print:hidden animate-fadeIn">
@@ -1222,10 +1247,10 @@ export default function MasterReportViewPage() {
       )}
 
       {/* =================================================================== */}
-      {/* 5. CUSTOM CATEGORY SUB-MODAL (AS IN USER SCREENSHOT)                */}
+      {/* 5. CUSTOM CATEGORY SUB-MODAL (ELEVATED TO TOP-LEVEL Z-INDEX: Z-100) */}
       {/* =================================================================== */}
       {customCategoryModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-60 p-4 print:hidden animate-fadeIn">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-md w-full overflow-hidden flex flex-col">
             
             {/* Header */}
@@ -1261,7 +1286,7 @@ export default function MasterReportViewPage() {
                         alert('Please enter a Category Name');
                         return;
                       }
-                      alert(`Custom Category "${customCategoryName}" Saved!`);
+                      alert(`Custom Category "${customCategoryName}" with ${customCategorySelectedReports.length} reports saved successfully!`);
                       setCustomCategoryModalOpen(false);
                     }}
                     className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs transition-colors"
@@ -1271,7 +1296,7 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
 
-              {/* Search Reports with Checkboxes */}
+              {/* Search Reports with Interactive Checkbox Picker */}
               <div>
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
                   <span className="text-slate-400">🔍</span>
@@ -1283,10 +1308,25 @@ export default function MasterReportViewPage() {
                     className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
                   />
                 </div>
-                <div className="mt-2 max-h-40 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
-                  <div className="text-[10.5px] text-slate-400 font-mono text-center">
-                    Type in search box to filter and assign reports with checkboxes
-                  </div>
+
+                {/* Searchable Report List */}
+                <div className="mt-2 max-h-52 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
+                  {allFlattenedReports
+                    .filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase()) || r.code.toLowerCase().includes(customCategorySearch.toLowerCase()))
+                    .slice(0, 30)
+                    .map((r) => (
+                      <label key={r.code} className="flex items-center gap-2 p-1.5 hover:bg-white rounded cursor-pointer text-slate-700 bg-white/60 border border-slate-100 transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={customCategorySelectedReports.includes(r.code)}
+                          onChange={() => toggleCustomCategoryReport(r.code)}
+                          className="accent-[#1e3a2b] w-3.5 h-3.5"
+                        />
+                        <span className="font-mono text-[9px] text-slate-400">[{r.code}]</span>
+                        <span className="font-semibold text-slate-900">{r.title}</span>
+                        <span className="text-[9px] text-slate-400 ml-auto truncate max-w-[100px]">{r.category}</span>
+                      </label>
+                    ))}
                 </div>
               </div>
 
