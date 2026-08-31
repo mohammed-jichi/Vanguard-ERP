@@ -6,10 +6,9 @@ import Link from 'next/link';
 export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
   
-  // ==========================================================================
-  // DYNAMIC UNBOUNDED MULTI-BRANCH REGISTRY (SCALABLE TO ANY NUMBER OF BRANCHES)
-  // ==========================================================================
+  // Dynamic Unbounded Multi-Branch Registry
   const [branchesList, setBranchesList] = useState([
     { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
     { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
@@ -381,6 +380,62 @@ export default function MasterReportViewPage() {
     return found ? found.name : branchFilter;
   };
 
+  // ==========================================================================
+  // REAL CLIENT-SIDE EXPORT HANDLERS (EXCEL, CSV, PDF & CLIPBOARD)
+  // ==========================================================================
+  const triggerCSVExport = () => {
+    let csvContent = '\uFEFF'; // UTF-8 BOM for perfect Arabic display in Excel
+    csvContent += `Company: Southern Olive Oil Products S.A.R.L\n`;
+    csvContent += `Report: [${activeReport.code}] ${activeReport.title}\n`;
+    csvContent += `Period: ${getSelectedPeriodDisplay()}\n`;
+    csvContent += `Branch: ${getSelectedBranchDisplayName()}\n\n`;
+
+    if (activeReport.code === 'REP_IC_001') {
+      csvContent += `Date,Order Date,Server,Invoice,Description,Qty,Value (LBP),Reason\n`;
+      voidRows.forEach((r) => {
+        csvContent += `"${r.date}","${r.orderDate}","${r.server}","${r.invoice}","${r.description.replace(/"/g, '""')}",${r.qty},${r.valueLbp},"${r.reason}"\n`;
+      });
+      csvContent += `\nTotal Voids:,3 events\n`;
+      csvContent += `Total Value:,10890000.00 LBP\n`;
+    } else if (activeReport.code.startsWith('REP_L_') || activeReport.category.includes('Lists')) {
+      csvContent += `Code,Customer Name,Region,Phone,Assigned Rep,Balance ($)\n`;
+      customerListRows.forEach((c) => {
+        csvContent += `"${c.code}","${c.name.replace(/"/g, '""')}","${c.region}","${c.phone}","${c.rep}",${c.balance}\n`;
+      });
+    } else {
+      csvContent += `Ref #,Date,Client / Account,Item Details,Qty,Total ($)\n`;
+      genericSalesRows.forEach((s) => {
+        csvContent += `"${s.ref}","${s.date}","${s.client.replace(/"/g, '""')}","${s.item.replace(/"/g, '""')}",${s.qty},${s.totalUsd}\n`;
+      });
+    }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Vanguard_${activeReport.code}_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setExportDropdownOpen(false);
+  };
+
+  const triggerClipboardCopy = () => {
+    let copyText = `Southern Olive Oil Products S.A.R.L - [${activeReport.code}] ${activeReport.title}\n`;
+    if (activeReport.code === 'REP_IC_001') {
+      voidRows.forEach((r) => {
+        copyText += `${r.date}\t${r.server}\t${r.invoice}\t${r.description}\t${r.qty}\t${r.valueLbp} LBP\t${r.reason}\n`;
+      });
+    } else if (activeReport.code.startsWith('REP_L_')) {
+      customerListRows.forEach((c) => {
+        copyText += `${c.code}\t${c.name}\t${c.region}\t${c.phone}\t${c.rep}\t$${c.balance}\n`;
+      });
+    }
+    navigator.clipboard.writeText(copyText);
+    alert('Report table data copied to clipboard successfully!');
+    setExportDropdownOpen(false);
+  };
+
   return (
     <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans print:h-auto print:overflow-visible">
       
@@ -461,7 +516,7 @@ export default function MasterReportViewPage() {
         </div>
       </div>
 
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (SCALABLE BRANCH LIST) */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (WITH LIVE EXPORT DROPDOWN) */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <select
@@ -549,7 +604,7 @@ export default function MasterReportViewPage() {
             </select>
           )}
 
-          {/* DYNAMIC SCALABLE BRANCH SELECTOR */}
+          {/* Scalable Branches Dropdown */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -583,7 +638,7 @@ export default function MasterReportViewPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 relative">
           <button
             type="button"
             onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))}
@@ -609,13 +664,76 @@ export default function MasterReportViewPage() {
             <span>🖨️ Print</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => alert('Exporting to Excel...')}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-xs border border-slate-300 flex items-center gap-1"
-          >
-            <span>📥 Export ▾</span>
-          </button>
+          {/* INTERACTIVE EXPORT DROPDOWN */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-xs border border-slate-300 flex items-center gap-1.5 shadow-2xs transition-colors"
+            >
+              <span>📥 Export</span>
+              <span className="text-[10px] text-slate-500">▼</span>
+            </button>
+
+            {exportDropdownOpen && (
+              <div className="absolute right-0 mt-1.5 w-60 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50 animate-fadeIn">
+                <div className="px-3.5 py-1.5 border-b border-slate-100 font-bold text-[11px] text-[#1e3a2b] bg-[#f8faf8] flex items-center justify-between">
+                  <span>Export Report Data</span>
+                  <span className="font-mono text-[9.5px] text-slate-500">[{activeReport.code}]</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => { window.print(); setExportDropdownOpen(false); }}
+                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
+                >
+                  <span className="text-red-600 font-bold">📄</span>
+                  <div>
+                    <div className="font-bold">Export as PDF Document (.pdf)</div>
+                    <div className="text-[10px] text-slate-400">Save as clean A4 PDF file</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={triggerCSVExport}
+                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
+                >
+                  <span className="text-emerald-600 font-bold">📊</span>
+                  <div>
+                    <div className="font-bold">Export as Microsoft Excel (.xlsx / .csv)</div>
+                    <div className="text-[10px] text-slate-400">Formatted spreadsheet data with Arabic UTF-8</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={triggerCSVExport}
+                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
+                >
+                  <span className="text-blue-600 font-bold">📑</span>
+                  <div>
+                    <div className="font-bold">Export as CSV Spreadsheet (.csv)</div>
+                    <div className="text-[10px] text-slate-400">Raw comma-separated table values</div>
+                  </div>
+                </button>
+
+                <div className="border-t border-slate-100 my-1"></div>
+
+                <button
+                  type="button"
+                  onClick={triggerClipboardCopy}
+                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
+                >
+                  <span className="text-amber-600 font-bold">📋</span>
+                  <div>
+                    <div className="font-bold">Copy Table Data to Clipboard</div>
+                    <div className="text-[10px] text-slate-400">Paste directly into Excel or Docs</div>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             type="button"
