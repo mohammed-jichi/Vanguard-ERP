@@ -84,9 +84,10 @@ export default function MasterReportViewPage() {
   };
 
   // ==========================================================================
-  // COMPLETE 100% EXHAUSTIVE 93-REPORT TREE (ALL 8 MAIN & 17 SUB-CATEGORIES)
+  // 100% VERIFIED AUTHENTIC 7-CATEGORY REPORT HIERARCHY
   // ==========================================================================
   const masterCatalog = [
+    // 1. Internal Control
     {
       id: 'internal_control',
       title: '1. Internal Control',
@@ -102,6 +103,8 @@ export default function MasterReportViewPage() {
         { code: 'REP_IC_008', title: 'Discount summary' },
       ],
     },
+
+    // 2. Financial Reports (9 Sub-Categories, 48 Reports)
     {
       id: 'financial',
       title: '2. Financial Reports',
@@ -109,108 +112,110 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'fin_stats',
-          title: 'Financial Statistics (7)',
+          title: 'Statistics',
           reports: [
-            { code: 'REP_F_101', title: 'Sales summary' },
-            { code: 'REP_F_102', title: 'Statistics by workstation' },
-            { code: 'REP_F_103', title: 'Statistics by department' },
-            { code: 'REP_F_104', title: 'Summary of sales by employee' },
-            { code: 'REP_F_105', title: 'Sales by employee by category' },
-            { code: 'REP_F_106', title: 'Sales by supplier' },
-            { code: 'REP_F_107', title: 'Delivery orders by date and branch' },
+            { code: 'REP_F_101', title: 'Sales Summary' },
+            { code: 'REP_F_102', title: 'Statistics by Workstation' },
+            { code: 'REP_F_103', title: 'Statistics by Department' },
+            { code: 'REP_F_104', title: 'Summary of Sales by Employee' },
+            { code: 'REP_F_105', title: 'Sales by Employee by Category' },
+            { code: 'REP_F_106', title: 'Sales by Supplier' },
+            { code: 'REP_F_107', title: 'Delivery Orders by Date and Branch' },
           ],
         },
         {
           id: 'tax_reports',
-          title: 'Tax Reports (2)',
+          title: 'Tax Reports',
           reports: [
-            { code: 'REP_F_201', title: 'Tax summary' },
-            { code: 'REP_F_202', title: 'Tax summary comparative' },
+            { code: 'REP_F_201', title: 'Tax Summary' },
+            { code: 'REP_F_202', title: 'Tax Summary Comparative' },
           ],
         },
         {
           id: 'discount_reports',
-          title: 'Discount Reports (6)',
+          title: 'Discount Reports',
           reports: [
-            { code: 'REP_F_301', title: 'Summary of discount by divisions' },
-            { code: 'REP_F_302', title: 'Discount by category by department' },
-            { code: 'REP_F_303', title: 'Summary of discount' },
-            { code: 'REP_F_304', title: 'Discount by description by employee' },
-            { code: 'REP_F_305', title: 'Summary of discount by items amount' },
-            { code: 'REP_F_306', title: 'Discount summary' },
+            { code: 'REP_F_301', title: 'Summary of Discount by Divisions' },
+            { code: 'REP_F_302', title: 'Discount By Category by Department' },
+            { code: 'REP_F_303', title: 'Summary of Discount' },
+            { code: 'REP_F_304', title: 'Discount By Description by Employee' },
+            { code: 'REP_F_305', title: 'Summary of Discount By Items Amount' },
+            { code: 'REP_F_306', title: 'Discount Summary' },
           ],
         },
         {
           id: 'payments',
-          title: 'Payments (10)',
+          title: 'Payments',
           reports: [
-            { code: 'REP_F_401', title: 'Summary of payment' },
-            { code: 'REP_F_402', title: 'Summary of payment by department' },
+            { code: 'REP_F_401', title: 'Summary of Payment' },
+            { code: 'REP_F_402', title: 'Summary of Payment by Department' },
             { code: 'REP_F_403', title: 'Summary of payment by workstation' },
-            { code: 'REP_F_404', title: 'Summary of payment by employee' },
-            { code: 'REP_F_405', title: 'Advanced payment history' },
-            { code: 'REP_F_406', title: 'Unpaid/Paid In/Paid Out' },
-            { code: 'REP_F_407', title: 'Customer payments' },
-            { code: 'REP_F_408', title: 'List of layaway sales' },
-            { code: 'REP_F_409', title: 'Layaway history' },
-            { code: 'REP_F_410', title: 'List of pending invoices with advanced payment' },
+            { code: 'REP_F_404', title: 'Summary of Payment by Employee' },
+            { code: 'REP_F_405', title: 'Advanced Payment History' },
+            { code: 'REP_F_406', title: 'Paid In/Out' },
+            { code: 'REP_F_407', title: 'Customer Payments' },
+            { code: 'REP_F_408', title: 'List of Layaway Sales' },
+            { code: 'REP_F_409', title: 'Layaway History' },
+            { code: 'REP_F_410', title: 'List of Pending Invoices with Advance Payment' },
           ],
         },
         {
           id: 'internal_control_fin',
-          title: 'Internal Control (Financial) (4)',
+          title: 'Internal Control',
           reports: [
-            { code: 'REP_F_501', title: 'Summary of voids' },
-            { code: 'REP_F_502', title: 'Summary of refunds' },
-            { code: 'REP_F_503', title: 'Duplicate invoices' },
-            { code: 'REP_F_504', title: 'Meter reports' },
+            { code: 'REP_F_501', title: 'Meter Report' },
+            { code: 'REP_F_502', title: 'No Sale' },
+            { code: 'REP_F_503', title: 'Transactions on Hold' },
+            { code: 'REP_F_504', title: 'User Log Report' },
           ],
         },
         {
           id: 'profit_summary',
-          title: 'Profit Summary (5)',
+          title: 'Profit Summary',
           reports: [
-            { code: 'REP_F_601', title: 'Profit by invoices summary' },
+            { code: 'REP_F_601', title: 'Profit by Invoices Summary' },
             { code: 'REP_F_602', title: 'Profit by item summary' },
             { code: 'REP_F_603', title: 'Profit by category summary' },
             { code: 'REP_F_604', title: 'Profit by category by department' },
-            { code: 'REP_F_605', title: 'Profit by invoices' },
+            { code: 'REP_F_605', title: 'Profit By Invoices' },
           ],
         },
         {
           id: 'comparative',
-          title: 'Comparative Reports (5)',
+          title: 'Comparative',
           reports: [
             { code: 'REP_F_701', title: 'Sales summary by day' },
-            { code: 'REP_F_702', title: 'Daily sales' },
-            { code: 'REP_F_703', title: 'Comparative yearly sales' },
-            { code: 'REP_F_704', title: 'Comparative monthly sales' },
-            { code: 'REP_F_705', title: 'Comparative monthly sales by employee' },
+            { code: 'REP_F_702', title: 'Daily Sales' },
+            { code: 'REP_F_703', title: 'Comparative Yearly Sales' },
+            { code: 'REP_F_704', title: 'Comparative Monthly Sales' },
+            { code: 'REP_F_705', title: 'Comparative Monthly Sales by Employee' },
           ],
         },
         {
           id: 'transaction_summary',
-          title: 'Transaction Summary (4)',
+          title: 'Transaction Summary',
           reports: [
-            { code: 'REP_F_801', title: 'Transaction by date' },
-            { code: 'REP_F_802', title: 'Credit sales' },
-            { code: 'REP_F_803', title: 'Credit card report' },
-            { code: 'REP_F_804', title: 'Electronic journal' },
+            { code: 'REP_F_801', title: 'Transactions by Date' },
+            { code: 'REP_F_802', title: 'Credit Sales' },
+            { code: 'REP_F_803', title: 'Credit Card Report' },
+            { code: 'REP_F_804', title: 'Electronic Journal' },
           ],
         },
         {
           id: 'time_sales_analysis',
-          title: 'Time Sales Analysis (5)',
+          title: 'Time sales analysis',
           reports: [
-            { code: 'REP_F_901', title: 'Time report group by transactions count' },
+            { code: 'REP_F_901', title: 'Timer Report Group by transaction count' },
             { code: 'REP_F_902', title: 'Time report by date' },
-            { code: 'REP_F_903', title: 'Time report - average check' },
-            { code: 'REP_F_904', title: 'Time report by EOD date' },
-            { code: 'REP_F_905', title: 'Transaction report by time' },
+            { code: 'REP_F_903', title: 'Time report - Average Check' },
+            { code: 'REP_F_904', title: 'Time report By EOD date' },
+            { code: 'REP_F_905', title: 'Transaction Report by Time' },
           ],
         },
       ],
     },
+
+    // 3. Product Sales (4 Sub-Categories, 19 Reports)
     {
       id: 'product_sales',
       title: '3. Product Sales',
@@ -218,42 +223,41 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'prod_sales_sub',
-          title: 'Product Sales (11)',
+          title: 'Product Sales',
           reports: [
-            { code: 'REP_P_101', title: 'Summary of sales by items' },
-            { code: 'REP_S_00191', title: 'Sales by items' },
-            { code: 'REP_S_00192', title: 'Sales by invoices' },
+            { code: 'REP_P_101', title: 'Summary of Sales By Items' },
+            { code: 'REP_S_00191', title: 'Sales by Items' },
             { code: 'REP_P_102', title: 'Sales details for one sales item' },
-            { code: 'REP_P_103', title: 'Sales by customer by items' },
-            { code: 'REP_P_104', title: 'Daily sales by items' },
-            { code: 'REP_P_105', title: 'Sales by categories' },
-            { code: 'REP_P_106', title: 'Sales by divisions' },
-            { code: 'REP_P_107', title: 'Sales items by transaction' },
-            { code: 'REP_P_108', title: 'Not sold items' },
-            { code: 'REP_P_109', title: 'Sold serial number' },
+            { code: 'REP_P_103', title: 'Sales By Customer By Items' },
+            { code: 'REP_P_104', title: 'Daily Sales By Items' },
+            { code: 'REP_P_105', title: 'Sales By Categories' },
+            { code: 'REP_P_106', title: 'Sales By Divisions' },
+            { code: 'REP_P_107', title: 'Sales Items by Transaction' },
+            { code: 'REP_P_108', title: 'Not Sold Items' },
+            { code: 'REP_P_109', title: 'Sold Serial Numbers' },
           ],
         },
         {
           id: 'comparative_by_branch',
-          title: 'Comparative by Branch (4)',
+          title: 'Comparative By Branch',
           reports: [
-            { code: 'REP_P_201', title: 'Sales by category' },
-            { code: 'REP_P_202', title: 'Sales by division' },
-            { code: 'REP_P_203', title: 'Sales by groups' },
-            { code: 'REP_P_204', title: 'Sales by items' },
+            { code: 'REP_P_201', title: 'Sales By Category' },
+            { code: 'REP_P_202', title: 'Sales By Division' },
+            { code: 'REP_P_203', title: 'Sales By Groups' },
+            { code: 'REP_P_204', title: 'Sales By Items' },
           ],
         },
         {
           id: 'top_performers_prod',
-          title: 'Top Performers (2)',
+          title: 'Top Performers',
           reports: [
-            { code: 'REP_P_301', title: 'Top N sold by quantity' },
-            { code: 'REP_P_302', title: 'Top N sold by amount' },
+            { code: 'REP_P_301', title: 'Top N sold by Quantity' },
+            { code: 'REP_P_302', title: 'Top N sold by Amount' },
           ],
         },
         {
           id: 'voids_and_refunds_prod',
-          title: 'Voids and Refunds (3)',
+          title: 'Voids & Refunds',
           reports: [
             { code: 'REP_P_401', title: 'Summary of voids' },
             { code: 'REP_P_402', title: 'Summary of refunds' },
@@ -262,6 +266,8 @@ export default function MasterReportViewPage() {
         },
       ],
     },
+
+    // 4. Customer Sales (2 Sub-Categories, 5 Reports)
     {
       id: 'customer_sales',
       title: '4. Customer Sales',
@@ -269,49 +275,53 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'top_performers_cust',
-          title: 'Top Performers (1)',
-          reports: [{ code: 'REP_C_101', title: 'Top N customers by amount' }],
+          title: 'Top Performers',
+          reports: [{ code: 'REP_C_101', title: 'Top N Customers by Amount' }],
         },
         {
           id: 'cust_delivery',
-          title: 'Customers and Delivery (4)',
+          title: 'Customers & Delivery',
           reports: [
-            { code: 'REP_C_201', title: 'Sales by customer and detail' },
+            { code: 'REP_C_201', title: 'Sales by customer In Detail' },
             { code: 'REP_C_202', title: 'Sales by zone' },
-            { code: 'REP_C_203', title: 'Delivery sales summary' },
-            { code: 'REP_C_204', title: 'Drivers history' },
+            { code: 'REP_C_203', title: 'Delivery Sales Summary' },
+            { code: 'REP_C_204', title: 'Drivers History' },
           ],
         },
       ],
     },
+
+    // 5. Today's & History (2 Sub-Categories, 6 Reports)
     {
       id: 'todays_history',
-      title: "5. Today's and History",
+      title: "5. Today's & History",
       icon: '📅',
       subCategories: [
         {
           id: 'todays_sales_sub',
-          title: "Today's Sales (4)",
+          title: "Today's Sales",
           reports: [
-            { code: 'REP_TH_101', title: "Today's statistics" },
-            { code: 'REP_TH_102', title: "Today's summary of payment" },
-            { code: 'REP_TH_103', title: "Today's summary by employee" },
-            { code: 'REP_TH_104', title: "Today's transactions" },
+            { code: 'REP_TH_101', title: "Today's Statistics" },
+            { code: 'REP_TH_102', title: "Today's Summary of payment" },
+            { code: 'REP_TH_103', title: "Today's summary by Employee" },
+            { code: 'REP_TH_104', title: "Today's Transactions" },
           ],
         },
         {
           id: 'history_sub',
-          title: 'History (2)',
+          title: 'History',
           reports: [
-            { code: 'REP_TH_201', title: 'Preview order sales' },
-            { code: 'REP_TH_202', title: 'Main reading history' },
+            { code: 'REP_TH_201', title: 'Preview Older Sales' },
+            { code: 'REP_TH_202', title: 'Main Reading History' },
           ],
         },
       ],
     },
+
+    // 6. Time & Attendance (3 Reports)
     {
       id: 'time_attendance',
-      title: '6. Time and Attendance',
+      title: '6. Time & Attendance',
       icon: '⏱️',
       reports: [
         { code: 'REP_TA_001', title: 'Employee attendance' },
@@ -319,6 +329,8 @@ export default function MasterReportViewPage() {
         { code: 'REP_TA_003', title: 'Labor cost' },
       ],
     },
+
+    // 7. Lists (4 Reports)
     {
       id: 'lists',
       title: '7. Lists',
@@ -332,7 +344,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Specific Datasets
+  // Specific Sample Datasets
   const customerListRows = [
     { code: 'CUST-01', name: 'Al-Baraka Supermarket S.A.R.L', region: 'Mount Lebanon', city: 'Choueifat Main Highway', phone: '03112233', rep: 'Ahmad Ali Kassem', creditLimit: 5000.0, balance: 1400.0 },
     { code: 'CUST-02', name: 'Al-Nour Food Establishment', region: 'Beirut', city: 'Hamra (Makdessi Street)', phone: '01778899', rep: 'Hiba Aloulou', creditLimit: 3500.0, balance: 890.0 },
@@ -637,12 +649,12 @@ export default function MasterReportViewPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="🔍 Search all 93 reports..."
+                placeholder="🔍 Search all reports..."
                 className="w-full px-2.5 py-1 bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
               />
             </div>
 
-            {/* Complete 93-Reports Categories & Sub-Categories */}
+            {/* Complete 7-Categories Hierarchy */}
             {masterCatalog.map((cat) => (
               <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
                 <div
@@ -677,7 +689,7 @@ export default function MasterReportViewPage() {
                         </button>
                       ))}
 
-                    {/* All Sub-Categories with Exact Counts */}
+                    {/* Sub-Categories */}
                     {cat.subCategories && cat.subCategories.map((sub) => (
                       <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
                         <div
@@ -864,7 +876,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* Footer */}
+            {/* A4 Footer */}
             <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
               <span>Printed from Vanguard ERP System</span>
               <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
