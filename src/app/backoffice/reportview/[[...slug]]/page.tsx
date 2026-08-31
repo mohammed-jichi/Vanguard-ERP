@@ -1,17 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 
 export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Period & Dynamic Date Logic
+  // ==========================================================================
+  // DYNAMIC ROLLING EOD DATE GENERATOR (From 10-Dec-2025 up to Live Date)
+  // ==========================================================================
+  const eodDateOptions = useMemo(() => {
+    const startDate = new Date('2025-12-10');
+    const today = new Date(); // Dynamically increments every single new day
+    const dates: { value: string; label: string }[] = [];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const current = new Date(today);
+    while (current >= startDate) {
+      const yyyy = current.getFullYear();
+      const mm = String(current.getMonth() + 1).padStart(2, '0');
+      const dd = String(current.getDate()).padStart(2, '0');
+      const isoValue = `${yyyy}-${mm}-${dd}`;
+      const formattedLabel = `${dd}-${monthNames[current.getMonth()]}-${yyyy} (EOD Closeout)`;
+
+      dates.push({ value: isoValue, label: formattedLabel });
+      current.setDate(current.getDate() - 1);
+    }
+    return dates;
+  }, []);
+
+  // Filter States
   const [periodPreset, setPeriodPreset] = useState<'TODAY' | 'YESTERDAY' | 'THIS_MONTH' | 'LAST_MONTH' | 'DATE_RANGE' | 'EOD_DATE'>('THIS_MONTH');
   const [fromDate, setFromDate] = useState('2026-08-30');
   const [toDate, setToDate] = useState('2026-08-30');
-  const [eodDate, setEodDate] = useState('2026-08-31');
+  const [eodDate, setEodDate] = useState(eodDateOptions[0]?.value || '2026-08-31');
   const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
@@ -386,7 +409,7 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (HIDDEN ON PRINT)               */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON WITH LIVE ROLLING EOD DATES     */}
       {/* =================================================================== */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         
@@ -406,7 +429,7 @@ export default function MasterReportViewPage() {
             <option value="EOD_DATE">EOD Date</option>
           </select>
 
-          {/* Conditional Date Display */}
+          {/* Conditional Dynamic Date Display */}
           {periodPreset === 'TODAY' && (
             <input
               type="text"
@@ -465,21 +488,22 @@ export default function MasterReportViewPage() {
             </div>
           )}
 
+          {/* REAL-TIME ROLLING EOD DATE LIST (AUTO INCREMENTS EVERY DAY) */}
           {periodPreset === 'EOD_DATE' && (
             <select
               value={eodDate}
               onChange={(e) => setEodDate(e.target.value)}
-              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs text-slate-800 focus:outline-none"
+              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs text-slate-800 focus:outline-none max-w-[240px]"
             >
-              <option value="2026-08-31">31-Aug-2026 (Closeout)</option>
-              <option value="2026-08-30">30-Aug-2026 (Closeout)</option>
-              <option value="2026-08-15">15-Aug-2026 (Mid-Month Closeout)</option>
-              <option value="2026-08-01">01-Aug-2026 (Start-Month Closeout)</option>
-              <option value="2026-07-31">31-Jul-2026 (Month Closeout)</option>
-              <option value="2025-12-10">10-Dec-2025 (Initial Rollout)</option>
+              {eodDateOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           )}
 
+          {/* Branches Dropdown */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -494,7 +518,7 @@ export default function MasterReportViewPage() {
 
           <button
             type="button"
-            onClick={() => alert('Filter applied')}
+            onClick={() => alert(`Filter applied for ${periodPreset} | Branch: ${branchFilter}`)}
             className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
           >
             Filter
@@ -563,7 +587,7 @@ export default function MasterReportViewPage() {
       {/* =================================================================== */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree Sidebar (Strictly hidden on print) */}
+        {/* Left 93-Reports Tree Sidebar */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             
@@ -639,7 +663,7 @@ export default function MasterReportViewPage() {
                                       : 'hover:bg-slate-100 text-slate-700 font-medium'
                                   }`}
                                 >
-                                  <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
+                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
                                   <span>{r.title}</span>
                                 </button>
                               ))}
