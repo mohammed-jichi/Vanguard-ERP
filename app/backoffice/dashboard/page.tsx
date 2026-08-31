@@ -60,28 +60,28 @@ export default function MasterDashboardOperationsPage() {
   const activeAlertsCount = alertsList.filter((a) => !a.resolved).length;
 
   return (
-    <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-3 pb-8">
+    <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-3 pb-8 max-w-[1440px] mx-auto">
       
       {/* =================================================================== */}
       {/* 1. TOP COMPACT SUB-HEADER & EXCHANGE RATE BAR                       */}
       {/* =================================================================== */}
       <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 shadow-2xs">
         
-        {/* Quick Module Navigation Chips */}
+        {/* Module Navigation Chips */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <Link href="/backoffice/operations" className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
+          <Link href="/backoffice/operations" className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
             Operations Center
           </Link>
-          <Link href="/backoffice/accounting" className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
+          <Link href="/backoffice/accounting" className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
             Accounting
           </Link>
-          <Link href="/backoffice/hr" className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
+          <Link href="/backoffice/hr" className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
             Human Resources
           </Link>
-          <Link href="/backoffice/customers" className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
+          <Link href="/backoffice/customers" className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
             Customer Management
           </Link>
-          <Link href="/backoffice/fleet" className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
+          <Link href="/backoffice/fleet" className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold border border-slate-200 transition-colors">
             Fleet Management
           </Link>
         </div>
@@ -186,209 +186,209 @@ export default function MasterDashboardOperationsPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 3. 30 COMPACT TIGHT SQUARE TILES (ORGANIZED IN 6 TIERS)            */}
+      {/* 3. BALANCED 5-COLUMN EVEN MATRIX (6 TIERS - 30 CARDS PROPORTIONED)  */}
       {/* =================================================================== */}
       <div className="space-y-3">
         
         {/* TIER 1: OVERVIEW */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Overview</h3>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/dashboard" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/dashboard" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📊</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Dashboard</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Dashboard</span>
             </Link>
 
-            <Link href="/backoffice/reportview" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/reportview" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📈</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Reports Matrix</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Reports Matrix</span>
             </Link>
 
-            <button type="button" onClick={() => alert('Events Calendar')} className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <button type="button" onClick={() => alert('Events Calendar')} className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🎟️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Events</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Events</span>
             </button>
 
-            <button type="button" onClick={() => alert('Tasks & Appointments')} className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <button type="button" onClick={() => alert('Tasks & Appointments')} className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🤝</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Tasks & Appt</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Tasks & Appointments</span>
             </button>
 
-            <Link href="/backoffice/customers" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/customers" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👤</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Customer Aged</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Customer Aged</span>
             </Link>
 
           </div>
         </div>
 
         {/* TIER 2: BILLING */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Billing</h3>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/customers" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/customers" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👥</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Customers</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Customers</span>
             </Link>
 
-            <Link href="/backoffice/online-orders" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/online-orders" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📄</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Quotations</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Quotations</span>
             </Link>
 
-            <Link href="/backoffice/online-orders" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/online-orders" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">💰</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Sales</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Sales</span>
             </Link>
 
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🚚</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Delivery Goods</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Delivery Of Goods</span>
             </Link>
 
-            <Link href="/backoffice/accounting" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/accounting" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🧾</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Receipts</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Receipts</span>
             </Link>
 
           </div>
         </div>
 
         {/* TIER 3: MOVEMENTS */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Movements</h3>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🗑️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Lost Goods</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Lost Goods</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🏗️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Item Assembly</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Item Assembly</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⚖️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Adjustment</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Adjustment</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Product Request</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Product Request</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🛒</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Transfers</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Transfers</span>
             </Link>
 
           </div>
         </div>
 
         {/* TIER 4: PROCUREMENTS */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Procurements</h3>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📦</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Products/Serv</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Products & Services</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🤝</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Suppliers</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Suppliers</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🛒</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Reorder Guide</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Reorder Guide</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Purchase Orders</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Purchase Orders</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/operations" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🛍️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Purchases</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Purchases</span>
             </Link>
 
           </div>
         </div>
 
         {/* TIER 5: SUPERSONIC FLEET MANAGEMENT */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <div className="flex items-center justify-between">
             <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">SuperSonic Fleet Management</h3>
-            <span className="text-[9.5px] font-mono bg-[#1e3a2b]/15 text-[#1e3a2b] px-2 py-0.5 rounded-full font-bold">Logistics</span>
+            <span className="text-[9.5px] font-mono bg-[#1e3a2b]/15 text-[#1e3a2b] px-2 py-0.5 rounded-full font-bold">Logistics & Tracking</span>
           </div>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🗺️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Live Fleet Map</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Live Fleet Map</span>
             </Link>
 
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🛣️</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Trip Dispatch</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Trip Dispatch</span>
             </Link>
 
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👤</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Drivers/Vehicles</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Drivers & Vehicles</span>
             </Link>
 
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⛽</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Fuel & Maint</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Fuel & Maintenance</span>
             </Link>
 
-            <Link href="/backoffice/fleet" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/fleet" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📦</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Proof Delivery</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Proof of Delivery</span>
             </Link>
 
           </div>
         </div>
 
-        {/* TIER 6: SOCIAL CRM & SUPPORT HUB */}
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs space-y-2">
+        {/* TIER 6: SOCIAL CRM & CUSTOMER SUPPORT HUB */}
+        <div className="bg-white rounded-xl border border-slate-300/80 p-3.5 shadow-2xs space-y-2.5">
           <div className="flex items-center justify-between">
-            <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Social CRM & Support Hub</h3>
-            <span className="text-[9.5px] font-mono bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold">Omnichannel</span>
+            <h3 className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider pl-0.5">Social CRM & Customer Support Hub</h3>
+            <span className="text-[9.5px] font-mono bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold">Omnichannel Engine</span>
           </div>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-full">
             
-            <Link href="/backoffice/social-crm" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/social-crm" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">💬</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Omni Inbox</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Omnichannel Inbox</span>
             </Link>
 
-            <Link href="/backoffice/social-crm" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/social-crm" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📢</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">WhatsApp Broadcast</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">WhatsApp Broadcasts</span>
             </Link>
 
-            <Link href="/backoffice/social-crm" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/social-crm" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">🎫</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Support Tickets</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Support Tickets</span>
             </Link>
 
-            <Link href="/backoffice/social-crm" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/social-crm" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⭐</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Feedback</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Customer Feedback</span>
             </Link>
 
-            <Link href="/backoffice/social-crm" className="w-[115px] h-[92px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center text-center group transition-all shrink-0">
+            <Link href="/backoffice/social-crm" className="h-[88px] p-2 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fafbfa] hover:bg-white flex flex-col items-center justify-center text-center group transition-all">
               <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📚</span>
-              <span className="text-[11px] font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Knowledge Base</span>
+              <span className="text-xs font-bold text-slate-800 group-hover:text-[#1e3a2b] leading-tight">Knowledge Base</span>
             </Link>
 
           </div>
