@@ -7,6 +7,18 @@ export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
+  // ==========================================================================
+  // DYNAMIC UNBOUNDED MULTI-BRANCH REGISTRY (SCALABLE TO ANY NUMBER OF BRANCHES)
+  // ==========================================================================
+  const [branchesList, setBranchesList] = useState([
+    { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
+    { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
+    { id: '003', code: 'BR_003', name: '003 - Saida Southern Center', region: 'South Lebanon' },
+    { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
+    { id: '005', code: 'BR_005', name: '005 - Tripoli North Depot', region: 'North Lebanon' },
+    { id: '006', code: 'BR_006', name: '006 - Nabatieh Center', region: 'South Lebanon' },
+  ]);
+
   // Rolling EOD Dates
   const eodDateOptions = useMemo(() => {
     const startDate = new Date('2025-12-10');
@@ -361,12 +373,18 @@ export default function MasterReportViewPage() {
     }
   };
 
+  const getSelectedBranchDisplayName = () => {
+    if (branchFilter === 'ALL') {
+      return 'Southern Olive Oil Products S.A.R.L (All Branches)';
+    }
+    const found = branchesList.find((b) => b.code === branchFilter);
+    return found ? found.name : branchFilter;
+  };
+
   return (
     <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans print:h-auto print:overflow-visible">
       
-      {/* =================================================================== */}
-      {/* INLINE BULLETPROOF CSS PRINT ISOLATION TAG                          */}
-      {/* =================================================================== */}
+      {/* INLINE BULLETPROOF CSS PRINT ISOLATION */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
@@ -406,7 +424,7 @@ export default function MasterReportViewPage() {
         }
       `}} />
 
-      {/* 1. TOP SUB-HEADER BAR (HIDDEN ON PRINT) */}
+      {/* 1. TOP SUB-HEADER BAR */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
@@ -443,7 +461,7 @@ export default function MasterReportViewPage() {
         </div>
       </div>
 
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (HIDDEN ON PRINT) */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (SCALABLE BRANCH LIST) */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <select
@@ -531,21 +549,23 @@ export default function MasterReportViewPage() {
             </select>
           )}
 
+          {/* DYNAMIC SCALABLE BRANCH SELECTOR */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none max-w-[260px]"
           >
-            <option value="ALL">All Branches</option>
-            <option value="BRANCH_1">Branch 1 (Choueifat Main Facility)</option>
-            <option value="BRANCH_2">Branch 2 (Beirut Branch)</option>
-            <option value="BRANCH_3">Branch 3</option>
-            <option value="BRANCH_4">Branch 4</option>
+            <option value="ALL">All Operating Branches ({branchesList.length})</option>
+            {branchesList.map((b) => (
+              <option key={b.id} value={b.code}>
+                {b.name}
+              </option>
+            ))}
           </select>
 
           <button
             type="button"
-            onClick={() => alert(`Filter applied for ${periodPreset} | Branch: ${branchFilter}`)}
+            onClick={() => alert(`Filter applied for ${periodPreset} | Branch: ${getSelectedBranchDisplayName()}`)}
             className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
           >
             Filter
@@ -610,7 +630,7 @@ export default function MasterReportViewPage() {
       {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree (Strictly hidden on print) */}
+        {/* Left 93-Reports Tree */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
@@ -680,7 +700,7 @@ export default function MasterReportViewPage() {
                                       : 'hover:bg-slate-100 text-slate-700 font-medium'
                                   }`}
                                 >
-                                  <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
+                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
                                   <span>{r.title}</span>
                                 </button>
                               ))}
@@ -718,7 +738,7 @@ export default function MasterReportViewPage() {
               </div>
               <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
                 <div>Period: {getSelectedPeriodDisplay()}</div>
-                <div>Branch: {branchFilter === 'ALL' ? 'Southern Olive Oil Products S.A.R.L (All)' : branchFilter}</div>
+                <div>Branch: {getSelectedBranchDisplayName()}</div>
               </div>
             </div>
 
