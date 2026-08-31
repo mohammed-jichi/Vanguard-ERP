@@ -1,55 +1,50 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // ==========================================================================
-  // 100% COMPLETE EXHAUSTIVE FILTER TREE STATES
-  // ==========================================================================
-  // View Modes & Grouping
-  const [reportMode, setReportMode] = useState<'DETAILED' | 'SUMMARY' | 'GROUP_CATEGORY' | 'COMPARATIVE' | 'PROFITABILITY' | 'PAYMENTS'>('DETAILED');
-
-  // Dates & Times
+  // Universal Ribbon Controls
   const [periodPreset, setPeriodPreset] = useState('THIS_MONTH');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-31');
-  const [fromTime, setFromTime] = useState('00:00');
-  const [toTime, setToTime] = useState('23:59');
-
-  // Organization & POS Workstations
+  const [dateRangeText, setDateRangeText] = useState('Aug 1 - Aug 31, 2026');
   const [branchFilter, setBranchFilter] = useState('ALL');
-  const [workstationFilter, setWorkstationFilter] = useState('ALL');
+  const [zoomLevel, setZoomLevel] = useState(100);
+
+  // Dynamic Context-Specific Filter States
+  const [reportMode, setReportMode] = useState<'DETAILED' | 'SUMMARY' | 'PAYMENTS'>('DETAILED');
+  const [serverFilter, setServerFilter] = useState('ALL');
+  const [voidReasonFilter, setVoidReasonFilter] = useState('ALL');
   
-  // Personnel
-  const [cashierFilter, setCashierFilter] = useState('ALL');
-  const [repFilter, setRepFilter] = useState('ALL');
-
-  // Customer & Customer Ratio / Tier
-  const [customerFilter, setCustomerFilter] = useState('ALL');
-  const [customerRatioTier, setCustomerRatioTier] = useState('ALL');
-
-  // Product Hierarchy & Suppliers
+  // Product Sales Cascading States
   const [divisionFilter, setDivisionFilter] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [groupFilter, setGroupFilter] = useState('ALL');
-  const [itemFilter, setItemFilter] = useState('ALL');
-  const [supplierFilter, setSupplierFilter] = useState('ALL');
 
-  // Financial & Order Logistics
-  const [paymentFilter, setPaymentFilter] = useState('ALL');
-  const [orderSourceFilter, setOrderSourceFilter] = useState('ALL');
+  // Customer & Delivery States
+  const [zoneFilter, setZoneFilter] = useState('ALL');
+  const [customerTierFilter, setCustomerTierFilter] = useState('ALL');
+  const [driverFilter, setDriverFilter] = useState('ALL');
 
-  // Operational Checkbox Toggles
+  // Financial & Payment States
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState('ALL');
+  const [taxRateFilter, setTaxRateFilter] = useState('ALL');
+
+  // Dynamic Checkbox Toggles
   const [showAuthManager, setShowAuthManager] = useState(true);
-  const [highValueOnly, setHighValueOnly] = useState(false);
+  const [showProfitMargins, setShowProfitMargins] = useState(false);
   const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
   const [includeZeroBalances, setIncludeZeroBalances] = useState(false);
-  const [includeVoidsRefunds, setIncludeVoidsRefunds] = useState(true);
-  const [showCostMargins, setShowCostMargins] = useState(false);
   const [flashSummaryMode, setFlashSummaryMode] = useState(false);
+
+  // Active Report State (Default: Summary of Voids)
+  const [activeReport, setActiveReport] = useState({
+    code: 'REP_IC_001',
+    title: 'Summary of voids',
+    category: 'Internal Control',
+  });
 
   // Accordion State
   const [expandedCats, setExpandedCats] = useState<string[]>([
@@ -80,28 +75,23 @@ export default function MasterReportViewPage() {
     );
   };
 
-  // Active Report State (Default: Summary of Voids)
-  const [activeReport, setActiveReport] = useState({
-    code: 'REP_IC_001',
-    title: 'Summary of Voids',
-    category: 'Internal Control',
-  });
-
-  // Complete 93-Reports Master Catalog
+  // ==========================================================================
+  // COMPLETE 100% EXHAUSTIVE 93-REPORT TREE
+  // ==========================================================================
   const masterCatalog = [
     {
       id: 'internal_control',
       title: '1. Internal Control',
       icon: '🛡️',
       reports: [
-        { code: 'REP_IC_001', title: 'Summary of Voids' },
-        { code: 'REP_IC_002', title: 'Summary of Refunds' },
-        { code: 'REP_IC_003', title: 'Duplicate Invoices' },
-        { code: 'REP_IC_004', title: 'Meter Reports' },
-        { code: 'REP_IC_005', title: 'No Sale' },
-        { code: 'REP_IC_006', title: 'Transactions on Hold' },
-        { code: 'REP_IC_007', title: 'User Log Report' },
-        { code: 'REP_IC_008', title: 'Discount Summary' },
+        { code: 'REP_IC_001', title: 'Summary of voids' },
+        { code: 'REP_IC_002', title: 'Summary of refunds' },
+        { code: 'REP_IC_003', title: 'Duplicate invoices' },
+        { code: 'REP_IC_004', title: 'Meter reports' },
+        { code: 'REP_IC_005', title: 'No sale' },
+        { code: 'REP_IC_006', title: 'Transactions on hold' },
+        { code: 'REP_IC_007', title: 'User log report' },
+        { code: 'REP_IC_008', title: 'Discount summary' },
       ],
     },
     {
@@ -113,92 +103,92 @@ export default function MasterReportViewPage() {
           id: 'fin_stats',
           title: 'Financial Statistics',
           reports: [
-            { code: 'REP_F_101', title: 'Sales Summary' },
-            { code: 'REP_F_102', title: 'Statistics by Workstation' },
-            { code: 'REP_F_103', title: 'Statistics by Department' },
-            { code: 'REP_F_104', title: 'Summary of Sales by Employee' },
-            { code: 'REP_F_105', title: 'Sales by Employee by Category' },
-            { code: 'REP_F_106', title: 'Sales by Supplier' },
-            { code: 'REP_F_107', title: 'Delivery Orders by Date and Branch' },
+            { code: 'REP_F_101', title: 'Sales summary' },
+            { code: 'REP_F_102', title: 'Statistics by workstation' },
+            { code: 'REP_F_103', title: 'Statistics by department' },
+            { code: 'REP_F_104', title: 'Summary of sales by employee' },
+            { code: 'REP_F_105', title: 'Sales by employee by category' },
+            { code: 'REP_F_106', title: 'Sales by supplier' },
+            { code: 'REP_F_107', title: 'Delivery orders by date and branch' },
           ],
         },
         {
           id: 'tax_reports',
           title: 'Tax Reports',
           reports: [
-            { code: 'REP_F_201', title: 'Tax Summary' },
-            { code: 'REP_F_202', title: 'Tax Summary Comparative' },
+            { code: 'REP_F_201', title: 'Tax summary' },
+            { code: 'REP_F_202', title: 'Tax summary comparative' },
           ],
         },
         {
           id: 'discount_reports',
           title: 'Discount Reports',
           reports: [
-            { code: 'REP_F_301', title: 'Summary of Discount by Divisions' },
-            { code: 'REP_F_302', title: 'Discount by Category by Department' },
-            { code: 'REP_F_303', title: 'Summary of Discount' },
-            { code: 'REP_F_304', title: 'Discount by Description by Employee' },
-            { code: 'REP_F_305', title: 'Summary of Discount by Items Amount' },
-            { code: 'REP_F_306', title: 'Discount Summary' },
+            { code: 'REP_F_301', title: 'Summary of discount by divisions' },
+            { code: 'REP_F_302', title: 'Discount by category by department' },
+            { code: 'REP_F_303', title: 'Summary of discount' },
+            { code: 'REP_F_304', title: 'Discount by description by employee' },
+            { code: 'REP_F_305', title: 'Summary of discount by items amount' },
+            { code: 'REP_F_306', title: 'Discount summary' },
           ],
         },
         {
           id: 'payments',
           title: 'Payments',
           reports: [
-            { code: 'REP_F_401', title: 'Summary of Payment' },
-            { code: 'REP_F_402', title: 'Summary of Payment by Department' },
-            { code: 'REP_F_403', title: 'Summary of Payment by Workstation' },
-            { code: 'REP_F_404', title: 'Summary of Payment by Employee' },
-            { code: 'REP_F_405', title: 'Advanced Payment History' },
+            { code: 'REP_F_401', title: 'Summary of payment' },
+            { code: 'REP_F_402', title: 'Summary of payment by department' },
+            { code: 'REP_F_403', title: 'Summary of payment by workstation' },
+            { code: 'REP_F_404', title: 'Summary of payment by employee' },
+            { code: 'REP_F_405', title: 'Advanced payment history' },
             { code: 'REP_F_406', title: 'Unpaid/Paid In/Paid Out' },
-            { code: 'REP_F_407', title: 'Customer Payments' },
-            { code: 'REP_F_408', title: 'List of Layaway Sales' },
-            { code: 'REP_F_409', title: 'Layaway History' },
-            { code: 'REP_F_410', title: 'List of Pending Invoices with Advanced Payment' },
+            { code: 'REP_F_407', title: 'Customer payments' },
+            { code: 'REP_F_408', title: 'List of layaway sales' },
+            { code: 'REP_F_409', title: 'Layaway history' },
+            { code: 'REP_F_410', title: 'List of pending invoices with advanced payment' },
           ],
         },
         {
           id: 'profit_summary',
           title: 'Profit Summary',
           reports: [
-            { code: 'REP_F_601', title: 'Profit by Invoices Summary' },
-            { code: 'REP_F_602', title: 'Profit by Item Summary' },
-            { code: 'REP_F_603', title: 'Profit by Category Summary' },
-            { code: 'REP_F_604', title: 'Profit by Category by Department' },
-            { code: 'REP_F_605', title: 'Profit by Invoices' },
+            { code: 'REP_F_601', title: 'Profit by invoices summary' },
+            { code: 'REP_F_602', title: 'Profit by item summary' },
+            { code: 'REP_F_603', title: 'Profit by category summary' },
+            { code: 'REP_F_604', title: 'Profit by category by department' },
+            { code: 'REP_F_605', title: 'Profit by invoices' },
           ],
         },
         {
           id: 'comparative',
           title: 'Comparative Reports',
           reports: [
-            { code: 'REP_F_701', title: 'Sales Summary by Day' },
-            { code: 'REP_F_702', title: 'Daily Sales' },
-            { code: 'REP_F_703', title: 'Comparative Yearly Sales' },
-            { code: 'REP_F_704', title: 'Comparative Monthly Sales' },
-            { code: 'REP_F_705', title: 'Comparative Monthly Sales by Employee' },
+            { code: 'REP_F_701', title: 'Sales summary by day' },
+            { code: 'REP_F_702', title: 'Daily sales' },
+            { code: 'REP_F_703', title: 'Comparative yearly sales' },
+            { code: 'REP_F_704', title: 'Comparative monthly sales' },
+            { code: 'REP_F_705', title: 'Comparative monthly sales by employee' },
           ],
         },
         {
           id: 'transaction_summary',
           title: 'Transaction Summary',
           reports: [
-            { code: 'REP_F_801', title: 'Transaction by Date' },
-            { code: 'REP_F_802', title: 'Credit Sales' },
-            { code: 'REP_F_803', title: 'Credit Card Report' },
-            { code: 'REP_F_804', title: 'Electronic Journal' },
+            { code: 'REP_F_801', title: 'Transaction by date' },
+            { code: 'REP_F_802', title: 'Credit sales' },
+            { code: 'REP_F_803', title: 'Credit card report' },
+            { code: 'REP_F_804', title: 'Electronic journal' },
           ],
         },
         {
           id: 'time_sales_analysis',
           title: 'Time Sales Analysis',
           reports: [
-            { code: 'REP_F_901', title: 'Time Report Group by Transactions Count' },
-            { code: 'REP_F_902', title: 'Time Report by Date' },
-            { code: 'REP_F_903', title: 'Time Report - Average Check' },
-            { code: 'REP_F_904', title: 'Time Report by EOD Date' },
-            { code: 'REP_F_905', title: 'Transaction Report by Time' },
+            { code: 'REP_F_901', title: 'Time report group by transactions count' },
+            { code: 'REP_F_902', title: 'Time report by date' },
+            { code: 'REP_F_903', title: 'Time report - average check' },
+            { code: 'REP_F_904', title: 'Time report by EOD date' },
+            { code: 'REP_F_905', title: 'Transaction report by time' },
           ],
         },
       ],
@@ -212,44 +202,44 @@ export default function MasterReportViewPage() {
           id: 'prod_sales_sub',
           title: 'Product Sales',
           reports: [
-            { code: 'REP_P_101', title: 'Summary of Sales by Items' },
-            { code: 'REP_S_00191', title: 'Sales by Items' },
-            { code: 'REP_S_00192', title: 'Sales by Invoices' },
-            { code: 'REP_P_102', title: 'Sales Details for One Sales Item' },
-            { code: 'REP_P_103', title: 'Sales by Customer by Items' },
-            { code: 'REP_P_104', title: 'Daily Sales by Items' },
-            { code: 'REP_P_105', title: 'Sales by Categories' },
-            { code: 'REP_P_106', title: 'Sales by Divisions' },
-            { code: 'REP_P_107', title: 'Sales Items by Transaction' },
-            { code: 'REP_P_108', title: 'Not Sold Items' },
-            { code: 'REP_P_109', title: 'Sold Serial Number' },
+            { code: 'REP_P_101', title: 'Summary of sales by items' },
+            { code: 'REP_S_00191', title: 'Sales by items' },
+            { code: 'REP_S_00192', title: 'Sales by invoices' },
+            { code: 'REP_P_102', title: 'Sales details for one sales item' },
+            { code: 'REP_P_103', title: 'Sales by customer by items' },
+            { code: 'REP_P_104', title: 'Daily sales by items' },
+            { code: 'REP_P_105', title: 'Sales by categories' },
+            { code: 'REP_P_106', title: 'Sales by divisions' },
+            { code: 'REP_P_107', title: 'Sales items by transaction' },
+            { code: 'REP_P_108', title: 'Not sold items' },
+            { code: 'REP_P_109', title: 'Sold serial number' },
           ],
         },
         {
           id: 'comparative_by_branch',
           title: 'Comparative by Branch',
           reports: [
-            { code: 'REP_P_201', title: 'Sales by Category' },
-            { code: 'REP_P_202', title: 'Sales by Division' },
-            { code: 'REP_P_203', title: 'Sales by Groups' },
-            { code: 'REP_P_204', title: 'Sales by Items' },
+            { code: 'REP_P_201', title: 'Sales by category' },
+            { code: 'REP_P_202', title: 'Sales by division' },
+            { code: 'REP_P_203', title: 'Sales by groups' },
+            { code: 'REP_P_204', title: 'Sales by items' },
           ],
         },
         {
           id: 'top_performers_prod',
           title: 'Top Performers',
           reports: [
-            { code: 'REP_P_301', title: 'Top N Sold by Quantity' },
-            { code: 'REP_P_302', title: 'Top N Sold by Amount' },
+            { code: 'REP_P_301', title: 'Top N sold by quantity' },
+            { code: 'REP_P_302', title: 'Top N sold by amount' },
           ],
         },
         {
           id: 'voids_and_refunds_prod',
           title: 'Voids and Refunds',
           reports: [
-            { code: 'REP_P_401', title: 'Summary of Voids' },
-            { code: 'REP_P_402', title: 'Summary of Refunds' },
-            { code: 'REP_P_403', title: 'Details of Refunds' },
+            { code: 'REP_P_401', title: 'Summary of voids' },
+            { code: 'REP_P_402', title: 'Summary of refunds' },
+            { code: 'REP_P_403', title: 'Details of refunds' },
           ],
         },
       ],
@@ -262,16 +252,16 @@ export default function MasterReportViewPage() {
         {
           id: 'top_performers_cust',
           title: 'Top Performers',
-          reports: [{ code: 'REP_C_101', title: 'Top N Customers by Amount' }],
+          reports: [{ code: 'REP_C_101', title: 'Top N customers by amount' }],
         },
         {
           id: 'cust_delivery',
           title: 'Customers and Delivery',
           reports: [
-            { code: 'REP_C_201', title: 'Sales by Customer and Detail' },
-            { code: 'REP_C_202', title: 'Sales by Zone' },
-            { code: 'REP_C_203', title: 'Delivery Sales Summary' },
-            { code: 'REP_C_204', title: 'Drivers History' },
+            { code: 'REP_C_201', title: 'Sales by customer and detail' },
+            { code: 'REP_C_202', title: 'Sales by zone' },
+            { code: 'REP_C_203', title: 'Delivery sales summary' },
+            { code: 'REP_C_204', title: 'Drivers history' },
           ],
         },
       ],
@@ -285,18 +275,18 @@ export default function MasterReportViewPage() {
           id: 'todays_sales_sub',
           title: "Today's Sales",
           reports: [
-            { code: 'REP_TH_101', title: "Today's Statistics" },
-            { code: 'REP_TH_102', title: "Today's Summary of Payment" },
-            { code: 'REP_TH_103', title: "Today's Summary by Employee" },
-            { code: 'REP_TH_104', title: "Today's Transactions" },
+            { code: 'REP_TH_101', title: "Today's statistics" },
+            { code: 'REP_TH_102', title: "Today's summary of payment" },
+            { code: 'REP_TH_103', title: "Today's summary by employee" },
+            { code: 'REP_TH_104', title: "Today's transactions" },
           ],
         },
         {
           id: 'history_sub',
           title: 'History',
           reports: [
-            { code: 'REP_TH_201', title: 'Preview Order Sales' },
-            { code: 'REP_TH_202', title: 'Main Reading History' },
+            { code: 'REP_TH_201', title: 'Preview order sales' },
+            { code: 'REP_TH_202', title: 'Main reading history' },
           ],
         },
       ],
@@ -306,9 +296,9 @@ export default function MasterReportViewPage() {
       title: '6. Time and Attendance',
       icon: '⏱️',
       reports: [
-        { code: 'REP_TA_001', title: 'Employee Attendance' },
-        { code: 'REP_TA_002', title: 'Time and Attendance' },
-        { code: 'REP_TA_003', title: 'Labor Cost' },
+        { code: 'REP_TA_001', title: 'Employee attendance' },
+        { code: 'REP_TA_002', title: 'Time and attendance' },
+        { code: 'REP_TA_003', title: 'Labor cost' },
       ],
     },
     {
@@ -316,15 +306,15 @@ export default function MasterReportViewPage() {
       title: '7. Lists',
       icon: '📋',
       reports: [
-        { code: 'REP_L_001', title: 'Customer List Standard' },
-        { code: 'REP_L_002', title: 'Not Active Customers' },
-        { code: 'REP_L_003', title: 'New Customers' },
-        { code: 'REP_L_004', title: 'Blacklist Customers' },
+        { code: 'REP_L_001', title: 'Customer list standard' },
+        { code: 'REP_L_002', title: 'Not active customers' },
+        { code: 'REP_L_003', title: 'New customers' },
+        { code: 'REP_L_004', title: 'Blacklist customers' },
       ],
     },
   ];
 
-  // Specific Datasets
+  // Specific Sample Datasets
   const customerListRows = [
     { code: 'CUST-01', name: 'Al-Baraka Supermarket S.A.R.L', region: 'Mount Lebanon', city: 'Choueifat Main Highway', phone: '03112233', rep: 'Ahmad Ali Kassem', creditLimit: 5000.0, balance: 1400.0 },
     { code: 'CUST-02', name: 'Al-Nour Food Establishment', region: 'Beirut', city: 'Hamra (Makdessi Street)', phone: '01778899', rep: 'Hiba Aloulou', creditLimit: 3500.0, balance: 890.0 },
@@ -334,9 +324,9 @@ export default function MasterReportViewPage() {
   ];
 
   const voidRows = [
-    { date: '22-Aug-2026 5:31 PM', orderDate: '22-Aug-2026 5:30 PM', server: 'Hiba Aloulou', invoice: '103225', description: 'عرض العطاء جديد - زيت زيتون بكر ممتاز 17.5 لتر', qty: 1.0, valueLbp: 9000000.0, reason: 'تعداد خاطئ' },
-    { date: '13-Aug-2026 6:58 PM', orderDate: '13-Aug-2026 6:55 PM', server: 'Hiba Aloulou', invoice: '103125', description: 'ألفية زيت زيتون خضير بلدي 1000 مل', qty: 1.0, valueLbp: 990000.0, reason: 'تعداد خاطئ' },
-    { date: '13-Aug-2026 6:58 PM', orderDate: '13-Aug-2026 6:55 PM', server: 'Hiba Aloulou', invoice: '103125', description: 'حبوب اللقاح البلدية 360غ', qty: 1.0, valueLbp: 900000.0, reason: 'تعداد خاطئ' },
+    { date: '22-Aug-2026 5:31 PM', orderDate: '22-Aug-2026 5:31 PM', server: 'Hiba Aloulou', invoice: '103225', description: 'عرض العطاء جديد - زيت زيتون بكر ممتاز 17.5 لتر', qty: 1.0, valueLbp: 9000000.0, reason: 'تعداد خاطئ' },
+    { date: '13-Aug-2026 6:58 PM', orderDate: '13-Aug-2026 6:58 PM', server: 'Hiba Aloulou', invoice: '103125', description: 'ألفية زيت زيتون خضير بلدي 1000 مل', qty: 1.0, valueLbp: 990000.0, reason: 'تعداد خاطئ' },
+    { date: '13-Aug-2026 6:58 PM', orderDate: '13-Aug-2026 6:58 PM', server: 'Hiba Aloulou', invoice: '103125', description: 'حبوب اللقاح البلدية 360غ', qty: 1.0, valueLbp: 900000.0, reason: 'تعداد خاطئ' },
   ];
 
   const genericSalesRows = [
@@ -346,530 +336,526 @@ export default function MasterReportViewPage() {
   ];
 
   return (
-    <div className="w-full flex overflow-hidden h-[calc(100vh-80px)] select-none">
+    <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans">
       
-      {/* 1. Left 93-Reports Tree Sidebar */}
-      {showCatalog && (
-        <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-sm custom-scrollbar rounded-xl">
+      {/* =================================================================== */}
+      {/* 1. TOP SUB-HEADER BAR                                               */}
+      {/* =================================================================== */}
+      <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowCatalog(!showCatalog)}
+            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1.5 transition-colors"
+          >
+            <span>{showCatalog ? '◀ Hide Catalog' : '▶ Show Report Categories'}</span>
+          </button>
+
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500 font-medium">Active Report:</span>
+            <span className="font-bold text-[#1e3a2b] bg-[#eef3ee] px-2.5 py-0.5 rounded border border-[#1e3a2b]/30">
+              [{activeReport.code}] {activeReport.title}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-slate-400 font-mono hidden md:inline">Southern Olive Oil Products S.A.R.L</span>
+          <button
+            type="button"
+            onClick={() => alert('Report view closed')}
+            className="px-2.5 py-1 text-slate-600 hover:text-slate-900 text-xs font-medium"
+          >
+            Close Report
+          </button>
+          <Link
+            href="/backoffice/dashboard"
+            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors flex items-center gap-1"
+          >
+            <span>🔄 Return to Hub</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* =================================================================== */}
+      {/* 2. DYNAMIC ADAPTIVE FILTER RIBBON TOOLBAR (ADAPTS TO REPORT TYPE)   */}
+      {/* =================================================================== */}
+      <div className="bg-white border-b border-slate-200 p-3 px-4 flex flex-col gap-2.5 print:hidden shrink-0 shadow-2xs">
+        
+        {/* Top Filter Ribbon Line */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           
-          {/* Search Box */}
-          <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
+          {/* Left Core Inputs: Period, Date Range, Branch */}
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <select
+              value={periodPreset}
+              onChange={(e) => setPeriodPreset(e.target.value)}
+              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+            >
+              <option value="THIS_MONTH">This Month (August 2026)</option>
+              <option value="TODAY">Today</option>
+              <option value="YESTERDAY">Yesterday</option>
+              <option value="THIS_WEEK">This Week</option>
+              <option value="LAST_MONTH">Last Month</option>
+            </select>
+
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="🔍 Search all 93 reports..."
-              className="w-full px-2.5 py-1.5 bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
+              value={dateRangeText}
+              onChange={(e) => setDateRangeText(e.target.value)}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded font-mono text-xs text-slate-800 w-44 text-center focus:outline-none"
             />
-          </div>
 
-          {/* Tree Categories */}
-          {masterCatalog.map((cat) => (
-            <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-              <div
-                onClick={() => toggleCat(cat.id)}
-                className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 cursor-pointer font-bold text-slate-900 text-[11px] flex items-center justify-between border-b border-slate-200 transition-colors"
+            <select
+              value={branchFilter}
+              onChange={(e) => setBranchFilter(e.target.value)}
+              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+            >
+              <option value="ALL">All Operating Branches</option>
+              <option value="Choueifat">Choueifat Main Facility</option>
+              <option value="Beirut">Beirut Branch</option>
+            </select>
+
+            {/* DYNAMIC FIELD 1: Cashier/Server (For Voids & POS Reports) */}
+            {(activeReport.category === 'Internal Control' || activeReport.code.startsWith('REP_IC_') || activeReport.code.startsWith('REP_TH_')) && (
+              <select
+                value={serverFilter}
+                onChange={(e) => setServerFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs focus:outline-none"
               >
-                <span className="flex items-center gap-1.5">
-                  <span>{cat.icon}</span> <span>{cat.title}</span>
-                </span>
-                <span className="text-[9px] text-[#1e3a2b] font-bold">{expandedCats.includes(cat.id) ? '▲' : '▼'}</span>
-              </div>
-
-              {expandedCats.includes(cat.id) && (
-                <div className="p-1 space-y-1 bg-white">
-                  
-                  {/* Direct Reports */}
-                  {cat.reports && cat.reports
-                    .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                    .map((r) => (
-                      <button
-                        key={r.code}
-                        type="button"
-                        onClick={() => setActiveReport({ ...r, category: cat.title })}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg truncate block text-xs transition-all ${
-                          activeReport.code === r.code
-                            ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
-                            : 'hover:bg-slate-100 text-slate-700 font-medium'
-                        }`}
-                      >
-                        <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
-                        <span>{r.title}</span>
-                      </button>
-                    ))}
-
-                  {/* Sub-Categories */}
-                  {cat.subCategories && cat.subCategories.map((sub) => (
-                    <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
-                      <div
-                        onClick={() => toggleSubCat(sub.id)}
-                        className="px-2.5 py-1 font-bold text-slate-800 hover:text-[#1e3a2b] cursor-pointer flex items-center justify-between text-[10.5px]"
-                      >
-                        <span>📁 {sub.title} ({sub.reports.length})</span>
-                        <span className="text-[8px] text-[#1e3a2b] font-bold">{expandedSubCats.includes(sub.id) ? '−' : '+'}</span>
-                      </div>
-
-                      {expandedSubCats.includes(sub.id) && (
-                        <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/80 bg-white">
-                          {sub.reports
-                            .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                            .map((r) => (
-                              <button
-                                key={r.code}
-                                type="button"
-                                onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
-                                className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-all ${
-                                  activeReport.code === r.code
-                                    ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
-                                    : 'hover:bg-slate-100 text-slate-700 font-medium'
-                                }`}
-                              >
-                                <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
-                                <span>{r.title}</span>
-                              </button>
-                            ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                </div>
-              )}
-            </div>
-          ))}
-        </aside>
-      )}
-
-      {/* 2. Right Canvas: 100% COMPLETE EXHAUSTIVE FILTER ENGINE + A4 PAPER */}
-      <div className="flex-1 overflow-y-auto">
-        
-        {/* ================================================================= */}
-        {/* MASTER FILTER ENGINE TOOLBAR (ALL OPERATIONAL FILTER FIELDS)       */}
-        {/* ================================================================= */}
-        <div className="bg-white p-4 rounded-xl border border-slate-300 mb-4 text-xs print:hidden shadow-xs space-y-3">
-          
-          {/* Level 1: View Modes & Action Print/Export Buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowCatalog(!showCatalog)}
-                className="px-3.5 py-1.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 hover:bg-slate-200 transition-colors"
-              >
-                {showCatalog ? '◀ Hide Catalog' : '▶ Show Catalog'}
-              </button>
-
-              <div className="flex flex-wrap items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                {[
-                  { id: 'DETAILED', label: 'Detailed Mode' },
-                  { id: 'SUMMARY', label: 'Summary Mode' },
-                  { id: 'GROUP_CATEGORY', label: 'Group by Category' },
-                  { id: 'COMPARATIVE', label: 'Comparative Branch' },
-                  { id: 'PROFITABILITY', label: 'Profitability' },
-                  { id: 'PAYMENTS', label: 'Payment Breakdown' },
-                ].map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setReportMode(m.id as any)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                      reportMode === m.id ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setBranchFilter('ALL');
-                  setWorkstationFilter('ALL');
-                  setCashierFilter('ALL');
-                  setRepFilter('ALL');
-                  setCustomerFilter('ALL');
-                  setCustomerRatioTier('ALL');
-                  setDivisionFilter('ALL');
-                  setCategoryFilter('ALL');
-                  setPaymentFilter('ALL');
-                }}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs border border-slate-300"
-              >
-                Reset Filters
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-xs transition-colors flex items-center gap-1.5 border border-[#1e3a2b]"
-              >
-                <span>🖨️ Print A4 Report</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Level 2: Comprehensive Dates, Times & Period Controls */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Period Preset:</label>
-              <select value={periodPreset} onChange={(e) => setPeriodPreset(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="THIS_MONTH">This Month (August 2026)</option>
-                <option value="TODAY">Today</option>
-                <option value="YESTERDAY">Yesterday</option>
-                <option value="THIS_WEEK">This Week</option>
-                <option value="LAST_MONTH">Last Month</option>
-                <option value="CUSTOM">Custom Date Range</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">From Date:</label>
-              <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-full p-1 bg-white border border-slate-300 rounded text-xs font-mono" />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">To Date:</label>
-              <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-full p-1 bg-white border border-slate-300 rounded text-xs font-mono" />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">From Time:</label>
-              <input type="time" value={fromTime} onChange={(e) => setFromTime(e.target.value)} className="w-full p-1 bg-white border border-slate-300 rounded text-xs font-mono" />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">To Time:</label>
-              <input type="time" value={toTime} onChange={(e) => setToTime(e.target.value)} className="w-full p-1 bg-white border border-slate-300 rounded text-xs font-mono" />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Order Source / Type:</label>
-              <select value={orderSourceFilter} onChange={(e) => setOrderSourceFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Order Sources</option>
-                <option value="POS_COUNTER">POS Counter Sales</option>
-                <option value="DELIVERY_RUN">Delivery Fleet Runs</option>
-                <option value="ONLINE_STORE">Online Store Orders</option>
-                <option value="WHATSAPP_LEAD">Direct WhatsApp Leads</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Level 3: Organizational, Personnel & Customer Fields */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-[11px]">
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Branch / Facility:</label>
-              <select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Operating Branches</option>
-                <option value="Choueifat">Choueifat Main Facility</option>
-                <option value="Beirut">Beirut Branch</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Workstation / Terminal:</label>
-              <select value={workstationFilter} onChange={(e) => setWorkstationFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All POS Workstations</option>
-                <option value="POS_01">Terminal 01 (Main Counter)</option>
-                <option value="POS_02">Terminal 02 (Wholesale Bay)</option>
-                <option value="PRESS_01">Mill Pressing Station</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Cashier / Server:</label>
-              <select value={cashierFilter} onChange={(e) => setCashierFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
                 <option value="ALL">All Cashiers / Servers</option>
                 <option value="Hiba Aloulou">Hiba Aloulou</option>
                 <option value="Ahmad Ali Kassem">Ahmad Ali Kassem</option>
                 <option value="Hussein Mahdi">Hussein Mahdi</option>
               </select>
-            </div>
+            )}
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Sales Representative:</label>
-              <select value={repFilter} onChange={(e) => setRepFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs focus:outline-none">
-                <option value="ALL">All Field Reps</option>
-                <option value="Ahmad Ali Kassem">Ahmad Ali Kassem (ADM-REP-01)</option>
-                <option value="Hiba Aloulou">Hiba Aloulou (ADM-REP-02)</option>
-                <option value="Hussein Mahdi">Hussein Mahdi (ADM-REP-03)</option>
+            {/* DYNAMIC FIELD 2: Void Reason (For Voids Reports) */}
+            {activeReport.code === 'REP_IC_001' && (
+              <select
+                value={voidReasonFilter}
+                onChange={(e) => setVoidReasonFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+              >
+                <option value="ALL">All Void Reasons</option>
+                <option value="WRONG_COUNT">تعداد خاطئ (Wrong Count)</option>
+                <option value="PRICE_DISPUTE">Price Dispute</option>
+                <option value="CUSTOMER_CANCEL">Customer Cancelled</option>
               </select>
-            </div>
+            )}
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Customer / Store:</label>
-              <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Customers & Stores</option>
-                <option value="Al-Baraka">Al-Baraka Supermarket S.A.R.L</option>
-                <option value="Al-Nour">Al-Nour Food Establishment</option>
-                <option value="Al-Kheir">Al-Kheir Olive Center</option>
-                <option value="Byblos">Byblos Green Grocers</option>
-              </select>
-            </div>
+            {/* DYNAMIC FIELD 3: Product Division & Category (For Product Sales Reports) */}
+            {(activeReport.category.includes('Product Sales') || activeReport.code.startsWith('REP_P_') || activeReport.code.startsWith('REP_S_')) && (
+              <>
+                <select
+                  value={divisionFilter}
+                  onChange={(e) => setDivisionFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                >
+                  <option value="ALL">All Product Divisions</option>
+                  <option value="OLIVE_OIL">Olive Oil & Extra Virgin</option>
+                  <option value="PRESERVES">Pomegranate Molasses & Jams</option>
+                  <option value="DETERGENTS">Industrial Cleaners & Javel</option>
+                </select>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Customer Ratio / Tier:</label>
-              <select value={customerRatioTier} onChange={(e) => setCustomerRatioTier(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Customer Ratios / Tiers</option>
-                <option value="WHOLESALE_DIST">B2B Wholesale Distributor</option>
-                <option value="SUPERMARKET">Supermarket Commercial Tier</option>
-                <option value="RETAIL_CLIENT">Retail Customer Tier</option>
-                <option value="VIP_PARTNER">VIP Preferred Partner</option>
-              </select>
-            </div>
-          </div>
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                >
+                  <option value="ALL">All Categories</option>
+                  <option value="TINS_17L">17.5L Bulk Tins</option>
+                  <option value="GLASS_1L">1L Glass Bottles</option>
+                  <option value="MOLASSES">Pomegranate Molasses 500ml</option>
+                </select>
+              </>
+            )}
 
-          {/* Level 4: Product Hierarchy, Suppliers & Payment Terms */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-[11px]">
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Product Division:</label>
-              <select value={divisionFilter} onChange={(e) => setDivisionFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Product Divisions</option>
-                <option value="OLIVE_OIL">Olive Oil & Virgin Tins</option>
-                <option value="PRESERVES">Molasses, Jams & Pickles</option>
-                <option value="DETERGENTS">Industrial Cleaners & Javel</option>
-              </select>
-            </div>
+            {/* DYNAMIC FIELD 4: Customer Zone & Ratio (For Customer Sales & Lists) */}
+            {(activeReport.category.includes('Customer') || activeReport.code.startsWith('REP_C_') || activeReport.code.startsWith('REP_L_')) && (
+              <>
+                <select
+                  value={zoneFilter}
+                  onChange={(e) => setZoneFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                >
+                  <option value="ALL">All Lebanon Zones</option>
+                  <option value="Mount Lebanon">Mount Lebanon (Choueifat / Metn)</option>
+                  <option value="Beirut">Beirut Governorate</option>
+                  <option value="South Lebanon">South Lebanon (Saida / Tyre)</option>
+                  <option value="Bekaa">Bekaa Valley</option>
+                  <option value="North Lebanon">North Lebanon (Tripoli)</option>
+                </select>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Product Category:</label>
-              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Categories</option>
-                <option value="TINS_17L">17.5L Bulk Tins</option>
-                <option value="GLASS_1L">1L Glass Bottles</option>
-                <option value="MOLASSES_500">Pomegranate 500ml</option>
-                <option value="PICKLES">Pickled Olives & Grape Leaves</option>
-              </select>
-            </div>
+                <select
+                  value={customerTierFilter}
+                  onChange={(e) => setCustomerTierFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs focus:outline-none"
+                >
+                  <option value="ALL">All Customer Ratios / Tiers</option>
+                  <option value="WHOLESALE">B2B Wholesale Distributor</option>
+                  <option value="SUPERMARKET">Supermarket Commercial Tier</option>
+                  <option value="RETAIL">Retail Customer</option>
+                </select>
+              </>
+            )}
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Product Group / Item:</label>
-              <select value={itemFilter} onChange={(e) => setItemFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Master Items</option>
-                <option value="EVOO_17L">17.5L Extra Virgin Cold Pressed</option>
-                <option value="EVOO_1L">1L Extra Virgin Bottle</option>
-                <option value="MOL_500ML">Pure Pomegranate Molasses 500ml</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Supplier / Farmer:</label>
-              <select value={supplierFilter} onChange={(e) => setSupplierFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                <option value="ALL">All Suppliers & Farmers</option>
-                <option value="SOUTH_FARMERS">South Lebanon Olive Orchards</option>
-                <option value="PACK_SUPPLIER">Packaging Material Suppliers</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Payment Method:</label>
-              <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className="w-full p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
+            {/* DYNAMIC FIELD 5: Payment Method (For Financial & Invoices Reports) */}
+            {(activeReport.category.includes('Financial') || activeReport.code.startsWith('REP_F_') || activeReport.code === 'REP_S_00192') && (
+              <select
+                value={paymentMethodFilter}
+                onChange={(e) => setPaymentMethodFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+              >
                 <option value="ALL">All Payment Methods</option>
-                <option value="CASH_USD">Cash USD</option>
-                <option value="CASH_LBP">Cash LBP</option>
+                <option value="CASH">Cash on Delivery / POS</option>
                 <option value="WHISH">Whish Money</option>
                 <option value="CREDIT">Credit (On Account)</option>
-                <option value="CHEQUE">Commercial Cheque</option>
               </select>
-            </div>
+            )}
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Action Filter:</label>
-              <button
-                type="button"
-                onClick={() => alert(`Filters Applied Successfully!\nBranch: ${branchFilter}\nPeriod: ${periodPreset}\nCustomer Ratio: ${customerRatioTier}`)}
-                className="w-full py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
-              >
-                Apply All Filters
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => alert('Filter applied')}
+              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
+            >
+              Filter
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setPeriodPreset('THIS_MONTH');
+                setBranchFilter('ALL');
+                setServerFilter('ALL');
+                setDivisionFilter('ALL');
+                setZoneFilter('ALL');
+              }}
+              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
+            >
+              Reset
+            </button>
           </div>
 
-          {/* Level 5: Operational Checkbox Toggles */}
-          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-200 text-xs">
+          {/* Right Tools: Zoom + Print + Export */}
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))}
+              className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
+              title="Zoom Out"
+            >
+              🔍−
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
+              className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
+              title="Zoom In"
+            >
+              🔍+
+            </button>
+
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+            >
+              <span>🖨️ Print</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => alert('Exporting to Excel...')}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-xs border border-slate-300 flex items-center gap-1"
+            >
+              <span>📥 Export ▾</span>
+            </button>
+          </div>
+
+        </div>
+
+        {/* Dynamic Checkbox Flags Row (Tailored to active report) */}
+        <div className="flex flex-wrap items-center gap-4 pt-1.5 border-t border-slate-100 text-xs">
+          {activeReport.code === 'REP_IC_001' && (
             <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
               <input type="checkbox" checked={showAuthManager} onChange={(e) => setShowAuthManager(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
               <span>Show Authorizing Manager</span>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={highValueOnly} onChange={(e) => setHighValueOnly(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>High Value Only (&gt; $50)</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showTaxBreakdown} onChange={(e) => setShowTaxBreakdown(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Show Tax / VAT Breakdown</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={includeZeroBalances} onChange={(e) => setIncludeZeroBalances(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Include Zero Balances</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={includeVoidsRefunds} onChange={(e) => setIncludeVoidsRefunds(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Include Voids & Refunds</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showCostMargins} onChange={(e) => setShowCostMargins(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Show Cost & Profit Margins</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={flashSummaryMode} onChange={(e) => setFlashSummaryMode(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Flash Summary Mode</span>
-            </label>
-          </div>
-
-        </div>
-
-        {/* ================================================================= */}
-        {/* HIGH-CONTRAST A4 PAPER MATRIX (w-[794px] min-h-[1123px])          */}
-        {/* ================================================================= */}
-        <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6">
-          
-          {/* Header */}
-          <div className="border-b-2 border-black pb-2 mb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-sm font-bold text-slate-900 uppercase">Southern Olive Oil Products S.A.R.L</h1>
-                <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.title}</h2>
-              </div>
-              <div className="text-right text-[10.5px] font-mono text-slate-700 space-y-0.5">
-                <div>Prepared By: Mohammed</div>
-                <div>Code: {activeReport.code}</div>
-                <div>Page 1 of 1</div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
-              <div>Period: {fromDate} to {toDate} ({periodPreset})</div>
-              <div>Branch: {branchFilter === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branchFilter}</div>
-            </div>
-          </div>
-
-          {/* VIEW A: LISTS / CUSTOMERS */}
-          {(activeReport.code.startsWith('REP_L_') || activeReport.category.includes('Lists')) && (
-            <div>
-              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
-                <thead>
-                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                    <th className="py-1 px-1 normal-case w-[12%]">code</th>
-                    <th className="py-1 px-1 normal-case w-[28%]">customer / store name</th>
-                    <th className="py-1 px-1 normal-case w-[14%]">region</th>
-                    <th className="py-1 px-1 normal-case w-[16%]">phone</th>
-                    <th className="py-1 px-1 normal-case w-[15%]">assigned rep</th>
-                    <th className="py-1 px-1 normal-case w-[15%] text-right">balance ($)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {customerListRows.map((cust) => (
-                    <tr key={cust.code} className="hover:bg-slate-50 leading-normal">
-                      <td className="py-1.5 px-1 font-mono font-bold">{cust.code}</td>
-                      <td className="py-1.5 px-1 font-bold text-slate-900">{cust.name}</td>
-                      <td className="py-1.5 px-1 text-slate-700">{cust.region}</td>
-                      <td className="py-1.5 px-1 font-mono text-slate-700">{cust.phone}</td>
-                      <td className="py-1.5 px-1 text-slate-800">{cust.rep.split(' ')[0]}</td>
-                      <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">
-                        ${cust.balance.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
-                <span>Total Customers: {customerListRows.length} Active Partners</span>
-                <span>Total Balance: ${customerListRows.reduce((s, c) => s + c.balance, 0).toFixed(2)}</span>
-              </div>
-            </div>
           )}
 
-          {/* VIEW B: VOIDS & INTERNAL CONTROL */}
-          {activeReport.code === 'REP_IC_001' && (
-            <div>
-              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
-                <thead>
-                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                    <th className="py-1.5 px-1 normal-case w-[15%]">date</th>
-                    <th className="py-1.5 px-1 normal-case w-[15%]">order date</th>
-                    <th className="py-1.5 px-1 normal-case w-[12%]">server</th>
-                    <th className="py-1.5 px-1 normal-case w-[8%] text-center">invoice</th>
-                    <th className="py-1.5 px-1 normal-case w-[28%]">description</th>
-                    <th className="py-1.5 px-1 normal-case w-[6%] text-center">qty</th>
-                    <th className="py-1.5 px-1 normal-case w-[12%] text-right">value (LBP)</th>
-                    <th className="py-1.5 px-1 normal-case w-[12%]">reason</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {voidRows.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 leading-normal align-top">
-                      <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.date}</td>
-                      <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.orderDate}</td>
-                      <td className="py-2 px-1 font-semibold text-slate-800">{item.server}</td>
-                      <td className="py-2 px-1 font-mono font-bold text-center">{item.invoice}</td>
-                      <td className="py-2 px-1 font-bold text-slate-900 leading-snug whitespace-normal break-words">
-                        {item.description}
-                      </td>
-                      <td className="py-2 px-1 text-center font-mono font-bold">{item.qty.toFixed(2)}</td>
-                      <td className="py-2 px-1 text-right font-mono font-bold">{item.valueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td className="py-2 px-1 text-slate-700 text-[10.5px] leading-tight font-medium">{item.reason}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {(activeReport.category.includes('Product Sales') || activeReport.code.startsWith('REP_P_')) && (
+            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+              <input type="checkbox" checked={showProfitMargins} onChange={(e) => setShowProfitMargins(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
+              <span>Show Cost & Profit Margins</span>
+            </label>
+          )}
 
-              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-end">
-                <div className="w-[300px] space-y-1">
-                  <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
-                    <span>Total Voids:</span> <span>3 events</span>
+          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+            <input type="checkbox" checked={showTaxBreakdown} onChange={(e) => setShowTaxBreakdown(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
+            <span>Show Tax / VAT Breakdown</span>
+          </label>
+
+          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+            <input type="checkbox" checked={includeZeroBalances} onChange={(e) => setIncludeZeroBalances(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
+            <span>Include Zero Balances / Sales</span>
+          </label>
+        </div>
+
+      </div>
+
+      {/* =================================================================== */}
+      {/* 3. WORKSPACE: 93-REPORTS TREE + PROPORTIONAL A4 PAPER               */}
+      {/* =================================================================== */}
+      <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8]">
+        
+        {/* Left 93-Reports Tree Sidebar */}
+        {showCatalog && (
+          <aside className="w-[280px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
+            
+            {/* Search Box */}
+            <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="🔍 Search all 93 reports..."
+                className="w-full px-2.5 py-1 bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
+              />
+            </div>
+
+            {/* Tree Categories */}
+            {masterCatalog.map((cat) => (
+              <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
+                <div
+                  onClick={() => toggleCat(cat.id)}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 cursor-pointer font-bold text-slate-900 text-[11px] flex items-center justify-between border-b border-slate-200 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>{cat.icon}</span> <span>{cat.title}</span>
+                  </span>
+                  <span className="text-[9px] text-[#1e3a2b] font-bold">{expandedCats.includes(cat.id) ? '▲' : '▼'}</span>
+                </div>
+
+                {expandedCats.includes(cat.id) && (
+                  <div className="p-1 space-y-1 bg-white">
+                    
+                    {/* Direct Reports */}
+                    {cat.reports && cat.reports
+                      .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map((r) => (
+                        <button
+                          key={r.code}
+                          type="button"
+                          onClick={() => setActiveReport({ ...r, category: cat.title })}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg truncate block text-xs transition-all ${
+                            activeReport.code === r.code
+                              ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
+                              : 'hover:bg-slate-100 text-slate-700 font-medium'
+                          }`}
+                        >
+                          <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
+                          <span>{r.title}</span>
+                        </button>
+                      ))}
+
+                    {/* Sub-Categories */}
+                    {cat.subCategories && cat.subCategories.map((sub) => (
+                      <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
+                        <div
+                          onClick={() => toggleSubCat(sub.id)}
+                          className="px-2.5 py-1 font-bold text-slate-800 hover:text-[#1e3a2b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                        >
+                          <span>📁 {sub.title} ({sub.reports.length})</span>
+                          <span className="text-[8px] text-[#1e3a2b] font-bold">{expandedSubCats.includes(sub.id) ? '−' : '+'}</span>
+                        </div>
+
+                        {expandedSubCats.includes(sub.id) && (
+                          <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/80 bg-white">
+                            {sub.reports
+                              .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                              .map((r) => (
+                                <button
+                                  key={r.code}
+                                  type="button"
+                                  onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
+                                  className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-all ${
+                                    activeReport.code === r.code
+                                      ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
+                                      : 'hover:bg-slate-100 text-slate-700 font-medium'
+                                  }`}
+                                >
+                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
+                                  <span>{r.title}</span>
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
                   </div>
-                  <div className="flex justify-between font-bold text-[#1e3a2b]">
-                    <span>Total Value:</span> <span>10,890,000.00 LBP</span>
+                )}
+              </div>
+            ))}
+          </aside>
+        )}
+
+        {/* Right Canvas: Zoomable A4 Paper */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar flex justify-center">
+          
+          <div
+            style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
+            className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 transition-transform duration-200 select-none"
+          >
+            {/* Header */}
+            <div className="border-b-2 border-black pb-2 mb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-sm font-bold text-slate-900 uppercase">Southern Olive Oil Products S.A.R.L</h1>
+                  <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.title}</h2>
+                </div>
+                <div className="text-right text-[10.5px] font-mono text-slate-700 space-y-0.5">
+                  <div>Prepared By: Mohammed</div>
+                  <div>Report Code: {activeReport.code}</div>
+                  <div>Page 1 of 1</div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
+                <div>Period: {dateRangeText}</div>
+                <div>Branch: {branchFilter === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branchFilter}</div>
+              </div>
+            </div>
+
+            {/* VIEW A: LISTS / CUSTOMERS */}
+            {(activeReport.code.startsWith('REP_L_') || activeReport.category.includes('Lists')) && (
+              <div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                  <thead>
+                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                      <th className="py-1 px-1 normal-case w-[12%]">code</th>
+                      <th className="py-1 px-1 normal-case w-[28%]">customer / store name</th>
+                      <th className="py-1 px-1 normal-case w-[14%]">region</th>
+                      <th className="py-1 px-1 normal-case w-[16%]">phone</th>
+                      <th className="py-1 px-1 normal-case w-[15%]">assigned rep</th>
+                      <th className="py-1 px-1 normal-case w-[15%] text-right">balance ($)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium">
+                    {customerListRows.map((cust) => (
+                      <tr key={cust.code} className="hover:bg-slate-50 leading-normal">
+                        <td className="py-1.5 px-1 font-mono font-bold">{cust.code}</td>
+                        <td className="py-1.5 px-1 font-bold text-slate-900">{cust.name}</td>
+                        <td className="py-1.5 px-1 text-slate-700">{cust.region}</td>
+                        <td className="py-1.5 px-1 font-mono text-slate-700">{cust.phone}</td>
+                        <td className="py-1.5 px-1 text-slate-800">{cust.rep.split(' ')[0]}</td>
+                        <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">
+                          ${cust.balance.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
+                  <span>Total Customers: {customerListRows.length} Active Partners</span>
+                  <span>Total Balance: ${customerListRows.reduce((s, c) => s + c.balance, 0).toFixed(2)}</span>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW B: VOIDS & INTERNAL CONTROL */}
+            {activeReport.code === 'REP_IC_001' && (
+              <div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                  <thead>
+                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[15%]">date</th>
+                      <th className="py-1.5 px-1 normal-case w-[15%]">order date</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%]">server</th>
+                      <th className="py-1.5 px-1 normal-case w-[8%] text-center">invoice</th>
+                      <th className="py-1.5 px-1 normal-case w-[28%]">description</th>
+                      <th className="py-1.5 px-1 normal-case w-[6%] text-center">qty</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%] text-right">value (LBP)</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%]">reason</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium">
+                    {voidRows.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 leading-normal align-top">
+                        <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.date}</td>
+                        <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.orderDate}</td>
+                        <td className="py-2 px-1 font-semibold text-slate-800">{item.server}</td>
+                        <td className="py-2 px-1 font-mono font-bold text-center">{item.invoice}</td>
+                        <td className="py-2 px-1 font-bold text-slate-900 leading-snug whitespace-normal break-words">
+                          {item.description}
+                        </td>
+                        <td className="py-2 px-1 text-center font-mono font-bold">{item.qty.toFixed(2)}</td>
+                        <td className="py-2 px-1 text-right font-mono font-bold">{item.valueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td className="py-2 px-1 text-slate-700 text-[10.5px] leading-tight font-medium">{item.reason}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-end">
+                  <div className="w-[300px] space-y-1">
+                    <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
+                      <span>Total Voids:</span> <span>3 events</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-[#1e3a2b]">
+                      <span>Total Value:</span> <span>10,890,000.00 LBP</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* VIEW C: SALES & OTHER MATRIX */}
-          {!activeReport.code.startsWith('REP_L_') && activeReport.code !== 'REP_IC_001' && (
-            <div>
-              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
-                <thead>
-                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                    <th className="py-1 px-1 normal-case w-[14%]">ref #</th>
-                    <th className="py-1 px-1 normal-case w-[14%]">date</th>
-                    <th className="py-1 px-1 normal-case w-[24%]">client / account</th>
-                    <th className="py-1 px-1 normal-case w-[26%]">item details</th>
-                    <th className="py-1 px-1 normal-case w-[8%] text-center">qty</th>
-                    <th className="py-1 px-1 normal-case w-[14%] text-right">total ($)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {genericSalesRows.map((s, i) => (
-                    <tr key={i} className="hover:bg-slate-50 leading-normal">
-                      <td className="py-1.5 px-1 font-mono font-bold">{s.ref}</td>
-                      <td className="py-1.5 px-1 font-mono text-[10px]">{s.date}</td>
-                      <td className="py-1.5 px-1 font-bold text-slate-900">{s.client}</td>
-                      <td className="py-1.5 px-1 text-slate-800">{s.item}</td>
-                      <td className="py-1.5 px-1 text-center font-mono">{s.qty}</td>
-                      <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">${s.totalUsd.toFixed(2)}</td>
+            {/* VIEW C: SALES & OTHER MATRIX */}
+            {!activeReport.code.startsWith('REP_L_') && activeReport.code !== 'REP_IC_001' && (
+              <div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                  <thead>
+                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                      <th className="py-1 px-1 normal-case w-[14%]">ref #</th>
+                      <th className="py-1 px-1 normal-case w-[14%]">date</th>
+                      <th className="py-1 px-1 normal-case w-[24%]">client / account</th>
+                      <th className="py-1 px-1 normal-case w-[26%]">item details</th>
+                      <th className="py-1 px-1 normal-case w-[8%] text-center">qty</th>
+                      <th className="py-1 px-1 normal-case w-[14%] text-right">total ($)</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium">
+                    {genericSalesRows.map((s, i) => (
+                      <tr key={i} className="hover:bg-slate-50 leading-normal">
+                        <td className="py-1.5 px-1 font-mono font-bold">{s.ref}</td>
+                        <td className="py-1.5 px-1 font-mono text-[10px]">{s.date}</td>
+                        <td className="py-1.5 px-1 font-bold text-slate-900">{s.client}</td>
+                        <td className="py-1.5 px-1 text-slate-800">{s.item}</td>
+                        <td className="py-1.5 px-1 text-center font-mono">{s.qty}</td>
+                        <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">${s.totalUsd.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
-                <span>Category: {activeReport.category}</span>
-                <span>Total Revenue: ${genericSalesRows.reduce((s, r) => s + r.totalUsd, 0).toFixed(2)}</span>
+                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
+                  <span>Category: {activeReport.category}</span>
+                  <span>Total Revenue: ${genericSalesRows.reduce((s, r) => s + r.totalUsd, 0).toFixed(2)}</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Footer */}
-          <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
-            <span>Printed from Vanguard ERP System</span>
-            <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
-            <span>Page 1 of 1</span>
+            {/* Footer */}
+            <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
+              <span>Printed from Vanguard ERP System</span>
+              <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
+              <span>Page 1 of 1</span>
+            </div>
+
           </div>
-        </div>
+
+        </main>
 
       </div>
 
