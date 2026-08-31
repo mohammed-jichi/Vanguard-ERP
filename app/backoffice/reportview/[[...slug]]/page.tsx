@@ -7,9 +7,7 @@ export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // ==========================================================================
-  // EXACT PERIOD & DYNAMIC DATE LOGIC AS DICTATED
-  // ==========================================================================
+  // Period & Dynamic Date Logic
   const [periodPreset, setPeriodPreset] = useState<'TODAY' | 'YESTERDAY' | 'THIS_MONTH' | 'LAST_MONTH' | 'DATE_RANGE' | 'EOD_DATE'>('THIS_MONTH');
   const [fromDate, setFromDate] = useState('2026-08-30');
   const [toDate, setToDate] = useState('2026-08-30');
@@ -17,7 +15,7 @@ export default function MasterReportViewPage() {
   const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
-  // Active Report State (Default: Summary of voids)
+  // Active Report State
   const [activeReport, setActiveReport] = useState({
     code: 'REP_IC_001',
     title: 'Summary of voids',
@@ -333,7 +331,6 @@ export default function MasterReportViewPage() {
     { ref: 'INV-0893', date: '29-Aug-2026', client: 'Al-Kheir Olive Center', item: 'Extra Virgin Glass 1L', qty: 50, totalUsd: 3000.0, rep: 'Hussein Mahdi' },
   ];
 
-  // Formatted date string for A4 Header
   const getSelectedPeriodDisplay = () => {
     switch (periodPreset) {
       case 'TODAY': return '31-Aug-2026 (Today)';
@@ -350,7 +347,7 @@ export default function MasterReportViewPage() {
     <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans">
       
       {/* =================================================================== */}
-      {/* 1. TOP SUB-HEADER BAR                                               */}
+      {/* 1. TOP SUB-HEADER BAR (HIDDEN ON PRINT)                             */}
       {/* =================================================================== */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
@@ -389,14 +386,13 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (WITH DICTATED CONDITIONAL LOGIC)*/}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (HIDDEN ON PRINT)               */}
       {/* =================================================================== */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         
         {/* Left Inputs: Period Dropdown + Conditional Dynamic Date Area + Branches */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           
-          {/* Period Preset Dropdown (6 Exact Dictated Options) */}
           <select
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value as any)}
@@ -410,8 +406,7 @@ export default function MasterReportViewPage() {
             <option value="EOD_DATE">EOD Date</option>
           </select>
 
-          {/* CONDITIONAL DATE AREA */}
-          {/* A. TODAY (Locked Date) */}
+          {/* Conditional Date Display */}
           {periodPreset === 'TODAY' && (
             <input
               type="text"
@@ -419,11 +414,9 @@ export default function MasterReportViewPage() {
               disabled
               value="31-Aug-2026"
               className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
-              title="Today's fixed date (Read-only)"
             />
           )}
 
-          {/* B. YESTERDAY (Locked Date) */}
           {periodPreset === 'YESTERDAY' && (
             <input
               type="text"
@@ -431,11 +424,9 @@ export default function MasterReportViewPage() {
               disabled
               value="30-Aug-2026"
               className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
-              title="Yesterday's fixed date (Read-only)"
             />
           )}
 
-          {/* C. THIS MONTH (Locked August 2026) */}
           {periodPreset === 'THIS_MONTH' && (
             <input
               type="text"
@@ -443,11 +434,9 @@ export default function MasterReportViewPage() {
               disabled
               value="August 2026"
               className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
-              title="Current month (Read-only)"
             />
           )}
 
-          {/* D. LAST MONTH (Locked July 2026) */}
           {periodPreset === 'LAST_MONTH' && (
             <input
               type="text"
@@ -455,34 +444,27 @@ export default function MasterReportViewPage() {
               disabled
               value="July 2026"
               className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
-              title="Previous month (Read-only)"
             />
           )}
 
-          {/* E. DATE RANGE (Dual 30 August 2026 with Calendar Buttons) */}
           {periodPreset === 'DATE_RANGE' && (
             <div className="flex items-center gap-1.5 bg-slate-50 p-0.5 rounded border border-slate-300">
-              <div className="flex items-center gap-1">
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
-                />
-              </div>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
+              />
               <span className="text-slate-400 text-xs font-bold">➔</span>
-              <div className="flex items-center gap-1">
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
-                />
-              </div>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
+              />
             </div>
           )}
 
-          {/* F. EOD DATE (Dropdown Starting Dec 10, 2025 to Today) */}
           {periodPreset === 'EOD_DATE' && (
             <select
               value={eodDate}
@@ -491,18 +473,13 @@ export default function MasterReportViewPage() {
             >
               <option value="2026-08-31">31-Aug-2026 (Closeout)</option>
               <option value="2026-08-30">30-Aug-2026 (Closeout)</option>
-              <option value="2026-08-29">29-Aug-2026 (Closeout)</option>
-              <option value="2026-08-28">28-Aug-2026 (Closeout)</option>
               <option value="2026-08-15">15-Aug-2026 (Mid-Month Closeout)</option>
               <option value="2026-08-01">01-Aug-2026 (Start-Month Closeout)</option>
               <option value="2026-07-31">31-Jul-2026 (Month Closeout)</option>
-              <option value="2026-06-30">30-Jun-2026 (Q2 Closeout)</option>
-              <option value="2026-01-01">01-Jan-2026 (New Year)</option>
               <option value="2025-12-10">10-Dec-2025 (Initial Rollout)</option>
             </select>
           )}
 
-          {/* Branches Dropdown (All Branches + Branch 1 to 4) */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -515,10 +492,9 @@ export default function MasterReportViewPage() {
             <option value="BRANCH_4">Branch 4</option>
           </select>
 
-          {/* Action Buttons: Filter & Reset */}
           <button
             type="button"
-            onClick={() => alert(`Filter Applied for Period: ${periodPreset} | Branch: ${branchFilter}`)}
+            onClick={() => alert('Filter applied')}
             className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
           >
             Filter
@@ -585,9 +561,9 @@ export default function MasterReportViewPage() {
       {/* =================================================================== */}
       {/* 3. WORKSPACE: 93-REPORTS TREE + PROPORTIONAL A4 PAPER               */}
       {/* =================================================================== */}
-      <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8]">
+      <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree Sidebar */}
+        {/* Left 93-Reports Tree Sidebar (Strictly hidden on print) */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             
@@ -679,12 +655,13 @@ export default function MasterReportViewPage() {
           </aside>
         )}
 
-        {/* Right Canvas: Zoomable A4 Paper */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar flex justify-center">
+        {/* Right Canvas: Isolated A4 Paper Container */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar flex justify-center print:overflow-visible print:p-0 print:m-0">
           
           <div
+            id="printable-a4-report"
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
-            className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 transition-transform duration-200 select-none"
+            className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none transition-transform duration-200 select-none"
           >
             {/* Header */}
             <div className="border-b-2 border-black pb-2 mb-2">
