@@ -35,7 +35,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (EMBEDDED GOLDEN VANGUARD EMBLEM)       */}
+      {/* 1. MASTER TOP GLOBAL HEADER (WITH VANGUARD CIRCULAR GOLD MEDALLION) */}
       {/* =================================================================== */}
       <header
         style={{
@@ -43,7 +43,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         }}
         className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
-        {/* Left Side: Toggle + Pure Vector Vanguard Logo (with Hover Pop) + Title */}
+        {/* Left Side: Toggle + Vanguard Circular Gold Medallion + Title */}
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -56,45 +56,24 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </svg>
           </button>
 
-          {/* Interactive Vanguard Logo & Title with 3D Hover Pop */}
+          {/* Interactive Vanguard Circular Emblem & Title with Hover Pop */}
           <Link href="/backoffice/dashboard" className="flex items-center gap-3 group cursor-pointer">
             
-            {/* Pure Inline Vector Vanguard Gold Emblem (Guaranteed Render) */}
-            <div className="relative flex items-center justify-center p-1.5 rounded-xl bg-gradient-to-br from-black/50 to-[#2a2418]/60 border border-amber-300/30 group-hover:border-amber-300/80 transition-all duration-300 shadow-md">
-              <svg
-                className="w-8 h-8 transition-all duration-300 ease-out transform group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:drop-shadow-[0_0_14px_rgba(212,175,55,0.7)]"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* SVG Definitions for Luxury Gold Gradient */}
-                <defs>
-                  <linearGradient id="vanguardGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f7e7b4" />
-                    <stop offset="30%" stopColor="#d4af37" />
-                    <stop offset="70%" stopColor="#8a703b" />
-                    <stop offset="100%" stopColor="#c5a059" />
-                  </linearGradient>
-                  <linearGradient id="vanguardDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#1e2638" />
-                    <stop offset="100%" stopColor="#0f1420" />
-                  </linearGradient>
-                </defs>
-
-                {/* Shield / Sail Emblem Shape */}
-                <path
-                  d="M24 4L40 10V22C40 32.5 33.2 42.1 24 44C14.8 42.1 8 32.5 8 22V10L24 4Z"
-                  fill="url(#vanguardDarkGrad)"
-                  stroke="url(#vanguardGoldGrad)"
-                  strokeWidth="2"
+            {/* CIRCULAR CLIPPED GOLD MEDALLION (ONLY THE CIRCLE) */}
+            <div className="relative flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-amber-300/70 shadow-md bg-[#13110d] group-hover:border-amber-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_16px_rgba(212,175,55,0.75)] transition-all duration-300">
+                <img
+                  src="/vanguard-emblem.jpg"
+                  alt="Vanguard ERP Circular Medallion"
+                  onError={(e) => {
+                    // Fallback to alternative filename if stored as original name
+                    if (!e.currentTarget.src.includes('Vanguard')) {
+                      e.currentTarget.src = '/Vanguard (Login Page and Header).jpg';
+                    }
+                  }}
+                  className="w-full h-full object-cover scale-105"
                 />
-                {/* Vanguard Stylized V / Ship Sail */}
-                <path
-                  d="M17 14L24 34L31 14H26.5L24 23.5L21.5 14H17Z"
-                  fill="url(#vanguardGoldGrad)"
-                />
-                <circle cx="24" cy="9" r="2" fill="#f7e7b4" />
-              </svg>
+              </div>
             </div>
 
             {/* Scaled Vanguard ERP Typography */}
