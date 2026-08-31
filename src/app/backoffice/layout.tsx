@@ -31,9 +31,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
       
-      {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER                                         */}
-      {/* =================================================================== */}
+      {/* 1. MASTER TOP GLOBAL HEADER */}
       <header className="h-[68px] bg-white border-b-2 border-[#1e3a2b]/20 px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
         
         {/* Left Side: Toggle + Vanguard Logo & Title */}
@@ -90,7 +88,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         {/* Right Side: Action Icons -> QUICK MENU FIRST -> JICHI MOHAMMED */}
         <div className="flex items-center gap-3 shrink-0">
           
-          {/* Action Icons Bar */}
           <div className="flex items-center gap-1.5 text-slate-600">
             {/* 1. Home */}
             <Link
@@ -103,16 +100,19 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </Link>
 
-            {/* 2. Messages */}
+            {/* 2. OPERATIONAL INBOX */}
             <Link
-              href="/backoffice/social-crm"
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
-              title="Messages & Inbox"
+              href="/backoffice/inbox"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
+              title="Operations & Approvals Inbox"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
               </svg>
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-xs">
+                2
+              </span>
             </Link>
 
             {/* 3. Alerts */}
@@ -120,14 +120,11 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               type="button"
               onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
-              title="Alerts & System Notifications"
+              title="Alerts & Notifications"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
               </svg>
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-xs">
-                0
-              </span>
             </button>
 
             {/* 4. Help */}
@@ -142,7 +139,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </button>
 
-            {/* 5. QUICK MENU GRID BUTTON (COMES FIRST BEFORE USER PROFILE) */}
+            {/* 5. QUICK MENU GRID BUTTON */}
             <button
               type="button"
               onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
@@ -155,7 +152,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </button>
           </div>
 
-          {/* 6. JICHI MOHAMMED USER PROFILE (COMES AFTER QUICK MENU) */}
+          {/* 6. JICHI MOHAMMED PROFILE */}
           <div className="relative">
             <button
               type="button"
@@ -172,8 +169,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             {/* 10-Item Authentic Dropdown Menu */}
             {userDropdownOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
-                
-                {/* Header */}
                 <div className="px-4 py-2.5 border-b border-slate-100 bg-[#f8faf8]">
                   <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
                   <div className="text-[10.5px] text-[#1e3a2b] font-mono font-semibold">General Operations Manager</div>
@@ -182,99 +177,39 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   </div>
                 </div>
 
-                {/* 10 Items */}
                 <div className="py-1">
-                  <button
-                    type="button"
-                    onClick={() => { alert('Organization Settings: Southern Olive Oil Products S.A.R.L'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">🏢</span>
-                    <span>Organization</span>
+                  <button type="button" onClick={() => { alert('Organization Settings'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">🏢</span> <span>Organization</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">🔔</span>
-                    <span>Alerts</span>
+                  <button type="button" onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">🔔</span> <span>Alerts</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { alert('System Notifications'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">💬</span>
-                    <span>Notifications</span>
+                  <Link href="/backoffice/inbox" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">💬</span> <span>Notifications & Inbox</span>
+                  </Link>
+                  <button type="button" onClick={() => { alert('Language: English / Arabic (العربية)'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">🌐</span> <span>Language</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { alert('Language: English / Arabic (العربية)'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">🌐</span>
-                    <span>Language</span>
+                  <button type="button" onClick={() => { alert('My Account Settings'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">👤</span> <span>My Account</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { alert('My Account & Credentials'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">👤</span>
-                    <span>My Account</span>
+                  <button type="button" onClick={() => { alert('Roles & Permissions'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">🔑</span> <span>Roles</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { alert('Roles & Permissions Management'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">🔑</span>
-                    <span>Roles</span>
+                  <button type="button" onClick={() => { alert('Users Management'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">👥</span> <span>Users</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { alert('Users & Access Directory'); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">👥</span>
-                    <span>Users</span>
+                  <button type="button" onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">📰</span> <span>Latest Updates</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">📰</span>
-                    <span>Latest Updates</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                  >
-                    <span className="text-sm">❓</span>
-                    <span>Support Center</span>
+                  <button type="button" onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                    <span className="text-sm">❓</span> <span>Support Center</span>
                   </button>
                 </div>
 
-                {/* Logout */}
                 <div className="border-t border-slate-100 mt-1 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => alert('Signed out successfully')}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors"
-                  >
-                    <span className="text-sm">🚪</span>
-                    <span>Logout</span>
+                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors">
+                    <span className="text-sm">🚪</span> <span>Logout</span>
                   </button>
                 </div>
 
@@ -284,7 +219,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
         </div>
 
-        {/* Accent Line */}
         <div
           style={{
             background: 'linear-gradient(90deg, #c5a059 0%, #1e3a2b 50%, #c5a059 100%)',
@@ -336,6 +270,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/reportview" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/reportview') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
                         <span>Sales Reports Matrix</span>
                         <span className="text-[9.5px] font-mono bg-[#1e3a2b]/15 text-[#1e3a2b] px-1.5 py-0.5 rounded font-bold">93 Rep</span>
+                      </Link>
+                      <Link href="/backoffice/inbox" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/inbox') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
+                        <span>Operations Inbox</span>
+                        <span className="text-[9.5px] font-mono bg-amber-500/20 text-amber-900 px-1.5 py-0.5 rounded font-bold">2 New</span>
                       </Link>
                       <Link href="/backoffice/online-orders" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/online-orders') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
                         Online Orders Control

@@ -291,7 +291,7 @@ export default function MasterDashboardOperationsPage() {
               <span className="font-bold text-xs text-slate-800 group-hover:text-[#1e3a2b]">Lost Goods</span>
             </Link>
 
-            <Link href="/backoffice/operations" className="p-4 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center gap-2 group transition-all">
+            <Link href="/backoffice/operations" className="p-4 rounded-xl border border-slate-200 hover:border-[#1e3a2b] hover:shadow-md bg-[#fbfcfb] hover:bg-white flex flex-col items-center justify-center gap-2 group-hover:scale-110 transition-all">
               <div className="w-11 h-11 rounded-xl bg-orange-50 text-orange-700 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🏗️</div>
               <span className="font-bold text-xs text-slate-800 group-hover:text-[#1e3a2b]">Item Assembly</span>
             </Link>
