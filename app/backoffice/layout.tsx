@@ -35,7 +35,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (WITH VANGUARD CIRCULAR GOLD MEDALLION) */}
+      {/* 1. MASTER TOP GLOBAL HEADER (52PX EMBLEM + 4CM SHIFTED BRANDING)    */}
       {/* =================================================================== */}
       <header
         style={{
@@ -43,8 +43,9 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         }}
         className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
-        {/* Left Side: Toggle + Vanguard Circular Gold Medallion + Title */}
-        <div className="flex items-center gap-4">
+        {/* Left Area: Toggle Button + 4cm Offset Logo & Title */}
+        <div className="flex items-center">
+          {/* Hamburger Toggle Button (Far Left) */}
           <button
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -56,29 +57,29 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </svg>
           </button>
 
-          {/* Interactive Vanguard Circular Emblem & Title with Hover Pop */}
-          <Link href="/backoffice/dashboard" className="flex items-center gap-3 group cursor-pointer">
+          {/* Logo & Branding Block Shifted ~4cm Right (ml-16 md:ml-24) */}
+          <Link href="/backoffice/dashboard" className="flex items-center gap-3.5 ml-16 md:ml-24 group cursor-pointer">
             
-            {/* CIRCULAR CLIPPED GOLD MEDALLION (ONLY THE CIRCLE) */}
-            <div className="relative flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-amber-300/70 shadow-md bg-[#13110d] group-hover:border-amber-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_16px_rgba(212,175,55,0.75)] transition-all duration-300">
-                <img
-                  src="/vanguard-emblem.jpg"
-                  alt="Vanguard ERP Circular Medallion"
-                  onError={(e) => {
-                    // Fallback to alternative filename if stored as original name
-                    if (!e.currentTarget.src.includes('Vanguard')) {
-                      e.currentTarget.src = '/Vanguard (Login Page and Header).jpg';
-                    }
-                  }}
-                  className="w-full h-full object-cover scale-105"
-                />
-              </div>
+            {/* 52px Circular Gold Medallion Image */}
+            <div className="w-[52px] h-[52px] rounded-full overflow-hidden border-2 border-amber-300/80 shadow-lg bg-black shrink-0 group-hover:border-amber-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_18px_rgba(212,175,55,0.85)] transition-all duration-300">
+              <img
+                src="/vanguard-logo.jpg"
+                alt="Vanguard ERP Circular Emblem"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('Vanguard (Login Page and Header).jpg')) {
+                    target.src = '/Vanguard (Login Page and Header).jpg';
+                  } else if (!target.src.includes('vanguard-emblem.jpg')) {
+                    target.src = '/vanguard-emblem.jpg';
+                  }
+                }}
+                className="w-full h-full object-cover scale-105"
+              />
             </div>
 
-            {/* Scaled Vanguard ERP Typography */}
+            {/* Scaled & Offset Vanguard ERP Typography */}
             <div className="flex flex-col">
-              <span className="font-extrabold text-[17px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
+              <span className="font-extrabold text-[17.5px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
                 Vanguard ERP
               </span>
               <span className="text-[10px] font-mono text-amber-200/90 -mt-0.5 tracking-wider uppercase">
