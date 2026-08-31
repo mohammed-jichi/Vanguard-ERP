@@ -35,11 +35,11 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (BALANCED 3-ZONE: CENTERED TENANT BADGE)*/}
+      {/* 1. MASTER TOP GLOBAL HEADER (IMPERIAL OLIVE GREEN & METALLIC GOLD)  */}
       {/* =================================================================== */}
       <header
         style={{
-          background: 'linear-gradient(110deg, #101624 0%, #172238 25%, #2a261c 48%, #8a703b 68%, #c5a059 80%, #a8843c 88%, #141c2c 100%)',
+          background: 'linear-gradient(110deg, #0b140e 0%, #132217 25%, #1e3323 48%, #5a4b22 68%, #c5a059 80%, #a8843c 88%, #0f1c12 100%)',
         }}
         className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
@@ -48,7 +48,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           <button
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
-            className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-amber-200 hover:text-white transition-colors border border-amber-400/25 shadow-xs"
+            className="p-2 rounded-xl bg-black/30 hover:bg-black/50 text-amber-200 hover:text-white transition-colors border border-amber-400/25 shadow-xs"
             title="Toggle Sidebar"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,19 +152,19 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </button>
 
             {userDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#1a202c] border border-amber-400/30 rounded-xl shadow-2xl py-1.5 text-xs text-slate-200 z-50">
-                <div className="px-4 py-2.5 border-b border-slate-700/80 bg-slate-900/60">
+              <div className="absolute right-0 mt-2 w-56 bg-[#16241b] border border-amber-400/30 rounded-xl shadow-2xl py-1.5 text-xs text-slate-200 z-50">
+                <div className="px-4 py-2.5 border-b border-slate-700/80 bg-black/50">
                   <div className="font-bold text-white text-[13px]">Jichi Mohammed</div>
                   <div className="text-[10.5px] text-amber-300 font-mono truncate mt-0.5">General Operations Manager</div>
                 </div>
-                <Link href="/backoffice/dashboard" className="block px-4 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
+                <Link href="/backoffice/dashboard" className="block px-4 py-2 hover:bg-[#233829] text-slate-300 hover:text-white">
                   Dashboard Overview
                 </Link>
-                <Link href="/backoffice/reportview" className="block px-4 py-2 hover:bg-slate-800 text-slate-300 hover:text-white">
+                <Link href="/backoffice/reportview" className="block px-4 py-2 hover:bg-[#233829] text-slate-300 hover:text-white">
                   Vanguard Reports Matrix (93)
                 </Link>
                 <div className="border-t border-slate-700/80 mt-1 pt-1">
-                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-800">
+                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-400 hover:bg-black/40">
                     Sign Out
                   </button>
                 </div>
@@ -173,27 +173,27 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* 4PX THICK INVERSE ACCENT BORDER */}
+        {/* 4PX THICK INVERSE ACCENT BORDER (GOLD OVER OLIVE -> OLIVE OVER GOLD) */}
         <div
           style={{
-            background: 'linear-gradient(90deg, #c5a059 0%, #d4af37 25%, #8a703b 50%, #1c263c 75%, #0f1624 100%)',
+            background: 'linear-gradient(90deg, #c5a059 0%, #d4af37 25%, #8a703b 50%, #1e3825 75%, #0b140e 100%)',
           }}
           className="absolute bottom-0 left-0 right-0 h-[4px] shadow-sm"
         />
       </header>
 
       {/* =================================================================== */}
-      {/* 2. BODY WORKSPACE: LIGHTER METALLIC BRONZE-GOLD GRADIENT SIDEBAR    */}
+      {/* 2. BODY WORKSPACE: IMPERIAL OLIVE GREEN GRADIENT SIDEBAR            */}
       {/* =================================================================== */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Master Sidebar with Lighter Metallic Bronze-Gold Gradient */}
+        {/* Master Sidebar with Imperial Olive Green & Metallic Gold Accents */}
         {sidebarVisible && (
           <aside
             style={{
-              background: 'linear-gradient(180deg, #241e16 0%, #30261a 25%, #423523 50%, #59472e 75%, #6f5939 100%)',
+              background: 'linear-gradient(180deg, #111d14 0%, #182a1d 25%, #233a29 50%, #334e3a 75%, #476850 100%)',
             }}
-            className="w-[280px] text-amber-50 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl relative"
+            className="w-[280px] text-emerald-50 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar shadow-xl relative"
           >
             <div>
               {/* Sidebar Header */}
@@ -221,7 +221,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('sales')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🛒</span>
@@ -260,7 +260,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('fleet')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🚚</span>
@@ -292,7 +292,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('social')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>💬</span>
@@ -315,7 +315,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('operations')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>⚙️</span>
@@ -347,7 +347,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('customers')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>👥</span>
@@ -379,7 +379,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('accounting')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>📈</span>
@@ -411,7 +411,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <button
                     type="button"
                     onClick={() => toggleSection('hr')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#6f5939]/40 text-[11.5px] font-bold transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-amber-100 hover:bg-[#476850]/40 text-[11.5px] font-bold transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <span>🪪</span>
@@ -449,10 +449,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <span className="text-[10px] text-amber-200 font-mono bg-black/45 px-1.5 py-0.5 rounded border border-[#c5a059]/45">Live</span>
             </div>
 
-            {/* 3.5PX THICK INVERSE ACCENT BORDER */}
+            {/* 3.5PX THICK INVERSE ACCENT BORDER (VERTICAL GOLD-OLIVE) */}
             <div
               style={{
-                background: 'linear-gradient(180deg, #c5a059 0%, #d4af37 30%, #8a703b 60%, #1c263c 85%, #0f1624 100%)',
+                background: 'linear-gradient(180deg, #c5a059 0%, #d4af37 30%, #8a703b 60%, #1e3825 85%, #0b140e 100%)',
               }}
               className="absolute top-0 right-0 bottom-0 w-[3.5px] shadow-sm"
             />
