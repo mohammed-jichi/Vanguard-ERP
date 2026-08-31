@@ -15,11 +15,11 @@ export default function MasterReportViewPage() {
   const [settingsSearch, setSettingsSearch] = useState('');
   const [customCategoryName, setCustomCategoryName] = useState('');
   const [customCategorySearch, setCustomCategorySearch] = useState('');
-  const [selectedToolbarCats, setSelectedToolbarCats] = useState<string[]>([
-    'internal_control',
-    'financial',
-    'product_sales',
-  ]);
+  
+  // Multi-Level Toolbar Selection (Categories, Subcategories & Individual Reports)
+  const [selectedToolbarCats, setSelectedToolbarCats] = useState<string[]>(['internal_control', 'financial', 'product_sales']);
+  const [selectedToolbarSubCats, setSelectedToolbarSubCats] = useState<string[]>([]);
+  const [selectedToolbarReports, setSelectedToolbarReports] = useState<string[]>([]);
   const [expandedSettingsCats, setExpandedSettingsCats] = useState<string[]>([]);
 
   const toggleSettingsCatExpand = (id: string) => {
@@ -32,11 +32,23 @@ export default function MasterReportViewPage() {
     if (selectedToolbarCats.includes(id)) {
       setSelectedToolbarCats(selectedToolbarCats.filter((k) => k !== id));
     } else {
-      if (selectedToolbarCats.length >= 8) {
-        alert('You can include up to 8 categories in the toolbar');
-        return;
-      }
       setSelectedToolbarCats([...selectedToolbarCats, id]);
+    }
+  };
+
+  const toggleToolbarSubCatCheck = (id: string) => {
+    if (selectedToolbarSubCats.includes(id)) {
+      setSelectedToolbarSubCats(selectedToolbarSubCats.filter((k) => k !== id));
+    } else {
+      setSelectedToolbarSubCats([...selectedToolbarSubCats, id]);
+    }
+  };
+
+  const toggleToolbarReportCheck = (code: string) => {
+    if (selectedToolbarReports.includes(code)) {
+      setSelectedToolbarReports(selectedToolbarReports.filter((c) => c !== code));
+    } else {
+      setSelectedToolbarReports([...selectedToolbarReports, code]);
     }
   };
 
@@ -371,7 +383,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Specific Datasets
+  // Sample Datasets
   const customerListRows = [
     { code: 'CUST-01', name: 'Al-Baraka Supermarket S.A.R.L', region: 'Mount Lebanon', city: 'Choueifat Main Highway', phone: '03112233', rep: 'Ahmad Ali Kassem', creditLimit: 5000.0, balance: 1400.0 },
     { code: 'CUST-02', name: 'Al-Nour Food Establishment', region: 'Beirut', city: 'Hamra (Makdessi Street)', phone: '01778899', rep: 'Hiba Aloulou', creditLimit: 3500.0, balance: 890.0 },
@@ -634,7 +646,6 @@ export default function MasterReportViewPage() {
             </select>
           )}
 
-          {/* Scalable Branches Dropdown */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -732,7 +743,7 @@ export default function MasterReportViewPage() {
                   <span className="text-emerald-600 font-bold">📊</span>
                   <div>
                     <div className="font-bold">Export as Microsoft Excel (.xlsx / .csv)</div>
-                    <div className="text-[10px] text-slate-400">Formatted spreadsheet data with Arabic UTF-8</div>
+                    <div className="text-[10px] text-slate-400">Formatted spreadsheet with Arabic UTF-8</div>
                   </div>
                 </button>
 
@@ -765,7 +776,7 @@ export default function MasterReportViewPage() {
             )}
           </div>
 
-          {/* GEAR ICON BUTTON (OPENS SETTINGS MODAL) */}
+          {/* GEAR ICON BUTTON */}
           <button
             type="button"
             onClick={() => setSettingsModalOpen(true)}
@@ -777,9 +788,7 @@ export default function MasterReportViewPage() {
         </div>
       </div>
 
-      {/* =================================================================== */}
-      {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER         */}
-      {/* =================================================================== */}
+      {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
         {/* Left 93-Reports Tree */}
@@ -1027,7 +1036,7 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 4. SETTINGS MODAL (AUTHENTIC OMEGA-STYLE SETTINGS MODAL)            */}
+      {/* 4. SETTINGS MODAL (WITH NESTED CHECKBOXES ON EVERY REPORT & SUBCAT) */}
       {/* =================================================================== */}
       {settingsModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 print:hidden animate-fadeIn">
@@ -1094,13 +1103,13 @@ export default function MasterReportViewPage() {
                     type="text"
                     value={settingsSearch}
                     onChange={(e) => setSettingsSearch(e.target.value)}
-                    placeholder="Search..."
+                    placeholder="Search categories and reports..."
                     className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
                   />
                 </div>
 
-                {/* Categories List with Checkbox & Expand Arrow */}
-                <div className="space-y-1.5 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                {/* Categories List with Granular Checkboxes on Every Level */}
+                <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                   
                   {/* Recently Viewed */}
                   <div className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
@@ -1118,7 +1127,7 @@ export default function MasterReportViewPage() {
                   {/* Main Categories Mapping */}
                   {masterCatalog.map((c) => (
                     <div key={c.id} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
-                      <div className="p-2 flex items-center justify-between bg-white">
+                      <div className="p-2 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors">
                         <label className="flex items-center gap-2 cursor-pointer font-semibold">
                           <input
                             type="checkbox"
@@ -1138,24 +1147,55 @@ export default function MasterReportViewPage() {
                         </button>
                       </div>
 
-                      {/* Expanded Sub-Categories & Reports inside Settings */}
+                      {/* Expanded Sub-Categories & Reports with Full Granular Checkboxes */}
                       {expandedSettingsCats.includes(c.id) && (
-                        <div className="p-2 border-t border-slate-100 bg-slate-50 space-y-1 text-[11px]">
+                        <div className="p-2 border-t border-slate-100 bg-slate-50/80 space-y-1.5 text-[11px]">
+                          
+                          {/* Direct Reports Checkboxes */}
                           {c.reports && c.reports.map((r) => (
-                            <div key={r.code} className="pl-4 py-0.5 text-slate-600 font-medium">
-                              • {r.title}
-                            </div>
+                            <label key={r.code} className="flex items-center gap-2 pl-4 py-1 hover:bg-white rounded cursor-pointer font-medium text-slate-700">
+                              <input
+                                type="checkbox"
+                                checked={selectedToolbarReports.includes(r.code)}
+                                onChange={() => toggleToolbarReportCheck(r.code)}
+                                className="accent-[#1e3a2b] w-3 h-3"
+                              />
+                              <span className="font-mono text-[9px] text-slate-400">[{r.code}]</span>
+                              <span>{r.title}</span>
+                            </label>
                           ))}
+
+                          {/* Subcategories with Nested Checkboxes */}
                           {c.subCategories && c.subCategories.map((s) => (
-                            <div key={s.id} className="pl-2 py-0.5">
-                              <span className="font-bold text-slate-800">📁 {s.title}</span>
-                              <div className="pl-4 space-y-0.5 mt-0.5 text-slate-600">
+                            <div key={s.id} className="border border-slate-200/80 rounded-lg p-1.5 bg-white space-y-1">
+                              <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedToolbarSubCats.includes(s.id)}
+                                  onChange={() => toggleToolbarSubCatCheck(s.id)}
+                                  className="accent-[#1e3a2b] w-3.5 h-3.5"
+                                />
+                                <span>📁 {s.title}</span>
+                              </label>
+
+                              {/* Reports inside this Subcategory */}
+                              <div className="pl-5 space-y-0.5 border-t border-slate-100 pt-1">
                                 {s.reports.map((sr) => (
-                                  <div key={sr.code}>- {sr.title}</div>
+                                  <label key={sr.code} className="flex items-center gap-2 py-0.5 hover:bg-slate-50 rounded cursor-pointer text-slate-600 font-medium">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedToolbarReports.includes(sr.code)}
+                                      onChange={() => toggleToolbarReportCheck(sr.code)}
+                                      className="accent-[#1e3a2b] w-3 h-3"
+                                    />
+                                    <span className="font-mono text-[9px] text-slate-400">[{sr.code}]</span>
+                                    <span>{sr.title}</span>
+                                  </label>
                                 ))}
                               </div>
                             </div>
                           ))}
+
                         </div>
                       )}
                     </div>
@@ -1231,7 +1271,7 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
 
-              {/* Search Reports */}
+              {/* Search Reports with Checkboxes */}
               <div>
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
                   <span className="text-slate-400">🔍</span>
@@ -1245,7 +1285,7 @@ export default function MasterReportViewPage() {
                 </div>
                 <div className="mt-2 max-h-40 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
                   <div className="text-[10.5px] text-slate-400 font-mono text-center">
-                    Type in search box to filter and assign reports
+                    Type in search box to filter and assign reports with checkboxes
                   </div>
                 </div>
               </div>
