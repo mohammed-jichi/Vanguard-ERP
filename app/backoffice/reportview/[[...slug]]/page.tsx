@@ -8,7 +8,7 @@ export default function MasterReportViewPage() {
   const [period, setPeriod] = useState('THIS_MONTH');
   const [branch, setBranch] = useState('ALL');
 
-  // Accordion State for Categories & Sub-Categories
+  // Accordion State
   const [expandedCats, setExpandedCats] = useState<string[]>([
     'internal_control',
     'financial',
@@ -37,18 +37,15 @@ export default function MasterReportViewPage() {
     );
   };
 
-  // Active Report State (Default: Summary of Voids)
+  // Active Report State
   const [activeReport, setActiveReport] = useState({
     code: 'REP_IC_001',
     title: 'Summary of Voids',
     category: 'Internal Control',
   });
 
-  // ==========================================================================
-  // COMPLETE 100% EXHAUSTIVE 93-REPORT TREE STRUCTURE
-  // ==========================================================================
+  // Complete 93-Reports Master Catalog
   const masterCatalog = [
-    // 1. Internal Control (8 Reports)
     {
       id: 'internal_control',
       title: '1. Internal Control',
@@ -64,8 +61,6 @@ export default function MasterReportViewPage() {
         { code: 'REP_IC_008', title: 'Discount Summary' },
       ],
     },
-
-    // 2. Financial Reports (9 Sub-Categories, 48 Reports)
     {
       id: 'financial',
       title: '2. Financial Reports',
@@ -175,8 +170,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 3. Product Sales (4 Sub-Categories, 19 Reports)
     {
       id: 'product_sales',
       title: '3. Product Sales',
@@ -188,6 +181,7 @@ export default function MasterReportViewPage() {
           reports: [
             { code: 'REP_P_101', title: 'Summary of Sales by Items' },
             { code: 'REP_S_00191', title: 'Sales by Items' },
+            { code: 'REP_S_00192', title: 'Sales by Invoices' },
             { code: 'REP_P_102', title: 'Sales Details for One Sales Item' },
             { code: 'REP_P_103', title: 'Sales by Customer by Items' },
             { code: 'REP_P_104', title: 'Daily Sales by Items' },
@@ -227,8 +221,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 4. Customer Sales (2 Sub-Categories, 5 Reports)
     {
       id: 'customer_sales',
       title: '4. Customer Sales',
@@ -237,9 +229,7 @@ export default function MasterReportViewPage() {
         {
           id: 'top_performers_cust',
           title: 'Top Performers',
-          reports: [
-            { code: 'REP_C_101', title: 'Top N Customers by Amount' },
-          ],
+          reports: [{ code: 'REP_C_101', title: 'Top N Customers by Amount' }],
         },
         {
           id: 'cust_delivery',
@@ -253,8 +243,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 5. Today's and History (2 Sub-Categories, 6 Reports)
     {
       id: 'todays_history',
       title: "5. Today's and History",
@@ -280,8 +268,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 6. Time and Attendance (3 Reports)
     {
       id: 'time_attendance',
       title: '6. Time and Attendance',
@@ -292,8 +278,6 @@ export default function MasterReportViewPage() {
         { code: 'REP_TA_003', title: 'Labor Cost' },
       ],
     },
-
-    // 7. Lists (4 Reports)
     {
       id: 'lists',
       title: '7. Lists',
@@ -329,310 +313,281 @@ export default function MasterReportViewPage() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] flex flex-col font-sans text-slate-800 select-none text-left">
+    <div className="w-full flex overflow-hidden h-[calc(100vh-80px)] select-none">
       
-      {/* Top Header Bar */}
-      <header className="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setShowCatalog(!showCatalog)}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors cursor-pointer"
-          >
-            {showCatalog ? '◀ Hide Catalog' : '▶ Show Report Categories'}
-          </button>
+      {/* 1. Left 93-Reports Tree Sidebar (HIGH CONTRAST & DISTINCT CARDS) */}
+      {showCatalog && (
+        <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-sm custom-scrollbar rounded-xl">
           
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Active Report:</span>
-            <span className="font-bold text-[#1a629b] bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
-              [{activeReport.code}] {activeReport.title}
-            </span>
-          </div>
-        </div>
-
-        <span className="text-xs font-mono text-slate-500">
-          Southern Olive Oil Products S.A.R.L - Vanguard Reports Matrix Engine
-        </span>
-      </header>
-
-      {/* Main Workspace Container */}
-      <div className="flex-1 flex overflow-hidden">
-        
-        {/* Left 93-Reports Nested Tree Sidebar */}
-        {showCatalog && (
-          <aside className="w-[300px] h-[calc(100vh-48px)] bg-white border-r border-slate-300 print:hidden overflow-y-auto p-2 space-y-2 shrink-0 custom-scrollbar">
+          {/* Search Box */}
+          <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="🔍 Search all 93 reports..."
-              className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded text-xs focus:border-[#1a629b] focus:outline-none mb-1.5"
+              className="w-full px-2.5 py-1.5 bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
             />
+          </div>
 
-            {/* Tree Categories */}
-            {masterCatalog.map((cat) => (
-              <div key={cat.id} className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50/70">
-                
-                {/* Main Category Header */}
-                <div
-                  onClick={() => toggleCat(cat.id)}
-                  className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 text-[11px] flex items-center justify-between border-b border-slate-200"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span>{cat.icon}</span> <span>{cat.title}</span>
-                  </span>
-                  <span className="text-[9px]">{expandedCats.includes(cat.id) ? '▲' : '▼'}</span>
-                </div>
+          {/* Tree Categories */}
+          {masterCatalog.map((cat) => (
+            <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
+              <div
+                onClick={() => toggleCat(cat.id)}
+                className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 cursor-pointer font-bold text-slate-900 text-[11px] flex items-center justify-between border-b border-slate-200 transition-colors"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>{cat.icon}</span> <span>{cat.title}</span>
+                </span>
+                <span className="text-[9px] text-[#1e3a2b] font-bold">{expandedCats.includes(cat.id) ? '▲' : '▼'}</span>
+              </div>
 
-                {/* Category Body */}
-                {expandedCats.includes(cat.id) && (
-                  <div className="p-1 space-y-1 bg-white">
-                    
-                    {/* If Direct Reports (like Internal Control, Time & Attendance, Lists) */}
-                    {cat.reports && cat.reports
-                      .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                      .map((r) => (
-                        <button
-                          key={r.code}
-                          type="button"
-                          onClick={() => setActiveReport({ ...r, category: cat.title })}
-                          className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-colors cursor-pointer ${
-                            activeReport.code === r.code ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
-                          }`}
-                        >
-                          <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
-                          <span>{r.title}</span>
-                        </button>
-                      ))}
-
-                    {/* If Nested Sub-Categories (like Financial with 9 groups, Product Sales with 4 groups) */}
-                    {cat.subCategories && cat.subCategories.map((sub) => (
-                      <div key={sub.id} className="border border-slate-100 rounded bg-slate-50/50">
-                        <div
-                          onClick={() => toggleSubCat(sub.id)}
-                          className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
-                        >
-                          <span>📁 {sub.title} ({sub.reports.length})</span>
-                          <span className="text-[8px]">{expandedSubCats.includes(sub.id) ? '−' : '+'}</span>
-                        </div>
-
-                        {expandedSubCats.includes(sub.id) && (
-                          <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
-                            {sub.reports
-                              .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                              .map((r) => (
-                                <button
-                                  key={r.code}
-                                  type="button"
-                                  onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
-                                  className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-colors cursor-pointer ${
-                                    activeReport.code === r.code ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
-                                  }`}
-                                >
-                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
-                                  <span>{r.title}</span>
-                                </button>
-                              ))}
-                          </div>
-                        )}
-                      </div>
+              {expandedCats.includes(cat.id) && (
+                <div className="p-1 space-y-1 bg-white">
+                  
+                  {/* Direct Reports */}
+                  {cat.reports && cat.reports
+                    .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map((r) => (
+                      <button
+                        key={r.code}
+                        type="button"
+                        onClick={() => setActiveReport({ ...r, category: cat.title })}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg truncate block text-xs transition-all ${
+                          activeReport.code === r.code
+                            ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
+                            : 'hover:bg-slate-100 text-slate-700 font-medium'
+                        }`}
+                      >
+                        <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
+                        <span>{r.title}</span>
+                      </button>
                     ))}
 
-                  </div>
-                )}
+                  {/* Sub-Categories */}
+                  {cat.subCategories && cat.subCategories.map((sub) => (
+                    <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
+                      <div
+                        onClick={() => toggleSubCat(sub.id)}
+                        className="px-2.5 py-1 font-bold text-slate-800 hover:text-[#1e3a2b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                      >
+                        <span>📁 {sub.title} ({sub.reports.length})</span>
+                        <span className="text-[8px] text-[#1e3a2b] font-bold">{expandedSubCats.includes(sub.id) ? '−' : '+'}</span>
+                      </div>
 
-              </div>
-            ))}
-          </aside>
-        )}
+                      {expandedSubCats.includes(sub.id) && (
+                        <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/80 bg-white">
+                          {sub.reports
+                            .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map((r) => (
+                              <button
+                                key={r.code}
+                                type="button"
+                                onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
+                                className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-all ${
+                                  activeReport.code === r.code
+                                    ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
+                                    : 'hover:bg-slate-100 text-slate-700 font-medium'
+                                }`}
+                              >
+                                <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
+                                <span>{r.title}</span>
+                              </button>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
 
-        {/* Right Canvas: Dynamic Filters + Crisp Fixed-Width A4 Document */}
-        <main className="flex-1 h-[calc(100vh-48px)] overflow-y-auto p-6 bg-[#f1f5f9] custom-scrollbar">
-          
-          {/* Universal Toolbar */}
-          <div className="bg-white p-3.5 rounded-xl border border-slate-300 mb-5 flex items-center justify-between text-xs print:hidden shadow-xs">
-            <div className="flex items-center gap-3">
-              <div>
-                <label className="block font-bold text-slate-700 mb-0.5 text-[11px]">Period:</label>
-                <select value={period} onChange={(e) => setPeriod(e.target.value)} className="p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                  <option value="THIS_MONTH">This Month (August 2026)</option>
-                  <option value="TODAY">Today</option>
-                  <option value="YESTERDAY">Yesterday</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 mb-0.5 text-[11px]">Branch:</label>
-                <select value={branch} onChange={(e) => setBranch(e.target.value)} className="p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none">
-                  <option value="ALL">All Operating Branches</option>
-                  <option value="Choueifat">Choueifat Main Facility</option>
-                  <option value="Beirut">Beirut Branch</option>
-                </select>
-              </div>
+                </div>
+              )}
             </div>
+          ))}
+        </aside>
+      )}
 
+      {/* 2. Right Canvas: Controls Toolbar + A4 Paper (HIGH DEFINITION & ZERO BLUE) */}
+      <div className="flex-1 overflow-y-auto">
+        
+        {/* Controls Toolbar */}
+        <div className="bg-white p-3.5 rounded-xl border border-slate-300 mb-4 flex items-center justify-between text-xs print:hidden shadow-xs">
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => window.print()}
-              className="px-4 py-2 bg-[#1a629b] hover:bg-[#124b77] text-white font-bold rounded-lg text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              onClick={() => setShowCatalog(!showCatalog)}
+              className="px-3.5 py-1.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 hover:bg-slate-200 transition-colors"
             >
-              <span>🖨️ Print A4 Report</span>
+              {showCatalog ? '◀ Hide Catalog' : '▶ Show Catalog'}
             </button>
+            <select value={period} onChange={(e) => setPeriod(e.target.value)} className="p-1.5 bg-slate-50 border border-slate-300 rounded-lg font-semibold text-xs focus:outline-none">
+              <option value="THIS_MONTH">This Month (August 2026)</option>
+              <option value="TODAY">Today</option>
+            </select>
+            <select value={branch} onChange={(e) => setBranch(e.target.value)} className="p-1.5 bg-slate-50 border border-slate-300 rounded-lg font-semibold text-xs focus:outline-none">
+              <option value="ALL">All Operating Branches</option>
+              <option value="Choueifat">Choueifat Main Facility</option>
+              <option value="Beirut">Beirut Branch</option>
+            </select>
           </div>
 
-          {/* =============================================================== */}
-          {/* HIGH-CONTRAST A4 PAPER MATRIX (w-[794px] min-h-[1123px])       */}
-          {/* =============================================================== */}
-          <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none">
-            
-            {/* Header */}
-            <div className="border-b-2 border-black pb-2 mb-3">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-sm font-bold uppercase tracking-tight text-slate-900">
-                    Southern Olive Oil Products S.A.R.L
-                  </h1>
-                  <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.title}</h2>
-                </div>
-                <div className="text-right text-[10.5px] font-mono text-slate-700 space-y-0.5">
-                  <div>Prepared By: Mohammed</div>
-                  <div>Report Code: {activeReport.code}</div>
-                  <div>Page 1 of 1</div>
-                </div>
+          {/* High-Contrast Olive Print Button (Zero Blue) */}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-xs transition-colors flex items-center gap-1.5 border border-[#1e3a2b]"
+          >
+            <span>🖨️ Print A4 Report</span>
+          </button>
+        </div>
+
+        {/* High-Contrast A4 Paper Container */}
+        <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none">
+          
+          {/* Header */}
+          <div className="border-b-2 border-black pb-2 mb-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-sm font-bold text-slate-900 uppercase">Southern Olive Oil Products S.A.R.L</h1>
+                <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.title}</h2>
               </div>
-              <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
-                <div>Period: 01-Aug-2026 to 31-Aug-2026</div>
-                <div>Branch: {branch === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branch}</div>
+              <div className="text-right text-[10.5px] font-mono text-slate-700 space-y-0.5">
+                <div>Prepared By: Mohammed</div>
+                <div>Code: {activeReport.code}</div>
+                <div>Page 1 of 1</div>
               </div>
             </div>
+            <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
+              <div>Period: 01-Aug-2026 to 31-Aug-2026</div>
+              <div>Branch: Southern Olive Oil Products S.A.R.L</div>
+            </div>
+          </div>
 
-            {/* VIEW A: LISTS / CUSTOMER DIRECTORY */}
-            {(activeReport.code.startsWith('REP_L_') || activeReport.category.includes('Lists')) && (
-              <div>
-                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-2">
-                  <thead>
-                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                      <th className="py-1 px-1 normal-case font-bold w-[12%]">code</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[28%]">customer / store name</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[14%]">region</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[16%]">phone</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[15%]">assigned rep</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[15%] text-right">balance ($)</th>
+          {/* VIEW A: LISTS / CUSTOMERS */}
+          {(activeReport.code.startsWith('REP_L_') || activeReport.category.includes('Lists')) && (
+            <div>
+              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                <thead>
+                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                    <th className="py-1 px-1 normal-case w-[12%]">code</th>
+                    <th className="py-1 px-1 normal-case w-[28%]">customer / store name</th>
+                    <th className="py-1 px-1 normal-case w-[14%]">region</th>
+                    <th className="py-1 px-1 normal-case w-[16%]">phone</th>
+                    <th className="py-1 px-1 normal-case w-[15%]">assigned rep</th>
+                    <th className="py-1 px-1 normal-case w-[15%] text-right">balance ($)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium">
+                  {customerListRows.map((cust) => (
+                    <tr key={cust.code} className="hover:bg-slate-50 leading-normal">
+                      <td className="py-1.5 px-1 font-mono font-bold">{cust.code}</td>
+                      <td className="py-1.5 px-1 font-bold text-slate-900">{cust.name}</td>
+                      <td className="py-1.5 px-1 text-slate-700">{cust.region}</td>
+                      <td className="py-1.5 px-1 font-mono text-slate-700">{cust.phone}</td>
+                      <td className="py-1.5 px-1 text-slate-800">{cust.rep.split(' ')[0]}</td>
+                      <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">
+                        ${cust.balance.toFixed(2)}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
-                    {customerListRows.map((cust) => (
-                      <tr key={cust.code} className="hover:bg-slate-50 leading-normal">
-                        <td className="py-1.5 px-1 font-mono font-bold">{cust.code}</td>
-                        <td className="py-1.5 px-1 font-bold text-slate-900">{cust.name}</td>
-                        <td className="py-1.5 px-1 text-slate-700">{cust.region}</td>
-                        <td className="py-1.5 px-1 font-mono text-slate-700">{cust.phone}</td>
-                        <td className="py-1.5 px-1 text-slate-800">{cust.rep.split(' ')[0]}</td>
-                        <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1a629b]">
-                          ${cust.balance.toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
-                  <span>Total Customers: {customerListRows.length} Active Partners</span>
-                  <span>Total Outstanding Balance: ${customerListRows.reduce((s, c) => s + c.balance, 0).toFixed(2)}</span>
-                </div>
+              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
+                <span>Total Customers: {customerListRows.length} Active Partners</span>
+                <span>Total Balance: ${customerListRows.reduce((s, c) => s + c.balance, 0).toFixed(2)}</span>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* VIEW B: SUMMARY OF VOIDS & INTERNAL CONTROL */}
-            {activeReport.code === 'REP_IC_001' && (
-              <div>
-                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-2">
-                  <thead>
-                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                      <th className="py-1 px-1 normal-case font-bold w-[16%]">date & time</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[14%]">cashier</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[8%] text-center">invoice</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[32%]">item description</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[6%] text-center">qty</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[12%] text-right">value (LBP)</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[12%]">reason</th>
+          {/* VIEW B: VOIDS & INTERNAL CONTROL */}
+          {activeReport.code === 'REP_IC_001' && (
+            <div>
+              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                <thead>
+                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                    <th className="py-1.5 px-1 normal-case w-[15%]">date</th>
+                    <th className="py-1.5 px-1 normal-case w-[15%]">order date</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%]">server</th>
+                    <th className="py-1.5 px-1 normal-case w-[8%] text-center">invoice</th>
+                    <th className="py-1.5 px-1 normal-case w-[28%]">description</th>
+                    <th className="py-1.5 px-1 normal-case w-[6%] text-center">qty</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%] text-right">value (LBP)</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%]">reason</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium">
+                  {voidRows.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50 leading-normal align-top">
+                      <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.date}</td>
+                      <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.date}</td>
+                      <td className="py-2 px-1 font-semibold text-slate-800">{item.server}</td>
+                      <td className="py-2 px-1 font-mono font-bold text-center">{item.invoice}</td>
+                      <td className="py-2 px-1 font-bold text-slate-900 leading-snug whitespace-normal break-words">
+                        {item.description}
+                      </td>
+                      <td className="py-2 px-1 text-center font-mono font-bold">{item.qty.toFixed(2)}</td>
+                      <td className="py-2 px-1 text-right font-mono font-bold">{item.valueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="py-2 px-1 text-slate-700 text-[10.5px] leading-tight font-medium">{item.reason}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
-                    {voidRows.map((v, i) => (
-                      <tr key={i} className="hover:bg-slate-50 leading-normal align-top">
-                        <td className="py-1.5 px-1 font-mono text-[10px] text-slate-700">{v.date}</td>
-                        <td className="py-1.5 px-1 font-semibold">{v.server}</td>
-                        <td className="py-1.5 px-1 font-mono font-bold text-center">{v.invoice}</td>
-                        <td className="py-1.5 px-1 font-bold text-slate-900 leading-snug whitespace-normal break-words">
-                          {v.description}
-                        </td>
-                        <td className="py-1.5 px-1 text-center font-mono font-bold">{v.qty.toFixed(2)}</td>
-                        <td className="py-1.5 px-1 text-right font-mono font-bold">{v.valueLbp.toLocaleString('en-US')}</td>
-                        <td className="py-1.5 px-1 text-slate-700 text-[10.5px]">{v.reason}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-end">
-                  <div className="w-[300px] space-y-1">
-                    <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
-                      <span>Total Voids:</span> <span>3 events</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-[#1a629b]">
-                      <span>Total Value:</span> <span>10,890,000 LBP</span>
-                    </div>
+              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-end">
+                <div className="w-[300px] space-y-1">
+                  <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
+                    <span>Total Voids:</span> <span>3</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-[#1e3a2b]">
+                    <span>Total Value:</span> <span>10,890,000.00 LBP</span>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* VIEW C: SALES, FINANCIAL & OTHER MATRIX REPORTS */}
-            {!activeReport.code.startsWith('REP_L_') && activeReport.code !== 'REP_IC_001' && (
-              <div>
-                <table className="w-full table-fixed text-left border-collapse text-[11px] mt-2">
-                  <thead>
-                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
-                      <th className="py-1 px-1 normal-case font-bold w-[14%]">ref #</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[14%]">date</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[24%]">client / account</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[26%]">item details</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[8%] text-center">qty</th>
-                      <th className="py-1 px-1 normal-case font-bold w-[14%] text-right">total ($)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 font-medium">
-                    {genericSalesRows.map((s, i) => (
-                      <tr key={i} className="hover:bg-slate-50 leading-normal">
-                        <td className="py-1.5 px-1 font-mono font-bold">{s.ref}</td>
-                        <td className="py-1.5 px-1 font-mono text-[10px]">{s.date}</td>
-                        <td className="py-1.5 px-1 font-bold text-slate-900">{s.client}</td>
-                        <td className="py-1.5 px-1 text-slate-800">{s.item}</td>
-                        <td className="py-1.5 px-1 text-center font-mono">{s.qty}</td>
-                        <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1a629b]">${s.totalUsd.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
-                  <span>Category: {activeReport.category}</span>
-                  <span>Total Revenue: ${genericSalesRows.reduce((s, r) => s + r.totalUsd, 0).toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-
-            {/* A4 Document Footer */}
-            <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
-              <span>Printed from Vanguard ERP System</span>
-              <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
-              <span>Page 1 of 1</span>
             </div>
+          )}
 
+          {/* VIEW C: SALES & OTHER MATRIX */}
+          {!activeReport.code.startsWith('REP_L_') && activeReport.code !== 'REP_IC_001' && (
+            <div>
+              <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
+                <thead>
+                  <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                    <th className="py-1 px-1 normal-case w-[14%]">ref #</th>
+                    <th className="py-1 px-1 normal-case w-[14%]">date</th>
+                    <th className="py-1 px-1 normal-case w-[24%]">client / account</th>
+                    <th className="py-1 px-1 normal-case w-[26%]">item details</th>
+                    <th className="py-1 px-1 normal-case w-[8%] text-center">qty</th>
+                    <th className="py-1 px-1 normal-case w-[14%] text-right">total ($)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium">
+                  {genericSalesRows.map((s, i) => (
+                    <tr key={i} className="hover:bg-slate-50 leading-normal">
+                      <td className="py-1.5 px-1 font-mono font-bold">{s.ref}</td>
+                      <td className="py-1.5 px-1 font-mono text-[10px]">{s.date}</td>
+                      <td className="py-1.5 px-1 font-bold text-slate-900">{s.client}</td>
+                      <td className="py-1.5 px-1 text-slate-800">{s.item}</td>
+                      <td className="py-1.5 px-1 text-center font-mono">{s.qty}</td>
+                      <td className="py-1.5 px-1 text-right font-mono font-bold text-[#1e3a2b]">${s.totalUsd.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
+                <span>Category: {activeReport.category}</span>
+                <span>Total Revenue: ${genericSalesRows.reduce((s, r) => s + r.totalUsd, 0).toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
+            <span>Printed from Vanguard ERP System</span>
+            <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
+            <span>Page 1 of 1</span>
           </div>
-
-        </main>
+        </div>
 
       </div>
 
