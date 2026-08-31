@@ -31,7 +31,9 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
       
-      {/* 1. MASTER TOP GLOBAL HEADER */}
+      {/* =================================================================== */}
+      {/* 1. MASTER TOP GLOBAL HEADER                                         */}
+      {/* =================================================================== */}
       <header className="h-[68px] bg-white border-b-2 border-[#1e3a2b]/20 px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
         
         {/* Left Side: Toggle + Vanguard Logo & Title */}
@@ -85,7 +87,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* Right Side: Action Icons + User Profile + Quick Drawer Trigger */}
+        {/* Right Side: Action Icons + 10-Item User Profile Dropdown + Quick Drawer Trigger */}
         <div className="flex items-center gap-3.5 shrink-0">
           <div className="flex items-center gap-2 text-slate-600">
             <Link
@@ -136,6 +138,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </button>
           </div>
 
+          {/* User Profile Dropdown Button & 10-Item Menu */}
           <div className="relative">
             <button
               type="button"
@@ -148,6 +151,118 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <span className="text-xs font-semibold text-slate-900">Jichi Mohammed</span>
               <span className="text-[11px] text-[#1e3a2b]">▾</span>
             </button>
+
+            {/* 10-ITEM AUTHENTIC USER PROFILE MENU */}
+            {userDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
+                
+                {/* User Header Block */}
+                <div className="px-4 py-2.5 border-b border-slate-100 bg-[#f8faf8]">
+                  <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
+                  <div className="text-[10.5px] text-[#1e3a2b] font-mono font-semibold">General Operations Manager</div>
+                  <div className="text-[9.5px] text-slate-400 font-mono truncate mt-0.5">
+                    Southern Olive Oil Products S.A.R.L
+                  </div>
+                </div>
+
+                {/* 10 Interactive Items */}
+                <div className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => { alert('Organization Settings: Southern Olive Oil Products S.A.R.L'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">🏢</span>
+                    <span>Organization</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">🔔</span>
+                    <span>Alerts</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { alert('System Notifications'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">💬</span>
+                    <span>Notifications</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { alert('Language: English / Arabic (العربية)'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">🌐</span>
+                    <span>Language</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { alert('My Account & Credentials'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">👤</span>
+                    <span>My Account</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { alert('Roles & Permissions Management'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">🔑</span>
+                    <span>Roles</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { alert('Users & Access Directory'); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">👥</span>
+                    <span>Users</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">📰</span>
+                    <span>Latest Updates</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                  >
+                    <span className="text-sm">❓</span>
+                    <span>Support Center</span>
+                  </button>
+                </div>
+
+                {/* Logout Divider & Action */}
+                <div className="border-t border-slate-100 mt-1 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => alert('Signed out successfully')}
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors"
+                  >
+                    <span className="text-sm">🚪</span>
+                    <span>Logout</span>
+                  </button>
+                </div>
+
+              </div>
+            )}
           </div>
         </div>
 
@@ -374,15 +489,11 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           {children}
         </main>
 
-        {/* ================================================================= */}
-        {/* 3. SLIDING QUICK MENU DRAWER (AUTHENTIC 5-TAB QUICK DRAWER)       */}
-        {/* ================================================================= */}
+        {/* 3. SLIDING QUICK MENU DRAWER */}
         {quickDrawerOpen && (
           <aside className="w-[360px] bg-white border-l border-slate-300 shadow-2xl flex flex-col h-[calc(100vh-68px)] z-50 shrink-0 print:hidden animate-slideLeft">
             
-            {/* Top 5 Tab Navigation Squares */}
             <div className="grid grid-cols-5 border-b border-slate-200 bg-slate-50 text-center text-xs">
-              
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('UPDATES')}
@@ -439,10 +550,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </button>
             </div>
 
-            {/* Drawer Body Contents */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 text-xs">
-              
-              {/* TAB 1: LATEST UPDATES */}
               {activeDrawerTab === 'UPDATES' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -472,7 +580,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               )}
 
-              {/* TAB 2: ALERTS */}
               {activeDrawerTab === 'ALERTS' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -487,7 +594,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               )}
 
-              {/* TAB 3: LAST ACTIVITIES */}
               {activeDrawerTab === 'ACTIVITIES' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -525,7 +631,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               )}
 
-              {/* TAB 4: HELP & SUPPORT & QUICK TIPS */}
               {activeDrawerTab === 'HELP' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -533,7 +638,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
                   </div>
 
-                  {/* Support Center */}
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
                     <div className="flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">?</span>
@@ -547,7 +651,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                     </button>
                   </div>
 
-                  {/* Feedback */}
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
                     <div className="flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">💬</span>
@@ -561,7 +664,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                     </button>
                   </div>
 
-                  {/* Quick Tips */}
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-900 text-xs">ℹ️ Quick Tips</span>
@@ -584,7 +686,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                 </div>
               )}
 
-              {/* TAB 5: THEME */}
               {activeDrawerTab === 'DARK' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
