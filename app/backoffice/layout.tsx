@@ -35,7 +35,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
     <div className="flex flex-col w-full min-h-screen bg-[#f1f5f9] font-sans text-slate-800 text-left select-none relative">
       
       {/* =================================================================== */}
-      {/* 1. MASTER TOP GLOBAL HEADER (52PX EMBLEM + 4CM SHIFTED BRANDING)    */}
+      {/* 1. MASTER TOP GLOBAL HEADER (BALANCED 3-ZONE: CENTERED TENANT BADGE)*/}
       {/* =================================================================== */}
       <header
         style={{
@@ -43,9 +43,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         }}
         className="h-[68px] px-5 flex items-center justify-between print:hidden shrink-0 text-white z-40 relative shadow-md"
       >
-        {/* Left Area: Toggle Button + 4cm Offset Logo & Title */}
-        <div className="flex items-center">
-          {/* Hamburger Toggle Button (Far Left) */}
+        {/* ZONE 1 (LEFT): Toggle Button + Vanguard Brand Block */}
+        <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
@@ -57,9 +56,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </svg>
           </button>
 
-          {/* Logo & Branding Block Shifted ~4cm Right (ml-16 md:ml-24) */}
-          <Link href="/backoffice/dashboard" className="flex items-center gap-3.5 ml-16 md:ml-24 group cursor-pointer">
-            
+          {/* Vanguard Logo & Typography */}
+          <Link href="/backoffice/dashboard" className="flex items-center gap-3 group cursor-pointer">
             {/* 52px Circular Gold Medallion Image */}
             <div className="w-[52px] h-[52px] rounded-full overflow-hidden border-2 border-amber-300/80 shadow-lg bg-black shrink-0 group-hover:border-amber-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_18px_rgba(212,175,55,0.85)] transition-all duration-300">
               <img
@@ -77,9 +75,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               />
             </div>
 
-            {/* Scaled & Offset Vanguard ERP Typography */}
             <div className="flex flex-col">
-              <span className="font-extrabold text-[17.5px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
+              <span className="font-extrabold text-[17px] tracking-tight text-white drop-shadow transition-all duration-300 group-hover:text-amber-200 group-hover:translate-x-0.5">
                 Vanguard ERP
               </span>
               <span className="text-[10px] font-mono text-amber-200/90 -mt-0.5 tracking-wider uppercase">
@@ -89,16 +86,20 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </Link>
         </div>
 
-        {/* Right Side: Tenant Badge + Action Icons + Profile */}
-        <div className="flex items-center gap-3.5">
-          <div className="hidden sm:flex items-center px-4 py-1.5 rounded-full bg-black/45 border border-[#c5a059]/45 shadow-sm backdrop-blur-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#c5a059] to-[#8a703b] mr-2.5 shadow-xs animate-pulse"></span>
-            <span className="text-[12.5px] font-bold tracking-wide text-amber-100 drop-shadow-xs">
+        {/* ZONE 2 (CENTER): CENTERED TENANT BADGE */}
+        <div className="flex-1 flex justify-center items-center px-4">
+          <div className="flex items-center px-5 py-2 rounded-full bg-black/45 border border-[#c5a059]/50 shadow-md backdrop-blur-md hover:border-[#c5a059] transition-all">
+            <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#c5a059] to-[#8a703b] mr-3 shadow-xs animate-pulse"></span>
+            <span className="text-[13px] font-bold tracking-wide text-amber-100 drop-shadow-xs">
               00001 - Southern Olive Oil Products S.A.R.L
             </span>
           </div>
+        </div>
 
+        {/* ZONE 3 (RIGHT): Action Icons + User Profile */}
+        <div className="flex items-center gap-3.5 shrink-0">
           <div className="flex items-center gap-2 text-slate-200">
+            {/* Home Icon */}
             <Link
               href="/backoffice/dashboard"
               className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10"
@@ -109,6 +110,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </Link>
 
+            {/* Notification Messages Icon with Red Badge */}
             <Link
               href="/backoffice/social-crm"
               className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10 relative"
@@ -123,18 +125,19 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </span>
             </Link>
 
-            <Link
-              href="/backoffice/dashboard"
+            {/* Help Icon */}
+            <button
+              type="button"
               className="p-2 rounded-xl bg-black/25 hover:bg-black/45 text-slate-200 hover:text-white transition-colors border border-white/10"
               title="Help & Support"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
               </svg>
-            </Link>
+            </button>
           </div>
 
-          {/* User Profile */}
+          {/* User Profile Dropdown */}
           <div className="relative">
             <button
               type="button"
