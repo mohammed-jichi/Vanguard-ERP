@@ -9,6 +9,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [quickDrawerOpen, setQuickDrawerOpen] = useState(false);
+  const [activeDrawerTab, setActiveDrawerTab] = useState<'UPDATES' | 'ALERTS' | 'ACTIVITIES' | 'HELP' | 'DARK'>('UPDATES');
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     sales: true,
@@ -29,10 +31,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
       
-      {/* 1. MASTER TOP GLOBAL HEADER (STRICTLY HIDDEN ON PRINT) */}
+      {/* 1. MASTER TOP GLOBAL HEADER */}
       <header className="h-[68px] bg-white border-b-2 border-[#1e3a2b]/20 px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
         
-        {/* Left Side: Toggle + Vanguard Medallion Logo & Title */}
+        {/* Left Side: Toggle + Vanguard Logo & Title */}
         <div className="flex items-center gap-3.5 shrink-0">
           <button
             type="button"
@@ -83,7 +85,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* Right Side: Action Icons + User Profile */}
+        {/* Right Side: Action Icons + User Profile + Quick Drawer Trigger */}
         <div className="flex items-center gap-3.5 shrink-0">
           <div className="flex items-center gap-2 text-slate-600">
             <Link
@@ -96,27 +98,40 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </Link>
 
-            <Link
-              href="/backoffice/social-crm"
+            <button
+              type="button"
+              onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
-              title="Messages & Alerts"
+              title="Alerts & Messages"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
               </svg>
               <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center shadow-xs">
                 0
               </span>
-            </Link>
+            </button>
 
             <button
               type="button"
+              onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
-              title="Help & Support"
+              title="Help & Quick Tips"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+              </svg>
+            </button>
+
+            {/* Quick Drawer Trigger Button */}
+            <button
+              type="button"
+              onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
+              className="p-2 rounded-xl bg-[#1e3a2b] hover:bg-[#14281e] text-white transition-colors shadow-2xs"
+              title="Open Quick Menu Drawer"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
               </svg>
             </button>
           </div>
@@ -136,7 +151,6 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* Accent Bottom Line */}
         <div
           style={{
             background: 'linear-gradient(90deg, #c5a059 0%, #1e3a2b 50%, #c5a059 100%)',
@@ -145,10 +159,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         />
       </header>
 
-      {/* 2. BODY WORKSPACE (SIDEBAR HIDDEN ON PRINT) */}
+      {/* 2. BODY WORKSPACE */}
       <div className="flex-1 flex overflow-hidden print:overflow-visible print:m-0 print:p-0">
         
-        {/* Master Left Sidebar (Strictly hidden on print) */}
+        {/* Master Left Sidebar */}
         {sidebarVisible && (
           <aside
             style={{
@@ -359,6 +373,236 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f3f5f8] p-4 md:p-6 custom-scrollbar print:overflow-visible print:m-0 print:p-0 print:bg-white">
           {children}
         </main>
+
+        {/* ================================================================= */}
+        {/* 3. SLIDING QUICK MENU DRAWER (AUTHENTIC 5-TAB QUICK DRAWER)       */}
+        {/* ================================================================= */}
+        {quickDrawerOpen && (
+          <aside className="w-[360px] bg-white border-l border-slate-300 shadow-2xl flex flex-col h-[calc(100vh-68px)] z-50 shrink-0 print:hidden animate-slideLeft">
+            
+            {/* Top 5 Tab Navigation Squares */}
+            <div className="grid grid-cols-5 border-b border-slate-200 bg-slate-50 text-center text-xs">
+              
+              <button
+                type="button"
+                onClick={() => setActiveDrawerTab('UPDATES')}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
+                  activeDrawerTab === 'UPDATES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-base">📰</span>
+                <span className="text-[10px] leading-tight">Latest<br/>Updates</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDrawerTab('ALERTS')}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
+                  activeDrawerTab === 'ALERTS' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-base">🔔</span>
+                <span className="text-[10px] leading-tight">Alerts</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDrawerTab('ACTIVITIES')}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
+                  activeDrawerTab === 'ACTIVITIES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-base">🕒</span>
+                <span className="text-[10px] leading-tight">Last<br/>Activities</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDrawerTab('HELP')}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
+                  activeDrawerTab === 'HELP' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-base">❓</span>
+                <span className="text-[10px] leading-tight">Help</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDrawerTab('DARK')}
+                className={`py-3 px-1 flex flex-col items-center gap-1 transition-colors ${
+                  activeDrawerTab === 'DARK' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <span className="text-base">🌙</span>
+                <span className="text-[10px] leading-tight">Theme</span>
+              </button>
+            </div>
+
+            {/* Drawer Body Contents */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 text-xs">
+              
+              {/* TAB 1: LATEST UPDATES */}
+              {activeDrawerTab === 'UPDATES' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-sm">Latest Updates</h3>
+                    <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+                  </div>
+
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-slate-900">Sales Control & POS</span>
+                      <span className="text-[10px] text-slate-400 font-mono">31 Aug 2026</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      High-contrast matrix reporting engine with multi-format exports (PDF, Excel, CSV) now live for Southern Olive Oil Products S.A.R.L.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-slate-900">Operations Center</span>
+                      <span className="text-[10px] text-slate-400 font-mono">26 Aug 2026</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      A new role access has been configured under Operations Center: Purchase Order - Hide Cost option.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: ALERTS */}
+              {activeDrawerTab === 'ALERTS' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-sm">Alerts</h3>
+                    <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+                  </div>
+
+                  <div className="p-8 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-medium space-y-2">
+                    <span className="text-2xl block">🔔</span>
+                    <span>No active alerts right now.</span>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: LAST ACTIVITIES */}
+              {activeDrawerTab === 'ACTIVITIES' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-sm">Last Activities</h3>
+                    <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+                  </div>
+
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <span className="font-bold text-slate-900 block border-b border-slate-200 pb-1">Sales Control</span>
+                    <div className="text-[11px] text-slate-600 space-y-1">
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Sales:</span>
+                        <span className="font-mono text-slate-400">Sun 30 Aug 2026 06:13 PM</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Quotations:</span>
+                        <span className="font-mono text-slate-400">Sat 22 Aug 2026 09:33 AM</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <span className="font-bold text-slate-900 block border-b border-slate-200 pb-1">Operations Center</span>
+                    <div className="text-[11px] text-slate-600 space-y-1">
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Adjustments:</span>
+                        <span className="font-mono text-slate-400">Sat 1 Aug 2026 01:39 PM</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Production:</span>
+                        <span className="font-mono text-slate-400">Thu 9 Jul 2026 10:13 AM</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: HELP & SUPPORT & QUICK TIPS */}
+              {activeDrawerTab === 'HELP' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-sm">Help & Support</h3>
+                    <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+                  </div>
+
+                  {/* Support Center */}
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">?</span>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Support Center</h4>
+                        <p className="text-[10.5px] text-slate-500">Open the main support page for guides and videos.</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => alert('Support Center Opened')} className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800">
+                      Open Support
+                    </button>
+                  </div>
+
+                  {/* Feedback */}
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">💬</span>
+                      <div>
+                        <h4 className="font-bold text-slate-900">Feedback</h4>
+                        <p className="text-[10.5px] text-slate-500">Open the feedback form and send your direct comments.</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => alert('Feedback Form Opened')} className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800">
+                      Open Feedback
+                    </button>
+                  </div>
+
+                  {/* Quick Tips */}
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-900 text-xs">ℹ️ Quick Tips</span>
+                    </div>
+                    <div className="space-y-1.5 text-[11px] text-slate-600">
+                      <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
+                        <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">1</span>
+                        <span>Use the left catalog to swap between all 93 reports.</span>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
+                        <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">2</span>
+                        <span>Use the ribbon toolbar to filter by live rolling EOD dates.</span>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
+                        <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">3</span>
+                        <span>Export directly to PDF, Excel, and CSV with Arabic UTF-8.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: THEME */}
+              {activeDrawerTab === 'DARK' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-sm">Theme Settings</h3>
+                    <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-2">
+                    <span className="text-2xl block">☀️</span>
+                    <span className="font-bold text-slate-800 block">Active Mode: Warm Light Mode</span>
+                    <p className="text-[11px] text-slate-500">High-Contrast Light Theme is active and locked for optimal eye comfort.</p>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </aside>
+        )}
 
       </div>
 
