@@ -392,7 +392,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Flattened reports for search inside Custom Category Modal
+  // Flattened reports list (WITHOUT CODE PREFIXES)
   const allFlattenedReports = useMemo(() => {
     const list: { code: string; title: string; category: string }[] = [];
     masterCatalog.forEach((c) => {
@@ -453,7 +453,7 @@ export default function MasterReportViewPage() {
   const triggerCSVExport = () => {
     let csvContent = '\uFEFF';
     csvContent += `Company: Southern Olive Oil Products S.A.R.L\n`;
-    csvContent += `Report: [${activeReport.code}] ${activeReport.title}\n`;
+    csvContent += `Report: ${activeReport.title}\n`;
     csvContent += `Period: ${getSelectedPeriodDisplay()}\n`;
     csvContent += `Branch: ${getSelectedBranchDisplayName()}\n\n`;
 
@@ -480,7 +480,7 @@ export default function MasterReportViewPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Vanguard_${activeReport.code}_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Vanguard_${activeReport.title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -488,7 +488,7 @@ export default function MasterReportViewPage() {
   };
 
   const triggerClipboardCopy = () => {
-    let copyText = `Southern Olive Oil Products S.A.R.L - [${activeReport.code}] ${activeReport.title}\n`;
+    let copyText = `Southern Olive Oil Products S.A.R.L - ${activeReport.title}\n`;
     if (activeReport.code === 'REP_IC_001') {
       voidRows.forEach((r) => {
         copyText += `${r.date}\t${r.server}\t${r.invoice}\t${r.description}\t${r.qty}\t${r.valueLbp} LBP\t${r.reason}\n`;
@@ -546,7 +546,7 @@ export default function MasterReportViewPage() {
         }
       `}} />
 
-      {/* 1. TOP SUB-HEADER BAR */}
+      {/* 1. TOP SUB-HEADER BAR (CLEAN TITLE WITHOUT CODE) */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
@@ -560,7 +560,7 @@ export default function MasterReportViewPage() {
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-500 font-medium">Active Report:</span>
             <span className="font-bold text-[#1e3a2b] bg-[#eef3ee] px-2.5 py-0.5 rounded border border-[#1e3a2b]/30">
-              [{activeReport.code}] {activeReport.title}
+              {activeReport.title}
             </span>
           </div>
         </div>
@@ -671,6 +671,7 @@ export default function MasterReportViewPage() {
             </select>
           )}
 
+          {/* Scalable Branches Dropdown */}
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
@@ -745,7 +746,7 @@ export default function MasterReportViewPage() {
               <div className="absolute right-0 mt-1.5 w-60 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50 animate-fadeIn">
                 <div className="px-3.5 py-1.5 border-b border-slate-100 font-bold text-[11px] text-[#1e3a2b] bg-[#f8faf8] flex items-center justify-between">
                   <span>Export Report Data</span>
-                  <span className="font-mono text-[9.5px] text-slate-500">[{activeReport.code}]</span>
+                  <span className="font-semibold text-[10px] text-slate-500">{activeReport.title}</span>
                 </div>
 
                 <button
@@ -816,7 +817,7 @@ export default function MasterReportViewPage() {
       {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree */}
+        {/* Left 93-Reports Tree (CLEAN REPORT TITLES WITHOUT BRACKETS) */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
@@ -844,19 +845,18 @@ export default function MasterReportViewPage() {
                 {expandedCats.includes(cat.id) && (
                   <div className="p-1 space-y-1 bg-white">
                     {cat.reports && cat.reports
-                      .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()))
                       .map((r) => (
                         <button
                           key={r.code}
                           type="button"
                           onClick={() => setActiveReport({ ...r, category: cat.title })}
-                          className={`w-full text-left px-2.5 py-1.5 rounded-lg truncate block text-xs transition-all ${
+                          className={`w-full text-left px-3 py-1.5 rounded-lg truncate block text-xs transition-all ${
                             activeReport.code === r.code
                               ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
                               : 'hover:bg-slate-100 text-slate-700 font-medium'
                           }`}
                         >
-                          <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
                           <span>{r.title}</span>
                         </button>
                       ))}
@@ -874,19 +874,18 @@ export default function MasterReportViewPage() {
                         {expandedSubCats.includes(sub.id) && (
                           <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/80 bg-white">
                             {sub.reports
-                              .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                              .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()))
                               .map((r) => (
                                 <button
                                   key={r.code}
                                   type="button"
                                   onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
-                                  className={`w-full text-left px-2 py-1 rounded truncate block text-xs transition-all ${
+                                  className={`w-full text-left px-2.5 py-1 rounded truncate block text-xs transition-all ${
                                     activeReport.code === r.code
                                       ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
                                       : 'hover:bg-slate-100 text-slate-700 font-medium'
                                   }`}
                                 >
-                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
                                   <span>{r.title}</span>
                                 </button>
                               ))}
@@ -909,7 +908,7 @@ export default function MasterReportViewPage() {
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
             className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none transition-transform duration-200 select-none"
           >
-            {/* Header */}
+            {/* Header (EXCLUSIVELY RETAINS REPORT CODE HERE) */}
             <div className="border-b-2 border-black pb-2 mb-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -1061,7 +1060,7 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 4. SETTINGS MODAL (Z-INDEX 50)                                      */}
+      {/* 4. SETTINGS MODAL (CLEAN TITLES ONLY)                               */}
       {/* =================================================================== */}
       {settingsModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 print:hidden animate-fadeIn">
@@ -1133,7 +1132,7 @@ export default function MasterReportViewPage() {
                   />
                 </div>
 
-                {/* Categories List with Granular Checkboxes on Every Level */}
+                {/* Categories List with Granular Checkboxes */}
                 <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                   
                   {/* Recently Viewed */}
@@ -1172,11 +1171,10 @@ export default function MasterReportViewPage() {
                         </button>
                       </div>
 
-                      {/* Expanded Sub-Categories & Reports with Full Granular Checkboxes */}
+                      {/* Expanded Sub-Categories & Reports with Clean Titles */}
                       {expandedSettingsCats.includes(c.id) && (
                         <div className="p-2 border-t border-slate-100 bg-slate-50/80 space-y-1.5 text-[11px]">
                           
-                          {/* Direct Reports Checkboxes */}
                           {c.reports && c.reports.map((r) => (
                             <label key={r.code} className="flex items-center gap-2 pl-4 py-1 hover:bg-white rounded cursor-pointer font-medium text-slate-700">
                               <input
@@ -1185,12 +1183,10 @@ export default function MasterReportViewPage() {
                                 onChange={() => toggleToolbarReportCheck(r.code)}
                                 className="accent-[#1e3a2b] w-3 h-3"
                               />
-                              <span className="font-mono text-[9px] text-slate-400">[{r.code}]</span>
                               <span>{r.title}</span>
                             </label>
                           ))}
 
-                          {/* Subcategories with Nested Checkboxes */}
                           {c.subCategories && c.subCategories.map((s) => (
                             <div key={s.id} className="border border-slate-200/80 rounded-lg p-1.5 bg-white space-y-1">
                               <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
@@ -1203,7 +1199,6 @@ export default function MasterReportViewPage() {
                                 <span>📁 {s.title}</span>
                               </label>
 
-                              {/* Reports inside this Subcategory */}
                               <div className="pl-5 space-y-0.5 border-t border-slate-100 pt-1">
                                 {s.reports.map((sr) => (
                                   <label key={sr.code} className="flex items-center gap-2 py-0.5 hover:bg-slate-50 rounded cursor-pointer text-slate-600 font-medium">
@@ -1213,7 +1208,6 @@ export default function MasterReportViewPage() {
                                       onChange={() => toggleToolbarReportCheck(sr.code)}
                                       className="accent-[#1e3a2b] w-3 h-3"
                                     />
-                                    <span className="font-mono text-[9px] text-slate-400">[{sr.code}]</span>
                                     <span>{sr.title}</span>
                                   </label>
                                 ))}
@@ -1247,7 +1241,7 @@ export default function MasterReportViewPage() {
       )}
 
       {/* =================================================================== */}
-      {/* 5. CUSTOM CATEGORY SUB-MODAL (ELEVATED TO TOP-LEVEL Z-INDEX: Z-100) */}
+      {/* 5. CUSTOM CATEGORY SUB-MODAL (TOP-LEVEL Z-INDEX: Z-100)             */}
       {/* =================================================================== */}
       {customCategoryModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 print:hidden animate-fadeIn">
@@ -1268,7 +1262,6 @@ export default function MasterReportViewPage() {
             {/* Body */}
             <div className="p-5 space-y-4 text-xs text-slate-800">
               
-              {/* Category Name Input + Save Button */}
               <div>
                 <label className="block font-bold text-slate-800 mb-1">Category Name</label>
                 <div className="flex items-center gap-2">
@@ -1286,7 +1279,7 @@ export default function MasterReportViewPage() {
                         alert('Please enter a Category Name');
                         return;
                       }
-                      alert(`Custom Category "${customCategoryName}" with ${customCategorySelectedReports.length} reports saved successfully!`);
+                      alert(`Custom Category "${customCategoryName}" saved!`);
                       setCustomCategoryModalOpen(false);
                     }}
                     className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs transition-colors"
@@ -1296,7 +1289,6 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
 
-              {/* Search Reports with Interactive Checkbox Picker */}
               <div>
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
                   <span className="text-slate-400">🔍</span>
@@ -1309,10 +1301,9 @@ export default function MasterReportViewPage() {
                   />
                 </div>
 
-                {/* Searchable Report List */}
                 <div className="mt-2 max-h-52 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
                   {allFlattenedReports
-                    .filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase()) || r.code.toLowerCase().includes(customCategorySearch.toLowerCase()))
+                    .filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase()))
                     .slice(0, 30)
                     .map((r) => (
                       <label key={r.code} className="flex items-center gap-2 p-1.5 hover:bg-white rounded cursor-pointer text-slate-700 bg-white/60 border border-slate-100 transition-colors">
@@ -1322,7 +1313,6 @@ export default function MasterReportViewPage() {
                           onChange={() => toggleCustomCategoryReport(r.code)}
                           className="accent-[#1e3a2b] w-3.5 h-3.5"
                         />
-                        <span className="font-mono text-[9px] text-slate-400">[{r.code}]</span>
                         <span className="font-semibold text-slate-900">{r.title}</span>
                         <span className="text-[9px] text-slate-400 ml-auto truncate max-w-[100px]">{r.category}</span>
                       </label>
