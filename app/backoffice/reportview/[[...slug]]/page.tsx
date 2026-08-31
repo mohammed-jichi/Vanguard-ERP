@@ -14,30 +14,25 @@ export default function MasterReportViewPage() {
   const [zoomLevel, setZoomLevel] = useState(100);
 
   // Dynamic Context-Specific Filter States
-  const [reportMode, setReportMode] = useState<'DETAILED' | 'SUMMARY' | 'PAYMENTS'>('DETAILED');
   const [serverFilter, setServerFilter] = useState('ALL');
   const [voidReasonFilter, setVoidReasonFilter] = useState('ALL');
   
   // Product Sales Cascading States
   const [divisionFilter, setDivisionFilter] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
-  const [groupFilter, setGroupFilter] = useState('ALL');
 
   // Customer & Delivery States
   const [zoneFilter, setZoneFilter] = useState('ALL');
   const [customerTierFilter, setCustomerTierFilter] = useState('ALL');
-  const [driverFilter, setDriverFilter] = useState('ALL');
 
   // Financial & Payment States
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('ALL');
-  const [taxRateFilter, setTaxRateFilter] = useState('ALL');
 
-  // Dynamic Checkbox Toggles
+  // Checkbox Toggles
   const [showAuthManager, setShowAuthManager] = useState(true);
   const [showProfitMargins, setShowProfitMargins] = useState(false);
   const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
   const [includeZeroBalances, setIncludeZeroBalances] = useState(false);
-  const [flashSummaryMode, setFlashSummaryMode] = useState(false);
 
   // Active Report State (Default: Summary of Voids)
   const [activeReport, setActiveReport] = useState({
@@ -58,9 +53,22 @@ export default function MasterReportViewPage() {
   ]);
   const [expandedSubCats, setExpandedSubCats] = useState<string[]>([
     'fin_stats',
+    'tax_reports',
+    'discount_reports',
+    'payments',
+    'internal_control_fin',
+    'profit_summary',
+    'comparative',
+    'transaction_summary',
+    'time_sales_analysis',
     'prod_sales_sub',
+    'comparative_by_branch',
+    'top_performers_prod',
+    'voids_and_refunds_prod',
+    'top_performers_cust',
     'cust_delivery',
     'todays_sales_sub',
+    'history_sub',
   ]);
 
   const toggleCat = (id: string) => {
@@ -76,7 +84,7 @@ export default function MasterReportViewPage() {
   };
 
   // ==========================================================================
-  // COMPLETE 100% EXHAUSTIVE 93-REPORT TREE
+  // COMPLETE 100% EXHAUSTIVE 93-REPORT TREE (ALL 8 MAIN & 17 SUB-CATEGORIES)
   // ==========================================================================
   const masterCatalog = [
     {
@@ -101,7 +109,7 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'fin_stats',
-          title: 'Financial Statistics',
+          title: 'Financial Statistics (7)',
           reports: [
             { code: 'REP_F_101', title: 'Sales summary' },
             { code: 'REP_F_102', title: 'Statistics by workstation' },
@@ -114,7 +122,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'tax_reports',
-          title: 'Tax Reports',
+          title: 'Tax Reports (2)',
           reports: [
             { code: 'REP_F_201', title: 'Tax summary' },
             { code: 'REP_F_202', title: 'Tax summary comparative' },
@@ -122,7 +130,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'discount_reports',
-          title: 'Discount Reports',
+          title: 'Discount Reports (6)',
           reports: [
             { code: 'REP_F_301', title: 'Summary of discount by divisions' },
             { code: 'REP_F_302', title: 'Discount by category by department' },
@@ -134,7 +142,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'payments',
-          title: 'Payments',
+          title: 'Payments (10)',
           reports: [
             { code: 'REP_F_401', title: 'Summary of payment' },
             { code: 'REP_F_402', title: 'Summary of payment by department' },
@@ -149,8 +157,18 @@ export default function MasterReportViewPage() {
           ],
         },
         {
+          id: 'internal_control_fin',
+          title: 'Internal Control (Financial) (4)',
+          reports: [
+            { code: 'REP_F_501', title: 'Summary of voids' },
+            { code: 'REP_F_502', title: 'Summary of refunds' },
+            { code: 'REP_F_503', title: 'Duplicate invoices' },
+            { code: 'REP_F_504', title: 'Meter reports' },
+          ],
+        },
+        {
           id: 'profit_summary',
-          title: 'Profit Summary',
+          title: 'Profit Summary (5)',
           reports: [
             { code: 'REP_F_601', title: 'Profit by invoices summary' },
             { code: 'REP_F_602', title: 'Profit by item summary' },
@@ -161,7 +179,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'comparative',
-          title: 'Comparative Reports',
+          title: 'Comparative Reports (5)',
           reports: [
             { code: 'REP_F_701', title: 'Sales summary by day' },
             { code: 'REP_F_702', title: 'Daily sales' },
@@ -172,7 +190,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'transaction_summary',
-          title: 'Transaction Summary',
+          title: 'Transaction Summary (4)',
           reports: [
             { code: 'REP_F_801', title: 'Transaction by date' },
             { code: 'REP_F_802', title: 'Credit sales' },
@@ -182,7 +200,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'time_sales_analysis',
-          title: 'Time Sales Analysis',
+          title: 'Time Sales Analysis (5)',
           reports: [
             { code: 'REP_F_901', title: 'Time report group by transactions count' },
             { code: 'REP_F_902', title: 'Time report by date' },
@@ -200,7 +218,7 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'prod_sales_sub',
-          title: 'Product Sales',
+          title: 'Product Sales (11)',
           reports: [
             { code: 'REP_P_101', title: 'Summary of sales by items' },
             { code: 'REP_S_00191', title: 'Sales by items' },
@@ -217,7 +235,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'comparative_by_branch',
-          title: 'Comparative by Branch',
+          title: 'Comparative by Branch (4)',
           reports: [
             { code: 'REP_P_201', title: 'Sales by category' },
             { code: 'REP_P_202', title: 'Sales by division' },
@@ -227,7 +245,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'top_performers_prod',
-          title: 'Top Performers',
+          title: 'Top Performers (2)',
           reports: [
             { code: 'REP_P_301', title: 'Top N sold by quantity' },
             { code: 'REP_P_302', title: 'Top N sold by amount' },
@@ -235,7 +253,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'voids_and_refunds_prod',
-          title: 'Voids and Refunds',
+          title: 'Voids and Refunds (3)',
           reports: [
             { code: 'REP_P_401', title: 'Summary of voids' },
             { code: 'REP_P_402', title: 'Summary of refunds' },
@@ -251,12 +269,12 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'top_performers_cust',
-          title: 'Top Performers',
+          title: 'Top Performers (1)',
           reports: [{ code: 'REP_C_101', title: 'Top N customers by amount' }],
         },
         {
           id: 'cust_delivery',
-          title: 'Customers and Delivery',
+          title: 'Customers and Delivery (4)',
           reports: [
             { code: 'REP_C_201', title: 'Sales by customer and detail' },
             { code: 'REP_C_202', title: 'Sales by zone' },
@@ -273,7 +291,7 @@ export default function MasterReportViewPage() {
       subCategories: [
         {
           id: 'todays_sales_sub',
-          title: "Today's Sales",
+          title: "Today's Sales (4)",
           reports: [
             { code: 'REP_TH_101', title: "Today's statistics" },
             { code: 'REP_TH_102', title: "Today's summary of payment" },
@@ -283,7 +301,7 @@ export default function MasterReportViewPage() {
         },
         {
           id: 'history_sub',
-          title: 'History',
+          title: 'History (2)',
           reports: [
             { code: 'REP_TH_201', title: 'Preview order sales' },
             { code: 'REP_TH_202', title: 'Main reading history' },
@@ -314,7 +332,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Specific Sample Datasets
+  // Specific Datasets
   const customerListRows = [
     { code: 'CUST-01', name: 'Al-Baraka Supermarket S.A.R.L', region: 'Mount Lebanon', city: 'Choueifat Main Highway', phone: '03112233', rep: 'Ahmad Ali Kassem', creditLimit: 5000.0, balance: 1400.0 },
     { code: 'CUST-02', name: 'Al-Nour Food Establishment', region: 'Beirut', city: 'Hamra (Makdessi Street)', phone: '01778899', rep: 'Hiba Aloulou', creditLimit: 3500.0, balance: 890.0 },
@@ -378,14 +396,14 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 2. DYNAMIC ADAPTIVE FILTER RIBBON TOOLBAR (ADAPTS TO REPORT TYPE)   */}
+      {/* 2. DYNAMIC ADAPTIVE FILTER RIBBON TOOLBAR                           */}
       {/* =================================================================== */}
       <div className="bg-white border-b border-slate-200 p-3 px-4 flex flex-col gap-2.5 print:hidden shrink-0 shadow-2xs">
         
         {/* Top Filter Ribbon Line */}
         <div className="flex flex-wrap items-center justify-between gap-2.5">
           
-          {/* Left Core Inputs: Period, Date Range, Branch */}
+          {/* Left Inputs: Period, Date Range, Branch */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <select
               value={periodPreset}
@@ -575,7 +593,7 @@ export default function MasterReportViewPage() {
 
         </div>
 
-        {/* Dynamic Checkbox Flags Row (Tailored to active report) */}
+        {/* Dynamic Checkbox Flags Row */}
         <div className="flex flex-wrap items-center gap-4 pt-1.5 border-t border-slate-100 text-xs">
           {activeReport.code === 'REP_IC_001' && (
             <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
@@ -611,7 +629,7 @@ export default function MasterReportViewPage() {
         
         {/* Left 93-Reports Tree Sidebar */}
         {showCatalog && (
-          <aside className="w-[280px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
+          <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             
             {/* Search Box */}
             <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
@@ -624,7 +642,7 @@ export default function MasterReportViewPage() {
               />
             </div>
 
-            {/* Tree Categories */}
+            {/* Complete 93-Reports Categories & Sub-Categories */}
             {masterCatalog.map((cat) => (
               <div key={cat.id} className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
                 <div
@@ -659,14 +677,14 @@ export default function MasterReportViewPage() {
                         </button>
                       ))}
 
-                    {/* Sub-Categories */}
+                    {/* All Sub-Categories with Exact Counts */}
                     {cat.subCategories && cat.subCategories.map((sub) => (
                       <div key={sub.id} className="border border-slate-200 rounded-lg bg-slate-50/60">
                         <div
                           onClick={() => toggleSubCat(sub.id)}
                           className="px-2.5 py-1 font-bold text-slate-800 hover:text-[#1e3a2b] cursor-pointer flex items-center justify-between text-[10.5px]"
                         >
-                          <span>📁 {sub.title} ({sub.reports.length})</span>
+                          <span>📁 {sub.title}</span>
                           <span className="text-[8px] text-[#1e3a2b] font-bold">{expandedSubCats.includes(sub.id) ? '−' : '+'}</span>
                         </div>
 
@@ -685,7 +703,7 @@ export default function MasterReportViewPage() {
                                       : 'hover:bg-slate-100 text-slate-700 font-medium'
                                   }`}
                                 >
-                                  <span className="font-mono text-[9.5px] opacity-60 mr-1">[{r.code}]</span>
+                                  <span className="font-mono text-[9.5px] opacity-75 mr-1">[{r.code}]</span>
                                   <span>{r.title}</span>
                                 </button>
                               ))}
