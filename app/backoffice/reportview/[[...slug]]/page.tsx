@@ -99,6 +99,30 @@ export default function MasterReportViewPage() {
   const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
+  // ==========================================================================
+  // INVOICE TYPE SEARCHABLE FILTER (FROM USER SCREENSHOT)
+  // ==========================================================================
+  const [invoiceTypeFilter, setInvoiceTypeFilter] = useState('ALL');
+  const [invoiceTypeDropdownOpen, setInvoiceTypeDropdownOpen] = useState(false);
+  const [invoiceTypeSearch, setInvoiceTypeSearch] = useState('');
+
+  const invoiceTypeOptions = [
+    { code: 'ALL', label: 'All Invoices' },
+    { code: 'INVENTORY', label: 'Inventory Invoices' },
+    { code: 'POS', label: 'POS Invoices' },
+    { code: 'TRAINING', label: 'Training Invoices' },
+  ];
+
+  const filteredInvoiceTypeOptions = invoiceTypeOptions.filter((opt) =>
+    opt.label.toLowerCase().includes(invoiceTypeSearch.toLowerCase())
+  );
+
+  const getSelectedInvoiceTypeLabel = () => {
+    const found = invoiceTypeOptions.find((o) => o.code === invoiceTypeFilter);
+    return found ? found.label : 'All Invoices';
+  };
+
+  // Active Report State (Default: Summary of voids)
   const [activeReport, setActiveReport] = useState({
     code: 'REP_IC_001',
     title: 'Summary of voids',
@@ -392,7 +416,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Flattened reports list (WITHOUT CODE PREFIXES)
+  // Flattened reports list
   const allFlattenedReports = useMemo(() => {
     const list: { code: string; title: string; category: string }[] = [];
     masterCatalog.forEach((c) => {
@@ -455,7 +479,8 @@ export default function MasterReportViewPage() {
     csvContent += `Company: Southern Olive Oil Products S.A.R.L\n`;
     csvContent += `Report: ${activeReport.title}\n`;
     csvContent += `Period: ${getSelectedPeriodDisplay()}\n`;
-    csvContent += `Branch: ${getSelectedBranchDisplayName()}\n\n`;
+    csvContent += `Branch: ${getSelectedBranchDisplayName()}\n`;
+    csvContent += `Invoice Type: ${getSelectedInvoiceTypeLabel()}\n\n`;
 
     if (activeReport.code === 'REP_IC_001') {
       csvContent += `Date,Order Date,Server,Invoice,Description,Qty,Value (LBP),Reason\n`;
@@ -506,7 +531,7 @@ export default function MasterReportViewPage() {
   return (
     <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans print:h-auto print:overflow-visible">
       
-      {/* INLINE BULPROOF CSS PRINT ISOLATION */}
+      {/* INLINE BULLETPROOF CSS PRINT ISOLATION */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           @page {
@@ -546,7 +571,7 @@ export default function MasterReportViewPage() {
         }
       `}} />
 
-      {/* 1. TOP SUB-HEADER BAR (CLEAN TITLE WITHOUT CODE) */}
+      {/* 1. TOP SUB-HEADER BAR */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
@@ -583,9 +608,13 @@ export default function MasterReportViewPage() {
         </div>
       </div>
 
-      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON */}
+      {/* =================================================================== */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (WITH NEW INVOICE TYPE DROPDOWN)*/}
+      {/* =================================================================== */}
       <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2 text-xs">
+          
+          {/* Period Preset Dropdown */}
           <select
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value as any)}
@@ -624,7 +653,7 @@ export default function MasterReportViewPage() {
               type="text"
               readOnly
               disabled
-              value="August 2026"
+              value="Aug, 2026"
               className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
             />
           )}
@@ -675,7 +704,7 @@ export default function MasterReportViewPage() {
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none max-w-[260px]"
+            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none max-w-[220px]"
           >
             <option value="ALL">All Branches ({branchesList.length})</option>
             {branchesList.map((b) => (
@@ -685,9 +714,65 @@ export default function MasterReportViewPage() {
             ))}
           </select>
 
+          {/* =============================================================== */}
+          {/* NEW SEARCHABLE INVOICE TYPE DROPDOWN (AS IN USER SCREENSHOT)     */}
+          {/* =============================================================== */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setInvoiceTypeDropdownOpen(!invoiceTypeDropdownOpen)}
+              className="px-3 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center justify-between gap-2 min-w-[160px] focus:outline-none hover:border-[#1e3a2b]"
+            >
+              <span>{getSelectedInvoiceTypeLabel()}</span>
+              <span className="text-[10px] text-slate-500">▼</span>
+            </button>
+
+            {invoiceTypeDropdownOpen && (
+              <div className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50 animate-fadeIn">
+                
+                {/* Search Input Box */}
+                <div className="p-1.5 border-b border-slate-100">
+                  <input
+                    type="text"
+                    value={invoiceTypeSearch}
+                    onChange={(e) => setInvoiceTypeSearch(e.target.value)}
+                    placeholder="Search..."
+                    className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white"
+                    autoFocus
+                  />
+                </div>
+
+                {/* Option Items */}
+                <div className="max-h-48 overflow-y-auto custom-scrollbar py-0.5">
+                  {filteredInvoiceTypeOptions.map((opt) => (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      onClick={() => {
+                        setInvoiceTypeFilter(opt.code);
+                        setInvoiceTypeDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 transition-colors flex items-center justify-between ${
+                        invoiceTypeFilter === opt.code ? 'bg-[#edf2ee] text-[#1e3a2b] font-bold' : 'text-slate-700'
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {invoiceTypeFilter === opt.code && <span className="text-[#1e3a2b] font-bold">✓</span>}
+                    </button>
+                  ))}
+                  {filteredInvoiceTypeOptions.length === 0 && (
+                    <div className="px-3 py-2 text-center text-slate-400 text-xs font-medium">
+                      No matching invoice types
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
           <button
             type="button"
-            onClick={() => alert(`Filter applied for ${periodPreset} | Branch: ${getSelectedBranchDisplayName()}`)}
+            onClick={() => alert(`Filter applied: ${periodPreset} | Branch: ${getSelectedBranchDisplayName()} | Type: ${getSelectedInvoiceTypeLabel()}`)}
             className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
           >
             Filter
@@ -698,6 +783,7 @@ export default function MasterReportViewPage() {
             onClick={() => {
               setPeriodPreset('THIS_MONTH');
               setBranchFilter('ALL');
+              setInvoiceTypeFilter('ALL');
             }}
             className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
           >
@@ -817,7 +903,7 @@ export default function MasterReportViewPage() {
       {/* 3. WORKSPACE: 93-REPORTS TREE + ISOLATED A4 PRINT CONTAINER */}
       <div className="flex-1 flex overflow-hidden p-4 bg-[#f3f5f8] print:p-0 print:m-0 print:bg-white print:overflow-visible">
         
-        {/* Left 93-Reports Tree (CLEAN REPORT TITLES WITHOUT BRACKETS) */}
+        {/* Left 93-Reports Tree */}
         {showCatalog && (
           <aside className="w-[300px] bg-[#eef3ee] border-r border-slate-300 print:hidden overflow-y-auto p-2.5 space-y-2 shrink-0 mr-4 shadow-2xs custom-scrollbar rounded-xl">
             <div className="bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
@@ -908,7 +994,7 @@ export default function MasterReportViewPage() {
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
             className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none transition-transform duration-200 select-none"
           >
-            {/* Header (EXCLUSIVELY RETAINS REPORT CODE HERE) */}
+            {/* Header */}
             <div className="border-b-2 border-black pb-2 mb-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -1174,7 +1260,6 @@ export default function MasterReportViewPage() {
                       {/* Expanded Sub-Categories & Reports with Clean Titles */}
                       {expandedSettingsCats.includes(c.id) && (
                         <div className="p-2 border-t border-slate-100 bg-slate-50/80 space-y-1.5 text-[11px]">
-                          
                           {c.reports && c.reports.map((r) => (
                             <label key={r.code} className="flex items-center gap-2 pl-4 py-1 hover:bg-white rounded cursor-pointer font-medium text-slate-700">
                               <input
@@ -1214,7 +1299,6 @@ export default function MasterReportViewPage() {
                               </div>
                             </div>
                           ))}
-
                         </div>
                       )}
                     </div>
@@ -1247,7 +1331,6 @@ export default function MasterReportViewPage() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-md w-full overflow-hidden flex flex-col">
             
-            {/* Header */}
             <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8faf8]">
               <h2 className="text-base font-bold text-slate-900">Custom Category</h2>
               <button
@@ -1259,9 +1342,7 @@ export default function MasterReportViewPage() {
               </button>
             </div>
 
-            {/* Body */}
             <div className="p-5 space-y-4 text-xs text-slate-800">
-              
               <div>
                 <label className="block font-bold text-slate-800 mb-1">Category Name</label>
                 <div className="flex items-center gap-2">
@@ -1319,10 +1400,8 @@ export default function MasterReportViewPage() {
                     ))}
                 </div>
               </div>
-
             </div>
 
-            {/* Footer */}
             <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-end">
               <button
                 type="button"
