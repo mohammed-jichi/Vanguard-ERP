@@ -7,34 +7,17 @@ export default function MasterReportViewPage() {
   const [showCatalog, setShowCatalog] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Universal Ribbon Controls
-  const [periodPreset, setPeriodPreset] = useState('THIS_MONTH');
-  const [dateRangeText, setDateRangeText] = useState('Aug 1 - Aug 31, 2026');
+  // ==========================================================================
+  // EXACT PERIOD & DYNAMIC DATE LOGIC AS DICTATED
+  // ==========================================================================
+  const [periodPreset, setPeriodPreset] = useState<'TODAY' | 'YESTERDAY' | 'THIS_MONTH' | 'LAST_MONTH' | 'DATE_RANGE' | 'EOD_DATE'>('THIS_MONTH');
+  const [fromDate, setFromDate] = useState('2026-08-30');
+  const [toDate, setToDate] = useState('2026-08-30');
+  const [eodDate, setEodDate] = useState('2026-08-31');
   const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
-  // Dynamic Context-Specific Filter States
-  const [serverFilter, setServerFilter] = useState('ALL');
-  const [voidReasonFilter, setVoidReasonFilter] = useState('ALL');
-  
-  // Product Sales Cascading States
-  const [divisionFilter, setDivisionFilter] = useState('ALL');
-  const [categoryFilter, setCategoryFilter] = useState('ALL');
-
-  // Customer & Delivery States
-  const [zoneFilter, setZoneFilter] = useState('ALL');
-  const [customerTierFilter, setCustomerTierFilter] = useState('ALL');
-
-  // Financial & Payment States
-  const [paymentMethodFilter, setPaymentMethodFilter] = useState('ALL');
-
-  // Checkbox Toggles
-  const [showAuthManager, setShowAuthManager] = useState(true);
-  const [showProfitMargins, setShowProfitMargins] = useState(false);
-  const [showTaxBreakdown, setShowTaxBreakdown] = useState(true);
-  const [includeZeroBalances, setIncludeZeroBalances] = useState(false);
-
-  // Active Report State (Default: Summary of Voids)
+  // Active Report State (Default: Summary of voids)
   const [activeReport, setActiveReport] = useState({
     code: 'REP_IC_001',
     title: 'Summary of voids',
@@ -83,11 +66,8 @@ export default function MasterReportViewPage() {
     );
   };
 
-  // ==========================================================================
-  // 100% VERIFIED AUTHENTIC 7-CATEGORY REPORT HIERARCHY
-  // ==========================================================================
+  // 100% Verified 93-Report Catalog Hierarchy
   const masterCatalog = [
-    // 1. Internal Control
     {
       id: 'internal_control',
       title: '1. Internal Control',
@@ -103,8 +83,6 @@ export default function MasterReportViewPage() {
         { code: 'REP_IC_008', title: 'Discount summary' },
       ],
     },
-
-    // 2. Financial Reports (9 Sub-Categories, 48 Reports)
     {
       id: 'financial',
       title: '2. Financial Reports',
@@ -214,8 +192,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 3. Product Sales (4 Sub-Categories, 19 Reports)
     {
       id: 'product_sales',
       title: '3. Product Sales',
@@ -266,8 +242,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 4. Customer Sales (2 Sub-Categories, 5 Reports)
     {
       id: 'customer_sales',
       title: '4. Customer Sales',
@@ -290,8 +264,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 5. Today's & History (2 Sub-Categories, 6 Reports)
     {
       id: 'todays_history',
       title: "5. Today's & History",
@@ -317,8 +289,6 @@ export default function MasterReportViewPage() {
         },
       ],
     },
-
-    // 6. Time & Attendance (3 Reports)
     {
       id: 'time_attendance',
       title: '6. Time & Attendance',
@@ -329,8 +299,6 @@ export default function MasterReportViewPage() {
         { code: 'REP_TA_003', title: 'Labor cost' },
       ],
     },
-
-    // 7. Lists (4 Reports)
     {
       id: 'lists',
       title: '7. Lists',
@@ -344,7 +312,7 @@ export default function MasterReportViewPage() {
     },
   ];
 
-  // Specific Sample Datasets
+  // Specific Datasets
   const customerListRows = [
     { code: 'CUST-01', name: 'Al-Baraka Supermarket S.A.R.L', region: 'Mount Lebanon', city: 'Choueifat Main Highway', phone: '03112233', rep: 'Ahmad Ali Kassem', creditLimit: 5000.0, balance: 1400.0 },
     { code: 'CUST-02', name: 'Al-Nour Food Establishment', region: 'Beirut', city: 'Hamra (Makdessi Street)', phone: '01778899', rep: 'Hiba Aloulou', creditLimit: 3500.0, balance: 890.0 },
@@ -364,6 +332,19 @@ export default function MasterReportViewPage() {
     { ref: 'INV-0892', date: '28-Aug-2026', client: 'Al-Nour Food Est.', item: 'Pomegranate Molasses Box', qty: 24, totalUsd: 890.0, rep: 'Hiba Aloulou' },
     { ref: 'INV-0893', date: '29-Aug-2026', client: 'Al-Kheir Olive Center', item: 'Extra Virgin Glass 1L', qty: 50, totalUsd: 3000.0, rep: 'Hussein Mahdi' },
   ];
+
+  // Formatted date string for A4 Header
+  const getSelectedPeriodDisplay = () => {
+    switch (periodPreset) {
+      case 'TODAY': return '31-Aug-2026 (Today)';
+      case 'YESTERDAY': return '30-Aug-2026 (Yesterday)';
+      case 'THIS_MONTH': return 'August 2026 (01-Aug-2026 to 31-Aug-2026)';
+      case 'LAST_MONTH': return 'July 2026 (01-Jul-2026 to 31-Jul-2026)';
+      case 'DATE_RANGE': return `${fromDate} to ${toDate}`;
+      case 'EOD_DATE': return `EOD Date: ${eodDate}`;
+      default: return 'August 2026';
+    }
+  };
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-80px)] select-none text-left font-sans">
@@ -408,228 +389,195 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 2. DYNAMIC ADAPTIVE FILTER RIBBON TOOLBAR                           */}
+      {/* 2. AUTHENTIC OMEGA REPORTING RIBBON (WITH DICTATED CONDITIONAL LOGIC)*/}
       {/* =================================================================== */}
-      <div className="bg-white border-b border-slate-200 p-3 px-4 flex flex-col gap-2.5 print:hidden shrink-0 shadow-2xs">
+      <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
         
-        {/* Top Filter Ribbon Line */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
+        {/* Left Inputs: Period Dropdown + Conditional Dynamic Date Area + Branches */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           
-          {/* Left Inputs: Period, Date Range, Branch */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <select
-              value={periodPreset}
-              onChange={(e) => setPeriodPreset(e.target.value)}
-              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-            >
-              <option value="THIS_MONTH">This Month (August 2026)</option>
-              <option value="TODAY">Today</option>
-              <option value="YESTERDAY">Yesterday</option>
-              <option value="THIS_WEEK">This Week</option>
-              <option value="LAST_MONTH">Last Month</option>
-            </select>
+          {/* Period Preset Dropdown (6 Exact Dictated Options) */}
+          <select
+            value={periodPreset}
+            onChange={(e) => setPeriodPreset(e.target.value as any)}
+            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+          >
+            <option value="TODAY">Today</option>
+            <option value="YESTERDAY">Yesterday</option>
+            <option value="THIS_MONTH">This Month</option>
+            <option value="LAST_MONTH">Last Month</option>
+            <option value="DATE_RANGE">Date Range</option>
+            <option value="EOD_DATE">EOD Date</option>
+          </select>
 
+          {/* CONDITIONAL DATE AREA */}
+          {/* A. TODAY (Locked Date) */}
+          {periodPreset === 'TODAY' && (
             <input
               type="text"
-              value={dateRangeText}
-              onChange={(e) => setDateRangeText(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded font-mono text-xs text-slate-800 w-44 text-center focus:outline-none"
+              readOnly
+              disabled
+              value="31-Aug-2026"
+              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
+              title="Today's fixed date (Read-only)"
             />
+          )}
 
+          {/* B. YESTERDAY (Locked Date) */}
+          {periodPreset === 'YESTERDAY' && (
+            <input
+              type="text"
+              readOnly
+              disabled
+              value="30-Aug-2026"
+              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
+              title="Yesterday's fixed date (Read-only)"
+            />
+          )}
+
+          {/* C. THIS MONTH (Locked August 2026) */}
+          {periodPreset === 'THIS_MONTH' && (
+            <input
+              type="text"
+              readOnly
+              disabled
+              value="August 2026"
+              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
+              title="Current month (Read-only)"
+            />
+          )}
+
+          {/* D. LAST MONTH (Locked July 2026) */}
+          {periodPreset === 'LAST_MONTH' && (
+            <input
+              type="text"
+              readOnly
+              disabled
+              value="July 2026"
+              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
+              title="Previous month (Read-only)"
+            />
+          )}
+
+          {/* E. DATE RANGE (Dual 30 August 2026 with Calendar Buttons) */}
+          {periodPreset === 'DATE_RANGE' && (
+            <div className="flex items-center gap-1.5 bg-slate-50 p-0.5 rounded border border-slate-300">
+              <div className="flex items-center gap-1">
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
+                />
+              </div>
+              <span className="text-slate-400 text-xs font-bold">➔</span>
+              <div className="flex items-center gap-1">
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* F. EOD DATE (Dropdown Starting Dec 10, 2025 to Today) */}
+          {periodPreset === 'EOD_DATE' && (
             <select
-              value={branchFilter}
-              onChange={(e) => setBranchFilter(e.target.value)}
-              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+              value={eodDate}
+              onChange={(e) => setEodDate(e.target.value)}
+              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs text-slate-800 focus:outline-none"
             >
-              <option value="ALL">All Operating Branches</option>
-              <option value="Choueifat">Choueifat Main Facility</option>
-              <option value="Beirut">Beirut Branch</option>
+              <option value="2026-08-31">31-Aug-2026 (Closeout)</option>
+              <option value="2026-08-30">30-Aug-2026 (Closeout)</option>
+              <option value="2026-08-29">29-Aug-2026 (Closeout)</option>
+              <option value="2026-08-28">28-Aug-2026 (Closeout)</option>
+              <option value="2026-08-15">15-Aug-2026 (Mid-Month Closeout)</option>
+              <option value="2026-08-01">01-Aug-2026 (Start-Month Closeout)</option>
+              <option value="2026-07-31">31-Jul-2026 (Month Closeout)</option>
+              <option value="2026-06-30">30-Jun-2026 (Q2 Closeout)</option>
+              <option value="2026-01-01">01-Jan-2026 (New Year)</option>
+              <option value="2025-12-10">10-Dec-2025 (Initial Rollout)</option>
             </select>
+          )}
 
-            {/* DYNAMIC FIELD 1: Cashier/Server (For Voids & POS Reports) */}
-            {(activeReport.category === 'Internal Control' || activeReport.code.startsWith('REP_IC_') || activeReport.code.startsWith('REP_TH_')) && (
-              <select
-                value={serverFilter}
-                onChange={(e) => setServerFilter(e.target.value)}
-                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs focus:outline-none"
-              >
-                <option value="ALL">All Cashiers / Servers</option>
-                <option value="Hiba Aloulou">Hiba Aloulou</option>
-                <option value="Ahmad Ali Kassem">Ahmad Ali Kassem</option>
-                <option value="Hussein Mahdi">Hussein Mahdi</option>
-              </select>
-            )}
+          {/* Branches Dropdown (All Branches + Branch 1 to 4) */}
+          <select
+            value={branchFilter}
+            onChange={(e) => setBranchFilter(e.target.value)}
+            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+          >
+            <option value="ALL">All Branches</option>
+            <option value="BRANCH_1">Branch 1 (Choueifat Main Facility)</option>
+            <option value="BRANCH_2">Branch 2 (Beirut Branch)</option>
+            <option value="BRANCH_3">Branch 3</option>
+            <option value="BRANCH_4">Branch 4</option>
+          </select>
 
-            {/* DYNAMIC FIELD 2: Void Reason (For Voids Reports) */}
-            {activeReport.code === 'REP_IC_001' && (
-              <select
-                value={voidReasonFilter}
-                onChange={(e) => setVoidReasonFilter(e.target.value)}
-                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-              >
-                <option value="ALL">All Void Reasons</option>
-                <option value="WRONG_COUNT">تعداد خاطئ (Wrong Count)</option>
-                <option value="PRICE_DISPUTE">Price Dispute</option>
-                <option value="CUSTOMER_CANCEL">Customer Cancelled</option>
-              </select>
-            )}
-
-            {/* DYNAMIC FIELD 3: Product Division & Category (For Product Sales Reports) */}
-            {(activeReport.category.includes('Product Sales') || activeReport.code.startsWith('REP_P_') || activeReport.code.startsWith('REP_S_')) && (
-              <>
-                <select
-                  value={divisionFilter}
-                  onChange={(e) => setDivisionFilter(e.target.value)}
-                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-                >
-                  <option value="ALL">All Product Divisions</option>
-                  <option value="OLIVE_OIL">Olive Oil & Extra Virgin</option>
-                  <option value="PRESERVES">Pomegranate Molasses & Jams</option>
-                  <option value="DETERGENTS">Industrial Cleaners & Javel</option>
-                </select>
-
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-                >
-                  <option value="ALL">All Categories</option>
-                  <option value="TINS_17L">17.5L Bulk Tins</option>
-                  <option value="GLASS_1L">1L Glass Bottles</option>
-                  <option value="MOLASSES">Pomegranate Molasses 500ml</option>
-                </select>
-              </>
-            )}
-
-            {/* DYNAMIC FIELD 4: Customer Zone & Ratio (For Customer Sales & Lists) */}
-            {(activeReport.category.includes('Customer') || activeReport.code.startsWith('REP_C_') || activeReport.code.startsWith('REP_L_')) && (
-              <>
-                <select
-                  value={zoneFilter}
-                  onChange={(e) => setZoneFilter(e.target.value)}
-                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-                >
-                  <option value="ALL">All Lebanon Zones</option>
-                  <option value="Mount Lebanon">Mount Lebanon (Choueifat / Metn)</option>
-                  <option value="Beirut">Beirut Governorate</option>
-                  <option value="South Lebanon">South Lebanon (Saida / Tyre)</option>
-                  <option value="Bekaa">Bekaa Valley</option>
-                  <option value="North Lebanon">North Lebanon (Tripoli)</option>
-                </select>
-
-                <select
-                  value={customerTierFilter}
-                  onChange={(e) => setCustomerTierFilter(e.target.value)}
-                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs focus:outline-none"
-                >
-                  <option value="ALL">All Customer Ratios / Tiers</option>
-                  <option value="WHOLESALE">B2B Wholesale Distributor</option>
-                  <option value="SUPERMARKET">Supermarket Commercial Tier</option>
-                  <option value="RETAIL">Retail Customer</option>
-                </select>
-              </>
-            )}
-
-            {/* DYNAMIC FIELD 5: Payment Method (For Financial & Invoices Reports) */}
-            {(activeReport.category.includes('Financial') || activeReport.code.startsWith('REP_F_') || activeReport.code === 'REP_S_00192') && (
-              <select
-                value={paymentMethodFilter}
-                onChange={(e) => setPaymentMethodFilter(e.target.value)}
-                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-              >
-                <option value="ALL">All Payment Methods</option>
-                <option value="CASH">Cash on Delivery / POS</option>
-                <option value="WHISH">Whish Money</option>
-                <option value="CREDIT">Credit (On Account)</option>
-              </select>
-            )}
-
-            <button
-              type="button"
-              onClick={() => alert('Filter applied')}
-              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
-            >
-              Filter
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => {
-                setPeriodPreset('THIS_MONTH');
-                setBranchFilter('ALL');
-                setServerFilter('ALL');
-                setDivisionFilter('ALL');
-                setZoneFilter('ALL');
-              }}
-              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* Right Tools: Zoom + Print + Export */}
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))}
-              className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
-              title="Zoom Out"
-            >
-              🔍−
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
-              className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
-              title="Zoom In"
-            >
-              🔍+
-            </button>
-
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
-            >
-              <span>🖨️ Print</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => alert('Exporting to Excel...')}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-xs border border-slate-300 flex items-center gap-1"
-            >
-              <span>📥 Export ▾</span>
-            </button>
-          </div>
-
+          {/* Action Buttons: Filter & Reset */}
+          <button
+            type="button"
+            onClick={() => alert(`Filter Applied for Period: ${periodPreset} | Branch: ${branchFilter}`)}
+            className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
+          >
+            Filter
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => {
+              setPeriodPreset('THIS_MONTH');
+              setBranchFilter('ALL');
+            }}
+            className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
+          >
+            Reset
+          </button>
         </div>
 
-        {/* Dynamic Checkbox Flags Row */}
-        <div className="flex flex-wrap items-center gap-4 pt-1.5 border-t border-slate-100 text-xs">
-          {activeReport.code === 'REP_IC_001' && (
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showAuthManager} onChange={(e) => setShowAuthManager(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Show Authorizing Manager</span>
-            </label>
-          )}
+        {/* Right Tools: Zoom + Print + Export + Settings */}
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))}
+            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
+            title="Zoom Out"
+          >
+            🔍−
+          </button>
+          <button
+            type="button"
+            onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
+            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
+            title="Zoom In"
+          >
+            🔍+
+          </button>
 
-          {(activeReport.category.includes('Product Sales') || activeReport.code.startsWith('REP_P_')) && (
-            <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showProfitMargins} onChange={(e) => setShowProfitMargins(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-              <span>Show Cost & Profit Margins</span>
-            </label>
-          )}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+          >
+            <span>🖨️ Print</span>
+          </button>
 
-          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-            <input type="checkbox" checked={showTaxBreakdown} onChange={(e) => setShowTaxBreakdown(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-            <span>Show Tax / VAT Breakdown</span>
-          </label>
+          <button
+            type="button"
+            onClick={() => alert('Exporting to Excel...')}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-xs border border-slate-300 flex items-center gap-1"
+          >
+            <span>📥 Export ▾</span>
+          </button>
 
-          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
-            <input type="checkbox" checked={includeZeroBalances} onChange={(e) => setIncludeZeroBalances(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5 rounded" />
-            <span>Include Zero Balances / Sales</span>
-          </label>
+          <button
+            type="button"
+            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300"
+            title="Report Settings"
+          >
+            ⚙️
+          </button>
         </div>
 
       </div>
@@ -752,8 +700,8 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
               <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
-                <div>Period: {dateRangeText}</div>
-                <div>Branch: {branchFilter === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branchFilter}</div>
+                <div>Period: {getSelectedPeriodDisplay()}</div>
+                <div>Branch: {branchFilter === 'ALL' ? 'Southern Olive Oil Products S.A.R.L (All)' : branchFilter}</div>
               </div>
             </div>
 
@@ -876,7 +824,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* A4 Footer */}
+            {/* Footer */}
             <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
               <span>Printed from Vanguard ERP System</span>
               <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
