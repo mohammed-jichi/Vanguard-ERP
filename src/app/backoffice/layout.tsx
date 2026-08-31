@@ -87,9 +87,12 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
           </div>
         </div>
 
-        {/* Right Side: Action Icons + 10-Item User Profile Dropdown + Quick Drawer Trigger */}
-        <div className="flex items-center gap-3.5 shrink-0">
-          <div className="flex items-center gap-2 text-slate-600">
+        {/* Right Side: Action Icons -> QUICK MENU FIRST -> JICHI MOHAMMED */}
+        <div className="flex items-center gap-3 shrink-0">
+          
+          {/* Action Icons Bar */}
+          <div className="flex items-center gap-1.5 text-slate-600">
+            {/* 1. Home */}
             <Link
               href="/backoffice/dashboard"
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
@@ -100,11 +103,24 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </svg>
             </Link>
 
+            {/* 2. Messages */}
+            <Link
+              href="/backoffice/social-crm"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
+              title="Messages & Inbox"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+            </Link>
+
+            {/* 3. Alerts */}
             <button
               type="button"
               onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
-              title="Alerts & Messages"
+              title="Alerts & System Notifications"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
@@ -114,18 +130,19 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </span>
             </button>
 
+            {/* 4. Help */}
             <button
               type="button"
               onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
-              title="Help & Quick Tips"
+              title="Help & Support"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
               </svg>
             </button>
 
-            {/* Quick Drawer Trigger Button */}
+            {/* 5. QUICK MENU GRID BUTTON (COMES FIRST BEFORE USER PROFILE) */}
             <button
               type="button"
               onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
@@ -138,7 +155,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
             </button>
           </div>
 
-          {/* User Profile Dropdown Button & 10-Item Menu */}
+          {/* 6. JICHI MOHAMMED USER PROFILE (COMES AFTER QUICK MENU) */}
           <div className="relative">
             <button
               type="button"
@@ -152,11 +169,11 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <span className="text-[11px] text-[#1e3a2b]">▾</span>
             </button>
 
-            {/* 10-ITEM AUTHENTIC USER PROFILE MENU */}
+            {/* 10-Item Authentic Dropdown Menu */}
             {userDropdownOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
                 
-                {/* User Header Block */}
+                {/* Header */}
                 <div className="px-4 py-2.5 border-b border-slate-100 bg-[#f8faf8]">
                   <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
                   <div className="text-[10.5px] text-[#1e3a2b] font-mono font-semibold">General Operations Manager</div>
@@ -165,7 +182,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   </div>
                 </div>
 
-                {/* 10 Interactive Items */}
+                {/* 10 Items */}
                 <div className="py-1">
                   <button
                     type="button"
@@ -249,7 +266,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   </button>
                 </div>
 
-                {/* Logout Divider & Action */}
+                {/* Logout */}
                 <div className="border-t border-slate-100 mt-1 pt-1">
                   <button
                     type="button"
@@ -264,8 +281,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </div>
             )}
           </div>
+
         </div>
 
+        {/* Accent Line */}
         <div
           style={{
             background: 'linear-gradient(90deg, #c5a059 0%, #1e3a2b 50%, #c5a059 100%)',
