@@ -2,23 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-interface OnlineOrder {
-  orderNo: string;
-  orderDate: string;
-  deliveryDate: string;
-  customerName: string;
-  platform: 'WhatsApp' | 'Web Store' | 'TikTok Shop' | 'Instagram' | 'Phone';
-  platformIcon: string;
-  totalAmount: string;
-  amountNum: number;
-  status: 'FULLY_RECEIVED' | 'PARTIALLY_RECEIVED' | 'NOT_RECEIVED_YET';
-  zoneName: string;
-  branchName: string;
-  itemsSummary: string;
-}
+import {
+  OnlineOrder,
+  initialOrdersList,
+  branchesList,
+  FulfillmentStatus,
+} from './orders-data';
 
 export default function OnlineOrdersControlCenterPage() {
+  const [ordersList] = useState<OnlineOrder[]>(initialOrdersList);
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [searchOrderNo, setSearchOrderNo] = useState('');
@@ -32,80 +24,6 @@ export default function OnlineOrdersControlCenterPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  // Authentic Operational Orders Dataset for Southern Olive Oil Products S.A.R.L
-  const [ordersList] = useState<OnlineOrder[]>([
-    {
-      orderNo: 'ORD-103349',
-      orderDate: '01-Sep-2026 10:14 AM',
-      deliveryDate: '01-Sep-2026',
-      customerName: 'Al-Baraka Supermarket S.A.R.L',
-      platform: 'WhatsApp',
-      platformIcon: '💬',
-      totalAmount: '9,000,000.00 LBP',
-      amountNum: 9000000,
-      status: 'FULLY_RECEIVED',
-      zoneName: 'Beirut - Hamra',
-      branchName: '002 - Beirut Distribution Hub',
-      itemsSummary: '1x 17.5L Extra Virgin Olive Oil Tin ($100.00)',
-    },
-    {
-      orderNo: 'ORD-103350',
-      orderDate: '01-Sep-2026 11:02 AM',
-      deliveryDate: '01-Sep-2026',
-      customerName: 'Colonel Mahmoud Abboud',
-      platform: 'Phone',
-      platformIcon: '📞',
-      totalAmount: '248,400,000.00 LBP ($2,760.00)',
-      amountNum: 248400000,
-      status: 'FULLY_RECEIVED',
-      zoneName: 'Mount Lebanon - Choueifat',
-      branchName: '001 - Choueifat Main Facility',
-      itemsSummary: '30x 17.5L Extra Virgin Bulk Harvest Tins',
-    },
-    {
-      orderNo: 'ORD-103351',
-      orderDate: '01-Sep-2026 12:22 PM',
-      deliveryDate: '02-Sep-2026',
-      customerName: 'Al-Nour Food Establishment',
-      platform: 'Web Store',
-      platformIcon: '🌐',
-      totalAmount: '460,000.00 LBP',
-      amountNum: 460000,
-      status: 'PARTIALLY_RECEIVED',
-      zoneName: 'Beirut - Achrafieh',
-      branchName: '002 - Beirut Distribution Hub',
-      itemsSummary: '6x Pomegranate Molasses (500ml), 4x Pickled Olives Glass 1Kg',
-    },
-    {
-      orderNo: 'ORD-103352',
-      orderDate: '01-Sep-2026 12:51 PM',
-      deliveryDate: '02-Sep-2026',
-      customerName: 'Hussein Daik Retail Mart',
-      platform: 'TikTok Shop',
-      platformIcon: '🎵',
-      totalAmount: '706,968,000.00 LBP',
-      amountNum: 706968000,
-      status: 'NOT_RECEIVED_YET',
-      zoneName: 'South Lebanon - Saida City',
-      branchName: '003 - Saida Southern Center',
-      itemsSummary: 'Wholesale Assorted Food Preserves & Olive Products Matrix',
-    },
-    {
-      orderNo: 'ORD-103353',
-      orderDate: '01-Sep-2026 01:40 PM',
-      deliveryDate: '02-Sep-2026',
-      customerName: 'Byblos Green Grocers',
-      platform: 'Instagram',
-      platformIcon: '📸',
-      totalAmount: '1,580,000.00 LBP',
-      amountNum: 1580000,
-      status: 'NOT_RECEIVED_YET',
-      zoneName: 'Mount Lebanon - Jbeil',
-      branchName: '001 - Choueifat Main Facility',
-      itemsSummary: '12x Cold Press Extra Virgin Glass Bottles 1L',
-    },
-  ]);
 
   // Metrics Calculation
   const totalOrdersCount = ordersList.length;
@@ -135,7 +53,7 @@ export default function OnlineOrdersControlCenterPage() {
     setSearchOrderNo('');
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: FulfillmentStatus) => {
     switch (status) {
       case 'FULLY_RECEIVED':
         return (
@@ -167,7 +85,7 @@ export default function OnlineOrdersControlCenterPage() {
     <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-2 pb-8">
       
       {/* =================================================================== */}
-      {/* 1. TOP TITLE (LICENSE WARNING PURGED)                               */}
+      {/* 1. TOP TITLE & DESCRIPTION                                          */}
       {/* =================================================================== */}
       <div className="flex flex-wrap items-start justify-between gap-2 pt-1">
         <div>
@@ -255,9 +173,11 @@ export default function OnlineOrdersControlCenterPage() {
             className="px-3 py-2 bg-white border border-slate-300 rounded-xl font-semibold text-slate-800 focus:outline-none min-w-[200px]"
           >
             <option value="ALL">Select Branch (All Branches)</option>
-            <option value="Choueifat">001 - Choueifat Main Facility</option>
-            <option value="Beirut">002 - Beirut Distribution Hub</option>
-            <option value="Saida">003 - Saida Southern Center</option>
+            {branchesList.map((b) => (
+              <option key={b.id} value={b.name.split(' - ')[1] || b.name}>
+                {b.name}
+              </option>
+            ))}
           </select>
 
           {/* Status Filter */}
