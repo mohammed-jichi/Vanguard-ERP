@@ -140,6 +140,60 @@ export default function MasterReportViewPage() {
   const [showSummaryFilter, setShowSummaryFilter] = useState(false);
   const [showZeroTaxFilter, setShowZeroTaxFilter] = useState(false);
 
+  // Multi-Filter Dropdown for Invoices Criteria (Show refund, zero invoices, discount, top 10, zero tax)
+  const invoiceCriteriaList = [
+    'Show refund',
+    'Show zero invoices',
+    'Show discount',
+    'Show top 10 invoices by amount',
+    'Show zero tax',
+  ];
+  const [selectedInvoiceCriteria, setSelectedInvoiceCriteria] = useState<string[]>([]);
+  const [invoicesCriteriaDropdownOpen, setInvoicesCriteriaDropdownOpen] = useState(false);
+
+  const toggleInvoiceCriteria = (crit: string) => {
+    if (selectedInvoiceCriteria.includes(crit)) {
+      setSelectedInvoiceCriteria(selectedInvoiceCriteria.filter((c) => c !== crit));
+    } else {
+      setSelectedInvoiceCriteria([...selectedInvoiceCriteria, crit]);
+    }
+  };
+
+  // Multi-Filter Dropdown for Departments (Show all, Local, International, Online)
+  const departmentsList = [
+    { code: 'LOCAL', label: 'Local' },
+    { code: 'INTERNATIONAL', label: 'International' },
+    { code: 'ONLINE', label: 'Online' },
+  ];
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>(['ALL']);
+  const [deptDropdownOpen, setDeptDropdownOpen] = useState(false);
+
+  const toggleDepartmentSelection = (code: string) => {
+    if (code === 'ALL') {
+      setSelectedDepartments(['ALL']);
+    } else {
+      let updated = selectedDepartments.filter((d) => d !== 'ALL');
+      if (updated.includes(code)) {
+        updated = updated.filter((d) => d !== code);
+        if (updated.length === 0) updated = ['ALL'];
+      } else {
+        updated.push(code);
+      }
+      setSelectedDepartments(updated);
+    }
+  };
+
+  const getDepartmentsDisplayLabel = () => {
+    if (selectedDepartments.includes('ALL') || selectedDepartments.length === 0) {
+      return 'Show all departments';
+    }
+    if (selectedDepartments.length === 1) {
+      const found = departmentsList.find((d) => d.code === selectedDepartments[0]);
+      return found ? found.label : selectedDepartments[0];
+    }
+    return `${selectedDepartments.length} Departments Selected`;
+  };
+
   // Invoice Number Range Filter (From / To)
   const [fromInvoiceNum, setFromInvoiceNum] = useState('');
   const [toInvoiceNum, setToInvoiceNum] = useState('');
@@ -868,7 +922,7 @@ export default function MasterReportViewPage() {
             {/* D. INVOICES TYPE FILTER (ONLY FOR Summary of refunds & specific transaction modes) */}
             {(activeReport.code === 'REP_IC_002' || 
               (activeReport.code === 'REP_IC_003' && 
-               ['Duplicate Invoices', 'Transactions by employees by payment', 'Transactions by date by payments', 'Transactions by customers', 'Transactions by customers by groups', 'Transactions by customers details', 'Transactions by workstation', 'Transactions by salesman', 'Transactions By Source'].includes(transactionSubType))) && (
+               ['Duplicate Invoices', 'Transactions by date', 'Transactions by employees by payment', 'Transactions by date by payments', 'Transactions by customers', 'Transactions by customers by groups', 'Transactions by customers details', 'Transactions by workstation', 'Transactions by salesman', 'Transactions By Source'].includes(transactionSubType))) && (
               <div className="relative">
                 <button
                   type="button"
@@ -907,7 +961,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* E. ALL PAYMENT TYPES (ONLY FOR Transactions by date, Transactions by date by payments, Transactions By Source) */}
+            {/* E. ALL PAYMENT TYPES */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions by date by payments', 'Transactions By Source'].includes(transactionSubType) && (
               <select
                 value={paymentTypeFilter}
@@ -923,7 +977,86 @@ export default function MasterReportViewPage() {
               </select>
             )}
 
-            {/* F. CUSTOMER SEARCH & VAT NUMBER (ONLY FOR Transactions by customers / details) */}
+            {/* F. MULTI-SELECT INVOICES CRITERIA "FILTERS" (EXCLUSIVE TO Transactions by date) */}
+            {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by date' && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setInvoicesCriteriaDropdownOpen(!invoicesCriteriaDropdownOpen)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center justify-between gap-1.5 min-w-[120px]"
+                >
+                  <span>{selectedInvoiceCriteria.length === 0 ? 'Filters' : `Filters (${selectedInvoiceCriteria.length})`}</span>
+                  <span className="text-[9px] text-slate-500">▼</span>
+                </button>
+
+                {invoicesCriteriaDropdownOpen && (
+                  <div className="absolute left-0 mt-1 w-64 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50 animate-fadeIn">
+                    <div className="px-3 py-1 border-b border-slate-100 font-bold text-[10.5px] text-slate-400 uppercase">
+                      Invoice Multi-Criteria Filters
+                    </div>
+                    <div className="py-1">
+                      {invoiceCriteriaList.map((crit) => (
+                        <label key={crit} className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer text-slate-700 font-medium">
+                          <input
+                            type="checkbox"
+                            checked={selectedInvoiceCriteria.includes(crit)}
+                            onChange={() => toggleInvoiceCriteria(crit)}
+                            className="accent-[#1e3a2b] w-3.5 h-3.5"
+                          />
+                          <span>{crit}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* G. MULTI-SELECT DEPARTMENTS (EXCLUSIVE TO Transactions by date & Transactions By Source) */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions By Source'].includes(transactionSubType) && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setDeptDropdownOpen(!deptDropdownOpen)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center justify-between gap-1.5 min-w-[140px]"
+                >
+                  <span>{getDepartmentsDisplayLabel()}</span>
+                  <span className="text-[9px] text-slate-500">▼</span>
+                </button>
+
+                {deptDropdownOpen && (
+                  <div className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50 animate-fadeIn">
+                    <div className="px-3 py-1 border-b border-slate-100 font-bold text-[10.5px] text-slate-400 uppercase">
+                      Select Department(s)
+                    </div>
+                    <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 cursor-pointer font-bold border-b border-slate-100">
+                      <input
+                        type="checkbox"
+                        checked={selectedDepartments.includes('ALL')}
+                        onChange={() => toggleDepartmentSelection('ALL')}
+                        className="accent-[#1e3a2b]"
+                      />
+                      <span>Show all departments</span>
+                    </label>
+                    <div className="py-1">
+                      {departmentsList.map((d) => (
+                        <label key={d.code} className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={selectedDepartments.includes(d.code)}
+                            onChange={() => toggleDepartmentSelection(d.code)}
+                            className="accent-[#1e3a2b]"
+                          />
+                          <span>{d.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* H. CUSTOMER SEARCH & VAT NUMBER */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by customers', 'Transactions by customers details'].includes(transactionSubType) && (
               <div className="flex items-center gap-1.5">
                 <input
@@ -948,7 +1081,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* G. SERVERS SELECTOR & GROUPED BY SERVER (ONLY FOR Transactions by employees) */}
+            {/* I. SERVERS SELECTOR & GROUPED BY SERVER */}
             {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by employees' && (
               <div className="flex items-center gap-1.5">
                 <select
@@ -974,7 +1107,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* H. DYNAMIC CHECKBOX FLAGS (ONLY WHERE USER EXPLICITLY DICTATED) */}
+            {/* J. DYNAMIC CHECKBOX FLAGS */}
             {/* Real Date */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by employees by payment', 'Transactions by workstation', 'Transactions by employees'].includes(transactionSubType) && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
@@ -1030,6 +1163,9 @@ export default function MasterReportViewPage() {
                 setPeriodPreset('THIS_MONTH');
                 setSelectedBranches(['ALL']);
                 setInvoiceTypeFilter('ALL');
+                setPaymentTypeFilter('ALL');
+                setSelectedInvoiceCriteria([]);
+                setSelectedDepartments(['ALL']);
                 setRealDateFilter(false);
                 setShowRateFilter(false);
                 setGroupByDateFilter(false);
