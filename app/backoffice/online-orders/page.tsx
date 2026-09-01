@@ -6,7 +6,7 @@ import {
   OnlineOrder,
   initialOrdersList,
   branchesList,
-  FulfillmentStatus,
+  OrderFulfillmentStatus,
 } from './orders-data';
 
 export default function OnlineOrdersControlCenterPage() {
@@ -17,7 +17,6 @@ export default function OnlineOrdersControlCenterPage() {
   const [lastSyncSeconds, setLastSyncSeconds] = useState(48);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<OnlineOrder | null>(null);
 
-  // Auto-reload countdown simulation
   useEffect(() => {
     const timer = setInterval(() => {
       setLastSyncSeconds((prev) => (prev > 0 ? prev - 1 : 120));
@@ -25,18 +24,16 @@ export default function OnlineOrdersControlCenterPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Metrics Calculation
   const totalOrdersCount = ordersList.length;
-  const fullyReceivedCount = ordersList.filter((o) => o.status === 'FULLY_RECEIVED').length;
-  const partiallyReceivedCount = ordersList.filter((o) => o.status === 'PARTIALLY_RECEIVED').length;
-  const notReceivedYetCount = ordersList.filter((o) => o.status === 'NOT_RECEIVED_YET').length;
+  const fullyInvoicedCount = ordersList.filter((o) => o.status === 'FULLY_INVOICED').length;
+  const underPrepCount = ordersList.filter((o) => o.status === 'UNDER_PREPARATION').length;
+  const pendingConfCount = ordersList.filter((o) => o.status === 'PENDING_CONFIRMATION').length;
 
-  // Filtering Logic
   const filteredOrders = ordersList.filter((order) => {
     const matchesBranch = selectedBranch === 'ALL' || order.branchName.includes(selectedBranch);
     const matchesStatus =
       selectedStatus === 'ALL' ||
-      (selectedStatus === 'PARTIALLY_OR_NOT' && order.status !== 'FULLY_RECEIVED') ||
+      (selectedStatus === 'PENDING_OR_PREP' && order.status !== 'FULLY_INVOICED') ||
       order.status === selectedStatus;
     const matchesSearch =
       searchOrderNo.trim() === '' ||
@@ -53,27 +50,27 @@ export default function OnlineOrdersControlCenterPage() {
     setSearchOrderNo('');
   };
 
-  const getStatusBadge = (status: FulfillmentStatus) => {
+  const getStatusBadge = (status: OrderFulfillmentStatus) => {
     switch (status) {
-      case 'FULLY_RECEIVED':
+      case 'FULLY_INVOICED':
         return (
           <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px] border border-emerald-300 inline-flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            Fully Received
+            Invoiced & Ready
           </span>
         );
-      case 'PARTIALLY_RECEIVED':
+      case 'UNDER_PREPARATION':
         return (
           <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[11px] border border-amber-300 inline-flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-            Partially Received
+            Under Preparation
           </span>
         );
-      case 'NOT_RECEIVED_YET':
+      case 'PENDING_CONFIRMATION':
         return (
           <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[11px] border border-rose-300 inline-flex items-center gap-1 animate-pulse">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
-            Not Received Yet
+            Pending Confirmation
           </span>
         );
       default:
@@ -84,89 +81,63 @@ export default function OnlineOrdersControlCenterPage() {
   return (
     <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-2 pb-8">
       
-      {/* =================================================================== */}
-      {/* 1. TOP TITLE & DESCRIPTION                                          */}
-      {/* =================================================================== */}
+      {/* 1. TOP TITLE */}
       <div className="flex flex-wrap items-start justify-between gap-2 pt-1">
         <div>
           <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">Online Orders Control Center</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Monitor online orders and check whether they are fully, partially, or not yet received in POS.
+            Monitor incoming E-Commerce and phone dispatch orders, tracking invoice generation and warehouse packing status.
           </p>
         </div>
       </div>
 
-      {/* =================================================================== */}
-      {/* 2. TOP 5 METRIC CARDS                                               */}
-      {/* =================================================================== */}
+      {/* 2. TOP 5 METRIC CARDS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
-        
-        {/* Card 1: Total Orders */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100/70 text-blue-700 flex items-center justify-center font-bold text-lg">
-            📦
-          </div>
+          <div className="w-10 h-10 rounded-full bg-blue-100/70 text-blue-700 flex items-center justify-center font-bold text-lg">📦</div>
           <div>
             <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Total Orders</span>
             <span className="text-xl font-extrabold text-slate-900 leading-tight">{totalOrdersCount}</span>
           </div>
         </div>
 
-        {/* Card 2: Fully Received */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-100/70 text-emerald-700 flex items-center justify-center font-bold text-lg">
-            ✓
-          </div>
+          <div className="w-10 h-10 rounded-full bg-emerald-100/70 text-emerald-700 flex items-center justify-center font-bold text-lg">✓</div>
           <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Fully Received</span>
-            <span className="text-xl font-extrabold text-slate-900 leading-tight">{fullyReceivedCount}</span>
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Invoiced & Ready</span>
+            <span className="text-xl font-extrabold text-slate-900 leading-tight">{fullyInvoicedCount}</span>
           </div>
         </div>
 
-        {/* Card 3: Partially Received */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-amber-100/70 text-amber-700 flex items-center justify-center font-bold text-lg">
-            ⏳
-          </div>
+          <div className="w-10 h-10 rounded-full bg-amber-100/70 text-amber-700 flex items-center justify-center font-bold text-lg">⏳</div>
           <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Partially Received</span>
-            <span className="text-xl font-extrabold text-slate-900 leading-tight">{partiallyReceivedCount}</span>
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Under Preparation</span>
+            <span className="text-xl font-extrabold text-slate-900 leading-tight">{underPrepCount}</span>
           </div>
         </div>
 
-        {/* Card 4: Not Received Yet */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-rose-100/70 text-rose-700 flex items-center justify-center font-bold text-lg">
-            ⚠️
-          </div>
+          <div className="w-10 h-10 rounded-full bg-rose-100/70 text-rose-700 flex items-center justify-center font-bold text-lg">⚠️</div>
           <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Not Received Yet</span>
-            <span className="text-xl font-extrabold text-slate-900 leading-tight">{notReceivedYetCount}</span>
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Pending Confirmation</span>
+            <span className="text-xl font-extrabold text-slate-900 leading-tight">{pendingConfCount}</span>
           </div>
         </div>
 
-        {/* Card 5: Last Sync */}
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-lg">
-            🔄
-          </div>
+          <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-lg">🔄</div>
           <div className="text-[10.5px]">
             <span className="font-bold text-slate-400 uppercase tracking-wider block">Last Sync</span>
             <span className="font-extrabold text-slate-800 block leading-tight">{lastSyncSeconds} sec ago</span>
             <span className="text-[9.5px] text-slate-400 font-mono block">Auto reload every 2 min</span>
           </div>
         </div>
-
       </div>
 
-      {/* =================================================================== */}
-      {/* 3. FILTER & SEARCH CONTROL BAR                                      */}
-      {/* =================================================================== */}
+      {/* 3. FILTER & SEARCH CONTROL BAR */}
       <div className="bg-white rounded-2xl border border-slate-200/90 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-        
         <div className="flex flex-wrap items-center gap-3 flex-1">
-          
-          {/* Branch Selector */}
           <select
             value={selectedBranch}
             onChange={(e) => setSelectedBranch(e.target.value)}
@@ -180,20 +151,18 @@ export default function OnlineOrdersControlCenterPage() {
             ))}
           </select>
 
-          {/* Status Filter */}
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="px-3 py-2 bg-white border border-slate-300 rounded-xl font-semibold text-slate-800 focus:outline-none min-w-[200px]"
           >
-            <option value="ALL">All POS Receipt Statuses</option>
-            <option value="PARTIALLY_OR_NOT">Partially or Not Received</option>
-            <option value="NOT_RECEIVED_YET">Not Received Yet</option>
-            <option value="PARTIALLY_RECEIVED">Partially Received</option>
-            <option value="FULLY_RECEIVED">Fully Received</option>
+            <option value="ALL">All Fulfillment Statuses</option>
+            <option value="PENDING_OR_PREP">Pending or Under Preparation</option>
+            <option value="PENDING_CONFIRMATION">Pending Confirmation</option>
+            <option value="UNDER_PREPARATION">Under Preparation</option>
+            <option value="FULLY_INVOICED">Fully Invoiced & Ready</option>
           </select>
 
-          {/* Search Input */}
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 flex-1 max-w-sm">
             <span className="text-slate-400 text-xs">🔍</span>
             <input
@@ -204,37 +173,23 @@ export default function OnlineOrdersControlCenterPage() {
               className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
             />
           </div>
-
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => alert(`Filters Applied: ${filteredOrders.length} matching orders`)}
-            className="px-5 py-2 bg-[#334155] hover:bg-[#1e293b] text-white font-bold rounded-xl text-xs shadow-2xs transition-colors"
-          >
+          <button type="button" onClick={() => alert(`Filters Applied: ${filteredOrders.length} matching orders`)} className="px-5 py-2 bg-[#334155] hover:bg-[#1e293b] text-white font-bold rounded-xl text-xs shadow-2xs transition-colors">
             Filter
           </button>
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs border border-slate-300 transition-colors"
-          >
+          <button type="button" onClick={handleResetFilters} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs border border-slate-300 transition-colors">
             Reset
           </button>
         </div>
-
       </div>
 
-      {/* =================================================================== */}
-      {/* 4. ONLINE ORDERS LIST TABLE SECTION                                 */}
-      {/* =================================================================== */}
+      {/* 4. ONLINE ORDERS LIST TABLE */}
       <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
-        
         <div>
           <h2 className="text-sm font-bold text-slate-900">Online Orders List</h2>
-          <p className="text-[11px] text-slate-400">Track receipt progress in POS for each online order.</p>
+          <p className="text-[11px] text-slate-400">Track fulfillment and warehouse preparation for remote and E-Commerce orders.</p>
         </div>
 
         <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
@@ -247,7 +202,7 @@ export default function OnlineOrdersControlCenterPage() {
                 <th className="py-2.5 px-3 normal-case">customer name</th>
                 <th className="py-2.5 px-3 normal-case text-center">platform</th>
                 <th className="py-2.5 px-3 normal-case text-right">total amount</th>
-                <th className="py-2.5 px-3 normal-case text-center">pos receipt status</th>
+                <th className="py-2.5 px-3 normal-case text-center">fulfillment status</th>
                 <th className="py-2.5 px-3 normal-case">zone name</th>
                 <th className="py-2.5 px-3 normal-case">branch name</th>
                 <th className="py-2.5 px-3 normal-case text-center">actions</th>
@@ -293,18 +248,15 @@ export default function OnlineOrdersControlCenterPage() {
           </table>
         </div>
 
-        {/* Pagination Bar */}
+        {/* Pagination */}
         <div className="flex justify-center items-center gap-1 pt-2">
           <button type="button" disabled className="px-2.5 py-1 rounded bg-slate-100 text-slate-400 text-xs border border-slate-200">«</button>
           <button type="button" className="px-3 py-1 rounded bg-[#1e3a2b] text-white font-bold text-xs shadow-2xs">1</button>
           <button type="button" disabled className="px-2.5 py-1 rounded bg-slate-100 text-slate-400 text-xs border border-slate-200">»</button>
         </div>
-
       </div>
 
-      {/* =================================================================== */}
-      {/* 5. ORDER DETAILS QUICK-VIEW MODAL                                   */}
-      {/* =================================================================== */}
+      {/* 5. ORDER DETAILS MODAL */}
       {selectedOrderDetails && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full overflow-hidden flex flex-col">

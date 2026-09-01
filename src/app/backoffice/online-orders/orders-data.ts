@@ -1,11 +1,10 @@
 // ============================================================================
-// ONLINE ORDERS DATA ENGINE & CHANNELS CONFIGURATION
-// SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
+// ONLINE & DISPATCH ORDERS DATA ENGINE - SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
 // ============================================================================
 
-export type PlatformType = 'WhatsApp' | 'Web Store' | 'TikTok Shop' | 'Instagram' | 'Phone';
+export type PlatformType = 'Web Store' | 'Mobile App' | 'Call Center' | 'Delivery Partner';
 
-export type FulfillmentStatus = 'FULLY_RECEIVED' | 'PARTIALLY_RECEIVED' | 'NOT_RECEIVED_YET';
+export type OrderFulfillmentStatus = 'FULLY_INVOICED' | 'UNDER_PREPARATION' | 'PENDING_CONFIRMATION';
 
 export interface OnlineOrder {
   orderNo: string;
@@ -16,22 +15,19 @@ export interface OnlineOrder {
   platformIcon: string;
   totalAmount: string;
   amountNum: number;
-  status: FulfillmentStatus;
+  status: OrderFulfillmentStatus;
   zoneName: string;
   branchName: string;
   itemsSummary: string;
 }
 
-// 1. OPERATIONAL CHANNELS CONFIGURATION
 export const platformOptions: { type: PlatformType; icon: string; label: string }[] = [
-  { type: 'WhatsApp', icon: '💬', label: 'WhatsApp Direct' },
   { type: 'Web Store', icon: '🌐', label: 'Online Web Store' },
-  { type: 'TikTok Shop', icon: '🎵', label: 'TikTok Live/Shop' },
-  { type: 'Instagram', icon: '📸', label: 'Instagram DM' },
-  { type: 'Phone', icon: '📞', label: 'Direct Call Center' },
+  { type: 'Mobile App', icon: '📱', label: 'Vanguard Mobile App' },
+  { type: 'Call Center', icon: '📞', label: 'Call Center Orders' },
+  { type: 'Delivery Partner', icon: '🛵', label: 'Delivery Partner' },
 ];
 
-// 2. FULFILLMENT BRANCHES REGISTRY
 export const branchesList = [
   { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
   { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
@@ -39,38 +35,37 @@ export const branchesList = [
   { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
 ];
 
-// 3. AUTHENTIC ORDERS DATASET (SOUTHERN OLIVE OIL PRODUCTS S.A.R.L)
 export const initialOrdersList: OnlineOrder[] = [
   {
-    orderNo: 'ORD-103349',
+    orderNo: 'WEB-103349',
     orderDate: '01-Sep-2026 10:14 AM',
     deliveryDate: '01-Sep-2026',
     customerName: 'Al-Baraka Supermarket S.A.R.L',
-    platform: 'WhatsApp',
-    platformIcon: '💬',
+    platform: 'Web Store',
+    platformIcon: '🌐',
     totalAmount: '9,000,000.00 LBP ($100.00)',
     amountNum: 9000000,
-    status: 'FULLY_RECEIVED',
+    status: 'FULLY_INVOICED',
     zoneName: 'Beirut - Hamra',
     branchName: '002 - Beirut Distribution Hub',
     itemsSummary: '1x 17.5L Extra Virgin Olive Oil Tin (Harvest 2026)',
   },
   {
-    orderNo: 'ORD-103350',
+    orderNo: 'APP-103350',
     orderDate: '01-Sep-2026 11:02 AM',
     deliveryDate: '01-Sep-2026',
     customerName: 'Colonel Mahmoud Abboud',
-    platform: 'Phone',
-    platformIcon: '📞',
+    platform: 'Mobile App',
+    platformIcon: '📱',
     totalAmount: '248,400,000.00 LBP ($2,760.00)',
     amountNum: 248400000,
-    status: 'FULLY_RECEIVED',
+    status: 'FULLY_INVOICED',
     zoneName: 'Mount Lebanon - Choueifat',
     branchName: '001 - Choueifat Main Facility',
     itemsSummary: '30x 17.5L Extra Virgin Bulk Harvest Tins (Special Reserve)',
   },
   {
-    orderNo: 'ORD-103351',
+    orderNo: 'WEB-103351',
     orderDate: '01-Sep-2026 12:22 PM',
     deliveryDate: '02-Sep-2026',
     customerName: 'Al-Nour Food Establishment',
@@ -78,35 +73,35 @@ export const initialOrdersList: OnlineOrder[] = [
     platformIcon: '🌐',
     totalAmount: '460,000.00 LBP',
     amountNum: 460000,
-    status: 'PARTIALLY_RECEIVED',
+    status: 'UNDER_PREPARATION',
     zoneName: 'Beirut - Achrafieh',
     branchName: '002 - Beirut Distribution Hub',
     itemsSummary: '6x Pomegranate Molasses (500ml), 4x Pickled Olives Glass 1Kg',
   },
   {
-    orderNo: 'ORD-103352',
+    orderNo: 'DLV-103352',
     orderDate: '01-Sep-2026 12:51 PM',
     deliveryDate: '02-Sep-2026',
     customerName: 'Hussein Daik Retail Mart',
-    platform: 'TikTok Shop',
-    platformIcon: '🎵',
+    platform: 'Delivery Partner',
+    platformIcon: '🛵',
     totalAmount: '706,968,000.00 LBP ($7,855.20)',
     amountNum: 706968000,
-    status: 'NOT_RECEIVED_YET',
+    status: 'PENDING_CONFIRMATION',
     zoneName: 'South Lebanon - Saida City',
     branchName: '003 - Saida Southern Center',
-    itemsSummary: 'Wholesale Assorted Food Preserves, Vinegar & Olive Products Matrix',
+    itemsSummary: 'Wholesale Assorted Food Preserves & Olive Products Matrix',
   },
   {
-    orderNo: 'ORD-103353',
+    orderNo: 'TEL-103353',
     orderDate: '01-Sep-2026 01:40 PM',
     deliveryDate: '02-Sep-2026',
     customerName: 'Byblos Green Grocers',
-    platform: 'Instagram',
-    platformIcon: '📸',
+    platform: 'Call Center',
+    platformIcon: '📞',
     totalAmount: '1,580,000.00 LBP',
     amountNum: 1580000,
-    status: 'NOT_RECEIVED_YET',
+    status: 'PENDING_CONFIRMATION',
     zoneName: 'Mount Lebanon - Jbeil',
     branchName: '001 - Choueifat Main Facility',
     itemsSummary: '12x Cold Press Extra Virgin Glass Bottles 1L',
