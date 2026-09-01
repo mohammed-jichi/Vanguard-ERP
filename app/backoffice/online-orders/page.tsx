@@ -167,7 +167,7 @@ export default function OnlineOrdersControlCenterPage() {
     <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-2 pb-8">
       
       {/* =================================================================== */}
-      {/* 1. TOP TITLE & NOTIFICATION BANNER                                  */}
+      {/* 1. TOP TITLE (LICENSE WARNING PURGED)                               */}
       {/* =================================================================== */}
       <div className="flex flex-wrap items-start justify-between gap-2 pt-1">
         <div>
@@ -176,16 +176,10 @@ export default function OnlineOrdersControlCenterPage() {
             Monitor online orders and check whether they are fully, partially, or not yet received in POS.
           </p>
         </div>
-
-        <div className="text-right">
-          <span className="text-[11px] text-rose-600 font-bold bg-rose-50 px-3 py-1 rounded-lg border border-rose-200 shadow-2xs">
-            A valid license is required to activate online ordering capabilities.
-          </span>
-        </div>
       </div>
 
       {/* =================================================================== */}
-      {/* 2. TOP 5 METRIC CARDS (IDENTICAL TO USER SCREENSHOT)                */}
+      {/* 2. TOP 5 METRIC CARDS                                               */}
       {/* =================================================================== */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
         
