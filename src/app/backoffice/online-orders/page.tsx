@@ -11,7 +11,7 @@ import {
 } from './orders-data';
 
 export default function OnlineOrdersControlCenterPage() {
-  const [ordersList] = useState<OnlineOrder[]>(initialOrdersList);
+  const [ordersList, setOrdersList] = useState<OnlineOrder[]>(initialOrdersList);
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedFulfillment, setSelectedFulfillment] = useState('ALL');
   const [searchOrderNo, setSearchOrderNo] = useState('');
@@ -27,8 +27,8 @@ export default function OnlineOrdersControlCenterPage() {
 
   const totalOrdersCount = ordersList.length;
   const inStorePickupCount = ordersList.filter((o) => o.fulfillmentType === 'IN_STORE_PICKUP').length;
+  const pendingPickupCount = ordersList.filter((o) => o.status === 'PENDING_PICKUP_POS').length;
   const deliveryFleetCount = ordersList.filter((o) => o.fulfillmentType === 'DELIVERY').length;
-  const posReceivedCount = ordersList.filter((o) => o.status === 'FULLY_RECEIVED_POS').length;
 
   const filteredOrders = ordersList.filter((order) => {
     const matchesBranch = selectedBranch === 'ALL' || order.branchName.includes(selectedBranch);
@@ -38,10 +38,32 @@ export default function OnlineOrdersControlCenterPage() {
       searchOrderNo.trim() === '' ||
       order.orderNo.toLowerCase().includes(searchOrderNo.toLowerCase()) ||
       order.customerName.toLowerCase().includes(searchOrderNo.toLowerCase()) ||
+      order.repAccount.toLowerCase().includes(searchOrderNo.toLowerCase()) ||
       order.zoneName.toLowerCase().includes(searchOrderNo.toLowerCase());
 
     return matchesBranch && matchesFulfillment && matchesSearch;
   });
+
+  // Action: Pick Up & Credit Commission
+  const handleMarkAsPickedUp = (orderNo: string) => {
+    setOrdersList((prev) =>
+      prev.map((o) => {
+        if (o.orderNo === orderNo) {
+          return {
+            ...o,
+            status: 'PICKED_UP_AND_CREDITED',
+            commissionCredited: true,
+          };
+        }
+        return o;
+      })
+    );
+    const found = ordersList.find((o) => o.orderNo === orderNo);
+    if (found) {
+      alert(`✓ Order ${orderNo} Picked Up!\nCommission of ${found.commissionAmount} was automatically credited to ${found.repAccount}.`);
+    }
+    setSelectedOrderDetails(null);
+  };
 
   const handleResetFilters = () => {
     setSelectedBranch('ALL');
@@ -66,34 +88,34 @@ export default function OnlineOrdersControlCenterPage() {
     );
   };
 
-  const getStatusBadge = (status: OrderStatus) => {
+  const getStatusBadge = (status: OrderStatus, credited: boolean) => {
     switch (status) {
-      case 'FULLY_RECEIVED_POS':
-        return (
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10.5px] border border-emerald-300 inline-flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            Received in POS & Billed
-          </span>
-        );
       case 'PENDING_PICKUP_POS':
         return (
           <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10.5px] border border-amber-300 inline-flex items-center gap-1 animate-pulse">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-            Awaiting Customer at POS
+            Pending Pickup at POS (% Pending)
+          </span>
+        );
+      case 'PICKED_UP_AND_CREDITED':
+        return (
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10.5px] border border-emerald-300 inline-flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            Picked Up (% Credited to Rep)
           </span>
         );
       case 'DISPATCHED_FLEET':
         return (
           <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold text-[10.5px] border border-indigo-300 inline-flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-            Loaded on Van (Out for Delivery)
+            Loaded on Fleet Van
           </span>
         );
-      case 'PENDING_DISPATCH':
+      case 'DELIVERED_COD':
         return (
-          <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10.5px] border border-rose-300 inline-flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
-            Queued for Fleet Dispatch
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10.5px] border border-emerald-300 inline-flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            Delivered & Paid (COD)
           </span>
         );
       default:
@@ -109,7 +131,7 @@ export default function OnlineOrdersControlCenterPage() {
         <div>
           <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">Online Orders Control Center</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Omnichannel order dispatch hub: Separating in-store pickup orders (POS) from fleet delivery shipments (SuperSonic).
+            Omnichannel order dispatch & showroom pickup center: Real-time rep commission crediting on pickup.
           </p>
         </div>
       </div>
@@ -133,18 +155,18 @@ export default function OnlineOrdersControlCenterPage() {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100/70 text-blue-700 flex items-center justify-center font-bold text-lg">🚚</div>
+          <div className="w-10 h-10 rounded-full bg-amber-100/70 text-amber-700 flex items-center justify-center font-bold text-lg">⏳</div>
           <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Fleet Deliveries</span>
-            <span className="text-xl font-extrabold text-slate-900 leading-tight">{deliveryFleetCount}</span>
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Pending at POS</span>
+            <span className="text-xl font-extrabold text-slate-900 leading-tight">{pendingPickupCount}</span>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-100/70 text-emerald-700 flex items-center justify-center font-bold text-lg">✓</div>
+          <div className="w-10 h-10 rounded-full bg-blue-100/70 text-blue-700 flex items-center justify-center font-bold text-lg">🚚</div>
           <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Billed in POS</span>
-            <span className="text-xl font-extrabold text-slate-900 leading-tight">{posReceivedCount}</span>
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Fleet Deliveries</span>
+            <span className="text-xl font-extrabold text-slate-900 leading-tight">{deliveryFleetCount}</span>
           </div>
         </div>
 
@@ -190,14 +212,14 @@ export default function OnlineOrdersControlCenterPage() {
               type="text"
               value={searchOrderNo}
               onChange={(e) => setSearchOrderNo(e.target.value)}
-              placeholder="Search order no, customer, zone..."
+              placeholder="Search order no, rep, customer, zone..."
               className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => alert(`Filters Applied: ${filteredOrders.length} orders`)} className="px-5 py-2 bg-[#334155] hover:bg-[#1e293b] text-white font-bold rounded-xl text-xs shadow-2xs transition-colors">
+          <button type="button" onClick={() => alert(`Filters Applied: ${filteredOrders.length} matching orders`)} className="px-5 py-2 bg-[#334155] hover:bg-[#1e293b] text-white font-bold rounded-xl text-xs shadow-2xs transition-colors">
             Filter
           </button>
           <button type="button" onClick={handleResetFilters} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs border border-slate-300 transition-colors">
@@ -210,7 +232,7 @@ export default function OnlineOrdersControlCenterPage() {
       <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
         <div>
           <h2 className="text-sm font-bold text-slate-900">Online Orders Dispatch & Pickup Matrix</h2>
-          <p className="text-[11px] text-slate-400">Manage orders routed to showroom POS registers versus dispatched fleet routes.</p>
+          <p className="text-[11px] text-slate-400">Track orders routed to showroom POS registers with automated sales commission crediting.</p>
         </div>
 
         <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
@@ -220,12 +242,12 @@ export default function OnlineOrdersControlCenterPage() {
                 <th className="py-2.5 px-3 normal-case">order no.</th>
                 <th className="py-2.5 px-3 normal-case">order date</th>
                 <th className="py-2.5 px-3 normal-case">customer name</th>
-                <th className="py-2.5 px-3 normal-case text-center">platform</th>
+                <th className="py-2.5 px-3 normal-case">originating rep</th>
                 <th className="py-2.5 px-3 normal-case text-center">fulfillment type</th>
                 <th className="py-2.5 px-3 normal-case text-right">total amount</th>
-                <th className="py-2.5 px-3 normal-case text-center">routing status</th>
-                <th className="py-2.5 px-3 normal-case">destination / zone</th>
-                <th className="py-2.5 px-3 normal-case">assigned branch</th>
+                <th className="py-2.5 px-3 normal-case text-right">rep commission</th>
+                <th className="py-2.5 px-3 normal-case text-center">status</th>
+                <th className="py-2.5 px-3 normal-case">branch / zone</th>
                 <th className="py-2.5 px-3 normal-case text-center">action</th>
               </tr>
             </thead>
@@ -235,17 +257,18 @@ export default function OnlineOrdersControlCenterPage() {
                   <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
                   <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600">{order.orderDate}</td>
                   <td className="py-2.5 px-3 font-bold text-slate-900">{order.customerName}</td>
-                  <td className="py-2.5 px-3 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 font-semibold text-[10.5px]">
-                      <span>{order.platformIcon}</span>
-                      <span>{order.platform}</span>
-                    </span>
-                  </td>
+                  <td className="py-2.5 px-3 text-slate-700 font-semibold">{order.repAccount}</td>
                   <td className="py-2.5 px-3 text-center">{getFulfillmentBadge(order.fulfillmentType)}</td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{order.totalAmount}</td>
-                  <td className="py-2.5 px-3 text-center">{getStatusBadge(order.status)}</td>
-                  <td className="py-2.5 px-3 text-slate-700 font-medium">{order.zoneName}</td>
-                  <td className="py-2.5 px-3 text-slate-600 font-mono text-[10.5px]">{order.branchName}</td>
+                  <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-700">
+                    <div>{order.commissionAmount}</div>
+                    <span className="text-[9.5px] text-slate-400 font-normal">({order.commissionRate * 100}%)</span>
+                  </td>
+                  <td className="py-2.5 px-3 text-center">{getStatusBadge(order.status, order.commissionCredited)}</td>
+                  <td className="py-2.5 px-3 text-slate-600 font-mono text-[10.5px]">
+                    <div>{order.branchName.split(' - ')[0] || order.branchName}</div>
+                    <span className="text-[10px] text-slate-400">{order.zoneName}</span>
+                  </td>
                   <td className="py-2.5 px-3 text-center">
                     <button
                       type="button"
@@ -283,24 +306,38 @@ export default function OnlineOrdersControlCenterPage() {
             <div className="p-5 space-y-4 text-xs text-slate-800 leading-relaxed">
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono">
                 <div><span className="text-slate-400 text-[10px] block">CUSTOMER</span><strong className="text-slate-900">{selectedOrderDetails.customerName}</strong></div>
-                <div><span className="text-slate-400 text-[10px] block">CHANNEL</span><strong className="text-slate-900">{selectedOrderDetails.platform}</strong></div>
-                <div><span className="text-slate-400 text-[10px] block">FULFILLMENT TYPE</span><strong className="text-purple-800">{selectedOrderDetails.fulfillmentType === 'IN_STORE_PICKUP' ? '🏪 In-Store Showroom Pickup (POS)' : '🚚 SuperSonic Fleet Delivery'}</strong></div>
+                <div><span className="text-slate-400 text-[10px] block">ORIGINATING REP</span><strong className="text-purple-900">{selectedOrderDetails.repAccount}</strong></div>
+                <div><span className="text-slate-400 text-[10px] block">FULFILLMENT</span><strong className="text-slate-900">{selectedOrderDetails.fulfillmentType === 'IN_STORE_PICKUP' ? '🏪 Showroom Pickup (POS)' : '🚚 SuperSonic Delivery'}</strong></div>
                 <div><span className="text-slate-400 text-[10px] block">TARGET BRANCH</span><strong className="text-slate-900">{selectedOrderDetails.branchName}</strong></div>
               </div>
 
               <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-[10px] font-mono block">ORDER ITEMS & SPECIFICATIONS</span>
+                <span className="text-slate-400 text-[10px] font-mono block">ORDER ITEMS</span>
                 <p className="font-semibold text-slate-900 text-xs">{selectedOrderDetails.itemsSummary}</p>
               </div>
 
-              <div className="flex justify-between items-center bg-[#edf2ee] p-3 rounded-xl border border-[#1e3a2b]/30">
-                <span className="font-bold text-slate-800">Total Invoice Amount:</span>
-                <strong className="text-[#1e3a2b] font-mono text-sm font-extrabold">{selectedOrderDetails.totalAmount}</strong>
+              <div className="grid grid-cols-2 gap-2 bg-[#edf2ee] p-3 rounded-xl border border-[#1e3a2b]/30 font-mono">
+                <div>
+                  <span className="text-slate-500 text-[10px] block">INVOICE TOTAL</span>
+                  <strong className="text-[#1e3a2b] text-sm font-extrabold">{selectedOrderDetails.totalAmount}</strong>
+                </div>
+                <div>
+                  <span className="text-slate-500 text-[10px] block">REP COMMISSION ({selectedOrderDetails.commissionRate * 100}%)</span>
+                  <strong className="text-purple-800 text-sm font-extrabold">{selectedOrderDetails.commissionAmount}</strong>
+                </div>
               </div>
             </div>
 
             <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-between items-center">
-              {selectedOrderDetails.fulfillmentType === 'DELIVERY' ? (
+              {selectedOrderDetails.fulfillmentType === 'IN_STORE_PICKUP' && selectedOrderDetails.status === 'PENDING_PICKUP_POS' ? (
+                <button
+                  type="button"
+                  onClick={() => handleMarkAsPickedUp(selectedOrderDetails.orderNo)}
+                  className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>🏪 Customer Picked Up ➔ Credit Commission</span>
+                </button>
+              ) : selectedOrderDetails.fulfillmentType === 'DELIVERY' ? (
                 <Link
                   href="/backoffice/fleet"
                   className="px-3.5 py-1.5 bg-[#1e3a2b] text-white font-bold rounded-lg text-xs hover:bg-[#14281e] transition-colors flex items-center gap-1.5"
@@ -308,13 +345,7 @@ export default function OnlineOrdersControlCenterPage() {
                   <span>🚚 Dispatch to SuperSonic Van</span>
                 </Link>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => alert(`Order ${selectedOrderDetails.orderNo} is ready for customer pickup at showroom POS!`)}
-                  className="px-3.5 py-1.5 bg-purple-800 text-white font-bold rounded-lg text-xs hover:bg-purple-900 transition-colors flex items-center gap-1.5"
-                >
-                  <span>🏪 Ready at POS Counter</span>
-                </button>
+                <span className="text-xs font-bold text-emerald-700">✓ Order Completed & Commission Credited</span>
               )}
               <button type="button" onClick={() => setSelectedOrderDetails(null)} className="px-4 py-1.5 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
                 Close
