@@ -125,7 +125,7 @@ export default function MasterReportViewPage() {
     return dates;
   }, []);
 
-  // 12-Period vs 6-Period Selection States
+  // Filter States
   const [periodPreset, setPeriodPreset] = useState<string>('THIS_MONTH');
   const [fromDate, setFromDate] = useState('2026-08-30');
   const [toDate, setToDate] = useState('2026-08-30');
@@ -168,9 +168,7 @@ export default function MasterReportViewPage() {
     'Ricky',
   ];
 
-  // ==========================================================================
-  // 13 DUPLICATE INVOICES / TRANSACTIONS MODES
-  // ==========================================================================
+  // 13 Duplicate Invoices Sub-Types
   const transactionReportSubTypes = [
     'Duplicate Invoices',
     'Transactions by salesman',
@@ -196,7 +194,6 @@ export default function MasterReportViewPage() {
     category: 'Internal Control',
   });
 
-  // Determines if the current report uses the 12-Period or 6-Period selector
   const is12PeriodReport = useMemo(() => {
     if (activeReport.code === 'REP_IC_001' || activeReport.code === 'REP_IC_002' || activeReport.code === 'REP_IC_007') {
       return false;
@@ -222,6 +219,100 @@ export default function MasterReportViewPage() {
     const found = invoiceTypeOptions.find((o) => o.code === invoiceTypeFilter);
     return found ? found.label : 'All Invoices';
   };
+
+  // ==========================================================================
+  // REAL-TIME DYNAMIC ROLLING TEMPORAL CALCULATION ENGINE
+  // ==========================================================================
+  const dynamicPeriodInfo = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonthIdx = now.getMonth();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fullMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const formatDate = (d: Date) => `${pad(d.getDate())}-${monthNames[d.getMonth()]}-${d.getFullYear()}`;
+
+    const todayStr = formatDate(now);
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = formatDate(yesterday);
+
+    const thisMonthChip = `${monthNames[currentMonthIdx]}, ${currentYear}`;
+    const lastMonthDate = new Date(currentYear, currentMonthIdx - 1, 1);
+    const lastMonthChip = `${monthNames[lastMonthDate.getMonth()]}, ${lastMonthDate.getFullYear()}`;
+
+    const daysInThisMonth = new Date(currentYear, currentMonthIdx + 1, 0).getDate();
+    const daysInLastMonth = new Date(lastMonthDate.getFullYear(), lastMonthDate.getMonth() + 1, 0).getDate();
+
+    switch (periodPreset) {
+      case 'TODAY':
+        return {
+          chip: todayStr,
+          header: `${todayStr} (Today)`,
+        };
+      case 'YESTERDAY':
+        return {
+          chip: yesterdayStr,
+          header: `${yesterdayStr} (Yesterday)`,
+        };
+      case 'THIS_MONTH':
+        return {
+          chip: thisMonthChip,
+          header: `${fullMonthNames[currentMonthIdx]} ${currentYear} (01-${monthNames[currentMonthIdx]}-${currentYear} to ${pad(daysInThisMonth)}-${monthNames[currentMonthIdx]}-${currentYear})`,
+        };
+      case 'LAST_MONTH':
+        return {
+          chip: lastMonthChip,
+          header: `${fullMonthNames[lastMonthDate.getMonth()]} ${lastMonthDate.getFullYear()} (01-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()} to ${pad(daysInLastMonth)}-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()})`,
+        };
+      case 'Q1':
+        return {
+          chip: `Q1, ${currentYear}`,
+          header: `First Quarter (01-Jan-${currentYear} to 31-Mar-${currentYear})`,
+        };
+      case 'Q2':
+        return {
+          chip: `Q2, ${currentYear}`,
+          header: `Second Quarter (01-Apr-${currentYear} to 30-Jun-${currentYear})`,
+        };
+      case 'Q3':
+        return {
+          chip: `Q3, ${currentYear}`,
+          header: `Third Quarter (01-Jul-${currentYear} to 30-Sep-${currentYear})`,
+        };
+      case 'Q4':
+        return {
+          chip: `Q4, ${currentYear}`,
+          header: `Fourth Quarter (01-Oct-${currentYear} to 31-Dec-${currentYear})`,
+        };
+      case 'THIS_YEAR':
+        return {
+          chip: `Year ${currentYear}`,
+          header: `Year to Date (01-Jan-${currentYear} to ${todayStr})`,
+        };
+      case 'LAST_YEAR':
+        return {
+          chip: `Year ${currentYear - 1}`,
+          header: `Full Year ${currentYear - 1} (01-Jan-${currentYear - 1} to 31-Dec-${currentYear - 1})`,
+        };
+      case 'DATE_RANGE':
+        return {
+          chip: `${fromDate} ➔ ${toDate}`,
+          header: `Date Range: ${fromDate} to ${toDate}`,
+        };
+      case 'EOD_DATE':
+        return {
+          chip: eodDate,
+          header: `EOD Closeout Date: ${eodDate}`,
+        };
+      default:
+        return {
+          chip: thisMonthChip,
+          header: thisMonthChip,
+        };
+    }
+  }, [periodPreset, fromDate, toDate, eodDate]);
 
   // Accordions
   const [expandedCats, setExpandedCats] = useState<string[]>([
@@ -548,31 +639,12 @@ export default function MasterReportViewPage() {
     { ref: 'INV-0893', date: '29-Aug-2026', client: 'Al-Kheir Olive Center', item: 'Extra Virgin Glass 1L', qty: 50, totalUsd: 3000.0, rep: 'Hussein Mahdi' },
   ];
 
-  // Auto-calculated Period Display
-  const getSelectedPeriodDisplay = () => {
-    switch (periodPreset) {
-      case 'TODAY': return '01-Sep-2026 (Today)';
-      case 'YESTERDAY': return '31-Aug-2026 (Yesterday)';
-      case 'THIS_MONTH': return 'September 2026 (01-Sep-2026 to 30-Sep-2026)';
-      case 'LAST_MONTH': return 'August 2026 (01-Aug-2026 to 31-Aug-2026)';
-      case 'Q1': return '01-Jan-2026 to 31-Mar-2026 (Q1)';
-      case 'Q2': return '01-Apr-2026 to 30-Jun-2026 (Q2)';
-      case 'Q3': return '01-Jul-2026 to 30-Sep-2026 (Q3)';
-      case 'Q4': return '01-Oct-2026 to 31-Dec-2026 (Q4)';
-      case 'THIS_YEAR': return '01-Jan-2026 to 01-Sep-2026 (Year to Date)';
-      case 'LAST_YEAR': return '01-Jan-2025 to 31-Dec-2025 (Full Year 2025)';
-      case 'DATE_RANGE': return `${fromDate} to ${toDate}`;
-      case 'EOD_DATE': return `EOD Date: ${eodDate}`;
-      default: return 'September 2026';
-    }
-  };
-
   // Real Client-Side Export Handlers
   const triggerCSVExport = () => {
     let csvContent = '\uFEFF';
     csvContent += `Company: Southern Olive Oil Products S.A.R.L\n`;
     csvContent += `Report: ${activeReport.code === 'REP_IC_003' ? transactionSubType : activeReport.title}\n`;
-    csvContent += `Period: ${getSelectedPeriodDisplay()}\n`;
+    csvContent += `Period: ${dynamicPeriodInfo.header}\n`;
     csvContent += `Branch: ${getBranchesDisplayLabel()}\n\n`;
 
     if (activeReport.code === 'REP_IC_001') {
@@ -711,7 +783,7 @@ export default function MasterReportViewPage() {
           
           <div className="flex flex-wrap items-center gap-2">
             
-            {/* A. PERIOD DROPDOWN (ADAPTIVE 12-PERIOD VS 6-PERIOD) */}
+            {/* A. PERIOD DROPDOWN (ADAPTIVE 12-PERIOD VS 6-PERIOD WITH DYNAMIC CALCULATION) */}
             {transactionSubType !== 'Transactions by invoice number' && (
               <>
                 <select
@@ -739,37 +811,18 @@ export default function MasterReportViewPage() {
                   <option value="EOD_DATE">EOD Date</option>
                 </select>
 
-                {/* Conditional Date Display */}
-                {periodPreset === 'TODAY' && (
-                  <input type="text" readOnly disabled value="01-Sep-2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center" />
+                {/* DYNAMIC COMPUTED DATE CHIP */}
+                {periodPreset !== 'DATE_RANGE' && periodPreset !== 'EOD_DATE' && (
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    value={dynamicPeriodInfo.chip}
+                    className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed text-center min-w-[100px]"
+                    title="Real-time Dynamic Computed Date"
+                  />
                 )}
-                {periodPreset === 'YESTERDAY' && (
-                  <input type="text" readOnly disabled value="31-Aug-2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center" />
-                )}
-                {periodPreset === 'THIS_MONTH' && (
-                  <input type="text" readOnly disabled value="Sep, 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
-                )}
-                {periodPreset === 'LAST_MONTH' && (
-                  <input type="text" readOnly disabled value="Aug, 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
-                )}
-                {periodPreset === 'Q1' && (
-                  <input type="text" readOnly disabled value="Jan - Mar 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
-                )}
-                {periodPreset === 'Q2' && (
-                  <input type="text" readOnly disabled value="Apr - Jun 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
-                )}
-                {periodPreset === 'Q3' && (
-                  <input type="text" readOnly disabled value="Jul - Sep 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
-                )}
-                {periodPreset === 'Q4' && (
-                  <input type="text" readOnly disabled value="Oct - Dec 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
-                )}
-                {periodPreset === 'THIS_YEAR' && (
-                  <input type="text" readOnly disabled value="Year 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
-                )}
-                {periodPreset === 'LAST_YEAR' && (
-                  <input type="text" readOnly disabled value="Year 2025" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
-                )}
+
                 {periodPreset === 'DATE_RANGE' && (
                   <div className="flex items-center gap-1 bg-slate-50 p-0.5 rounded border border-slate-300">
                     <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="px-1.5 py-1 bg-white border border-slate-300 rounded text-xs font-mono" />
@@ -777,6 +830,7 @@ export default function MasterReportViewPage() {
                     <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="px-1.5 py-1 bg-white border border-slate-300 rounded text-xs font-mono" />
                   </div>
                 )}
+
                 {periodPreset === 'EOD_DATE' && (
                   <select value={eodDate} onChange={(e) => setEodDate(e.target.value)} className="px-2 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs max-w-[220px]">
                     {eodDateOptions.map((opt) => (
@@ -829,7 +883,7 @@ export default function MasterReportViewPage() {
               )}
             </div>
 
-            {/* C. INVOICE NUMBER RANGE (EXCLUSIVE TO Transactions by invoice number) */}
+            {/* C. INVOICE NUMBER RANGE */}
             {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by invoice number' && (
               <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-lg border border-slate-300">
                 <span className="text-slate-500 font-semibold text-xs">From #:</span>
@@ -851,7 +905,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* D. INVOICES TYPE FILTER (ALL INVOICES, INVENTORY, POS, TRAINING) */}
+            {/* D. INVOICES TYPE FILTER */}
             {(activeReport.code === 'REP_IC_002' || 
               (activeReport.code === 'REP_IC_003' && 
                ['Duplicate Invoices', 'Transactions by employees by payment', 'Transactions by date by payments', 'Transactions by customers', 'Transactions by customers by groups', 'Transactions by customers details', 'Transactions by workstation', 'Transactions by salesman', 'Transactions By Source'].includes(transactionSubType))) && (
@@ -893,7 +947,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* E. ALL PAYMENT TYPES (CASH, CREDIT, CASH USD, CREDIT CARD, CREDIT CARD USD) */}
+            {/* E. ALL PAYMENT TYPES */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions by date by payments', 'Transactions By Source'].includes(transactionSubType) && (
               <select
                 value={paymentTypeFilter}
@@ -909,7 +963,7 @@ export default function MasterReportViewPage() {
               </select>
             )}
 
-            {/* F. CUSTOMER SEARCH ENGINE & VAT NUMBER */}
+            {/* F. CUSTOMER SEARCH & VAT */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by customers', 'Transactions by customers details'].includes(transactionSubType) && (
               <div className="flex items-center gap-1.5">
                 <input
@@ -934,7 +988,7 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* G. SERVERS / EMPLOYEES SELECTOR & GROUPED BY SERVER */}
+            {/* G. SERVERS SELECTOR */}
             {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by employees' && (
               <div className="flex items-center gap-1.5">
                 <select
@@ -987,7 +1041,6 @@ export default function MasterReportViewPage() {
             )}
 
             {/* I. DYNAMIC CHECKBOX FLAGS */}
-            {/* Real Date */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by employees by payment', 'Transactions by workstation', 'Transactions by employees'].includes(transactionSubType) && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={realDateFilter} onChange={(e) => setRealDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -995,7 +1048,6 @@ export default function MasterReportViewPage() {
               </label>
             )}
 
-            {/* Show Rate */}
             {activeReport.code === 'REP_IC_003' && ['Duplicate Invoices', 'Transactions by date'].includes(transactionSubType) && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={showRateFilter} onChange={(e) => setShowRateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -1003,7 +1055,6 @@ export default function MasterReportViewPage() {
               </label>
             )}
 
-            {/* Group by date */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions By Source'].includes(transactionSubType) && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={groupByDateFilter} onChange={(e) => setGroupByDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -1011,7 +1062,6 @@ export default function MasterReportViewPage() {
               </label>
             )}
 
-            {/* Summary */}
             {activeReport.code === 'REP_IC_003' && ['Transactions by date by payments', 'Transactions by customers details'].includes(transactionSubType) && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={showSummaryFilter} onChange={(e) => setShowSummaryFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -1019,7 +1069,6 @@ export default function MasterReportViewPage() {
               </label>
             )}
 
-            {/* Show Zero Tax */}
             {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by invoice number' && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={showZeroTaxFilter} onChange={(e) => setShowZeroTaxFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -1027,7 +1076,6 @@ export default function MasterReportViewPage() {
               </label>
             )}
 
-            {/* Summary of Voids Checkbox */}
             {activeReport.code === 'REP_IC_001' && (
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
                 <input type="checkbox" checked={showAuthManager} onChange={(e) => setShowAuthManager(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
@@ -1068,7 +1116,6 @@ export default function MasterReportViewPage() {
             <button type="button" onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))} className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold" title="Zoom In">🔍+</button>
             <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"><span>🖨️ Print</span></button>
             
-            {/* Export */}
             <div className="relative">
               <button type="button" onClick={() => setExportDropdownOpen(!exportDropdownOpen)} className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-xs border border-slate-300 flex items-center gap-1.5 shadow-2xs">
                 <span>📥 Export</span>
@@ -1158,7 +1205,10 @@ export default function MasterReportViewPage() {
                                 <button
                                   key={r.code}
                                   type="button"
-                                  onClick={() => setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` })}
+                                  onClick={() => {
+                                    setActiveReport({ ...r, category: `${cat.title} - ${sub.title}` });
+                                    setTransactionSubType(r.title);
+                                  }}
                                   className={`w-full text-left px-2.5 py-1 rounded truncate block text-xs transition-all ${
                                     activeReport.code === r.code
                                       ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
@@ -1187,7 +1237,7 @@ export default function MasterReportViewPage() {
             style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}
             className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none transition-transform duration-200 select-none"
           >
-            {/* Header */}
+            {/* Header (DYNAMIC ROLLING DATE HEADER) */}
             <div className="border-b-2 border-black pb-2 mb-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -1201,7 +1251,7 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
               <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
-                <div>Period: {getSelectedPeriodDisplay()}</div>
+                <div>Period: {dynamicPeriodInfo.header}</div>
                 <div>Branch: {getBranchesDisplayLabel()}</div>
               </div>
             </div>
