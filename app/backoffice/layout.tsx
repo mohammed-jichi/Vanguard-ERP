@@ -30,10 +30,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
-      
+
       {/* 1. MASTER TOP GLOBAL HEADER */}
       <header className="h-[68px] bg-white border-b-2 border-[#1e3a2b]/20 px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
-        
+
         {/* Left Side: Toggle + Vanguard Logo & Title */}
         <div className="flex items-center gap-3.5 shrink-0">
           <button
@@ -87,7 +87,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
         {/* Right Side: Action Icons -> QUICK MENU FIRST -> JICHI MOHAMMED */}
         <div className="flex items-center gap-3 shrink-0">
-          
+
           <div className="flex items-center gap-1.5 text-slate-600">
             {/* 1. Home */}
             <Link
@@ -229,7 +229,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
       {/* 2. BODY WORKSPACE */}
       <div className="flex-1 flex overflow-hidden print:overflow-visible print:m-0 print:p-0">
-        
+
         {/* Master Left Sidebar */}
         {sidebarVisible && (
           <aside
@@ -247,7 +247,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               </div>
 
               <nav className="p-2 space-y-1.5 text-xs font-semibold">
-                
+
                 {/* 1. SALES CONTROL & POS */}
                 <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
                   <button
@@ -449,25 +449,23 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
         {/* 3. SLIDING QUICK MENU DRAWER */}
         {quickDrawerOpen && (
           <aside className="w-[360px] bg-white border-l border-slate-300 shadow-2xl flex flex-col h-[calc(100vh-68px)] z-50 shrink-0 print:hidden animate-slideLeft">
-            
+
             <div className="grid grid-cols-5 border-b border-slate-200 bg-slate-50 text-center text-xs">
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('UPDATES')}
-                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
-                  activeDrawerTab === 'UPDATES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
-                }`}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${activeDrawerTab === 'UPDATES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
               >
                 <span className="text-base">📰</span>
-                <span className="text-[10px] leading-tight">Latest<br/>Updates</span>
+                <span className="text-[10px] leading-tight">Latest<br />Updates</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('ALERTS')}
-                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
-                  activeDrawerTab === 'ALERTS' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
-                }`}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${activeDrawerTab === 'ALERTS' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
               >
                 <span className="text-base">🔔</span>
                 <span className="text-[10px] leading-tight">Alerts</span>
@@ -476,20 +474,18 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('ACTIVITIES')}
-                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
-                  activeDrawerTab === 'ACTIVITIES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
-                }`}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${activeDrawerTab === 'ACTIVITIES' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
               >
                 <span className="text-base">🕒</span>
-                <span className="text-[10px] leading-tight">Last<br/>Activities</span>
+                <span className="text-[10px] leading-tight">Last<br />Activities</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('HELP')}
-                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${
-                  activeDrawerTab === 'HELP' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
-                }`}
+                className={`py-3 px-1 flex flex-col items-center gap-1 border-r border-slate-200 transition-colors ${activeDrawerTab === 'HELP' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
               >
                 <span className="text-base">❓</span>
                 <span className="text-[10px] leading-tight">Help</span>
@@ -498,9 +494,8 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
               <button
                 type="button"
                 onClick={() => setActiveDrawerTab('DARK')}
-                className={`py-3 px-1 flex flex-col items-center gap-1 transition-colors ${
-                  activeDrawerTab === 'DARK' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
-                }`}
+                className={`py-3 px-1 flex flex-col items-center gap-1 transition-colors ${activeDrawerTab === 'DARK' ? 'bg-white text-[#1e3a2b] font-bold border-b-2 border-b-[#1e3a2b]' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
               >
                 <span className="text-base">🌙</span>
                 <span className="text-[10px] leading-tight">Theme</span>
