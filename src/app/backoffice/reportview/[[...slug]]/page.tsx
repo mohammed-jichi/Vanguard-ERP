@@ -61,17 +61,50 @@ export default function MasterReportViewPage() {
     }
   };
 
-  // Dynamic Unbounded Multi-Branch Registry
-  const [branchesList, setBranchesList] = useState([
+  // ==========================================================================
+  // MULTI-SELECT BRANCHES ENGINE (SCALABLE TO ANY NUMBER OF BRANCHES)
+  // ==========================================================================
+  const branchesList = [
     { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
     { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
     { id: '003', code: 'BR_003', name: '003 - Saida Southern Center', region: 'South Lebanon' },
     { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
     { id: '005', code: 'BR_005', name: '005 - Tripoli North Depot', region: 'North Lebanon' },
     { id: '006', code: 'BR_006', name: '006 - Nabatieh Center', region: 'South Lebanon' },
-  ]);
+  ];
 
-  // Rolling EOD Dates
+  const [selectedBranches, setSelectedBranches] = useState<string[]>(['ALL']);
+  const [branchDropdownOpen, setBranchDropdownOpen] = useState(false);
+
+  const toggleBranchSelection = (code: string) => {
+    if (code === 'ALL') {
+      setSelectedBranches(['ALL']);
+    } else {
+      let updated = selectedBranches.filter((b) => b !== 'ALL');
+      if (updated.includes(code)) {
+        updated = updated.filter((b) => b !== code);
+        if (updated.length === 0) updated = ['ALL'];
+      } else {
+        updated.push(code);
+      }
+      setSelectedBranches(updated);
+    }
+  };
+
+  const getBranchesDisplayLabel = () => {
+    if (selectedBranches.includes('ALL') || selectedBranches.length === 0) {
+      return `All Branches (${branchesList.length})`;
+    }
+    if (selectedBranches.length === 1) {
+      const found = branchesList.find((b) => b.code === selectedBranches[0]);
+      return found ? found.name : selectedBranches[0];
+    }
+    return `${selectedBranches.length} Branches Selected`;
+  };
+
+  // ==========================================================================
+  // REAL-TIME ROLLING EOD DATES
+  // ==========================================================================
   const eodDateOptions = useMemo(() => {
     const startDate = new Date('2025-12-10');
     const today = new Date();
@@ -92,18 +125,87 @@ export default function MasterReportViewPage() {
     return dates;
   }, []);
 
-  const [periodPreset, setPeriodPreset] = useState<'TODAY' | 'YESTERDAY' | 'THIS_MONTH' | 'LAST_MONTH' | 'DATE_RANGE' | 'EOD_DATE'>('THIS_MONTH');
+  // 12-Period vs 6-Period Selection States
+  const [periodPreset, setPeriodPreset] = useState<string>('THIS_MONTH');
   const [fromDate, setFromDate] = useState('2026-08-30');
   const [toDate, setToDate] = useState('2026-08-30');
   const [eodDate, setEodDate] = useState(eodDateOptions[0]?.value || '2026-08-31');
-  const [branchFilter, setBranchFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(100);
 
-  // Searchable Invoice Type Filter
+  // Invoices & Payment Filters
   const [invoiceTypeFilter, setInvoiceTypeFilter] = useState('ALL');
   const [invoiceTypeDropdownOpen, setInvoiceTypeDropdownOpen] = useState(false);
   const [invoiceTypeSearch, setInvoiceTypeSearch] = useState('');
+  
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState('ALL');
   const [realDateFilter, setRealDateFilter] = useState(false);
+  const [showRateFilter, setShowRateFilter] = useState(false);
+  const [groupByDateFilter, setGroupByDateFilter] = useState(false);
+  const [showSummaryFilter, setShowSummaryFilter] = useState(false);
+  const [showZeroTaxFilter, setShowZeroTaxFilter] = useState(false);
+  const [showAuthManager, setShowAuthManager] = useState(true);
+
+  // Invoice Number Range Filter (From / To)
+  const [fromInvoiceNum, setFromInvoiceNum] = useState('');
+  const [toInvoiceNum, setToInvoiceNum] = useState('');
+
+  // Customer Search & VAT Engine
+  const [customerSearchInput, setCustomerSearchInput] = useState('');
+  const [vatNumberFilter, setVatNumberFilter] = useState('ALL');
+
+  // Server / Employees Filter
+  const [serverFilter, setServerFilter] = useState('ALL');
+  const [groupedByServer, setGroupedByServer] = useState(false);
+  const [voidReasonFilter, setVoidReasonFilter] = useState('ALL');
+
+  const serverOptions = [
+    'Cashier N2',
+    'Cashier NK',
+    'Cashier NR',
+    'Hiba Aloulou',
+    'Hussein Mahdi',
+    'Nour Yazbek',
+    'Ricky',
+  ];
+
+  // ==========================================================================
+  // 13 DUPLICATE INVOICES / TRANSACTIONS MODES
+  // ==========================================================================
+  const transactionReportSubTypes = [
+    'Duplicate Invoices',
+    'Transactions by salesman',
+    'Transactions by date',
+    'Transactions by employees by payment',
+    'Transactions by customers by employee',
+    'Transactions by invoice number',
+    'Transactions by date by payments',
+    'Transactions by customers',
+    'Transactions by customers by groups',
+    'Transactions by customers details',
+    'Transactions by workstation',
+    'Transactions by employees',
+    'Transactions By Source',
+  ];
+
+  const [transactionSubType, setTransactionSubType] = useState('Duplicate Invoices');
+
+  // Active Report State (Default: Summary of voids)
+  const [activeReport, setActiveReport] = useState({
+    code: 'REP_IC_001',
+    title: 'Summary of voids',
+    category: 'Internal Control',
+  });
+
+  // Determines if the current report uses the 12-Period or 6-Period selector
+  const is12PeriodReport = useMemo(() => {
+    if (activeReport.code === 'REP_IC_001' || activeReport.code === 'REP_IC_002' || activeReport.code === 'REP_IC_007') {
+      return false;
+    }
+    if (activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions By Source') {
+      return false;
+    }
+    return true;
+  }, [activeReport, transactionSubType]);
 
   const invoiceTypeOptions = [
     { code: 'ALL', label: 'All Invoices' },
@@ -121,13 +223,7 @@ export default function MasterReportViewPage() {
     return found ? found.label : 'All Invoices';
   };
 
-  // Active Report State (Default: Summary of voids)
-  const [activeReport, setActiveReport] = useState({
-    code: 'REP_IC_001',
-    title: 'Summary of voids',
-    category: 'Internal Control',
-  });
-
+  // Accordions
   const [expandedCats, setExpandedCats] = useState<string[]>([
     'internal_control',
     'financial',
@@ -452,43 +548,38 @@ export default function MasterReportViewPage() {
     { ref: 'INV-0893', date: '29-Aug-2026', client: 'Al-Kheir Olive Center', item: 'Extra Virgin Glass 1L', qty: 50, totalUsd: 3000.0, rep: 'Hussein Mahdi' },
   ];
 
+  // Auto-calculated Period Display
   const getSelectedPeriodDisplay = () => {
     switch (periodPreset) {
-      case 'TODAY': return '31-Aug-2026 (Today)';
-      case 'YESTERDAY': return '30-Aug-2026 (Yesterday)';
-      case 'THIS_MONTH': return 'August 2026 (01-Aug-2026 to 31-Aug-2026)';
-      case 'LAST_MONTH': return 'July 2026 (01-Jul-2026 to 31-Jul-2026)';
+      case 'TODAY': return '01-Sep-2026 (Today)';
+      case 'YESTERDAY': return '31-Aug-2026 (Yesterday)';
+      case 'THIS_MONTH': return 'September 2026 (01-Sep-2026 to 30-Sep-2026)';
+      case 'LAST_MONTH': return 'August 2026 (01-Aug-2026 to 31-Aug-2026)';
+      case 'Q1': return '01-Jan-2026 to 31-Mar-2026 (Q1)';
+      case 'Q2': return '01-Apr-2026 to 30-Jun-2026 (Q2)';
+      case 'Q3': return '01-Jul-2026 to 30-Sep-2026 (Q3)';
+      case 'Q4': return '01-Oct-2026 to 31-Dec-2026 (Q4)';
+      case 'THIS_YEAR': return '01-Jan-2026 to 01-Sep-2026 (Year to Date)';
+      case 'LAST_YEAR': return '01-Jan-2025 to 31-Dec-2025 (Full Year 2025)';
       case 'DATE_RANGE': return `${fromDate} to ${toDate}`;
       case 'EOD_DATE': return `EOD Date: ${eodDate}`;
-      default: return 'August 2026';
+      default: return 'September 2026';
     }
-  };
-
-  const getSelectedBranchDisplayName = () => {
-    if (branchFilter === 'ALL') {
-      return 'Southern Olive Oil Products S.A.R.L (All Branches)';
-    }
-    const found = branchesList.find((b) => b.code === branchFilter);
-    return found ? found.name : branchFilter;
   };
 
   // Real Client-Side Export Handlers
   const triggerCSVExport = () => {
     let csvContent = '\uFEFF';
     csvContent += `Company: Southern Olive Oil Products S.A.R.L\n`;
-    csvContent += `Report: ${activeReport.title}\n`;
+    csvContent += `Report: ${activeReport.code === 'REP_IC_003' ? transactionSubType : activeReport.title}\n`;
     csvContent += `Period: ${getSelectedPeriodDisplay()}\n`;
-    csvContent += `Branch: ${getSelectedBranchDisplayName()}\n`;
-    csvContent += `Invoice Type: ${getSelectedInvoiceTypeLabel()}\n`;
-    csvContent += `Real Date Filter: ${realDateFilter ? 'Yes' : 'No'}\n\n`;
+    csvContent += `Branch: ${getBranchesDisplayLabel()}\n\n`;
 
     if (activeReport.code === 'REP_IC_001') {
       csvContent += `Date,Order Date,Server,Invoice,Description,Qty,Value (LBP),Reason\n`;
       voidRows.forEach((r) => {
         csvContent += `"${r.date}","${r.orderDate}","${r.server}","${r.invoice}","${r.description.replace(/"/g, '""')}",${r.qty},${r.valueLbp},"${r.reason}"\n`;
       });
-      csvContent += `\nTotal Voids:,3 events\n`;
-      csvContent += `Total Value:,10890000.00 LBP\n`;
     } else if (activeReport.code.startsWith('REP_L_')) {
       csvContent += `Code,Customer Name,Region,Phone,Assigned Rep,Balance ($)\n`;
       customerListRows.forEach((c) => {
@@ -509,22 +600,6 @@ export default function MasterReportViewPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setExportDropdownOpen(false);
-  };
-
-  const triggerClipboardCopy = () => {
-    let copyText = `Southern Olive Oil Products S.A.R.L - ${activeReport.title}\n`;
-    if (activeReport.code === 'REP_IC_001') {
-      voidRows.forEach((r) => {
-        copyText += `${r.date}\t${r.server}\t${r.invoice}\t${r.description}\t${r.qty}\t${r.valueLbp} LBP\t${r.reason}\n`;
-      });
-    } else if (activeReport.code.startsWith('REP_L_')) {
-      customerListRows.forEach((c) => {
-        copyText += `${c.code}\t${c.name}\t${c.region}\t${c.phone}\t${c.rep}\t$${c.balance}\n`;
-      });
-    }
-    navigator.clipboard.writeText(copyText);
-    alert('Report table data copied to clipboard successfully!');
     setExportDropdownOpen(false);
   };
 
@@ -585,7 +660,7 @@ export default function MasterReportViewPage() {
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-500 font-medium">Active Report:</span>
             <span className="font-bold text-[#1e3a2b] bg-[#eef3ee] px-2.5 py-0.5 rounded border border-[#1e3a2b]/30">
-              {activeReport.title}
+              {activeReport.code === 'REP_IC_003' ? transactionSubType : activeReport.title}
             </span>
           </div>
         </div>
@@ -609,299 +684,408 @@ export default function MasterReportViewPage() {
       </div>
 
       {/* =================================================================== */}
-      {/* 2. CLEAN AUTHENTIC FILTER RIBBON (EXCLUSIVELY DESIRED FILTERS)     */}
+      {/* 2. DYNAMIC CONTEXT-AWARE FILTER RIBBON                              */}
       {/* =================================================================== */}
-      <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-wrap items-center justify-between gap-2.5 print:hidden shrink-0 shadow-2xs">
+      <div className="bg-white border-b border-slate-200 p-2.5 px-4 flex flex-col gap-2.5 print:hidden shrink-0 shadow-2xs">
         
-        {/* Left Filters Group */}
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          
-          {/* Period Preset Dropdown */}
-          <select
-            value={periodPreset}
-            onChange={(e) => setPeriodPreset(e.target.value as any)}
-            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
-          >
-            <option value="TODAY">Today</option>
-            <option value="YESTERDAY">Yesterday</option>
-            <option value="THIS_MONTH">This Month</option>
-            <option value="LAST_MONTH">Last Month</option>
-            <option value="DATE_RANGE">Date Range</option>
-            <option value="EOD_DATE">EOD Date</option>
-          </select>
-
-          {/* Conditional Date Display */}
-          {periodPreset === 'TODAY' && (
-            <input
-              type="text"
-              readOnly
-              disabled
-              value="31-Aug-2026"
-              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
-            />
-          )}
-
-          {periodPreset === 'YESTERDAY' && (
-            <input
-              type="text"
-              readOnly
-              disabled
-              value="30-Aug-2026"
-              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center"
-            />
-          )}
-
-          {periodPreset === 'THIS_MONTH' && (
-            <input
-              type="text"
-              readOnly
-              disabled
-              value="Aug, 2026"
-              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
-            />
-          )}
-
-          {periodPreset === 'LAST_MONTH' && (
-            <input
-              type="text"
-              readOnly
-              disabled
-              value="July 2026"
-              className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center"
-            />
-          )}
-
-          {periodPreset === 'DATE_RANGE' && (
-            <div className="flex items-center gap-1.5 bg-slate-50 p-0.5 rounded border border-slate-300">
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
-              />
-              <span className="text-slate-400 text-xs font-bold">➔</span>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="px-2 py-1 bg-white border border-slate-300 rounded text-xs font-mono text-slate-800"
-              />
+        {/* DUPLICATE INVOICES EXCLUSIVE: TOP 13-MODE SELECTOR BAR */}
+        {activeReport.code === 'REP_IC_003' && (
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-700">Transaction Mode:</span>
+              <select
+                value={transactionSubType}
+                onChange={(e) => setTransactionSubType(e.target.value)}
+                className="px-3 py-1 bg-[#f8faf8] border border-[#1e3a2b]/40 rounded-lg font-bold text-xs text-[#1e3a2b] focus:outline-none min-w-[280px] shadow-2xs"
+              >
+                {transactionReportSubTypes.map((sub) => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
             </div>
-          )}
-
-          {periodPreset === 'EOD_DATE' && (
-            <select
-              value={eodDate}
-              onChange={(e) => setEodDate(e.target.value)}
-              className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs text-slate-800 focus:outline-none max-w-[240px]"
-            >
-              {eodDateOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {/* Scalable Branches Dropdown */}
-          <select
-            value={branchFilter}
-            onChange={(e) => setBranchFilter(e.target.value)}
-            className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none max-w-[200px]"
-          >
-            <option value="ALL">All Branches ({branchesList.length})</option>
-            {branchesList.map((b) => (
-              <option key={b.id} value={b.code}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Searchable Invoice Type Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setInvoiceTypeDropdownOpen(!invoiceTypeDropdownOpen)}
-              className="px-3 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center justify-between gap-2 min-w-[140px] focus:outline-none hover:border-[#1e3a2b]"
-            >
-              <span>{getSelectedInvoiceTypeLabel()}</span>
-              <span className="text-[10px] text-slate-500">▼</span>
-            </button>
-
-            {invoiceTypeDropdownOpen && (
-              <div className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50 animate-fadeIn">
-                <div className="p-1.5 border-b border-slate-100">
-                  <input
-                    type="text"
-                    value={invoiceTypeSearch}
-                    onChange={(e) => setInvoiceTypeSearch(e.target.value)}
-                    placeholder="Search..."
-                    className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white"
-                    autoFocus
-                  />
-                </div>
-                <div className="max-h-48 overflow-y-auto custom-scrollbar py-0.5">
-                  {filteredInvoiceTypeOptions.map((opt) => (
-                    <button
-                      key={opt.code}
-                      type="button"
-                      onClick={() => {
-                        setInvoiceTypeFilter(opt.code);
-                        setInvoiceTypeDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 transition-colors flex items-center justify-between ${
-                        invoiceTypeFilter === opt.code ? 'bg-[#edf2ee] text-[#1e3a2b] font-bold' : 'text-slate-700'
-                      }`}
-                    >
-                      <span>{opt.label}</span>
-                      {invoiceTypeFilter === opt.code && <span className="text-[#1e3a2b] font-bold">✓</span>}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
+        )}
 
-          {/* Real Date Checkbox */}
-          <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800 ml-1">
-            <input
-              type="checkbox"
-              checked={realDateFilter}
-              onChange={(e) => setRealDateFilter(e.target.checked)}
-              className="accent-[#1e3a2b] w-3.5 h-3.5 rounded"
-            />
-            <span>Real Date</span>
-          </label>
-
-          <button
-            type="button"
-            onClick={() => alert(`Filter applied: ${activeReport.title} | Period: ${periodPreset} | Branch: ${getSelectedBranchDisplayName()} | Type: ${getSelectedInvoiceTypeLabel()} | Real Date: ${realDateFilter ? 'Yes' : 'No'}`)}
-            className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
-          >
-            Filter
-          </button>
+        {/* MAIN FILTER CONTROLS ROW */}
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
           
-          <button
-            type="button"
-            onClick={() => {
-              setPeriodPreset('THIS_MONTH');
-              setBranchFilter('ALL');
-              setInvoiceTypeFilter('ALL');
-              setRealDateFilter(false);
-            }}
-            className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
-          >
-            Reset
-          </button>
-        </div>
+          <div className="flex flex-wrap items-center gap-2">
+            
+            {/* A. PERIOD DROPDOWN (ADAPTIVE 12-PERIOD VS 6-PERIOD) */}
+            {transactionSubType !== 'Transactions by invoice number' && (
+              <>
+                <select
+                  value={periodPreset}
+                  onChange={(e) => setPeriodPreset(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                >
+                  <option value="TODAY">Today</option>
+                  <option value="YESTERDAY">Yesterday</option>
+                  <option value="THIS_MONTH">This Month</option>
+                  <option value="LAST_MONTH">Last Month</option>
+                  
+                  {is12PeriodReport && (
+                    <>
+                      <option value="Q1">First Quarter (Q1)</option>
+                      <option value="Q2">Second Quarter (Q2)</option>
+                      <option value="Q3">Third Quarter (Q3)</option>
+                      <option value="Q4">Fourth Quarter (Q4)</option>
+                      <option value="THIS_YEAR">This Year</option>
+                      <option value="LAST_YEAR">Last Year</option>
+                    </>
+                  )}
 
-        {/* Right Tools: Zoom + Print + Export + Settings */}
-        <div className="flex items-center gap-1.5 relative">
-          <button
-            type="button"
-            onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))}
-            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
-            title="Zoom Out"
-          >
-            🔍−
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
-            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold"
-            title="Zoom In"
-          >
-            🔍+
-          </button>
+                  <option value="DATE_RANGE">Date Range</option>
+                  <option value="EOD_DATE">EOD Date</option>
+                </select>
 
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
-          >
-            <span>🖨️ Print</span>
-          </button>
+                {/* Conditional Date Display */}
+                {periodPreset === 'TODAY' && (
+                  <input type="text" readOnly disabled value="01-Sep-2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'YESTERDAY' && (
+                  <input type="text" readOnly disabled value="31-Aug-2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-mono text-slate-600 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'THIS_MONTH' && (
+                  <input type="text" readOnly disabled value="Sep, 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'LAST_MONTH' && (
+                  <input type="text" readOnly disabled value="Aug, 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'Q1' && (
+                  <input type="text" readOnly disabled value="Jan - Mar 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
+                )}
+                {periodPreset === 'Q2' && (
+                  <input type="text" readOnly disabled value="Apr - Jun 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
+                )}
+                {periodPreset === 'Q3' && (
+                  <input type="text" readOnly disabled value="Jul - Sep 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
+                )}
+                {periodPreset === 'Q4' && (
+                  <input type="text" readOnly disabled value="Oct - Dec 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-32 text-center" />
+                )}
+                {periodPreset === 'THIS_YEAR' && (
+                  <input type="text" readOnly disabled value="Year 2026" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'LAST_YEAR' && (
+                  <input type="text" readOnly disabled value="Year 2025" className="px-2.5 py-1.5 bg-slate-100 border border-slate-300 rounded text-xs font-semibold text-slate-700 cursor-not-allowed w-28 text-center" />
+                )}
+                {periodPreset === 'DATE_RANGE' && (
+                  <div className="flex items-center gap-1 bg-slate-50 p-0.5 rounded border border-slate-300">
+                    <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="px-1.5 py-1 bg-white border border-slate-300 rounded text-xs font-mono" />
+                    <span className="text-slate-400 font-bold">➔</span>
+                    <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="px-1.5 py-1 bg-white border border-slate-300 rounded text-xs font-mono" />
+                  </div>
+                )}
+                {periodPreset === 'EOD_DATE' && (
+                  <select value={eodDate} onChange={(e) => setEodDate(e.target.value)} className="px-2 py-1.5 bg-white border border-slate-300 rounded font-mono text-xs max-w-[220px]">
+                    {eodDateOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                )}
+              </>
+            )}
 
-          {/* Interactive Export Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-xs border border-slate-300 flex items-center gap-1.5 shadow-2xs transition-colors"
-            >
-              <span>📥 Export</span>
-              <span className="text-[10px] text-slate-500">▼</span>
-            </button>
+            {/* B. MULTI-SELECT BRANCHES DROPDOWN */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setBranchDropdownOpen(!branchDropdownOpen)}
+                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center gap-1.5 focus:outline-none hover:border-[#1e3a2b]"
+              >
+                <span>{getBranchesDisplayLabel()}</span>
+                <span className="text-[9px] text-slate-500">▼</span>
+              </button>
 
-            {exportDropdownOpen && (
-              <div className="absolute right-0 mt-1.5 w-60 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50 animate-fadeIn">
-                <div className="px-3.5 py-1.5 border-b border-slate-100 font-bold text-[11px] text-[#1e3a2b] bg-[#f8faf8] flex items-center justify-between">
-                  <span>Export Report Data</span>
-                  <span className="font-semibold text-[10px] text-slate-500">{activeReport.title}</span>
+              {branchDropdownOpen && (
+                <div className="absolute left-0 mt-1 w-64 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50 animate-fadeIn">
+                  <div className="px-3 py-1 border-b border-slate-100 font-bold text-[10.5px] text-slate-400 uppercase">
+                    Select Operating Branches
+                  </div>
+                  <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 cursor-pointer font-bold border-b border-slate-100">
+                    <input
+                      type="checkbox"
+                      checked={selectedBranches.includes('ALL')}
+                      onChange={() => toggleBranchSelection('ALL')}
+                      className="accent-[#1e3a2b]"
+                    />
+                    <span>All Operating Branches ({branchesList.length})</span>
+                  </label>
+                  <div className="max-h-48 overflow-y-auto custom-scrollbar py-1">
+                    {branchesList.map((b) => (
+                      <label key={b.id} className="flex items-center gap-2 px-3 py-1 hover:bg-slate-50 cursor-pointer text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={selectedBranches.includes(b.code)}
+                          onChange={() => toggleBranchSelection(b.code)}
+                          className="accent-[#1e3a2b]"
+                        />
+                        <span>{b.name}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
+              )}
+            </div>
 
-                <button
-                  type="button"
-                  onClick={() => { window.print(); setExportDropdownOpen(false); }}
-                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  <span className="text-red-600 font-bold">📄</span>
-                  <div>
-                    <div className="font-bold">Export as PDF Document (.pdf)</div>
-                    <div className="text-[10px] text-slate-400">Save as clean A4 PDF file</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={triggerCSVExport}
-                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  <span className="text-emerald-600 font-bold">📊</span>
-                  <div>
-                    <div className="font-bold">Export as Microsoft Excel (.xlsx / .csv)</div>
-                    <div className="text-[10px] text-slate-400">Formatted spreadsheet with Arabic UTF-8</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={triggerCSVExport}
-                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  <span className="text-blue-600 font-bold">📑</span>
-                  <div>
-                    <div className="font-bold">Export as CSV Spreadsheet (.csv)</div>
-                    <div className="text-[10px] text-slate-400">Raw comma-separated table values</div>
-                  </div>
-                </button>
-
-                <div className="border-t border-slate-100 my-1"></div>
-
-                <button
-                  type="button"
-                  onClick={triggerClipboardCopy}
-                  className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 transition-colors"
-                >
-                  <span className="text-amber-600 font-bold">📋</span>
-                  <div>
-                    <div className="font-bold">Copy Table Data to Clipboard</div>
-                    <div className="text-[10px] text-slate-400">Paste directly into Excel or Docs</div>
-                  </div>
-                </button>
+            {/* C. INVOICE NUMBER RANGE (EXCLUSIVE TO Transactions by invoice number) */}
+            {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by invoice number' && (
+              <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-lg border border-slate-300">
+                <span className="text-slate-500 font-semibold text-xs">From #:</span>
+                <input
+                  type="text"
+                  value={fromInvoiceNum}
+                  onChange={(e) => setFromInvoiceNum(e.target.value)}
+                  placeholder="e.g. 103100"
+                  className="w-20 px-2 py-0.5 bg-white border border-slate-300 rounded font-mono text-xs"
+                />
+                <span className="text-slate-500 font-semibold text-xs">To #:</span>
+                <input
+                  type="text"
+                  value={toInvoiceNum}
+                  onChange={(e) => setToInvoiceNum(e.target.value)}
+                  placeholder="e.g. 103250"
+                  className="w-20 px-2 py-0.5 bg-white border border-slate-300 rounded font-mono text-xs"
+                />
               </div>
             )}
+
+            {/* D. INVOICES TYPE FILTER (ALL INVOICES, INVENTORY, POS, TRAINING) */}
+            {(activeReport.code === 'REP_IC_002' || 
+              (activeReport.code === 'REP_IC_003' && 
+               ['Duplicate Invoices', 'Transactions by employees by payment', 'Transactions by date by payments', 'Transactions by customers', 'Transactions by customers by groups', 'Transactions by customers details', 'Transactions by workstation', 'Transactions by salesman', 'Transactions By Source'].includes(transactionSubType))) && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setInvoiceTypeDropdownOpen(!invoiceTypeDropdownOpen)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 flex items-center justify-between gap-2 min-w-[130px]"
+                >
+                  <span>{getSelectedInvoiceTypeLabel()}</span>
+                  <span className="text-[9px] text-slate-500">▼</span>
+                </button>
+
+                {invoiceTypeDropdownOpen && (
+                  <div className="absolute left-0 mt-1 w-52 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50">
+                    <div className="p-1.5 border-b border-slate-100">
+                      <input
+                        type="text"
+                        value={invoiceTypeSearch}
+                        onChange={(e) => setInvoiceTypeSearch(e.target.value)}
+                        placeholder="Search..."
+                        className="w-full px-2 py-0.5 bg-slate-50 border border-slate-200 rounded text-xs"
+                        autoFocus
+                      />
+                    </div>
+                    {filteredInvoiceTypeOptions.map((opt) => (
+                      <button
+                        key={opt.code}
+                        type="button"
+                        onClick={() => { setInvoiceTypeFilter(opt.code); setInvoiceTypeDropdownOpen(false); }}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between ${invoiceTypeFilter === opt.code ? 'bg-[#edf2ee] text-[#1e3a2b] font-bold' : ''}`}
+                      >
+                        <span>{opt.label}</span>
+                        {invoiceTypeFilter === opt.code && <span className="text-[#1e3a2b]">✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* E. ALL PAYMENT TYPES (CASH, CREDIT, CASH USD, CREDIT CARD, CREDIT CARD USD) */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions by date by payments', 'Transactions By Source'].includes(transactionSubType) && (
+              <select
+                value={paymentTypeFilter}
+                onChange={(e) => setPaymentTypeFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+              >
+                <option value="ALL">All Payment Types</option>
+                <option value="CASH">Cash</option>
+                <option value="CREDIT">Credit</option>
+                <option value="CASH_USD">Cash USD</option>
+                <option value="CREDIT_CARD">Credit Card</option>
+                <option value="CREDIT_CARD_USD">Credit Card USD</option>
+              </select>
+            )}
+
+            {/* F. CUSTOMER SEARCH ENGINE & VAT NUMBER */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by customers', 'Transactions by customers details'].includes(transactionSubType) && (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="text"
+                  value={customerSearchInput}
+                  onChange={(e) => setCustomerSearchInput(e.target.value)}
+                  placeholder="Search Customers..."
+                  className="w-36 px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs placeholder-slate-400 focus:outline-none focus:border-[#1e3a2b]"
+                />
+
+                {transactionSubType === 'Transactions by customers' && (
+                  <select
+                    value={vatNumberFilter}
+                    onChange={(e) => setVatNumberFilter(e.target.value)}
+                    className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                  >
+                    <option value="ALL">All VAT Status</option>
+                    <option value="WITH_VAT">With VATNB</option>
+                    <option value="WITHOUT_VAT">Without VATNB</option>
+                  </select>
+                )}
+              </div>
+            )}
+
+            {/* G. SERVERS / EMPLOYEES SELECTOR & GROUPED BY SERVER */}
+            {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by employees' && (
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={serverFilter}
+                  onChange={(e) => setServerFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs text-slate-800 focus:outline-none"
+                >
+                  <option value="ALL">All Servers</option>
+                  {serverOptions.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+
+                <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={groupedByServer}
+                    onChange={(e) => setGroupedByServer(e.target.checked)}
+                    className="accent-[#1e3a2b] w-3.5 h-3.5"
+                  />
+                  <span>Grouped by server</span>
+                </label>
+              </div>
+            )}
+
+            {/* H. VOID REPORT EXCLUSIVES */}
+            {activeReport.code === 'REP_IC_001' && (
+              <>
+                <select
+                  value={serverFilter}
+                  onChange={(e) => setServerFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-[#1e3a2b] text-xs"
+                >
+                  <option value="ALL">All Servers</option>
+                  {serverOptions.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={voidReasonFilter}
+                  onChange={(e) => setVoidReasonFilter(e.target.value)}
+                  className="px-2.5 py-1.5 bg-white border border-slate-300 rounded font-semibold text-xs"
+                >
+                  <option value="ALL">All Void Reasons</option>
+                  <option value="WRONG_COUNT">تعداد خاطئ</option>
+                  <option value="PRICE">Price Dispute</option>
+                </select>
+              </>
+            )}
+
+            {/* I. DYNAMIC CHECKBOX FLAGS */}
+            {/* Real Date */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by employees by payment', 'Transactions by workstation', 'Transactions by employees'].includes(transactionSubType) && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={realDateFilter} onChange={(e) => setRealDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Real Date</span>
+              </label>
+            )}
+
+            {/* Show Rate */}
+            {activeReport.code === 'REP_IC_003' && ['Duplicate Invoices', 'Transactions by date'].includes(transactionSubType) && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={showRateFilter} onChange={(e) => setShowRateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Show rate</span>
+              </label>
+            )}
+
+            {/* Group by date */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions By Source'].includes(transactionSubType) && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={groupByDateFilter} onChange={(e) => setGroupByDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Group by date</span>
+              </label>
+            )}
+
+            {/* Summary */}
+            {activeReport.code === 'REP_IC_003' && ['Transactions by date by payments', 'Transactions by customers details'].includes(transactionSubType) && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={showSummaryFilter} onChange={(e) => setShowSummaryFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Summary</span>
+              </label>
+            )}
+
+            {/* Show Zero Tax */}
+            {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by invoice number' && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={showZeroTaxFilter} onChange={(e) => setShowZeroTaxFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Show zero tax</span>
+              </label>
+            )}
+
+            {/* Summary of Voids Checkbox */}
+            {activeReport.code === 'REP_IC_001' && (
+              <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
+                <input type="checkbox" checked={showAuthManager} onChange={(e) => setShowAuthManager(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                <span>Show Authorizing Manager</span>
+              </label>
+            )}
+
+            {/* ACTION BUTTONS */}
+            <button
+              type="button"
+              onClick={() => alert(`Filter Applied: ${activeReport.title}`)}
+              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors shadow-2xs"
+            >
+              Filter
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setPeriodPreset('THIS_MONTH');
+                setSelectedBranches(['ALL']);
+                setInvoiceTypeFilter('ALL');
+                setRealDateFilter(false);
+                setShowRateFilter(false);
+                setGroupByDateFilter(false);
+                setShowSummaryFilter(false);
+                setCustomerSearchInput('');
+              }}
+              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs transition-colors"
+            >
+              Reset
+            </button>
           </div>
 
-          {/* GEAR ICON BUTTON */}
-          <button
-            type="button"
-            onClick={() => setSettingsModalOpen(true)}
-            className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 hover:text-[#1e3a2b] transition-colors"
-            title="Report Settings & Toolbar Customization"
-          >
-            ⚙️
-          </button>
+          {/* Right Tools: Zoom + Print + Export + Settings */}
+          <div className="flex items-center gap-1.5 relative">
+            <button type="button" onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))} className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold" title="Zoom Out">🔍−</button>
+            <button type="button" onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))} className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold" title="Zoom In">🔍+</button>
+            <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded text-xs transition-colors flex items-center gap-1.5 shadow-2xs"><span>🖨️ Print</span></button>
+            
+            {/* Export */}
+            <div className="relative">
+              <button type="button" onClick={() => setExportDropdownOpen(!exportDropdownOpen)} className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-xs border border-slate-300 flex items-center gap-1.5 shadow-2xs">
+                <span>📥 Export</span>
+                <span className="text-[9px] text-slate-500">▼</span>
+              </button>
+              {exportDropdownOpen && (
+                <div className="absolute right-0 mt-1.5 w-60 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50">
+                  <button type="button" onClick={() => { window.print(); setExportDropdownOpen(false); }} className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2"><span>📄</span> <div><div className="font-bold">Export as PDF (.pdf)</div></div></button>
+                  <button type="button" onClick={triggerCSVExport} className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2"><span>📊</span> <div><div className="font-bold">Export as Excel (.xlsx / .csv)</div></div></button>
+                  <button type="button" onClick={triggerCSVExport} className="w-full text-left px-3.5 py-2 hover:bg-slate-100 flex items-center gap-2"><span>📑</span> <div><div className="font-bold">Export as CSV (.csv)</div></div></button>
+                </div>
+              )}
+            </div>
+
+            <button type="button" onClick={() => setSettingsModalOpen(true)} className="p-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300" title="Settings">⚙️</button>
+          </div>
+
         </div>
 
       </div>
@@ -942,7 +1126,10 @@ export default function MasterReportViewPage() {
                         <button
                           key={r.code}
                           type="button"
-                          onClick={() => setActiveReport({ ...r, category: cat.title })}
+                          onClick={() => {
+                            setActiveReport({ ...r, category: cat.title });
+                            if (r.code === 'REP_IC_003') setTransactionSubType('Duplicate Invoices');
+                          }}
                           className={`w-full text-left px-3 py-1.5 rounded-lg truncate block text-xs transition-all ${
                             activeReport.code === r.code
                               ? 'bg-[#1e3a2b] text-white font-bold shadow-xs'
@@ -1005,7 +1192,7 @@ export default function MasterReportViewPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-sm font-bold text-slate-900 uppercase">Southern Olive Oil Products S.A.R.L</h1>
-                  <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.title}</h2>
+                  <h2 className="text-base font-bold mt-0.5 text-slate-900">{activeReport.code === 'REP_IC_003' ? transactionSubType : activeReport.title}</h2>
                 </div>
                 <div className="text-right text-[10.5px] font-mono text-slate-700 space-y-0.5">
                   <div>Prepared By: Mohammed</div>
@@ -1015,7 +1202,7 @@ export default function MasterReportViewPage() {
               </div>
               <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-300 text-slate-700">
                 <div>Period: {getSelectedPeriodDisplay()}</div>
-                <div>Branch: {getSelectedBranchDisplayName()}</div>
+                <div>Branch: {getBranchesDisplayLabel()}</div>
               </div>
             </div>
 
@@ -1104,7 +1291,7 @@ export default function MasterReportViewPage() {
             )}
 
             {/* VIEW C: SALES & OTHER MATRIX */}
-            {!activeReport.code.startsWith('REP_L_') && activeReport.code !== 'REP_IC_001' && (
+            {activeReport.code !== 'REP_IC_001' && !activeReport.code.startsWith('REP_L_') && (
               <div>
                 <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
                   <thead>
@@ -1132,7 +1319,7 @@ export default function MasterReportViewPage() {
                 </table>
 
                 <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono flex justify-between items-center font-bold">
-                  <span>Category: {activeReport.category}</span>
+                  <span>Report Mode: {activeReport.code === 'REP_IC_003' ? transactionSubType : activeReport.title}</span>
                   <span>Total Revenue: ${genericSalesRows.reduce((s, r) => s + r.totalUsd, 0).toFixed(2)}</span>
                 </div>
               </div>
@@ -1157,35 +1344,17 @@ export default function MasterReportViewPage() {
       {settingsModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
-            
             <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8faf8]">
               <h2 className="text-base font-bold text-slate-900">Settings</h2>
-              <button
-                type="button"
-                onClick={() => setSettingsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded"
-              >
-                ✕
-              </button>
+              <button type="button" onClick={() => setSettingsModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded">✕</button>
             </div>
-
             <div className="p-5 overflow-y-auto custom-scrollbar space-y-5 text-xs text-slate-800">
               <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-slate-800 text-xs">Default Date Range Selection</label>
-                  <button
-                    type="button"
-                    onClick={() => alert(`Default Date Range Saved as ${defaultDateSelection}`)}
-                    className="px-3.5 py-1 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs transition-colors shadow-2xs"
-                  >
-                    Save
-                  </button>
+                  <button type="button" onClick={() => alert(`Default Date Range Saved as ${defaultDateSelection}`)} className="px-3.5 py-1 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
-                <select
-                  value={defaultDateSelection}
-                  onChange={(e) => setDefaultDateSelection(e.target.value)}
-                  className="w-full p-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-800 focus:outline-none"
-                >
+                <select value={defaultDateSelection} onChange={(e) => setDefaultDateSelection(e.target.value)} className="w-full p-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-800 focus:outline-none">
                   <option value="THIS_MONTH">This Month</option>
                   <option value="EOD_DATE">EOD Date</option>
                   <option value="TODAY">Today</option>
@@ -1198,35 +1367,18 @@ export default function MasterReportViewPage() {
                     <h3 className="font-bold text-slate-900 text-xs">Toolbar Categories</h3>
                     <p className="text-[10.5px] text-slate-500">You can include up to 8 categories in the toolbar</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setCustomCategoryModalOpen(true)}
-                    className="px-3 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs transition-colors shadow-2xs"
-                  >
-                    Custom Category
-                  </button>
+                  <button type="button" onClick={() => setCustomCategoryModalOpen(true)} className="px-3 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Custom Category</button>
                 </div>
 
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
                   <span className="text-slate-400">🔍</span>
-                  <input
-                    type="text"
-                    value={settingsSearch}
-                    onChange={(e) => setSettingsSearch(e.target.value)}
-                    placeholder="Search categories and reports..."
-                    className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
-                  />
+                  <input type="text" value={settingsSearch} onChange={(e) => setSettingsSearch(e.target.value)} placeholder="Search categories and reports..." className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none" />
                 </div>
 
                 <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                   <div className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
                     <label className="flex items-center gap-2 cursor-pointer font-semibold">
-                      <input
-                        type="checkbox"
-                        checked={selectedToolbarCats.includes('recently_viewed')}
-                        onChange={() => toggleToolbarCatCheck('recently_viewed')}
-                        className="accent-[#1e3a2b] w-3.5 h-3.5"
-                      />
+                      <input type="checkbox" checked={selectedToolbarCats.includes('recently_viewed')} onChange={() => toggleToolbarCatCheck('recently_viewed')} className="accent-[#1e3a2b] w-3.5 h-3.5" />
                       <span>Recently Viewed</span>
                     </label>
                   </div>
@@ -1235,59 +1387,30 @@ export default function MasterReportViewPage() {
                     <div key={c.id} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
                       <div className="p-2 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors">
                         <label className="flex items-center gap-2 cursor-pointer font-semibold">
-                          <input
-                            type="checkbox"
-                            checked={selectedToolbarCats.includes(c.id)}
-                            onChange={() => toggleToolbarCatCheck(c.id)}
-                            className="accent-[#1e3a2b] w-3.5 h-3.5"
-                          />
+                          <input type="checkbox" checked={selectedToolbarCats.includes(c.id)} onChange={() => toggleToolbarCatCheck(c.id)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
                           <span>{c.title.replace(/^\d+\.\s*/, '')}</span>
                         </label>
-                        <button
-                          type="button"
-                          onClick={() => toggleSettingsCatExpand(c.id)}
-                          className="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600 hover:bg-slate-100 font-bold"
-                          title="Expand subcategories and reports"
-                        >
-                          {expandedSettingsCats.includes(c.id) ? '»' : '«'}
-                        </button>
+                        <button type="button" onClick={() => toggleSettingsCatExpand(c.id)} className="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600 hover:bg-slate-100 font-bold">{expandedSettingsCats.includes(c.id) ? '»' : '«'}</button>
                       </div>
 
                       {expandedSettingsCats.includes(c.id) && (
                         <div className="p-2 border-t border-slate-100 bg-slate-50/80 space-y-1.5 text-[11px]">
                           {c.reports && c.reports.map((r) => (
                             <label key={r.code} className="flex items-center gap-2 pl-4 py-1 hover:bg-white rounded cursor-pointer font-medium text-slate-700">
-                              <input
-                                type="checkbox"
-                                checked={selectedToolbarReports.includes(r.code)}
-                                onChange={() => toggleToolbarReportCheck(r.code)}
-                                className="accent-[#1e3a2b] w-3 h-3"
-                              />
+                              <input type="checkbox" checked={selectedToolbarReports.includes(r.code)} onChange={() => toggleToolbarReportCheck(r.code)} className="accent-[#1e3a2b] w-3 h-3" />
                               <span>{r.title}</span>
                             </label>
                           ))}
-
                           {c.subCategories && c.subCategories.map((s) => (
                             <div key={s.id} className="border border-slate-200/80 rounded-lg p-1.5 bg-white space-y-1">
                               <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedToolbarSubCats.includes(s.id)}
-                                  onChange={() => toggleToolbarSubCatCheck(s.id)}
-                                  className="accent-[#1e3a2b] w-3.5 h-3.5"
-                                />
+                                <input type="checkbox" checked={selectedToolbarSubCats.includes(s.id)} onChange={() => toggleToolbarSubCatCheck(s.id)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
                                 <span>📁 {s.title}</span>
                               </label>
-
                               <div className="pl-5 space-y-0.5 border-t border-slate-100 pt-1">
                                 {s.reports.map((sr) => (
                                   <label key={sr.code} className="flex items-center gap-2 py-0.5 hover:bg-slate-50 rounded cursor-pointer text-slate-600 font-medium">
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedToolbarReports.includes(sr.code)}
-                                      onChange={() => toggleToolbarReportCheck(sr.code)}
-                                      className="accent-[#1e3a2b] w-3 h-3"
-                                    />
+                                    <input type="checkbox" checked={selectedToolbarReports.includes(sr.code)} onChange={() => toggleToolbarReportCheck(sr.code)} className="accent-[#1e3a2b] w-3 h-3" />
                                     <span>{sr.title}</span>
                                   </label>
                                 ))}
@@ -1301,17 +1424,9 @@ export default function MasterReportViewPage() {
                 </div>
               </div>
             </div>
-
             <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-end">
-              <button
-                type="button"
-                onClick={() => setSettingsModalOpen(false)}
-                className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs"
-              >
-                Close
-              </button>
+              <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs">Close</button>
             </div>
-
           </div>
         </div>
       )}
@@ -1322,88 +1437,38 @@ export default function MasterReportViewPage() {
       {customCategoryModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-md w-full overflow-hidden flex flex-col">
-            
             <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8faf8]">
               <h2 className="text-base font-bold text-slate-900">Custom Category</h2>
-              <button
-                type="button"
-                onClick={() => setCustomCategoryModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded"
-              >
-                ✕
-              </button>
+              <button type="button" onClick={() => setCustomCategoryModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded">✕</button>
             </div>
-
             <div className="p-5 space-y-4 text-xs text-slate-800">
               <div>
                 <label className="block font-bold text-slate-800 mb-1">Category Name</label>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={customCategoryName}
-                    onChange={(e) => setCustomCategoryName(e.target.value)}
-                    placeholder="e.g. Daily Operations Summary"
-                    className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-[#1e3a2b]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!customCategoryName.trim()) {
-                        alert('Please enter a Category Name');
-                        return;
-                      }
-                      alert(`Custom Category "${customCategoryName}" saved!`);
-                      setCustomCategoryModalOpen(false);
-                    }}
-                    className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs transition-colors"
-                  >
-                    Save
-                  </button>
+                  <input type="text" value={customCategoryName} onChange={(e) => setCustomCategoryName(e.target.value)} placeholder="e.g. Daily Operations Summary" className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-[#1e3a2b]" />
+                  <button type="button" onClick={() => { if (!customCategoryName.trim()) { alert('Please enter a Category Name'); return; } alert(`Custom Category "${customCategoryName}" saved!`); setCustomCategoryModalOpen(false); }} className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
               </div>
 
               <div>
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
                   <span className="text-slate-400">🔍</span>
-                  <input
-                    type="text"
-                    value={customCategorySearch}
-                    onChange={(e) => setCustomCategorySearch(e.target.value)}
-                    placeholder="Search Report..."
-                    className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
-                  />
+                  <input type="text" value={customCategorySearch} onChange={(e) => setCustomCategorySearch(e.target.value)} placeholder="Search Report..." className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none" />
                 </div>
-
                 <div className="mt-2 max-h-52 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
-                  {allFlattenedReports
-                    .filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase()))
-                    .slice(0, 30)
-                    .map((r) => (
-                      <label key={r.code} className="flex items-center gap-2 p-1.5 hover:bg-white rounded cursor-pointer text-slate-700 bg-white/60 border border-slate-100 transition-colors">
-                        <input
-                          type="checkbox"
-                          checked={customCategorySelectedReports.includes(r.code)}
-                          onChange={() => toggleCustomCategoryReport(r.code)}
-                          className="accent-[#1e3a2b] w-3.5 h-3.5"
-                        />
-                        <span className="font-semibold text-slate-900">{r.title}</span>
-                        <span className="text-[9px] text-slate-400 ml-auto truncate max-w-[100px]">{r.category}</span>
-                      </label>
-                    ))}
+                  {allFlattenedReports.filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase())).slice(0, 30).map((r) => (
+                    <label key={r.code} className="flex items-center gap-2 p-1.5 hover:bg-white rounded cursor-pointer text-slate-700 bg-white/60 border border-slate-100">
+                      <input type="checkbox" checked={customCategorySelectedReports.includes(r.code)} onChange={() => toggleCustomCategoryReport(r.code)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                      <span className="font-semibold text-slate-900">{r.title}</span>
+                      <span className="text-[9px] text-slate-400 ml-auto truncate max-w-[100px]">{r.category}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
-
             <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-end">
-              <button
-                type="button"
-                onClick={() => setCustomCategoryModalOpen(false)}
-                className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs"
-              >
-                Cancel
-              </button>
+              <button type="button" onClick={() => setCustomCategoryModalOpen(false)} className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs">Cancel</button>
             </div>
-
           </div>
         </div>
       )}
