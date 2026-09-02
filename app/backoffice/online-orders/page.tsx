@@ -2,13 +2,141 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  OnlineOrder,
-  initialOrdersList,
-  branchesList,
-  OrderStatus,
-  FulfillmentType,
-} from './orders-data';
+
+// ============================================================================
+// TYPES & DATA STRUCTURES - SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
+// ============================================================================
+
+type PlatformType = 'Web Store' | 'WhatsApp' | 'TikTok Shop' | 'Instagram' | 'Phone';
+
+type FulfillmentType = 'IN_STORE_PICKUP' | 'DELIVERY';
+
+type OrderStatus = 'PENDING_PICKUP_POS' | 'PICKED_UP_AND_CREDITED' | 'DISPATCHED_FLEET' | 'PENDING_DISPATCH';
+
+interface OnlineOrder {
+  orderNo: string;
+  orderDate: string;
+  deliveryDate: string;
+  customerName: string;
+  platform: PlatformType;
+  platformIcon: string;
+  fulfillmentType: FulfillmentType;
+  totalAmount: string;
+  amountNum: number;
+  status: OrderStatus;
+  repAccount: string;
+  commissionRate: number;
+  commissionAmount: string;
+  commissionCredited: boolean;
+  zoneName: string;
+  branchName: string;
+  itemsSummary: string;
+}
+
+const branchesList = [
+  { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
+  { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
+  { id: '003', code: 'BR_003', name: '003 - Saida Southern Center', region: 'South Lebanon' },
+  { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
+];
+
+const initialOrdersList: OnlineOrder[] = [
+  {
+    orderNo: 'ORD-103350',
+    orderDate: '01-Sep-2026 11:02 AM',
+    deliveryDate: '01-Sep-2026',
+    customerName: 'Colonel Mahmoud Abboud',
+    platform: 'Web Store',
+    platformIcon: '🌐',
+    fulfillmentType: 'IN_STORE_PICKUP',
+    totalAmount: '248,400,000.00 LBP ($2,760.00)',
+    amountNum: 248400000,
+    status: 'PENDING_PICKUP_POS',
+    repAccount: 'Hiba Aloulou (Rep #04)',
+    commissionRate: 0.05,
+    commissionAmount: '12,420,000.00 LBP ($138.00)',
+    commissionCredited: false,
+    zoneName: 'Choueifat Showroom Counter',
+    branchName: '001 - Choueifat Main Facility',
+    itemsSummary: '30x 17.5L Extra Virgin Bulk Harvest Tins (Ready for Pickup at Showroom POS)',
+  },
+  {
+    orderNo: 'ORD-103353',
+    orderDate: '01-Sep-2026 01:40 PM',
+    deliveryDate: '02-Sep-2026',
+    customerName: 'Byblos Green Grocers',
+    platform: 'Phone',
+    platformIcon: '📞',
+    fulfillmentType: 'IN_STORE_PICKUP',
+    totalAmount: '1,580,000.00 LBP',
+    amountNum: 1580000,
+    status: 'PENDING_PICKUP_POS',
+    repAccount: 'Hussein Mahdi (Rep #08)',
+    commissionRate: 0.07,
+    commissionAmount: '110,600.00 LBP',
+    commissionCredited: false,
+    zoneName: 'Choueifat Showroom Counter',
+    branchName: '001 - Choueifat Main Facility',
+    itemsSummary: '12x Cold Press Extra Virgin Glass Bottles 1L',
+  },
+  {
+    orderNo: 'ORD-103349',
+    orderDate: '01-Sep-2026 10:14 AM',
+    deliveryDate: '01-Sep-2026',
+    customerName: 'Al-Baraka Supermarket S.A.R.L',
+    platform: 'WhatsApp',
+    platformIcon: '💬',
+    fulfillmentType: 'DELIVERY',
+    totalAmount: '9,000,000.00 LBP ($100.00)',
+    amountNum: 9000000,
+    status: 'DISPATCHED_FLEET',
+    repAccount: 'Ahmad Ali Kassem (Rep #02)',
+    commissionRate: 0.05,
+    commissionAmount: '450,000.00 LBP',
+    commissionCredited: true,
+    zoneName: 'Beirut - Hamra',
+    branchName: '002 - Beirut Distribution Hub',
+    itemsSummary: '1x 17.5L Extra Virgin Olive Oil Tin (Harvest 2026)',
+  },
+  {
+    orderNo: 'ORD-103351',
+    orderDate: '01-Sep-2026 12:22 PM',
+    deliveryDate: '02-Sep-2026',
+    customerName: 'Al-Nour Food Establishment',
+    platform: 'Web Store',
+    platformIcon: '🌐',
+    fulfillmentType: 'DELIVERY',
+    totalAmount: '460,000.00 LBP',
+    amountNum: 460000,
+    status: 'PENDING_DISPATCH',
+    repAccount: 'Hiba Aloulou (Rep #04)',
+    commissionRate: 0.05,
+    commissionAmount: '23,000.00 LBP',
+    commissionCredited: false,
+    zoneName: 'Beirut - Achrafieh',
+    branchName: '002 - Beirut Distribution Hub',
+    itemsSummary: '6x Pomegranate Molasses (500ml), 4x Pickled Olives Glass 1Kg',
+  },
+  {
+    orderNo: 'ORD-103352',
+    orderDate: '01-Sep-2026 12:51 PM',
+    deliveryDate: '02-Sep-2026',
+    customerName: 'Hussein Daik Retail Mart',
+    platform: 'TikTok Shop',
+    platformIcon: '🎵',
+    fulfillmentType: 'DELIVERY',
+    totalAmount: '706,968,000.00 LBP ($7,855.20)',
+    amountNum: 706968000,
+    status: 'PENDING_DISPATCH',
+    repAccount: 'Mahdi (Rep #01)',
+    commissionRate: 0.04,
+    commissionAmount: '28,278,720.00 LBP',
+    commissionCredited: false,
+    zoneName: 'South Lebanon - Saida City',
+    branchName: '003 - Saida Southern Center',
+    itemsSummary: 'Wholesale Assorted Food Preserves & Olive Products Matrix',
+  },
+];
 
 export default function OnlineOrdersControlCenterPage() {
   const [ordersList, setOrdersList] = useState<OnlineOrder[]>(initialOrdersList);
@@ -88,7 +216,7 @@ export default function OnlineOrdersControlCenterPage() {
     );
   };
 
-  const getStatusBadge = (status: OrderStatus, credited: boolean) => {
+  const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'PENDING_PICKUP_POS':
         return (
@@ -111,11 +239,11 @@ export default function OnlineOrdersControlCenterPage() {
             Loaded on Fleet Van
           </span>
         );
-      case 'DELIVERED_COD':
+      case 'PENDING_DISPATCH':
         return (
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10.5px] border border-emerald-300 inline-flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            Delivered & Paid (COD)
+          <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10.5px] border border-rose-300 inline-flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+            Queued for Fleet Dispatch
           </span>
         );
       default:
@@ -126,12 +254,12 @@ export default function OnlineOrdersControlCenterPage() {
   return (
     <div className="w-full flex flex-col min-h-[calc(100vh-100px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-2 pb-8">
       
-      {/* 1. TOP TITLE */}
+      {/* 1. TOP TITLE & DESCRIPTION */}
       <div className="flex flex-wrap items-start justify-between gap-2 pt-1">
         <div>
           <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">Online Orders Control Center</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Omnichannel order dispatch & showroom pickup center: Real-time rep commission crediting on pickup.
+            Omnichannel order dispatch & showroom pickup center: Real-time rep commission crediting on customer pickup.
           </p>
         </div>
       </div>
@@ -190,7 +318,7 @@ export default function OnlineOrdersControlCenterPage() {
           >
             <option value="ALL">Select Branch (All Branches)</option>
             {branchesList.map((b) => (
-              <option key={b.id} value={b.name.split(' - ')[1] || b.name}>
+              <option key={b.id} value={b.name.split(' - ')[0] || b.name}>
                 {b.name}
               </option>
             ))}
@@ -264,7 +392,7 @@ export default function OnlineOrdersControlCenterPage() {
                     <div>{order.commissionAmount}</div>
                     <span className="text-[9.5px] text-slate-400 font-normal">({order.commissionRate * 100}%)</span>
                   </td>
-                  <td className="py-2.5 px-3 text-center">{getStatusBadge(order.status, order.commissionCredited)}</td>
+                  <td className="py-2.5 px-3 text-center">{getStatusBadge(order.status)}</td>
                   <td className="py-2.5 px-3 text-slate-600 font-mono text-[10.5px]">
                     <div>{order.branchName.split(' - ')[0] || order.branchName}</div>
                     <span className="text-[10px] text-slate-400">{order.zoneName}</span>
@@ -307,12 +435,12 @@ export default function OnlineOrdersControlCenterPage() {
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono">
                 <div><span className="text-slate-400 text-[10px] block">CUSTOMER</span><strong className="text-slate-900">{selectedOrderDetails.customerName}</strong></div>
                 <div><span className="text-slate-400 text-[10px] block">ORIGINATING REP</span><strong className="text-purple-900">{selectedOrderDetails.repAccount}</strong></div>
-                <div><span className="text-slate-400 text-[10px] block">FULFILLMENT</span><strong className="text-slate-900">{selectedOrderDetails.fulfillmentType === 'IN_STORE_PICKUP' ? '🏪 Showroom Pickup (POS)' : '🚚 SuperSonic Delivery'}</strong></div>
+                <div><span className="text-slate-400 text-[10px] block">FULFILLMENT TYPE</span><strong className="text-purple-800">{selectedOrderDetails.fulfillmentType === 'IN_STORE_PICKUP' ? '🏪 In-Store Showroom Pickup (POS)' : '🚚 SuperSonic Fleet Delivery'}</strong></div>
                 <div><span className="text-slate-400 text-[10px] block">TARGET BRANCH</span><strong className="text-slate-900">{selectedOrderDetails.branchName}</strong></div>
               </div>
 
               <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
-                <span className="text-slate-400 text-[10px] font-mono block">ORDER ITEMS</span>
+                <span className="text-slate-400 text-[10px] font-mono block">ORDER ITEMS & SPECIFICATIONS</span>
                 <p className="font-semibold text-slate-900 text-xs">{selectedOrderDetails.itemsSummary}</p>
               </div>
 
