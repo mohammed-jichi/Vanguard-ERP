@@ -172,7 +172,7 @@ export default function MasterReportViewPage() {
         }
       `}} />
 
-      {/* 1. TOP SUB-HEADER */}
+      {/* 1. TOP SUB-HEADER BAR */}
       <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
           <button
@@ -332,14 +332,271 @@ export default function MasterReportViewPage() {
             className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 print:transform-none select-none"
           >
             
-            {/* 1. SALES SUMMARY (REP_F_101 / REP_S_00020) */}
+            {/* =============================================================== */}
+            {/* SECTION 1: INTERNAL CONTROL (ALL 8 VERIFIED TEMPLATES)           */}
+            {/* =============================================================== */}
+
+            {/* REP_IC_001: Summary of voids */}
+            {activeReport.code === 'REP_IC_001' && (
+              <div className="space-y-4">
+                <div className="text-center font-bold text-base text-slate-900">Summary of voids</div>
+                <div className="text-right text-[10.5px] font-mono text-slate-700 -mt-3">Prepared By: Mohammed Jichi</div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 1</span>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[14%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[14%]">Order Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%]">Server</th>
+                      <th className="py-1.5 px-1 normal-case w-[10%]">Invoice</th>
+                      <th className="py-1.5 px-1 normal-case w-[26%]">Description</th>
+                      <th className="py-1.5 px-1 normal-case w-[6%] text-center">QTY</th>
+                      <th className="py-1.5 px-1 normal-case w-[10%] text-right">Value</th>
+                      <th className="py-1.5 px-1 normal-case w-[8%]">Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    <tr><td colSpan={8} className="py-1.5 px-1 font-bold underline bg-slate-50/50">Branch: Southern Olive Oil Products S.A.R.L - Choueifat</td></tr>
+                    <tr className="align-top leading-normal">
+                      <td className="py-1 px-1 font-mono text-[10px]">22-Aug-2026 5:31 PM</td>
+                      <td className="py-1 px-1 font-mono text-[10px]">22-Aug-2026 5:31 PM</td>
+                      <td className="py-1 px-1">Hiba Aloulou</td>
+                      <td className="py-1 px-1 font-mono font-bold">103225</td>
+                      <td className="py-1 px-1 font-bold">عرض العطاء جديد - زيت زيتون 17.5L</td>
+                      <td className="py-1 px-1 text-center font-mono">1.00</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold">9,000,000.00</td>
+                      <td className="py-1 px-1 text-[10px]">تعداد خاطئ</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* REP_IC_002: Summary & Details of refunds */}
+            {activeReport.code === 'REP_IC_002' && (
+              <div className="space-y-6">
+                <div className="text-center font-bold text-base text-slate-900">Details of refunds</div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 3</span>
+                </div>
+                <div className="space-y-2 border-b border-slate-200 pb-4">
+                  <div className="flex justify-between items-start text-[11px] font-mono">
+                    <div className="space-y-0.5">
+                      <div><strong className="underline">Branch Name:</strong> Southern Olive Oil Products - Choueifat</div>
+                      <div><strong>EOD Date:</strong> 11-08-2026</div>
+                      <div><strong>Invoice Number:</strong> 103098</div>
+                    </div>
+                    <div><strong>Customer:</strong> null null</div>
+                  </div>
+                  <div className="pt-2">
+                    <div className="flex justify-between font-bold border-b border-slate-300 pb-1 text-xs"><span>QTY Description</span><span>Total Price</span></div>
+                    <div className="flex justify-between py-1 text-xs font-mono font-bold text-red-700"><span>-0.90 كزبرة ناعم كيلو</span><span>-630,000.00</span></div>
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <div className="w-56 text-[11px] font-mono space-y-0.5">
+                      <div className="flex justify-between"><span>Sub Total:</span> <strong className="text-red-700">-630,000.00</strong></div>
+                      <div className="flex justify-between text-slate-500"><span>Discount:</span> <span>0.00</span></div>
+                      <div className="flex justify-between text-slate-500"><span>Tax:</span> <span>0.00</span></div>
+                      <div className="flex justify-between border-t border-black pt-0.5 font-bold"><span>Grand Total:</span> <strong className="text-red-700">-630,000.00</strong></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-6 border-t-2 border-black flex justify-between items-end">
+                  <div className="text-[10.5px] font-mono text-slate-600"><div>Printed: 02-Sep-2026</div><div>{dynamicPeriodInfo.header}</div></div>
+                  <div className="w-64 text-xs font-mono space-y-1 bg-slate-50 p-2.5 rounded border border-slate-200">
+                    <div className="flex justify-between"><span>Sub Total:</span> <strong className="text-red-700">-990,000.00</strong></div>
+                    <div className="flex justify-between border-t border-black pt-1 font-bold text-sm"><span>Grand Total:</span> <strong className="text-red-700">-990,000.00</strong></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* REP_IC_003: Duplicate Invoices & 13 Transaction Sub-Modes */}
+            {activeReport.code === 'REP_IC_003' && (
+              <div className="space-y-3">
+                <div className="text-blue-700 font-bold text-xs">Southern Olive Oil Products - Choueifat</div>
+                <div className="text-center font-bold text-sm text-slate-900 -mt-2">
+                  {transactionSubType === 'Duplicate Invoices' ? 'Duplicate Invoices Report' : transactionSubType}
+                </div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 1</span>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[10px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1 px-0.5 normal-case w-[12%]">Date</th>
+                      <th className="py-1 px-0.5 normal-case w-[7%]">Time</th>
+                      <th className="py-1 px-0.5 normal-case w-[9%]">Invoice #</th>
+                      <th className="py-1 px-0.5 normal-case w-[8%]">Cust_ID</th>
+                      <th className="py-1 px-0.5 normal-case w-[14%]">Customer Name</th>
+                      <th className="py-1 px-0.5 normal-case w-[7%] text-center">Order #</th>
+                      <th className="py-1 px-0.5 normal-case w-[13%] text-right">SubTotal</th>
+                      <th className="py-1 px-0.5 normal-case w-[11%] text-right">Discount</th>
+                      <th className="py-1 px-0.5 normal-case w-[5%] text-right">Tax</th>
+                      <th className="py-1 px-0.5 normal-case w-[9%]">Pay Type</th>
+                      <th className="py-1 px-0.5 normal-case w-[14%] text-right">Total</th>
+                      {showRateFilter && <th className="py-1 px-0.5 normal-case w-[10%] text-right">Rate</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[9.5px]">
+                    <tr><td colSpan={showRateFilter ? 12 : 11} className="py-1 px-0.5 font-bold underline bg-slate-50/50">Branch : Southern Olive Oil Products - Choueifat</td></tr>
+                    <tr className="align-top leading-tight hover:bg-slate-50">
+                      <td className="py-1 px-0.5 font-mono">11-Aug-2026</td>
+                      <td className="py-1 px-0.5 font-mono">18:56</td>
+                      <td className="py-1 px-0.5 font-mono font-bold">103098</td>
+                      <td className="py-1 px-0.5 font-mono text-slate-400">-</td>
+                      <td className="py-1 px-0.5 text-slate-400">-</td>
+                      <td className="py-1 px-0.5 text-center font-mono">1</td>
+                      <td className="py-1 px-0.5 text-right font-mono text-red-700">-630,000.00</td>
+                      <td className="py-1 px-0.5 text-right font-mono text-red-700">0.00</td>
+                      <td className="py-1 px-0.5 text-right font-mono">0.00</td>
+                      <td className="py-1 px-0.5 font-mono font-bold">CASH</td>
+                      <td className="py-1 px-0.5 text-right font-mono font-bold text-red-700">-630,000.00</td>
+                      {showRateFilter && <td className="py-1 px-0.5 text-right font-mono font-bold">90,000.00</td>}
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="pt-3 border-t border-black space-y-1 text-[10.5px] font-mono">
+                  <div className="flex justify-between items-center text-red-600 font-bold border-b border-slate-200 pb-1">
+                    <span>Total for: Southern Olive Oil Products</span>
+                    <div className="flex gap-4"><span>Gross: 1,868,425,450.00</span><span>Disc: 58,780,450.00</span><span>Net: 1,809,645,000.00</span></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* REP_IC_004: Meter reports */}
+            {activeReport.code === 'REP_IC_004' && (
+              <div className="space-y-4">
+                <div className="text-center font-bold text-base text-slate-900">Meter Report</div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 1</span>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[28%]">Branch Name</th>
+                      <th className="py-1.5 px-1 normal-case w-[28%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[22%]">By Employee</th>
+                      <th className="py-1.5 px-1 normal-case w-[22%]">To Employee</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+                    <tr><td colSpan={4} className="py-1 font-bold underline bg-slate-50">Branch: Southern Olive Oil Products</td></tr>
+                    <tr><td colSpan={4} className="py-1 font-bold text-slate-700 pl-2">EOD Date 17-Dec-2025</td></tr>
+                    <tr><td className="py-0.5 px-1">Choueifat Facility</td><td className="py-0.5 px-1 font-mono">17-12-2025 00.00.00</td><td className="py-0.5 px-1">Mahdi</td><td className="py-0.5 px-1 font-semibold">Server Mahdi</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* REP_IC_005: No sale */}
+            {activeReport.code === 'REP_IC_005' && (
+              <div className="space-y-4">
+                <div className="text-center font-bold text-base text-slate-900">No Sale Report</div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 1</span>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[40%]">Employee Name</th>
+                      <th className="py-1.5 px-1 normal-case w-[35%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[25%] text-right">Workstation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+                    <tr><td colSpan={3} className="py-1 font-bold underline bg-slate-50">Branch Name: Southern Olive Oil Products</td></tr>
+                    <tr><td colSpan={3} className="py-1 font-bold text-slate-700 pl-4">EOD Date: 01-Jan-26</td></tr>
+                    <tr><td className="py-1 px-1 font-semibold">Ricky</td><td className="py-1 px-1 font-mono">01/01/2026 6.23 PM</td><td className="py-1 px-1 text-right font-mono font-bold">1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* REP_IC_006: Transactions on hold */}
+            {activeReport.code === 'REP_IC_006' && (
+              <div className="space-y-4">
+                <div className="text-center font-bold text-base text-slate-900">History of Transactions on Hold</div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 2</span>
+                </div>
+                <div className="border-b border-slate-300 pb-2 text-[11px] font-mono space-y-1">
+                  <div><strong>Workstation :</strong> 1 Showroom 1</div>
+                  <div className="font-bold pt-1">14 December 2025</div>
+                  <div className="flex gap-6 text-slate-700"><span><strong>Employee ID :</strong> 2</span><span><strong>Employee Name:</strong> Cashier R</span></div>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[24%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[40%]">Qty Description</th>
+                      <th className="py-1.5 px-1 normal-case w-[18%] text-right">Unit Price</th>
+                      <th className="py-1.5 px-1 normal-case w-[18%] text-right">Total Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px] font-mono">
+                    <tr><td className="py-1 px-1">14/12/2025 13.39.32</td><td className="py-1 px-1 font-bold">1.0 حليب تاترا 400 غ</td><td className="py-1 px-1 text-right">340000.0</td><td className="py-1 px-1 text-right font-bold">340000.0</td></tr>
+                  </tbody>
+                </table>
+                <div className="border-t border-black pt-2 flex justify-end font-mono font-bold text-xs"><span>Amount : 1,435,000.0 LBP</span></div>
+              </div>
+            )}
+
+            {/* REP_IC_007: User log report */}
+            {activeReport.code === 'REP_IC_007' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-start text-xs font-bold"><span>Southern Olive Oil Products</span><span className="text-base">User Log Report</span><span></span></div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 29</span>
+                </div>
+                <table className="w-full table-fixed text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="border-b border-black font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[18%]">User</th>
+                      <th className="py-1.5 px-1 normal-case w-[16%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[16%]">Module</th>
+                      <th className="py-1.5 px-1 normal-case w-[28%]">Action</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%]">Computer Name</th>
+                      <th className="py-1.5 px-1 normal-case w-[10%] text-right">Reference</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+                    <tr><td colSpan={6} className="py-1 font-bold underline bg-slate-50">Branch : Southern Olive Oil Products</td></tr>
+                    <tr><td colSpan={6} className="py-1 font-bold text-slate-800 pl-2">Module : Adjustment</td></tr>
+                    <tr><td className="py-0.5 px-1 font-bold">Mohammed Jichi</td><td className="py-0.5 px-1 font-mono">01-Aug-2026</td><td className="py-0.5 px-1">Adjustment</td><td className="py-0.5 px-1 text-emerald-800 font-bold">Save & Post</td><td className="py-0.5 px-1 font-mono">POS-DESK-01</td><td className="py-0.5 px-1 text-right font-mono font-bold">41</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* REP_IC_008: Discount summary */}
+            {activeReport.code === 'REP_IC_008' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-start text-xs font-bold"><span className="text-blue-800">Southern Olive Oil Products</span><span className="text-base text-slate-900">Discount Summary</span><span></span></div>
+                <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
+                  <span>02-Sep-2026</span><span>Year: 2026 - All Months</span><span>Page 1 of 1</span>
+                </div>
+                <div className="max-w-md">
+                  <table className="w-full table-fixed text-left border border-black border-collapse text-xs">
+                    <thead><tr className="border-b border-black font-bold bg-slate-100"><th className="py-1.5 px-2 border-r border-black w-[55%]"></th><th className="py-1.5 px-2 text-right font-bold w-[45%]">Total Discount</th></tr></thead>
+                    <tbody className="font-mono text-xs divide-y divide-black">
+                      <tr><td className="py-1.5 px-2 border-r border-black font-bold font-sans">Southern Olive Oil Products</td><td className="py-1.5 px-2 text-right font-bold">104,813,558.18</td></tr>
+                      <tr className="bg-blue-100/70 font-bold"><td className="py-1.5 px-2 border-r border-black font-sans">Total</td><td className="py-1.5 px-2 text-right">104,813,558.18</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* =============================================================== */}
+            {/* SECTION 2: FINANCIAL REPORTS (SALES SUMMARY & WORKSTATION)       */}
+            {/* =============================================================== */}
             {activeReport.code === 'REP_F_101' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start text-xs font-bold">
-                  <span>Southern Olive Oil Products</span>
-                  <span className="text-base font-bold text-slate-900">Statistics Summary Report</span>
-                  <span></span>
-                </div>
+                <div className="flex justify-between items-start text-xs font-bold"><span>Southern Olive Oil Products</span><span className="text-base font-bold text-slate-900">Statistics Summary Report</span><span></span></div>
                 <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
                   <span>02-Sep-2026</span><span>Year: 2026 - Month: 8</span><span>Page 1 of 1</span>
                 </div>
@@ -362,7 +619,6 @@ export default function MasterReportViewPage() {
                     <tr><td className="font-sans">Net Sales</td><td className="text-right">1,561,245,000.0</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right font-bold">1,561,245,000.000</td></tr>
                     <tr><td className="font-sans">Number of Customers</td><td className="text-right">366</td><td className="text-right">0</td><td className="text-right">0</td><td className="text-right">0</td><td className="text-right font-bold">366</td></tr>
                     <tr><td colSpan={6} className="py-0.5 font-bold font-sans text-slate-800 pl-2 pt-2 border-t border-slate-300">Consolidation by branch</td></tr>
-                    <tr className="font-bold"><td className="font-sans">Gross Sales</td><td className="text-right">1,868,425,450.0</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right">1,868,425,450.000</td></tr>
                     <tr className="font-bold"><td className="font-sans">Net Sales</td><td className="text-right">1,809,645,000.0</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right">0.000</td><td className="text-right">1,809,645,000.000</td></tr>
                   </tbody>
                 </table>
@@ -372,14 +628,9 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* 2. STATISTICS BY WORKSTATION (REP_F_102 / REP_S_00192) */}
             {activeReport.code === 'REP_F_102' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start text-xs font-bold">
-                  <span>Southern Olive Oil Products</span>
-                  <span className="text-base font-bold text-slate-900">Statistics by workstation</span>
-                  <span></span>
-                </div>
+                <div className="flex justify-between items-start text-xs font-bold"><span>Southern Olive Oil Products</span><span className="text-base font-bold text-slate-900">Statistics by workstation</span><span></span></div>
                 <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
                   <span>02-Sep-26</span><span>From Date: 01-Aug-2026 To Date: 31-Aug-2026</span><span>Page 1 of 2</span>
                 </div>
@@ -409,7 +660,9 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* 3. PRODUCT SALES: SUMMARY OF SALES BY ITEMS (REP_P_101) */}
+            {/* =============================================================== */}
+            {/* SECTION 3 & 4: PRODUCT SALES & CUSTOMER SALES                   */}
+            {/* =============================================================== */}
             {activeReport.code.startsWith('REP_P_') && (
               <div className="space-y-4">
                 <div className="text-center font-bold text-base text-slate-900">{activeReport.title}</div>
@@ -450,7 +703,6 @@ export default function MasterReportViewPage() {
               </div>
             )}
 
-            {/* 4. CUSTOMER SALES: (REP_C_...) */}
             {activeReport.code.startsWith('REP_C_') && (
               <div className="space-y-4">
                 <div className="text-center font-bold text-base text-slate-900">{activeReport.title}</div>
@@ -481,53 +733,49 @@ export default function MasterReportViewPage() {
                     ))}
                   </tbody>
                 </table>
+                <div className="pt-4 border-t-2 border-black flex justify-between font-mono font-bold text-xs">
+                  <span>Total Active Clients: {customerSalesRows.length}</span>
+                  <span>Consolidated Value: {customerSalesRows.reduce((a, b) => a + b.totalLbp, 0).toLocaleString('en-US')} LBP</span>
+                </div>
                 <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
                   <span>REP_S_00130</span><span>Copyright © 2026 Southern Olive Oil Products S.A.R.L. All Rights Reserved.</span><span>Page 1 of 1</span>
                 </div>
               </div>
             )}
 
-            {/* 5. INTERNAL CONTROL: (REP_IC_001 TO REP_IC_008) */}
-            {activeReport.code === 'REP_IC_001' && (
+            {/* DEFAULT FALLBACK FOR OTHER CATEGORIES */}
+            {!activeReport.code.startsWith('REP_IC_') && !activeReport.code.startsWith('REP_P_') && !activeReport.code.startsWith('REP_C_') && activeReport.code !== 'REP_F_101' && activeReport.code !== 'REP_F_102' && (
               <div className="space-y-4">
-                <div className="text-center font-bold text-base text-slate-900">Summary of voids</div>
-                <div className="text-right text-[10.5px] font-mono text-slate-700 -mt-3">Prepared By: Mohammed Jichi</div>
+                <div className="text-center font-bold text-base text-slate-900">{activeReport.title}</div>
                 <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 text-slate-800">
                   <span>02-Sep-2026</span><span>{dynamicPeriodInfo.header}</span><span>Page 1 of 1</span>
                 </div>
                 <table className="w-full table-fixed text-left border-collapse text-[11px]">
                   <thead>
-                    <tr className="border-b border-black font-bold text-black leading-tight">
-                      <th className="py-1.5 px-1 normal-case w-[14%]">Date</th>
-                      <th className="py-1.5 px-1 normal-case w-[14%]">Order Date</th>
-                      <th className="py-1.5 px-1 normal-case w-[12%]">Server</th>
-                      <th className="py-1.5 px-1 normal-case w-[10%]">Invoice</th>
-                      <th className="py-1.5 px-1 normal-case w-[26%]">Description</th>
-                      <th className="py-1.5 px-1 normal-case w-[6%] text-center">QTY</th>
-                      <th className="py-1.5 px-1 normal-case w-[10%] text-right">Value</th>
-                      <th className="py-1.5 px-1 normal-case w-[8%]">Reason</th>
+                    <tr className="border-b border-black bg-slate-100 font-bold text-black leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[15%]">Reference #</th>
+                      <th className="py-1.5 px-1 normal-case w-[15%]">Date</th>
+                      <th className="py-1.5 px-1 normal-case w-[35%]">Description / Details</th>
+                      <th className="py-1.5 px-1 normal-case w-[15%]">Account / Category</th>
+                      <th className="py-1.5 px-1 normal-case w-[20%] text-right">Total (LBP)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    <tr><td colSpan={8} className="py-1.5 px-1 font-bold underline bg-slate-50/50">Branch: Southern Olive Oil Products S.A.R.L - Choueifat</td></tr>
-                    <tr className="align-top leading-normal">
-                      <td className="py-1 px-1 font-mono text-[10px]">22-Aug-2026 5:31 PM</td>
-                      <td className="py-1 px-1 font-mono text-[10px]">22-Aug-2026 5:31 PM</td>
-                      <td className="py-1 px-1">Hiba Aloulou</td>
-                      <td className="py-1 px-1 font-mono font-bold">103225</td>
-                      <td className="py-1 px-1 font-bold">عرض العطاء جديد - زيت زيتون 17.5L</td>
-                      <td className="py-1 px-1 text-center font-mono">1.00</td>
-                      <td className="py-1 px-1 text-right font-mono font-bold">9,000,000.00</td>
-                      <td className="py-1 px-1 text-[10px]">تعداد خاطئ</td>
+                  <tbody className="divide-y divide-slate-100 font-mono text-[10.5px]">
+                    <tr>
+                      <td className="py-2 px-1 font-bold text-slate-900">REF-2026-089</td>
+                      <td className="py-2 px-1 text-slate-600">01-Sep-2026</td>
+                      <td className="py-2 px-1 font-sans text-slate-800 font-medium">حركة مبيعات وتسوية دورية معتمدة</td>
+                      <td className="py-2 px-1 font-sans text-slate-600">Southern Olive Hub</td>
+                      <td className="py-2 px-1 text-right font-bold text-[#1e3a2b]">12,450,000.00</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             )}
 
-            {/* DEFAULT REINFORCED A4 FOOTER */}
+            {/* REINFORCED A4 FOOTER */}
             <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between items-center text-[10px] text-slate-600 font-mono">
-              <span>Vanguard ERP Master Reporting System</span>
+              <span>Vanguard ERP Core Engine</span>
               <span>Southern Olive Oil Products S.A.R.L - Confidential</span>
               <span>Page 1 of 1</span>
             </div>
