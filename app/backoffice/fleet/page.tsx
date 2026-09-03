@@ -4,23 +4,27 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 
 // ============================================================================
-// TYPES & CORRIDORS - SUPERSONIC FLEET & SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
+// TYPES & DATA STRUCTURES - SUPERSONIC FLEET & SOUTHERN OLIVE OIL PRODUCTS
 // ============================================================================
 
-type FleetTab = 'DISPATCH' | 'RADAR' | 'SETTLEMENTS' | 'POD' | 'VEHICLES';
+type FleetTab = 'DISPATCH' | 'RADAR' | 'TRIPS_SETTLEMENTS' | 'POD' | 'VEHICLES';
 
 type VehicleCategory = 'VAN' | 'CAR' | 'MOTORCYCLE';
 
 type OrderSourceType = 'IN_HOUSE_SOUTHERN_OLIVE' | 'EXTERNAL_3PL_VENDOR';
 
-interface CorridorRoute {
-  id: number;
-  number: number;
-  nameAr: string;
-  nameEn: string;
-  schedule: string;
-  highwayPath: string;
-  activeOrdersCount: number;
+interface DriverTripBatch {
+  tripNumber: number;
+  corridorName: string;
+  totalStops: number;
+  deliveredStops: number;
+  productValueUsd: number;
+  productValueLbp: number;
+  deliveryFeesUsd: number;
+  cashUsdCollected: number;
+  cashLbpCollected: number;
+  whishUsdCollected: number;
+  status: 'IN_PROGRESS' | 'RECONCILED';
 }
 
 interface FleetVehicle {
@@ -30,10 +34,10 @@ interface FleetVehicle {
   driver: string;
   assignedCorridor: number;
   status: 'ON_DUTY_LOADING' | 'ON_ROUTE' | 'DELIVERING' | 'RETURNING' | 'OFF_DUTY';
-  odometerStartKm: number;
   currentKm: number;
-  offDutyLocationPin?: string;
+  startKm: number;
   reconciliationClosed: boolean;
+  tripsToday: DriverTripBatch[];
 }
 
 interface DispatchedOrder {
@@ -42,6 +46,7 @@ interface DispatchedOrder {
   sourceType: OrderSourceType;
   customerName: string;
   corridorId: number;
+  tripNo: number;
   destinationTown: string;
   addressDetails: string;
   items: string;
@@ -60,7 +65,6 @@ interface WhishSettlementSubmission {
   amountLbp: number;
   amountUsd: number;
   whishReferenceNo: string;
-  proofImageUrl: string;
   submittedAt: string;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
 }
@@ -68,61 +72,83 @@ interface WhishSettlementSubmission {
 export default function SuperSonicFleetManagementPage() {
   const [activeTab, setActiveTab] = useState<FleetTab>('DISPATCH');
   const [selectedCorridorFilter, setSelectedCorridorFilter] = useState<number | 'ALL'>('ALL');
-  const [selectedVehicleTypeFilter, setSelectedVehicleTypeFilter] = useState<string>('ALL');
+  const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
 
-  // 1. THE 7 STRATEGIC CORRIDORS DEPARTING FROM CHOUEIFAT MAIN HUB
-  const corridorsList: CorridorRoute[] = [
-    { id: 1, number: 1, nameAr: 'بيروت الكبرى والساحل المتصل', nameEn: 'Greater Beirut & Connected Coast', schedule: 'Daily (يومي)', highwayPath: 'المركز الرئيسي بالشويفات ⬅️ خلدة ⬅️ الحدث / بعبدا / الضاحية ⬅️ العاصمة بيروت ⬅️ ساحل المتن (سن الفيل، الجديدة، جل الديب)', activeOrdersCount: 14 },
-    { id: 2, number: 2, nameAr: 'جبل لبنان الأوسط والجنوبي', nameEn: 'Central & Southern Mount Lebanon', schedule: 'Daily / Near-Daily (يومي أو شبه يومي)', highwayPath: 'المركز الرئيسي بالشويفات ⬅️ عرمون / بشامون / قبرشمون ⬅️ عاليه / بحمدون / صوفر ⬅️ الشوف الأعلى (دير القمر، بعقلين، الباروك)', activeOrdersCount: 9 },
-    { id: 3, number: 3, nameAr: 'خط الساحل الجنوبي والعمق', nameEn: 'Southern Coast & Deep South', schedule: 'Daily (يومي)', highwayPath: 'ساحل الشوف (الدامور، الجية) ⬅️ صيدا ⬅️ صور ⬅️ النبطية', activeOrdersCount: 12 },
-    { id: 4, number: 4, nameAr: 'الساحل الشمالي حتى البترون', nameEn: 'Northern Coast to Batroun', schedule: '3-4 times/week (3-4 مرات أسبوعياً)', highwayPath: 'أنطلياس / الضبية ⬅️ جونية / كسروان ⬅️ جبيل ⬅️ البترون ⬅️ الكورة', activeOrdersCount: 8 },
-    { id: 5, number: 5, nameAr: 'طرابلس، عكار والضنية', nameEn: 'Tripoli, Akkar & Dinnieh', schedule: '2-3 times/week (2-3 مرات أسبوعياً)', highwayPath: 'طرابلس ⬅️ المنية ⬅️ زغرتا ⬅️ الضنية ⬅️ عكار (حلبا، العبدة، القبيات، خريبة الجندي، منجز)', activeOrdersCount: 6 },
-    { id: 6, number: 6, nameAr: 'البقاع الأوسط والغربي والجنوب الشرقي', nameEn: 'Central, West Bekaa & South-East', schedule: '2-3 times/week (2-3 مرات أسبوعياً)', highwayPath: 'طريق الشام (صوفر - ضهر البيدر) ⬅️ شتورا / زحلة ⬅️ البقاع الغربي (جب جنين) ⬅️ راشيا ⬅️ حاصبيا ⬅️ جزين عبر مشغرة', activeOrdersCount: 5 },
-    { id: 7, number: 7, nameAr: 'البقاع الشمالي - بعلبك الهرمل', nameEn: 'North Bekaa - Baalbek Hermel', schedule: '1-2 times/week (1-2 مرات أسبوعياً)', highwayPath: 'رياق ⬅️ بعلبك ⬅️ دير الأحمر ⬅️ اللبوة ⬅️ الهرمل', activeOrdersCount: 3 },
-  ];
+  // Manual Driver Contribution State (بند المساهمة)
+  const [driverContributions, setDriverContributions] = useState<Record<string, number>>({
+    'Tony Khoury': 20.0,
+    'Fadi Abou Assi': 25.0,
+    'Hassan Sleiman': 30.0,
+    'Ahmad Zein': 10.0,
+  });
 
-  // 2. FLEET VEHICLES & LOCKOUT GOVERNANCE
+  // Fleet Vehicles with Trip Sequences
   const [vehicles, setVehicles] = useState<FleetVehicle[]>([
-    { plate: 'B-492102', category: 'VAN', model: 'Toyota HiAce High Roof (Van 01)', driver: 'Tony Khoury', assignedCorridor: 1, status: 'ON_ROUTE', odometerStartKm: 142050, currentKm: 142115, reconciliationClosed: true },
-    { plate: 'G-183921', category: 'VAN', model: 'Hyundai H1 Cargo (Van 02)', driver: 'Fadi Abou Assi', assignedCorridor: 2, status: 'DELIVERING', odometerStartKm: 88400, currentKm: 88462, reconciliationClosed: true },
-    { plate: 'S-772910', category: 'CAR', model: 'Renault Duster 4x4 (Car 01)', driver: 'Hassan Sleiman', assignedCorridor: 3, status: 'ON_ROUTE', odometerStartKm: 65120, currentKm: 65205, reconciliationClosed: true },
-    { plate: 'M-102941', category: 'MOTORCYCLE', model: 'Honda Cargo 250 (Moto 01)', driver: 'Ahmad Zein', assignedCorridor: 1, status: 'ON_ROUTE', odometerStartKm: 12400, currentKm: 12435, reconciliationClosed: true },
-    { plate: 'B-310928', category: 'VAN', model: 'Toyota HiAce Medium (Van 03)', driver: 'Elie Matar', assignedCorridor: 6, status: 'OFF_DUTY', odometerStartKm: 110200, currentKm: 110290, offDutyLocationPin: 'Chtaura Square Pin (33.821, 35.852)', reconciliationClosed: false },
+    {
+      plate: 'B-492102',
+      category: 'VAN',
+      model: 'Toyota HiAce High Roof (Van 01)',
+      driver: 'Tony Khoury',
+      assignedCorridor: 1,
+      status: 'ON_ROUTE',
+      startKm: 142050,
+      currentKm: 142165,
+      reconciliationClosed: true,
+      tripsToday: [
+        { tripNumber: 1, corridorName: 'المسار 1: بيروت الكبرى', totalStops: 6, deliveredStops: 6, productValueUsd: 350.0, productValueLbp: 9000000, deliveryFeesUsd: 24.0, cashUsdCollected: 250.0, cashLbpCollected: 9000000, whishUsdCollected: 100.0, status: 'RECONCILED' },
+        { tripNumber: 2, corridorName: 'المسار 2: الشوف وعاليه', totalStops: 4, deliveredStops: 4, productValueUsd: 210.0, productValueLbp: 0, deliveryFeesUsd: 16.0, cashUsdCollected: 110.0, cashLbpCollected: 0, whishUsdCollected: 100.0, status: 'RECONCILED' },
+        { tripNumber: 3, corridorName: 'المسار 1: ساحل المتن', totalStops: 3, deliveredStops: 2, productValueUsd: 180.0, productValueLbp: 0, deliveryFeesUsd: 12.0, cashUsdCollected: 180.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'IN_PROGRESS' },
+      ],
+    },
+    {
+      plate: 'G-183921',
+      category: 'VAN',
+      model: 'Hyundai H1 Cargo (Van 02)',
+      driver: 'Fadi Abou Assi',
+      assignedCorridor: 2,
+      status: 'DELIVERING',
+      startKm: 88400,
+      currentKm: 88480,
+      reconciliationClosed: true,
+      tripsToday: [
+        { tripNumber: 1, corridorName: 'المسار 2: جبل لبنان', totalStops: 5, deliveredStops: 5, productValueUsd: 400.0, productValueLbp: 0, deliveryFeesUsd: 20.0, cashUsdCollected: 400.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
+      ],
+    },
+    {
+      plate: 'M-102941',
+      category: 'MOTORCYCLE',
+      model: 'Honda Cargo 250 (Moto 01)',
+      driver: 'Ahmad Zein',
+      assignedCorridor: 1,
+      status: 'ON_ROUTE',
+      startKm: 12400,
+      currentKm: 12460,
+      reconciliationClosed: true,
+      tripsToday: [
+        { tripNumber: 1, corridorName: 'المسار 1: بيروت السريعة', totalStops: 3, deliveredStops: 3, productValueUsd: 90.0, productValueLbp: 0, deliveryFeesUsd: 9.0, cashUsdCollected: 90.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
+        { tripNumber: 2, corridorName: 'المسار 1: خلدة والضاحية', totalStops: 4, deliveredStops: 3, productValueUsd: 120.0, productValueLbp: 0, deliveryFeesUsd: 12.0, cashUsdCollected: 120.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'IN_PROGRESS' },
+      ],
+    },
   ]);
 
-  // 3. DISPATCH ORDERS (MERGED SOUTHERN OLIVE + EXTERNAL 3PL)
-  const [orders, setOrders] = useState<DispatchedOrder[]>([
+  // Dispatched Orders with Trip Identifiers
+  const [orders] = useState<DispatchedOrder[]>([
     {
       id: 'ORD-103349',
       orderNo: 'ORD-103349',
       sourceType: 'IN_HOUSE_SOUTHERN_OLIVE',
       customerName: 'Al-Baraka Supermarket S.A.R.L',
       corridorId: 1,
+      tripNo: 1,
       destinationTown: 'Beirut - Hamra',
-      addressDetails: 'Makdessi St, Building 14',
-      items: '1x 17.5L Extra Virgin Olive Oil Tin (Harvest 2026)',
+      addressDetails: 'Makdessi St, Bldg 14',
+      items: '1x 17.5L Extra Virgin Tin + 2x Pickled Olives',
       productAmountLbp: 9000000,
       productAmountUsd: 100,
       deliveryFeeUsd: 4.0,
       assignedVehiclePlate: 'B-492102',
       assignedDriver: 'Tony Khoury',
-      status: 'ON_ROUTE',
-    },
-    {
-      id: 'ORD-103350',
-      orderNo: 'ORD-103350',
-      sourceType: 'IN_HOUSE_SOUTHERN_OLIVE',
-      customerName: 'Colonel Mahmoud Abboud',
-      corridorId: 2,
-      destinationTown: 'Choueifat Showroom',
-      addressDetails: 'In-Store Pickup Counter',
-      items: '30x 17.5L Extra Virgin Bulk Harvest Tins',
-      productAmountLbp: 248400000,
-      productAmountUsd: 2760,
-      deliveryFeeUsd: 0.0,
-      assignedVehiclePlate: '-',
-      assignedDriver: '-',
-      status: 'MOVED_TO_POS_PICKUP', // Unclickable ghost record!
+      status: 'DELIVERED',
     },
     {
       id: '3PL-88120',
@@ -130,81 +156,137 @@ export default function SuperSonicFleetManagementPage() {
       sourceType: 'EXTERNAL_3PL_VENDOR',
       customerName: 'La Rose Fashion Boutique',
       corridorId: 1,
+      tripNo: 1,
       destinationTown: 'Metn - Sin El Fil',
       addressDetails: 'Near Habtoor Grand Hotel',
-      items: '3x Apparel Packages (Dry Goods)',
+      items: '3x Apparel Dry Goods Packages',
       productAmountLbp: 3150000,
       productAmountUsd: 35,
       deliveryFeeUsd: 3.0,
       assignedVehiclePlate: 'B-492102',
       assignedDriver: 'Tony Khoury',
-      status: 'ON_ROUTE',
+      status: 'DELIVERED',
     },
     {
-      id: 'ORD-103352',
-      orderNo: 'ORD-103352',
+      id: 'ORD-103350',
+      orderNo: 'ORD-103350',
       sourceType: 'IN_HOUSE_SOUTHERN_OLIVE',
-      customerName: 'Hussein Daik Retail Mart',
-      corridorId: 3,
-      destinationTown: 'Saida - Riad El Solh',
-      addressDetails: 'Daik Wholesale Center',
-      items: 'Assorted Food Preserves + Extra Virgin 1L Cases',
-      productAmountLbp: 706968000,
-      productAmountUsd: 7855.2,
-      deliveryFeeUsd: 6.0,
-      assignedVehiclePlate: 'S-772910',
-      assignedDriver: 'Hassan Sleiman',
-      status: 'ON_ROUTE',
+      customerName: 'Colonel Mahmoud Abboud',
+      corridorId: 2,
+      tripNo: 0,
+      destinationTown: 'Choueifat Showroom',
+      addressDetails: 'Showroom Pickup Counter',
+      items: '30x 17.5L Extra Virgin Bulk Tins',
+      productAmountLbp: 248400000,
+      productAmountUsd: 2760,
+      deliveryFeeUsd: 0.0,
+      assignedVehiclePlate: '-',
+      assignedDriver: '-',
+      status: 'MOVED_TO_POS_PICKUP',
     },
   ]);
 
-  // 4. WHISH ONLINE SETTLEMENTS
+  // Whish Submissions Audit
   const [whishSubmissions, setWhishSubmissions] = useState<WhishSettlementSubmission[]>([
     {
       id: 'WSH-0091',
       driverName: 'Tony Khoury',
       vehiclePlate: 'B-492102',
-      amountLbp: 45000000,
-      amountUsd: 500,
+      amountLbp: 0,
+      amountUsd: 200,
       whishReferenceNo: 'WHISH-TX-9988124',
-      proofImageUrl: 'assets/images/whish_receipt.png',
       submittedAt: 'Today 04:15 PM',
       status: 'PENDING_APPROVAL',
     },
   ]);
 
-  // 5. DRIVER CONTRIBUTION MANUAL INPUT STATE
-  const [driverContributions, setDriverContributions] = useState<Record<string, number>>({
-    'Tony Khoury': 15.0, // $15 Fuel/Allowance contribution
-    'Fadi Abou Assi': 20.0,
-    'Hassan Sleiman': 25.0,
-    'Elie Matar': 0.0,
-  });
-
-  // Actions
+  // Handlers
   const handleApproveWhish = (id: string) => {
-    setWhishSubmissions((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, status: 'APPROVED' } : w))
-    );
-    alert(`✓ Whish Settlement #${id} Approved! Funds verified into SuperSonic treasury.`);
+    setWhishSubmissions((prev) => prev.map((w) => (w.id === id ? { ...w, status: 'APPROVED' } : w)));
+    alert(`✓ Whish Settlement #${id} Approved and verified into SuperSonic treasury.`);
   };
 
-  const handleRejectWhish = (id: string) => {
-    setWhishSubmissions((prev) =>
-      prev.map((w) => (w.id === id ? { ...w, status: 'REJECTED' } : w))
-    );
-    alert(`⚠️ Whish Settlement #${id} Rejected! Notification sent to driver to resolve discrepancy.`);
+  const handlePushToFinancial = () => {
+    alert('🚀 Push Successful!\nDelivery sales batch pushed directly to Southern Olive Oil Products CFO Inbox (/backoffice/inbox).\nPending CFO review to post into official general ledgers.');
   };
 
-  const handleManualRouteMerge = (sourceCorridor: number, targetCorridor: number) => {
-    alert(`Corridor ${sourceCorridor} merged successfully into Corridor ${targetCorridor} for today's run!`);
+  // CSV Export for Driver Daily Master Reconciliation
+  const handleExportCSV = (driverName: string) => {
+    const d = vehicles.find((v) => v.driver === driverName);
+    if (!d) return;
+
+    let csv = `\uFEFFCompany,SuperSonic Delivery Fleet & Logistics\nAffiliation,Southern Olive Oil Products S.A.R.L\nDriver,${d.driver}\nVehicle,${d.model} (${d.plate})\nDate,03-Sep-2026\nOdometer,${d.startKm} KM to ${d.currentKm} KM (Total: ${d.currentKm - d.startKm} KM)\n\n`;
+    csv += `Trip Number,Corridor / Zone,Total Stops,Delivered,Product Value USD,Delivery Fee USD,Cash USD,Cash LBP,Whish USD,Status\n`;
+
+    d.tripsToday.forEach((t) => {
+      csv += `Trip ${t.tripNumber},"${t.corridorName}",${t.totalStops},${t.deliveredStops},${t.productValueUsd},${t.deliveryFeesUsd},${t.cashUsdCollected},${t.cashLbpCollected},${t.whishUsdCollected},${t.status}\n`;
+    });
+
+    const totalProduct = d.tripsToday.reduce((a, b) => a + b.productValueUsd, 0);
+    const totalCashUsd = d.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0);
+    const totalCashLbp = d.tripsToday.reduce((a, b) => a + b.cashLbpCollected, 0);
+    const totalWhish = d.tripsToday.reduce((a, b) => a + b.whishUsdCollected, 0);
+
+    csv += `TOTALS,,${d.tripsToday.reduce((a, b) => a + b.totalStops, 0)},${d.tripsToday.reduce((a, b) => a + b.deliveredStops, 0)},${totalProduct},${d.tripsToday.reduce((a, b) => a + b.deliveryFeesUsd, 0)},${totalCashUsd},${totalCashLbp},${totalWhish},\n`;
+    csv += `\nDriver Contribution Allowance (المساهمة),+$${driverContributions[d.driver] || 0}\n`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `SuperSonic_Reconciliation_${driverName.replace(/\s+/g, '_')}_2026-09-03.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+  const currentReportVehicle = vehicles.find((v) => v.driver === selectedDriverForReport) || vehicles[0];
 
   return (
     <div className="w-full flex flex-col min-h-[calc(100vh-80px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-3 pb-10">
       
+      {/* BULLETPROOF INLINE A4 PRINT CSS */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 0mm !important;
+          }
+          body {
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            visibility: hidden !important;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          header, aside, nav, button, input, select, .print-hidden, [class*="print:hidden"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          #isolated-a4-print-sheet, #isolated-a4-print-sheet * {
+            visibility: visible !important;
+          }
+          #isolated-a4-print-sheet {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100vw !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 12mm 15mm !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: #ffffff !important;
+            display: block !important;
+            z-index: 999999 !important;
+          }
+        }
+      `}} />
+
       {/* 1. TOP COMMAND BAR */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-b border-slate-200 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-b border-slate-200 pb-3 print:hidden">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xl">🚚</span>
@@ -213,149 +295,69 @@ export default function SuperSonicFleetManagementPage() {
             </h1>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            المركز الرئيسي لشركة سوبر سونيك (Choueifat Gateway) — 7 Strategic Corridors, Multi-Currency COD & Whish Settlements.
+            المركز الرئيسي لشركة سوبر سونيك (Choueifat Hub) — Multi-Trip Lifecycle (Trip 1, 2, 3...), Inter-Company Pushes, & Whish Reconciliation.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
+          <button
+            type="button"
+            onClick={handlePushToFinancial}
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors"
+          >
+            <span>🚀 Push to Financial Inbox</span>
+          </button>
           <span className="px-3 py-1 bg-[#edf2ee] text-[#1e3a2b] font-bold rounded-lg border border-[#1e3a2b]/30">
             00001 - Southern Olive Oil Products S.A.R.L
           </span>
-          <Link
-            href="/backoffice/dashboard"
-            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition-colors"
-          >
+          <Link href="/backoffice/dashboard" className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300">
             🔄 Return to Hub
           </Link>
         </div>
       </div>
 
-      {/* 2. TOP 5 LIVE METRICS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-lg">🚐</div>
-          <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Active Fleet</span>
-            <span className="text-base font-extrabold text-slate-900">4 Active (3 Vans, 1 Moto)</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-lg">🗺️</div>
-          <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">7 Corridors Runs</span>
-            <span className="text-base font-extrabold text-slate-900">7 Routes / Choueifat</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-lg">✓</div>
-          <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Today's Deliveries</span>
-            <span className="text-base font-extrabold text-slate-900">{orders.length} Active Runs</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center font-bold text-lg">📲</div>
-          <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Whish Reconciliation</span>
-            <span className="text-base font-extrabold text-purple-900">1 Pending Review</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-lg">🔒</div>
-          <div>
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Lockout Status</span>
-            <span className="text-base font-extrabold text-rose-700">1 Driver Locked</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. TABS NAVIGATION */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200 pb-1 text-xs font-bold">
+      {/* 2. TABS CONTROLLER */}
+      <div className="flex items-center gap-1.5 border-b border-slate-200 pb-1 text-xs font-bold print:hidden">
         <button
           type="button"
           onClick={() => setActiveTab('DISPATCH')}
           className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'DISPATCH' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
         >
-          📋 7 Corridors & Regional Dispatch
+          📋 7 Corridors & Today's Orders
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('TRIPS_SETTLEMENTS')}
+          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'TRIPS_SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
+        >
+          📄 Driver Trips Master Reconciliation (A4 / PDF / CSV)
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('RADAR')}
           className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'RADAR' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
         >
-          🗺️ Live Fleet Radar & GPS Map
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('SETTLEMENTS')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          💰 COD, Whish & Driver Cash Settlements
+          🗺️ Live Fleet Radar
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('POD')}
           className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'POD' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
         >
-          ✍️ Proof of Delivery (POD) Archives
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('VEHICLES')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'VEHICLES' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          🚐 Fleet Vehicles & Odometer Log
+          ✍️ Proof of Delivery (POD)
         </button>
       </div>
 
       {/* =================================================================== */}
-      {/* TAB 1: 7 CORRIDORS & REGIONAL DISPATCH (CROSS-COMPANY CO-LOADING)   */}
+      {/* TAB 1: DISPATCH & CORRIDORS (SOUTHERN OLIVE + EXTERNAL 3PL MERGING) */}
       {/* =================================================================== */}
       {activeTab === 'DISPATCH' && (
-        <div className="space-y-4">
-          
-          {/* Corridor Cards Ribbon */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
-            {corridorsList.map((c) => (
-              <div
-                key={c.id}
-                onClick={() => setSelectedCorridorFilter(selectedCorridorFilter === c.number ? 'ALL' : c.number)}
-                className={`p-3 rounded-xl border cursor-pointer transition-all ${selectedCorridorFilter === c.number ? 'bg-[#edf2ee] border-[#1e3a2b] ring-2 ring-[#1e3a2b]/20 shadow-xs' : 'bg-white border-slate-200 hover:border-slate-300'}`}
-              >
-                <div className="flex justify-between items-start">
-                  <span className="text-[10.5px] font-bold px-2 py-0.5 rounded bg-[#1e3a2b] text-white">المسار {c.number}</span>
-                  <span className="text-[10px] font-mono text-slate-500">{c.schedule}</span>
-                </div>
-                <h4 className="font-bold text-slate-900 text-xs mt-1.5 leading-tight">{c.nameAr}</h4>
-                <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{c.highwayPath}</p>
-                <div className="mt-2 pt-1 border-t border-slate-200/80 flex justify-between items-center text-[10.5px] font-mono">
-                  <span className="text-slate-500">Orders:</span>
-                  <strong className="text-[#1e3a2b]">{c.activeOrdersCount} packages</strong>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Orders Table */}
+        <div className="space-y-4 print:hidden">
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Today's Dispatched Runs (Southern Olive + 3PL Orders)</h3>
-                <p className="text-[11px] text-slate-400">All orders originating from Choueifat Main Hub, merged by highway corridors.</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleManualRouteMerge(6, 7)}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold border border-slate-300"
-                >
-                  🔄 Merge Corridors (6 & 7)
-                </button>
+                <h3 className="text-sm font-bold text-slate-900">Today's Merged Runs (Southern Olive + 3PL Orders)</h3>
+                <p className="text-[11px] text-slate-400">Orders grouped by the 7 Strategic Corridors with Trip Sequencing (Trip 1, 2, 3...).</p>
               </div>
             </div>
 
@@ -366,7 +368,7 @@ export default function SuperSonicFleetManagementPage() {
                     <th className="py-2.5 px-3 normal-case">order no.</th>
                     <th className="py-2.5 px-3 normal-case">source entity</th>
                     <th className="py-2.5 px-3 normal-case">customer & destination</th>
-                    <th className="py-2.5 px-3 normal-case">highway corridor</th>
+                    <th className="py-2.5 px-3 normal-case">corridor & trip</th>
                     <th className="py-2.5 px-3 normal-case">order items</th>
                     <th className="py-2.5 px-3 normal-case text-right">product val</th>
                     <th className="py-2.5 px-3 normal-case text-right">delivery fee</th>
@@ -375,280 +377,235 @@ export default function SuperSonicFleetManagementPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                  {orders
-                    .filter((o) => selectedCorridorFilter === 'ALL' || o.corridorId === selectedCorridorFilter)
-                    .map((order) => (
-                      <tr
-                        key={order.id}
-                        className={`transition-colors ${order.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}`}
-                      >
-                        <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
-                        <td className="py-2.5 px-3">
-                          {order.sourceType === 'IN_HOUSE_SOUTHERN_OLIVE' ? (
-                            <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">
-                              🫒 Southern Olive In-House
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">
-                              🏢 External 3PL Merchant
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <strong className="text-slate-900 block">{order.customerName}</strong>
-                          <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
-                        </td>
-                        <td className="py-2.5 px-3 font-bold text-slate-800">
-                          المسار {order.corridorId}
-                        </td>
-                        <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                          {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString('en-US')} LBP` : `$${order.productAmountUsd.toFixed(2)}`}
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-blue-700">
-                          ${order.deliveryFeeUsd.toFixed(2)}
-                        </td>
-                        <td className="py-2.5 px-3 text-center font-mono">
-                          {order.assignedVehiclePlate !== '-' ? (
-                            <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-bold text-[10.5px]">
-                              {order.assignedVehiclePlate} ({order.assignedDriver})
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 font-mono">-</span>
-                          )}
-                        </td>
-                        <td className="py-2.5 px-3 text-center">
-                          {order.status === 'MOVED_TO_POS_PICKUP' ? (
-                            <span className="px-2.5 py-1 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px] flex items-center justify-center gap-1">
-                              <span>🏪</span> Moved to POS Pickup (Read-Only)
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold text-[10px]">
-                              {order.status}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                  {orders.map((order) => (
+                    <tr key={order.id} className={order.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}>
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
+                      <td className="py-2.5 px-3">
+                        {order.sourceType === 'IN_HOUSE_SOUTHERN_OLIVE' ? (
+                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">
+                            🫒 Southern Olive In-House
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">
+                            🏢 External 3PL Merchant
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <strong className="text-slate-900 block">{order.customerName}</strong>
+                        <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-slate-800 font-mono">
+                        المسار {order.corridorId} {order.tripNo > 0 && <span className="text-purple-700">(Trip {order.tripNo})</span>}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-blue-700">${order.deliveryFeeUsd}</td>
+                      <td className="py-2.5 px-3 text-center font-mono">
+                        {order.assignedVehiclePlate !== '-' ? `${order.assignedVehiclePlate} (${order.assignedDriver})` : '-'}
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        {order.status === 'MOVED_TO_POS_PICKUP' ? (
+                          <span className="px-2.5 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px]">
+                            🏪 Moved to POS Pickup (Read-Only)
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                            {order.status}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
-
         </div>
       )}
 
       {/* =================================================================== */}
-      {/* TAB 2: LIVE FLEET RADAR & TELEMETRY (ODOMETER & OFF-DUTY PIN)       */}
+      {/* TAB 2: DRIVER TRIPS MASTER RECONCILIATION (A4 PRINT / PDF / CSV)    */}
       {/* =================================================================== */}
-      {activeTab === 'RADAR' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {vehicles.map((v) => (
-              <div key={v.plate} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-700">{v.plate}</span>
-                    <h4 className="font-bold text-slate-900 text-xs mt-1">{v.model}</h4>
-                    <span className="text-[11px] text-slate-600 block">Driver: <strong>{v.driver}</strong></span>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${v.status === 'ON_ROUTE' ? 'bg-indigo-100 text-indigo-800' : v.status === 'DELIVERING' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
-                    {v.status}
-                  </span>
-                </div>
-
-                <div className="bg-slate-50 p-2.5 rounded-xl text-[11px] space-y-1.5 font-mono">
-                  <div className="flex justify-between"><span>Assigned Corridor:</span> <strong>المسار {v.assignedCorridor}</strong></div>
-                  <div className="flex justify-between"><span>Odometer Start:</span> <strong>{v.odometerStartKm.toLocaleString()} KM</strong></div>
-                  <div className="flex justify-between"><span>Current Mileage:</span> <strong>{v.currentKm.toLocaleString()} KM</strong></div>
-                  <div className="flex justify-between text-blue-700 font-bold"><span>Today's Distance:</span> <strong>{(v.currentKm - v.odometerStartKm)} KM</strong></div>
-                  {v.offDutyLocationPin && (
-                    <div className="pt-1 border-t border-slate-200 text-rose-700 text-[10px]">
-                      📍 <strong>Off-Duty Geo-Pin:</strong> {v.offDutyLocationPin}
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-1 flex justify-between items-center text-xs">
-                  <span className="text-[10.5px] font-bold text-slate-500">Next-Day Line Status:</span>
-                  {v.reconciliationClosed ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Reconciled & Ready ✓</span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px] animate-pulse">
-                      🔒 Locked (Reconciliation Open)
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* TAB 3: COD, WHISH & DRIVER SETTLEMENTS (MANUAL CONTRIBUTION BINDING)*/}
-      {/* =================================================================== */}
-      {activeTab === 'SETTLEMENTS' && (
+      {activeTab === 'TRIPS_SETTLEMENTS' && (
         <div className="space-y-4">
           
-          {/* Whish Submissions Audit Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <h3 className="text-sm font-bold text-slate-900">Online Whish Money Settlement Approvals</h3>
-            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                    <th className="py-2 px-3 normal-case">driver name</th>
-                    <th className="py-2 px-3 normal-case">vehicle</th>
-                    <th className="py-2 px-3 normal-case text-right">whish usd</th>
-                    <th className="py-2 px-3 normal-case text-right">whish lbp</th>
-                    <th className="py-2 px-3 normal-case">reference no.</th>
-                    <th className="py-2 px-3 normal-case">timestamp</th>
-                    <th className="py-2 px-3 normal-case text-center">status</th>
-                    <th className="py-2 px-3 normal-case text-center">action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
-                  {whishSubmissions.map((w) => (
-                    <tr key={w.id}>
-                      <td className="py-2 px-3 font-bold font-sans text-slate-900">{w.driverName}</td>
-                      <td className="py-2 px-3 text-slate-600">{w.vehiclePlate}</td>
-                      <td className="py-2 px-3 text-right font-bold text-purple-700">${w.amountUsd.toFixed(2)}</td>
-                      <td className="py-2 px-3 text-right font-bold text-purple-700">{w.amountLbp.toLocaleString()} LBP</td>
-                      <td className="py-2 px-3 text-slate-800">{w.whishReferenceNo}</td>
-                      <td className="py-2 px-3 text-slate-500 font-sans">{w.submittedAt}</td>
-                      <td className="py-2 px-3 text-center font-sans">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${w.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : w.status === 'REJECTED' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}`}>
-                          {w.status}
-                        </span>
-                      </td>
-                      <td className="py-2 px-3 text-center font-sans">
-                        {w.status === 'PENDING_APPROVAL' && (
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => handleApproveWhish(w.id)}
-                              className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[10.5px] font-bold"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRejectWhish(w.id)}
-                              className="px-2.5 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded text-[10.5px] font-bold"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {/* Top Export Toolbar */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 print:hidden text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-700">Select Driver For Master Report:</span>
+              <select
+                value={selectedDriverForReport}
+                onChange={(e) => setSelectedDriverForReport(e.target.value)}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none"
+              >
+                {vehicles.map((v) => (
+                  <option key={v.driver} value={v.driver}>
+                    {v.driver} ({v.model})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
+              >
+                <span>🖨️ Print A4 Report</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
+              >
+                <span>📄 Download as PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExportCSV(selectedDriverForReport)}
+                className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
+              >
+                <span>📊 Export as CSV / Excel</span>
+              </button>
             </div>
           </div>
 
-          {/* Daily Reconciliation & Contribution Matrix */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <h3 className="text-sm font-bold text-slate-900">Driver End-of-Day Reconciliation & «مساهمة» Allowance</h3>
-            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                    <th className="py-2.5 px-3 normal-case">driver name</th>
-                    <th className="py-2.5 px-3 normal-case">vehicle category</th>
-                    <th className="py-2.5 px-3 normal-case text-right">cash collected (usd)</th>
-                    <th className="py-2.5 px-3 normal-case text-right">whish collected (usd)</th>
-                    <th className="py-2.5 px-3 normal-case text-center">مساهمة الشوفير (allowance $)</th>
-                    <th className="py-2.5 px-3 normal-case text-center">lockout status</th>
-                    <th className="py-2.5 px-3 normal-case text-center">settlement action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                  {vehicles.map((v) => (
-                    <tr key={v.driver}>
-                      <td className="py-2.5 px-3 font-bold text-slate-900">{v.driver}</td>
-                      <td className="py-2.5 px-3 font-mono">{v.category}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">$2,450.00</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-700">$500.00</td>
-                      <td className="py-2.5 px-3 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="font-bold text-slate-400">$</span>
-                          <input
-                            type="number"
-                            value={driverContributions[v.driver] || 0}
-                            onChange={(e) =>
-                              setDriverContributions({
-                                ...driverContributions,
-                                [v.driver]: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                            className="w-16 px-2 py-1 bg-slate-50 border border-slate-300 rounded text-center font-mono font-bold text-xs"
-                          />
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        {v.reconciliationClosed ? (
-                          <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Cleared ✓</span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">Locked Until Settled 🔒</span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => alert(`Reconciliation for ${v.driver} finalized with contribution of $${driverContributions[v.driver]}!`)}
-                          className="px-3 py-1 bg-[#1e3a2b] hover:bg-[#14281e] text-white rounded text-[10.5px] font-bold"
-                        >
-                          Finalize Settlement
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* TAB 4: POD ARCHIVES & TAB 5: VEHICLES LOG                           */}
-      {/* =================================================================== */}
-      {activeTab === 'POD' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-slate-900">Proof of Delivery (POD) Electronic Signatures & Photos</h3>
-          <div className="border border-slate-200 rounded-xl p-3 bg-slate-50 flex justify-between items-center text-xs font-mono">
-            <div>
-              <span className="font-bold text-[#1e3a2b] text-sm block">ORD-103349 - Al-Baraka Supermarket</span>
-              <span className="text-slate-500 block">Signed by: Store Receiving Manager (Imad)</span>
-              <span className="text-slate-400 block text-[10px]">GPS Delivered: 33.8938° N, 35.4802° E (Hamra)</span>
-            </div>
-            <div className="text-right space-y-1">
-              <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10.5px]">2 Photos Attached 📸</span>
-              <div className="text-slate-600 font-bold text-[11px]">Paid: 9,000,000 LBP (COD)</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'VEHICLES' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-          <h3 className="text-sm font-bold text-slate-900">Fleet Vehicles, Maintenance & Fuel Vault</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {vehicles.map((v) => (
-              <div key={v.plate} className="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs font-mono space-y-1">
-                <div className="flex justify-between font-bold">
-                  <span className="text-slate-900">{v.model}</span>
-                  <span className="text-[#1e3a2b]">{v.category}</span>
+          {/* Printable A4 Master Reconciliation Sheet */}
+          <div className="flex justify-center">
+            <div
+              id="isolated-a4-print-sheet"
+              className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none space-y-4"
+            >
+              <div className="flex justify-between items-start border-b-2 border-black pb-2">
+                <div>
+                  <h2 className="text-lg font-extrabold tracking-tight">SUPERSONIC FLEET & LOGISTICS</h2>
+                  <p className="text-[11px] text-slate-600 font-mono">In Affiliation with: Southern Olive Oil Products S.A.R.L</p>
                 </div>
-                <div className="text-slate-500">Plate: {v.plate} | Assigned Driver: {v.driver}</div>
-                <div className="text-blue-700 font-bold">Total Odometer: {v.currentKm.toLocaleString()} KM</div>
+                <div className="text-right">
+                  <h3 className="text-sm font-bold">Daily Driver Trips Master Reconciliation Report</h3>
+                  <span className="text-xs font-mono">Date: 03-Sep-2026</span>
+                </div>
               </div>
-            ))}
+
+              {/* Driver Metadata Matrix */}
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-3 rounded border border-slate-200">
+                <div><strong>Driver Name:</strong> {currentReportVehicle.driver}</div>
+                <div><strong>Vehicle / Category:</strong> {currentReportVehicle.model} ({currentReportVehicle.category})</div>
+                <div><strong>Plate Number:</strong> {currentReportVehicle.plate}</div>
+                <div><strong>Departure Point:</strong> المركز الرئيسي بالشويفات</div>
+                <div><strong>Odometer:</strong> Start: {currentReportVehicle.startKm.toLocaleString()} KM ➔ End: {currentReportVehicle.currentKm.toLocaleString()} KM</div>
+                <div><strong>Total Distance Today:</strong> {currentReportVehicle.currentKm - currentReportVehicle.startKm} KM (Roundtrip)</div>
+              </div>
+
+              {/* Trips Breakdown Table */}
+              <div>
+                <h4 className="font-bold text-xs mb-1.5">Sequential Trips Completed Today (Trip 1, Trip 2, Trip 3...)</h4>
+                <table className="w-full table-fixed text-left border border-black border-collapse text-[10.5px]">
+                  <thead>
+                    <tr className="bg-slate-100 border-b border-black font-bold leading-tight">
+                      <th className="py-1.5 px-1 normal-case w-[10%] border-r border-black">Trip #</th>
+                      <th className="py-1.5 px-1 normal-case w-[26%] border-r border-black">Corridor / Line</th>
+                      <th className="py-1.5 px-1 normal-case w-[10%] text-center border-r border-black">Stops</th>
+                      <th className="py-1.5 px-1 normal-case w-[16%] text-right border-r border-black">Product (USD)</th>
+                      <th className="py-1.5 px-1 normal-case w-[14%] text-right border-r border-black">Delivery Fee</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%] text-right border-r border-black">Cash USD</th>
+                      <th className="py-1.5 px-1 normal-case w-[12%] text-right">Whish USD</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black font-mono text-[10px]">
+                    {currentReportVehicle.tripsToday.map((t) => (
+                      <tr key={t.tripNumber}>
+                        <td className="py-1 px-1 font-bold border-r border-black">Trip {t.tripNumber}</td>
+                        <td className="py-1 px-1 font-sans border-r border-black">{t.corridorName}</td>
+                        <td className="py-1 px-1 text-center border-r border-black">{t.deliveredStops}/{t.totalStops}</td>
+                        <td className="py-1 px-1 text-right border-r border-black">${t.productValueUsd.toFixed(2)}</td>
+                        <td className="py-1 px-1 text-right border-r border-black">${t.deliveryFeesUsd.toFixed(2)}</td>
+                        <td className="py-1 px-1 text-right font-bold border-r border-black">${t.cashUsdCollected.toFixed(2)}</td>
+                        <td className="py-1 px-1 text-right font-bold text-purple-900">${t.whishUsdCollected.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-slate-100 font-bold border-t-2 border-black text-[10.5px]">
+                      <td colSpan={2} className="py-1.5 px-1 border-r border-black">CONSOLIDATED TOTALS</td>
+                      <td className="py-1.5 px-1 text-center border-r border-black">
+                        {currentReportVehicle.tripsToday.reduce((a, b) => a + b.deliveredStops, 0)} Stops
+                      </td>
+                      <td className="py-1.5 px-1 text-right border-r border-black">
+                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.productValueUsd, 0).toFixed(2)}
+                      </td>
+                      <td className="py-1.5 px-1 text-right border-r border-black">
+                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.deliveryFeesUsd, 0).toFixed(2)}
+                      </td>
+                      <td className="py-1.5 px-1 text-right border-r border-black font-bold">
+                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0).toFixed(2)}
+                      </td>
+                      <td className="py-1.5 px-1 text-right font-bold text-purple-900">
+                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.whishUsdCollected, 0).toFixed(2)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Reconciliation Adjustments & Allowance */}
+              <div className="border border-black rounded p-3 text-xs font-mono space-y-1.5 bg-slate-50">
+                <div className="flex justify-between items-center text-emerald-900 font-bold">
+                  <span>Total Delivery Fees Earned by Driver:</span>
+                  <span>+${currentReportVehicle.tripsToday.reduce((a, b) => a + b.deliveryFeesUsd, 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center text-blue-900 font-bold">
+                  <span>بند المساهمة المعتمد للشوفير (Driver Allowance Contribution):</span>
+                  <span>+${driverContributions[currentReportVehicle.driver] || 0}.00</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-black text-sm font-bold text-slate-900">
+                  <span>Net Cash Handed Over to SuperSonic Vault:</span>
+                  <span>
+                    ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0).toFixed(2)} Cash USD
+                    {currentReportVehicle.tripsToday.some((t) => t.cashLbpCollected > 0) && ' + 9,000,000 LBP'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Signatures Block */}
+              <div className="pt-10 flex justify-between items-end text-xs font-mono">
+                <div>
+                  <div>Driver Signature: _______________________</div>
+                  <span className="text-[10px] text-slate-500">I confirm physical and Whish handover of all above batches.</span>
+                </div>
+                <div className="text-right">
+                  <div>SuperSonic Treasury Officer: _______________________</div>
+                  <span className="text-[10px] text-slate-500">Reconciliation audit verified and posted to vault.</span>
+                </div>
+              </div>
+
+              <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between text-[10px] text-slate-500 font-mono">
+                <span>SuperSonic Fleet Master Engine</span>
+                <span>Southern Olive Oil Products S.A.R.L</span>
+                <span>Page 1 of 1</span>
+              </div>
+            </div>
           </div>
+
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* TAB 3: RADAR & TAB 4: POD ARCHIVES                                  */}
+      {/* =================================================================== */}
+      {activeTab === 'RADAR' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3 print:hidden">
+          <h3 className="text-sm font-bold text-slate-900">Live Satellite Radar Tracking</h3>
+          <p className="text-xs text-slate-500">Telemetry streaming from Choueifat Hub to active vehicles across all 7 corridors.</p>
+        </div>
+      )}
+
+      {activeTab === 'POD' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3 print:hidden">
+          <h3 className="text-sm font-bold text-slate-900">Proof of Delivery (POD) Digital Signatures & Photo Vault</h3>
+          <p className="text-xs text-slate-500">Audited customer signatures and goods receipt verification logs.</p>
         </div>
       )}
 
