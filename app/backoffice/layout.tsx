@@ -310,23 +310,29 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/fleet?tab=southern-olive" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🫒 Southern Olive Orders
                       </Link>
-                      <Link href="/backoffice/fleet?tab=3pl" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                      <Link href="/backoffice/fleet?tab=3pl-orders" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🏢 SuperSonic 3PL Orders
                       </Link>
+                      <Link href="/backoffice/fleet?tab=vendors" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🤝 Vendor & Merchant Accounts
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=accounting" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        💰 SuperSonic Accounting & Finance
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=hr" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        👔 SuperSonic HR & Staff Registry
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=complaints" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🎧 Customer Complaints & Care
+                      </Link>
                       <Link href="/backoffice/fleet?tab=settlements" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        💵 COD, Whish & Reports
+                        💵 COD, Whish & Settlements
                       </Link>
                       <Link href="/backoffice/fleet?tab=radar" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         📡 Live Fleet Radar & GPS
                       </Link>
                       <Link href="/backoffice/fleet?tab=pod" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         ✍️ Proof of Delivery (POD)
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=employees" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        👥 Employees & Drivers
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=complaints" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🎧 Complaints & Reviews
                       </Link>
                       <Link href="/backoffice/fleet?tab=vehicles" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🚐 Vehicles & Odometer Log
