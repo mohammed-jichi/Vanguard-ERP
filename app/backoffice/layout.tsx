@@ -304,8 +304,32 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.fleet && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/fleet" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/fleet') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Live Fleet Map & Dispatch
+                      <Link href="/backoffice/fleet?tab=dispatch" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        📋 7 Corridors & Dispatch
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=southern-olive" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🫒 Southern Olive Orders
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=3pl" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🏢 SuperSonic 3PL Orders
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=settlements" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        💵 COD, Whish & Reports
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=radar" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        📡 Live Fleet Radar & GPS
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=pod" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        ✍️ Proof of Delivery (POD)
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=employees" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        👥 Employees & Drivers
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=complaints" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🎧 Complaints & Reviews
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=vehicles" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🚐 Vehicles & Odometer Log
                       </Link>
                     </div>
                   )}

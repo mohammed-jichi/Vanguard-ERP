@@ -2,174 +2,195 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useLanguage, LanguageCode } from '@/context/LanguageContext';
+import { usePathname, useSearchParams } from 'next/navigation';
 
-export default function VanguardSidebar() {
-  const { language, setLanguage, t } = useLanguage();
-  const [operationsOpen, setOperationsOpen] = useState(true);
-  const [selectedBranch, setSelectedBranch] = useState('choueifat');
+export default function Sidebar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get('tab') || 'dispatch';
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    sales: true,
+    fleet: true, // Expanded by default
+    social: false,
+    operations: false,
+    customers: false,
+    accounting: false,
+    hr: false,
+  });
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   return (
-    <aside className="w-64 bg-[#141820] text-slate-300 border-r border-slate-800/80 flex flex-col h-screen select-none font-sans text-left">
+    <aside className="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col select-none text-xs font-sans print:hidden shrink-0 shadow-2xs">
       
-      {/* 1. Corporate Brand Header */}
-      <div className="p-3.5 border-b border-slate-800 bg-[#0f1218]">
-        <div className="text-[13px] font-bold text-white tracking-tight leading-tight">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="flex items-center justify-between mt-1.5">
-          <span className="text-[10px] text-amber-400 font-semibold font-mono">Vanguard ERP v2.6</span>
-          <div className="flex items-center gap-1 text-[10px] text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>{t('system_live', 'System Live')}</span>
-          </div>
-        </div>
+      {/* Sidebar Header */}
+      <div className="p-3.5 border-b border-slate-200 bg-slate-50/70">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Main Navigation Modules</span>
       </div>
 
-      {/* 2. Branch & Language Selectors */}
-      <div className="p-2.5 bg-[#181d26] border-b border-slate-800 space-y-2 text-xs">
-        {/* Branch Selector */}
-        <div>
-          <select
-            value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
-            className="w-full bg-[#10141b] text-slate-200 border border-slate-700 rounded px-2 py-1 text-[11px] font-medium focus:border-amber-500 focus:outline-none cursor-pointer"
-          >
-            <option value="choueifat">Choueifat Main Branch</option>
-            <option value="beirut">Beirut Branch</option>
-            <option value="pressing_plant">Central Pressing Plant</option>
-          </select>
-        </div>
-
-        {/* Global Language Selector (Default: English) */}
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-slate-400 font-medium">Language:</span>
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-            className="bg-[#10141b] text-amber-400 border border-slate-700 rounded px-2 py-0.5 text-[11px] font-bold focus:outline-none cursor-pointer"
-          >
-            <option value="en">English (Default)</option>
-            <option value="ar">العربية (Arabic)</option>
-            <option value="fr">Français (French)</option>
-            <option value="es">Español (Spanish)</option>
-            <option value="fa">فارسی (Persian)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* 3. 7 Core Navigation Modules (Clean - No Lock Icons) */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1 custom-scrollbar text-[12.5px]">
+      <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
         
-        {/* 1. Sales Control & POS */}
-        <Link 
-          href="/pos" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">🛒</span>
-            <span>{t('mod_sales_pos', '1. Sales Control & POS')}</span>
-          </div>
-          <span className="text-[10px] text-slate-500">›</span>
-        </Link>
-
-        {/* 2. SuperSonic Fleet Management (Clean - No Lock Icon) */}
-        <Link 
-          href="/backoffice/fleet" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">🚚</span>
-            <span>{t('mod_fleet', '2. SuperSonic Fleet Management')}</span>
-          </div>
-          <span className="text-[10px] text-slate-500">›</span>
-        </Link>
-
-        {/* 3. Social CRM & Support (Clean - No Lock Icon) */}
-        <Link 
-          href="/backoffice/social-crm" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">💬</span>
-            <span>{t('mod_social_crm', '3. Social CRM & Support')}</span>
-          </div>
-          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            ENT
-          </span>
-        </Link>
-
-        {/* 4. Operations & Pressing Center */}
-        <div className="pt-0.5">
+        {/* ================================================================= */}
+        {/* 1. SALES CONTROL & POS                                            */}
+        {/* ================================================================= */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
           <button
             type="button"
-            onClick={() => setOperationsOpen(!operationsOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-md font-bold text-amber-400 bg-slate-800/80 border-l-2 border-amber-500 transition-colors cursor-pointer"
+            onClick={() => toggleSection('sales')}
+            className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left"
           >
-            <div className="flex items-center gap-2.5">
-              <span className="w-4 text-center text-sm">⚙️</span>
-              <span>{t('mod_operations', '4. Operations & Pressing Center')}</span>
-            </div>
-            <span className={`text-[10px] transition-transform ${operationsOpen ? 'rotate-90' : ''}`}>›</span>
+            <span className="flex items-center gap-2">
+              <span>🛒</span>
+              <span>1. Sales Control & POS</span>
+            </span>
+            <span className="text-[10px] text-slate-400">{openSections.sales ? '▲' : '▼'}</span>
           </button>
 
-          {operationsOpen && (
-            <div className="pl-6 pr-1 py-1 space-y-0.5 border-l border-slate-700/50 ml-4 mt-1 text-[12px]">
-              <Link href="/backoffice/operations" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
-                {t('ops_dashboard', 'Operations Center Dashboard')}
+          {openSections.sales && (
+            <div className="p-1 space-y-0.5 bg-white border-t border-slate-100">
+              <Link href="/backoffice/dashboard" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                Dashboard Overview
               </Link>
-              <Link href="/backoffice/operations" className="w-full block py-1 px-2 rounded font-semibold text-amber-300 bg-amber-500/10 cursor-pointer">
-                {t('ops_olive_pressing', 'Olive Pressing & Production')}
+              <Link href="/backoffice/reportview" className="flex items-center justify-between px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                <span>Sales Reports Matrix</span>
+                <span className="px-1.5 py-0.2 bg-slate-200 text-slate-700 text-[9px] font-bold rounded">93 Rep</span>
               </Link>
-              <Link href="/backoffice/reportview" className="w-full block py-1 px-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer">
-                {t('ops_reports', 'Operations & Pressing Reports')}
+              <Link href="/backoffice/inbox" className="flex items-center justify-between px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                <span>Operations Inbox</span>
+                <span className="px-1.5 py-0.2 bg-amber-200 text-amber-900 text-[9px] font-bold rounded">2 New</span>
+              </Link>
+              <Link href="/backoffice/online-orders" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                Online Orders Control
+              </Link>
+              <Link href="/backoffice/end-of-day" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                End of Day (EOD) Z-Report
+              </Link>
+              <Link href="/pos" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-[11.5px]">
+                POS Touch Terminal ↗
               </Link>
             </div>
           )}
         </div>
 
-        {/* 5. Customer Management & AR */}
-        <Link 
-          href="/backoffice/customers" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">👥</span>
-            <span>{t('mod_customers_ar', '5. Customer Management & AR')}</span>
-          </div>
-          <span className="text-[10px] text-slate-500">›</span>
-        </Link>
+        {/* ================================================================= */}
+        {/* 2. SUPERSONIC FLEET (NOW FULLY EXPANDED WITH ALL SUB-SECTIONS!)   */}
+        {/* ================================================================= */}
+        <div className="border border-[#1e3a2b]/30 rounded-xl overflow-hidden bg-white shadow-2xs">
+          <button
+            type="button"
+            onClick={() => toggleSection('fleet')}
+            className="w-full px-3 py-2 bg-[#edf2ee] hover:bg-[#e4ebe5] flex items-center justify-between font-bold text-[#1e3a2b] text-xs text-left"
+          >
+            <span className="flex items-center gap-2">
+              <span>🚚</span>
+              <span>2. SuperSonic Fleet</span>
+            </span>
+            <span className="text-[10px] text-[#1e3a2b]">{openSections.fleet ? '▲' : '▼'}</span>
+          </button>
 
-        {/* 6. Accounting & Finance */}
-        <Link 
-          href="/backoffice/accounting" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">📊</span>
-            <span>{t('mod_accounting', '6. Accounting & Finance')}</span>
-          </div>
-          <span className="text-[10px] text-slate-500">›</span>
-        </Link>
+          {openSections.fleet && (
+            <div className="p-1 space-y-0.5 bg-white border-t border-slate-100">
+              <Link
+                href="/backoffice/fleet?tab=dispatch"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'dispatch' && pathname.includes('/fleet') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                📋 7 Corridors & Dispatch
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=southern-olive"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'southern-olive' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                🫒 Southern Olive Orders
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=3pl"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === '3pl' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                🏢 SuperSonic 3PL Orders
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=settlements"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'settlements' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                💵 COD, Whish & Reports
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=radar"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'radar' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                📡 Live Fleet Radar & GPS
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=pod"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'pod' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                ✍️ Proof of Delivery (POD)
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=employees"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'employees' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                👥 Employees & Drivers
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=complaints"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'complaints' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                🎧 Complaints & Reviews
+              </Link>
+              <Link
+                href="/backoffice/fleet?tab=vehicles"
+                className={`block px-3 py-1.5 rounded-lg text-[11.5px] font-medium transition-colors ${currentTab === 'vehicles' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
+              >
+                🚐 Vehicles & Odometer Log
+              </Link>
+            </div>
+          )}
+        </div>
 
-        {/* 7. HR & Payroll Management */}
-        <Link 
-          href="/backoffice/hr" 
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="w-4 text-center text-sm group-hover:text-amber-400">🪪</span>
-            <span>{t('mod_hr', '7. HR & Payroll Management')}</span>
-          </div>
-          <span className="text-[10px] text-slate-500">›</span>
-        </Link>
+        {/* 3. SOCIAL CRM */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
+          <button type="button" onClick={() => toggleSection('social')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
+            <span className="flex items-center gap-2"><span>💬</span><span>3. Social CRM & Support</span></span>
+            <span className="text-[10px] text-slate-400">{openSections.social ? '▲' : '▼'}</span>
+          </button>
+        </div>
 
-      </nav>
+        {/* 4. OPERATIONS & PRESSING */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
+          <button type="button" onClick={() => toggleSection('operations')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
+            <span className="flex items-center gap-2"><span>⚙️</span><span>4. Operations & Pressing</span></span>
+            <span className="text-[10px] text-slate-400">{openSections.operations ? '▲' : '▼'}</span>
+          </button>
+        </div>
 
-      {/* 4. Footer */}
-      <div className="p-2.5 bg-[#0d1015] border-t border-slate-800 text-[10.5px] text-slate-500 flex items-center justify-between">
-        <span>© 2026 Vanguard ERP</span>
-        <span className="font-mono text-slate-400">SO-SARL</span>
+        {/* 5. CUSTOMER MANAGEMENT */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
+          <button type="button" onClick={() => toggleSection('customers')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
+            <span className="flex items-center gap-2"><span>👥</span><span>5. Customer Management & AR</span></span>
+            <span className="text-[10px] text-slate-400">{openSections.customers ? '▲' : '▼'}</span>
+          </button>
+        </div>
+
+        {/* 6. ACCOUNTING */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
+          <button type="button" onClick={() => toggleSection('accounting')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
+            <span className="flex items-center gap-2"><span>📈</span><span>6. Accounting & Finance</span></span>
+            <span className="text-[10px] text-slate-400">{openSections.accounting ? '▲' : '▼'}</span>
+          </button>
+        </div>
+
+        {/* 7. HR */}
+        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
+          <button type="button" onClick={() => toggleSection('hr')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
+            <span className="flex items-center gap-2"><span>👔</span><span>7. HR & Payroll Management</span></span>
+            <span className="text-[10px] text-slate-400">{openSections.hr ? '▲' : '▼'}</span>
+          </button>
+        </div>
+
       </div>
 
     </aside>
