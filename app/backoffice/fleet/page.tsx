@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 
 // ============================================================================
-// TYPES & DATA STRUCTURES - SUPERSONIC FLEET & SOUTHERN OLIVE OIL PRODUCTS
+// TYPES & CORRIDORS - SUPERSONIC FLEET & SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
 // ============================================================================
 
-type FleetTab = 'DISPATCH' | 'RADAR' | 'TRIPS_SETTLEMENTS' | 'POD' | 'VEHICLES';
+type FleetView = 'DASHBOARD' | 'DISPATCH' | 'RADAR' | 'SETTLEMENTS' | 'POD' | 'VEHICLES';
 
 type VehicleCategory = 'VAN' | 'CAR' | 'MOTORCYCLE';
 
@@ -19,7 +19,6 @@ interface DriverTripBatch {
   totalStops: number;
   deliveredStops: number;
   productValueUsd: number;
-  productValueLbp: number;
   deliveryFeesUsd: number;
   cashUsdCollected: number;
   cashLbpCollected: number;
@@ -62,7 +61,6 @@ interface WhishSettlementSubmission {
   id: string;
   driverName: string;
   vehiclePlate: string;
-  amountLbp: number;
   amountUsd: number;
   whishReferenceNo: string;
   submittedAt: string;
@@ -70,11 +68,12 @@ interface WhishSettlementSubmission {
 }
 
 export default function SuperSonicFleetManagementPage() {
-  const [activeTab, setActiveTab] = useState<FleetTab>('DISPATCH');
+  // Master View Navigation (Defaults to Clean Dashboard Overview)
+  const [currentView, setCurrentView] = useState<FleetView>('DASHBOARD');
   const [selectedCorridorFilter, setSelectedCorridorFilter] = useState<number | 'ALL'>('ALL');
   const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
 
-  // Manual Driver Contribution State (بند المساهمة)
+  // Driver Allowance (المساهمة)
   const [driverContributions, setDriverContributions] = useState<Record<string, number>>({
     'Tony Khoury': 20.0,
     'Fadi Abou Assi': 25.0,
@@ -82,8 +81,8 @@ export default function SuperSonicFleetManagementPage() {
     'Ahmad Zein': 10.0,
   });
 
-  // Fleet Vehicles with Trip Sequences
-  const [vehicles, setVehicles] = useState<FleetVehicle[]>([
+  // Fleet Vehicles
+  const [vehicles] = useState<FleetVehicle[]>([
     {
       plate: 'B-492102',
       category: 'VAN',
@@ -95,9 +94,8 @@ export default function SuperSonicFleetManagementPage() {
       currentKm: 142165,
       reconciliationClosed: true,
       tripsToday: [
-        { tripNumber: 1, corridorName: 'المسار 1: بيروت الكبرى', totalStops: 6, deliveredStops: 6, productValueUsd: 350.0, productValueLbp: 9000000, deliveryFeesUsd: 24.0, cashUsdCollected: 250.0, cashLbpCollected: 9000000, whishUsdCollected: 100.0, status: 'RECONCILED' },
-        { tripNumber: 2, corridorName: 'المسار 2: الشوف وعاليه', totalStops: 4, deliveredStops: 4, productValueUsd: 210.0, productValueLbp: 0, deliveryFeesUsd: 16.0, cashUsdCollected: 110.0, cashLbpCollected: 0, whishUsdCollected: 100.0, status: 'RECONCILED' },
-        { tripNumber: 3, corridorName: 'المسار 1: ساحل المتن', totalStops: 3, deliveredStops: 2, productValueUsd: 180.0, productValueLbp: 0, deliveryFeesUsd: 12.0, cashUsdCollected: 180.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'IN_PROGRESS' },
+        { tripNumber: 1, corridorName: 'المسار 1: بيروت الكبرى', totalStops: 6, deliveredStops: 6, productValueUsd: 350.0, deliveryFeesUsd: 24.0, cashUsdCollected: 250.0, cashLbpCollected: 9000000, whishUsdCollected: 100.0, status: 'RECONCILED' },
+        { tripNumber: 2, corridorName: 'المسار 2: الشوف وعاليه', totalStops: 4, deliveredStops: 4, productValueUsd: 210.0, deliveryFeesUsd: 16.0, cashUsdCollected: 110.0, cashLbpCollected: 0, whishUsdCollected: 100.0, status: 'RECONCILED' },
       ],
     },
     {
@@ -111,7 +109,7 @@ export default function SuperSonicFleetManagementPage() {
       currentKm: 88480,
       reconciliationClosed: true,
       tripsToday: [
-        { tripNumber: 1, corridorName: 'المسار 2: جبل لبنان', totalStops: 5, deliveredStops: 5, productValueUsd: 400.0, productValueLbp: 0, deliveryFeesUsd: 20.0, cashUsdCollected: 400.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
+        { tripNumber: 1, corridorName: 'المسار 2: جبل لبنان', totalStops: 5, deliveredStops: 5, productValueUsd: 400.0, deliveryFeesUsd: 20.0, cashUsdCollected: 400.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
       ],
     },
     {
@@ -125,13 +123,24 @@ export default function SuperSonicFleetManagementPage() {
       currentKm: 12460,
       reconciliationClosed: true,
       tripsToday: [
-        { tripNumber: 1, corridorName: 'المسار 1: بيروت السريعة', totalStops: 3, deliveredStops: 3, productValueUsd: 90.0, productValueLbp: 0, deliveryFeesUsd: 9.0, cashUsdCollected: 90.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
-        { tripNumber: 2, corridorName: 'المسار 1: خلدة والضاحية', totalStops: 4, deliveredStops: 3, productValueUsd: 120.0, productValueLbp: 0, deliveryFeesUsd: 12.0, cashUsdCollected: 120.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'IN_PROGRESS' },
+        { tripNumber: 1, corridorName: 'المسار 1: بيروت السريعة', totalStops: 3, deliveredStops: 3, productValueUsd: 90.0, deliveryFeesUsd: 9.0, cashUsdCollected: 90.0, cashLbpCollected: 0, whishUsdCollected: 0.0, status: 'RECONCILED' },
       ],
+    },
+    {
+      plate: 'B-310928',
+      category: 'VAN',
+      model: 'Toyota HiAce Medium (Van 03)',
+      driver: 'Elie Matar',
+      assignedCorridor: 6,
+      status: 'OFF_DUTY',
+      startKm: 110200,
+      currentKm: 110290,
+      reconciliationClosed: false,
+      tripsToday: [],
     },
   ]);
 
-  // Dispatched Orders with Trip Identifiers
+  // Dispatched Orders
   const [orders] = useState<DispatchedOrder[]>([
     {
       id: 'ORD-103349',
@@ -158,7 +167,7 @@ export default function SuperSonicFleetManagementPage() {
       corridorId: 1,
       tripNo: 1,
       destinationTown: 'Metn - Sin El Fil',
-      addressDetails: 'Near Habtoor Grand Hotel',
+      addressDetails: 'Near Habtoor Hotel',
       items: '3x Apparel Dry Goods Packages',
       productAmountLbp: 3150000,
       productAmountUsd: 35,
@@ -186,13 +195,12 @@ export default function SuperSonicFleetManagementPage() {
     },
   ]);
 
-  // Whish Submissions Audit
+  // Whish Submissions
   const [whishSubmissions, setWhishSubmissions] = useState<WhishSettlementSubmission[]>([
     {
       id: 'WSH-0091',
       driverName: 'Tony Khoury',
       vehiclePlate: 'B-492102',
-      amountLbp: 0,
       amountUsd: 200,
       whishReferenceNo: 'WHISH-TX-9988124',
       submittedAt: 'Today 04:15 PM',
@@ -200,44 +208,9 @@ export default function SuperSonicFleetManagementPage() {
     },
   ]);
 
-  // Handlers
   const handleApproveWhish = (id: string) => {
     setWhishSubmissions((prev) => prev.map((w) => (w.id === id ? { ...w, status: 'APPROVED' } : w)));
-    alert(`✓ Whish Settlement #${id} Approved and verified into SuperSonic treasury.`);
-  };
-
-  const handlePushToFinancial = () => {
-    alert('🚀 Push Successful!\nDelivery sales batch pushed directly to Southern Olive Oil Products CFO Inbox (/backoffice/inbox).\nPending CFO review to post into official general ledgers.');
-  };
-
-  // CSV Export for Driver Daily Master Reconciliation
-  const handleExportCSV = (driverName: string) => {
-    const d = vehicles.find((v) => v.driver === driverName);
-    if (!d) return;
-
-    let csv = `\uFEFFCompany,SuperSonic Delivery Fleet & Logistics\nAffiliation,Southern Olive Oil Products S.A.R.L\nDriver,${d.driver}\nVehicle,${d.model} (${d.plate})\nDate,03-Sep-2026\nOdometer,${d.startKm} KM to ${d.currentKm} KM (Total: ${d.currentKm - d.startKm} KM)\n\n`;
-    csv += `Trip Number,Corridor / Zone,Total Stops,Delivered,Product Value USD,Delivery Fee USD,Cash USD,Cash LBP,Whish USD,Status\n`;
-
-    d.tripsToday.forEach((t) => {
-      csv += `Trip ${t.tripNumber},"${t.corridorName}",${t.totalStops},${t.deliveredStops},${t.productValueUsd},${t.deliveryFeesUsd},${t.cashUsdCollected},${t.cashLbpCollected},${t.whishUsdCollected},${t.status}\n`;
-    });
-
-    const totalProduct = d.tripsToday.reduce((a, b) => a + b.productValueUsd, 0);
-    const totalCashUsd = d.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0);
-    const totalCashLbp = d.tripsToday.reduce((a, b) => a + b.cashLbpCollected, 0);
-    const totalWhish = d.tripsToday.reduce((a, b) => a + b.whishUsdCollected, 0);
-
-    csv += `TOTALS,,${d.tripsToday.reduce((a, b) => a + b.totalStops, 0)},${d.tripsToday.reduce((a, b) => a + b.deliveredStops, 0)},${totalProduct},${d.tripsToday.reduce((a, b) => a + b.deliveryFeesUsd, 0)},${totalCashUsd},${totalCashLbp},${totalWhish},\n`;
-    csv += `\nDriver Contribution Allowance (المساهمة),+$${driverContributions[d.driver] || 0}\n`;
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `SuperSonic_Reconciliation_${driverName.replace(/\s+/g, '_')}_2026-09-03.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    alert(`✓ Whish Settlement #${id} Approved into SuperSonic treasury.`);
   };
 
   const currentReportVehicle = vehicles.find((v) => v.driver === selectedDriverForReport) || vehicles[0];
@@ -245,122 +218,224 @@ export default function SuperSonicFleetManagementPage() {
   return (
     <div className="w-full flex flex-col min-h-[calc(100vh-80px)] select-none text-left font-sans space-y-4 max-w-[1440px] mx-auto px-3 pb-10">
       
-      {/* BULLETPROOF INLINE A4 PRINT CSS */}
+      {/* BULLETPROOF PRINT CSS */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          @page {
-            size: A4 portrait;
-            margin: 0mm !important;
-          }
-          body {
-            background: #ffffff !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            visibility: hidden !important;
-          }
-          body * {
-            visibility: hidden !important;
-          }
-          header, aside, nav, button, input, select, .print-hidden, [class*="print:hidden"] {
-            display: none !important;
-            visibility: hidden !important;
-          }
-          #isolated-a4-print-sheet, #isolated-a4-print-sheet * {
-            visibility: visible !important;
-          }
+          @page { size: A4 portrait; margin: 0mm !important; }
+          body { background: #fff !important; margin: 0 !important; visibility: hidden !important; }
+          body * { visibility: hidden !important; }
+          header, aside, nav, button, input, select, .print-hidden { display: none !important; }
+          #isolated-a4-print-sheet, #isolated-a4-print-sheet * { visibility: visible !important; }
           #isolated-a4-print-sheet {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100vw !important;
-            min-height: 100vh !important;
-            margin: 0 !important;
-            padding: 12mm 15mm !important;
-            box-shadow: none !important;
-            border: none !important;
-            background: #ffffff !important;
-            display: block !important;
-            z-index: 999999 !important;
+            position: fixed !important; left: 0 !important; top: 0 !important; width: 100vw !important;
+            min-height: 100vh !important; margin: 0 !important; padding: 12mm 15mm !important;
+            background: #fff !important; display: block !important; z-index: 999999 !important;
           }
         }
       `}} />
 
-      {/* 1. TOP COMMAND BAR */}
+      {/* 1. TOP HEADER WITH BREADCRUMB & RETURN TO DASHBOARD */}
       <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-b border-slate-200 pb-3 print:hidden">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🚚</span>
-            <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
-              2. SuperSonic Fleet Management & Dispatch
-            </h1>
+        <div className="flex items-center gap-3">
+          {currentView !== 'DASHBOARD' && (
+            <button
+              type="button"
+              onClick={() => setCurrentView('DASHBOARD')}
+              className="px-3 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition-colors"
+            >
+              <span>◀ Back to Fleet Dashboard</span>
+            </button>
+          )}
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🚚</span>
+              <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
+                {currentView === 'DASHBOARD' && 'SuperSonic Fleet Management & Dispatch'}
+                {currentView === 'DISPATCH' && '7 Corridors & Regional Dispatch'}
+                {currentView === 'RADAR' && 'Live Fleet Radar & Telemetry'}
+                {currentView === 'SETTLEMENTS' && 'Driver Trips Master Reconciliation (A4 / PDF / CSV)'}
+                {currentView === 'POD' && 'Proof of Delivery (POD) Archives'}
+                {currentView === 'VEHICLES' && 'Fleet Vehicles & Odometer Log'}
+              </h1>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              المركز الرئيسي لشركة سوبر سونيك (Choueifat Gateway) — Southern Olive Oil Products S.A.R.L
+            </p>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            المركز الرئيسي لشركة سوبر سونيك (Choueifat Hub) — Multi-Trip Lifecycle (Trip 1, 2, 3...), Inter-Company Pushes, & Whish Reconciliation.
-          </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <button
-            type="button"
-            onClick={handlePushToFinancial}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors"
-          >
-            <span>🚀 Push to Financial Inbox</span>
-          </button>
           <span className="px-3 py-1 bg-[#edf2ee] text-[#1e3a2b] font-bold rounded-lg border border-[#1e3a2b]/30">
             00001 - Southern Olive Oil Products S.A.R.L
           </span>
           <Link href="/backoffice/dashboard" className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300">
-            🔄 Return to Hub
+            🔄 Return to Main ERP Hub
           </Link>
         </div>
       </div>
 
-      {/* 2. TABS CONTROLLER */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200 pb-1 text-xs font-bold print:hidden">
-        <button
-          type="button"
-          onClick={() => setActiveTab('DISPATCH')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'DISPATCH' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          📋 7 Corridors & Today's Orders
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('TRIPS_SETTLEMENTS')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'TRIPS_SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          📄 Driver Trips Master Reconciliation (A4 / PDF / CSV)
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('RADAR')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'RADAR' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          🗺️ Live Fleet Radar
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('POD')}
-          className={`px-4 py-2 rounded-xl transition-all ${activeTab === 'POD' ? 'bg-[#1e3a2b] text-white shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
-        >
-          ✍️ Proof of Delivery (POD)
-        </button>
-      </div>
+      {/* =================================================================== */}
+      {/* 2. MASTER DASHBOARD OVERVIEW (CLEAN CLICKABLE TILES - NO CLUTTER)   */}
+      {/* =================================================================== */}
+      {currentView === 'DASHBOARD' && (
+        <div className="space-y-6 pt-2">
+          
+          <div>
+            <h2 className="text-sm font-bold text-slate-900">SuperSonic Fleet Operations Overview</h2>
+            <p className="text-xs text-slate-500">Click on any operational card below to access its dedicated management workspace.</p>
+          </div>
 
-      {/* =================================================================== */}
-      {/* TAB 1: DISPATCH & CORRIDORS (SOUTHERN OLIVE + EXTERNAL 3PL MERGING) */}
-      {/* =================================================================== */}
-      {activeTab === 'DISPATCH' && (
-        <div className="space-y-4 print:hidden">
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Today's Merged Runs (Southern Olive + 3PL Orders)</h3>
-                <p className="text-[11px] text-slate-400">Orders grouped by the 7 Strategic Corridors with Trip Sequencing (Trip 1, 2, 3...).</p>
+          {/* Interactive Clickable Tiles Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            {/* Tile 1: 7 Corridors & Dispatch */}
+            <div
+              onClick={() => setCurrentView('DISPATCH')}
+              className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-[#1e3a2b] shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-[#1e3a2b] flex items-center justify-center text-2xl font-bold group-hover:scale-105 transition-transform">
+                  🗺️
+                </div>
+                <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  7 Corridors Active
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-[#1e3a2b] transition-colors">
+                  7 Corridors & Regional Dispatch
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Manage trips departing from Choueifat across Beirut, Mount Lebanon, South, North, and Bekaa.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Today's Orders: <strong>{orders.length} Runs</strong></span>
+                <span className="text-[#1e3a2b] font-bold group-hover:underline">Open Dispatch ➔</span>
               </div>
             </div>
 
+            {/* Tile 2: Trips Master Reconciliation & Whish */}
+            <div
+              onClick={() => setCurrentView('SETTLEMENTS')}
+              className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-blue-600 shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center text-2xl font-bold group-hover:scale-105 transition-transform">
+                  💵
+                </div>
+                <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
+                  Whish + COD
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                  Driver Trips Master Reconciliation
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Review multi-trip settlements (Trip 1, 2, 3...), driver allowances (المساهمة), and print A4/PDF/CSV reports.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Pending Whish: <strong className="text-purple-700">{whishSubmissions.length}</strong></span>
+                <span className="text-blue-700 font-bold group-hover:underline">Open Settlements ➔</span>
+              </div>
+            </div>
+
+            {/* Tile 3: Live Radar & GPS Telemetry */}
+            <div
+              onClick={() => setCurrentView('RADAR')}
+              className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-600 shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-2xl font-bold group-hover:scale-105 transition-transform">
+                  📡
+                </div>
+                <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200">
+                  Live Telemetry
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
+                  Live Fleet Radar & GPS Map
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Real-time GPS coordinates, vehicle speed, and off-duty pin locations for drivers in the field.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Active Drivers: <strong>{vehicles.filter(v => v.status !== 'OFF_DUTY').length}</strong></span>
+                <span className="text-indigo-700 font-bold group-hover:underline">Open Radar ➔</span>
+              </div>
+            </div>
+
+            {/* Tile 4: POD Digital Signatures & Photos */}
+            <div
+              onClick={() => setCurrentView('POD')}
+              className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-emerald-600 shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl font-bold group-hover:scale-105 transition-transform">
+                  ✍️
+                </div>
+                <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  Verified POD
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  Proof of Delivery (POD) Archives
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Examine on-screen customer signatures, camera photo attachments of delivered goods, and rejection reasons.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Delivery Success: <strong>100% Verified</strong></span>
+                <span className="text-emerald-700 font-bold group-hover:underline">View Archives ➔</span>
+              </div>
+            </div>
+
+            {/* Tile 5: Fleet Vehicles & Odometer Log */}
+            <div
+              onClick={() => setCurrentView('VEHICLES')}
+              className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-amber-600 shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between group"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-2xl font-bold group-hover:scale-105 transition-transform">
+                  🚐
+                </div>
+                <span className="text-[11px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                  Vans / Cars / Moto
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-base font-bold text-slate-900 group-hover:text-amber-700 transition-colors">
+                  Fleet Vehicles & Odometer Log
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Track start-of-day and end-of-day kilometers, maintenance intervals, and next-day route lockout enforcement.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Lockout: <strong className="text-rose-700">1 Pending</strong></span>
+                <span className="text-amber-700 font-bold group-hover:underline">Manage Fleet ➔</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 3. DEDICATED VIEW A: 7 CORRIDORS & REGIONAL DISPATCH                */}
+      {/* =================================================================== */}
+      {currentView === 'DISPATCH' && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+            <h3 className="text-sm font-bold text-slate-900">Today's Merged Runs (Southern Olive + 3PL Orders)</h3>
             <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
@@ -382,39 +457,25 @@ export default function SuperSonicFleetManagementPage() {
                       <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
                       <td className="py-2.5 px-3">
                         {order.sourceType === 'IN_HOUSE_SOUTHERN_OLIVE' ? (
-                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">
-                            🫒 Southern Olive In-House
-                          </span>
+                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">🫒 Southern Olive In-House</span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">
-                            🏢 External 3PL Merchant
-                          </span>
+                          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">🏢 External 3PL Merchant</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3">
                         <strong className="text-slate-900 block">{order.customerName}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
+                        <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown}</span>
                       </td>
-                      <td className="py-2.5 px-3 font-bold text-slate-800 font-mono">
-                        المسار {order.corridorId} {order.tripNo > 0 && <span className="text-purple-700">(Trip {order.tripNo})</span>}
-                      </td>
+                      <td className="py-2.5 px-3 font-bold text-slate-800 font-mono">المسار {order.corridorId} {order.tripNo > 0 && <span className="text-purple-700">(Trip {order.tripNo})</span>}</td>
                       <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                        {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
-                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}</td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-blue-700">${order.deliveryFeeUsd}</td>
-                      <td className="py-2.5 px-3 text-center font-mono">
-                        {order.assignedVehiclePlate !== '-' ? `${order.assignedVehiclePlate} (${order.assignedDriver})` : '-'}
-                      </td>
+                      <td className="py-2.5 px-3 text-center font-mono">{order.assignedVehiclePlate !== '-' ? `${order.assignedVehiclePlate} (${order.assignedDriver})` : '-'}</td>
                       <td className="py-2.5 px-3 text-center">
                         {order.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <span className="px-2.5 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px]">
-                            🏪 Moved to POS Pickup (Read-Only)
-                          </span>
+                          <span className="px-2.5 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px]">🏪 Moved to POS Pickup (Read-Only)</span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                            {order.status}
-                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">{order.status}</span>
                         )}
                       </td>
                     </tr>
@@ -427,59 +488,32 @@ export default function SuperSonicFleetManagementPage() {
       )}
 
       {/* =================================================================== */}
-      {/* TAB 2: DRIVER TRIPS MASTER RECONCILIATION (A4 PRINT / PDF / CSV)    */}
+      {/* 4. DEDICATED VIEW B: DRIVER TRIPS MASTER RECONCILIATION             */}
       {/* =================================================================== */}
-      {activeTab === 'TRIPS_SETTLEMENTS' && (
+      {currentView === 'SETTLEMENTS' && (
         <div className="space-y-4">
-          
-          {/* Top Export Toolbar */}
           <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 print:hidden text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-700">Select Driver For Master Report:</span>
+              <span className="font-bold text-slate-700">Driver Report:</span>
               <select
                 value={selectedDriverForReport}
                 onChange={(e) => setSelectedDriverForReport(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none"
+                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900"
               >
                 {vehicles.map((v) => (
-                  <option key={v.driver} value={v.driver}>
-                    {v.driver} ({v.model})
-                  </option>
+                  <option key={v.driver} value={v.driver}>{v.driver} ({v.model})</option>
                 ))}
               </select>
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
-              >
-                <span>🖨️ Print A4 Report</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
-              >
-                <span>📄 Download as PDF</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleExportCSV(selectedDriverForReport)}
-                className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs flex items-center gap-1"
-              >
-                <span>📊 Export as CSV / Excel</span>
-              </button>
+              <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs">🖨️ Print A4 Report</button>
+              <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs">📄 Download as PDF</button>
             </div>
           </div>
 
-          {/* Printable A4 Master Reconciliation Sheet */}
           <div className="flex justify-center">
-            <div
-              id="isolated-a4-print-sheet"
-              className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none space-y-4"
-            >
+            <div id="isolated-a4-print-sheet" className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none space-y-4">
               <div className="flex justify-between items-start border-b-2 border-black pb-2">
                 <div>
                   <h2 className="text-lg font-extrabold tracking-tight">SUPERSONIC FLEET & LOGISTICS</h2>
@@ -491,66 +525,41 @@ export default function SuperSonicFleetManagementPage() {
                 </div>
               </div>
 
-              {/* Driver Metadata Matrix */}
               <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-3 rounded border border-slate-200">
                 <div><strong>Driver Name:</strong> {currentReportVehicle.driver}</div>
                 <div><strong>Vehicle / Category:</strong> {currentReportVehicle.model} ({currentReportVehicle.category})</div>
                 <div><strong>Plate Number:</strong> {currentReportVehicle.plate}</div>
                 <div><strong>Departure Point:</strong> المركز الرئيسي بالشويفات</div>
-                <div><strong>Odometer:</strong> Start: {currentReportVehicle.startKm.toLocaleString()} KM ➔ End: {currentReportVehicle.currentKm.toLocaleString()} KM</div>
-                <div><strong>Total Distance Today:</strong> {currentReportVehicle.currentKm - currentReportVehicle.startKm} KM (Roundtrip)</div>
+                <div><strong>Odometer:</strong> {currentReportVehicle.startKm.toLocaleString()} KM ➔ {currentReportVehicle.currentKm.toLocaleString()} KM (Total: {currentReportVehicle.currentKm - currentReportVehicle.startKm} KM)</div>
               </div>
 
-              {/* Trips Breakdown Table */}
-              <div>
-                <h4 className="font-bold text-xs mb-1.5">Sequential Trips Completed Today (Trip 1, Trip 2, Trip 3...)</h4>
-                <table className="w-full table-fixed text-left border border-black border-collapse text-[10.5px]">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-black font-bold leading-tight">
-                      <th className="py-1.5 px-1 normal-case w-[10%] border-r border-black">Trip #</th>
-                      <th className="py-1.5 px-1 normal-case w-[26%] border-r border-black">Corridor / Line</th>
-                      <th className="py-1.5 px-1 normal-case w-[10%] text-center border-r border-black">Stops</th>
-                      <th className="py-1.5 px-1 normal-case w-[16%] text-right border-r border-black">Product (USD)</th>
-                      <th className="py-1.5 px-1 normal-case w-[14%] text-right border-r border-black">Delivery Fee</th>
-                      <th className="py-1.5 px-1 normal-case w-[12%] text-right border-r border-black">Cash USD</th>
-                      <th className="py-1.5 px-1 normal-case w-[12%] text-right">Whish USD</th>
+              <table className="w-full table-fixed text-left border border-black border-collapse text-[10.5px]">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-black font-bold">
+                    <th className="py-1.5 px-1 normal-case w-[10%] border-r border-black">Trip #</th>
+                    <th className="py-1.5 px-1 normal-case w-[28%] border-r border-black">Corridor / Line</th>
+                    <th className="py-1.5 px-1 normal-case w-[10%] text-center border-r border-black">Stops</th>
+                    <th className="py-1.5 px-1 normal-case w-[16%] text-right border-r border-black">Product ($)</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%] text-right border-r border-black">Delivery ($)</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%] text-right border-r border-black">Cash ($)</th>
+                    <th className="py-1.5 px-1 normal-case w-[12%] text-right">Whish ($)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black font-mono text-[10px]">
+                  {currentReportVehicle.tripsToday.map((t) => (
+                    <tr key={t.tripNumber}>
+                      <td className="py-1 px-1 font-bold border-r border-black">Trip {t.tripNumber}</td>
+                      <td className="py-1 px-1 font-sans border-r border-black">{t.corridorName}</td>
+                      <td className="py-1 px-1 text-center border-r border-black">{t.deliveredStops}/{t.totalStops}</td>
+                      <td className="py-1 px-1 text-right border-r border-black">${t.productValueUsd.toFixed(2)}</td>
+                      <td className="py-1 px-1 text-right border-r border-black">${t.deliveryFeesUsd.toFixed(2)}</td>
+                      <td className="py-1 px-1 text-right font-bold border-r border-black">${t.cashUsdCollected.toFixed(2)}</td>
+                      <td className="py-1 px-1 text-right font-bold text-purple-900">${t.whishUsdCollected.toFixed(2)}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-black font-mono text-[10px]">
-                    {currentReportVehicle.tripsToday.map((t) => (
-                      <tr key={t.tripNumber}>
-                        <td className="py-1 px-1 font-bold border-r border-black">Trip {t.tripNumber}</td>
-                        <td className="py-1 px-1 font-sans border-r border-black">{t.corridorName}</td>
-                        <td className="py-1 px-1 text-center border-r border-black">{t.deliveredStops}/{t.totalStops}</td>
-                        <td className="py-1 px-1 text-right border-r border-black">${t.productValueUsd.toFixed(2)}</td>
-                        <td className="py-1 px-1 text-right border-r border-black">${t.deliveryFeesUsd.toFixed(2)}</td>
-                        <td className="py-1 px-1 text-right font-bold border-r border-black">${t.cashUsdCollected.toFixed(2)}</td>
-                        <td className="py-1 px-1 text-right font-bold text-purple-900">${t.whishUsdCollected.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                    <tr className="bg-slate-100 font-bold border-t-2 border-black text-[10.5px]">
-                      <td colSpan={2} className="py-1.5 px-1 border-r border-black">CONSOLIDATED TOTALS</td>
-                      <td className="py-1.5 px-1 text-center border-r border-black">
-                        {currentReportVehicle.tripsToday.reduce((a, b) => a + b.deliveredStops, 0)} Stops
-                      </td>
-                      <td className="py-1.5 px-1 text-right border-r border-black">
-                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.productValueUsd, 0).toFixed(2)}
-                      </td>
-                      <td className="py-1.5 px-1 text-right border-r border-black">
-                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.deliveryFeesUsd, 0).toFixed(2)}
-                      </td>
-                      <td className="py-1.5 px-1 text-right border-r border-black font-bold">
-                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0).toFixed(2)}
-                      </td>
-                      <td className="py-1.5 px-1 text-right font-bold text-purple-900">
-                        ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.whishUsdCollected, 0).toFixed(2)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
 
-              {/* Reconciliation Adjustments & Allowance */}
               <div className="border border-black rounded p-3 text-xs font-mono space-y-1.5 bg-slate-50">
                 <div className="flex justify-between items-center text-emerald-900 font-bold">
                   <span>Total Delivery Fees Earned by Driver:</span>
@@ -560,52 +569,46 @@ export default function SuperSonicFleetManagementPage() {
                   <span>بند المساهمة المعتمد للشوفير (Driver Allowance Contribution):</span>
                   <span>+${driverContributions[currentReportVehicle.driver] || 0}.00</span>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t border-black text-sm font-bold text-slate-900">
-                  <span>Net Cash Handed Over to SuperSonic Vault:</span>
-                  <span>
-                    ${currentReportVehicle.tripsToday.reduce((a, b) => a + b.cashUsdCollected, 0).toFixed(2)} Cash USD
-                    {currentReportVehicle.tripsToday.some((t) => t.cashLbpCollected > 0) && ' + 9,000,000 LBP'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Signatures Block */}
-              <div className="pt-10 flex justify-between items-end text-xs font-mono">
-                <div>
-                  <div>Driver Signature: _______________________</div>
-                  <span className="text-[10px] text-slate-500">I confirm physical and Whish handover of all above batches.</span>
-                </div>
-                <div className="text-right">
-                  <div>SuperSonic Treasury Officer: _______________________</div>
-                  <span className="text-[10px] text-slate-500">Reconciliation audit verified and posted to vault.</span>
-                </div>
-              </div>
-
-              <div className="absolute bottom-6 left-8 right-8 border-t border-black pt-2 flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>SuperSonic Fleet Master Engine</span>
-                <span>Southern Olive Oil Products S.A.R.L</span>
-                <span>Page 1 of 1</span>
               </div>
             </div>
           </div>
-
         </div>
       )}
 
       {/* =================================================================== */}
-      {/* TAB 3: RADAR & TAB 4: POD ARCHIVES                                  */}
+      {/* 5. DEDICATED VIEW C: RADAR & POD & VEHICLES                         */}
       {/* =================================================================== */}
-      {activeTab === 'RADAR' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3 print:hidden">
-          <h3 className="text-sm font-bold text-slate-900">Live Satellite Radar Tracking</h3>
-          <p className="text-xs text-slate-500">Telemetry streaming from Choueifat Hub to active vehicles across all 7 corridors.</p>
+      {currentView === 'RADAR' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center space-y-2">
+          <span className="text-3xl">📡</span>
+          <h3 className="text-base font-bold text-slate-900">Live Satellite Fleet Radar & Telemetry</h3>
+          <p className="text-xs text-slate-500">Live coordinates streaming from active vans to the central SuperSonic hub in Choueifat.</p>
         </div>
       )}
 
-      {activeTab === 'POD' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3 print:hidden">
-          <h3 className="text-sm font-bold text-slate-900">Proof of Delivery (POD) Digital Signatures & Photo Vault</h3>
-          <p className="text-xs text-slate-500">Audited customer signatures and goods receipt verification logs.</p>
+      {currentView === 'POD' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center space-y-2">
+          <span className="text-3xl">✍️</span>
+          <h3 className="text-base font-bold text-slate-900">Proof of Delivery (POD) Digital Archive</h3>
+          <p className="text-xs text-slate-500">Searchable electronic signatures, photo verifications, and delivery time stamps.</p>
+        </div>
+      )}
+
+      {currentView === 'VEHICLES' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
+          <h3 className="text-sm font-bold text-slate-900">Fleet Vehicles & Odometer Log</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {vehicles.map((v) => (
+              <div key={v.plate} className="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs font-mono space-y-1">
+                <div className="flex justify-between font-bold">
+                  <span>{v.model}</span>
+                  <span className="text-[#1e3a2b]">{v.category}</span>
+                </div>
+                <div className="text-slate-500">Plate: {v.plate} | Driver: {v.driver}</div>
+                <div className="text-blue-700 font-bold">Total Mileage: {v.currentKm.toLocaleString()} KM</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
