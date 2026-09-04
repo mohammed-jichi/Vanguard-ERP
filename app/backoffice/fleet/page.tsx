@@ -123,6 +123,51 @@ function SuperSonicFleetContent() {
   // En-Route Waypoint Modal State (e.g. Taking Aramoun/Bchamoun/Dahieh on Southbound Runs)
   const [showEnRouteModal, setShowEnRouteModal] = useState(false);
 
+  // Order Sub-Tabs State for Southern Olive & 3PL
+  const [soFilterTab, setSoFilterTab] = useState<'ACTIVE' | 'DELIVERED' | 'REJECTED' | 'POSTPONED'>('ACTIVE');
+  const [tplFilterTab, setTplFilterTab] = useState<'ACTIVE' | 'DELIVERED' | 'REJECTED' | 'POSTPONED'>('ACTIVE');
+
+  // Postponed Reschedule Modal State
+  const [postponeModalOrder, setPostponeModalOrder] = useState<DispatchedOrder | null>(null);
+  const [rescheduledDateInput, setRescheduledDateInput] = useState<string>('2026-09-05');
+
+  // Auto-return postponed orders to Active Feed when target date matches today or earlier
+  useEffect(() => {
+    const todayStr = '2026-09-04';
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.status === 'PENDING' && o.deliveredAt?.startsWith('Postponed to ')) {
+          const targetDate = o.deliveredAt.replace('Postponed to ', '').trim();
+          if (targetDate <= todayStr) {
+            return {
+              ...o,
+              status: 'QUEUED',
+              deliveredAt: undefined,
+            };
+          }
+        }
+        return o;
+      })
+    );
+  }, []);
+
+  const handleConfirmPostpone = () => {
+    if (!postponeModalOrder) return;
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === postponeModalOrder.id
+          ? {
+              ...o,
+              status: 'PENDING',
+              deliveredAt: `Postponed to ${rescheduledDateInput}`,
+            }
+          : o
+      )
+    );
+    alert(`✓ Order #${postponeModalOrder.orderNo} postponed to ${rescheduledDateInput}.\nIt will move to the Postponed tab and auto-reappear in Active Feed on that date.`);
+    setPostponeModalOrder(null);
+  };
+
   // Pre-select current corridor orders by default
   const currentCorridorOrders = orders.filter(
     (o) => o.corridorId === selectedCorridorId && o.status !== 'MOVED_TO_POS_PICKUP'
@@ -350,89 +395,151 @@ function SuperSonicFleetContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* 1. SOUTHERN OLIVE ORDERS (CLEAN INCOMING FEED)                      */}
+      {/* 1. SOUTHERN OLIVE ORDERS (RE-ORDERED COLUMNS & 4 FILTER TABS)       */}
       {/* =================================================================== */}
       {activeTab === 'southern-olive' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-          <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+          
+          {/* Header & Sub-Tabs */}
+          <div className="flex flex-wrap justify-between items-center border-b border-slate-100 pb-3 gap-2">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Incoming Orders Feed — Southern Olive Oil Products S.A.R.L</h3>
-              <p className="text-[11px] text-slate-400">
-                New online/CRM orders awaiting delivery dispatch. Management can switch fulfillment between Fleet Delivery and Showroom POS Pickup.
-              </p>
+              <h3 className="text-sm font-bold text-slate-900">Southern Olive Oil Products S.A.R.L Dedicated Inflow</h3>
+              <p className="text-[11px] text-slate-400">Manage in-house production orders. Switch tabs to review active, delivered, rejected, or postponed orders.</p>
             </div>
-            <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">
-              {orders.filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED').length} Active Inflow
-            </span>
+
+            {/* 4 Status Tabs */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setSoFilterTab('ACTIVE')}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${soFilterTab === 'ACTIVE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                📥 Active Incoming Feed ({orders.filter(o => o.sourceType === 'SOUTHERN_OLIVE' && (o.status === 'QUEUED' || o.status === 'ON_ROUTE' || o.status === 'MOVED_TO_POS_PICKUP')).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSoFilterTab('DELIVERED')}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${soFilterTab === 'DELIVERED' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                ✅ Delivered ({orders.filter(o => o.sourceType === 'SOUTHERN_OLIVE' && o.status === 'DELIVERED').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSoFilterTab('REJECTED')}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${soFilterTab === 'REJECTED' ? 'bg-rose-700 text-white shadow-xs' : 'text-rose-700 hover:bg-rose-100'}`}
+              >
+                ❌ Rejected ({orders.filter(o => o.sourceType === 'SOUTHERN_OLIVE' && o.status === 'REJECTED').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSoFilterTab('POSTPONED')}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${soFilterTab === 'POSTPONED' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                ⏳ Postponed ({orders.filter(o => o.sourceType === 'SOUTHERN_OLIVE' && o.status === 'PENDING').length})
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">order no.</th>
-                  <th className="py-2.5 px-3 normal-case">customer & phone</th>
-                  <th className="py-2.5 px-3 normal-case">destination town & address</th>
-                  <th className="py-2.5 px-3 normal-case">packing items & packaging</th>
-                  <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                  <th className="py-2.5 px-3 normal-case">order date</th>
+                  <th className="py-2.5 px-3 normal-case">order number</th>
                   <th className="py-2.5 px-3 normal-case">sales rep</th>
-                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status & actions</th>
+                  <th className="py-2.5 px-3 normal-case">customer details</th>
+                  <th className="py-2.5 px-3 normal-case">destination details</th>
+                  <th className="py-2.5 px-3 normal-case">packaging details</th>
+                  <th className="py-2.5 px-3 normal-case text-right">value</th>
+                  <th className="py-2.5 px-3 normal-case text-center">status</th>
+                  <th className="py-2.5 px-3 normal-case text-center">action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
                 {orders
-                  .filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED')
+                  .filter((o) => {
+                    if (o.sourceType !== 'SOUTHERN_OLIVE') return false;
+                    if (soFilterTab === 'ACTIVE') return o.status === 'QUEUED' || o.status === 'ON_ROUTE' || o.status === 'MOVED_TO_POS_PICKUP';
+                    if (soFilterTab === 'DELIVERED') return o.status === 'DELIVERED';
+                    if (soFilterTab === 'REJECTED') return o.status === 'REJECTED';
+                    if (soFilterTab === 'POSTPONED') return o.status === 'PENDING';
+                    return true;
+                  })
                   .map((o) => (
                     <tr
                       key={o.id}
-                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
+                      className={o.status === 'REJECTED' ? 'bg-rose-50/70' : o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
                     >
+                      {/* 1. Order Date */}
+                      <td className="py-2.5 px-3 font-mono text-[11px] text-slate-500">2026-09-04</td>
+
+                      {/* 2. Order Number */}
                       <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+
+                      {/* 3. Sales Rep (Directly beside Order Number) */}
+                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName || '-'}</td>
+
+                      {/* 4. Customer Details */}
                       <td className="py-2.5 px-3">
                         <strong className="text-slate-900 block">{o.customerName}</strong>
                         <span className="text-[10px] text-slate-500 font-mono">{o.phone}</span>
                       </td>
+
+                      {/* 5. Destination Details */}
                       <td className="py-2.5 px-3">
                         <span className="text-slate-800 block font-bold">{o.destinationTown}</span>
                         <span className="text-[10px] text-slate-500 font-mono">{o.addressDetails}</span>
                       </td>
+
+                      {/* 6. Packaging Details */}
                       <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
+
+                      {/* 7. Value */}
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
                         {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
                       </td>
-                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
-                      
-                      {/* CLEAN FULFILLMENT STATUS & ACTIONS */}
+
+                      {/* 8. Status (Highlight Red if Rejected) */}
                       <td className="py-2.5 px-3 text-center">
-                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
-                              <span>🏪</span> Moved to POS (Read-Only)
-                            </span>
+                        {o.status === 'DELIVERED' && <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">delivered</span>}
+                        {o.status === 'REJECTED' && <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-bold text-[10px] shadow-xs animate-pulse">rejected</span>}
+                        {o.status === 'PENDING' && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">postponed</span>}
+                        {o.status === 'MOVED_TO_POS_PICKUP' && <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold text-[10px]">moved to POS pickup</span>}
+                        {(o.status === 'QUEUED' || o.status === 'ON_ROUTE') && <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">active for delivery</span>}
+                      </td>
+
+                      {/* 9. Action */}
+                      <td className="py-2.5 px-3 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {o.status === 'MOVED_TO_POS_PICKUP' ? (
                             <button
                               type="button"
-                              onClick={() => handleReturnToDelivery(o.id, 'REPRESENTATIVE', 'REP-002', o.repName || 'Sales Rep')}
-                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors"
-                              title="Revert back to Fleet Delivery"
+                              onClick={() => handleReturnToDelivery(o.id)}
+                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
                             >
                               🚚 Return to Delivery
                             </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                              Active for Delivery
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveToPosPickup(o.id, 'MANAGEMENT', 'MGR-01', 'Operations Desk')}
-                              className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors"
-                              title="Customer prefers in-store pickup at Showroom"
-                            >
-                              🏪 Move to POS Pickup
-                            </button>
-                          </div>
-                        )}
+                          ) : o.status === 'QUEUED' || o.status === 'ON_ROUTE' ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveToPosPickup(o.id)}
+                                className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200"
+                              >
+                                🏪 Move to POS
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPostponeModalOrder(o)}
+                                className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded text-[10px] border border-amber-200"
+                              >
+                                ⏳ Postpone
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-slate-400 text-[10px] font-mono">-</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -707,46 +814,139 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 4. SUPERSONIC 3PL ORDERS                                            */}
+      {/* 2. SUPERSONIC 3PL ORDERS (MATCHING 4 TABS & STRUCTURE)              */}
       {/* =================================================================== */}
       {activeTab === '3pl-orders' && (
-        <div className="space-y-4">
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex justify-between items-center">
-            <span>💡 <strong>3PL Commercial Orders:</strong> External merchant packages. Delivery fees are flexible and editable per package.</span>
-            <button type="button" onClick={() => setShowAdd3PLModal(true)} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white rounded-lg font-bold shadow-xs">
-              ➕ Add 3PL Package
-            </button>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+          
+          {/* Header & Sub-Tabs */}
+          <div className="flex flex-wrap justify-between items-center border-b border-slate-100 pb-3 gap-2">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">SuperSonic 3PL Commercial Orders</h3>
+              <p className="text-[11px] text-slate-400">External merchant shipments. Delivery fees and COD payouts remain isolated inside SuperSonic.</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* 4 Status Tabs */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setTplFilterTab('ACTIVE')}
+                  className={`px-3 py-1.5 rounded-lg transition-colors ${tplFilterTab === 'ACTIVE' ? 'bg-blue-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  📥 Active Feed ({orders.filter(o => o.sourceType === 'EXTERNAL_3PL' && (o.status === 'QUEUED' || o.status === 'ON_ROUTE')).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTplFilterTab('DELIVERED')}
+                  className={`px-3 py-1.5 rounded-lg transition-colors ${tplFilterTab === 'DELIVERED' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  ✅ Delivered ({orders.filter(o => o.sourceType === 'EXTERNAL_3PL' && o.status === 'DELIVERED').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTplFilterTab('REJECTED')}
+                  className={`px-3 py-1.5 rounded-lg transition-colors ${tplFilterTab === 'REJECTED' ? 'bg-rose-700 text-white shadow-xs' : 'text-rose-700 hover:bg-rose-100'}`}
+                >
+                  ❌ Rejected ({orders.filter(o => o.sourceType === 'EXTERNAL_3PL' && o.status === 'REJECTED').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTplFilterTab('POSTPONED')}
+                  className={`px-3 py-1.5 rounded-lg transition-colors ${tplFilterTab === 'POSTPONED' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  ⏳ Postponed ({orders.filter(o => o.sourceType === 'EXTERNAL_3PL' && o.status === 'PENDING').length})
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAdd3PLModal(true)}
+                className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-xs"
+              >
+                ➕ Add 3PL Package
+              </button>
+            </div>
           </div>
 
-          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl bg-white p-4">
+          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">waybill #</th>
-                  <th className="py-2.5 px-3 normal-case">merchant</th>
-                  <th className="py-2.5 px-3 normal-case">recipient & town</th>
-                  <th className="py-2.5 px-3 normal-case">cargo description</th>
-                  <th className="py-2.5 px-3 normal-case text-right">cod cash</th>
-                  <th className="py-2.5 px-3 normal-case text-center">delivery fee ($)</th>
+                  <th className="py-2.5 px-3 normal-case">order date</th>
+                  <th className="py-2.5 px-3 normal-case">order numbers</th>
+                  <th className="py-2.5 px-3 normal-case">vendor details</th>
+                  <th className="py-2.5 px-3 normal-case">customer details</th>
+                  <th className="py-2.5 px-3 normal-case">destination details</th>
+                  <th className="py-2.5 px-3 normal-case">packaging details</th>
+                  <th className="py-2.5 px-3 normal-case text-right">value</th>
                   <th className="py-2.5 px-3 normal-case text-center">status</th>
+                  <th className="py-2.5 px-3 normal-case text-center">action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                {orders.filter(o => o.sourceType === 'EXTERNAL_3PL').map(o => (
-                  <tr key={o.id}>
-                    <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
-                    <td className="py-2.5 px-3 font-bold text-slate-900">{o.customerName}</td>
-                    <td className="py-2.5 px-3">{o.destinationTown}</td>
-                    <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
-                    <td className="py-2.5 px-3 text-center">
-                      <span className="font-mono font-bold text-blue-700">${o.deliveryFeeUsd}</span>
-                    </td>
-                    <td className="py-2.5 px-3 text-center">
-                      <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
-                    </td>
-                  </tr>
-                ))}
+                {orders
+                  .filter((o) => {
+                    if (o.sourceType !== 'EXTERNAL_3PL') return false;
+                    if (tplFilterTab === 'ACTIVE') return o.status === 'QUEUED' || o.status === 'ON_ROUTE';
+                    if (tplFilterTab === 'DELIVERED') return o.status === 'DELIVERED';
+                    if (tplFilterTab === 'REJECTED') return o.status === 'REJECTED';
+                    if (tplFilterTab === 'POSTPONED') return o.status === 'PENDING';
+                    return true;
+                  })
+                  .map((o) => (
+                    <tr key={o.id} className={o.status === 'REJECTED' ? 'bg-rose-50/70' : 'hover:bg-slate-50'}>
+                      {/* 1. Order Date */}
+                      <td className="py-2.5 px-3 font-mono text-[11px] text-slate-500">2026-09-04</td>
+
+                      {/* 2. Order Numbers */}
+                      <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
+
+                      {/* 3. Vendor Details */}
+                      <td className="py-2.5 px-3 font-bold text-slate-900">{o.customerName}</td>
+
+                      {/* 4. Customer Details */}
+                      <td className="py-2.5 px-3 font-mono text-slate-600">{o.phone}</td>
+
+                      {/* 5. Destination Details */}
+                      <td className="py-2.5 px-3">
+                        <span className="text-slate-800 block font-bold">{o.destinationTown}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{o.addressDetails}</span>
+                      </td>
+
+                      {/* 6. Packaging Details */}
+                      <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
+
+                      {/* 7. Value */}
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        ${o.productAmountUsd.toFixed(2)}
+                        <span className="text-blue-700 block text-[10px]">Fee: ${o.deliveryFeeUsd}</span>
+                      </td>
+
+                      {/* 8. Status (Highlight Red if Rejected) */}
+                      <td className="py-2.5 px-3 text-center">
+                        {o.status === 'DELIVERED' && <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">delivered</span>}
+                        {o.status === 'REJECTED' && <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-bold text-[10px] shadow-xs animate-pulse">rejected</span>}
+                        {o.status === 'PENDING' && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">postponed</span>}
+                        {(o.status === 'QUEUED' || o.status === 'ON_ROUTE') && <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">active for delivery</span>}
+                      </td>
+
+                      {/* 9. Action */}
+                      <td className="py-2.5 px-3 text-center">
+                        {o.status === 'QUEUED' || o.status === 'ON_ROUTE' ? (
+                          <button
+                            type="button"
+                            onClick={() => setPostponeModalOrder(o)}
+                            className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded text-[10px] border border-amber-200"
+                          >
+                            ⏳ Postpone
+                          </button>
+                        ) : (
+                          <span className="text-slate-400 text-[10px] font-mono">-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -1427,6 +1627,46 @@ function SuperSonicFleetContent() {
             <div className="flex gap-2 pt-2">
               <button type="button" onClick={() => { alert('3PL Package Saved!'); setShowAdd3PLModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save</button>
               <button type="button" onClick={() => setShowAdd3PLModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: POSTPONE ORDER TO SPECIFIC DATE */}
+      {postponeModalOrder && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-xs space-y-3.5 shadow-2xl">
+            <h3 className="font-bold text-sm text-slate-900">Postpone Order #{postponeModalOrder.orderNo}</h3>
+            <p className="text-slate-600">
+              Customer: <strong>{postponeModalOrder.customerName}</strong> ({postponeModalOrder.phone})
+            </p>
+            <div>
+              <label className="font-bold block mb-1 text-slate-700">Reschedule for Target Date:</label>
+              <input
+                type="date"
+                value={rescheduledDateInput}
+                onChange={(e) => setRescheduledDateInput(e.target.value)}
+                className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-mono text-slate-800"
+              />
+              <span className="text-[10px] text-slate-400 block mt-1">
+                Order will move to "Postponed" tab and automatically return to Active Feed on this date.
+              </span>
+            </div>
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={handleConfirmPostpone}
+                className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl"
+              >
+                Confirm Postpone
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostponeModalOrder(null)}
+                className="py-2 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
