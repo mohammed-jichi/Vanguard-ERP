@@ -400,149 +400,130 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 2. CORRIDORS & DISPATCH: DROPDOWN + AUTO TRIP # + MOVE CORRIDOR     */}
+      {/* 1. CORRIDORS & DISPATCH: INLINE DRIVER ASSIGNMENT & SAVE ROUTES     */}
       {/* =================================================================== */}
-      {activeTab === 'dispatch' && (
-        <div className="space-y-4">
-          
-          {/* Corridor Dropdown Selector & Driver Assignment Toolbar */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <label className="text-xs font-bold text-slate-700">Select Highway Corridor:</label>
-                <select
-                  value={selectedCorridorId}
-                  onChange={(e) => setSelectedCorridorId(parseInt(e.target.value))}
-                  className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 text-xs focus:outline-none min-w-[340px]"
-                >
-                  {corridors.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      Corridor {c.id}: {c.name.split(': ')[1] || c.name} ({c.schedule})
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {activeTab === 'dispatch' && (() => {
+        // Master Save Routes Action: Groups orders by driver and splits into Route Cards
+        const handleSaveRoutes = () => {
+          const assignedInCorridor = currentCorridorOrders.filter(
+            (o) => o.assignedDriver && o.assignedDriver !== '-' && o.assignedDriver !== 'UNASSIGNED'
+          );
 
-              <div className="text-xs text-slate-500 font-mono">
-                Highway Path: <strong className="text-slate-800">{corridors.find(c => c.id === selectedCorridorId)?.highwayPath}</strong>
-              </div>
-            </div>
+          if (assignedInCorridor.length === 0) {
+            alert('Please assign at least one package to a driver using the dropdown before saving routes!');
+            return;
+          }
 
-            {/* ASSIGNMENT BAR WITH AUTO-RESOLVED VEHICLE & AUTO-TRIP SEQUENCING */}
-            {(() => {
-              const selectedDriverObj = staffList.find((s) => s.fullName === assignDriver);
-              const autoResolvedVehicle = selectedDriverObj?.assignedAsset || 'Toyota HiAce (B-492102)';
+          // Group orders by assigned driver
+          const driverGroups: Record<string, DispatchedOrder[]> = {};
+          assignedInCorridor.forEach((o) => {
+            if (!driverGroups[o.assignedDriver]) driverGroups[o.assignedDriver] = [];
+            driverGroups[o.assignedDriver].push(o);
+          });
 
-              return (
-                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
-                  <div className="flex flex-wrap items-center gap-3">
-                    
-                    {/* Driver Selector with Phone Number */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs font-bold text-slate-700">Assign to Driver:</label>
-                      <select
-                        value={assignDriver}
-                        onChange={(e) => setAssignDriver(e.target.value)}
-                        className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none"
-                      >
-                        {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
-                          <option key={d.id} value={d.fullName}>
-                            {d.fullName} ({d.phone})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+          const currentCorridor = corridors.find((c) => c.id === selectedCorridorId);
+          const newCards: AssignedPathCard[] = [];
 
-                    {/* Automatic Vehicle Display (Pulled Directly from Driver's Profile) */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs font-bold text-slate-700">Registered Vehicle:</label>
-                      <span className="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1.5">
-                        <span>🚐</span>
-                        <span>{autoResolvedVehicle}</span>
-                      </span>
-                    </div>
+          Object.entries(driverGroups).forEach(([driverName, groupOrders]) => {
+            const driverObj = staffList.find((s) => s.fullName === driverName);
+            const vehiclePlate = (driverObj?.assignedAsset || 'B-492102').split(' ')[0];
+            const autoTripNo = getAutoTripNumberForDriver(driverName);
 
-                    {/* Automatic Trip Sequence */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
-                      <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
-                        <span>⚡</span>
-                        <span>Auto: Trip {autoCalculatedTripNo}</span>
-                      </span>
-                    </div>
+            newCards.push({
+              pathId: `ROUTE-C${selectedCorridorId}-${driverName.split(' ')[0]}-T${autoTripNo}-${Date.now().toString().slice(-4)}`,
+              corridorId: selectedCorridorId,
+              corridorName: currentCorridor?.name || `Corridor ${selectedCorridorId}`,
+              driverName: driverName,
+              vehiclePlate: vehiclePlate,
+              tripNo: autoTripNo,
+              status: 'READY_FOR_LOADING',
+              assignedAt: 'Just Now',
+              assignedOrders: groupOrders,
+            });
+          });
 
-                    <div className="text-xs font-mono text-slate-600 pl-2">
-                      Selected for Run: <strong className="text-[#1e3a2b]">{selectedOrderIds.length} orders</strong>
-                    </div>
-                  </div>
+          // Add to Route Cards
+          setPathCards((prev) => [...newCards, ...prev]);
 
-                  <button
-                    type="button"
-                    onClick={handleSaveAndAssignToDelivery}
-                    className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
+          // Update order statuses
+          const assignedIds = assignedInCorridor.map((o) => o.id);
+          setOrders((prev) =>
+            prev.map((o) =>
+              assignedIds.includes(o.id)
+                ? { ...o, status: 'QUEUED' }
+                : o
+            )
+          );
+
+          alert(`✓ Routes Saved! Automatically split into ${newCards.length} separate Route Card(s) by driver and moved to Route Cards!`);
+        };
+
+        return (
+          <div className="space-y-4">
+            
+            {/* Top Corridor Selector Toolbar (Clean & Simple) */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <label className="text-xs font-bold text-slate-700">Select Highway Corridor:</label>
+                  <select
+                    value={selectedCorridorId}
+                    onChange={(e) => setSelectedCorridorId(parseInt(e.target.value))}
+                    className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 text-xs focus:outline-none min-w-[340px]"
                   >
-                    <span>📦 Save & Load to Driver (Move to Route Cards)</span>
-                  </button>
+                    {corridors.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        Corridor {c.id}: {c.name.split(': ')[1] || c.name} ({c.schedule})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              );
-            })()}
-          </div>
 
-          {/* Incoming Packages Table with MOVE CORRIDOR ACTION */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">
-                  Packages Assigned to Corridor {selectedCorridorId} — Waiting for Driver Loading
-                </h3>
-                <p className="text-[11px] text-slate-400">
-                  Use "Move Corridor" on any row to transfer the package to another route.
-                </p>
+                <div className="text-xs text-slate-500 font-mono">
+                  Highway Path: <strong className="text-slate-800">{corridors.find(c => c.id === selectedCorridorId)?.highwayPath}</strong>
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={handleToggleSelectAll}
-                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-xs border border-slate-300 cursor-pointer"
-              >
-                {selectedOrderIds.length === currentCorridorOrders.length ? 'Deselect All' : 'Select All Packages'}
-              </button>
             </div>
 
-            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                    <th className="py-2.5 px-3 normal-case w-10 text-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedOrderIds.length > 0 && selectedOrderIds.length === currentCorridorOrders.length}
-                        onChange={handleToggleSelectAll}
-                        className="w-4 h-4 rounded text-[#1e3a2b] cursor-pointer"
-                      />
-                    </th>
-                    <th className="py-2.5 px-3 normal-case">order no.</th>
-                    <th className="py-2.5 px-3 normal-case">source entity</th>
-                    <th className="py-2.5 px-3 normal-case">customer & destination</th>
-                    <th className="py-2.5 px-3 normal-case">packing checklist</th>
-                    <th className="py-2.5 px-3 normal-case text-right">product val</th>
-                    <th className="py-2.5 px-3 normal-case text-center w-32">delivery fee ($) [manual]</th>
-                    <th className="py-2.5 px-3 normal-case text-center">actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                  {currentCorridorOrders.map((order) => {
-                    const isChecked = selectedOrderIds.includes(order.id);
-                    return (
-                      <tr key={order.id} className={isChecked ? 'bg-emerald-50/50' : 'hover:bg-slate-50'}>
-                        <td className="py-2.5 px-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => toggleOrderSelection(order.id)}
-                            className="w-4 h-4 rounded text-[#1e3a2b] cursor-pointer"
-                          />
-                        </td>
+            {/* Corridor Packages Table with Inline Driver Dropdown & Save Routes Button */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Corridor {selectedCorridorId} Orders Queue — Assign Drivers & Build Routes
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Assign each order to its driver individually. Click "Save Routes" to split and save separate Route Cards for each driver.
+                  </p>
+                </div>
+
+                {/* Master Save Routes Button */}
+                <button
+                  type="button"
+                  onClick={handleSaveRoutes}
+                  className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
+                >
+                  <span>💾 Save Routes (Split by Drivers ➔ Route Cards)</span>
+                </button>
+              </div>
+
+              <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                      <th className="py-2.5 px-3 normal-case">order no.</th>
+                      <th className="py-2.5 px-3 normal-case">source entity</th>
+                      <th className="py-2.5 px-3 normal-case">customer & destination</th>
+                      <th className="py-2.5 px-3 normal-case">packing checklist</th>
+                      <th className="py-2.5 px-3 normal-case text-right">product val</th>
+                      <th className="py-2.5 px-3 normal-case text-center w-28">delivery fee ($)</th>
+                      <th className="py-2.5 px-3 normal-case text-center w-48">assign to driver</th>
+                      <th className="py-2.5 px-3 normal-case text-center">actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+                    {currentCorridorOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-slate-50">
                         <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
                         <td className="py-2.5 px-3">
                           {order.sourceType === 'SOUTHERN_OLIVE' ? (
@@ -559,6 +540,8 @@ function SuperSonicFleetContent() {
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
                           {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
                         </td>
+                        
+                        {/* Manual Delivery Fee Input */}
                         <td className="py-2.5 px-3 text-center">
                           <div className="inline-flex items-center justify-center gap-1">
                             <span className="text-slate-400 font-mono text-xs">$</span>
@@ -571,31 +554,60 @@ function SuperSonicFleetContent() {
                             />
                           </div>
                         </td>
+
+                        {/* INLINE PER-ORDER DRIVER ASSIGNMENT DROPDOWN */}
+                        <td className="py-2.5 px-3 text-center">
+                          <select
+                            value={order.assignedDriver && order.assignedDriver !== '-' ? order.assignedDriver : 'UNASSIGNED'}
+                            onChange={(e) => {
+                              const chosenDriver = e.target.value;
+                              const driverObj = staffList.find((s) => s.fullName === chosenDriver);
+                              const vehicle = driverObj?.assignedAsset?.split(' ')[0] || '-';
+                              setOrders((prev) =>
+                                prev.map((o) =>
+                                  o.id === order.id
+                                    ? { ...o, assignedDriver: chosenDriver === 'UNASSIGNED' ? '-' : chosenDriver, vehiclePlate: vehicle }
+                                    : o
+                                )
+                              );
+                            }}
+                            className={`px-2 py-1 border rounded-lg text-xs font-bold transition-colors focus:outline-none ${order.assignedDriver && order.assignedDriver !== '-' ? 'bg-emerald-50 text-[#1e3a2b] border-emerald-300' : 'bg-white text-slate-600 border-slate-300'}`}
+                          >
+                            <option value="UNASSIGNED">-- Select Driver --</option>
+                            {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
+                              <option key={d.id} value={d.fullName}>
+                                {d.fullName} ({d.assignedAsset.split(' ')[0]})
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
                         <td className="py-2.5 px-3 text-center">
                           <button
                             type="button"
                             onClick={() => setSelectedOrderForReroute(order)}
-                            className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300 transition-colors cursor-pointer"
+                            className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300"
                           >
                             🔄 Move Corridor
                           </button>
                         </td>
                       </tr>
-                    );
-                  })}
-                  {currentCorridorOrders.length === 0 && (
-                    <tr>
-                      <td colSpan={8} className="py-8 text-center text-slate-400 font-mono text-xs">
-                        No unassigned packages currently queued for Corridor {selectedCorridorId}.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    ))}
+
+                    {currentCorridorOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={8} className="py-8 text-center text-slate-400 font-mono text-xs">
+                          No packages currently queued for Corridor {selectedCorridorId}.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =================================================================== */}
       {/* 3. ROUTE CARDS (PATH CARDS — READY FOR LOADING)                     */}
