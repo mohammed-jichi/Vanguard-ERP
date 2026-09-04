@@ -368,7 +368,7 @@ function SuperSonicFleetPageContent() {
                 className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors"
                 title="Add nearby packages (like Aramoun, Bchamoun, Dahieh) to this departure run"
               >
-                <span>➕ Attach En-Route Stops (Aramoun, Bchamoun, Dahieh...)</span>
+                <span>➕ Add En-Route Stops (Aramoun, Bchamoun, Dahieh...)</span>
               </button>
             </div>
 
@@ -687,13 +687,13 @@ function SuperSonicFleetPageContent() {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">waybill</th>
+                  <th className="py-2.5 px-3 normal-case">waybill #</th>
                   <th className="py-2.5 px-3 normal-case">merchant</th>
-                  <th className="py-2.5 px-3 normal-case">customer details</th>
-                  <th className="py-2.5 px-3 normal-case">destination details</th>
-                  <th className="py-2.5 px-3 normal-case">item descriptions</th>
-                  <th className="py-2.5 px-3 normal-case text-right">COD cash</th>
-                  <th className="py-2.5 px-3 normal-case text-center">delivery fee ($)</th>
+                  <th className="py-2.5 px-3 normal-case">recipient & phone</th>
+                  <th className="py-2.5 px-3 normal-case">destination town</th>
+                  <th className="py-2.5 px-3 normal-case">cargo description</th>
+                  <th className="py-2.5 px-3 normal-case text-right">cod cash</th>
+                  <th className="py-2.5 px-3 normal-case text-center">delivery fee (read-only)</th>
                   <th className="py-2.5 px-3 normal-case text-center">status</th>
                 </tr>
               </thead>
@@ -712,14 +712,11 @@ function SuperSonicFleetPageContent() {
                     </td>
                     <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd.toFixed(2)}</td>
+                    {/* STRICTLY READ-ONLY DELIVERY FEE */}
                     <td className="py-2.5 px-3 text-center">
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={o.deliveryFeeUsd}
-                        onChange={(e) => handleUpdateDeliveryFee(o.id, parseFloat(e.target.value) || 0)}
-                        className="w-16 px-2 py-1 bg-white border border-slate-300 rounded text-center font-mono font-bold text-blue-700 text-xs"
-                      />
+                      <span className="font-mono font-bold text-blue-700 text-xs">
+                        ${o.deliveryFeeUsd.toFixed(2)}
+                      </span>
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
@@ -1263,19 +1260,251 @@ function SuperSonicFleetPageContent() {
         </div>
       )}
 
+      {/* ENHANCED 3PL MODAL: WAYBILL # FIRST + LEBANESE DESTINATION SELECTOR */}
       {showAdd3PLModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-5 max-w-md w-full text-xs space-y-3">
-            <h3 className="font-bold text-sm text-slate-900">Add External 3PL Shipment</h3>
-            <div><label className="font-bold block mb-1">Merchant Name:</label><input type="text" placeholder="e.g. Apex Electronics" className="w-full p-2 border rounded-xl" /></div>
-            <div className="flex gap-2 pt-2">
-              <button type="button" onClick={() => { alert('3PL Package Saved!'); setShowAdd3PLModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save</button>
-              <button type="button" onClick={() => setShowAdd3PLModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl">Cancel</button>
-            </div>
-          </div>
-        </div>
+        <Add3PLPackageModal
+          vendors={vendors}
+          onClose={() => setShowAdd3PLModal(false)}
+          onSave={(newOrder) => setOrders((prev) => [newOrder, ...prev])}
+        />
       )}
 
+    </div>
+  );
+}
+
+function Add3PLPackageModal({
+  vendors,
+  onClose,
+  onSave,
+}: {
+  vendors: SuperSonicVendor[];
+  onClose: () => void;
+  onSave: (order: DispatchedOrder) => void;
+}) {
+  const [waybillInput, setWaybillInput] = useState(`WB-3PL-${Math.floor(10000 + Math.random() * 90000)}`);
+  const [merchantInput, setMerchantInput] = useState('La Rose Fashion Boutique');
+  const [custNameInput, setCustNameInput] = useState('');
+  const [custPhoneInput, setCustPhoneInput] = useState('');
+  const [governorateInput, setGovernorateInput] = useState('Mount Lebanon');
+  const [districtInput, setDistrictInput] = useState('Aley');
+  const [townInput, setTownInput] = useState('Aramoun');
+  const [addressDetailsInput, setAddressDetailsInput] = useState('');
+  const [cargoInput, setCargoInput] = useState('');
+  const [codInput, setCodInput] = useState<number>(35.0);
+  const [feeInput, setFeeInput] = useState<number>(3.0);
+
+  const handleSave3PLPackage = () => {
+    if (!custNameInput || !custPhoneInput) {
+      alert('Please enter Customer Details (Full Name and Phone Number)!');
+      return;
+    }
+
+    // Auto-resolve corridor from Lebanese destination district
+    let resolvedCorridor = 1;
+    if (districtInput === 'Aley' || districtInput === 'Chouf' || townInput.includes('Aramoun') || townInput.includes('Bchamoun')) resolvedCorridor = 2;
+    else if (districtInput === 'Saida' || districtInput === 'Tyre' || districtInput === 'Nabatieh') resolvedCorridor = 3;
+    else if (districtInput === 'Keserwan' || districtInput === 'Jbeil' || districtInput === 'Batroun') resolvedCorridor = 4;
+    else if (districtInput === 'Tripoli' || districtInput === 'Akkar') resolvedCorridor = 5;
+    else if (districtInput === 'Zahle' || districtInput === 'West Bekaa') resolvedCorridor = 6;
+    else if (districtInput === 'Baalbek' || districtInput === 'Hermel') resolvedCorridor = 7;
+
+    const newOrder: DispatchedOrder = {
+      id: `3PL-${Date.now().toString().slice(-5)}`,
+      orderNo: waybillInput,
+      sourceType: 'EXTERNAL_3PL',
+      customerName: custNameInput,
+      phone: custPhoneInput,
+      corridorId: resolvedCorridor,
+      tripNo: 0,
+      destinationTown: `${townInput} (${districtInput})`,
+      addressDetails: addressDetailsInput || 'Standard Delivery Address',
+      items: cargoInput || 'Commercial Parcel',
+      productAmountLbp: 0,
+      productAmountUsd: codInput,
+      deliveryFeeUsd: feeInput,
+      assignedDriver: '-',
+      vehiclePlate: '-',
+      status: 'QUEUED',
+    };
+
+    onSave(newOrder);
+    alert(`✓ Package ${waybillInput} added successfully!\nRouted automatically to Corridor ${resolvedCorridor} (${townInput}).`);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+      <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full p-5 space-y-3.5 text-xs text-slate-800">
+        <div className="flex justify-between items-center border-b border-slate-200 pb-2 bg-slate-50 -mx-5 -mt-5 p-4 rounded-t-2xl">
+          <div>
+            <h3 className="font-bold text-sm text-slate-900">Add External 3PL Commercial Package</h3>
+            <span className="text-[10.5px] text-slate-500 font-mono">SuperSonic Central Logistics Hub Entry</span>
+          </div>
+          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
+        </div>
+
+        {/* 1. WAYBILL NUMBER FIRST */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">1. Waybill Number (#):</label>
+            <input
+              type="text"
+              value={waybillInput}
+              onChange={(e) => setWaybillInput(e.target.value)}
+              className="w-full px-3 py-1.5 bg-blue-50/60 border border-blue-300 rounded-xl font-mono font-bold text-blue-900"
+            />
+          </div>
+          {/* 2. MERCHANT NAME */}
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">2. Merchant Name:</label>
+            <select
+              value={merchantInput}
+              onChange={(e) => setMerchantInput(e.target.value)}
+              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800"
+            >
+              {vendors.map((v) => (
+                <option key={v.id} value={v.vendorName}>{v.vendorName}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* 3. CUSTOMER DETAILS (MANUAL) */}
+        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <span className="font-bold text-slate-800 text-[11px] block">3. Recipient Customer Details (Manual Input):</span>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="text"
+              placeholder="Recipient Full Name (e.g. Ziad Nassar)"
+              value={custNameInput}
+              onChange={(e) => setCustNameInput(e.target.value)}
+              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+            />
+            <input
+              type="text"
+              placeholder="Phone Number (e.g. 03-554433)"
+              value={custPhoneInput}
+              onChange={(e) => setCustPhoneInput(e.target.value)}
+              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono"
+            />
+          </div>
+        </div>
+
+        {/* 4. DESTINATION DETAILS (CASCADING LEBANESE REGIONS) */}
+        <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 space-y-2">
+          <span className="font-bold text-emerald-900 text-[11px] block">4. Destination Details (Lebanese Administrative Selector):</span>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">Governorate:</label>
+              <select
+                value={governorateInput}
+                onChange={(e) => setGovernorateInput(e.target.value)}
+                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs"
+              >
+                <option value="Mount Lebanon">Mount Lebanon</option>
+                <option value="Beirut">Beirut</option>
+                <option value="South Lebanon">South Lebanon</option>
+                <option value="North Lebanon">North Lebanon</option>
+                <option value="Bekaa">Bekaa</option>
+                <option value="Nabatieh">Nabatieh</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">District (Caza):</label>
+              <select
+                value={districtInput}
+                onChange={(e) => setDistrictInput(e.target.value)}
+                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold"
+              >
+                <option value="Aley">Aley</option>
+                <option value="Chouf">Chouf</option>
+                <option value="Baabda">Baabda</option>
+                <option value="Beirut">Beirut Center</option>
+                <option value="Saida">Saida</option>
+                <option value="Tyre">Tyre (Sour)</option>
+                <option value="Tripoli">Tripoli</option>
+                <option value="Zahle">Zahle</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">Town / Village:</label>
+              <select
+                value={townInput}
+                onChange={(e) => setTownInput(e.target.value)}
+                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold text-emerald-900"
+              >
+                <option value="Aramoun">Aramoun</option>
+                <option value="Bchamoun">Bchamoun</option>
+                <option value="Qabr Chmoun">Qabr Chmoun</option>
+                <option value="Choueifat Gateway">Choueifat Gateway</option>
+                <option value="Khalde">Khalde</option>
+                <option value="Saida Center">Saida Center</option>
+                <option value="Tyre Port">Tyre Port</option>
+                <option value="Hamra">Beirut - Hamra</option>
+              </select>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="Detailed Address (Street, Building, Floor, Landmark notes...)"
+            value={addressDetailsInput}
+            onChange={(e) => setAddressDetailsInput(e.target.value)}
+            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+          />
+        </div>
+
+        {/* 5. ITEM CARGO DESCRIPTION */}
+        <div>
+          <label className="font-bold text-slate-700 block mb-1">5. Item Cargo Description:</label>
+          <input
+            type="text"
+            placeholder="e.g. 2x Apparel Packages, 1x Shoes Box"
+            value={cargoInput}
+            onChange={(e) => setCargoInput(e.target.value)}
+            className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs"
+          />
+        </div>
+
+        {/* 6 & 7. COD CASH AND DELIVERY FEE */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">6. COD Cash to Collect ($):</label>
+            <input
+              type="number"
+              value={codInput}
+              onChange={(e) => setCodInput(parseFloat(e.target.value) || 0)}
+              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-emerald-800 text-sm"
+            />
+          </div>
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">7. Delivery Fee ($):</label>
+            <input
+              type="number"
+              value={feeInput}
+              onChange={(e) => setFeeInput(parseFloat(e.target.value) || 0)}
+              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-blue-700 text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2 pt-2 border-t border-slate-200">
+          <button
+            type="button"
+            onClick={handleSave3PLPackage}
+            className="flex-1 py-2.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md"
+          >
+            ✓ Save & Route Package by Lebanese Region
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="py-2.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
