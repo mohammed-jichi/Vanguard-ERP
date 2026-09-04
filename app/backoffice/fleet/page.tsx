@@ -122,7 +122,7 @@ function SuperSonicFleetMasterSuiteContent() {
   // 2. ROUTE CARDS (PATH CARDS)
   const [pathCards, setPathCards] = useState<AssignedPathCard[]>([
     {
-      pathId: 'ROUTE-C1-TONY-T1',
+      pathId: 'PATH-C1-T1',
       corridorId: 1,
       corridorName: 'Corridor 1: Greater Beirut & Connected Coast',
       driverName: 'Tony Khoury',
@@ -130,7 +130,10 @@ function SuperSonicFleetMasterSuiteContent() {
       tripNo: 1,
       status: 'READY_FOR_LOADING',
       assignedAt: 'Today 08:30 AM',
-      assignedOrders: [initialOrders[0] as DispatchedOrder, initialOrders[1] as DispatchedOrder],
+      assignedOrders: [
+        initialOrders[0] as DispatchedOrder, 
+        initialOrders[1] as DispatchedOrder
+      ],
     },
   ]);
 
@@ -289,7 +292,12 @@ function SuperSonicFleetMasterSuiteContent() {
     alert(`✓ Order #${orderId} moved to Showroom POS Pickup!\nLocked as Read-Only for Fleet and activated at Showroom.`);
   };
 
-  const handleReturnToDelivery = (orderId: string, repCode = 'REP-002', repName = 'Ahmad Ali Kassem') => {
+  const handleReturnToDelivery = (
+    orderId: string,
+    actorType: 'REPRESENTATIVE' | 'MANAGEMENT' = 'REPRESENTATIVE',
+    repCode = 'REP-002',
+    repName = 'Ahmad Ali Kassem'
+  ) => {
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId
@@ -298,7 +306,7 @@ function SuperSonicFleetMasterSuiteContent() {
               status: 'QUEUED',
               corridorId: 1,
               fulfillmentSwitchedBy: {
-                actorType: 'REPRESENTATIVE',
+                actorType: actorType,
                 actorCode: repCode,
                 actorName: repName,
                 timestamp: 'Just Now',
@@ -459,8 +467,8 @@ function SuperSonicFleetMasterSuiteContent() {
                             </span>
                             <button
                               type="button"
-                              onClick={() => handleReturnToDelivery(o.id, 'REP-002', o.repName || 'Sales Rep')}
-                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors"
+                              onClick={() => handleReturnToDelivery(o.id, 'REPRESENTATIVE', o.repName?.match(/\(([^)]+)\)/)?.[1] || 'REP-002', o.repName || 'Sales Rep')}
+                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
                               title="Revert back to Fleet Delivery"
                             >
                               🚚 Return to Delivery
