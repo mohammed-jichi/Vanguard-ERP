@@ -45,6 +45,7 @@ interface DispatchedOrder {
   repName?: string;
   deliveredAt?: string;
   signatureSvg?: string;
+  isCrossRouteAttached?: boolean;
   fulfillmentSwitchedBy?: FulfillmentAudit;
 }
 
@@ -60,29 +61,65 @@ interface AssignedPathCard {
   assignedAt: string;
 }
 
-function SuperSonicFleetPageContent() {
+function SuperSonicFleetMasterSuiteContent() {
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'dispatch';
+  const activeTab = searchParams.get('tab') || 'southern-olive';
 
   // Master State
   const [corridors] = useState(initialCorridors);
   const [vehicles] = useState<FleetVehicle[]>(initialVehicles);
-  const [orders, setOrders] = useState<DispatchedOrder[]>(initialOrders as DispatchedOrder[]);
-  const [vendors] = useState<SuperSonicVendor[]>(initialVendors);
+  const [orders, setOrders] = useState<DispatchedOrder[]>([
+    ...(initialOrders as DispatchedOrder[]),
+    {
+      id: 'ORD-103355',
+      orderNo: 'ORD-103355',
+      sourceType: 'SOUTHERN_OLIVE',
+      customerName: 'Samir Daou Preserves',
+      phone: '05-430112',
+      corridorId: 2, // Naturally in Corridor 2 (Mount Lebanon / Bchamoun)
+      tripNo: 0,
+      destinationTown: 'Bchamoun - Schools Street',
+      addressDetails: 'Near Modern School Complex, Ground Floor',
+      items: '2x 17.5L Extra Virgin Bulk Tins + 4x Makdous Jars',
+      productAmountLbp: 18000000,
+      productAmountUsd: 200.0,
+      deliveryFeeUsd: 3.5,
+      assignedDriver: '-',
+      vehiclePlate: '-',
+      status: 'QUEUED',
+      repName: 'Ahmad Ali Kassem (REP-002)',
+    },
+    {
+      id: '3PL-88130',
+      orderNo: '3PL-88130',
+      sourceType: 'EXTERNAL_3PL',
+      customerName: 'Aramoun Textile Depot',
+      phone: '05-801299',
+      corridorId: 2, // Naturally in Corridor 2 (Aramoun)
+      tripNo: 0,
+      destinationTown: 'Aramoun - Main Boulevard',
+      addressDetails: 'Facing Municipality Garden',
+      items: '1x Commercial Linen Package (Dry Goods)',
+      productAmountLbp: 4500000,
+      productAmountUsd: 50.0,
+      deliveryFeeUsd: 3.0,
+      assignedDriver: '-',
+      vehiclePlate: '-',
+      status: 'QUEUED',
+    },
+  ]);
+
+  const [vendors, setVendors] = useState<SuperSonicVendor[]>(initialVendors);
   const [staffList, setStaffList] = useState<StaffMember[]>(initialStaff);
   const [complaints, setComplaints] = useState<CustomerComplaintTicket[]>(initialComplaints);
   const [ledger] = useState(initialLedger);
 
-  // Corridor Selection in Dispatch
-  const [selectedCorridorId, setSelectedCorridorId] = useState<number>(3); // Default Corridor 3: South
+  // 1. DISPATCH CONTROLS & AUTO-TRIP
+  const [selectedCorridorId, setSelectedCorridorId] = useState<number>(3); // Defaults to South (Corridor 3)
   const [assignDriver, setAssignDriver] = useState<string>('Hassan Sleiman');
-  const [assignVehicle, setAssignVehicle] = useState<string>('S-772910 (Car 01)');
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 
-  // Waypoint En-Route Modal (Adding Aramoun/Bchamoun/Dahieh to South or Mountain Runs)
-  const [showEnRouteModal, setShowEnRouteModal] = useState<boolean>(false);
-
-  // Route Cards (Active Ready-to-Load Manifests)
+  // 2. ROUTE CARDS (PATH CARDS)
   const [pathCards, setPathCards] = useState<AssignedPathCard[]>([
     {
       pathId: 'ROUTE-C1-TONY-T1',
@@ -97,12 +134,22 @@ function SuperSonicFleetPageContent() {
     },
   ]);
 
-  // Reports selection state (strictly declared at top level for React rules of hooks)
-  const [selectedReportKey, setSelectedReportKey] = useState<'COD_WHISH' | 'FULFILLMENT_AUDIT' | 'TRIPS_MASTER'>('COD_WHISH');
+  // Top-level hooks for reports tab to strictly adhere to React rules of hooks
+  const [selectedReportKey, setSelectedReportKey] = useState<
+    | 'COD_WHISH_SETTLEMENTS'
+    | 'FULFILLMENT_AUDIT'
+    | 'DRIVER_RECONCILIATION'
+    | 'MERCHANT_REMITTANCE'
+    | 'DELIVERY_REVENUE'
+    | 'COMPLAINTS_QUALITY'
+    | 'FLEET_MILEAGE'
+    | 'POD_AUDIT'
+  >('COD_WHISH_SETTLEMENTS');
 
   // Modals
-  const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
+  const [showAttachNearbyModal, setShowAttachNearbyModal] = useState(false);
   const [selectedOrderForReroute, setSelectedOrderForReroute] = useState<DispatchedOrder | null>(null);
+  const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
   const [selectedComplaintForAction, setSelectedComplaintForAction] = useState<CustomerComplaintTicket | null>(null);
   const [complaintResolutionInput, setComplaintResolutionInput] = useState('');
   const [selectedPodOrder, setSelectedPodOrder] = useState<DispatchedOrder | null>(null);
@@ -112,20 +159,15 @@ function SuperSonicFleetPageContent() {
   const [newStaffType, setNewStaffType] = useState<'DRIVER' | 'ON_SITE'>('DRIVER');
   const [showAdd3PLModal, setShowAdd3PLModal] = useState(false);
 
-  // Current corridor orders
+  // Current Corridor Orders waiting for assignment
   const currentCorridorOrders = orders.filter(
-    (o) => o.corridorId === selectedCorridorId && o.status !== 'MOVED_TO_POS_PICKUP'
-  );
-
-  // Orders available from other corridors to attach as en-route waypoints
-  const otherCorridorWaypoints = orders.filter(
-    (o) => o.corridorId !== selectedCorridorId && o.status === 'QUEUED' && o.assignedDriver === '-'
+    (o) => o.corridorId === selectedCorridorId && o.status !== 'MOVED_TO_POS_PICKUP' && o.status !== 'DELIVERED'
   );
 
   // Pre-select all corridor packages by default
   useEffect(() => {
     setSelectedOrderIds(currentCorridorOrders.map((o) => o.id));
-  }, [selectedCorridorId]);
+  }, [selectedCorridorId, orders.length]);
 
   // Automatic Trip Sequencing per driver
   const getAutoTripNumberForDriver = (driverName: string) => {
@@ -133,6 +175,12 @@ function SuperSonicFleetPageContent() {
     return driverExistingRuns.length + 1;
   };
   const autoCalculatedTripNo = getAutoTripNumberForDriver(assignDriver);
+
+  // Get selected driver vehicle automatically from registration
+  const getDriverRegisteredVehicle = (driverName: string) => {
+    const driverObj = staffList.find((s) => s.fullName === driverName);
+    return driverObj?.assignedAsset || 'B-492102 (Van 01)';
+  };
 
   // Toggle order checkbox
   const toggleOrderSelection = (id: string) => {
@@ -156,20 +204,67 @@ function SuperSonicFleetPageContent() {
     );
   };
 
-  // Attach En-Route Waypoint Stop (e.g. Aramoun/Bchamoun before heading South)
-  const handleAttachWaypointOrder = (orderId: string) => {
+  // Cross-Route Attach Action (e.g. Attaching Aramoun / Bchamoun to South line)
+  const handleAttachOrderToCurrentRun = (orderToAttach: DispatchedOrder) => {
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === orderId
-          ? { ...o, corridorId: selectedCorridorId } // Transfers package into the active corridor run
+        o.id === orderToAttach.id
+          ? {
+              ...o,
+              corridorId: selectedCorridorId,
+              isCrossRouteAttached: true,
+            }
           : o
       )
     );
-    setSelectedOrderIds((prev) => [...prev, orderId]);
-    alert(`✓ En-Route stop attached to Corridor ${selectedCorridorId} manifest!`);
+    setSelectedOrderIds((prev) => [...prev, orderToAttach.id]);
+    alert(`✓ Attached: ${orderToAttach.customerName} (${orderToAttach.destinationTown}) added as an On-The-Way stop to Corridor ${selectedCorridorId}!`);
   };
 
-  // Bidirectional Fulfillment Switching Handlers with Audit Logging
+  // Save & Confirm Run to Driver (Moves to Route Cards)
+  const handleSaveAndAssignToDelivery = () => {
+    if (selectedOrderIds.length === 0) {
+      alert('Please select at least one package to load onto this run!');
+      return;
+    }
+
+    const currentCorridor = corridors.find((c) => c.id === selectedCorridorId);
+    const assignedOrdersList = orders.filter((o) => selectedOrderIds.includes(o.id));
+    const vehicleAssigned = getDriverRegisteredVehicle(assignDriver).split(' ')[0];
+
+    const newPathCard: AssignedPathCard = {
+      pathId: `ROUTE-C${selectedCorridorId}-${assignDriver.split(' ')[0]}-T${autoCalculatedTripNo}-${Date.now().toString().slice(-4)}`,
+      corridorId: selectedCorridorId,
+      corridorName: currentCorridor?.name || `Corridor ${selectedCorridorId}`,
+      driverName: assignDriver,
+      vehiclePlate: vehicleAssigned,
+      tripNo: autoCalculatedTripNo,
+      status: 'READY_FOR_LOADING',
+      assignedAt: 'Just Now',
+      assignedOrders: assignedOrdersList,
+    };
+
+    setPathCards((prev) => [newPathCard, ...prev]);
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        selectedOrderIds.includes(o.id)
+          ? {
+              ...o,
+              assignedDriver: assignDriver,
+              vehiclePlate: vehicleAssigned,
+              tripNo: autoCalculatedTripNo,
+              status: 'QUEUED',
+            }
+          : o
+      )
+    );
+
+    setSelectedOrderIds([]);
+    alert(`✓ Run Confirmed & Dispatched!\n${assignedOrdersList.length} packages (including cross-route stops) loaded to ${assignDriver} on Trip ${autoCalculatedTripNo}.\nMoved to Route Cards ready for A4 manifest printing!`);
+  };
+
+  // Bidirectional Fulfillment Switching
   const handleMoveToPosPickup = (orderId: string) => {
     setOrders((prev) =>
       prev.map((o) =>
@@ -184,14 +279,14 @@ function SuperSonicFleetPageContent() {
                 actorType: 'MANAGEMENT',
                 actorCode: 'MGR-01',
                 actorName: 'SuperSonic Operations Desk',
-                timestamp: 'Today 09:15 AM',
+                timestamp: 'Just Now',
                 actionType: 'MOVED_TO_POS',
               },
             }
           : o
       )
     );
-    alert(`✓ Order #${orderId} moved to Showroom POS Pickup! Locked as read-only for fleet.`);
+    alert(`✓ Order #${orderId} moved to Showroom POS Pickup!\nLocked as Read-Only for Fleet and activated at Showroom.`);
   };
 
   const handleReturnToDelivery = (orderId: string, repCode = 'REP-002', repName = 'Ahmad Ali Kassem') => {
@@ -216,48 +311,7 @@ function SuperSonicFleetPageContent() {
     alert(`✓ Order #${orderId} returned to Fleet Delivery queue!`);
   };
 
-  // Save & Load to Driver (Builds Route Card)
-  const handleSaveAndAssignToDelivery = () => {
-    if (selectedOrderIds.length === 0) {
-      alert('Please select at least one package to load!');
-      return;
-    }
-
-    const currentCorridor = corridors.find((c) => c.id === selectedCorridorId);
-    const assignedOrdersList = orders.filter((o) => selectedOrderIds.includes(o.id));
-
-    const newPathCard: AssignedPathCard = {
-      pathId: `ROUTE-C${selectedCorridorId}-${assignDriver.split(' ')[0]}-T${autoCalculatedTripNo}-${Date.now().toString().slice(-4)}`,
-      corridorId: selectedCorridorId,
-      corridorName: currentCorridor?.name || `Corridor ${selectedCorridorId}`,
-      driverName: assignDriver,
-      vehiclePlate: assignVehicle.split(' ')[0],
-      tripNo: autoCalculatedTripNo,
-      status: 'READY_FOR_LOADING',
-      assignedAt: 'Just Now',
-      assignedOrders: assignedOrdersList,
-    };
-
-    setPathCards((prev) => [newPathCard, ...prev]);
-
-    setOrders((prev) =>
-      prev.map((o) =>
-        selectedOrderIds.includes(o.id)
-          ? {
-              ...o,
-              assignedDriver: assignDriver,
-              vehiclePlate: assignVehicle.split(' ')[0],
-              tripNo: autoCalculatedTripNo,
-              status: 'QUEUED',
-            }
-          : o
-      )
-    );
-
-    setSelectedOrderIds([]);
-    alert(`✓ Success! ${assignedOrdersList.length} packages loaded to ${assignDriver} on Trip ${autoCalculatedTripNo} (Including attached waypoints).\nMoved to Route Cards ready for departure!`);
-  };
-
+  // Corridor Re-routing
   const handleExecuteReroute = (targetCorridorId: number) => {
     if (!selectedOrderForReroute) return;
     setOrders((prev) =>
@@ -267,6 +321,7 @@ function SuperSonicFleetPageContent() {
     setSelectedOrderForReroute(null);
   };
 
+  // Complaint Resolution
   const handleResolveComplaint = () => {
     if (!selectedComplaintForAction) return;
     setComplaints((prev) =>
@@ -280,6 +335,11 @@ function SuperSonicFleetPageContent() {
     setSelectedComplaintForAction(null);
     setComplaintResolutionInput('');
   };
+
+  // Candidate cross-route orders (Aramoun, Bchamoun, Dahieh, Khalde) that can be co-loaded
+  const potentialCrossRouteOrders = orders.filter(
+    (o) => o.corridorId !== selectedCorridorId && o.status === 'QUEUED' && !o.isCrossRouteAttached
+  );
 
   const currentReportVehicle = vehicles.find((v) => v.driver === selectedDriverForReport) || vehicles[0];
 
@@ -309,9 +369,9 @@ function SuperSonicFleetPageContent() {
             <span className="text-xl">🚚</span>
             <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
               {activeTab === 'southern-olive' && 'Southern Olive Oil In-House Orders (Incoming Feed)'}
-              {activeTab === '3pl-orders' && 'SuperSonic 3PL Commercial Orders'}
-              {activeTab === 'dispatch' && 'Corridors & Regional Dispatch (With Waypoint Co-Loading)'}
-              {activeTab === 'path-cards' && 'Route Cards (Confirmed Runs Ready for Departure)'}
+              {activeTab === '3pl-orders' && 'SuperSonic 3PL Commercial Orders (By Path)'}
+              {activeTab === 'dispatch' && 'Corridors & Regional Dispatch (Co-Loading Hub)'}
+              {activeTab === 'path-cards' && 'Route Cards (Confirmed Runs Ready for Loading)'}
               {activeTab === 'vendors' && 'SuperSonic 3PL Merchant Accounts'}
               {activeTab === 'accounting' && 'SuperSonic Financial Ledger & Treasury'}
               {activeTab === 'hr' && 'SuperSonic Staff & Driver Roster'}
@@ -338,16 +398,109 @@ function SuperSonicFleetPageContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* 1. DISPATCH: CORRIDORS + EN-ROUTE WAYPOINTS (ARAMOUN/BCHAMOUN/SOUTH)*/}
+      {/* 1. SOUTHERN OLIVE ORDERS (CLEAN INCOMING FEED — NO SUB-BADGES)      */}
+      {/* =================================================================== */}
+      {activeTab === 'southern-olive' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+          <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Incoming Orders Feed — Southern Olive Oil Products S.A.R.L</h3>
+              <p className="text-[11px] text-slate-400">
+                New incoming orders waiting for fulfillment. Management can transition orders between Fleet Delivery and Showroom POS Pickup.
+              </p>
+            </div>
+            <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">
+              {orders.filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED').length} Active Inflow
+            </span>
+          </div>
+
+          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                  <th className="py-2.5 px-3 normal-case">order no.</th>
+                  <th className="py-2.5 px-3 normal-case">customer & phone</th>
+                  <th className="py-2.5 px-3 normal-case">destination town & address</th>
+                  <th className="py-2.5 px-3 normal-case">packing items</th>
+                  <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                  <th className="py-2.5 px-3 normal-case">sales rep</th>
+                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status & actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+                {orders
+                  .filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED')
+                  .map((o) => (
+                    <tr
+                      key={o.id}
+                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
+                    >
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+                      <td className="py-2.5 px-3">
+                        <strong className="text-slate-900 block">{o.customerName}</strong>
+                        <span className="text-[10px] text-slate-500 font-mono">{o.phone}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="text-slate-800 block font-bold">{o.destinationTown}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{o.addressDetails}</span>
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
+                      </td>
+                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
+                      
+                      {/* CLEAN FULFILLMENT STATUS & ACTIONS */}
+                      <td className="py-2.5 px-3 text-center">
+                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
+                              <span>🏪</span> Moved to POS (Read-Only)
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleReturnToDelivery(o.id, 'REP-002', o.repName || 'Sales Rep')}
+                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors"
+                              title="Revert back to Fleet Delivery"
+                            >
+                              🚚 Return to Delivery
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                              Active for Delivery
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveToPosPickup(o.id)}
+                              className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors"
+                              title="Customer prefers in-store pickup at Showroom"
+                            >
+                              🏪 Move to POS Pickup
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 2. DISPATCH: CORRIDORS + CROSS-ROUTE ATTACHMENT (CO-LOADING)        */}
       {/* =================================================================== */}
       {activeTab === 'dispatch' && (
         <div className="space-y-4">
           
-          {/* Corridor Dropdown Selector & Driver Assignment Toolbar */}
+          {/* Main Dispatch Bar */}
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <label className="text-xs font-bold text-slate-700">Select Highway Corridor:</label>
+                <label className="text-xs font-bold text-slate-700">Select Primary Corridor:</label>
                 <select
                   value={selectedCorridorId}
                   onChange={(e) => setSelectedCorridorId(parseInt(e.target.value))}
@@ -361,26 +514,22 @@ function SuperSonicFleetPageContent() {
                 </select>
               </div>
 
-              {/* EN-ROUTE WAYPOINT CO-LOADING TRIGGER */}
-              <button
-                type="button"
-                onClick={() => setShowEnRouteModal(true)}
-                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors"
-                title="Add nearby packages (like Aramoun, Bchamoun, Dahieh) to this departure run"
-              >
-                <span>➕ Add En-Route Stops (Aramoun, Bchamoun, Dahieh...)</span>
-              </button>
+              <div className="text-xs text-slate-500 font-mono">
+                Highway Path: <strong className="text-slate-800">{corridors.find(c => c.id === selectedCorridorId)?.highwayPath}</strong>
+              </div>
             </div>
 
-            {/* Assignment Bar */}
+            {/* Assignment Controls Toolbar with CROSS-ROUTE CO-LOADING BUTTON */}
             <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
               <div className="flex flex-wrap items-center gap-3">
+                
+                {/* Driver */}
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-slate-700">Assign to Driver:</label>
+                  <label className="text-xs font-bold text-slate-700">Driver:</label>
                   <select
                     value={assignDriver}
                     onChange={(e) => setAssignDriver(e.target.value)}
-                    className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+                    className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none"
                   >
                     {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
                       <option key={d.id} value={d.fullName}>{d.fullName} ({d.phone})</option>
@@ -388,13 +537,15 @@ function SuperSonicFleetPageContent() {
                   </select>
                 </div>
 
+                {/* Registered Vehicle (Auto) */}
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-slate-700">Registered Vehicle:</label>
+                  <label className="text-xs font-bold text-slate-700">Vehicle:</label>
                   <span className="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-300 rounded-lg font-mono font-bold text-xs">
-                    🚐 {staffList.find((s) => s.fullName === assignDriver)?.assignedAsset || 'Toyota HiAce B-492102'}
+                    🚐 {getDriverRegisteredVehicle(assignDriver)}
                   </span>
                 </div>
 
+                {/* Auto Trip Sequence */}
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
                   <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
@@ -403,29 +554,37 @@ function SuperSonicFleetPageContent() {
                   </span>
                 </div>
 
-                <div className="text-xs font-mono text-slate-600 pl-2">
-                  Loaded: <strong className="text-[#1e3a2b]">{selectedOrderIds.length} stops</strong>
-                </div>
+                {/* Cross-Route Co-loading Trigger (Aramoun, Bchamoun, Dahieh...) */}
+                <button
+                  type="button"
+                  onClick={() => setShowAttachNearbyModal(true)}
+                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg font-bold text-xs flex items-center gap-1 transition-colors"
+                >
+                  <span>➕ Attach On-The-Way Stops (Aramoun / Bchamoun / Dahieh...)</span>
+                </button>
               </div>
 
+              {/* Confirm Run Button */}
               <button
                 type="button"
                 onClick={handleSaveAndAssignToDelivery}
                 className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
               >
-                <span>📦 Save & Load to Driver (Move to Route Cards)</span>
+                <span>🚀 Confirm Run & Dispatch to Driver (Move to Route Cards)</span>
               </button>
             </div>
           </div>
 
-          {/* Orders Table */}
+          {/* Corridor Packages Table */}
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">
-                  Corridor {selectedCorridorId} Packages Waiting for Vehicle Loading
+                  Packages Queued for Corridor {selectedCorridorId} Run ({currentCorridorOrders.length} Packages)
                 </h3>
-                <p className="text-[11px] text-slate-400">All stops pre-selected. Edit delivery fees manually if desired.</p>
+                <p className="text-[11px] text-slate-400">
+                  Review items, edit delivery fees, and verify on-the-way cross-route stops before confirming departure.
+                </p>
               </div>
 
               <button
@@ -462,7 +621,7 @@ function SuperSonicFleetPageContent() {
                   {currentCorridorOrders.map((order) => {
                     const isChecked = selectedOrderIds.includes(order.id);
                     return (
-                      <tr key={order.id} className={isChecked ? 'bg-emerald-50/50' : 'hover:bg-slate-50'}>
+                      <tr key={order.id} className={order.isCrossRouteAttached ? 'bg-indigo-50/60' : isChecked ? 'bg-emerald-50/40' : 'hover:bg-slate-50'}>
                         <td className="py-2.5 px-3 text-center">
                           <input
                             type="checkbox"
@@ -471,7 +630,12 @@ function SuperSonicFleetPageContent() {
                             className="w-4 h-4 rounded text-[#1e3a2b]"
                           />
                         </td>
-                        <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
+                        <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">
+                          {order.orderNo}
+                          {order.isCrossRouteAttached && (
+                            <span className="block text-[9px] text-indigo-700 font-bold font-sans">⚡ On-The-Way Stop</span>
+                          )}
+                        </td>
                         <td className="py-2.5 px-3">
                           {order.sourceType === 'SOUTHERN_OLIVE' ? (
                             <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">🫒 Southern Olive In-House</span>
@@ -487,7 +651,6 @@ function SuperSonicFleetPageContent() {
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
                           {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
                         </td>
-                        
                         <td className="py-2.5 px-3 text-center">
                           <div className="inline-flex items-center justify-center gap-1">
                             <span className="text-slate-400 font-mono text-xs">$</span>
@@ -500,7 +663,6 @@ function SuperSonicFleetPageContent() {
                             />
                           </div>
                         </td>
-
                         <td className="py-2.5 px-3 text-center">
                           <button
                             type="button"
@@ -521,103 +683,12 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 2. SOUTHERN OLIVE ORDERS (INCOMING INBOX WITH CLEAN ROW ATTRIBUTION)*/}
-      {/* =================================================================== */}
-      {activeTab === 'southern-olive' && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-          <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Incoming Orders Feed — Southern Olive Oil Products S.A.R.L</h3>
-              <p className="text-[11px] text-slate-400">
-                New online orders awaiting delivery. Management can switch orders between Fleet Delivery and Showroom POS Pickup.
-              </p>
-            </div>
-            <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">
-              {orders.filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED').length} Active Inflow
-            </span>
-          </div>
-
-          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">order number</th>
-                  <th className="py-2.5 px-3 normal-case">sales rep</th>
-                  <th className="py-2.5 px-3 normal-case">customer details</th>
-                  <th className="py-2.5 px-3 normal-case">destination details</th>
-                  <th className="py-2.5 px-3 normal-case">item details</th>
-                  <th className="py-2.5 px-3 normal-case text-right">COD cash</th>
-                  <th className="py-2.5 px-3 normal-case text-center">status</th>
-                  <th className="py-2.5 px-3 normal-case text-center">action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                {orders
-                  .filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED')
-                  .map((o) => (
-                    <tr
-                      key={o.id}
-                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
-                    >
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
-                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
-                      <td className="py-2.5 px-3">
-                        <strong className="text-slate-900 block">{o.customerName}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono block">{o.phone}</span>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <strong className="text-slate-800 block">{o.destinationTown}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono block">{o.addressDetails}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                        {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px]">
-                            Moved to POS
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                            Active
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <button
-                            type="button"
-                            onClick={() => handleReturnToDelivery(o.id)}
-                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
-                          >
-                            🚚 Return to Delivery
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleMoveToPosPickup(o.id)}
-                            className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200"
-                          >
-                            🏪 Move to POS Pickup
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* 3. ROUTE CARDS (CONFIRMED RUNS READY FOR LOADING & A4 PRINT)        */}
+      {/* 3. ROUTE CARDS (CONFIRMED RUNS READY FOR LOADING & A4 MANIFEST)     */}
       {/* =================================================================== */}
       {activeTab === 'path-cards' && (
         <div className="space-y-4">
           <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 flex justify-between items-center">
-            <span>🗂️ <strong>Route Cards:</strong> Confirmed departure manifests with attached waypoints. Ready for warehouse loading.</span>
+            <span>🗂️ <strong>Route Cards:</strong> Confirmed dispatch runs ready for warehouse loading and vehicle departure from Choueifat Hub.</span>
             <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white rounded-lg font-bold shadow-xs">
               🖨️ Print Assigned Route Manifest A4
             </button>
@@ -640,7 +711,7 @@ function SuperSonicFleetPageContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-[10.5px] font-bold text-slate-500 block">LOADED PACKAGES IN THIS RUN ({card.assignedOrders.length}):</span>
+                  <span className="text-[10.5px] font-bold text-slate-500 block">ASSIGNED STOPS IN THIS RUN ({card.assignedOrders.length}):</span>
                   {card.assignedOrders.map((o, idx) => (
                     <div key={o.id} className="p-2 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
                       <div>
@@ -659,7 +730,7 @@ function SuperSonicFleetPageContent() {
                   <span className="text-slate-400 font-mono text-[10px]">Assigned: {card.assignedAt}</span>
                   <button
                     type="button"
-                    onClick={() => alert(`Printing packing sheet for ${card.pathId}...`)}
+                    onClick={() => alert(`Printing warehouse loading manifest for ${card.pathId}...`)}
                     className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg font-bold border border-slate-300"
                   >
                     🖨️ Print Packing Sheet
@@ -672,12 +743,12 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 4. SUPERSONIC 3PL ORDERS                                            */}
+      {/* 4. SUPERSONIC 3PL ORDERS (BY PATH)                                  */}
       {/* =================================================================== */}
       {activeTab === '3pl-orders' && (
         <div className="space-y-4">
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex justify-between items-center">
-            <span>💡 <strong>3PL Commercial Orders:</strong> External merchant packages. Delivery fees are flexible and editable per package.</span>
+            <span>💡 <strong>3PL Commercial Orders:</strong> External merchant shipments. Delivery fees can be edited manually per package.</span>
             <button type="button" onClick={() => setShowAdd3PLModal(true)} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white rounded-lg font-bold shadow-xs">
               ➕ Add 3PL Package
             </button>
@@ -689,34 +760,23 @@ function SuperSonicFleetPageContent() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
                   <th className="py-2.5 px-3 normal-case">waybill #</th>
                   <th className="py-2.5 px-3 normal-case">merchant</th>
-                  <th className="py-2.5 px-3 normal-case">recipient & phone</th>
-                  <th className="py-2.5 px-3 normal-case">destination town</th>
+                  <th className="py-2.5 px-3 normal-case">recipient & town</th>
                   <th className="py-2.5 px-3 normal-case">cargo description</th>
                   <th className="py-2.5 px-3 normal-case text-right">cod cash</th>
-                  <th className="py-2.5 px-3 normal-case text-center">delivery fee (read-only)</th>
+                  <th className="py-2.5 px-3 normal-case text-center">delivery fee ($)</th>
                   <th className="py-2.5 px-3 normal-case text-center">status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
                 {orders.filter(o => o.sourceType === 'EXTERNAL_3PL').map(o => (
-                  <tr key={o.id} className="hover:bg-slate-50">
+                  <tr key={o.id}>
                     <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{o.customerName}</td>
-                    <td className="py-2.5 px-3">
-                      <strong className="text-slate-800 block">{o.customerName}</strong>
-                      <span className="text-[10px] text-slate-500 font-mono block">{o.phone}</span>
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <strong className="text-slate-800 block">{o.destinationTown}</strong>
-                      <span className="text-[10px] text-slate-500 font-mono block">{o.addressDetails}</span>
-                    </td>
+                    <td className="py-2.5 px-3">{o.destinationTown}</td>
                     <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd.toFixed(2)}</td>
-                    {/* STRICTLY READ-ONLY DELIVERY FEE */}
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="font-mono font-bold text-blue-700 text-xs">
-                        ${o.deliveryFeeUsd.toFixed(2)}
-                      </span>
+                      <span className="font-mono font-bold text-blue-700">${o.deliveryFeeUsd}</span>
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
@@ -839,7 +899,166 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 7. HR & STAFF REGISTRY                                              */}
+      {/* 7. SUPERSONIC MASTER REPORTS HUB (8 DEDICATED AUDIT REPORTS)        */}
+      {/* =================================================================== */}
+      {activeTab === 'reports' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            
+            {/* Reports Sub-Sidebar */}
+            <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-2 space-y-1 shadow-2xs print:hidden">
+              <div className="p-2.5 border-b border-slate-100">
+                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">Reports Picker</span>
+              </div>
+              <button type="button" onClick={() => setSelectedReportKey('COD_WHISH_SETTLEMENTS')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COD_WHISH_SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>💵 COD, Whish & Settlements</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-900 font-mono font-bold">Audit</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('FULFILLMENT_AUDIT')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FULFILLMENT_AUDIT' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>🔄 Fulfillment Audit (By Who)</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-mono font-bold">Logs</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('DRIVER_RECONCILIATION')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'DRIVER_RECONCILIATION' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>📄 Driver Daily Trips Master</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-mono font-bold">A4</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('MERCHANT_REMITTANCE')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'MERCHANT_REMITTANCE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>🤝 Merchant COD Remittance</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-900 font-mono font-bold">3PL</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('DELIVERY_REVENUE')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'DELIVERY_REVENUE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>📈 3PL Delivery Revenue</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Finance</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('COMPLAINTS_QUALITY')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COMPLAINTS_QUALITY' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>🎧 Complaints & Reviews</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-100 text-rose-900 font-mono font-bold">Service</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('FLEET_MILEAGE')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FLEET_MILEAGE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>🚐 Fleet Mileage & Fuel</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Assets</span>
+              </button>
+              <button type="button" onClick={() => setSelectedReportKey('POD_AUDIT')} className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'POD_AUDIT' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}>
+                <span>✍️ Proof of Delivery Log</span>
+                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Signed</span>
+              </button>
+            </div>
+
+            {/* Active Report Viewport */}
+            <div className="lg:col-span-9 space-y-3">
+              <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs print:hidden">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-700">Active Report:</span>
+                  <span className="font-mono font-bold text-[#1e3a2b] px-2.5 py-0.5 rounded bg-emerald-50 border border-emerald-200">{selectedReportKey}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs">🖨️ Print A4</button>
+                  <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs">📄 PDF</button>
+                  <button type="button" onClick={() => alert(`Exporting ${selectedReportKey} to CSV...`)} className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs">📊 CSV</button>
+                </div>
+              </div>
+
+              {/* Report Content */}
+              {selectedReportKey === 'COD_WHISH_SETTLEMENTS' && (
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                  <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-base text-slate-900">COD, Whish & Settlements Audit Report</h3>
+                      <p className="text-[11px] text-slate-500 font-mono">Detailed audit of remote Whish transfers, cash vault handovers, and approval verifications.</p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-400">Tenant: 00001 - Southern Olive Oil Products S.A.R.L</span>
+                  </div>
+
+                  <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                          <th className="py-2.5 px-3 normal-case">transaction id</th>
+                          <th className="py-2.5 px-3 normal-case">driver name</th>
+                          <th className="py-2.5 px-3 normal-case text-right">amount ($)</th>
+                          <th className="py-2.5 px-3 normal-case">payment method</th>
+                          <th className="py-2.5 px-3 normal-case">reference no.</th>
+                          <th className="py-2.5 px-3 normal-case text-center">status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
+                        <tr>
+                          <td className="py-2.5 px-3 font-mono font-bold text-purple-900">WSH-0091</td>
+                          <td className="py-2.5 px-3 font-bold text-slate-900">Tony Khoury</td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-800">$200.00</td>
+                          <td className="py-2.5 px-3"><span className="px-2 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200 font-bold text-[10px]">Whish Money</span></td>
+                          <td className="py-2.5 px-3 font-mono text-slate-600">WHISH-TX-9988124</td>
+                          <td className="py-2.5 px-3 text-center"><span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Pending Approval</span></td>
+                        </tr>
+                        <tr>
+                          <td className="py-2.5 px-3 font-mono font-bold text-slate-900">CSH-0042</td>
+                          <td className="py-2.5 px-3 font-bold text-slate-900">Tony Khoury</td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">$250.00</td>
+                          <td className="py-2.5 px-3"><span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[10px]">Physical Cash</span></td>
+                          <td className="py-2.5 px-3 font-mono text-slate-600">VAULT-DEP-4920</td>
+                          <td className="py-2.5 px-3 text-center"><span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Audited & Cleared ✓</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {selectedReportKey === 'FULFILLMENT_AUDIT' && (
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                  <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-base text-slate-900">Fulfillment Transition & Audit Trail Report</h3>
+                      <p className="text-[11px] text-slate-500 font-mono">Tracks all orders converted between Fleet Delivery and Showroom POS Pickup with user attribution.</p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-400">Tenant: 00001 - Southern Olive Oil Products S.A.R.L</span>
+                  </div>
+
+                  <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                          <th className="py-2.5 px-3 normal-case">order no.</th>
+                          <th className="py-2.5 px-3 normal-case">customer</th>
+                          <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                          <th className="py-2.5 px-3 normal-case text-center">transition</th>
+                          <th className="py-2.5 px-3 normal-case text-center">switched by (role)</th>
+                          <th className="py-2.5 px-3 normal-case text-center">code</th>
+                          <th className="py-2.5 px-3 normal-case font-mono">timestamp</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
+                        {orders.filter(o => o.status === 'MOVED_TO_POS_PICKUP' || o.fulfillmentSwitchedBy).map((o) => (
+                          <tr key={o.id}>
+                            <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+                            <td className="py-2.5 px-3">{o.customerName}</td>
+                            <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd.toFixed(2)}</td>
+                            <td className="py-2.5 px-3 text-center">
+                              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold text-[10px]">Moved to POS</span>
+                            </td>
+                            <td className="py-2.5 px-3 text-center">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">
+                                {o.fulfillmentSwitchedBy?.actorType || 'MANAGEMENT'}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-3 text-center font-mono font-bold text-purple-800">
+                              {o.fulfillmentSwitchedBy?.actorCode || 'MGR-01'}
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-slate-500">{o.fulfillmentSwitchedBy?.timestamp || 'Today 09:15 AM'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 8. HR & COMPLAINTS & OTHER SECTIONS                                 */}
       {/* =================================================================== */}
       {activeTab === 'hr' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
@@ -878,9 +1097,6 @@ function SuperSonicFleetPageContent() {
         </div>
       )}
 
-      {/* =================================================================== */}
-      {/* 8. CUSTOMER COMPLAINTS                                              */}
-      {/* =================================================================== */}
       {activeTab === 'complaints' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
           <h3 className="text-sm font-bold text-slate-900">Customer Complaints & 1-Hour Automated Review Feed</h3>
@@ -908,12 +1124,9 @@ function SuperSonicFleetPageContent() {
                     <td className="py-2 px-3">{c.category}</td>
                     <td className="py-2 px-3 italic">"{c.description}"</td>
                     <td className="py-2 px-3 text-center"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{c.status}</span></td>
-                    <td className="py-2.5 px-3 text-center">
+                    <td className="py-2 px-3 text-center">
                       {c.status !== 'RESOLVED' ? (
-                        <div className="flex gap-1.5 justify-center">
-                          <a href={`https://wa.me/961${c.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-bold">💬 WhatsApp</a>
-                          <button onClick={() => setSelectedComplaintForAction(c)} className="px-2 py-1 bg-[#1e3a2b] text-white rounded text-[10px] font-bold">Resolve</button>
-                        </div>
+                        <button onClick={() => setSelectedComplaintForAction(c)} className="px-2 py-1 bg-[#1e3a2b] text-white rounded text-[10px] font-bold">Resolve</button>
                       ) : (
                         <span className="text-slate-400 text-[10px]">Closed ✓</span>
                       )}
@@ -927,144 +1140,38 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 9. SUPERSONIC MASTER REPORTS HUB                                    */}
-      {/* =================================================================== */}
-      {(activeTab === 'reports' || activeTab === 'settlements') && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-2 space-y-1 shadow-2xs print:hidden">
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block p-2 border-b border-slate-100">Reports Catalog</span>
-            <button
-              type="button"
-              onClick={() => setSelectedReportKey('COD_WHISH')}
-              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COD_WHISH' ? 'bg-[#1e3a2b] text-white' : 'text-slate-700 hover:bg-slate-100'}`}
-            >
-              <span>💵 COD, Whish & Settlements</span>
-              <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-900 font-mono font-bold">Audit</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedReportKey('FULFILLMENT_AUDIT')}
-              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FULFILLMENT_AUDIT' ? 'bg-[#1e3a2b] text-white' : 'text-slate-700 hover:bg-slate-100'}`}
-            >
-              <span>🔄 Fulfillment Audit (By Who)</span>
-              <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-mono font-bold">Logs</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedReportKey('TRIPS_MASTER')}
-              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'TRIPS_MASTER' ? 'bg-[#1e3a2b] text-white' : 'text-slate-700 hover:bg-slate-100'}`}
-            >
-              <span>📄 Driver Daily Trips Master</span>
-              <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-mono font-bold">A4</span>
-            </button>
-          </div>
-
-          <div className="lg:col-span-9 bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-              <h3 className="font-bold text-base text-slate-900">
-                {selectedReportKey === 'COD_WHISH' && 'COD, Whish & Settlements Audit Report'}
-                {selectedReportKey === 'FULFILLMENT_AUDIT' && 'Fulfillment Transition & Audit Trail Report (By Who)'}
-                {selectedReportKey === 'TRIPS_MASTER' && 'Driver Daily Trips Master Reconciliation Report'}
-              </h3>
-              <div className="flex gap-2 print:hidden">
-                <button type="button" onClick={() => window.print()} className="px-3 py-1 bg-[#1e3a2b] text-white font-bold rounded-lg text-xs">🖨️ Print A4</button>
-              </div>
-            </div>
-
-            {selectedReportKey === 'FULFILLMENT_AUDIT' && (
-              <div className="overflow-x-auto border border-slate-200 rounded-xl">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="bg-slate-50 border-b font-bold text-[11px]">
-                      <th className="py-2.5 px-3 normal-case">order no.</th>
-                      <th className="py-2.5 px-3 normal-case">customer</th>
-                      <th className="py-2.5 px-3 normal-case text-center">transition action</th>
-                      <th className="py-2.5 px-3 normal-case text-center">switched by (role)</th>
-                      <th className="py-2.5 px-3 normal-case text-center">actor code</th>
-                      <th className="py-2.5 px-3 normal-case font-mono">timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-[11px]">
-                    {orders.filter(o => o.status === 'MOVED_TO_POS_PICKUP' || o.fulfillmentSwitchedBy).map((o) => (
-                      <tr key={o.id}>
-                        <td className="py-2 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
-                        <td className="py-2 px-3">{o.customerName}</td>
-                        <td className="py-2 px-3 text-center">
-                          {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold text-[10px]">Moved to POS</span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-bold text-[10px]">Returned to Delivery</span>
-                          )}
-                        </td>
-                        <td className="py-2 px-3 text-center font-bold">
-                          {o.fulfillmentSwitchedBy?.actorType || 'MANAGEMENT'}
-                        </td>
-                        <td className="py-2 px-3 text-center font-mono font-bold text-purple-800">
-                          {o.fulfillmentSwitchedBy?.actorCode || 'MGR-01'}
-                        </td>
-                        <td className="py-2 px-3 font-mono text-slate-500">
-                          {o.fulfillmentSwitchedBy?.timestamp || 'Today 09:15 AM'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {selectedReportKey === 'COD_WHISH' && (
-              <div className="text-xs text-slate-600 font-mono p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <div>• Vault Cash Deposit: $250.00 USD (Dep: VAULT-DEP-4920) — Audited ✓</div>
-                <div>• Whish Remote Transfer: $200.00 USD (Ref: WHISH-TX-9988124) — Approved ✓</div>
-                <div className="mt-2 text-emerald-800 font-bold">Net Audited Balance: $450.00 USD</div>
-              </div>
-            )}
-
-            {selectedReportKey === 'TRIPS_MASTER' && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <label className="font-bold text-xs">Select Driver:</label>
-                  <select
-                    value={selectedDriverForReport}
-                    onChange={(e) => setSelectedDriverForReport(e.target.value)}
-                    className="px-2.5 py-1 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold"
-                  >
-                    {vehicles.map((v) => (
-                      <option key={v.driver} value={v.driver}>{v.driver} ({v.model})</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
-                  <div><strong>Driver:</strong> {currentReportVehicle.driver} ({currentReportVehicle.phone})</div>
-                  <div><strong>Vehicle:</strong> {currentReportVehicle.model} ({currentReportVehicle.plate})</div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* 10. RADAR, POD, VEHICLES                                            */}
+      {/* 9. RADAR, POD, VEHICLES                                             */}
       {/* =================================================================== */}
       {activeTab === 'radar' && (
         <div className="space-y-4">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900">
+            💡 <strong>Interactive Telemetry:</strong> Click any driver card below to open the real-time simulation of their mobile phone screen.
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {vehicles.map((v) => (
               <div
                 key={v.plate}
                 onClick={() => setSelectedVehicleForTelemetry(v)}
-                className="bg-white rounded-2xl border border-slate-200 hover:border-blue-600 p-4 shadow-2xs hover:shadow-md cursor-pointer transition-all space-y-3"
+                className="bg-white rounded-2xl border border-slate-200 hover:border-blue-600 p-4 shadow-2xs hover:shadow-md cursor-pointer transition-all space-y-3 group"
               >
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-[10px] font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-700">{v.plate}</span>
-                    <h4 className="font-bold text-slate-900 text-xs mt-1">{v.model}</h4>
+                    <h4 className="font-bold text-slate-900 text-xs mt-1 group-hover:text-blue-700 transition-colors">{v.model}</h4>
                     <span className="text-[11px] text-slate-600 block">Driver: <strong>{v.driver}</strong></span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">{v.status}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${v.status === 'ON_ROUTE' ? 'bg-indigo-100 text-indigo-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                    {v.status}
+                  </span>
                 </div>
-                <div className="pt-1 text-center text-xs text-blue-600 font-bold">📱 Mirror Driver Phone Screen ➔</div>
+                <div className="bg-slate-50 p-2.5 rounded-xl text-[11px] space-y-1 font-mono">
+                  <div className="flex justify-between"><span>Speed:</span> <strong className="text-blue-700">{v.currentSpeedKmH} KM/H</strong></div>
+                  <div className="flex justify-between"><span>Battery:</span> <strong className="text-emerald-700">{v.batteryPercent}% 🔋</strong></div>
+                  <div className="flex justify-between text-emerald-800 font-bold"><span>Progress:</span> <span>{v.stopsDelivered}/{v.stopsTotal} Done</span></div>
+                </div>
+                <div className="pt-1 text-center text-xs text-blue-600 font-bold group-hover:underline">
+                  📱 Mirror Driver Phone Screen ➔
+                </div>
               </div>
             ))}
           </div>
@@ -1094,7 +1201,7 @@ function SuperSonicFleetPageContent() {
                     <td className="py-2.5 px-3 font-mono text-slate-600">{o.deliveredAt}</td>
                     <td className="py-2.5 px-3 text-slate-800">{o.assignedDriver}</td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="px-2 py-1 bg-slate-100 rounded border font-serif italic text-blue-900 font-bold">✍️ {o.signatureSvg || 'Customer Sig'}</span>
+                      <span className="px-2 py-1 bg-slate-100 rounded border font-serif italic text-blue-900 font-bold">✍️ {o.signatureSvg}</span>
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
                   </tr>
@@ -1108,6 +1215,7 @@ function SuperSonicFleetPageContent() {
       {activeTab === 'vehicles' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
           <h3 className="text-sm font-bold text-slate-900">SuperSonic Company-Owned Fleet Asset & Odometer Log</h3>
+          <p className="text-[11px] text-slate-400">Strictly company-owned vehicles. Freelance driver-owned vehicles are excluded from corporate asset maintenance.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {vehicles.filter((v) => v.ownership === 'COMPANY_OWNED').map((v) => (
               <div key={v.plate} className="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs font-mono space-y-1">
@@ -1116,7 +1224,8 @@ function SuperSonicFleetPageContent() {
                   <span className="text-[#1e3a2b]">{v.category}</span>
                 </div>
                 <div className="text-slate-500">Plate: {v.plate} | Assigned Driver: {v.driver}</div>
-                <div className="text-blue-700 font-bold">Current Odometer: {v.currentKm.toLocaleString()} KM</div>
+                <div className="text-blue-700 font-bold">Current Odometer: {v.currentKm.toLocaleString()} KM (+{v.currentKm - v.startKm} KM today)</div>
+                <div className="text-[10px] text-emerald-800 font-bold pt-1">Company Fleet Asset #SUPER-{v.plate}</div>
               </div>
             ))}
           </div>
@@ -1124,61 +1233,56 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* MODAL: EN-ROUTE WAYPOINT CO-LOADING (ARAMOUN, BCHAMOUN, DAHIEH)     */}
+      {/* MODAL 1: ATTACH ON-THE-WAY STOPS (ARAMOUN, BCHAMOUN, DAHIEH...)     */}
       {/* =================================================================== */}
-      {showEnRouteModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-xl w-full p-5 space-y-4 text-xs">
+      {showAttachNearbyModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-5 max-w-lg w-full text-xs space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
               <div>
-                <h3 className="font-bold text-sm text-slate-900">Attach En-Route Waypoint Stops to Corridor {selectedCorridorId} Run</h3>
-                <p className="text-[11px] text-slate-500">
-                  Select packages from nearby zones (Aramoun, Bchamoun, Dahieh) that the driver can deliver on his way departing Choueifat.
-                </p>
+                <h3 className="font-bold text-sm text-slate-900">Attach Nearby On-The-Way Stops to Corridor {selectedCorridorId}</h3>
+                <span className="text-[10.5px] text-slate-500 font-mono">Select candidate packages near exit routes (e.g. Aramoun, Bchamoun, Dahieh):</span>
               </div>
-              <button type="button" onClick={() => setShowEnRouteModal(false)} className="text-slate-400 font-bold text-sm">✕</button>
+              <button type="button" onClick={() => setShowAttachNearbyModal(false)} className="text-slate-400 font-bold">✕</button>
             </div>
 
-            <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-              {otherCorridorWaypoints.map((wp) => (
-                <div key={wp.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+            <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+              {potentialCrossRouteOrders.map((p) => (
+                <div key={p.id} className="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs">
                   <div>
-                    <strong className="block text-slate-900">{wp.customerName} ({wp.orderNo})</strong>
-                    <span className="text-[11px] text-blue-700 font-bold">{wp.destinationTown}</span>
-                    <span className="text-[10px] text-slate-500 font-mono block">{wp.addressDetails} — {wp.items}</span>
+                    <strong className="text-slate-900 block">{p.customerName} — #{p.orderNo}</strong>
+                    <span className="text-[10px] text-slate-600 font-mono">{p.destinationTown} ({p.items})</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      handleAttachWaypointOrder(wp.id);
-                      setShowEnRouteModal(false);
-                    }}
-                    className="px-3 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs"
+                    onClick={() => handleAttachOrderToCurrentRun(p)}
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs"
                   >
                     ➕ Attach to Run
                   </button>
                 </div>
               ))}
 
-              {otherCorridorWaypoints.length === 0 && (
-                <div className="text-center py-6 text-slate-400 font-mono text-xs">
-                  No other unassigned packages currently available for waypoint attachment.
+              {potentialCrossRouteOrders.length === 0 && (
+                <div className="p-6 text-center text-slate-400 font-mono text-xs">
+                  No candidate cross-route packages waiting in other corridors.
                 </div>
               )}
             </div>
 
             <div className="flex justify-end pt-2 border-t">
-              <button type="button" onClick={() => setShowEnRouteModal(false)} className="px-4 py-1.5 bg-slate-200 font-bold rounded-lg text-xs">Done</button>
+              <button type="button" onClick={() => setShowAttachNearbyModal(false)} className="px-4 py-1.5 bg-slate-200 font-bold rounded-lg text-xs">Done</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* OTHER MODALS */}
+      {/* MODAL 2: MOVE CORRIDOR */}
       {selectedOrderForReroute && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-xs space-y-3">
             <h3 className="font-bold text-sm text-slate-900">Re-route Order #{selectedOrderForReroute.orderNo}</h3>
+            <p className="text-slate-600">Select target destination corridor:</p>
             <div className="space-y-1.5">
               {corridors.map((c) => (
                 <button
@@ -1196,11 +1300,12 @@ function SuperSonicFleetPageContent() {
         </div>
       )}
 
+      {/* MODAL 3: RESOLVE COMPLAINT */}
       {selectedComplaintForAction && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-md w-full text-xs space-y-3">
             <h3 className="font-bold text-sm text-slate-900">Resolve Complaint #{selectedComplaintForAction.id}</h3>
-            <p className="text-slate-600"><strong>Customer:</strong> {selectedComplaintForAction.customerName} ({selectedComplaintForAction.phone})</p>
+            <p className="text-slate-600"><strong>Customer:</strong> {selectedComplaintForAction.customerName}</p>
             <textarea
               value={complaintResolutionInput}
               onChange={(e) => setComplaintResolutionInput(e.target.value)}
@@ -1216,6 +1321,7 @@ function SuperSonicFleetPageContent() {
         </div>
       )}
 
+      {/* MODAL 4: TELEMETRY PHONE MIRRORING */}
       {selectedVehicleForTelemetry && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-slate-950 rounded-3xl border border-slate-700 max-w-sm w-full p-4 space-y-3 text-xs text-white shadow-2xl">
@@ -1226,293 +1332,74 @@ function SuperSonicFleetPageContent() {
             <div className="grid grid-cols-3 gap-2 text-center font-mono">
               <div className="p-2 bg-slate-900 rounded"><span>SPEED:</span> <strong>{selectedVehicleForTelemetry.currentSpeedKmH} KM/H</strong></div>
               <div className="p-2 bg-slate-900 rounded"><span>BATTERY:</span> <strong>{selectedVehicleForTelemetry.batteryPercent}% 🔋</strong></div>
+              <div className="p-2 bg-slate-900 rounded"><span>STOPS:</span> <strong>{selectedVehicleForTelemetry.stopsDelivered}/{selectedVehicleForTelemetry.stopsTotal}</strong></div>
             </div>
-            <div className="flex justify-end pt-2">
-              <button type="button" onClick={() => setSelectedVehicleForTelemetry(null)} className="px-4 py-1.5 bg-slate-200 text-slate-800 font-bold rounded-lg">Close</button>
+            <div className="flex gap-2 pt-2 border-t border-slate-800">
+              <a href={`tel:${selectedVehicleForTelemetry.phone}`} className="flex-1 py-1.5 bg-emerald-600 text-white font-bold rounded-lg text-center text-xs">📞 Call</a>
+              <a href={`https://wa.me/961${selectedVehicleForTelemetry.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1 py-1.5 bg-emerald-500 text-white font-bold rounded-lg text-center text-xs">💬 WhatsApp</a>
             </div>
           </div>
         </div>
       )}
 
+      {/* MODAL 5: ADD VENDOR */}
       {showAddVendorModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-md w-full text-xs space-y-3">
             <h3 className="font-bold text-sm text-slate-900">Add New SuperSonic 3PL Vendor</h3>
             <div><label className="font-bold block mb-1">Merchant Name:</label><input type="text" placeholder="e.g. Beirut Gourmet" className="w-full p-2 border rounded-xl" /></div>
+            <div><label className="font-bold block mb-1">Contact & Phone:</label><input type="text" placeholder="03-741258" className="w-full p-2 border rounded-xl" /></div>
             <div className="flex gap-2 pt-2">
-              <button type="button" onClick={() => { alert('Vendor saved!'); setShowAddVendorModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save</button>
+              <button type="button" onClick={() => { alert('✓ Vendor saved!'); setShowAddVendorModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save Vendor</button>
               <button type="button" onClick={() => setShowAddVendorModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl">Cancel</button>
             </div>
           </div>
         </div>
       )}
 
+      {/* MODAL 6: ADD STAFF */}
       {showAddStaffModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-md w-full text-xs space-y-3">
             <h3 className="font-bold text-sm text-slate-900">Add New SuperSonic Staff Member</h3>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setNewStaffType('DRIVER')} className={`flex-1 py-2 rounded-xl border font-bold ${newStaffType === 'DRIVER' ? 'bg-[#1e3a2b] text-white' : 'bg-slate-100'}`}>Driver</button>
+              <button type="button" onClick={() => setNewStaffType('ON_SITE')} className={`flex-1 py-2 rounded-xl border font-bold ${newStaffType === 'ON_SITE' ? 'bg-[#1e3a2b] text-white' : 'bg-slate-100'}`}>On-Site Personnel</button>
+            </div>
             <div><label className="font-bold block mb-1">Full Name:</label><input type="text" placeholder="e.g. Jad Mansour" className="w-full p-2 border rounded-xl" /></div>
+            <div><label className="font-bold block mb-1">Phone Number:</label><input type="text" placeholder="03-334455" className="w-full p-2 border rounded-xl" /></div>
             <div className="flex gap-2 pt-2">
-              <button type="button" onClick={() => { alert('Staff profile created!'); setShowAddStaffModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save</button>
+              <button type="button" onClick={() => { alert('✓ Staff profile created!'); setShowAddStaffModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Create Profile</button>
               <button type="button" onClick={() => setShowAddStaffModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl">Cancel</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ENHANCED 3PL MODAL: WAYBILL # FIRST + LEBANESE DESTINATION SELECTOR */}
+      {/* MODAL 7: ADD 3PL */}
       {showAdd3PLModal && (
-        <Add3PLPackageModal
-          vendors={vendors}
-          onClose={() => setShowAdd3PLModal(false)}
-          onSave={(newOrder) => setOrders((prev) => [newOrder, ...prev])}
-        />
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-5 max-w-md w-full text-xs space-y-3">
+            <h3 className="font-bold text-sm text-slate-900">Add External 3PL Shipment</h3>
+            <div><label className="font-bold block mb-1">Merchant Name:</label><input type="text" placeholder="e.g. Apex Electronics" className="w-full p-2 border rounded-xl" /></div>
+            <div><label className="font-bold block mb-1">Recipient & Phone:</label><input type="text" placeholder="Ziad (03-554433)" className="w-full p-2 border rounded-xl" /></div>
+            <div><label className="font-bold block mb-1">Destination Town:</label><input type="text" placeholder="Saida - Riad El Solh" className="w-full p-2 border rounded-xl" /></div>
+            <div className="flex gap-2 pt-2">
+              <button type="button" onClick={() => { alert('✓ 3PL Package Saved!'); setShowAdd3PLModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl">Save Package</button>
+              <button type="button" onClick={() => setShowAdd3PLModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl">Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>
   );
 }
 
-function Add3PLPackageModal({
-  vendors,
-  onClose,
-  onSave,
-}: {
-  vendors: SuperSonicVendor[];
-  onClose: () => void;
-  onSave: (order: DispatchedOrder) => void;
-}) {
-  const [waybillInput, setWaybillInput] = useState(`WB-3PL-${Math.floor(10000 + Math.random() * 90000)}`);
-  const [merchantInput, setMerchantInput] = useState('La Rose Fashion Boutique');
-  const [custNameInput, setCustNameInput] = useState('');
-  const [custPhoneInput, setCustPhoneInput] = useState('');
-  const [governorateInput, setGovernorateInput] = useState('Mount Lebanon');
-  const [districtInput, setDistrictInput] = useState('Aley');
-  const [townInput, setTownInput] = useState('Aramoun');
-  const [addressDetailsInput, setAddressDetailsInput] = useState('');
-  const [cargoInput, setCargoInput] = useState('');
-  const [codInput, setCodInput] = useState<number>(35.0);
-  const [feeInput, setFeeInput] = useState<number>(3.0);
-
-  const handleSave3PLPackage = () => {
-    if (!custNameInput || !custPhoneInput) {
-      alert('Please enter Customer Details (Full Name and Phone Number)!');
-      return;
-    }
-
-    // Auto-resolve corridor from Lebanese destination district
-    let resolvedCorridor = 1;
-    if (districtInput === 'Aley' || districtInput === 'Chouf' || townInput.includes('Aramoun') || townInput.includes('Bchamoun')) resolvedCorridor = 2;
-    else if (districtInput === 'Saida' || districtInput === 'Tyre' || districtInput === 'Nabatieh') resolvedCorridor = 3;
-    else if (districtInput === 'Keserwan' || districtInput === 'Jbeil' || districtInput === 'Batroun') resolvedCorridor = 4;
-    else if (districtInput === 'Tripoli' || districtInput === 'Akkar') resolvedCorridor = 5;
-    else if (districtInput === 'Zahle' || districtInput === 'West Bekaa') resolvedCorridor = 6;
-    else if (districtInput === 'Baalbek' || districtInput === 'Hermel') resolvedCorridor = 7;
-
-    const newOrder: DispatchedOrder = {
-      id: `3PL-${Date.now().toString().slice(-5)}`,
-      orderNo: waybillInput,
-      sourceType: 'EXTERNAL_3PL',
-      customerName: custNameInput,
-      phone: custPhoneInput,
-      corridorId: resolvedCorridor,
-      tripNo: 0,
-      destinationTown: `${townInput} (${districtInput})`,
-      addressDetails: addressDetailsInput || 'Standard Delivery Address',
-      items: cargoInput || 'Commercial Parcel',
-      productAmountLbp: 0,
-      productAmountUsd: codInput,
-      deliveryFeeUsd: feeInput,
-      assignedDriver: '-',
-      vehiclePlate: '-',
-      status: 'QUEUED',
-    };
-
-    onSave(newOrder);
-    alert(`✓ Package ${waybillInput} added successfully!\nRouted automatically to Corridor ${resolvedCorridor} (${townInput}).`);
-    onClose();
-  };
-
+export default function SuperSonicFleetMasterSuitePage() {
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full p-5 space-y-3.5 text-xs text-slate-800">
-        <div className="flex justify-between items-center border-b border-slate-200 pb-2 bg-slate-50 -mx-5 -mt-5 p-4 rounded-t-2xl">
-          <div>
-            <h3 className="font-bold text-sm text-slate-900">Add External 3PL Commercial Package</h3>
-            <span className="text-[10.5px] text-slate-500 font-mono">SuperSonic Central Logistics Hub Entry</span>
-          </div>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
-        </div>
-
-        {/* 1. WAYBILL NUMBER FIRST */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">1. Waybill Number (#):</label>
-            <input
-              type="text"
-              value={waybillInput}
-              onChange={(e) => setWaybillInput(e.target.value)}
-              className="w-full px-3 py-1.5 bg-blue-50/60 border border-blue-300 rounded-xl font-mono font-bold text-blue-900"
-            />
-          </div>
-          {/* 2. MERCHANT NAME */}
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">2. Merchant Name:</label>
-            <select
-              value={merchantInput}
-              onChange={(e) => setMerchantInput(e.target.value)}
-              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800"
-            >
-              {vendors.map((v) => (
-                <option key={v.id} value={v.vendorName}>{v.vendorName}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* 3. CUSTOMER DETAILS (MANUAL) */}
-        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-          <span className="font-bold text-slate-800 text-[11px] block">3. Recipient Customer Details (Manual Input):</span>
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              placeholder="Recipient Full Name (e.g. Ziad Nassar)"
-              value={custNameInput}
-              onChange={(e) => setCustNameInput(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-            />
-            <input
-              type="text"
-              placeholder="Phone Number (e.g. 03-554433)"
-              value={custPhoneInput}
-              onChange={(e) => setCustPhoneInput(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono"
-            />
-          </div>
-        </div>
-
-        {/* 4. DESTINATION DETAILS (CASCADING LEBANESE REGIONS) */}
-        <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 space-y-2">
-          <span className="font-bold text-emerald-900 text-[11px] block">4. Destination Details (Lebanese Administrative Selector):</span>
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">Governorate:</label>
-              <select
-                value={governorateInput}
-                onChange={(e) => setGovernorateInput(e.target.value)}
-                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs"
-              >
-                <option value="Mount Lebanon">Mount Lebanon</option>
-                <option value="Beirut">Beirut</option>
-                <option value="South Lebanon">South Lebanon</option>
-                <option value="North Lebanon">North Lebanon</option>
-                <option value="Bekaa">Bekaa</option>
-                <option value="Nabatieh">Nabatieh</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">District (Caza):</label>
-              <select
-                value={districtInput}
-                onChange={(e) => setDistrictInput(e.target.value)}
-                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold"
-              >
-                <option value="Aley">Aley</option>
-                <option value="Chouf">Chouf</option>
-                <option value="Baabda">Baabda</option>
-                <option value="Beirut">Beirut Center</option>
-                <option value="Saida">Saida</option>
-                <option value="Tyre">Tyre (Sour)</option>
-                <option value="Tripoli">Tripoli</option>
-                <option value="Zahle">Zahle</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] text-slate-500 font-bold block mb-0.5">Town / Village:</label>
-              <select
-                value={townInput}
-                onChange={(e) => setTownInput(e.target.value)}
-                className="w-full px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-bold text-emerald-900"
-              >
-                <option value="Aramoun">Aramoun</option>
-                <option value="Bchamoun">Bchamoun</option>
-                <option value="Qabr Chmoun">Qabr Chmoun</option>
-                <option value="Choueifat Gateway">Choueifat Gateway</option>
-                <option value="Khalde">Khalde</option>
-                <option value="Saida Center">Saida Center</option>
-                <option value="Tyre Port">Tyre Port</option>
-                <option value="Hamra">Beirut - Hamra</option>
-              </select>
-            </div>
-          </div>
-          <input
-            type="text"
-            placeholder="Detailed Address (Street, Building, Floor, Landmark notes...)"
-            value={addressDetailsInput}
-            onChange={(e) => setAddressDetailsInput(e.target.value)}
-            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
-          />
-        </div>
-
-        {/* 5. ITEM CARGO DESCRIPTION */}
-        <div>
-          <label className="font-bold text-slate-700 block mb-1">5. Item Cargo Description:</label>
-          <input
-            type="text"
-            placeholder="e.g. 2x Apparel Packages, 1x Shoes Box"
-            value={cargoInput}
-            onChange={(e) => setCargoInput(e.target.value)}
-            className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs"
-          />
-        </div>
-
-        {/* 6 & 7. COD CASH AND DELIVERY FEE */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">6. COD Cash to Collect ($):</label>
-            <input
-              type="number"
-              value={codInput}
-              onChange={(e) => setCodInput(parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-emerald-800 text-sm"
-            />
-          </div>
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">7. Delivery Fee ($):</label>
-            <input
-              type="number"
-              value={feeInput}
-              onChange={(e) => setFeeInput(parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-mono font-bold text-blue-700 text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-2 pt-2 border-t border-slate-200">
-          <button
-            type="button"
-            onClick={handleSave3PLPackage}
-            className="flex-1 py-2.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md"
-          >
-            ✓ Save & Route Package by Lebanese Region
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="py-2.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function SuperSonicFleetPage() {
-  return (
-    <Suspense fallback={<div className="p-6 text-xs text-slate-500 font-mono">Loading SuperSonic Fleet Workspace...</div>}>
-      <SuperSonicFleetPageContent />
+    <Suspense fallback={<div className="p-6 text-xs text-slate-500 font-mono">Loading SuperSonic Fleet Suite...</div>}>
+      <SuperSonicFleetMasterSuiteContent />
     </Suspense>
   );
 }
