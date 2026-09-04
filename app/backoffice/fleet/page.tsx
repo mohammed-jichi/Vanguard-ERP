@@ -157,6 +157,29 @@ function SuperSonicFleetContent() {
     alert(`✓ Success! ${assignedOrdersList.length} packages loaded to ${assignDriver} on Trip ${autoCalculatedTripNo}.\nMoved to Route Cards ready for departure!`);
   };
 
+  // Bidirectional Fulfillment Switching Handlers
+  const handleMoveToPosPickup = (orderId: string) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? { ...o, status: 'MOVED_TO_POS_PICKUP', corridorId: 0, assignedDriver: '-', vehiclePlate: '-' }
+          : o
+      )
+    );
+    alert(`✓ Order #${orderId} moved to Showroom POS Pickup!\nIt is now locked as read-only for Fleet and active at the Choueifat Showroom Counter.`);
+  };
+
+  const handleReturnToDelivery = (orderId: string) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? { ...o, status: 'QUEUED', corridorId: 1 } // Reverts to active delivery queue in Corridor 1 by default
+          : o
+      )
+    );
+    alert(`✓ Order #${orderId} returned to Fleet Delivery queue!\nRe-activated in SuperSonic Corridors for van dispatch.`);
+  };
+
   // Corridor Re-routing
   const handleExecuteReroute = (targetCorridorId: number) => {
     if (!selectedOrderForReroute) return;
@@ -242,7 +265,7 @@ function SuperSonicFleetContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* 1. SOUTHERN OLIVE ORDERS (INCOMING INBOX — NO CORRIDORS / NO CLUTTER)*/}
+      {/* 1. SOUTHERN OLIVE ORDERS (INCOMING INBOX WITH BIDIRECTIONAL ACTIONS)*/}
       {/* =================================================================== */}
       {activeTab === 'southern-olive' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
@@ -250,7 +273,7 @@ function SuperSonicFleetContent() {
             <div>
               <h3 className="text-sm font-bold text-slate-900">Incoming Orders Feed — Southern Olive Oil Products S.A.R.L</h3>
               <p className="text-[11px] text-slate-400">
-                Chronological list of new online/CRM orders awaiting delivery dispatch. Dispatched items appear under Route Cards.
+                New online/CRM orders waiting for dispatch. Management can transition orders between Fleet Delivery and Showroom POS Pickup.
               </p>
             </div>
             <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">
@@ -267,8 +290,8 @@ function SuperSonicFleetContent() {
                   <th className="py-2.5 px-3 normal-case">destination town & address</th>
                   <th className="py-2.5 px-3 normal-case">packing items & packaging</th>
                   <th className="py-2.5 px-3 normal-case text-right">goods value</th>
-                  <th className="py-2.5 px-3 normal-case">originating sales rep</th>
-                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status</th>
+                  <th className="py-2.5 px-3 normal-case">sales rep</th>
+                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status & actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
@@ -277,7 +300,7 @@ function SuperSonicFleetContent() {
                   .map((o) => (
                     <tr
                       key={o.id}
-                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}
+                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
                     >
                       <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
                       <td className="py-2.5 px-3">
@@ -293,15 +316,37 @@ function SuperSonicFleetContent() {
                         {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
                       </td>
                       <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
+                      
+                      {/* BIDIRECTIONAL SWITCHING ACTIONS */}
                       <td className="py-2.5 px-3 text-center">
                         {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <span className="px-2.5 py-1 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px] inline-flex items-center gap-1">
-                            <span>🏪</span> Moved to POS Pickup (Read-Only)
-                          </span>
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
+                              <span>🏪</span> Moved to POS (Read-Only)
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleReturnToDelivery(o.id)}
+                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors cursor-pointer"
+                              title="Revert back to SuperSonic Fleet Delivery"
+                            >
+                              🚚 Return to Delivery
+                            </button>
+                          </div>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                            New Incoming (Waiting Dispatch)
-                          </span>
+                          <div className="flex items-center justify-center gap-2">
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                              Active for Delivery
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveToPosPickup(o.id)}
+                              className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors cursor-pointer"
+                              title="Customer prefers in-store pickup at Showroom"
+                            >
+                              🏪 Move to POS Pickup
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
