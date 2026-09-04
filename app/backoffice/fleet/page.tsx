@@ -428,63 +428,64 @@ function SuperSonicFleetContent() {
               </div>
             </div>
 
-            {/* Assignment Bar with AUTOMATIC TRIP SEQUENCING */}
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-slate-700">Assign to Driver:</label>
-                  <select
-                    value={assignDriver}
-                    onChange={(e) => {
-                      setAssignDriver(e.target.value);
-                      const staff = staffList.find((s) => s.fullName === e.target.value);
-                      if (staff && staff.assignedAsset) {
-                        setAssignVehicle(staff.assignedAsset);
-                      }
-                    }}
-                    className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
+            {/* ASSIGNMENT BAR WITH AUTO-RESOLVED VEHICLE & AUTO-TRIP SEQUENCING */}
+            {(() => {
+              const selectedDriverObj = staffList.find((s) => s.fullName === assignDriver);
+              const autoResolvedVehicle = selectedDriverObj?.assignedAsset || 'Toyota HiAce (B-492102)';
+
+              return (
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+                  <div className="flex flex-wrap items-center gap-3">
+                    
+                    {/* Driver Selector with Phone Number */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-bold text-slate-700">Assign to Driver:</label>
+                      <select
+                        value={assignDriver}
+                        onChange={(e) => setAssignDriver(e.target.value)}
+                        className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none"
+                      >
+                        {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
+                          <option key={d.id} value={d.fullName}>
+                            {d.fullName} ({d.phone})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Automatic Vehicle Display (Pulled Directly from Driver's Profile) */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-bold text-slate-700">Registered Vehicle:</label>
+                      <span className="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1.5">
+                        <span>🚐</span>
+                        <span>{autoResolvedVehicle}</span>
+                      </span>
+                    </div>
+
+                    {/* Automatic Trip Sequence */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
+                      <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
+                        <span>⚡</span>
+                        <span>Auto: Trip {autoCalculatedTripNo}</span>
+                      </span>
+                    </div>
+
+                    <div className="text-xs font-mono text-slate-600 pl-2">
+                      Selected for Run: <strong className="text-[#1e3a2b]">{selectedOrderIds.length} orders</strong>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveAndAssignToDelivery}
+                    className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
                   >
-                    {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
-                      <option key={d.id} value={d.fullName}>{d.fullName} ({d.assignedAsset})</option>
-                    ))}
-                  </select>
+                    <span>📦 Save & Load to Driver (Move to Route Cards)</span>
+                  </button>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-slate-700">Vehicle:</label>
-                  <select
-                    value={assignVehicle}
-                    onChange={(e) => setAssignVehicle(e.target.value)}
-                    className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800"
-                  >
-                    <option value="B-492102 (Van 01)">Toyota HiAce B-492102 (Van 01)</option>
-                    <option value="G-183921 (Van 02)">Hyundai H1 G-183921 (Van 02)</option>
-                    <option value="S-772910 (Car 01)">Renault Duster S-772910 (Car 01)</option>
-                    <option value="M-102941 (Moto 01)">Honda Cargo M-102941 (Moto 01)</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
-                    <span>⚡</span>
-                    <span>Auto: Trip {autoCalculatedTripNo}</span>
-                  </span>
-                </div>
-
-                <div className="text-xs font-mono text-slate-600 pl-2">
-                  Selected for Run: <strong className="text-[#1e3a2b]">{selectedOrderIds.length} orders</strong>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleSaveAndAssignToDelivery}
-                className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <span>📦 Save & Load to Driver (Move to Route Cards)</span>
-              </button>
-            </div>
+              );
+            })()}
           </div>
 
           {/* Incoming Packages Table with MOVE CORRIDOR ACTION */}
