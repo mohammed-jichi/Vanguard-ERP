@@ -304,14 +304,17 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.fleet && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/fleet?tab=dispatch" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        📋 7 Corridors & Dispatch
-                      </Link>
                       <Link href="/backoffice/fleet?tab=southern-olive" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🫒 Southern Olive Orders
+                        🫒 Southern Olive Oil Orders
                       </Link>
                       <Link href="/backoffice/fleet?tab=3pl-orders" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🏢 SuperSonic 3PL Orders
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=dispatch" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        📋 Corridors & Dispatch
+                      </Link>
+                      <Link href="/backoffice/fleet?tab=path-cards" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🗂️ Route Cards (Path Cards)
                       </Link>
                       <Link href="/backoffice/fleet?tab=vendors" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🤝 Vendor & Merchant Accounts

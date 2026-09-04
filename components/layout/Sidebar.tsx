@@ -7,11 +7,11 @@ import { usePathname, useSearchParams } from 'next/navigation';
 export default function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get('tab') || 'dispatch';
+  const currentTab = searchParams.get('tab') || 'southern-olive';
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     sales: false,
-    fleet: true, // Expanded by default for SuperSonic Fleet
+    fleet: true, // SuperSonic expanded by default
     social: false,
     operations: false,
     customers: false,
@@ -48,9 +48,6 @@ export default function Sidebar() {
               <Link href="/backoffice/reportview" className="flex items-center justify-between px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">
                 <span>Sales Reports Matrix</span><span className="px-1.5 py-0.2 bg-slate-200 text-slate-700 text-[9px] font-bold rounded">93 Rep</span>
               </Link>
-              <Link href="/backoffice/inbox" className="flex items-center justify-between px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">
-                <span>Operations Inbox</span><span className="px-1.5 py-0.2 bg-amber-200 text-amber-900 text-[9px] font-bold rounded">2 New</span>
-              </Link>
               <Link href="/backoffice/online-orders" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">Online Orders Control</Link>
               <Link href="/backoffice/end-of-day" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">End of Day (EOD) Z-Report</Link>
               <Link href="/pos" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">POS Touch Terminal ↗</Link>
@@ -58,7 +55,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* 2. SUPERSONIC FLEET (COMPLETE 11-SECTION 3PL MICRO-SYSTEM) */}
+        {/* 2. SUPERSONIC FLEET (EXACT ORDER AS REQUESTED) */}
         <div className="border border-[#1e3a2b]/30 rounded-xl overflow-hidden bg-white shadow-2xs">
           <button
             type="button"
@@ -71,39 +68,103 @@ export default function Sidebar() {
 
           {openSections.fleet && (
             <div className="p-1 space-y-0.5 bg-white border-t border-slate-100">
-              <Link href="/backoffice/fleet?tab=dispatch" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'dispatch' && pathname.includes('/fleet') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
-                📋 7 Corridors & Dispatch
+              
+              {/* 1. Southern Olive Oil Orders */}
+              <Link
+                href="/backoffice/fleet?tab=southern-olive"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'southern-olive' && pathname.includes('/fleet') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
+                🫒 Southern Olive Oil Orders
               </Link>
-              <Link href="/backoffice/fleet?tab=southern-olive" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'southern-olive' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
-                🫒 Southern Olive Orders
-              </Link>
-              <Link href="/backoffice/fleet?tab=3pl-orders" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === '3pl-orders' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 2. SuperSonic 3PL Orders */}
+              <Link
+                href="/backoffice/fleet?tab=3pl-orders"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === '3pl-orders' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 🏢 SuperSonic 3PL Orders
               </Link>
-              <Link href="/backoffice/fleet?tab=vendors" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'vendors' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 3. Corridors and Dispatch */}
+              <Link
+                href="/backoffice/fleet?tab=dispatch"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'dispatch' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
+                📋 Corridors & Dispatch
+              </Link>
+
+              {/* 4. Route Cards (Path Cards) */}
+              <Link
+                href="/backoffice/fleet?tab=path-cards"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'path-cards' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
+                🗂️ Route Cards (Path Cards)
+              </Link>
+
+              {/* 5. Vendor & Merchant Accounts */}
+              <Link
+                href="/backoffice/fleet?tab=vendors"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'vendors' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 🤝 Vendor & Merchant Accounts
               </Link>
-              <Link href="/backoffice/fleet?tab=accounting" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'accounting' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 6. SuperSonic Accounting & Finance */}
+              <Link
+                href="/backoffice/fleet?tab=accounting"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'accounting' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 💰 SuperSonic Accounting & Finance
               </Link>
-              <Link href="/backoffice/fleet?tab=hr" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'hr' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 7. SuperSonic HR & Staff Registry */}
+              <Link
+                href="/backoffice/fleet?tab=hr"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'hr' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 👔 SuperSonic HR & Staff Registry
               </Link>
-              <Link href="/backoffice/fleet?tab=complaints" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'complaints' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 8. Customer Complaints & Care */}
+              <Link
+                href="/backoffice/fleet?tab=complaints"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'complaints' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 🎧 Customer Complaints & Care
               </Link>
-              <Link href="/backoffice/fleet?tab=settlements" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'settlements' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 9. COD, Whish & Settlements */}
+              <Link
+                href="/backoffice/fleet?tab=settlements"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'settlements' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 💵 COD, Whish & Settlements
               </Link>
-              <Link href="/backoffice/fleet?tab=radar" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'radar' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 10. Live Fleet Radar & GPS */}
+              <Link
+                href="/backoffice/fleet?tab=radar"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'radar' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 📡 Live Fleet Radar & GPS
               </Link>
-              <Link href="/backoffice/fleet?tab=pod" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'pod' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 11. Proof of Delivery (POD) */}
+              <Link
+                href="/backoffice/fleet?tab=pod"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'pod' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 ✍️ Proof of Delivery (POD)
               </Link>
-              <Link href="/backoffice/fleet?tab=vehicles" className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'vehicles' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}>
+
+              {/* 12. Vehicles & Odometer Log */}
+              <Link
+                href="/backoffice/fleet?tab=vehicles"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'vehicles' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+              >
                 🚐 Vehicles & Odometer Log
               </Link>
+
             </div>
           )}
         </div>
