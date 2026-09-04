@@ -541,13 +541,14 @@ function SuperSonicFleetPageContent() {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">order no.</th>
-                  <th className="py-2.5 px-3 normal-case">customer & phone</th>
-                  <th className="py-2.5 px-3 normal-case">destination town & address</th>
-                  <th className="py-2.5 px-3 normal-case">packing items & packaging</th>
-                  <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                  <th className="py-2.5 px-3 normal-case">order number</th>
                   <th className="py-2.5 px-3 normal-case">sales rep</th>
-                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status & actions</th>
+                  <th className="py-2.5 px-3 normal-case">customer details</th>
+                  <th className="py-2.5 px-3 normal-case">destination details</th>
+                  <th className="py-2.5 px-3 normal-case">item details</th>
+                  <th className="py-2.5 px-3 normal-case text-right">COD cash</th>
+                  <th className="py-2.5 px-3 normal-case text-center">status</th>
+                  <th className="py-2.5 px-3 normal-case text-center">action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
@@ -559,50 +560,47 @@ function SuperSonicFleetPageContent() {
                       className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 opacity-70' : 'hover:bg-slate-50'}
                     >
                       <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
                       <td className="py-2.5 px-3">
                         <strong className="text-slate-900 block">{o.customerName}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono">{o.phone}</span>
+                        <span className="text-[10px] text-slate-500 font-mono block">{o.phone}</span>
                       </td>
                       <td className="py-2.5 px-3">
-                        <span className="text-slate-800 block font-bold">{o.destinationTown}</span>
-                        <span className="text-[10px] text-slate-500 font-mono">{o.addressDetails}</span>
+                        <strong className="text-slate-800 block">{o.destinationTown}</strong>
+                        <span className="text-[10px] text-slate-500 font-mono block">{o.addressDetails}</span>
                       </td>
                       <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
                         {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
                       </td>
-                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
-                      
-                      {/* CLEAN FULFILLMENT STATUS & ACTION BUTTON */}
                       <td className="py-2.5 px-3 text-center">
                         {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
-                              <span>🏪</span> Moved to POS (Read-Only)
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleReturnToDelivery(o.id)}
-                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors"
-                              title="Revert back to Fleet Delivery"
-                            >
-                              🚚 Return to Delivery
-                            </button>
-                          </div>
+                          <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px]">
+                            Moved to POS
+                          </span>
                         ) : (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                              Active for Delivery
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveToPosPickup(o.id)}
-                              className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors"
-                              title="Customer prefers in-store pickup at Showroom"
-                            >
-                              🏪 Move to POS Pickup
-                            </button>
-                          </div>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                            Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
+                          <button
+                            type="button"
+                            onClick={() => handleReturnToDelivery(o.id)}
+                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
+                          >
+                            🚚 Return to Delivery
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleMoveToPosPickup(o.id)}
+                            className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200"
+                          >
+                            🏪 Move to POS Pickup
+                          </button>
                         )}
                       </td>
                     </tr>
@@ -689,25 +687,39 @@ function SuperSonicFleetPageContent() {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                  <th className="py-2.5 px-3 normal-case">waybill #</th>
+                  <th className="py-2.5 px-3 normal-case">waybill</th>
                   <th className="py-2.5 px-3 normal-case">merchant</th>
-                  <th className="py-2.5 px-3 normal-case">recipient & town</th>
-                  <th className="py-2.5 px-3 normal-case">cargo description</th>
-                  <th className="py-2.5 px-3 normal-case text-right">cod cash</th>
+                  <th className="py-2.5 px-3 normal-case">customer details</th>
+                  <th className="py-2.5 px-3 normal-case">destination details</th>
+                  <th className="py-2.5 px-3 normal-case">item descriptions</th>
+                  <th className="py-2.5 px-3 normal-case text-right">COD cash</th>
                   <th className="py-2.5 px-3 normal-case text-center">delivery fee ($)</th>
                   <th className="py-2.5 px-3 normal-case text-center">status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
                 {orders.filter(o => o.sourceType === 'EXTERNAL_3PL').map(o => (
-                  <tr key={o.id}>
+                  <tr key={o.id} className="hover:bg-slate-50">
                     <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{o.customerName}</td>
-                    <td className="py-2.5 px-3">{o.destinationTown}</td>
+                    <td className="py-2.5 px-3">
+                      <strong className="text-slate-800 block">{o.customerName}</strong>
+                      <span className="text-[10px] text-slate-500 font-mono block">{o.phone}</span>
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <strong className="text-slate-800 block">{o.destinationTown}</strong>
+                      <span className="text-[10px] text-slate-500 font-mono block">{o.addressDetails}</span>
+                    </td>
                     <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd.toFixed(2)}</td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="font-mono font-bold text-blue-700">${o.deliveryFeeUsd}</span>
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={o.deliveryFeeUsd}
+                        onChange={(e) => handleUpdateDeliveryFee(o.id, parseFloat(e.target.value) || 0)}
+                        className="w-16 px-2 py-1 bg-white border border-slate-300 rounded text-center font-mono font-bold text-blue-700 text-xs"
+                      />
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
