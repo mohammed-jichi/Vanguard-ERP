@@ -268,7 +268,12 @@ function SuperSonicFleetMasterSuiteContent() {
   };
 
   // Bidirectional Fulfillment Switching
-  const handleMoveToPosPickup = (orderId: string) => {
+  const handleMoveToPosPickup = (
+    orderId: string,
+    actorType: 'MANAGEMENT' | 'REPRESENTATIVE' = 'MANAGEMENT',
+    actorCode = 'MGR-01',
+    actorName = 'SuperSonic Operations Desk'
+  ) => {
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId
@@ -279,9 +284,9 @@ function SuperSonicFleetMasterSuiteContent() {
               assignedDriver: '-',
               vehiclePlate: '-',
               fulfillmentSwitchedBy: {
-                actorType: 'MANAGEMENT',
-                actorCode: 'MGR-01',
-                actorName: 'SuperSonic Operations Desk',
+                actorType: actorType,
+                actorCode: actorCode,
+                actorName: actorName,
                 timestamp: 'Just Now',
                 actionType: 'MOVED_TO_POS',
               },
@@ -458,7 +463,7 @@ function SuperSonicFleetMasterSuiteContent() {
                       </td>
                       <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
                       
-                      {/* CLEAN FULFILLMENT STATUS & ACTIONS */}
+                      {/* SAFE & VALID FULFILLMENT STATUS CELL */}
                       <td className="py-2.5 px-3 text-center">
                         {o.status === 'MOVED_TO_POS_PICKUP' ? (
                           <div className="flex items-center justify-center gap-2">
@@ -467,8 +472,12 @@ function SuperSonicFleetMasterSuiteContent() {
                             </span>
                             <button
                               type="button"
-                              onClick={() => handleReturnToDelivery(o.id, 'REPRESENTATIVE', o.repName?.match(/\(([^)]+)\)/)?.[1] || 'REP-002', o.repName || 'Sales Rep')}
-                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
+                              onClick={() => {
+                                const repMatch = o.repName ? o.repName.match(/\(([^)]+)\)/) : null;
+                                const repCode = repMatch && repMatch[1] ? repMatch[1] : 'REP-002';
+                                handleReturnToDelivery(o.id, 'REPRESENTATIVE', repCode, o.repName || 'Sales Rep');
+                              }}
+                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors"
                               title="Revert back to Fleet Delivery"
                             >
                               🚚 Return to Delivery
@@ -481,7 +490,7 @@ function SuperSonicFleetMasterSuiteContent() {
                             </span>
                             <button
                               type="button"
-                              onClick={() => handleMoveToPosPickup(o.id)}
+                              onClick={() => handleMoveToPosPickup(o.id, 'MANAGEMENT', 'MGR-01', 'Operations Desk')}
                               className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors"
                               title="Customer prefers in-store pickup at Showroom"
                             >
@@ -606,7 +615,7 @@ function SuperSonicFleetMasterSuiteContent() {
                   >
                     {corridors.map((c) => (
                       <option key={c.id} value={c.id}>
-                        Corridor {c.id}: {c.name.split(': ') || c.name} ({c.schedule})
+                        Corridor {c.id}: {c.name.split(': ')[1] || c.name} ({c.schedule})
                       </option>
                     ))}
                   </select>
@@ -779,7 +788,7 @@ function SuperSonicFleetMasterSuiteContent() {
                     >
                       {corridors.filter(c => c.id !== selectedCorridorId).map((c) => (
                         <option key={c.id} value={c.id}>
-                          Corridor {c.id}: {c.name.split(': ') || c.name}
+                          Corridor {c.id}: {c.name.split(': ')[1] || c.name}
                         </option>
                       ))}
                     </select>
