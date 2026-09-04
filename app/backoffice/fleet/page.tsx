@@ -320,32 +320,48 @@ function SuperSonicFleetContent() {
                       {/* BIDIRECTIONAL SWITCHING ACTIONS */}
                       <td className="py-2.5 px-3 text-center">
                         {o.status === 'MOVED_TO_POS_PICKUP' ? (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
-                              <span>🏪</span> Moved to POS (Read-Only)
+                          <div className="flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px] inline-flex items-center gap-1">
+                                <span>🏪</span> Moved to POS (Read-Only)
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOrders(prev => prev.map(ord => ord.id === o.id ? { ...ord, status: 'QUEUED', corridorId: 1, repName: o.repName } : ord));
+                                  alert(`Returned to Delivery by Rep: ${o.repName || 'REP-002'}`);
+                                }}
+                                className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200"
+                              >
+                                🚚 Return to Delivery
+                              </button>
+                            </div>
+                            {/* WHO SWITCHED IT BADGE */}
+                            <span className="text-[9px] font-mono text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200/60">
+                              Moved to POS by: Management (MGR-01)
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => handleReturnToDelivery(o.id)}
-                              className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded text-[10px] border border-blue-200 transition-colors cursor-pointer"
-                              title="Revert back to SuperSonic Fleet Delivery"
-                            >
-                              🚚 Return to Delivery
-                            </button>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                              Active for Delivery
+                          <div className="flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                                Active for Delivery
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOrders(prev => prev.map(ord => ord.id === o.id ? { ...ord, status: 'MOVED_TO_POS_PICKUP', corridorId: 0 } : ord));
+                                  alert('Moved to Showroom POS Pickup by Management (MGR-01)');
+                                }}
+                                className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200"
+                              >
+                                🏪 Move to POS Pickup
+                              </button>
+                            </div>
+                            {/* WHO REVERTED IT BADGE */}
+                            <span className="text-[9px] font-mono text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60">
+                              Representative: {o.repName ? o.repName.split(' ')[0] : 'REP-002'}
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveToPosPickup(o.id)}
-                              className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold rounded text-[10px] border border-purple-200 transition-colors cursor-pointer"
-                              title="Customer prefers in-store pickup at Showroom"
-                            >
-                              🏪 Move to POS Pickup
-                            </button>
                           </div>
                         )}
                       </td>
