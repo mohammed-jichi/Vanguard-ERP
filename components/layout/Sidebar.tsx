@@ -133,12 +133,12 @@ export default function Sidebar() {
                 🎧 Customer Complaints & Care
               </Link>
 
-              {/* 9. COD, Whish & Settlements */}
+              {/* 9. Reports (Renamed from COD, Whish & Settlements) */}
               <Link
-                href="/backoffice/fleet?tab=settlements"
-                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'settlements' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
+                href="/backoffice/fleet?tab=reports"
+                className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'reports' || currentTab === 'settlements' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
               >
-                💵 COD, Whish & Settlements
+                📊 Reports
               </Link>
 
               {/* 10. Live Fleet Radar & GPS */}

@@ -45,6 +45,12 @@ export interface DispatchedOrder {
   repName?: string;
   deliveredAt?: string;
   signatureSvg?: string;
+  fulfillmentSwitchedBy?: {
+    actorType: 'MANAGEMENT' | 'REPRESENTATIVE';
+    actorCode: string;
+    actorName: string;
+    timestamp: string;
+  };
 }
 
 export interface FleetVehicle {

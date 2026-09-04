@@ -71,6 +71,16 @@ function SuperSonicFleetContent() {
   const [complaintResolutionInput, setComplaintResolutionInput] = useState('');
   const [selectedPodOrder, setSelectedPodOrder] = useState<DispatchedOrder | null>(null);
   const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
+  const [selectedReportKey, setSelectedReportKey] = useState<
+    | 'COD_WHISH_SETTLEMENTS'
+    | 'FULFILLMENT_AUDIT'
+    | 'DRIVER_RECONCILIATION'
+    | 'MERCHANT_REMITTANCE'
+    | 'DELIVERY_REVENUE'
+    | 'COMPLAINTS_QUALITY'
+    | 'FLEET_MILEAGE'
+    | 'POD_AUDIT'
+  >('COD_WHISH_SETTLEMENTS');
   const [showAddVendorModal, setShowAddVendorModal] = useState(false);
   const [showAddStaffModal, setShowAddStaffModal] = useState(false);
   const [newStaffType, setNewStaffType] = useState<'DRIVER' | 'ON_SITE'>('DRIVER');
@@ -869,86 +879,335 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 8. SETTLEMENTS & MASTER A4 RECONCILIATION REPORT                    */}
+      {/* 8. SUPERSONIC MASTER REPORTS HUB (NOW ACCESSIBLE AS "REPORTS")      */}
       {/* =================================================================== */}
-      {activeTab === 'settlements' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-700">Driver Reconciliation:</span>
-              <select
-                value={selectedDriverForReport}
-                onChange={(e) => setSelectedDriverForReport(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900"
-              >
-                {vehicles.map((v) => (
-                  <option key={v.driver} value={v.driver}>{v.driver} ({v.model})</option>
-                ))}
-              </select>
+      {(activeTab === 'reports' || activeTab === 'settlements') && (() => {
+        return (
+          <div className="space-y-4">
+            
+            {/* Split View: Left Reports Sub-Sidebar + Right Active Report Sheet */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+              
+              {/* LEFT REPORT PICKER MENU */}
+              <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-2 space-y-1 shadow-2xs print:hidden">
+                <div className="p-2.5 border-b border-slate-100">
+                  <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">SuperSonic Reports Catalog</span>
+                </div>
+
+                {/* 1. COD, Whish & Settlements Report */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('COD_WHISH_SETTLEMENTS')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COD_WHISH_SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>💵 COD, Whish & Settlements</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-900 font-mono font-bold">Audit</span>
+                </button>
+
+                {/* 2. Fulfillment Audit (By Who) */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('FULFILLMENT_AUDIT')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FULFILLMENT_AUDIT' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>🔄 Fulfillment Audit (By Who)</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-mono font-bold">Logs</span>
+                </button>
+
+                {/* 3. Driver Daily Trips Master */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('DRIVER_RECONCILIATION')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'DRIVER_RECONCILIATION' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>📄 Driver Daily Trips Master</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-mono font-bold">A4</span>
+                </button>
+
+                {/* 4. Merchant COD Remittance */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('MERCHANT_REMITTANCE')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'MERCHANT_REMITTANCE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>🤝 Merchant COD Remittance</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-900 font-mono font-bold">3PL</span>
+                </button>
+
+                {/* 5. 3PL Delivery Fee Revenue */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('DELIVERY_REVENUE')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'DELIVERY_REVENUE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>📈 3PL Delivery Revenue</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Finance</span>
+                </button>
+
+                {/* 6. Complaints & Review Quality */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('COMPLAINTS_QUALITY')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COMPLAINTS_QUALITY' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>🎧 Complaints & Reviews</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-rose-100 text-rose-900 font-mono font-bold">Service</span>
+                </button>
+
+                {/* 7. Fleet Mileage & Fuel Audit */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('FLEET_MILEAGE')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FLEET_MILEAGE' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>🚐 Fleet Mileage & Fuel</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Assets</span>
+                </button>
+
+                {/* 8. Proof of Delivery Legal Log */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReportKey('POD_AUDIT')}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'POD_AUDIT' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
+                >
+                  <span>✍️ Proof of Delivery Log</span>
+                  <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-800 font-mono font-bold">Signed</span>
+                </button>
+              </div>
+
+              {/* RIGHT MAIN REPORT VIEWPORT */}
+              <div className="lg:col-span-9 space-y-3">
+                
+                {/* Export Toolbar */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs print:hidden">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-700">Active Report:</span>
+                    <span className="font-mono font-bold text-[#1e3a2b] px-2.5 py-0.5 rounded bg-emerald-50 border border-emerald-200">
+                      {selectedReportKey}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs">
+                      🖨️ Print A4 Report
+                    </button>
+                    <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs">
+                      📄 Download as PDF
+                    </button>
+                    <button type="button" onClick={() => alert(`Exporting ${selectedReportKey} to CSV...`)} className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs">
+                      📊 Export as CSV
+                    </button>
+                  </div>
+                </div>
+
+                {/* 1. COD, WHISH & SETTLEMENTS DEDICATED REPORT */}
+                {selectedReportKey === 'COD_WHISH_SETTLEMENTS' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                    <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-base text-slate-900">COD, Whish & Settlements Audit Report</h3>
+                        <p className="text-[11px] text-slate-500 font-mono">Detailed audit of remote Whish transfers, cash vault handovers, and approval verifications.</p>
+                      </div>
+                      <span className="text-xs font-mono text-slate-400">Tenant: 00001 - Southern Olive Oil Products S.A.R.L</span>
+                    </div>
+
+                    <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                            <th className="py-2.5 px-3 normal-case">transaction id</th>
+                            <th className="py-2.5 px-3 normal-case">driver name</th>
+                            <th className="py-2.5 px-3 normal-case">vehicle</th>
+                            <th className="py-2.5 px-3 normal-case text-right">amount ($)</th>
+                            <th className="py-2.5 px-3 normal-case">payment method</th>
+                            <th className="py-2.5 px-3 normal-case">reference no.</th>
+                            <th className="py-2.5 px-3 normal-case text-center">status</th>
+                            <th className="py-2.5 px-3 normal-case text-center">action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
+                          <tr className="hover:bg-slate-50">
+                            <td className="py-2.5 px-3 font-mono font-bold text-purple-900">WSH-0091</td>
+                            <td className="py-2.5 px-3 font-bold text-slate-900">Tony Khoury</td>
+                            <td className="py-2.5 px-3 text-slate-600">Toyota HiAce (B-492102)</td>
+                            <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-800">$200.00</td>
+                            <td className="py-2.5 px-3"><span className="px-2 py-0.5 rounded bg-purple-50 text-purple-800 border border-purple-200 font-bold text-[10px]">Whish Money</span></td>
+                            <td className="py-2.5 px-3 font-mono text-slate-600">WHISH-TX-9988124</td>
+                            <td className="py-2.5 px-3 text-center"><span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Pending Approval</span></td>
+                            <td className="py-2.5 px-3 text-center">
+                              <button type="button" onClick={() => alert('Approved into vault!')} className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[10px] font-bold">Approve</button>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-slate-50">
+                            <td className="py-2.5 px-3 font-mono font-bold text-slate-900">CSH-0042</td>
+                            <td className="py-2.5 px-3 font-bold text-slate-900">Tony Khoury</td>
+                            <td className="py-2.5 px-3 text-slate-600">Toyota HiAce (B-492102)</td>
+                            <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">$250.00</td>
+                            <td className="py-2.5 px-3"><span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[10px]">Physical Cash (Vault)</span></td>
+                            <td className="py-2.5 px-3 font-mono text-slate-600">VAULT-DEP-4920</td>
+                            <td className="py-2.5 px-3 text-center"><span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Audited & Cleared ✓</span></td>
+                            <td className="py-2.5 px-3 text-center"><span className="text-slate-400 text-[10px]">Closed</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. FULFILLMENT AUDIT TRAIL (WHO SWITCHED IT) */}
+                {selectedReportKey === 'FULFILLMENT_AUDIT' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                    <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-base text-slate-900">Fulfillment Transition & Audit Trail Report</h3>
+                        <p className="text-[11px] text-slate-500 font-mono">Tracks all orders converted between Fleet Delivery and Showroom POS Pickup with user attribution.</p>
+                      </div>
+                      <span className="text-xs font-mono text-slate-400">Tenant: 00001 - Southern Olive Oil Products S.A.R.L</span>
+                    </div>
+
+                    <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                            <th className="py-2.5 px-3 normal-case">order no.</th>
+                            <th className="py-2.5 px-3 normal-case">customer & phone</th>
+                            <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                            <th className="py-2.5 px-3 normal-case text-center">transition action</th>
+                            <th className="py-2.5 px-3 normal-case text-center">switched by (role)</th>
+                            <th className="py-2.5 px-3 normal-case text-center">user / rep code</th>
+                            <th className="py-2.5 px-3 normal-case">operator name</th>
+                            <th className="py-2.5 px-3 normal-case font-mono">timestamp</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
+                          {orders.filter(o => o.status === 'MOVED_TO_POS_PICKUP' || o.fulfillmentSwitchedBy).map((o) => (
+                            <tr key={o.id} className="hover:bg-slate-50">
+                              <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+                              <td className="py-2.5 px-3">{o.customerName} ({o.phone})</td>
+                              <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd.toFixed(2)}</td>
+                              <td className="py-2.5 px-3 text-center">
+                                {o.status === 'MOVED_TO_POS_PICKUP' ? (
+                                  <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold text-[10px]">Moved to POS</span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-bold text-[10px]">Returned to Delivery</span>
+                                )}
+                              </td>
+                              <td className="py-2.5 px-3 text-center">
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${o.fulfillmentSwitchedBy?.actorType === 'MANAGEMENT' ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'}`}>
+                                  {o.fulfillmentSwitchedBy?.actorType || 'MANAGEMENT'}
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-center font-mono font-bold text-purple-800">
+                                {o.fulfillmentSwitchedBy?.actorCode || 'MGR-01'}
+                              </td>
+                              <td className="py-2.5 px-3">{o.fulfillmentSwitchedBy?.actorName || 'SuperSonic Dispatch Ops'}</td>
+                              <td className="py-2.5 px-3 font-mono text-slate-500">{o.fulfillmentSwitchedBy?.timestamp || 'Today 09:15 AM'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. DRIVER DAILY TRIPS MASTER */}
+                {selectedReportKey === 'DRIVER_RECONCILIATION' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                      <div>
+                        <h3 className="font-bold text-base text-slate-900">Driver Daily Trips Master Reconciliation Report</h3>
+                        <p className="text-[11px] text-slate-500 font-mono">Consolidated settlement of sequential trips, cash, Whish, and driver allowances.</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-700">Driver:</span>
+                        <select
+                          value={selectedDriverForReport}
+                          onChange={(e) => setSelectedDriverForReport(e.target.value)}
+                          className="px-2.5 py-1 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold"
+                        >
+                          {vehicles.map((v) => (
+                            <option key={v.driver} value={v.driver}>{v.driver} ({v.model})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-200">
+                      <div><strong>Driver:</strong> {currentReportVehicle.driver} ({currentReportVehicle.phone})</div>
+                      <div><strong>Vehicle Model:</strong> {currentReportVehicle.model} ({currentReportVehicle.plate})</div>
+                      <div><strong>Departure Hub:</strong> SuperSonic Central Hub (Choueifat)</div>
+                      <div><strong>Odometer:</strong> {currentReportVehicle.startKm.toLocaleString()} KM ➔ {currentReportVehicle.currentKm.toLocaleString()} KM</div>
+                    </div>
+
+                    <table className="w-full text-left border border-slate-300 border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-slate-100 font-bold border-b border-slate-300 text-[10.5px]">
+                          <th className="py-2 px-2 normal-case border-r">trip #</th>
+                          <th className="py-2 px-2 normal-case border-r">corridor / line</th>
+                          <th className="py-2 px-2 normal-case text-center border-r">stops</th>
+                          <th className="py-2 px-2 normal-case text-right border-r">product val ($)</th>
+                          <th className="py-2 px-2 normal-case text-right border-r">delivery ($)</th>
+                          <th className="py-2 px-2 normal-case text-right border-r">cash usd</th>
+                          <th className="py-2 px-2 normal-case text-right">whish usd</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+                        <tr>
+                          <td className="py-2 px-2 font-bold border-r">Trip 1</td>
+                          <td className="py-2 px-2 font-sans border-r">Corridor 1: Greater Beirut</td>
+                          <td className="py-2 px-2 text-center border-r">6/6</td>
+                          <td className="py-2 px-2 text-right border-r">$350.00</td>
+                          <td className="py-2 px-2 text-right border-r">$24.00</td>
+                          <td className="py-2 px-2 text-right font-bold border-r">$250.00</td>
+                          <td className="py-2 px-2 text-right font-bold text-purple-900">$100.00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* 4. OTHER REPORTS */}
+                {selectedReportKey === 'MERCHANT_REMITTANCE' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3">
+                    <h3 className="font-bold text-base text-slate-900">3PL Merchant COD Remittance & Payout Ledger</h3>
+                    <p className="text-xs text-slate-500">COD cash collected minus delivery margins, ready for merchant disbursement.</p>
+                  </div>
+                )}
+
+                {selectedReportKey === 'DELIVERY_REVENUE' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3">
+                    <h3 className="font-bold text-base text-slate-900">SuperSonic 3PL Delivery Fee Operating Revenue</h3>
+                    <p className="text-xs text-slate-500">Pure courier margins isolated from Southern Olive Oil Products S.A.R.L product revenue.</p>
+                  </div>
+                )}
+
+                {selectedReportKey === 'COMPLAINTS_QUALITY' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3">
+                    <h3 className="font-bold text-base text-slate-900">Customer Complaints & Review Quality Audit</h3>
+                    <p className="text-xs text-slate-500">Audit of WhatsApp automated review ratings and courier incident resolutions.</p>
+                  </div>
+                )}
+
+                {selectedReportKey === 'FLEET_MILEAGE' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3">
+                    <h3 className="font-bold text-base text-slate-900">Company Fleet Mileage, Odometer & Fuel Audit</h3>
+                    <p className="text-xs text-slate-500">Daily start/end mileage tracking for company-owned vans and motorcycles.</p>
+                  </div>
+                )}
+
+                {selectedReportKey === 'POD_AUDIT' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-3">
+                    <h3 className="font-bold text-base text-slate-900">Proof of Delivery (POD) Legal Archive</h3>
+                    <p className="text-xs text-slate-500">Legally verified electronic customer signatures and goods receipt photos.</p>
+                  </div>
+                )}
+
+              </div>
+
             </div>
-            <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl shadow-xs cursor-pointer">
-              🖨️ Print A4 Report
-            </button>
+
           </div>
-
-          <div className="flex justify-center">
-            <div id="isolated-a4-print-sheet" className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans border border-slate-300 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none space-y-4">
-              <div className="flex justify-between items-start border-b-2 border-black pb-2">
-                <div>
-                  <h2 className="text-lg font-extrabold tracking-tight">SUPERSONIC FLEET & LOGISTICS</h2>
-                  <p className="text-[11px] text-slate-600 font-mono">Affiliation: Southern Olive Oil Products S.A.R.L</p>
-                </div>
-                <div className="text-right">
-                  <h3 className="text-sm font-bold">Daily Driver Trips Master Reconciliation Report</h3>
-                  <span className="text-xs font-mono">Date: 03-Sep-2026</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-3 rounded border border-slate-200">
-                <div><strong>Driver Name:</strong> {currentReportVehicle.driver} ({currentReportVehicle.phone})</div>
-                <div><strong>Vehicle Model:</strong> {currentReportVehicle.model} ({currentReportVehicle.category})</div>
-                <div><strong>Plate Number:</strong> {currentReportVehicle.plate}</div>
-                <div><strong>Departure Point:</strong> SuperSonic Central Hub (Choueifat)</div>
-                <div><strong>Odometer:</strong> {currentReportVehicle.startKm.toLocaleString()} KM ➔ {currentReportVehicle.currentKm.toLocaleString()} KM</div>
-              </div>
-
-              <table className="w-full table-fixed text-left border border-black border-collapse text-[10.5px]">
-                <thead>
-                  <tr className="bg-slate-100 border-b border-black font-bold">
-                    <th className="py-1.5 px-1 normal-case w-[12%] border-r border-black">Trip #</th>
-                    <th className="py-1.5 px-1 normal-case w-[28%] border-r border-black">Corridor / Line</th>
-                    <th className="py-1.5 px-1 normal-case w-[10%] text-center border-r border-black">Stops</th>
-                    <th className="py-1.5 px-1 normal-case w-[16%] text-right border-r border-black">Product ($)</th>
-                    <th className="py-1.5 px-1 normal-case w-[16%] text-right border-r border-black">Cash USD</th>
-                    <th className="py-1.5 px-1 normal-case w-[18%] text-right">Whish USD</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black font-mono text-[10px]">
-                  <tr>
-                    <td className="py-1 px-1 font-bold border-r border-black">Trip 1</td>
-                    <td className="py-1 px-1 font-sans border-r border-black">Corridor 1: Greater Beirut</td>
-                    <td className="py-1 px-1 text-center border-r border-black">6/6</td>
-                    <td className="py-1 px-1 text-right border-r border-black">$350.00</td>
-                    <td className="py-1 px-1 text-right font-bold border-r border-black">$250.00</td>
-                    <td className="py-1 px-1 text-right font-bold text-purple-900">$100.00</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="border border-black rounded p-3 text-xs font-mono space-y-1 bg-slate-50">
-                <div className="flex justify-between items-center text-blue-900 font-bold">
-                  <span>Driver Contribution Allowance (المساهمة):</span>
-                  <span>+$20.00</span>
-                </div>
-                <div className="flex justify-between items-center pt-1 border-t border-black text-sm font-bold text-slate-900">
-                  <span>Net Cash Handed Over to SuperSonic Vault:</span>
-                  <span>$250.00 USD Cash + 9,000,000 LBP</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =================================================================== */}
       {/* 9. LIVE RADAR (DRIVER PHONE MIRRORING)                              */}
