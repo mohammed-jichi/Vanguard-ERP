@@ -233,12 +233,6 @@ function SuperSonicFleetContent() {
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <Link
-            href="/backoffice/fleet?tab=path-cards"
-            className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors"
-          >
-            <span>🗂️ View Route Cards ({pathCards.length})</span>
-          </Link>
           <span className="px-3 py-1 bg-[#edf2ee] text-[#1e3a2b] font-bold rounded-lg border border-[#1e3a2b]/30">
             00001 - Southern Olive Oil Products S.A.R.L
           </span>

@@ -93,12 +93,12 @@ export default function Sidebar() {
                 📋 Corridors & Dispatch
               </Link>
 
-              {/* 4. Route Cards (Path Cards) */}
+              {/* 4. Route Cards */}
               <Link
                 href="/backoffice/fleet?tab=path-cards"
                 className={`block px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${currentTab === 'path-cards' ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-600 hover:bg-slate-100'}`}
               >
-                🗂️ Route Cards (Path Cards)
+                🗂️ Route Cards
               </Link>
 
               {/* 5. Vendor & Merchant Accounts */}

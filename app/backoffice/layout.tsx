@@ -314,7 +314,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                         📋 Corridors & Dispatch
                       </Link>
                       <Link href="/backoffice/fleet?tab=path-cards" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🗂️ Route Cards (Path Cards)
+                        🗂️ Route Cards
                       </Link>
                       <Link href="/backoffice/fleet?tab=vendors" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         🤝 Vendor & Merchant Accounts
