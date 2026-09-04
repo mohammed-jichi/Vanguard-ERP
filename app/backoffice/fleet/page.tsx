@@ -32,7 +32,7 @@ interface AssignedPathCard {
 
 function SuperSonicFleetContent() {
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'southern-olive';
+  const activeTab = searchParams.get('tab') || 'dispatch';
 
   // Master State
   const [corridors] = useState(initialCorridors);
@@ -43,15 +43,13 @@ function SuperSonicFleetContent() {
   const [complaints, setComplaints] = useState<CustomerComplaintTicket[]>(initialComplaints);
   const [ledger] = useState(initialLedger);
 
-  // 1. CLEAN CORRIDOR DROPDOWN SELECTION
+  // 1. CORRIDOR DROPDOWN IN DISPATCH
   const [selectedCorridorId, setSelectedCorridorId] = useState<number>(1);
   const [assignDriver, setAssignDriver] = useState<string>('Tony Khoury');
   const [assignVehicle, setAssignVehicle] = useState<string>('B-492102 (Van 01)');
-
-  // Selected Order IDs for current corridor assignment
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 
-  // 2. PATH CARDS STATE (ACTIVE ASSIGNED RUNS READY FOR LOADING)
+  // 2. ROUTE CARDS (PATH CARDS)
   const [pathCards, setPathCards] = useState<AssignedPathCard[]>([
     {
       pathId: 'PATH-C1-T1',
@@ -66,33 +64,42 @@ function SuperSonicFleetContent() {
     },
   ]);
 
-  // Current corridor orders that are waiting for route assignment
+  // Modals & Popups
+  const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
+  const [selectedOrderForReroute, setSelectedOrderForReroute] = useState<DispatchedOrder | null>(null);
+  const [selectedComplaintForAction, setSelectedComplaintForAction] = useState<CustomerComplaintTicket | null>(null);
+  const [complaintResolutionInput, setComplaintResolutionInput] = useState('');
+  const [selectedPodOrder, setSelectedPodOrder] = useState<DispatchedOrder | null>(null);
+  const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
+  const [showAddVendorModal, setShowAddVendorModal] = useState(false);
+  const [showAddStaffModal, setShowAddStaffModal] = useState(false);
+  const [newStaffType, setNewStaffType] = useState<'DRIVER' | 'ON_SITE'>('DRIVER');
+  const [showAdd3PLModal, setShowAdd3PLModal] = useState(false);
+
+  // Current corridor orders waiting for assignment in Dispatch
   const currentCorridorOrders = orders.filter(
     (o) => o.corridorId === selectedCorridorId && o.status !== 'MOVED_TO_POS_PICKUP'
   );
 
-  // Pre-select all orders when corridor changes so user doesn't have to manually check each one
+  // Pre-select all corridor packages by default
   useEffect(() => {
     setSelectedOrderIds(currentCorridorOrders.map((o) => o.id));
   }, [selectedCorridorId, orders]);
 
-  // AUTOMATIC TRIP SEQUENCING LOGIC (Counts trips automatically as driver finishes and reconciles)
+  // Automatic Trip Sequencing per driver
   const getAutoTripNumberForDriver = (driverName: string) => {
-    // Check how many path runs or trips this driver has completed or reconciled today
     const driverExistingRuns = pathCards.filter((p) => p.driverName === driverName);
-    return driverExistingRuns.length + 1; // Auto-increments: Trip 1 -> Trip 2 -> Trip 3
+    return driverExistingRuns.length + 1;
   };
-
   const autoCalculatedTripNo = getAutoTripNumberForDriver(assignDriver);
 
-  // Toggle Single Order
+  // Toggle order checkbox
   const toggleOrderSelection = (id: string) => {
     setSelectedOrderIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
-  // Toggle Select All
   const handleToggleSelectAll = () => {
     if (selectedOrderIds.length === currentCorridorOrders.length) {
       setSelectedOrderIds([]);
@@ -101,14 +108,14 @@ function SuperSonicFleetContent() {
     }
   };
 
-  // Inline Delivery Fee Manual Input Update
+  // Manual delivery fee edit in table
   const handleUpdateDeliveryFee = (orderId: string, newFee: number) => {
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, deliveryFeeUsd: newFee } : o))
     );
   };
 
-  // Save & Load to Driver (Moves from Dispatch to Route Cards / Path Cards)
+  // Action: Save & Load to Driver
   const handleSaveAndAssignToDelivery = () => {
     if (selectedOrderIds.length === 0) {
       alert('Please select at least one package to load!');
@@ -132,7 +139,6 @@ function SuperSonicFleetContent() {
 
     setPathCards((prev) => [newPathCard, ...prev]);
 
-    // Update status in orders master
     setOrders((prev) =>
       prev.map((o) =>
         selectedOrderIds.includes(o.id)
@@ -148,21 +154,10 @@ function SuperSonicFleetContent() {
     );
 
     setSelectedOrderIds([]);
-    alert(`✓ Success! ${assignedOrdersList.length} packages loaded to ${assignDriver} on Trip ${autoCalculatedTripNo}.\nMoved to Route Cards (Path Cards) ready for departure!`);
+    alert(`✓ Success! ${assignedOrdersList.length} packages loaded to ${assignDriver} on Trip ${autoCalculatedTripNo}.\nMoved to Route Cards ready for departure!`);
   };
 
-  // Modals & Secondary States
-  const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
-  const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
-  const [selectedOrderForReroute, setSelectedOrderForReroute] = useState<DispatchedOrder | null>(null);
-  const [selectedComplaintForAction, setSelectedComplaintForAction] = useState<CustomerComplaintTicket | null>(null);
-  const [complaintResolutionInput, setComplaintResolutionInput] = useState('');
-  const [selectedPodOrder, setSelectedPodOrder] = useState<DispatchedOrder | null>(null);
-  const [showAddVendorModal, setShowAddVendorModal] = useState(false);
-  const [showAddStaffModal, setShowAddStaffModal] = useState(false);
-  const [newStaffType, setNewStaffType] = useState<'DRIVER' | 'ON_SITE'>('DRIVER');
-  const [showAdd3PLModal, setShowAdd3PLModal] = useState(false);
-
+  // Corridor Re-routing
   const handleExecuteReroute = (targetCorridorId: number) => {
     if (!selectedOrderForReroute) return;
     setOrders((prev) =>
@@ -184,6 +179,10 @@ function SuperSonicFleetContent() {
     alert(`✓ Ticket #${selectedComplaintForAction.id} marked as RESOLVED!`);
     setSelectedComplaintForAction(null);
     setComplaintResolutionInput('');
+  };
+
+  const handlePushToFinancial = () => {
+    alert('🚀 Push Successful!\nNet Southern Olive goods revenue pushed to CFO Inbox (/backoffice/inbox).\nSuperSonic delivery fees and driver earnings remain securely isolated.');
   };
 
   const currentReportVehicle = vehicles.find((v) => v.driver === selectedDriverForReport) || vehicles[0];
@@ -213,10 +212,10 @@ function SuperSonicFleetContent() {
           <div className="flex items-center gap-2">
             <span className="text-xl">🚚</span>
             <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
-              {activeTab === 'southern-olive' && 'Southern Olive Oil In-House Orders'}
+              {activeTab === 'southern-olive' && 'Southern Olive Oil In-House Orders (Incoming Feed)'}
               {activeTab === '3pl-orders' && 'SuperSonic 3PL Commercial Orders'}
               {activeTab === 'dispatch' && 'Corridors & Regional Dispatch (Unassigned Queue)'}
-              {activeTab === 'path-cards' && 'Route Cards (Path Cards — Ready for Loading)'}
+              {activeTab === 'path-cards' && 'Route Cards (Assigned Runs Ready for Loading)'}
               {activeTab === 'vendors' && 'SuperSonic 3PL Merchant Accounts'}
               {activeTab === 'accounting' && 'SuperSonic Financial Ledger & Treasury'}
               {activeTab === 'hr' && 'SuperSonic Staff & Driver Roster'}
@@ -243,7 +242,78 @@ function SuperSonicFleetContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* 1. CORRIDORS & DISPATCH: DROPDOWN + AUTO TRIP # + MANUAL FEE INPUT  */}
+      {/* 1. SOUTHERN OLIVE ORDERS (INCOMING INBOX — NO CORRIDORS / NO CLUTTER)*/}
+      {/* =================================================================== */}
+      {activeTab === 'southern-olive' && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+          <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Incoming Orders Feed — Southern Olive Oil Products S.A.R.L</h3>
+              <p className="text-[11px] text-slate-400">
+                Chronological list of new online/CRM orders awaiting delivery dispatch. Dispatched items appear under Route Cards.
+              </p>
+            </div>
+            <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">
+              {orders.filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED').length} Active Inflow
+            </span>
+          </div>
+
+          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                  <th className="py-2.5 px-3 normal-case">order no.</th>
+                  <th className="py-2.5 px-3 normal-case">customer & phone</th>
+                  <th className="py-2.5 px-3 normal-case">destination town & address</th>
+                  <th className="py-2.5 px-3 normal-case">packing items & packaging</th>
+                  <th className="py-2.5 px-3 normal-case text-right">goods value</th>
+                  <th className="py-2.5 px-3 normal-case">originating sales rep</th>
+                  <th className="py-2.5 px-3 normal-case text-center">fulfillment status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+                {orders
+                  .filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.status !== 'DELIVERED')
+                  .map((o) => (
+                    <tr
+                      key={o.id}
+                      className={o.status === 'MOVED_TO_POS_PICKUP' ? 'bg-slate-100/70 text-slate-400 cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}
+                    >
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
+                      <td className="py-2.5 px-3">
+                        <strong className="text-slate-900 block">{o.customerName}</strong>
+                        <span className="text-[10px] text-slate-500 font-mono">{o.phone}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="text-slate-800 block font-bold">{o.destinationTown}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{o.addressDetails}</span>
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        {o.productAmountLbp > 0 ? `${o.productAmountLbp.toLocaleString()} LBP` : `$${o.productAmountUsd.toFixed(2)}`}
+                      </td>
+                      <td className="py-2.5 px-3 text-purple-800 font-semibold">{o.repName}</td>
+                      <td className="py-2.5 px-3 text-center">
+                        {o.status === 'MOVED_TO_POS_PICKUP' ? (
+                          <span className="px-2.5 py-1 rounded bg-purple-100 text-purple-900 border border-purple-300 font-bold text-[10px] inline-flex items-center gap-1">
+                            <span>🏪</span> Moved to POS Pickup (Read-Only)
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                            New Incoming (Waiting Dispatch)
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 2. CORRIDORS & DISPATCH: DROPDOWN + AUTO TRIP # + MOVE CORRIDOR     */}
       {/* =================================================================== */}
       {activeTab === 'dispatch' && (
         <div className="space-y-4">
@@ -307,7 +377,6 @@ function SuperSonicFleetContent() {
                   </select>
                 </div>
 
-                {/* AUTOMATIC TRIP SEQUENCING BADGE */}
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
                   <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
@@ -331,15 +400,15 @@ function SuperSonicFleetContent() {
             </div>
           </div>
 
-          {/* Incoming Packages Table with PRE-SELECT & MANUAL DELIVERY FEE INPUT */}
+          {/* Incoming Packages Table with MOVE CORRIDOR ACTION */}
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">
-                  Incoming Packages Waiting for Route Assignment — Corridor {selectedCorridorId}
+                  Packages Assigned to Corridor {selectedCorridorId} — Waiting for Driver Loading
                 </h3>
                 <p className="text-[11px] text-slate-400">
-                  All packages are pre-selected by default. Edit delivery fees manually if required, then click "Save & Load to Driver".
+                  Use "Move Corridor" on any row to transfer the package to another route.
                 </p>
               </div>
 
@@ -402,8 +471,6 @@ function SuperSonicFleetContent() {
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
                           {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
                         </td>
-                        
-                        {/* MANUAL DELIVERY FEE INPUT */}
                         <td className="py-2.5 px-3 text-center">
                           <div className="inline-flex items-center justify-center gap-1">
                             <span className="text-slate-400 font-mono text-xs">$</span>
@@ -416,12 +483,11 @@ function SuperSonicFleetContent() {
                             />
                           </div>
                         </td>
-
                         <td className="py-2.5 px-3 text-center">
                           <button
                             type="button"
                             onClick={() => setSelectedOrderForReroute(order)}
-                            className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300 cursor-pointer"
+                            className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300 transition-colors cursor-pointer"
                           >
                             🔄 Move Corridor
                           </button>
@@ -429,7 +495,6 @@ function SuperSonicFleetContent() {
                       </tr>
                     );
                   })}
-
                   {currentCorridorOrders.length === 0 && (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-slate-400 font-mono text-xs">
@@ -445,12 +510,12 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 2. ROUTE CARDS (PATH CARDS — READY FOR LOADING)                     */}
+      {/* 3. ROUTE CARDS (PATH CARDS — READY FOR LOADING)                     */}
       {/* =================================================================== */}
       {activeTab === 'path-cards' && (
         <div className="space-y-4">
           <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 flex justify-between items-center">
-            <span>🗂️ <strong>Route Cards (Path Cards):</strong> Assigned and confirmed routes. Ready for warehouse loading and driver departure.</span>
+            <span>🗂️ <strong>Route Cards:</strong> Confirmed and loaded routes. Ready for warehouse loading and vehicle departure.</span>
             <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white rounded-lg font-bold shadow-xs cursor-pointer">
               🖨️ Print Assigned Route Manifest A4
             </button>
@@ -492,7 +557,7 @@ function SuperSonicFleetContent() {
                   <span className="text-slate-400 font-mono text-[10px]">Assigned: {card.assignedAt}</span>
                   <button
                     type="button"
-                    onClick={() => alert(`Printing packing and loading sheet for ${card.pathId}...`)}
+                    onClick={() => alert(`Printing packing sheet for ${card.pathId}...`)}
                     className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg font-bold border border-slate-300 cursor-pointer"
                   >
                     🖨️ Print Packing Sheet
@@ -505,116 +570,54 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 3. SOUTHERN OLIVE ORDERS (ORGANIZED BY CORRIDOR PATH)               */}
-      {/* =================================================================== */}
-      {activeTab === 'southern-olive' && (
-        <div className="space-y-4">
-          {corridors.map((c) => {
-            const corridorOrders = orders.filter((o) => o.sourceType === 'SOUTHERN_OLIVE' && o.corridorId === c.id);
-            if (corridorOrders.length === 0) return null;
-            return (
-              <div key={c.id} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-bold text-[#1e3a2b]">{c.name}</h3>
-                  <span className="px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-xs">{corridorOrders.length} Orders</span>
-                </div>
-                <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                        <th className="py-2 px-3 normal-case">order no.</th>
-                        <th className="py-2 px-3 normal-case">customer</th>
-                        <th className="py-2 px-3 normal-case">destination</th>
-                        <th className="py-2 px-3 normal-case">items & packaging</th>
-                        <th className="py-2 px-3 normal-case text-right">goods value</th>
-                        <th className="py-2 px-3 normal-case">originating rep</th>
-                        <th className="py-2 px-3 normal-case text-center">status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
-                      {corridorOrders.map((o) => (
-                        <tr key={o.id}>
-                          <td className="py-2 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
-                          <td className="py-2 px-3 font-bold text-slate-900">{o.customerName}</td>
-                          <td className="py-2 px-3 text-slate-600">{o.destinationTown}</td>
-                          <td className="py-2 px-3 text-slate-800">{o.items}</td>
-                          <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
-                          <td className="py-2 px-3 text-purple-800 font-semibold">{o.repName}</td>
-                          <td className="py-2 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">{o.status}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* 4. SUPERSONIC 3PL ORDERS (BY PATH + EDITABLE FEES)                  */}
+      {/* 4. SUPERSONIC 3PL ORDERS                                            */}
       {/* =================================================================== */}
       {activeTab === '3pl-orders' && (
         <div className="space-y-4">
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex justify-between items-center">
-            <span>💡 <strong>3PL Path Management:</strong> All merchant packages grouped by route. Delivery fees can be edited manually per package.</span>
+            <span>💡 <strong>3PL Commercial Orders:</strong> External merchant packages. Delivery fees are flexible and editable per package.</span>
             <button type="button" onClick={() => setShowAdd3PLModal(true)} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white rounded-lg font-bold shadow-xs cursor-pointer">
               ➕ Add 3PL Package
             </button>
           </div>
 
-          {corridors.map((c) => {
-            const corridor3pl = orders.filter((o) => o.sourceType === 'EXTERNAL_3PL' && o.corridorId === c.id);
-            if (corridor3pl.length === 0) return null;
-            return (
-              <div key={c.id} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                  <h3 className="text-sm font-bold text-blue-900">{c.name} — 3PL Cargo</h3>
-                  <span className="px-2.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs">{corridor3pl.length} Shipments</span>
-                </div>
-                <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                        <th className="py-2 px-3 normal-case">waybill #</th>
-                        <th className="py-2 px-3 normal-case">merchant</th>
-                        <th className="py-2 px-3 normal-case">recipient & town</th>
-                        <th className="py-2 px-3 normal-case">package cargo</th>
-                        <th className="py-2 px-3 normal-case text-right">cod amount ($)</th>
-                        <th className="py-2 px-3 normal-case text-center">delivery fee ($)</th>
-                        <th className="py-2 px-3 normal-case text-center">status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
-                      {corridor3pl.map((o) => (
-                        <tr key={o.id}>
-                          <td className="py-2 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
-                          <td className="py-2 px-3 font-bold text-slate-900">{o.customerName}</td>
-                          <td className="py-2 px-3">{o.destinationTown}</td>
-                          <td className="py-2 px-3 text-slate-800">{o.items}</td>
-                          <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
-                          <td className="py-2 px-3 text-center">
-                            <span className="font-mono font-bold text-blue-700">${o.deliveryFeeUsd}</span>
-                          </td>
-                          <td className="py-2 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })}
+          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl bg-white p-4">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                  <th className="py-2.5 px-3 normal-case">waybill #</th>
+                  <th className="py-2.5 px-3 normal-case">merchant</th>
+                  <th className="py-2.5 px-3 normal-case">recipient & town</th>
+                  <th className="py-2.5 px-3 normal-case">cargo description</th>
+                  <th className="py-2.5 px-3 normal-case text-right">cod cash</th>
+                  <th className="py-2.5 px-3 normal-case text-center">delivery fee ($)</th>
+                  <th className="py-2.5 px-3 normal-case text-center">status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+                {orders.filter(o => o.sourceType === 'EXTERNAL_3PL').map(o => (
+                  <tr key={o.id}>
+                    <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{o.orderNo}</td>
+                    <td className="py-2.5 px-3 font-bold text-slate-900">{o.customerName}</td>
+                    <td className="py-2.5 px-3">{o.destinationTown}</td>
+                    <td className="py-2.5 px-3 text-slate-800">{o.items}</td>
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">${o.productAmountUsd}</td>
+                    <td className="py-2.5 px-3 text-center">
+                      <span className="font-mono font-bold text-blue-700">${o.deliveryFeeUsd}</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">{o.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* =================================================================== */}
-      {/* 5. VENDORS & MERCHANTS MANAGEMENT                                   */}
+      {/* 5. VENDORS MASTER                                                   */}
       {/* =================================================================== */}
       {activeTab === 'vendors' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
@@ -665,7 +668,7 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 6. SUPERSONIC FINANCIAL LEDGER & REVENUE JOURNAL                    */}
+      {/* 6. SUPERSONIC FINANCIAL LEDGER                                      */}
       {/* =================================================================== */}
       {activeTab === 'accounting' && (
         <div className="space-y-4">
@@ -723,53 +726,37 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 7. HR & STAFF REGISTRY                                              */}
+      {/* 7. HR & COMPLAINTS & OTHER SECTIONS                                 */}
       {/* =================================================================== */}
       {activeTab === 'hr' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
           <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">SuperSonic Dedicated Logistics Personnel Roster</h3>
-              <p className="text-[11px] text-slate-400">Isolated logistics workforce roster.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowAddStaffModal(true)}
-              className="px-3.5 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs cursor-pointer"
-            >
-              ➕ Add New Staff / Driver
+            <h3 className="text-sm font-bold text-slate-900">SuperSonic Dedicated Personnel Roster</h3>
+            <button onClick={() => setShowAddStaffModal(true)} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white font-bold rounded-xl text-xs cursor-pointer">
+              ➕ Add Staff
             </button>
           </div>
-
-          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto border border-slate-200 rounded-xl">
+            <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                <tr className="bg-slate-50 border-b font-bold text-[11px]">
                   <th className="py-2.5 px-3 normal-case">staff id</th>
                   <th className="py-2.5 px-3 normal-case">full name</th>
-                  <th className="py-2.5 px-3 normal-case">role & title</th>
-                  <th className="py-2.5 px-3 normal-case">type</th>
+                  <th className="py-2.5 px-3 normal-case">role</th>
                   <th className="py-2.5 px-3 normal-case">phone</th>
-                  <th className="py-2.5 px-3 normal-case">assigned asset</th>
-                  <th className="py-2.5 px-3 normal-case">vehicle ownership</th>
-                  <th className="py-2.5 px-3 normal-case text-right">rate / salary</th>
+                  <th className="py-2.5 px-3 normal-case">ownership</th>
+                  <th className="py-2.5 px-3 normal-case text-right">salary/rate</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {staffList.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{s.id}</td>
-                    <td className="py-2.5 px-3 font-bold text-[#1e3a2b]">{s.fullName}</td>
-                    <td className="py-2.5 px-3 font-semibold text-slate-900">{s.role}</td>
-                    <td className="py-2.5 px-3"><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-900">{s.type}</span></td>
-                    <td className="py-2.5 px-3 font-mono text-slate-600">{s.phone}</td>
-                    <td className="py-2.5 px-3 text-slate-600 font-mono text-[11px]">{s.assignedAsset}</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${s.ownershipStatus === 'COMPANY_FLEET' ? 'bg-emerald-100 text-emerald-800' : s.ownershipStatus === 'OWN_VEHICLE' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>
-                        {s.ownershipStatus}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{s.salaryOrRate}</td>
+                  <tr key={s.id}>
+                    <td className="py-2 px-3 font-mono font-bold">{s.id}</td>
+                    <td className="py-2 px-3 font-bold text-[#1e3a2b]">{s.fullName}</td>
+                    <td className="py-2 px-3">{s.role}</td>
+                    <td className="py-2 px-3 font-mono">{s.phone}</td>
+                    <td className="py-2 px-3">{s.ownershipStatus}</td>
+                    <td className="py-2 px-3 text-right font-mono font-bold">{s.salaryOrRate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -778,58 +765,38 @@ function SuperSonicFleetContent() {
         </div>
       )}
 
-      {/* =================================================================== */}
-      {/* 8. CUSTOMER COMPLAINTS & RESOLUTION                                 */}
-      {/* =================================================================== */}
       {activeTab === 'complaints' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
           <h3 className="text-sm font-bold text-slate-900">Customer Complaints & 1-Hour Automated Review Feed</h3>
-          <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto border border-slate-200 rounded-xl">
+            <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                <tr className="bg-slate-50 border-b font-bold text-[11px]">
                   <th className="py-2.5 px-3 normal-case">ticket id</th>
                   <th className="py-2.5 px-3 normal-case">order no.</th>
-                  <th className="py-2.5 px-3 normal-case">customer & phone</th>
+                  <th className="py-2.5 px-3 normal-case">customer</th>
                   <th className="py-2.5 px-3 normal-case">courier</th>
-                  <th className="py-2.5 px-3 normal-case">issue category</th>
-                  <th className="py-2.5 px-3 normal-case">customer comment</th>
-                  <th className="py-2.5 px-3 normal-case">timestamp</th>
+                  <th className="py-2.5 px-3 normal-case">category</th>
+                  <th className="py-2.5 px-3 normal-case">comment</th>
                   <th className="py-2.5 px-3 normal-case text-center">status</th>
                   <th className="py-2.5 px-3 normal-case text-center">action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {complaints.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 px-3 font-mono font-bold text-rose-700">{c.id}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{c.orderNo}</td>
-                    <td className="py-2.5 px-3 font-bold text-slate-900">{c.customerName} ({c.phone})</td>
-                    <td className="py-2.5 px-3 text-slate-800">{c.driverName}</td>
-                    <td className="py-2.5 px-3"><span className="px-2 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 rounded font-bold text-[10px]">{c.category}</span></td>
-                    <td className="py-2.5 px-3 text-slate-600 italic">"{c.description}"</td>
-                    <td className="py-2.5 px-3 font-mono text-[11px] text-slate-500">{c.reportedAt}</td>
-                    <td className="py-2.5 px-3 text-center">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-center">
+                  <tr key={c.id}>
+                    <td className="py-2 px-3 font-mono font-bold text-rose-700">{c.id}</td>
+                    <td className="py-2 px-3 font-mono">{c.orderNo}</td>
+                    <td className="py-2 px-3 font-bold">{c.customerName} ({c.phone})</td>
+                    <td className="py-2 px-3">{c.driverName}</td>
+                    <td className="py-2 px-3">{c.category}</td>
+                    <td className="py-2 px-3 italic">"{c.description}"</td>
+                    <td className="py-2 px-3 text-center"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${c.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{c.status}</span></td>
+                    <td className="py-2 px-3 text-center">
                       {c.status !== 'RESOLVED' ? (
-                        <div className="flex items-center justify-center gap-1.5">
-                          <a href={`https://wa.me/961${c.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold">
-                            💬 WhatsApp
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => setSelectedComplaintForAction(c)}
-                            className="px-2 py-1 bg-[#1e3a2b] text-white rounded text-[10px] font-bold cursor-pointer"
-                          >
-                            Resolve
-                          </button>
-                        </div>
+                        <button onClick={() => setSelectedComplaintForAction(c)} className="px-2 py-1 bg-[#1e3a2b] text-white rounded text-[10px] font-bold cursor-pointer">Resolve</button>
                       ) : (
-                        <span className="text-slate-400 font-mono text-[10px]">Closed ✓</span>
+                        <span className="text-slate-400 text-[10px]">Closed ✓</span>
                       )}
                     </td>
                   </tr>
@@ -841,7 +808,7 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 9. SETTLEMENTS & MASTER A4 RECONCILIATION REPORT                    */}
+      {/* 8. SETTLEMENTS & MASTER A4 RECONCILIATION REPORT                    */}
       {/* =================================================================== */}
       {activeTab === 'settlements' && (
         <div className="space-y-4">
@@ -923,7 +890,7 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 10. LIVE RADAR (DRIVER PHONE MIRRORING)                             */}
+      {/* 9. LIVE RADAR (DRIVER PHONE MIRRORING)                              */}
       {/* =================================================================== */}
       {activeTab === 'radar' && (
         <div className="space-y-4">
@@ -965,7 +932,7 @@ function SuperSonicFleetContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 11. PROOF OF DELIVERY & VEHICLES LOG                                */}
+      {/* 10. PROOF OF DELIVERY (POD) ARCHIVE                                 */}
       {/* =================================================================== */}
       {activeTab === 'pod' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
@@ -1001,6 +968,9 @@ function SuperSonicFleetContent() {
         </div>
       )}
 
+      {/* =================================================================== */}
+      {/* 11. COMPANY FLEET & ODOMETER LOG                                    */}
+      {/* =================================================================== */}
       {activeTab === 'vehicles' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
           <h3 className="text-sm font-bold text-slate-900">SuperSonic Company-Owned Fleet Asset & Odometer Log</h3>
@@ -1025,7 +995,7 @@ function SuperSonicFleetContent() {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-sm w-full text-xs space-y-3">
             <h3 className="font-bold text-sm text-slate-900">Re-route Order #{selectedOrderForReroute.orderNo}</h3>
-            <p className="text-slate-600">Select destination corridor:</p>
+            <p className="text-slate-600">Select target corridor to transfer this package:</p>
             <div className="space-y-1.5">
               {corridors.map((c) => (
                 <button
@@ -1128,7 +1098,7 @@ function SuperSonicFleetContent() {
               <button type="button" onClick={() => setNewStaffType('ON_SITE')} className={`flex-1 py-2 rounded-xl border font-bold cursor-pointer ${newStaffType === 'ON_SITE' ? 'bg-[#1e3a2b] text-white' : 'bg-slate-100'}`}>On-Site Personnel</button>
             </div>
             <div><label className="font-bold block mb-1">Full Name:</label><input type="text" placeholder="e.g. Jad Mansour" className="w-full p-2 border rounded-xl" /></div>
-            <div><label className="font-bold block mb-1">Phone Number:</label><input type="text" placeholder="e.g. 03-334455" className="w-full p-2 border rounded-xl" /></div>
+            <div><label className="font-bold block mb-1">Phone Number:</label><input type="text" placeholder="03-334455" className="w-full p-2 border rounded-xl" /></div>
             <div className="flex gap-2 pt-2">
               <button type="button" onClick={() => { alert('✓ Staff profile created!'); setShowAddStaffModal(false); }} className="flex-1 py-2 bg-[#1e3a2b] text-white font-bold rounded-xl cursor-pointer">Create Profile</button>
               <button type="button" onClick={() => setShowAddStaffModal(false)} className="py-2 px-4 bg-slate-200 font-bold rounded-xl cursor-pointer">Cancel</button>
