@@ -23,8 +23,7 @@ import {
   ChevronsUp,
   Info,
   CheckCircle2,
-  X,
-  ArrowUp
+  X
 } from 'lucide-react';
 
 export default function AuthenticOmegaSalesDashboard() {
@@ -35,7 +34,7 @@ export default function AuthenticOmegaSalesDashboard() {
   const [selectedMonth, setSelectedMonth] = useState('9'); // September
   const [selectedDay, setSelectedDay] = useState('ALL');
   
-  // Chart Mode: Pie or Line
+  // Chart Mode: Pie or Line (toggled from the top right pill bar)
   const [chartMode, setChartMode] = useState<'pie' | 'line'>('pie');
 
   // Active Tab
@@ -169,14 +168,14 @@ export default function AuthenticOmegaSalesDashboard() {
     if (slices.length === 1 || slices.filter(s => s.amount > 0).length === 1) {
       const active = slices.find(s => s.amount > 0) || slices[0];
       return (
-        <svg viewBox="0 0 100 100" className="w-40 h-40 mx-auto my-2">
+        <svg viewBox="0 0 100 100" className="w-36 h-36 mx-auto my-2">
           <circle cx="50" cy="50" r="45" fill={active.color} />
         </svg>
       );
     }
 
     return (
-      <svg viewBox="0 0 100 100" className="w-44 h-44 mx-auto my-2">
+      <svg viewBox="0 0 100 100" className="w-40 h-40 mx-auto my-2">
         {slices.map((slice, i) => {
           if (slice.amount === 0) return null;
           const sliceFraction = slice.amount / total;
@@ -206,62 +205,162 @@ export default function AuthenticOmegaSalesDashboard() {
     );
   };
 
-  // Pie chart datasets matching user screenshots
-  const categorySlices = [
-    { name: 'Raw Materials', amount: 0, color: '#2e7d32', pct: 0.00 },
-    { name: 'جملة', amount: 23940000, color: '#1976d2', pct: 17.79 },
-    { name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { name: 'مفرق', amount: 57061800, color: '#d32f2f', pct: 42.41 },
+  // Helper for generating SVG Line Chart (matching exact Line Mode screenshots)
+  const renderLineSvg = (
+    points: { label: string; amount: number }[],
+    yMax: number,
+    yTicks: string[],
+    yMin: number = 0
+  ) => {
+    const width = 560;
+    const height = 180;
+    const paddingLeft = 65;
+    const paddingRight = 35;
+    const paddingTop = 20;
+    const paddingBottom = 40;
+    const graphWidth = width - paddingLeft - paddingRight;
+    const graphHeight = height - paddingTop - paddingBottom;
+    const valRange = yMax - yMin || 1;
+
+    const coords = points.map((p, i) => {
+      const x = paddingLeft + (i / Math.max(points.length - 1, 1)) * graphWidth;
+      const normalized = (p.amount - yMin) / valRange;
+      const y = paddingTop + graphHeight * (1 - Math.min(Math.max(normalized, 0), 1));
+      return { x, y, ...p };
+    });
+
+    let pathD = '';
+    if (coords.length === 1) {
+      pathD = `M ${coords[0].x - 20} ${coords[0].y} L ${coords[0].x + 20} ${coords[0].y}`;
+    } else {
+      pathD = coords.reduce((acc, pt, i) => {
+        if (i === 0) return `M ${pt.x} ${pt.y}`;
+        return `${acc} L ${pt.x} ${pt.y}`;
+      }, '');
+    }
+
+    return (
+      <div className="w-full overflow-x-auto py-1">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-[580px] mx-auto h-44 select-none">
+          {/* Horizontal Grid lines and Y labels */}
+          {yTicks.map((tick, idx) => {
+            const yPos = paddingTop + (idx / Math.max(yTicks.length - 1, 1)) * graphHeight;
+            return (
+              <g key={idx}>
+                <line 
+                  x1={paddingLeft} 
+                  y1={yPos} 
+                  x2={width - paddingRight} 
+                  y2={yPos} 
+                  stroke="#e2e8f0" 
+                  strokeWidth="1" 
+                />
+                <text 
+                  x={paddingLeft - 8} 
+                  y={yPos + 3.5} 
+                  fill="#64748b" 
+                  fontSize="9.5" 
+                  textAnchor="end"
+                  fontWeight="500"
+                >
+                  {tick}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Vertical axis line */}
+          <line 
+            x1={paddingLeft} 
+            y1={paddingTop} 
+            x2={paddingLeft} 
+            y2={height - paddingBottom} 
+            stroke="#cbd5e1" 
+            strokeWidth="1.2" 
+          />
+
+          {/* Green Line Path */}
+          <path 
+            d={pathD} 
+            fill="none" 
+            stroke="#2e7d32" 
+            strokeWidth="2.2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+          />
+
+          {/* Data Points */}
+          {coords.map((pt, i) => (
+            <g key={i}>
+              <circle 
+                cx={pt.x} 
+                cy={pt.y} 
+                r="3.8" 
+                fill="#2e7d32" 
+                stroke="#ffffff" 
+                strokeWidth="1.8" 
+              />
+              {/* X Axis Label */}
+              <text 
+                x={pt.x} 
+                y={height - paddingBottom + 16} 
+                fill="#334155" 
+                fontSize="9" 
+                textAnchor="middle"
+                className="truncate"
+              >
+                {pt.label}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
+    );
+  };
+
+  // Datasets for Pie & Line modes
+  const categoryData = [
+    { label: 'Raw Materials', name: 'Raw Materials', amount: 0, color: '#2e7d32', pct: 0.00 },
+    { label: 'جملة', name: 'جملة', amount: 23940000, color: '#1976d2', pct: 17.79 },
+    { label: 'عروض', name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
+    { label: 'مفرق', name: 'مفرق', amount: 57061800, color: '#d32f2f', pct: 42.41 },
   ];
 
-  const divisionSlices = [
-    { name: 'Plastic', amount: 0, color: '#2e7d32', pct: 0 },
-    { name: 'زيوت مفرق', amount: 48500000, color: '#1976d2', pct: 36.05 },
-    { name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { name: 'عسل مفرق', amount: 4800000, color: '#d32f2f', pct: 3.57 },
-    { name: 'كيلو مفرق', amount: 3761800, color: '#7c3aed', pct: 2.80 },
-    { name: 'معصره مفرق', amount: 0, color: '#0f766e', pct: 0 },
-    { name: 'مربيات جملة', amount: 0, color: '#b45309', pct: 0 },
-    { name: 'مربيات مفرق', amount: 0, color: '#991b1b', pct: 0 },
-    { name: 'معصره جملة', amount: 23940000, color: '#334155', pct: 17.79 },
-    { name: 'دوفه بلديه مفرق', amount: 0, color: '#84cc16', pct: 0 },
+  const divisionData = [
+    { label: 'Plastic', name: 'Plastic', amount: 0, color: '#2e7d32', pct: 0 },
+    { label: 'عروض', name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
+    { label: 'كيلو مفرق', name: 'كيلو مفرق', amount: 2231000, color: '#7c3aed', pct: 1.66 },
+    { label: 'مربيات جملة', name: 'مربيات جملة', amount: 17370000, color: '#b45309', pct: 12.91 },
+    { label: 'مربيات مفرق', name: 'مربيات مفرق', amount: 225000, color: '#991b1b', pct: 0.17 },
+    { label: 'مرطبان', name: 'مرطبان', amount: 3405000, color: '#1976d2', pct: 2.53 },
+    { label: 'مونة بلدية مفرق', name: 'مونة بلدية مفرق', amount: 2665000, color: '#84cc16', pct: 1.98 },
   ];
 
-  const groupSlices = [
-    { name: 'مرطبان 500', amount: 2235000, color: '#2e7d32', pct: 1.66 },
-    { name: 'Plastic Gallon', amount: 0, color: '#1976d2', pct: 0.00 },
-    { name: 'حبوب فلت', amount: 430000, color: '#f59e0b', pct: 0.32 },
-    { name: 'رف', amount: 2235000, color: '#d32f2f', pct: 1.66 },
-    { name: 'زيت زيتون عصير مفرق', amount: 9360000, color: '#7c3aed', pct: 6.96 },
-    { name: 'زيت زيتون فرجين مفرق', amount: 39140000, color: '#0f766e', pct: 29.09 },
-    { name: 'عروض', amount: 53550000, color: '#ea580c', pct: 39.80 },
-    { name: 'عسل مفرق', amount: 4800000, color: '#991b1b', pct: 3.57 },
-    { name: 'قنينات بي', amount: 0, color: '#ec4899', pct: 0.00 },
-    { name: 'كيلو مفرق', amount: 3761800, color: '#475569', pct: 2.80 },
-    { name: 'مربيات جملة', amount: 0, color: '#84cc16', pct: 0.00 },
-    { name: 'مربيات مفرق', amount: 0, color: '#581c87', pct: 0.00 },
-    { name: 'مرطبان 507', amount: 0, color: '#1e3a8a', pct: 0.00 },
-    { name: 'مرطبان 510', amount: 0, color: '#dc2626', pct: 0.00 },
-    { name: 'مكفوله باق جملة', amount: 19040000, color: '#4c1d95', pct: 14.15 },
+  const groupData = [
+    { label: 'مرطبان 509', name: 'مرطبان 509', amount: 2235000, color: '#2e7d32', pct: 1.66 },
+    { label: 'زيت زيتون خضير مفرق', name: 'زيت زيتون خضير مفرق', amount: 9360000, color: '#7c3aed', pct: 6.96 },
+    { label: 'زيت زيتون فرجين', name: 'زيت زيتون فرجين مفرق', amount: 39140000, color: '#0f766e', pct: 29.09 },
+    { label: 'قنينات بي', name: 'قنينات بي', amount: 0, color: '#ec4899', pct: 0.00 },
+    { label: 'مرطبان 507', name: 'مرطبان 507', amount: 0, color: '#1e3a8a', pct: 0.00 },
   ];
 
-  const departmentSlices = [
-    { name: 'MAIN DEPARTMENT', amount: 107911800, color: '#2e7d32', pct: 81.84 },
-    { name: 'Showroom', amount: 23940000, color: '#1976d2', pct: 18.16 },
+  const departmentData = [
+    { label: 'MAIN DEPARTMENT', name: 'MAIN DEPARTMENT', amount: 107911800, color: '#2e7d32', pct: 81.84 },
+    { label: 'Showroom', name: 'Showroom', amount: 23940000, color: '#1976d2', pct: 18.16 },
   ];
 
-  const discountSlices = [
-    { name: 'DISCOUNT', amount: 2700000, color: '#2e7d32', pct: 100.00 },
+  const discountData = [
+    { label: 'DISCOUNT', name: 'DISCOUNT', amount: 2700000, color: '#2e7d32', pct: 100.00 },
   ];
 
-  const userSlices = [
-    { name: 'Hiba Aloulou', amount: 108031800, color: '#2e7d32', pct: 81.93 },
-    { name: 'Mahdi', amount: 23820000, color: '#1976d2', pct: 18.07 },
+  const userData = [
+    { label: 'Hiba Aloulou', name: 'Hiba Aloulou', amount: 108031800, color: '#2e7d32', pct: 81.93 },
+    { label: 'Mahdi', name: 'Mahdi', amount: 23820000, color: '#1976d2', pct: 18.07 },
   ];
 
-  const paymentSlices = [
-    { name: 'CASH', amount: 107911800, color: '#2e7d32', pct: 81.84 },
-    { name: 'CASH USD', amount: 23940000, color: '#1976d2', pct: 18.16 },
+  const paymentData = [
+    { label: 'CASH', name: 'CASH', amount: 107911800, color: '#2e7d32', pct: 81.84 },
+    { label: 'CASH USD', name: 'CASH USD', amount: 23940000, color: '#1976d2', pct: 18.16 },
   ];
 
   return (
@@ -357,6 +456,7 @@ export default function AuthenticOmegaSalesDashboard() {
           background-color: #f8fafc;
           color: #334155;
           cursor: pointer;
+          transition: all 0.15s;
         }
         .omega-circle-btn.active {
           background-color: #111827;
@@ -415,7 +515,7 @@ export default function AuthenticOmegaSalesDashboard() {
             </select>
           </div>
 
-          {/* Month */}
+          {/* Month with Quarters */}
           <div className="w-36">
             <select 
               value={selectedMonth}
@@ -690,7 +790,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
           <div className="flex-1"></div>
 
-          {/* Chart mode buttons */}
+          {/* Chart mode toggle buttons: Line and Pie */}
           <button 
             type="button"
             onClick={() => setChartMode('line')}
@@ -948,16 +1048,25 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(categorySlices)}
-                  {/* Legend */}
-                  <div className="flex flex-wrap justify-center gap-3 my-2 text-[11px] text-slate-700">
-                    {categorySlices.map((s, i) => (
-                      <span key={i} className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(categoryData)}
+                      <div className="flex flex-wrap justify-center gap-3 my-2 text-[11px] text-slate-700">
+                        {categoryData.map((s, i) => (
+                          <span key={i} className="inline-flex items-center gap-1">
+                            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      categoryData,
+                      60000000,
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                    )
+                  )}
                   {/* Table */}
                   <table className="omega-dense-table mt-2">
                     <thead>
@@ -968,7 +1077,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {categorySlices.map((s, i) => (
+                      {categoryData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
@@ -992,15 +1101,25 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(divisionSlices)}
-                  <div className="flex flex-wrap justify-center gap-2 my-2 text-[10.5px] text-slate-700">
-                    {divisionSlices.filter(s => s.amount > 0).map((s, i) => (
-                      <span key={i} className="inline-flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: s.color }}></span>
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(divisionData)}
+                      <div className="flex flex-wrap justify-center gap-2 my-2 text-[10.5px] text-slate-700">
+                        {divisionData.filter(s => s.amount > 0).map((s, i) => (
+                          <span key={i} className="inline-flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      divisionData,
+                      60000000,
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1010,7 +1129,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {divisionSlices.slice(0, 5).map((s, i) => (
+                      {divisionData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
@@ -1039,7 +1158,15 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(groupSlices)}
+                  {chartMode === 'pie' ? (
+                    renderPieSvg(groupData)
+                  ) : (
+                    renderLineSvg(
+                      groupData,
+                      60000000,
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1049,7 +1176,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {groupSlices.slice(0, 6).map((s, i) => (
+                      {groupData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
@@ -1073,15 +1200,26 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(departmentSlices)}
-                  <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700">
-                    {departmentSlices.map((s, i) => (
-                      <span key={i} className="inline-flex items-center gap-1 font-semibold">
-                        <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(departmentData)}
+                      <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700">
+                        {departmentData.map((s, i) => (
+                          <span key={i} className="inline-flex items-center gap-1 font-semibold">
+                            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      departmentData,
+                      110000000,
+                      ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M', '30M', '20M'],
+                      20000000
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1091,7 +1229,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {departmentSlices.map((s, i) => (
+                      {departmentData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
@@ -1118,11 +1256,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(discountSlices)}
-                  <div className="flex justify-center gap-2 my-2 text-xs font-semibold text-slate-700">
-                    <span className="w-2.5 h-2.5 bg-[#2e7d32] rounded-sm inline-block"></span>
-                    <span>DISCOUNT</span>
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(discountData)}
+                      <div className="flex justify-center gap-2 my-2 text-xs font-semibold text-slate-700">
+                        <span className="w-2.5 h-2.5 bg-[#2e7d32] rounded-sm inline-block"></span>
+                        <span>DISCOUNT</span>
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      discountData,
+                      3000000,
+                      ['2.7M', '2.7M', '2.7M', '2.7M', '2.7M', '2.7M'],
+                      2000000
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1188,15 +1337,26 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(userSlices)}
-                  <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700 font-semibold">
-                    {userSlices.map((s, i) => (
-                      <span key={i} className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(userData)}
+                      <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700 font-semibold">
+                        {userData.map((s, i) => (
+                          <span key={i} className="inline-flex items-center gap-1">
+                            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      userData,
+                      110000000,
+                      ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M', '30M', '20M'],
+                      20000000
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1206,7 +1366,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {userSlices.map((s, i) => (
+                      {userData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
@@ -1228,15 +1388,26 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="omega-panel-body">
-                  {renderPieSvg(paymentSlices)}
-                  <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700 font-semibold">
-                    {paymentSlices.map((s, i) => (
-                      <span key={i} className="inline-flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
-                        {s.name}
-                      </span>
-                    ))}
-                  </div>
+                  {chartMode === 'pie' ? (
+                    <>
+                      {renderPieSvg(paymentData)}
+                      <div className="flex justify-center gap-4 my-2 text-[11px] text-slate-700 font-semibold">
+                        {paymentData.map((s, i) => (
+                          <span key={i} className="inline-flex items-center gap-1">
+                            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            {s.name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    renderLineSvg(
+                      paymentData,
+                      110000000,
+                      ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M'],
+                      20000000
+                    )
+                  )}
                   <table className="omega-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
@@ -1246,7 +1417,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {paymentSlices.map((s, i) => (
+                      {paymentData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
                           <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
