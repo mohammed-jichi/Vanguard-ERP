@@ -383,8 +383,25 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.operations && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/operations" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Operations Center Overview
+                      <Link href="/backoffice/operations?tab=catalog" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        📦 Products & Master Catalog
+                      </Link>
+                      <Link href="/backoffice/operations?tab=pressing" className="flex items-center justify-between px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        <span>🫒 Olive Pressing & Harvest Runs</span>
+                        <span className="text-[9px] font-mono bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">2026</span>
+                      </Link>
+                      <Link href="/backoffice/operations?tab=transfers" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🔄 Stock Transfers & Requisitions
+                      </Link>
+                      <Link href="/backoffice/operations?tab=adjustments" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        ⚖️ Physical Count & Adjustments
+                      </Link>
+                      <Link href="/backoffice/operations?tab=suppliers" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        🤝 Suppliers & Grove Farmers
+                      </Link>
+                      <Link href="/backoffice/operations?tab=reorder" className="flex items-center justify-between px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
+                        <span>🔔 Reorder Guide & Stock Alerts</span>
+                        <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1 py-0.2 rounded font-bold">Alert</span>
                       </Link>
                     </div>
                   )}
