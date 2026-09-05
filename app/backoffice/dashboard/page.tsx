@@ -1,55 +1,98 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { 
+  Calendar, 
+  TrendingUp, 
+  BookOpen, 
+  Ticket, 
+  Clock, 
+  RefreshCw, 
+  BarChart3, 
+  Scale, 
+  Boxes, 
+  UserCircle2, 
+  Truck, 
+  Users, 
+  Globe, 
+  Maximize2, 
+  PieChart as PieChartIcon, 
+  LineChart as LineChartIcon,
+  Sun,
+  Moon,
+  ArrowUp,
+  ArrowDown,
+  Info,
+  CheckCircle2,
+  X
+} from 'lucide-react';
 
-export default function MasterSalesDashboardPage() {
-  // Global Filters
-  const [selectedBranch, setSelectedBranch] = useState('ALL');
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+export default function OmegaSalesDashboardPage() {
+  // Theme state: dark (Omega default) or light
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  // Filters
+  const [selectedBranch, setSelectedBranch] = useState('0'); // 0 = ALL
+  const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'LBP'>('USD');
   const [selectedYear, setSelectedYear] = useState('2026');
-  const [selectedMonth, setSelectedMonth] = useState('09');
-  const [selectedDay, setSelectedDay] = useState('ALL');
-  
-  // UI States
+  const [selectedMonth, setSelectedMonth] = useState('9'); // September
+  const [selectedDay, setSelectedDay] = useState('0'); // 0 = All Days
+  const [chartType, setChartType] = useState<'line' | 'pie'>('line');
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics'>('summary');
+
+  // Loading / Modal states
   const [recalculating, setRecalculating] = useState(false);
   const [eodModalOpen, setEodModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'daily' | 'hourly' | 'weekday' | 'category' | 'payments' | 'branches'>('daily');
+  const [enlargedSection, setEnlargedSection] = useState<string | null>(null);
 
-  // Rate
   const usdRate = 89500;
 
   const branches = [
-    { id: 'ALL', name: 'All Branches (001 - 006)', code: '-100' },
-    { id: '001', name: '001 - Choueifat Main Facility & Plant', code: 'BR_001' },
-    { id: '002', name: '002 - Beirut Wholesale Hub', code: 'BR_002' },
-    { id: '003', name: '003 - Saida Southern Center', code: 'BR_003' },
-    { id: '004', name: '004 - Zahle Bekaa Branch', code: 'BR_004' },
-    { id: '005', name: '005 - Tripoli North Depot', code: 'BR_005' },
-    { id: '006', name: '006 - Nabatieh Center', code: 'BR_006' },
+    { id: '0', code: '000', name: 'All Branches' },
+    { id: '1', code: '001', name: '001 - Choueifat Main Facility & Plant' },
+    { id: '2', code: '002', name: '002 - Beirut Wholesale Hub' },
+    { id: '3', code: '003', name: '003 - Saida Southern Center' },
+    { id: '4', code: '004', name: '004 - Zahle Bekaa Branch' },
+    { id: '5', code: '005', name: '005 - Tripoli North Depot' },
+    { id: '6', code: '006', name: '006 - Nabatieh Center' },
   ];
 
-  const formatCurrency = (valUsd: number) => {
+  const months = [
+    { id: '0', name: 'All Months' },
+    { id: '1', name: 'January' },
+    { id: '2', name: 'February' },
+    { id: '3', name: 'March' },
+    { id: '4', name: 'April' },
+    { id: '5', name: 'May' },
+    { id: '6', name: 'June' },
+    { id: '7', name: 'July' },
+    { id: '8', name: 'August' },
+    { id: '9', name: 'September' },
+    { id: '10', name: 'October' },
+    { id: '11', name: 'November' },
+    { id: '12', name: 'December' },
+  ];
+
+  const formatAmount = (usdVal: number) => {
     if (selectedCurrency === 'LBP') {
-      const lbpVal = Math.round(valUsd * usdRate);
+      const lbpVal = Math.round(usdVal * usdRate);
       return `${lbpVal.toLocaleString()} LBP`;
     }
-    return `$${valUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `$${usdVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const handleRecalculate = () => {
     setRecalculating(true);
     setTimeout(() => {
       setRecalculating(false);
-    }, 800);
+    }, 700);
   };
 
-  const handleExportPdf = () => {
-    window.print();
-  };
-
-  // Branch EOD Closeout status
-  const branchEods = [
+  // Branch EOD Closeout Status
+  const branchEodDates = [
     { branch: '001 - Choueifat Main Facility', lastEod: '2026-09-04 23:45', status: 'Closed', cashier: 'Mahdi Jichi' },
     { branch: '002 - Beirut Wholesale Hub', lastEod: '2026-09-04 22:15', status: 'Closed', cashier: 'Hiba Aloulou' },
     { branch: '003 - Saida Southern Center', lastEod: '2026-09-04 21:30', status: 'Closed', cashier: 'Hussein Daik' },
@@ -58,128 +101,603 @@ export default function MasterSalesDashboardPage() {
     { branch: '006 - Nabatieh Center', lastEod: '2026-09-04 22:00', status: 'Closed', cashier: 'Ali Wehbe' },
   ];
 
-  // Daily Sales dataset (September 2026)
-  const dailySalesData = [
-    { day: '01-Sep', dayName: 'Tue', salesUsd: 14250, invoices: 182, avgTicket: 78.30, lyearUsd: 12800 },
-    { day: '02-Sep', dayName: 'Wed', salesUsd: 16800, invoices: 210, avgTicket: 80.00, lyearUsd: 14500 },
-    { day: '03-Sep', dayName: 'Thu', salesUsd: 19400, invoices: 245, avgTicket: 79.18, lyearUsd: 17100 },
-    { day: '04-Sep', dayName: 'Fri', salesUsd: 22100, invoices: 278, avgTicket: 79.50, lyearUsd: 19600 },
-    { day: '05-Sep', dayName: 'Sat', salesUsd: 18450, invoices: 224, avgTicket: 82.36, lyearUsd: 16300 },
+  // Highlights Dataset
+  const highlights = [
+    { id: 1, label: 'Cost of Goods', value: '$168,400.00', trend: 'down', sub: 'Margin: 57.8% ┃ Target: 55%', formula: 'Cost / Realized Net Revenue', color: '#1976d2' },
+    { id: 2, label: 'Total Receipts', value: '$382,100.00', trend: 'up', sub: '95.8% Collection ┃ MTD', formula: 'Total Cash + Inflows Received', color: '#2e7d32' },
+    { id: 3, label: 'Void / Refund Ratio', value: '0.51%', trend: 'down', sub: 'Voids: $1.2k ┃ Refunds: $850', formula: '(Voids + Refunds) / Gross Sales', color: '#f59e0b' },
+    { id: 4, label: 'Average Ticket', value: '$85.40', trend: 'up', sub: 'LY: $76.20 (+12.1%)', formula: 'Net Sales / Total Checks', color: '#0f766e' },
+    { id: 5, label: 'Customer Count', value: '1,620', trend: 'up', sub: 'New: 142 ┃ Repeat: 1,478', formula: 'Unique Billed Clients This Month', color: '#7c3aed' },
+    { id: 6, label: 'Wholesale / Retail', value: '72% / 28%', trend: 'up', sub: 'Bulk Tins: 64% ┃ Bottled: 36%', formula: 'Wholesale Volume vs Retail Bottling', color: '#64748b' },
   ];
 
-  // Hourly Breakdown
-  const hourlyData = [
-    { hour: '08:00 - 09:00', salesUsd: 1200, count: 18, pct: '6.5%' },
-    { hour: '09:00 - 10:00', salesUsd: 2450, count: 32, pct: '13.3%' },
-    { hour: '10:00 - 11:00', salesUsd: 3800, count: 48, pct: '20.6%' },
-    { hour: '11:00 - 12:00', salesUsd: 3400, count: 42, pct: '18.4%' },
-    { hour: '12:00 - 13:00', salesUsd: 1900, count: 25, pct: '10.3%' },
-    { hour: '13:00 - 14:00', salesUsd: 1400, count: 19, pct: '7.6%' },
-    { hour: '14:00 - 15:00', salesUsd: 1100, count: 14, pct: '6.0%' },
-    { hour: '15:00 - 16:00', salesUsd: 1600, count: 20, pct: '8.7%' },
-    { hour: '16:00 - 17:00', salesUsd: 1600, count: 21, pct: '8.7%' },
+  // Monthly Revenue Matrix (12 months per branch)
+  const monthlyRevenueData = [
+    {
+      branch: '001 - Choueifat Main Facility',
+      months: [
+        { cur: 84200, ly: 74500, diff: '+13.0%' },
+        { cur: 78900, ly: 71200, diff: '+10.8%' },
+        { cur: 92400, ly: 81000, diff: '+14.1%' },
+        { cur: 88100, ly: 79500, diff: '+10.8%' },
+        { cur: 96500, ly: 85200, diff: '+13.3%' },
+        { cur: 104200, ly: 92100, diff: '+13.1%' },
+        { cur: 112400, ly: 99800, diff: '+12.6%' },
+        { cur: 118900, ly: 105200, diff: '+13.0%' },
+        { cur: 124500, ly: 109800, diff: '+13.4%' },
+        { cur: 0, ly: 98400, diff: '-' },
+        { cur: 0, ly: 102100, diff: '-' },
+        { cur: 0, ly: 115000, diff: '-' },
+      ],
+      total: { cur: 900100, ly: 798300, diff: '+12.8%' }
+    },
+    {
+      branch: '002 - Beirut Wholesale Hub',
+      months: [
+        { cur: 54100, ly: 48200, diff: '+12.2%' },
+        { cur: 52000, ly: 46800, diff: '+11.1%' },
+        { cur: 58900, ly: 51200, diff: '+15.0%' },
+        { cur: 56400, ly: 50100, diff: '+12.6%' },
+        { cur: 61200, ly: 54000, diff: '+13.3%' },
+        { cur: 67800, ly: 60200, diff: '+12.6%' },
+        { cur: 72100, ly: 64100, diff: '+12.5%' },
+        { cur: 75400, ly: 67300, diff: '+12.0%' },
+        { cur: 79200, ly: 69900, diff: '+13.3%' },
+        { cur: 0, ly: 62400, diff: '-' },
+        { cur: 0, ly: 65100, diff: '-' },
+        { cur: 0, ly: 74200, diff: '-' },
+      ],
+      total: { cur: 577100, ly: 511800, diff: '+12.8%' }
+    },
+    {
+      branch: '003 - Saida Southern Center',
+      months: [
+        { cur: 41200, ly: 37100, diff: '+11.1%' },
+        { cur: 39500, ly: 35800, diff: '+10.3%' },
+        { cur: 44800, ly: 39200, diff: '+14.3%' },
+        { cur: 43100, ly: 38400, diff: '+12.2%' },
+        { cur: 47200, ly: 41800, diff: '+12.9%' },
+        { cur: 51900, ly: 46100, diff: '+12.6%' },
+        { cur: 55400, ly: 49200, diff: '+12.6%' },
+        { cur: 58200, ly: 51800, diff: '+12.4%' },
+        { cur: 61400, ly: 54100, diff: '+13.5%' },
+        { cur: 0, ly: 48900, diff: '-' },
+        { cur: 0, ly: 50800, diff: '-' },
+        { cur: 0, ly: 58100, diff: '-' },
+      ],
+      total: { cur: 442700, ly: 393500, diff: '+12.5%' }
+    },
+    {
+      branch: '004 - Zahle Bekaa Branch',
+      months: [
+        { cur: 31200, ly: 28100, diff: '+11.0%' },
+        { cur: 29800, ly: 27000, diff: '+10.4%' },
+        { cur: 34100, ly: 30100, diff: '+13.3%' },
+        { cur: 32900, ly: 29400, diff: '+11.9%' },
+        { cur: 36200, ly: 32000, diff: '+13.1%' },
+        { cur: 39800, ly: 35100, diff: '+13.4%' },
+        { cur: 42400, ly: 37600, diff: '+12.8%' },
+        { cur: 44800, ly: 39800, diff: '+12.6%' },
+        { cur: 47200, ly: 41500, diff: '+13.7%' },
+        { cur: 0, ly: 37800, diff: '-' },
+        { cur: 0, ly: 39200, diff: '-' },
+        { cur: 0, ly: 45100, diff: '-' },
+      ],
+      total: { cur: 338400, ly: 300600, diff: '+12.6%' }
+    },
+    {
+      branch: '005 - Tripoli North Depot',
+      months: [
+        { cur: 33500, ly: 30100, diff: '+11.3%' },
+        { cur: 32100, ly: 29000, diff: '+10.7%' },
+        { cur: 36800, ly: 32400, diff: '+13.6%' },
+        { cur: 35200, ly: 31500, diff: '+11.7%' },
+        { cur: 38900, ly: 34500, diff: '+12.8%' },
+        { cur: 42700, ly: 37900, diff: '+12.7%' },
+        { cur: 45600, ly: 40500, diff: '+12.6%' },
+        { cur: 48100, ly: 42800, diff: '+12.4%' },
+        { cur: 50850, ly: 44700, diff: '+13.8%' },
+        { cur: 0, ly: 40900, diff: '-' },
+        { cur: 0, ly: 42500, diff: '-' },
+        { cur: 0, ly: 48900, diff: '-' },
+      ],
+      total: { cur: 363750, ly: 323400, diff: '+12.5%' }
+    },
+    {
+      branch: '006 - Nabatieh Center',
+      months: [
+        { cur: 23100, ly: 20800, diff: '+11.1%' },
+        { cur: 22000, ly: 19900, diff: '+10.6%' },
+        { cur: 25400, ly: 22400, diff: '+13.4%' },
+        { cur: 24300, ly: 21800, diff: '+11.5%' },
+        { cur: 26900, ly: 23900, diff: '+12.6%' },
+        { cur: 29600, ly: 26300, diff: '+12.5%' },
+        { cur: 31600, ly: 28100, diff: '+12.5%' },
+        { cur: 33400, ly: 29700, diff: '+12.5%' },
+        { cur: 35500, ly: 31200, diff: '+13.8%' },
+        { cur: 0, ly: 28400, diff: '-' },
+        { cur: 0, ly: 29500, diff: '-' },
+        { cur: 0, ly: 33900, diff: '-' },
+      ],
+      total: { cur: 251800, ly: 224100, diff: '+12.4%' }
+    }
   ];
 
-  // Weekday Breakdown
-  const weekdayData = [
-    { day: 'Monday', avgSalesUsd: 15800, totalInvoices: 820, share: '14.8%' },
-    { day: 'Tuesday', avgSalesUsd: 16400, totalInvoices: 845, share: '15.4%' },
-    { day: 'Wednesday', avgSalesUsd: 17200, totalInvoices: 890, share: '16.1%' },
-    { day: 'Thursday', avgSalesUsd: 19800, totalInvoices: 1020, share: '18.5%' },
-    { day: 'Friday', avgSalesUsd: 22400, totalInvoices: 1150, share: '21.0%' },
-    { day: 'Saturday', avgSalesUsd: 15200, totalInvoices: 780, share: '14.2%' },
-    { day: 'Sunday', avgSalesUsd: 0, totalInvoices: 0, share: '0.0%' },
-  ];
-
-  // Category Revenue
+  // Category Breakdown
   const categoryData = [
-    { name: 'Extra Virgin Olive Oil (EVOO)', salesUsd: 224800, qty: '18,450 L', pct: '56.4%' },
-    { name: 'Virgin Olive Oil', salesUsd: 78500, qty: '8,200 L', pct: '19.7%' },
-    { name: 'Table Olives & Pickles', salesUsd: 42300, qty: '4,600 Kg', pct: '10.6%' },
-    { name: 'Pomegranate Molasses & Vinegar', salesUsd: 31200, qty: '3,800 Bottles', pct: '7.8%' },
-    { name: 'Olive Pomace Oil & Industrial', salesUsd: 15400, qty: '2,900 L', pct: '3.9%' },
-    { name: 'Bulk Packaging & Tin Containers', salesUsd: 6450, qty: '1,200 Tins', pct: '1.6%' },
+    { name: 'Extra Virgin Olive Oil (EVOO)', amount: 224800, pct: '56.4%' },
+    { name: 'Virgin Olive Oil', amount: 78500, pct: '19.7%' },
+    { name: 'Table Olives & Pickles', amount: 42300, pct: '10.6%' },
+    { name: 'Pomegranate Molasses & Vinegar', amount: 31200, pct: '7.8%' },
+    { name: 'Olive Pomace Oil & Industrial', amount: 15400, pct: '3.9%' },
+    { name: 'Empty Tins, Bottles & Packaging', amount: 6450, pct: '1.6%' },
+  ];
+  const totalCategoryAmount = 398650;
+
+  // Department / Division
+  const departmentData = [
+    { name: 'Wholesale Commercial Bulk', amount: 245000, pct: '61.5%' },
+    { name: 'Supermarkets & Retail Packaging', amount: 89400, pct: '22.4%' },
+    { name: 'Export & International Distribution', amount: 43250, pct: '10.8%' },
+    { name: 'Direct Plant & Factory Gate Outlet', amount: 21000, pct: '5.3%' },
   ];
 
-  // Payment Breakdown
+  // Discounts
+  const discountData = [
+    { name: 'Wholesale Volume Rebate (Tier 1)', amount: 6800, pct: '47.9%' },
+    { name: 'Seasonal Harvesting Promotion', amount: 3450, pct: '24.3%' },
+    { name: 'Payment Terms & Early Settlement (2%)', amount: 2150, pct: '15.1%' },
+    { name: 'Customer Loyalty & Annual Agreement', amount: 1200, pct: '8.5%' },
+    { name: 'Damaged Packaging Allowance', amount: 600, pct: '4.2%' },
+  ];
+  const totalDiscount = 14200;
+
+  // Voids
+  const voidData = [
+    { name: 'Barcode Scan Mismatch / Incorrect SKU', amount: 480, pct: '40.0%' },
+    { name: 'Customer Changed Mind on Quantity', amount: 350, pct: '29.2%' },
+    { name: 'Credit Limit Verification Hold', amount: 220, pct: '18.3%' },
+    { name: 'Terminal Re-entry / Network Timeout', amount: 150, pct: '12.5%' },
+  ];
+  const totalVoids = 1200;
+
+  // Payments
   const paymentData = [
-    { method: 'Cash (USD)', amountUsd: 215400, transactions: 2450, pct: '54.0%' },
-    { method: 'Cash (LBP)', amountUsd: 112300, transactions: 1520, pct: '28.2%' },
-    { method: 'Customer Account Ledger (Credit)', amountUsd: 48500, transactions: 410, pct: '12.2%' },
-    { method: 'Whish Money Transfer', amountUsd: 14200, transactions: 180, pct: '3.6%' },
-    { method: 'Credit Card / POS Terminal', amountUsd: 5800, transactions: 74, pct: '1.5%' },
-    { method: 'Bank Cheques', amountUsd: 2450, transactions: 12, pct: '0.6%' },
+    { name: 'Cash USD ($)', amount: 184500, pct: '48.3%' },
+    { name: 'Cash LBP (Market 89,500)', amount: 96400, pct: '25.2%' },
+    { name: 'Customer Credit Ledger (Net 30)', amount: 64200, pct: '16.8%' },
+    { name: 'Whish Money Transfer', amount: 18500, pct: '4.8%' },
+    { name: 'Bank Cards (Visa / MC)', amount: 11500, pct: '3.0%' },
+    { name: 'Cheques Under Collection', amount: 7000, pct: '1.8%' },
+  ];
+  const totalPayments = 382100;
+
+  // Users
+  const userData = [
+    { name: 'Mahdi Jichi (Executive Manager)', amount: 142500, pct: '35.7%' },
+    { name: 'Hiba Aloulou (Senior Accountant)', amount: 98400, pct: '24.7%' },
+    { name: 'Hussein Daik (Sales Lead - South)', amount: 68900, pct: '17.3%' },
+    { name: 'Ahmad Taha (Wholesale Representative)', amount: 51200, pct: '12.8%' },
+    { name: 'Rami Kassem (Bekaa Area Officer)', amount: 37650, pct: '9.5%' },
   ];
 
-  // Branch Performance
-  const branchData = [
-    { branch: '001 - Choueifat Main Facility & Plant', salesUsd: 168400, invoices: 1850, pct: '42.2%', growth: '+14.2%' },
-    { branch: '002 - Beirut Wholesale Hub', salesUsd: 98200, invoices: 1120, pct: '24.6%', growth: '+12.5%' },
-    { branch: '003 - Saida Southern Center', salesUsd: 62400, invoices: 740, pct: '15.7%', growth: '+9.8%' },
-    { branch: '004 - Zahle Bekaa Branch', salesUsd: 34100, invoices: 410, pct: '8.6%', growth: '+11.0%' },
-    { branch: '005 - Tripoli North Depot', salesUsd: 21300, invoices: 290, pct: '5.3%', growth: '+7.4%' },
-    { branch: '006 - Nabatieh Center', salesUsd: 14250, invoices: 258, pct: '3.6%', growth: '+15.8%' },
-  ];
+  // Daily Summary (Comparative Tab)
+  const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
-    <div className="w-full flex flex-col min-h-[calc(100vh-80px)] text-left font-sans space-y-3 pb-8 max-w-7xl mx-auto px-2">
-      
-      {/* =================================================================== */}
-      {/* 1. OMEGA STYLE TOPBAR FILTER BAR                                    */}
-      {/* =================================================================== */}
-      <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          
-          {/* Left Title & System Status */}
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <span>📊</span>
-                <span>Sales Dashboard</span>
-              </h1>
-              <div className="text-[11px] font-mono text-slate-500">
-                Southern Olive Oil Products S.A.R.L • Executive Sales Control
-              </div>
-            </div>
-          </div>
+    <div className={`omega-page-wrapper ${theme === 'dark' ? 'cms-theme-dark' : 'cms-theme-light'}`}>
+      <style jsx global>{`
+        .omega-page-wrapper {
+          min-height: 100vh;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          transition: background-color 0.2s;
+        }
+        .cms-theme-dark {
+          background-color: #0f172a;
+          color: #e5e7eb;
+        }
+        .cms-theme-light {
+          background-color: #f4f6f9;
+          color: #1e293b;
+        }
 
-          {/* Center Filters matching Omega exactly */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            
-            {/* Branch Filter */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-              <span className="text-slate-400 font-bold">🏢</span>
-              <select
+        /* Authentic Omega Branch Dashboard Shell */
+        .branch-dashboard-shell {
+          --bd-bg: #111827;
+          --bd-surface: #1f2937;
+          --bd-surface-soft: #111827;
+          --bd-surface-muted: #374151;
+          --bd-card: #18212f;
+          --bd-card-soft: #243244;
+          --bd-border: rgba(148, 163, 184, 0.22);
+          --bd-text: #f8fafc;
+          --bd-text-muted: #cbd5e1;
+          --bd-accent: #f8fafc;
+          --bd-shadow: 0 18px 42px rgba(2, 6, 23, 0.28);
+          --bd-tab: rgba(255, 255, 255, 0.06);
+          --bd-tab-active-bg: #f8fafc;
+          --bd-tab-active-text: #111827;
+          --bd-input-bg: #0f172a;
+          --bd-input-text: #f8fafc;
+          --bd-input-border: rgba(148, 163, 184, 0.35);
+          background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+          color: var(--bd-text);
+          border-radius: 12px;
+          padding: 18px;
+          box-shadow: var(--bd-shadow);
+          border: 1px solid var(--bd-border);
+        }
+
+        .cms-theme-light .branch-dashboard-shell {
+          --bd-bg: #edf3f9;
+          --bd-surface: #ffffff;
+          --bd-surface-soft: #f3f7fc;
+          --bd-surface-muted: #dbe4f0;
+          --bd-card: #e7eef8;
+          --bd-card-soft: #f8fbff;
+          --bd-border: rgba(15, 23, 42, 0.14);
+          --bd-text: #0f172a;
+          --bd-text-muted: #334155;
+          --bd-accent: #0f172a;
+          --bd-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+          --bd-tab: #e8eef6;
+          --bd-tab-active-bg: #0f172a;
+          --bd-tab-active-text: #ffffff;
+          --bd-input-bg: #ffffff;
+          --bd-input-text: #0f172a;
+          --bd-input-border: rgba(100, 116, 139, 0.3);
+          background: linear-gradient(180deg, #fcfdff 0%, #eef4fb 100%);
+        }
+
+        /* Topbar Controls */
+        .dashboard-topbar {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 18px;
+        }
+        .page-title-omega {
+          font-size: 22px;
+          font-weight: 700;
+          margin: 0;
+          color: var(--bd-text);
+          letter-spacing: -0.3px;
+        }
+        .tenant-subtitle {
+          font-size: 11px;
+          color: var(--bd-text-muted);
+          font-weight: 500;
+        }
+        .topbar-select {
+          background-color: var(--bd-input-bg);
+          color: var(--bd-input-text);
+          border: 1px solid var(--bd-input-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          font-size: 13px;
+          outline: none;
+          min-height: 36px;
+        }
+        .topbar-btn {
+          height: 36px;
+          padding: 0 14px;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          cursor: pointer;
+          transition: all 0.15s;
+          border: 1px solid var(--bd-border);
+          background: var(--bd-surface-muted);
+          color: var(--bd-text);
+        }
+        .topbar-btn:hover {
+          background: var(--bd-card-soft);
+        }
+        .topbar-btn-dark {
+          background: #1e293b;
+          color: #ffffff;
+          border-color: #334155;
+        }
+        .topbar-btn-dark:hover {
+          background: #0f172a;
+        }
+
+        /* Omega 4 Metric Cards */
+        .omega-metric-card {
+          border-radius: 14px;
+          overflow: hidden;
+          display: flex;
+          height: 124px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .omega-card-icon-pane {
+          width: 54px;
+          flex-shrink: 0;
+          background-color: rgba(0, 0, 0, 0.28);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+        }
+        .omega-card-content-pane {
+          flex: 1;
+          padding: 8px 12px;
+          color: #ffffff;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          font-size: 12px;
+        }
+        .omega-metric-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          line-height: 1.25;
+        }
+        .omega-metric-row .title {
+          font-size: 12px;
+          opacity: 0.92;
+          font-weight: 500;
+        }
+        .omega-metric-row .body {
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .omega-metric-row .body.bold-value {
+          font-size: 15px;
+          font-weight: 900;
+        }
+        .omega-two-col-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          line-height: 1.25;
+        }
+        .omega-two-col-row .cell {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+        }
+        .omega-two-col-row .cell .title {
+          font-size: 11px;
+          opacity: 0.9;
+        }
+        .omega-two-col-row .cell .body {
+          font-size: 11.5px;
+          font-weight: 700;
+        }
+        .omega-red-badge {
+          color: #dc2626 !important;
+          background-color: #f1e5dd !important;
+          padding: 1px 4px;
+          border-radius: 4px;
+          font-weight: 800 !important;
+          font-size: 11px !important;
+        }
+
+        /* Omega Tabs */
+        .omega-nav-tabs {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border-bottom: 1px solid var(--bd-border);
+          padding-bottom: 10px;
+          margin-bottom: 16px;
+          overflow-x: auto;
+        }
+        .omega-nav-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 7px 16px;
+          border-radius: 999px;
+          font-size: 13.5px;
+          font-weight: 600;
+          color: var(--bd-text);
+          background: var(--bd-surface);
+          border: 1px solid var(--bd-border);
+          cursor: pointer;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: all 0.15s;
+        }
+        .omega-nav-link:hover {
+          background: var(--bd-card-soft);
+        }
+        .omega-nav-link.active {
+          background: var(--bd-card-soft);
+          border-color: #3b82f6;
+          color: #60a5fa !important;
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+        .omega-chart-mode-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--bd-surface);
+          border: 1px solid var(--bd-border);
+          color: var(--bd-text);
+          cursor: pointer;
+        }
+        .omega-chart-mode-btn.active {
+          background: var(--bd-card-soft);
+          border-color: #3b82f6;
+          color: #60a5fa;
+        }
+
+        /* Omega Section Header Banner */
+        .dashboard-branches-country {
+          background-color: #3e3e3e !important;
+          color: white !important;
+          padding: 8px 14px;
+          font-size: 14px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .dashboard-branches-body {
+          background: var(--bd-surface);
+          border: 1px solid var(--bd-border);
+          border-top: none;
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          padding: 12px;
+          margin-bottom: 16px;
+        }
+
+        /* Performance Highlights Grid */
+        .performance-highlights-grid {
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          gap: 10px;
+        }
+        @media (max-width: 1200px) {
+          .performance-highlights-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        @media (max-width: 768px) {
+          .performance-highlights-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        .performance-highlight-card {
+          background: var(--bd-card);
+          border: 1px solid var(--bd-border);
+          border-radius: 6px;
+          padding: 8px 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 74px;
+        }
+        .performance-highlight-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+          padding-bottom: 3px;
+        }
+        .performance-highlight-label {
+          font-size: 12.5px;
+          color: var(--bd-text-muted);
+          font-weight: 500;
+        }
+        .performance-highlight-value {
+          font-size: 14px;
+          font-weight: 800;
+          color: var(--bd-text);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin: 4px 0;
+        }
+        .performance-highlight-sub {
+          font-size: 11px;
+          color: var(--bd-text-muted);
+        }
+
+        /* Authentic Dense Table Styling */
+        .omega-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 12.5px;
+        }
+        .omega-table th, .omega-table td {
+          padding: 6px 10px;
+          border-bottom: 1px solid var(--bd-border);
+          white-space: nowrap;
+        }
+        .omega-table thead tr {
+          background-color: #242424;
+          color: #ffffff;
+        }
+        .cms-theme-light .omega-table thead tr {
+          background-color: #e2e8f0;
+          color: #0f172a;
+        }
+        .omega-table tbody tr:nth-child(even) {
+          background-color: rgba(148, 163, 184, 0.05);
+        }
+        .omega-table tbody tr:hover {
+          background-color: rgba(148, 163, 184, 0.12);
+        }
+        .omega-table tr.table-total {
+          background-color: #000000 !important;
+          color: #ffffff !important;
+          font-weight: 700;
+        }
+        .cms-theme-light .omega-table tr.table-total {
+          background-color: #334155 !important;
+          color: #ffffff !important;
+        }
+        .sticky-col {
+          position: sticky;
+          left: 0;
+          z-index: 5;
+          background: inherit;
+        }
+      `}</style>
+
+      <div className="max-w-[1700px] mx-auto p-3 sm:p-4">
+        {/* Main Branch Dashboard Shell */}
+        <div className="branch-dashboard-shell">
+
+          {/* Top Control Toolbar */}
+          <div className="dashboard-topbar">
+            <div>
+              <h1 className="page-title-omega">Sales Dashboard</h1>
+              <div className="tenant-subtitle">Southern Olive Oil Products S.A.R.L • Executive Sales Control</div>
+            </div>
+
+            <div className="flex-1"></div>
+
+            {/* Branch Selector */}
+            <div>
+              <select 
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer text-xs"
+                className="topbar-select"
+                title="Branch"
               >
-                {branches.map((b) => (
+                {branches.map(b => (
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
               </select>
             </div>
 
-            {/* Currency Filter */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-              <span className="text-slate-400 font-bold">💱</span>
-              <select
+            {/* Currency Selector */}
+            <div>
+              <select 
                 value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer text-xs font-mono"
+                onChange={(e) => setSelectedCurrency(e.target.value as 'USD' | 'LBP')}
+                className="topbar-select"
+                title="Currency"
               >
                 <option value="USD">USD ($)</option>
-                <option value="LBP">LBP (89,500)</option>
+                <option value="LBP">LBP (ل.ل 89,500)</option>
               </select>
             </div>
 
-            {/* Year Filter */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-              <span className="text-slate-400 font-bold">📅</span>
-              <select
+            {/* Year Selector */}
+            <div>
+              <select 
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer text-xs font-mono"
+                className="topbar-select"
+                title="Year"
               >
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
@@ -187,547 +705,981 @@ export default function MasterSalesDashboardPage() {
               </select>
             </div>
 
-            {/* Month Filter */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-              <select
+            {/* Month Selector */}
+            <div>
+              <select 
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer text-xs"
+                className="topbar-select"
+                title="Month"
               >
-                <option value="ALL">All Months</option>
-                <option value="01">January</option>
-                <option value="02">February</option>
-                <option value="03">March</option>
-                <option value="04">April</option>
-                <option value="05">May</option>
-                <option value="06">June</option>
-                <option value="07">July</option>
-                <option value="08">August</option>
-                <option value="09">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
+                {months.map(m => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
               </select>
             </div>
 
-            {/* Day Filter */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg px-2 py-1">
-              <select
+            {/* Day Selector */}
+            <div>
+              <select 
                 value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
-                className="bg-transparent font-semibold text-slate-800 focus:outline-none cursor-pointer text-xs"
+                className="topbar-select"
+                title="Day"
               >
-                <option value="ALL">All Days</option>
-                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={String(d).padStart(2, '0')}>Day {d}</option>
+                <option value="0">All Days</option>
+                {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                  <option key={d} value={d.toString()}>{d}</option>
                 ))}
               </select>
             </div>
 
-          </div>
-
-          {/* Right Action Icons matching Omega Eod_Recalbtns */}
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={handleExportPdf}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
-            >
-              <span>📥</span>
-              <span>Export PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setEodModalOpen(true)}
-              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-colors"
-              title="Branches Last EOD Date"
-            >
-              🕒
-            </button>
-
-            <button
-              type="button"
-              onClick={handleRecalculate}
-              className={`p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-colors ${recalculating ? 'animate-spin text-emerald-700' : ''}`}
-              title="Recalculate Data by Selected Filters"
-            >
-              🔄
-            </button>
-
-            <Link
-              href="/backoffice/reportview"
-              className="px-3 py-1.5 rounded-lg bg-[#1e3a2b] hover:bg-[#162c20] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
-              title="Open Full 93-Report Center"
-            >
-              <span>📈</span>
-              <span>Reports Center</span>
-            </Link>
-          </div>
-
-        </div>
-      </div>
-
-      {/* =================================================================== */}
-      {/* 2. OMEGA 4-ROW KPI MATRIX SUITE                                     */}
-      {/* =================================================================== */}
-      
-      {/* ROW 1: TODAY'S PULSE (Omega exact layout) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs border-l-4 border-l-emerald-600">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Net Sales</div>
-          <div className="text-xl font-black text-slate-900 font-mono mt-0.5">{formatCurrency(18450)}</div>
-          <div className="text-[10px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-            <span>▲ +12.4%</span>
-            <span className="text-slate-400 font-normal">vs yesterday</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs border-l-4 border-l-blue-600">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Receipts</div>
-          <div className="text-xl font-black text-slate-900 font-mono mt-0.5">{formatCurrency(19200)}</div>
-          <div className="text-[10px] text-blue-700 font-bold mt-1 flex items-center gap-1">
-            <span>224 Invoices</span>
-            <span className="text-slate-400 font-normal">collected</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs border-l-4 border-l-amber-500">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Discounts</div>
-          <div className="text-xl font-black text-slate-900 font-mono mt-0.5">{formatCurrency(750)}</div>
-          <div className="text-[10px] text-amber-700 font-bold mt-1 flex items-center gap-1">
-            <span>3.9%</span>
-            <span className="text-slate-400 font-normal">discount ratio</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs border-l-4 border-l-red-600">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Refunds</div>
-          <div className="text-xl font-black text-slate-900 font-mono mt-0.5">{formatCurrency(0)}</div>
-          <div className="text-[10px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-            <span>✓ 0 Voids</span>
-            <span className="text-slate-400 font-normal">clean run</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 2: MONTHLY REVENUE MATRIX */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Gross Sales</div>
-          <div className="text-lg font-black text-slate-800 font-mono mt-0.5">{formatCurrency(412850)}</div>
-          <div className="text-[10px] font-mono text-slate-500">4,668 items billed</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Discount</div>
-          <div className="text-lg font-black text-amber-700 font-mono mt-0.5">-{formatCurrency(14200)}</div>
-          <div className="text-[10px] font-mono text-slate-500">Customer terms & promotions</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tax (VAT 11%)</div>
-          <div className="text-lg font-black text-slate-800 font-mono mt-0.5">{formatCurrency(43851.5)}</div>
-          <div className="text-[10px] font-mono text-slate-500">Ministry of Finance ledger</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs bg-emerald-50/40">
-          <div className="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Net Sales</div>
-          <div className="text-lg font-black text-emerald-900 font-mono mt-0.5">{formatCurrency(398650)}</div>
-          <div className="text-[10px] font-mono text-emerald-700 font-bold">Executive Realized Revenue</div>
-        </div>
-      </div>
-
-      {/* ROW 3: PERFORMANCE COMPARISONS (MTD vs LYM / YTD vs LYTM) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs flex items-center justify-between">
-          <div>
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">MTD vs LYM (Month to Date vs Last Year)</div>
-            <div className="flex items-baseline gap-3 mt-1">
-              <span className="text-lg font-black font-mono text-slate-900">{formatCurrency(398650)}</span>
-              <span className="text-xs font-mono text-slate-400">LYM: {formatCurrency(352400)}</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold text-xs">
-              ▲ +13.1% YoY
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-3 shadow-2xs flex items-center justify-between">
-          <div>
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">YTD vs LYTM (Year to Date vs Last Year)</div>
-            <div className="flex items-baseline gap-3 mt-1">
-              <span className="text-lg font-black font-mono text-slate-900">{formatCurrency(3145200)}</span>
-              <span className="text-xs font-mono text-slate-400">LYTM: {formatCurrency(2810500)}</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold text-xs">
-              ▲ +11.9% YoY
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ROW 4: OPERATIONAL & CUSTOMER FLOW METRICS */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-2.5 text-xs">
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">Customer Aged</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">{formatCurrency(84200)}</div>
-          <div className="text-[9.5px] text-amber-700 font-bold mt-0.5">Receivables</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">MTD Receipts</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">{formatCurrency(382100)}</div>
-          <div className="text-[9.5px] text-blue-700 font-bold mt-0.5">95.8% Collection</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">Paid In / Paid Out</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">{formatCurrency(4500)} / {formatCurrency(2850)}</div>
-          <div className="text-[9.5px] text-slate-500 mt-0.5">Net +{formatCurrency(1650)}</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">Voids & Refunds</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">{formatCurrency(1200)} / {formatCurrency(850)}</div>
-          <div className="text-[9.5px] text-red-700 font-bold mt-0.5">6 Total Cases</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">Avg Inv / Cust</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">{formatCurrency(85.40)} / {formatCurrency(245.80)}</div>
-          <div className="text-[9.5px] text-slate-500 mt-0.5">Ticket size</div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-300/80 p-2.5 shadow-2xs">
-          <div className="text-[10px] font-bold text-slate-500 uppercase">Cust / Inv Count</div>
-          <div className="text-sm font-black font-mono text-slate-900 mt-1">1,620 / 4,668</div>
-          <div className="text-[9.5px] text-emerald-700 font-bold mt-0.5">High Frequency</div>
-        </div>
-      </div>
-
-      {/* =================================================================== */}
-      {/* 3. VISUAL CHARTS & BREAKDOWN TABS (Omega exact modules)             */}
-      {/* =================================================================== */}
-      <div className="bg-white rounded-xl border border-slate-300/80 shadow-2xs overflow-hidden">
-        
-        {/* Navigation Tabs Header */}
-        <div className="flex flex-wrap items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2 gap-2">
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setActiveTab('daily')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'daily' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              📅 Daily Sales Breakdown
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('hourly')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'hourly' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              ⏰ Hourly Distribution
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('weekday')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'weekday' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              📊 Weekday Trends
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('category')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'category' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              🫒 Revenue by Category
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('payments')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'payments' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              💵 Payment Methods
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('branches')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'branches' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-200'}`}
-            >
-              🏢 Regional Performance
-            </button>
-          </div>
-
-          <div className="text-[11px] font-mono text-slate-500 font-semibold">
-            Status: Synchronized Live • Branch: {selectedBranch}
-          </div>
-        </div>
-
-        {/* Tab 1: Daily Sales Table & Chart */}
-        {activeTab === 'daily' && (
-          <div className="p-4 space-y-4">
-            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Daily Sales Performance Log (September 2026)</span>
-              <span className="font-mono text-slate-500">Normal-case Data Table</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                    <th className="p-2.5 normal-case">Date</th>
-                    <th className="p-2.5 normal-case">Weekday</th>
-                    <th className="p-2.5 normal-case text-right">Net Sales</th>
-                    <th className="p-2.5 normal-case text-right">Invoices</th>
-                    <th className="p-2.5 normal-case text-right">Avg Ticket</th>
-                    <th className="p-2.5 normal-case text-right">LY Sales</th>
-                    <th className="p-2.5 normal-case text-center">Variance %</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                  {dailySalesData.map((row, idx) => {
-                    const diffPct = (((row.salesUsd - row.lyearUsd) / row.lyearUsd) * 100).toFixed(1);
-                    return (
-                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="p-2.5 font-bold">{row.day}-2026</td>
-                        <td className="p-2.5 font-sans font-semibold text-slate-600">{row.dayName}</td>
-                        <td className="p-2.5 text-right font-bold text-emerald-800">{formatCurrency(row.salesUsd)}</td>
-                        <td className="p-2.5 text-right">{row.invoices}</td>
-                        <td className="p-2.5 text-right">{formatCurrency(row.avgTicket)}</td>
-                        <td className="p-2.5 text-right text-slate-400">{formatCurrency(row.lyearUsd)}</td>
-                        <td className="p-2.5 text-center font-bold text-emerald-700">+{diffPct}%</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-slate-400 bg-slate-50 font-mono font-black text-xs">
-                    <td className="p-2.5" colSpan={2}>Period Total</td>
-                    <td className="p-2.5 text-right text-emerald-900">{formatCurrency(91000)}</td>
-                    <td className="p-2.5 text-right">1,139</td>
-                    <td className="p-2.5 text-right">{formatCurrency(79.89)}</td>
-                    <td className="p-2.5 text-right text-slate-500">{formatCurrency(80300)}</td>
-                    <td className="p-2.5 text-center text-emerald-800">+13.3%</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 2: Hourly Distribution */}
-        {activeTab === 'hourly' && (
-          <div className="p-4 space-y-4">
-            <div className="text-xs font-bold text-slate-700">Hourly Traffic & Revenue Distribution (08:00 - 17:00)</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                    <th className="p-2.5 normal-case">Hour Window</th>
-                    <th className="p-2.5 normal-case text-right">Net Sales</th>
-                    <th className="p-2.5 normal-case text-right">Ticket Count</th>
-                    <th className="p-2.5 normal-case text-right">Share %</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                  {hourlyData.map((h, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold">{h.hour}</td>
-                      <td className="p-2.5 text-right font-bold text-slate-900">{formatCurrency(h.salesUsd)}</td>
-                      <td className="p-2.5 text-right">{h.count}</td>
-                      <td className="p-2.5 text-right text-blue-700 font-bold">{h.pct}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Graphical Visual Bars */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
-                <div className="text-xs font-bold text-slate-700 mb-2">Visual Hourly Concentration</div>
-                {hourlyData.map((h, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex justify-between text-[11px] font-mono">
-                      <span>{h.hour}</span>
-                      <span className="font-bold">{formatCurrency(h.salesUsd)} ({h.pct})</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[#1e3a2b]"
-                        style={{ width: `${Math.min(100, (h.salesUsd / 3800) * 100)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Weekday Breakdown */}
-        {activeTab === 'weekday' && (
-          <div className="p-4 space-y-4">
-            <div className="text-xs font-bold text-slate-700">Weekly Performance Cycle</div>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                  <th className="p-2.5 normal-case">Weekday</th>
-                  <th className="p-2.5 normal-case text-right">Average Daily Sales</th>
-                  <th className="p-2.5 normal-case text-right">Total Invoices</th>
-                  <th className="p-2.5 normal-case text-right">Weekly Revenue Share</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                {weekdayData.map((w, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="p-2.5 font-bold font-sans">{w.day}</td>
-                    <td className="p-2.5 text-right font-bold text-slate-900">{formatCurrency(w.avgSalesUsd)}</td>
-                    <td className="p-2.5 text-right">{w.totalInvoices.toLocaleString()}</td>
-                    <td className="p-2.5 text-right font-bold text-emerald-800">{w.share}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Tab 4: Revenue by Category */}
-        {activeTab === 'category' && (
-          <div className="p-4 space-y-4">
-            <div className="text-xs font-bold text-slate-700">Product Category Distribution (Sales & Volume)</div>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                  <th className="p-2.5 normal-case">Product Category</th>
-                  <th className="p-2.5 normal-case text-right">Net Revenue</th>
-                  <th className="p-2.5 normal-case text-right">Physical Volume Sold</th>
-                  <th className="p-2.5 normal-case text-right">Contribution %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                {categoryData.map((c, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="p-2.5 font-bold font-sans">{c.name}</td>
-                    <td className="p-2.5 text-right font-bold text-emerald-800">{formatCurrency(c.salesUsd)}</td>
-                    <td className="p-2.5 text-right">{c.qty}</td>
-                    <td className="p-2.5 text-right text-blue-700 font-bold">{c.pct}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Tab 5: Payment Methods */}
-        {activeTab === 'payments' && (
-          <div className="p-4 space-y-4">
-            <div className="text-xs font-bold text-slate-700">Payment Tender Distribution & Cash Reconciliations</div>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                  <th className="p-2.5 normal-case">Tender Method</th>
-                  <th className="p-2.5 normal-case text-right">Collected Amount</th>
-                  <th className="p-2.5 normal-case text-right">Transaction Count</th>
-                  <th className="p-2.5 normal-case text-right">Tender Share %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                {paymentData.map((p, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="p-2.5 font-bold font-sans">{p.method}</td>
-                    <td className="p-2.5 text-right font-bold text-slate-900">{formatCurrency(p.amountUsd)}</td>
-                    <td className="p-2.5 text-right">{p.transactions.toLocaleString()}</td>
-                    <td className="p-2.5 text-right font-bold text-emerald-800">{p.pct}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Tab 6: Regional Performance */}
-        {activeTab === 'branches' && (
-          <div className="p-4 space-y-4">
-            <div className="text-xs font-bold text-slate-700">Branch & Regional Sales Distribution</div>
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                  <th className="p-2.5 normal-case">Facility & Branch</th>
-                  <th className="p-2.5 normal-case text-right">Net Sales</th>
-                  <th className="p-2.5 normal-case text-right">Invoices</th>
-                  <th className="p-2.5 normal-case text-right">Network Share</th>
-                  <th className="p-2.5 normal-case text-center">YoY Growth</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                {branchData.map((b, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="p-2.5 font-bold font-sans">{b.branch}</td>
-                    <td className="p-2.5 text-right font-bold text-slate-900">{formatCurrency(b.salesUsd)}</td>
-                    <td className="p-2.5 text-right">{b.invoices}</td>
-                    <td className="p-2.5 text-right text-blue-700 font-bold">{b.pct}</td>
-                    <td className="p-2.5 text-center font-bold text-emerald-700">{b.growth}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-      </div>
-
-      {/* =================================================================== */}
-      {/* 4. MODAL: BRANCHES LAST EOD CLOSEOUT MODAL                         */}
-      {/* =================================================================== */}
-      {eodModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-300 max-w-xl w-full p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🕒</span>
-                <h3 className="text-base font-bold text-slate-900">Branches Last EOD Date Registry</h3>
-              </div>
-              <button
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              <button 
                 type="button"
-                onClick={() => setEodModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 font-bold text-lg"
+                onClick={() => window.print()}
+                className="topbar-btn topbar-btn-dark"
+                title="Export PDF"
               >
-                ✕
+                Export PDF
+              </button>
+
+              <button 
+                type="button"
+                onClick={() => setEodModalOpen(true)}
+                className="topbar-btn"
+                title="Branches Last EOD Date"
+              >
+                <Clock className="w-4 h-4 text-amber-400" />
+              </button>
+
+              <button 
+                type="button"
+                onClick={handleRecalculate}
+                className="topbar-btn"
+                title="Recalculate Data"
+              >
+                <RefreshCw className={`w-4 h-4 text-emerald-400 ${recalculating ? 'animate-spin' : ''}`} />
+              </button>
+
+              <Link 
+                href="/backoffice/reportview"
+                className="topbar-btn"
+                title="Reports Center"
+              >
+                <BarChart3 className="w-4 h-4 text-blue-400" />
+              </Link>
+
+              <button 
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="topbar-btn"
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+              </button>
+            </div>
+          </div>
+
+          {/* THE 4 ICONIC OMEGA METRIC CARDS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+            
+            {/* Card 1: Sales - Green (#337718) */}
+            <div className="omega-metric-card" style={{ backgroundColor: '#337718' }}>
+              <div className="omega-card-icon-pane">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <div className="omega-card-content-pane">
+                <div className="omega-metric-row">
+                  <div className="title">Today&apos;s Net Sales</div>
+                  <div className="body bold-value">{formatAmount(18450)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Today&apos;s Receipts</div>
+                  <div className="body">{formatAmount(19200)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Today&apos;s Discounts</div>
+                  <div className="body">{formatAmount(750)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Today&apos;s Refunds</div>
+                  <div className="body">{formatAmount(0)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Performance - Navy (#003566) */}
+            <div className="omega-metric-card" style={{ backgroundColor: '#003566' }}>
+              <div className="omega-card-icon-pane">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <div className="omega-card-content-pane">
+                <div className="omega-metric-row">
+                  <div className="title">Gross Sales</div>
+                  <div className="body">{formatAmount(412850)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Discount</div>
+                  <div className="body">{formatAmount(14200)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Tax (VAT 11%)</div>
+                  <div className="body">{formatAmount(43851.50)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Net Sales</div>
+                  <div className="body bold-value">{formatAmount(398650)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Period - Gold/Brown (#8a6a1f) */}
+            <div className="omega-metric-card" style={{ backgroundColor: '#8a6a1f' }}>
+              <div className="omega-card-icon-pane">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div className="omega-card-content-pane">
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">MTD:</span>
+                    <span className="body">{formatAmount(398650)}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">LYM:</span>
+                    <span className="body">{formatAmount(352400)}</span>
+                  </div>
+                </div>
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">YTD:</span>
+                    <span className="body">{formatAmount(3145200)}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">LYTM:</span>
+                    <span className="body">{formatAmount(2810500)}</span>
+                  </div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">Customer Aged</div>
+                  <div className="body">{formatAmount(84200)}</div>
+                </div>
+                <div className="omega-metric-row">
+                  <div className="title">MTD Receipts</div>
+                  <div className="body bold-value">{formatAmount(382100)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Operations - Brick Red (#852b12) */}
+            <div className="omega-metric-card" style={{ backgroundColor: '#852b12' }}>
+              <div className="omega-card-icon-pane">
+                <Ticket className="w-6 h-6" />
+              </div>
+              <div className="omega-card-content-pane">
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">Paid in:</span>
+                    <span className="body">{formatAmount(4500)}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">Paid out:</span>
+                    <span className="body">{formatAmount(2850)}</span>
+                  </div>
+                </div>
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">Voids:</span>
+                    <span className="body omega-red-badge">-{formatAmount(1200)}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">Refunds:</span>
+                    <span className="body omega-red-badge">-{formatAmount(850)}</span>
+                  </div>
+                </div>
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">Avg Inv:</span>
+                    <span className="body">{formatAmount(85.40)}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">Avg Cust:</span>
+                    <span className="body">{formatAmount(245.80)}</span>
+                  </div>
+                </div>
+                <div className="omega-two-col-row">
+                  <div className="cell">
+                    <span className="title">Cust Count:</span>
+                    <span className="body">1,620</span>
+                  </div>
+                  <div className="cell">
+                    <span className="title">Inv Count:</span>
+                    <span className="body">4,668</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* REAL OMEGA NAVIGATION TABS */}
+          <div className="omega-nav-tabs">
+            <button 
+              type="button" 
+              onClick={() => setActiveTab('summary')}
+              className={`omega-nav-link ${activeTab === 'summary' ? 'active' : ''}`}
+            >
+              <Scale className="w-4 h-4" /> Summary
+            </button>
+
+            <button 
+              type="button" 
+              onClick={() => setActiveTab('comparative')}
+              className={`omega-nav-link ${activeTab === 'comparative' ? 'active' : ''}`}
+            >
+              <TrendingUp className="w-4 h-4" /> Comparative
+            </button>
+
+            <Link 
+              href="/product-insights" 
+              target="_blank"
+              className="omega-nav-link"
+            >
+              <Boxes className="w-4 h-4" /> Product Insights
+            </Link>
+
+            <Link 
+              href="/backoffice/customers" 
+              target="_blank"
+              className="omega-nav-link"
+            >
+              <UserCircle2 className="w-4 h-4" /> Customer Insights
+            </Link>
+
+            <Link 
+              href="/backoffice/operations" 
+              target="_blank"
+              className="omega-nav-link"
+            >
+              <Truck className="w-4 h-4" /> VTrack
+            </Link>
+
+            <button 
+              type="button" 
+              onClick={() => setActiveTab('customers')}
+              className={`omega-nav-link ${activeTab === 'customers' ? 'active' : ''}`}
+            >
+              <Users className="w-4 h-4" /> Customers
+            </button>
+
+            <button 
+              type="button" 
+              onClick={() => setActiveTab('today')}
+              className={`omega-nav-link ${activeTab === 'today' ? 'active' : ''}`}
+            >
+              <Calendar className="w-4 h-4" /> Today
+            </button>
+
+            <button 
+              type="button" 
+              onClick={() => setActiveTab('geographics')}
+              className={`omega-nav-link ${activeTab === 'geographics' ? 'active' : ''}`}
+            >
+              <Globe className="w-4 h-4" /> Geographics
+            </button>
+
+            <div className="flex-1"></div>
+
+            {/* Chart Mode Toggles */}
+            <div className="flex items-center gap-1">
+              <button 
+                type="button"
+                onClick={() => setChartType('line')}
+                className={`omega-chart-mode-btn ${chartType === 'line' ? 'active' : ''}`}
+                title="Line Chart Mode"
+              >
+                <LineChartIcon className="w-4 h-4" />
+              </button>
+              <button 
+                type="button"
+                onClick={() => setChartType('pie')}
+                className={`omega-chart-mode-btn ${chartType === 'pie' ? 'active' : ''}`}
+                title="Pie Chart Mode"
+              >
+                <PieChartIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* TAB CONTENT: SUMMARY */}
+          {activeTab === 'summary' && (
+            <div>
+              {/* Performance Highlights Banner & Cards */}
+              <div className="mb-4">
+                <div className="dashboard-branches-country">
+                  <span>Performance Highlights</span>
+                  <span className="text-xs font-normal opacity-80">Live Synchronized Metrics</span>
+                </div>
+                <div className="dashboard-branches-body">
+                  <div className="performance-highlights-grid">
+                    {highlights.map(h => (
+                      <div key={h.id} className="performance-highlight-card" style={{ borderTop: `3px solid ${h.color}` }}>
+                        <div className="performance-highlight-top">
+                          <span className="performance-highlight-label">{h.label}</span>
+                          <span title={h.formula} className="cursor-help"><Info className="w-3.5 h-3.5 text-slate-400" /></span>
+                        </div>
+                        <div className="performance-highlight-value">
+                          <span>{h.value}</span>
+                          {h.trend === 'up' && (
+                            <span className="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px]">
+                              ▲
+                            </span>
+                          )}
+                          {h.trend === 'down' && (
+                            <span className="w-3.5 h-3.5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[9px]">
+                              ▼
+                            </span>
+                          )}
+                        </div>
+                        <div className="performance-highlight-sub">{h.sub}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Revenue Matrix */}
+              <div className="mb-4">
+                <div className="dashboard-branches-country">
+                  <span>Monthly Revenue</span>
+                  <div className="flex items-center gap-3">
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                    <Maximize2 className="w-4 h-4 cursor-pointer" onClick={() => setEnlargedSection(enlargedSection === 'revenue' ? null : 'revenue')} />
+                  </div>
+                </div>
+                <div className="dashboard-branches-body">
+                  <div className="overflow-x-auto">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="sticky-col">Branch</th>
+                          <th>Jan</th>
+                          <th>Feb</th>
+                          <th>Mar</th>
+                          <th>Apr</th>
+                          <th>May</th>
+                          <th>Jun</th>
+                          <th>Jul</th>
+                          <th>Aug</th>
+                          <th>Sep</th>
+                          <th>Oct</th>
+                          <th>Nov</th>
+                          <th>Dec</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {monthlyRevenueData
+                          .filter(b => selectedBranch === '0' || b.branch.startsWith(branches.find(x => x.id === selectedBranch)?.code || ''))
+                          .map((row, idx) => (
+                          <tr key={idx}>
+                            <th className="sticky-col text-left font-semibold">{row.branch}</th>
+                            {row.months.map((m, mIdx) => (
+                              <td key={mIdx} className="text-right">
+                                {m.cur > 0 ? (
+                                  <div>
+                                    <div className="font-bold flex items-center justify-end gap-1">
+                                      {formatAmount(m.cur)}
+                                      <span className="text-emerald-500 text-[10px]">▲</span>
+                                    </div>
+                                    <div className="text-[10px] text-slate-400">
+                                      LY {formatAmount(m.ly)} ({m.diff})
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-500">-</span>
+                                )}
+                              </td>
+                            ))}
+                            <td className="text-right font-bold" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+                              <div className="text-emerald-400">{formatAmount(row.total.cur)}</div>
+                              <div className="text-[10px] text-slate-400">LY {formatAmount(row.total.ly)} ({row.total.diff})</div>
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="table-total">
+                          <th className="sticky-col text-left font-extrabold">Grand Total</th>
+                          <td>$267,300</td>
+                          <td>$254,300</td>
+                          <td>$292,600</td>
+                          <td>$280,000</td>
+                          <td>$306,900</td>
+                          <td>$336,000</td>
+                          <td>$361,500</td>
+                          <td>$380,800</td>
+                          <td>$398,650</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td className="text-right text-emerald-400 font-black">$2,878,050</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2-Column Grid: Sales by Category & Sales by Department */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                
+                {/* Sales by Category */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>Sales By Category</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Categories</th>
+                          <th className="text-right">{formatAmount(totalCategoryAmount)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {categoryData.map((cat, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{cat.name}</td>
+                            <td className="text-right font-bold">{formatAmount(cat.amount)}</td>
+                            <td className="text-right text-slate-400">{cat.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Sales by Department / Division */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>Sales By Department</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Departments</th>
+                          <th className="text-right">{formatAmount(398650)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {departmentData.map((dept, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{dept.name}</td>
+                            <td className="text-right font-bold">{formatAmount(dept.amount)}</td>
+                            <td className="text-right text-slate-400">{dept.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* 2-Column Grid: Discount Summary & Void Summary */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                
+                {/* Discount Summary */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>Discount Summary</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Discounts</th>
+                          <th className="text-right">{formatAmount(totalDiscount)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {discountData.map((disc, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{disc.name}</td>
+                            <td className="text-right font-bold text-amber-400">-{formatAmount(disc.amount)}</td>
+                            <td className="text-right text-slate-400">{disc.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Void Summary */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>Void Summary</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Voids</th>
+                          <th className="text-right">{formatAmount(totalVoids)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {voidData.map((vd, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{vd.name}</td>
+                            <td className="text-right font-bold text-rose-400">-{formatAmount(vd.amount)}</td>
+                            <td className="text-right text-slate-400">{vd.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* 2-Column Grid: Payment Summary & User Summary */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                
+                {/* Payment Summary */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>Payment Summary</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Payments</th>
+                          <th className="text-right">{formatAmount(totalPayments)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paymentData.map((p, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{p.name}</td>
+                            <td className="text-right font-bold">{formatAmount(p.amount)}</td>
+                            <td className="text-right text-slate-400">{p.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* User Summary */}
+                <div>
+                  <div className="dashboard-branches-country">
+                    <span>User Summary</span>
+                    <span className="cursor-pointer text-lg font-bold">⋮</span>
+                  </div>
+                  <div className="dashboard-branches-body">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="text-left">All Users</th>
+                          <th className="text-right">{formatAmount(398650)}</th>
+                          <th className="text-right">100%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {userData.map((u, idx) => (
+                          <tr key={idx}>
+                            <td className="text-left font-medium">{u.name}</td>
+                            <td className="text-right font-bold">{formatAmount(u.amount)}</td>
+                            <td className="text-right text-slate-400">{u.pct}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Full Width Table: Sales By Employee By Category */}
+              <div>
+                <div className="dashboard-branches-country">
+                  <span>Sales By Employee By Category</span>
+                  <span className="cursor-pointer text-lg font-bold">⋮</span>
+                </div>
+                <div className="dashboard-branches-body">
+                  <div className="overflow-x-auto">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="sticky-col text-left">User Name</th>
+                          <th className="text-right">EVOO</th>
+                          <th className="text-right">Virgin</th>
+                          <th className="text-right">Table Olives</th>
+                          <th className="text-right">Molasses</th>
+                          <th className="text-right">Pomace</th>
+                          <th className="text-right">Packaging</th>
+                          <th className="text-right">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="sticky-col text-left font-bold">Mahdi Jichi</td>
+                          <td className="text-right">{formatAmount(85000)}</td>
+                          <td className="text-right">{formatAmount(24000)}</td>
+                          <td className="text-right">{formatAmount(14000)}</td>
+                          <td className="text-right">{formatAmount(11000)}</td>
+                          <td className="text-right">{formatAmount(6000)}</td>
+                          <td className="text-right">{formatAmount(2500)}</td>
+                          <td className="text-right font-extrabold text-emerald-400">{formatAmount(142500)}</td>
+                        </tr>
+                        <tr>
+                          <td className="sticky-col text-left font-bold">Hiba Aloulou</td>
+                          <td className="text-right">{formatAmount(58000)}</td>
+                          <td className="text-right">{formatAmount(18000)}</td>
+                          <td className="text-right">{formatAmount(10500)}</td>
+                          <td className="text-right">{formatAmount(7200)}</td>
+                          <td className="text-right">{formatAmount(3500)}</td>
+                          <td className="text-right">{formatAmount(1200)}</td>
+                          <td className="text-right font-extrabold text-emerald-400">{formatAmount(98400)}</td>
+                        </tr>
+                        <tr>
+                          <td className="sticky-col text-left font-bold">Hussein Daik</td>
+                          <td className="text-right">{formatAmount(39000)}</td>
+                          <td className="text-right">{formatAmount(14200)}</td>
+                          <td className="text-right">{formatAmount(7400)}</td>
+                          <td className="text-right">{formatAmount(5100)}</td>
+                          <td className="text-right">{formatAmount(2200)}</td>
+                          <td className="text-right">{formatAmount(1000)}</td>
+                          <td className="text-right font-extrabold text-emerald-400">{formatAmount(68900)}</td>
+                        </tr>
+                        <tr>
+                          <td className="sticky-col text-left font-bold">Ahmad Taha</td>
+                          <td className="text-right">{formatAmount(26500)}</td>
+                          <td className="text-right">{formatAmount(12100)}</td>
+                          <td className="text-right">{formatAmount(5800)}</td>
+                          <td className="text-right">{formatAmount(4200)}</td>
+                          <td className="text-right">{formatAmount(2000)}</td>
+                          <td className="text-right">{formatAmount(600)}</td>
+                          <td className="text-right font-extrabold text-emerald-400">{formatAmount(51200)}</td>
+                        </tr>
+                        <tr>
+                          <td className="sticky-col text-left font-bold">Rami Kassem</td>
+                          <td className="text-right">{formatAmount(16300)}</td>
+                          <td className="text-right">{formatAmount(10200)}</td>
+                          <td className="text-right">{formatAmount(4600)}</td>
+                          <td className="text-right">{formatAmount(3700)}</td>
+                          <td className="text-right">{formatAmount(1700)}</td>
+                          <td className="text-right">{formatAmount(1150)}</td>
+                          <td className="text-right font-extrabold text-emerald-400">{formatAmount(37650)}</td>
+                        </tr>
+                        <tr className="table-total">
+                          <th className="sticky-col text-left font-black">Total</th>
+                          <td className="text-right">{formatAmount(224800)}</td>
+                          <td className="text-right">{formatAmount(78500)}</td>
+                          <td className="text-right">{formatAmount(42300)}</td>
+                          <td className="text-right">{formatAmount(31200)}</td>
+                          <td className="text-right">{formatAmount(15400)}</td>
+                          <td className="text-right">{formatAmount(6450)}</td>
+                          <td className="text-right text-emerald-400 font-black">{formatAmount(398650)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB CONTENT: COMPARATIVE */}
+          {activeTab === 'comparative' && (
+            <div>
+              {/* Daily Summary */}
+              <div className="mb-4">
+                <div className="dashboard-branches-country">
+                  <span>Daily Summary (September 2026)</span>
+                  <span className="text-xs font-normal">Day 1 to 30</span>
+                </div>
+                <div className="dashboard-branches-body">
+                  <div className="overflow-x-auto">
+                    <table className="omega-table">
+                      <thead>
+                        <tr className="table-total">
+                          <th className="sticky-col text-left">Branch</th>
+                          {daysInMonth.map(d => (
+                            <th key={d} className="text-center">{d}</th>
+                          ))}
+                          <th className="text-right">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {branches.filter(b => b.id !== '0').map((branch, bIdx) => (
+                          <tr key={bIdx}>
+                            <td className="sticky-col text-left font-semibold">{branch.name}</td>
+                            {daysInMonth.map(d => {
+                              const pseudoVal = Math.round((2800 + (bIdx * 800) + (d * 120)) * 0.9);
+                              return (
+                                <td key={d} className="text-center text-xs">
+                                  {d <= 5 ? formatAmount(pseudoVal) : '-'}
+                                </td>
+                              );
+                            })}
+                            <td className="text-right font-bold text-emerald-400">
+                              {formatAmount(64000 + (bIdx * 12000))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Sales By Category YoY Comparison */}
+              <div className="mb-4">
+                <div className="dashboard-branches-country">
+                  <span>Monthly Sales By Category (Year-over-Year)</span>
+                </div>
+                <div className="dashboard-branches-body">
+                  <table className="omega-table">
+                    <thead>
+                      <tr className="table-total">
+                        <th className="text-left">Category</th>
+                        <th className="text-right">Current Year (2026)</th>
+                        <th className="text-right">Last Year (2025)</th>
+                        <th className="text-right">Difference</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {categoryData.map((cat, idx) => {
+                        const lyVal = Math.round(cat.amount / 1.13);
+                        const diff = cat.amount - lyVal;
+                        return (
+                          <tr key={idx}>
+                            <td className="text-left font-semibold">{cat.name}</td>
+                            <td className="text-right font-bold">{formatAmount(cat.amount)}</td>
+                            <td className="text-right text-slate-400">{formatAmount(lyVal)}</td>
+                            <td className="text-right text-emerald-400 font-bold">+{formatAmount(diff)} (+13.0%)</td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="table-total">
+                        <th className="text-left">Total</th>
+                        <td className="text-right">{formatAmount(398650)}</td>
+                        <td className="text-right">{formatAmount(352400)}</td>
+                        <td className="text-right text-emerald-400 font-black">+{formatAmount(46250)} (+13.1%)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB CONTENT: CUSTOMERS */}
+          {activeTab === 'customers' && (
+            <div>
+              <div className="dashboard-branches-country">
+                <span>Top Customer Accounts</span>
+                <span className="text-xs font-normal">Active Trade Partners</span>
+              </div>
+              <div className="dashboard-branches-body">
+                <table className="omega-table">
+                  <thead>
+                    <tr className="table-total">
+                      <th className="text-left">Customer Name</th>
+                      <th className="text-left">Zone / City</th>
+                      <th className="text-right">Invoices</th>
+                      <th className="text-right">Sales Amount</th>
+                      <th className="text-right">Balance Due</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="text-left font-bold">Spinneys Lebanon S.A.L</td>
+                      <td className="text-left">Beirut & Mount Lebanon</td>
+                      <td className="text-right">48</td>
+                      <td className="text-right font-bold">{formatAmount(78400)}</td>
+                      <td className="text-right text-emerald-400">{formatAmount(12000)}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Carrefour / Majid Al Futtaim</td>
+                      <td className="text-left">City Centre & Mall of Dhayeh</td>
+                      <td className="text-right">36</td>
+                      <td className="text-right font-bold">{formatAmount(64200)}</td>
+                      <td className="text-right text-emerald-400">{formatAmount(8500)}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Fahd Supermarket Wholesale</td>
+                      <td className="text-left">Jounieh & Keserwan</td>
+                      <td className="text-right">24</td>
+                      <td className="text-right font-bold">{formatAmount(39100)}</td>
+                      <td className="text-right text-emerald-400">{formatAmount(4200)}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Al Makhazen Cooperative</td>
+                      <td className="text-left">Beirut Wholesale</td>
+                      <td className="text-right">28</td>
+                      <td className="text-right font-bold">{formatAmount(32800)}</td>
+                      <td className="text-right text-emerald-400">{formatAmount(6100)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB CONTENT: TODAY */}
+          {activeTab === 'today' && (
+            <div>
+              <div className="dashboard-branches-country">
+                <span>Today&apos;s Live Register Statistics</span>
+                <span className="text-xs font-normal">Real-time Register Sync</span>
+              </div>
+              <div className="dashboard-branches-body">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                  <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                    <div className="text-xs text-slate-400">Total Transactions Today</div>
+                    <div className="text-2xl font-black text-white mt-1">224 Invoices</div>
+                    <div className="text-xs text-emerald-400 mt-1">▲ +8.2% vs yesterday</div>
+                  </div>
+                  <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                    <div className="text-xs text-slate-400">Average Check Today</div>
+                    <div className="text-2xl font-black text-white mt-1">{formatAmount(82.36)}</div>
+                    <div className="text-xs text-emerald-400 mt-1">▲ Premium EVOO sales</div>
+                  </div>
+                  <div className="p-4 bg-slate-800 rounded-lg border border-slate-700">
+                    <div className="text-xs text-slate-400">Active Open Cash Drawers</div>
+                    <div className="text-2xl font-black text-emerald-400 mt-1">6 / 6 Terminals</div>
+                    <div className="text-xs text-slate-400 mt-1">All branch registers synchronized</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB CONTENT: GEOGRAPHICS */}
+          {activeTab === 'geographics' && (
+            <div>
+              <div className="dashboard-branches-country">
+                <span>Geographical Revenue Distribution (Lebanon)</span>
+                <span className="text-xs font-normal">By Administrative Region</span>
+              </div>
+              <div className="dashboard-branches-body">
+                <table className="omega-table">
+                  <thead>
+                    <tr className="table-total">
+                      <th className="text-left">Governorate / Region</th>
+                      <th className="text-left">Primary Hub</th>
+                      <th className="text-right">MTD Revenue</th>
+                      <th className="text-right">Share %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="text-left font-bold">Mount Lebanon</td>
+                      <td className="text-left">Choueifat Industrial Plant</td>
+                      <td className="text-right font-bold">{formatAmount(124500)}</td>
+                      <td className="text-right">31.2%</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Beirut Central</td>
+                      <td className="text-left">Beirut Wholesale Hub</td>
+                      <td className="text-right font-bold">{formatAmount(79200)}</td>
+                      <td className="text-right">19.9%</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">South Lebanon</td>
+                      <td className="text-left">Saida Southern Center</td>
+                      <td className="text-right font-bold">{formatAmount(61400)}</td>
+                      <td className="text-right">15.4%</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">North Lebanon</td>
+                      <td className="text-left">Tripoli North Depot</td>
+                      <td className="text-right font-bold">{formatAmount(50850)}</td>
+                      <td className="text-right">12.8%</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Bekaa Valley</td>
+                      <td className="text-left">Zahle Bekaa Branch</td>
+                      <td className="text-right font-bold">{formatAmount(47200)}</td>
+                      <td className="text-right">11.8%</td>
+                    </tr>
+                    <tr>
+                      <td className="text-left font-bold">Nabatieh</td>
+                      <td className="text-left">Nabatieh Center</td>
+                      <td className="text-right font-bold">{formatAmount(35500)}</td>
+                      <td className="text-right">8.9%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* BRANCHES LAST EOD MODAL */}
+      {eodModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full p-6 text-white shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-amber-400" />
+                <h3 className="font-bold text-lg">Branches Last EOD Date & Status</h3>
+              </div>
+              <button onClick={() => setEodModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-xs text-left">
                 <thead>
-                  <tr className="border-b border-slate-300 bg-slate-100 font-bold text-slate-700">
-                    <th className="p-2 normal-case">Branch Name</th>
-                    <th className="p-2 normal-case">Last Closeout Date</th>
-                    <th className="p-2 normal-case">Status</th>
-                    <th className="p-2 normal-case">Auditor</th>
+                  <tr className="bg-slate-800 text-slate-300">
+                    <th className="p-2.5">Branch</th>
+                    <th className="p-2.5">Last EOD Date/Time</th>
+                    <th className="p-2.5">Status</th>
+                    <th className="p-2.5">Supervisor</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                  {branchEods.map((e, idx) => (
-                    <tr key={idx}>
-                      <td className="p-2 font-sans font-semibold">{e.branch}</td>
-                      <td className="p-2 font-bold">{e.lastEod}</td>
-                      <td className="p-2 font-bold text-emerald-700">{e.status}</td>
-                      <td className="p-2 font-sans text-slate-600">{e.cashier}</td>
+                <tbody className="divide-y divide-slate-800">
+                  {branchEodDates.map((b, idx) => (
+                    <tr key={idx} className="hover:bg-slate-800/50">
+                      <td className="p-2.5 font-semibold text-slate-200">{b.branch}</td>
+                      <td className="p-2.5 font-mono text-slate-300">{b.lastEod}</td>
+                      <td className="p-2.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
+                          <CheckCircle2 className="w-3 h-3" /> {b.status}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-slate-400">{b.cashier}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
+            <div className="mt-6 flex justify-end">
+              <button 
                 onClick={() => setEodModalOpen(false)}
-                className="px-4 py-1.5 rounded-lg bg-slate-900 text-white font-bold text-xs hover:bg-slate-800"
+                className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-semibold text-white border border-slate-700"
               >
-                Close Registry
+                Close
               </button>
             </div>
           </div>
