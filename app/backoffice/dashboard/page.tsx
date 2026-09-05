@@ -50,6 +50,30 @@ export default function AuthenticOmegaSalesDashboard() {
   // Scroll to top visibility
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  // Interactive Legend filters for Comparative tab (Strikethrough & exclude from comparison)
+  const [hiddenCategorySeries, setHiddenCategorySeries] = useState<string[]>([]);
+  const [hiddenRevenueMonths, setHiddenRevenueMonths] = useState<string[]>([]);
+  const [hiddenEmployees, setHiddenEmployees] = useState<string[]>([]);
+  const [hoveredCategoryMonth, setHoveredCategoryMonth] = useState<string | null>(null);
+
+  const toggleCategorySeries = (seriesName: string) => {
+    setHiddenCategorySeries(prev => 
+      prev.includes(seriesName) ? prev.filter(s => s !== seriesName) : [...prev, seriesName]
+    );
+  };
+
+  const toggleRevenueMonth = (monthName: string) => {
+    setHiddenRevenueMonths(prev => 
+      prev.includes(monthName) ? prev.filter(m => m !== monthName) : [...prev, monthName]
+    );
+  };
+
+  const toggleEmployee = (empName: string) => {
+    setHiddenEmployees(prev => 
+      prev.includes(empName) ? prev.filter(e => e !== empName) : [...prev, empName]
+    );
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 200);
@@ -1523,74 +1547,210 @@ export default function AuthenticOmegaSalesDashboard() {
                 </div>
               </div>
               <div className="omega-panel-body">
-                {/* Multi-series Bar Chart (Jan - Dec) */}
-                <div className="w-full overflow-x-auto py-2">
-                  <svg viewBox="0 0 920 220" className="w-full min-w-[760px] h-52 select-none">
-                    {/* Y-axis gridlines & labels */}
-                    {['4B', '3B', '2B', '1B', '0'].map((tick, i) => {
-                      const y = 20 + i * 40;
-                      return (
+                <div className="flex flex-col lg:flex-row items-start gap-4">
+                  {/* Left Chart Area */}
+                  <div className="flex-1 w-full relative overflow-x-auto">
+                    <svg viewBox="0 0 820 220" className="w-full min-w-[700px] h-52 select-none">
+                      {/* Y-axis gridlines & labels matching screenshot: 2B, 1.5B, 1B, 500M, 0 */}
+                      {[
+                        { label: '2B', y: 20 },
+                        { label: '1.5B', y: 60 },
+                        { label: '1B', y: 100 },
+                        { label: '500M', y: 140 },
+                        { label: '0', y: 180 },
+                      ].map((tick, i) => (
                         <g key={i}>
-                          <line x1="45" y1={y} x2="900" y2={y} stroke="#e2e8f0" strokeWidth="1" />
-                          <text x="38" y={y + 4} fill="#64748b" fontSize="10" textAnchor="end" fontWeight="500">
-                            {tick}
+                          <line x1="45" y1={tick.y} x2="800" y2={tick.y} stroke="#e2e8f0" strokeWidth="1" />
+                          <text x="38" y={tick.y + 4} fill="#64748b" fontSize="10" textAnchor="end" fontWeight="500">
+                            {tick.label}
                           </text>
                         </g>
-                      );
-                    })}
+                      ))}
 
-                    {/* Bars for Jan-Dec */}
+                      {/* Bars for Jan-Dec */}
+                      {[
+                        { 
+                          m: 'January', 
+                          segments: [
+                            { series: '2026 جملة', c: '#1976d2', h: 60, val: '2,144,645,080' },
+                            { series: '2026 عروض', c: '#f59e0b', h: 32, val: '535,500,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 28, val: '424,787,350' },
+                          ] 
+                        },
+                        { 
+                          m: 'February', 
+                          segments: [
+                            { series: '2026 جملة', c: '#1976d2', h: 30, val: '895,931,000' },
+                            { series: '2026 عروض', c: '#f59e0b', h: 52, val: '880,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 24, val: '325,164,942' },
+                          ] 
+                        },
+                        { 
+                          m: 'March', 
+                          segments: [
+                            { series: '2026 Raw Materials', c: '#2e7d32', h: 0, val: '0' },
+                            { series: '2026 عروض', c: '#f59e0b', h: 4, val: '120,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 14, val: '212,743,800' },
+                          ] 
+                        },
+                        { 
+                          m: 'April', 
+                          segments: [
+                            { series: '2026 جملة', c: '#1976d2', h: 4, val: '50,000,000' },
+                            { series: '2026 عروض', c: '#f59e0b', h: 14, val: '250,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 22, val: '347,849,550' },
+                          ] 
+                        },
+                        { 
+                          m: 'May', 
+                          segments: [
+                            { series: '2026 مفرق', c: '#d32f2f', h: 10, val: '192,590,050' },
+                          ] 
+                        },
+                        { 
+                          m: 'June', 
+                          segments: [
+                            { series: '2026 عروض', c: '#f59e0b', h: 24, val: '420,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 14, val: '242,845,750' },
+                          ] 
+                        },
+                        { 
+                          m: 'July', 
+                          segments: [
+                            { series: '2026 جملة', c: '#1976d2', h: 12, val: '250,000,000' },
+                            { series: '2026 عروض', c: '#f59e0b', h: 54, val: '930,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 38, val: '604,311,315' },
+                          ] 
+                        },
+                        { 
+                          m: 'August', 
+                          segments: [
+                            { series: '2026 عروض', c: '#f59e0b', h: 56, val: '980,000,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 52, val: '883,715,000' },
+                          ] 
+                        },
+                        { 
+                          m: 'September', 
+                          segments: [
+                            { series: '2026 عروض', c: '#f59e0b', h: 4, val: '53,550,000' },
+                            { series: '2026 مفرق', c: '#d32f2f', h: 5, val: '78,301,800' },
+                          ] 
+                        },
+                        { m: 'October', segments: [] },
+                        { m: 'November', segments: [] },
+                        { 
+                          m: 'December', 
+                          segments: [
+                            { series: '2025 مفرق', c: '#ef9a9a', h: 8, val: '103,890,400' },
+                            { series: '2025 جملة', c: '#90caf9', h: 4, val: '50,023,000' },
+                          ] 
+                        },
+                      ].map((col, idx) => {
+                        const barWidth = 28;
+                        const x = 60 + idx * 62;
+                        let currentY = 180;
+                        const activeSegments = col.segments.filter(seg => !hiddenCategorySeries.includes(seg.series));
+
+                        return (
+                          <g 
+                            key={idx}
+                            onMouseEnter={() => setHoveredCategoryMonth(col.m)}
+                            onMouseLeave={() => setHoveredCategoryMonth(null)}
+                            className="cursor-pointer"
+                          >
+                            {/* Hover backdrop */}
+                            <rect
+                              x={x - 8}
+                              y="20"
+                              width={barWidth + 16}
+                              height="160"
+                              fill="transparent"
+                              className="hover:fill-blue-50/40"
+                            />
+                            {activeSegments.map((seg, sIdx) => {
+                              currentY -= seg.h;
+                              return (
+                                <rect
+                                  key={sIdx}
+                                  x={x}
+                                  y={currentY}
+                                  width={barWidth}
+                                  height={seg.h}
+                                  fill={seg.c}
+                                  className="transition-all duration-150"
+                                />
+                              );
+                            })}
+                            <text x={x + barWidth / 2} y="196" fill="#475569" fontSize="9" textAnchor="middle">
+                              {col.m}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+
+                    {/* Floating Tooltip matching exact screenshot */}
+                    {hoveredCategoryMonth && (
+                      <div className="absolute top-6 right-4 z-20 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-3 shadow-lg text-[11px] min-w-[170px] pointer-events-none animate-in fade-in duration-150">
+                        <div className="font-bold text-slate-900 mb-1.5 pb-1 border-b border-slate-100">
+                          {hoveredCategoryMonth}
+                        </div>
+                        <div className="space-y-1">
+                          {[
+                            { label: '2025 Raw Materials', c: '#81c784', val: '0' },
+                            { label: 'جملة', c: '#1976d2', val: hoveredCategoryMonth === 'January' ? '2.1 B' : hoveredCategoryMonth === 'February' ? '895.9 M' : hoveredCategoryMonth === 'December' ? '50.0 M' : '0' },
+                            { label: '2026 عروض', c: '#f59e0b', val: hoveredCategoryMonth === 'January' ? '535.5 M' : hoveredCategoryMonth === 'February' ? '880.0 M' : hoveredCategoryMonth === 'August' ? '980.0 M' : '0' },
+                            { label: '2025 عروض', c: '#ffe082', val: '0' },
+                            { label: '2026 مفرق', c: '#d32f2f', val: hoveredCategoryMonth === 'January' ? '424.8 M' : hoveredCategoryMonth === 'August' ? '883.7 M' : '0' },
+                            { label: '2025 مفرق', c: '#ef9a9a', val: hoveredCategoryMonth === 'December' ? '103.9 M' : '0' },
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-center justify-between gap-2 text-slate-700">
+                              <span className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-sm inline-block" style={{ backgroundColor: item.c }} />
+                                <span>{item.label}:</span>
+                              </span>
+                              <span className="font-semibold text-slate-900">{item.val}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Side Vertical Legend with Interactive Strikethrough Click */}
+                  <div className="w-full lg:w-44 flex-shrink-0 flex flex-col gap-2 pt-2 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-4">
                     {[
-                      { m: 'January', segments: [{ c: '#1976d2', h: 84 }, { c: '#f59e0b', h: 22 }, { c: '#d32f2f', h: 18 }] },
-                      { m: 'February', segments: [{ c: '#1976d2', h: 33 }, { c: '#f59e0b', h: 35 }, { c: '#d32f2f', h: 16 }] },
-                      { m: 'March', segments: [{ c: '#2e7d32', h: 2 }, { c: '#f59e0b', h: 4.5 }, { c: '#d32f2f', h: 7 }] },
-                      { m: 'April', segments: [{ c: '#1976d2', h: 2 }, { c: '#f59e0b', h: 10 }, { c: '#d32f2f', h: 14 }] },
-                      { m: 'May', segments: [{ c: '#d32f2f', h: 8 }] },
-                      { m: 'June', segments: [{ c: '#f59e0b', h: 16 }, { c: '#d32f2f', h: 10.5 }] },
-                      { m: 'July', segments: [{ c: '#1976d2', h: 10 }, { c: '#f59e0b', h: 37 }, { c: '#d32f2f', h: 24 }] },
-                      { m: 'August', segments: [{ c: '#f59e0b', h: 39 }, { c: '#d32f2f', h: 35 }] },
-                      { m: 'September', segments: [{ c: '#1976d2', h: 1 }, { c: '#f59e0b', h: 2 }, { c: '#d32f2f', h: 2.5 }] },
-                      { m: 'October', segments: [] },
-                      { m: 'November', segments: [] },
-                      { m: 'December', segments: [{ c: '#ef9a9a', h: 6 }] },
-                    ].map((col, idx) => {
-                      const barWidth = 28;
-                      const x = 70 + idx * 70;
-                      let currentY = 180;
+                      { name: '2026 Raw Materials', c: '#2e7d32' },
+                      { name: '2025 Raw Materials', c: '#81c784' },
+                      { name: '2026 جملة', c: '#1976d2' },
+                      { name: '2025 جملة', c: '#90caf9' },
+                      { name: '2026 عروض', c: '#f59e0b' },
+                      { name: '2025 عروض', c: '#ffe082' },
+                      { name: '2026 مفرق', c: '#d32f2f' },
+                      { name: '2025 مفرق', c: '#ef9a9a' },
+                    ].map((item, i) => {
+                      const isHidden = hiddenCategorySeries.includes(item.name);
                       return (
-                        <g key={idx}>
-                          {col.segments.map((seg, sIdx) => {
-                            currentY -= seg.h;
-                            return (
-                              <rect
-                                key={sIdx}
-                                x={x}
-                                y={currentY}
-                                width={barWidth}
-                                height={seg.h}
-                                fill={seg.c}
-                              />
-                            );
-                          })}
-                          <text x={x + barWidth / 2} y="196" fill="#475569" fontSize="9.5" textAnchor="middle">
-                            {col.m}
-                          </text>
-                        </g>
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => toggleCategorySeries(item.name)}
+                          className={`flex items-center gap-2 text-[11.5px] cursor-pointer select-none text-left transition-all ${
+                            isHidden 
+                              ? 'line-through text-slate-400 opacity-60 decoration-slate-900 decoration-[1.5px]' 
+                              : 'text-slate-800 font-medium hover:text-blue-600'
+                          }`}
+                          title={`Click to ${isHidden ? 'include' : 'exclude'} ${item.name}`}
+                        >
+                          <span 
+                            className={`w-3 h-3 rounded-sm inline-block flex-shrink-0 transition-opacity ${isHidden ? 'opacity-40' : ''}`}
+                            style={{ backgroundColor: item.c }} 
+                          />
+                          <span>{item.name}</span>
+                        </button>
                       );
                     })}
-                  </svg>
-                </div>
-
-                {/* Legend */}
-                <div className="flex flex-wrap justify-end gap-x-4 gap-y-1.5 px-4 py-2 text-[11px] text-slate-700 font-medium border-t border-slate-100">
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> 2026 Raw Materials</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#81c784] inline-block"></span> 2025 Raw Materials</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> 2026 جملة</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#90caf9] inline-block"></span> 2025 جملة</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> 2026 عروض</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#ffe082] inline-block"></span> 2025 عروض</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#d32f2f] inline-block"></span> 2026 مفرق</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#ef9a9a] inline-block"></span> 2025 مفرق</span>
+                  </div>
                 </div>
 
                 {/* Comparison Table */}
@@ -1788,16 +1948,35 @@ export default function AuthenticOmegaSalesDashboard() {
 
                     {/* 2026 Multi-month Stacked Bar */}
                     <g>
-                      {/* Stacked segments for 2026 total 10.9B */}
-                      <rect x="120" y="32" width="290" height="24" fill="#831843" /> {/* September */}
-                      <rect x="120" y="56" width="290" height="34" fill="#c2410c" /> {/* August */}
-                      <rect x="120" y="90" width="290" height="32" fill="#0284c7" /> {/* July */}
-                      <rect x="120" y="122" width="290" height="12" fill="#0d9488" /> {/* June */}
-                      <rect x="120" y="134" width="290" height="4" fill="#7c3aed" /> {/* May */}
-                      <rect x="120" y="138" width="290" height="12" fill="#dc2626" /> {/* April */}
-                      <rect x="120" y="150" width="290" height="6" fill="#f59e0b" /> {/* March */}
-                      <rect x="120" y="156" width="290" height="38" fill="#1976d2" /> {/* February */}
-                      <rect x="120" y="194" width="290" height="6" fill="#2e7d32" /> {/* January */}
+                      {(() => {
+                        const segments = [
+                          { m: 'September', c: '#831843', h: 24 },
+                          { m: 'August', c: '#c2410c', h: 34 },
+                          { m: 'July', c: '#0284c7', h: 32 },
+                          { m: 'June', c: '#0d9488', h: 12 },
+                          { m: 'May', c: '#7c3aed', h: 4 },
+                          { m: 'April', c: '#dc2626', h: 12 },
+                          { m: 'March', c: '#f59e0b', h: 6 },
+                          { m: 'February', c: '#1976d2', h: 38 },
+                          { m: 'January', c: '#2e7d32', h: 6 },
+                        ].filter(s => !hiddenRevenueMonths.includes(s.m));
+
+                        let currentY = 200;
+                        return segments.reverse().map((seg, sIdx) => {
+                          currentY -= seg.h;
+                          return (
+                            <rect
+                              key={sIdx}
+                              x="120"
+                              y={currentY}
+                              width="290"
+                              height={seg.h}
+                              fill={seg.c}
+                              className="transition-all duration-150"
+                            />
+                          );
+                        });
+                      })()}
                       
                       <text x="265" y="215" fill="#334155" fontSize="11" fontWeight="bold" textAnchor="middle">
                         2026
@@ -1814,20 +1993,43 @@ export default function AuthenticOmegaSalesDashboard() {
                   </svg>
                 </div>
 
-                {/* 12-Month Legend */}
+                {/* 12-Month Legend with Clickable Strikethrough Filter */}
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-2 px-4 py-2 border-t border-slate-100 text-[10.5px] text-slate-700 font-medium text-center">
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> January</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> February</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> March</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#dc2626] inline-block"></span> April</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#7c3aed] inline-block"></span> May</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#0d9488] inline-block"></span> June</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#0284c7] inline-block"></span> July</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#c2410c] inline-block"></span> August</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#831843] inline-block"></span> September</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#334155] inline-block"></span> October</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#84cc16] inline-block"></span> November</span>
-                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#1e3a8a] inline-block"></span> December</span>
+                  {[
+                    { m: 'January', c: '#2e7d32' },
+                    { m: 'February', c: '#1976d2' },
+                    { m: 'March', c: '#f59e0b' },
+                    { m: 'April', c: '#dc2626' },
+                    { m: 'May', c: '#7c3aed' },
+                    { m: 'June', c: '#0d9488' },
+                    { m: 'July', c: '#0284c7' },
+                    { m: 'August', c: '#c2410c' },
+                    { m: 'September', c: '#831843' },
+                    { m: 'October', c: '#334155' },
+                    { m: 'November', c: '#84cc16' },
+                    { m: 'December', c: '#1e3a8a' },
+                  ].map((item, idx) => {
+                    const isHidden = hiddenRevenueMonths.includes(item.m);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => toggleRevenueMonth(item.m)}
+                        className={`flex items-center gap-1 justify-center cursor-pointer select-none transition-all ${
+                          isHidden 
+                            ? 'line-through text-slate-400 opacity-60 decoration-slate-900 decoration-[1.5px]' 
+                            : 'hover:text-blue-600'
+                        }`}
+                        title={`Click to ${isHidden ? 'include' : 'exclude'} ${item.m}`}
+                      >
+                        <span 
+                          className={`w-2.5 h-2.5 inline-block ${isHidden ? 'opacity-40' : ''}`} 
+                          style={{ backgroundColor: item.c }}
+                        />
+                        <span>{item.m}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1927,15 +2129,76 @@ export default function AuthenticOmegaSalesDashboard() {
 
                     {/* Bars for Jan-Dec */}
                     {[
-                      { m: 'January', segments: [{ c: '#2e7d32', h: 3 }, { c: '#1976d2', h: 20 }, { c: '#f59e0b', h: 15 }, { c: '#7c3aed', h: 86 }] },
-                      { m: 'February', segments: [{ c: '#2e7d32', h: 7 }, { c: '#1976d2', h: 18 }, { c: '#f59e0b', h: 23 }, { c: '#7c3aed', h: 36 }] },
-                      { m: 'March', segments: [{ c: '#2e7d32', h: 9 }, { c: '#f59e0b', h: 2.5 }, { c: '#7c3aed', h: 2 }] },
-                      { m: 'April', segments: [{ c: '#2e7d32', h: 13 }, { c: '#1976d2', h: 6 }, { c: '#7c3aed', h: 7.5 }] },
-                      { m: 'May', segments: [{ c: '#0d9488', h: 0.5 }, { c: '#7c3aed', h: 7.5 }] },
-                      { m: 'June', segments: [{ c: '#d32f2f', h: 15 }, { c: '#7c3aed', h: 10.5 }, { c: '#0d9488', h: 1 }] },
-                      { m: 'July', segments: [{ c: '#d32f2f', h: 60 }, { c: '#7c3aed', h: 12 }] },
-                      { m: 'August', segments: [{ c: '#d32f2f', h: 64 }, { c: '#7c3aed', h: 11 }] },
-                      { m: 'September', segments: [{ c: '#d32f2f', h: 4.5 }, { c: '#7c3aed', h: 1 }] },
+                      { 
+                        m: 'January', 
+                        segments: [
+                          { emp: 'Cashier N2', c: '#2e7d32', h: 3 },
+                          { emp: 'Cashier NK', c: '#1976d2', h: 20 },
+                          { emp: 'Cashier R', c: '#f59e0b', h: 15 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 86 }
+                        ] 
+                      },
+                      { 
+                        m: 'February', 
+                        segments: [
+                          { emp: 'Cashier N2', c: '#2e7d32', h: 7 },
+                          { emp: 'Cashier NK', c: '#1976d2', h: 18 },
+                          { emp: 'Cashier R', c: '#f59e0b', h: 23 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 36 }
+                        ] 
+                      },
+                      { 
+                        m: 'March', 
+                        segments: [
+                          { emp: 'Cashier N2', c: '#2e7d32', h: 9 },
+                          { emp: 'Cashier R', c: '#f59e0b', h: 2.5 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 2 }
+                        ] 
+                      },
+                      { 
+                        m: 'April', 
+                        segments: [
+                          { emp: 'Cashier N2', c: '#2e7d32', h: 13 },
+                          { emp: 'Cashier NK', c: '#1976d2', h: 6 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 7.5 }
+                        ] 
+                      },
+                      { 
+                        m: 'May', 
+                        segments: [
+                          { emp: 'Nour Yazbeck', c: '#0d9488', h: 0.5 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 7.5 }
+                        ] 
+                      },
+                      { 
+                        m: 'June', 
+                        segments: [
+                          { emp: 'Hiba Aloulou', c: '#d32f2f', h: 15 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 10.5 },
+                          { emp: 'Nour Yazbeck', c: '#0d9488', h: 1 }
+                        ] 
+                      },
+                      { 
+                        m: 'July', 
+                        segments: [
+                          { emp: 'Hiba Aloulou', c: '#d32f2f', h: 60 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 12 }
+                        ] 
+                      },
+                      { 
+                        m: 'August', 
+                        segments: [
+                          { emp: 'Hiba Aloulou', c: '#d32f2f', h: 64 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 11 }
+                        ] 
+                      },
+                      { 
+                        m: 'September', 
+                        segments: [
+                          { emp: 'Hiba Aloulou', c: '#d32f2f', h: 4.5 },
+                          { emp: 'Mahdi', c: '#7c3aed', h: 1 }
+                        ] 
+                      },
                       { m: 'October', segments: [] },
                       { m: 'November', segments: [] },
                       { m: 'December', segments: [] },
@@ -1943,9 +2206,11 @@ export default function AuthenticOmegaSalesDashboard() {
                       const barWidth = 34;
                       const x = 65 + idx * 70;
                       let currentY = 180;
+                      const activeSegments = col.segments.filter(seg => !hiddenEmployees.includes(seg.emp));
+
                       return (
                         <g key={idx}>
-                          {col.segments.map((seg, sIdx) => {
+                          {activeSegments.map((seg, sIdx) => {
                             currentY -= seg.h;
                             return (
                               <rect
@@ -1955,6 +2220,7 @@ export default function AuthenticOmegaSalesDashboard() {
                                 width={barWidth}
                                 height={seg.h}
                                 fill={seg.c}
+                                className="transition-all duration-150"
                               />
                             );
                           })}
@@ -1967,14 +2233,37 @@ export default function AuthenticOmegaSalesDashboard() {
                   </svg>
                 </div>
 
-                {/* Legend */}
+                {/* Legend with Clickable Strikethrough Filter */}
                 <div className="flex flex-wrap justify-start gap-x-6 gap-y-1.5 px-4 py-2 text-[11px] text-slate-700 font-medium border-t border-slate-100">
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> Cashier N2</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> Cashier NK</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> Cashier R</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#d32f2f] inline-block"></span> Hiba Aloulou</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#7c3aed] inline-block"></span> Mahdi</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#0d9488] inline-block"></span> Nour Yazbeck</span>
+                  {[
+                    { name: 'Cashier N2', color: '#2e7d32' },
+                    { name: 'Cashier NK', color: '#1976d2' },
+                    { name: 'Cashier R', color: '#f59e0b' },
+                    { name: 'Hiba Aloulou', color: '#d32f2f' },
+                    { name: 'Mahdi', color: '#7c3aed' },
+                    { name: 'Nour Yazbeck', color: '#0d9488' },
+                  ].map((item, idx) => {
+                    const isHidden = hiddenEmployees.includes(item.name);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => toggleEmployee(item.name)}
+                        className={`flex items-center gap-1.5 cursor-pointer select-none transition-all ${
+                          isHidden 
+                            ? 'line-through text-slate-400 opacity-60 decoration-slate-900 decoration-[1.5px]' 
+                            : 'text-slate-800 hover:text-blue-600'
+                        }`}
+                        title={`Click to ${isHidden ? 'include' : 'exclude'} ${item.name}`}
+                      >
+                        <span 
+                          className={`w-2.5 h-2.5 inline-block ${isHidden ? 'opacity-40' : ''}`} 
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span>{item.name}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Employee Table */}
