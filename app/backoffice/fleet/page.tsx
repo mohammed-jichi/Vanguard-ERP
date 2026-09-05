@@ -75,12 +75,16 @@ function SuperSonicFleetPageContent() {
 
   // Top-Level State (Strictly compliant with React Rules of Hooks)
   const [selectedCorridorId, setSelectedCorridorId] = useState<number>(1);
+  const [assignDriver, setAssignDriver] = useState<string>('Hassan Sleiman');
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [selectedReportKey, setSelectedReportKey] = useState<string>('COD_WHISH_SETTLEMENTS');
   const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
 
-  // En-Route Adjacent Corridor Filter Toggle
+  // En-Route Adjacent Corridor Filter & Modal State
   const [includeAdjacentAramoun, setIncludeAdjacentAramoun] = useState<boolean>(false);
+  const [showAttachEnRouteModal, setShowAttachEnRouteModal] = useState(false);
+  const [enRouteSourceCorridorId, setEnRouteSourceCorridorId] = useState<number>(2); // Default to Aramoun/Bchamoun (Corridor 2)
+  const [enRouteSelectedOrderIds, setEnRouteSelectedOrderIds] = useState<string[]>([]);
 
   // Modals
   const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
@@ -125,6 +129,22 @@ function SuperSonicFleetPageContent() {
   const getAutoTripNumberForDriver = (driverName: string) => {
     const driverExistingRuns = pathCards.filter((p) => p.driverName === driverName);
     return driverExistingRuns.length + 1;
+  };
+
+  const autoCalculatedTripNo = getAutoTripNumberForDriver(assignDriver);
+
+  const handleToggleSelectAll = () => {
+    if (selectedOrderIds.length === currentCorridorOrders.length) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(currentCorridorOrders.map((o) => o.id));
+    }
+  };
+
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+    );
   };
 
   const handleUpdateDeliveryFee = (orderId: string, newFee: number) => {
@@ -308,166 +328,380 @@ function SuperSonicFleetPageContent() {
       </div>
 
       {/* =================================================================== */}
-      {/* 1. DISPATCH: CORRIDORS, EN-ROUTE STOPS (ARAMOUN/BCHAMOUN), & SAVE    */}
+      {/* 1. CORRIDORS & DISPATCH: INLINE CONTROLS + ATTACH EN-ROUTE PACKAGES */}
       {/* =================================================================== */}
-      {activeTab === 'dispatch' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <label className="text-xs font-bold text-slate-700">Select Highway Corridor:</label>
-                <select
-                  value={selectedCorridorId}
-                  onChange={(e) => setSelectedCorridorId(parseInt(e.target.value))}
-                  className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 text-xs focus:outline-none min-w-[320px]"
+      {activeTab === 'dispatch' && (() => {
+        // Master Save & Dispatch Run
+        const handleSaveAndDispatchRun = () => {
+          if (selectedOrderIds.length === 0) {
+            alert('Please select at least one package to include in this dispatch run!');
+            return;
+          }
+
+          const currentCorridor = corridors.find((c) => c.id === selectedCorridorId);
+          const assignedOrdersList = orders.filter((o) => selectedOrderIds.includes(o.id));
+          const selectedDriverObj = staffList.find((s) => s.fullName === assignDriver);
+          const vehiclePlate = (selectedDriverObj?.assignedAsset || 'B-492102').split(' ')[0];
+
+          const newPathCard: AssignedPathCard = {
+            pathId: `ROUTE-C${selectedCorridorId}-${assignDriver.split(' ')[0]}-T${autoCalculatedTripNo}-${Date.now().toString().slice(-4)}`,
+            corridorId: selectedCorridorId,
+            corridorName: currentCorridor?.name || `Corridor ${selectedCorridorId}`,
+            driverName: assignDriver,
+            vehiclePlate: vehiclePlate,
+            tripNo: autoCalculatedTripNo,
+            status: 'READY_FOR_LOADING',
+            assignedAt: 'Just Now',
+            assignedOrders: assignedOrdersList,
+          };
+
+          setPathCards((prev) => [newPathCard, ...prev]);
+
+          setOrders((prev) =>
+            prev.map((o) =>
+              selectedOrderIds.includes(o.id)
+                ? {
+                    ...o,
+                    assignedDriver: assignDriver,
+                    vehiclePlate: vehiclePlate,
+                    tripNo: autoCalculatedTripNo,
+                    status: 'QUEUED',
+                  }
+                : o
+            )
+          );
+
+          setSelectedOrderIds([]);
+          alert(`✓ Route Dispatched! ${assignedOrdersList.length} packages (including en-route stops) assigned to ${assignDriver} on Trip ${autoCalculatedTripNo}.\nMoved to Route Cards ready for loading!`);
+        };
+
+        // Attach Selected En-Route Packages to current corridor run
+        const handleConfirmAttachEnRoute = () => {
+          if (enRouteSelectedOrderIds.length === 0) {
+            alert('Please select at least one package to attach!');
+            return;
+          }
+
+          // Move the selected orders from source corridor to current corridor with en-route tag
+          setOrders((prev) =>
+            prev.map((o) =>
+              enRouteSelectedOrderIds.includes(o.id)
+                ? { ...o, corridorId: selectedCorridorId }
+                : o
+            )
+          );
+
+          // Automatically select them in the current corridor batch
+          setSelectedOrderIds((prev) => [...prev, ...enRouteSelectedOrderIds]);
+          setEnRouteSelectedOrderIds([]);
+          setShowAttachEnRouteModal(false);
+          alert(`✓ Attached successfully! En-route packages added to Corridor ${selectedCorridorId} dispatch table.`);
+        };
+
+        const selectedDriverObj = staffList.find((s) => s.fullName === assignDriver);
+        const autoResolvedVehicle = selectedDriverObj?.assignedAsset || 'Toyota HiAce (B-492102)';
+        const candidateEnRouteOrders = orders.filter(
+          (o) => o.corridorId === enRouteSourceCorridorId && o.status !== 'MOVED_TO_POS_PICKUP' && o.status !== 'DELIVERED'
+        );
+
+        return (
+          <div className="space-y-4">
+            
+            {/* Top Corridor Selector & Driver Assignment Toolbar */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <label className="text-xs font-bold text-slate-700">Target Corridor:</label>
+                  <select
+                    value={selectedCorridorId}
+                    onChange={(e) => setSelectedCorridorId(parseInt(e.target.value))}
+                    className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 text-xs focus:outline-none min-w-[340px]"
+                  >
+                    {corridors.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        Corridor {c.id}: {c.name.split(': ')[1] || c.name} ({c.schedule})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="text-xs text-slate-500 font-mono">
+                  Highway Path: <strong className="text-slate-800">{corridors.find(c => c.id === selectedCorridorId)?.highwayPath}</strong>
+                </div>
+              </div>
+
+              {/* Assignment Bar with En-Route Attachment Action */}
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+                <div className="flex flex-wrap items-center gap-3">
+                  
+                  {/* Driver Selector */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-bold text-slate-700">Assign Driver:</label>
+                    <select
+                      value={assignDriver}
+                      onChange={(e) => setAssignDriver(e.target.value)}
+                      className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none"
+                    >
+                      {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
+                        <option key={d.id} value={d.fullName}>
+                          {d.fullName} ({d.phone})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Auto-Resolved Vehicle */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-bold text-slate-700">Vehicle:</label>
+                    <span className="px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-300 rounded-lg font-mono font-bold text-xs">
+                      🚐 {autoResolvedVehicle}
+                    </span>
+                  </div>
+
+                  {/* Auto Trip Sequence */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-bold text-slate-700">Trip Sequence:</label>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-900 border border-purple-300 rounded-lg font-mono font-bold text-xs flex items-center gap-1">
+                      <span>⚡</span>
+                      <span>Auto: Trip {autoCalculatedTripNo}</span>
+                    </span>
+                  </div>
+
+                  <div className="text-xs font-mono text-slate-600 pl-2">
+                    Selected for Run: <strong className="text-[#1e3a2b]">{selectedOrderIds.length} orders</strong>
+                  </div>
+                </div>
+
+                {/* Action Buttons: Attach En-Route + Dispatch Run */}
+                <div className="flex items-center gap-2">
+                  
+                  {/* THE NEW EN-ROUTE PACKAGES ATTACHMENT BUTTON */}
+                  <button
+                    type="button"
+                    onClick={() => setShowAttachEnRouteModal(true)}
+                    className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold rounded-xl text-xs border border-blue-300 flex items-center gap-1.5 transition-colors shadow-2xs"
+                    title="Attach gateway/en-route packages (e.g. Aramoun, Bchamoun, Dahieh) to this vehicle before departing"
+                  >
+                    <span>➕ Attach En-Route Packages</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveAndDispatchRun}
+                    className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>🚀 Save & Dispatch Run (Move to Route Cards)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Packages Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Corridor {selectedCorridorId} Loading Queue — Assigned to {assignDriver}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Includes direct corridor shipments and co-loaded en-route gateway packages. Check packages to load into this run.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleToggleSelectAll}
+                  className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-xs border border-slate-300"
                 >
-                  {corridors.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      Corridor {c.id}: {c.name.split(': ')[1] || c.name} ({c.schedule})
-                    </option>
-                  ))}
-                </select>
+                  {selectedOrderIds.length === currentCorridorOrders.length ? 'Deselect All' : 'Select All Packages'}
+                </button>
               </div>
 
-              {/* EN-ROUTE CROSS-CORRIDOR ADD-ON (e.g. South driver takes Aramoun/Bchamoun) */}
-              {selectedCorridorId === 3 && (
-                <label className="flex items-center gap-2 text-xs font-bold text-blue-900 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeAdjacentAramoun}
-                    onChange={(e) => setIncludeAdjacentAramoun(e.target.checked)}
-                    className="w-4 h-4 rounded text-blue-700"
-                  />
-                  <span>➕ Add En-Route Stops from Aramoun / Bchamoun to South Run</span>
-                </label>
-              )}
+              <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
+                      <th className="py-2.5 px-3 normal-case w-10 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedOrderIds.length > 0 && selectedOrderIds.length === currentCorridorOrders.length}
+                          onChange={handleToggleSelectAll}
+                          className="w-4 h-4 rounded text-[#1e3a2b]"
+                        />
+                      </th>
+                      <th className="py-2.5 px-3 normal-case">order no.</th>
+                      <th className="py-2.5 px-3 normal-case">source entity</th>
+                      <th className="py-2.5 px-3 normal-case">customer & destination</th>
+                      <th className="py-2.5 px-3 normal-case">packing checklist</th>
+                      <th className="py-2.5 px-3 normal-case text-right">product val</th>
+                      <th className="py-2.5 px-3 normal-case text-center w-32">delivery fee ($) [manual]</th>
+                      <th className="py-2.5 px-3 normal-case text-center">route status</th>
+                      <th className="py-2.5 px-3 normal-case text-center">actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
+                    {currentCorridorOrders.map((order) => {
+                      const isChecked = selectedOrderIds.includes(order.id);
+                      return (
+                        <tr key={order.id} className={isChecked ? 'bg-emerald-50/50' : 'hover:bg-slate-50'}>
+                          <td className="py-2.5 px-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => toggleOrderSelection(order.id)}
+                              className="w-4 h-4 rounded text-[#1e3a2b]"
+                            />
+                          </td>
+                          <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
+                          <td className="py-2.5 px-3">
+                            {order.sourceType === 'SOUTHERN_OLIVE' ? (
+                              <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">🫒 Southern Olive In-House</span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">🏢 External 3PL Merchant</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <strong className="text-slate-900 block">{order.customerName}</strong>
+                            <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
+                          </td>
+                          <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
+                          <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                            {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
+                          </td>
+                          <td className="py-2.5 px-3 text-center">
+                            <div className="inline-flex items-center justify-center gap-1">
+                              <span className="text-slate-400 font-mono text-xs">$</span>
+                              <input
+                                type="number"
+                                step="0.5"
+                                value={order.deliveryFeeUsd}
+                                onChange={(e) => handleUpdateDeliveryFee(order.id, parseFloat(e.target.value) || 0)}
+                                className="w-16 px-2 py-1 bg-white border border-slate-300 rounded text-center font-mono font-bold text-blue-700 text-xs focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3 text-center">
+                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200 text-[10px] font-bold">
+                              Corridor {order.corridorId}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-center">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedOrderForReroute(order)}
+                              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300"
+                            >
+                              🔄 Move
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
 
-              <div className="text-xs text-slate-500 font-mono">
-                Highway Path: <strong className="text-slate-800">{corridors.find(c => c.id === selectedCorridorId)?.highwayPath}</strong>
+                    {currentCorridorOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={9} className="py-8 text-center text-slate-400 font-mono text-xs">
+                          No packages currently queued for Corridor {selectedCorridorId}. Click "Attach En-Route Packages" to co-load stops from adjacent routes.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">
-                  Corridor {selectedCorridorId} Orders Queue — Assign Drivers & Build Routes
-                </h3>
-                <p className="text-[11px] text-slate-400">
-                  Select a driver for each order. Click "Save Routes" to automatically split them into Route Cards.
-                </p>
-              </div>
+            {/* MODAL: ATTACH EN-ROUTE PACKAGES FROM ADJACENT CORRIDOR */}
+            {showAttachEnRouteModal && (
+              <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+                <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-xl w-full p-5 space-y-4 text-xs">
+                  <div className="flex justify-between items-center border-b border-slate-200 pb-2.5">
+                    <div>
+                      <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                        <span>➕</span>
+                        <span>Attach En-Route Packages to Corridor {selectedCorridorId} ({assignDriver})</span>
+                      </h3>
+                      <p className="text-[11px] text-slate-500">Pick packages from gateway areas (e.g. Aramoun, Bchamoun, Dahieh) to deliver on the way.</p>
+                    </div>
+                    <button type="button" onClick={() => setShowAttachEnRouteModal(false)} className="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
+                  </div>
 
-              <button
-                type="button"
-                onClick={handleSaveRoutes}
-                className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition-colors"
-              >
-                <span>💾 Save Routes (Split by Drivers ➔ Route Cards)</span>
-              </button>
-            </div>
+                  {/* Source Corridor Selector */}
+                  <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <label className="font-bold text-slate-700">Source Corridor to Pick From:</label>
+                    <select
+                      value={enRouteSourceCorridorId}
+                      onChange={(e) => setEnRouteSourceCorridorId(parseInt(e.target.value))}
+                      className="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg font-bold text-xs text-slate-800"
+                    >
+                      {corridors.filter(c => c.id !== selectedCorridorId).map(c => (
+                        <option key={c.id} value={c.id}>
+                          Corridor {c.id}: {c.name.split(': ')[1] || c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-            <div className="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px]">
-                    <th className="py-2.5 px-3 normal-case">order no.</th>
-                    <th className="py-2.5 px-3 normal-case">source entity</th>
-                    <th className="py-2.5 px-3 normal-case">customer & destination</th>
-                    <th className="py-2.5 px-3 normal-case">packing checklist</th>
-                    <th className="py-2.5 px-3 normal-case text-right">product val</th>
-                    <th className="py-2.5 px-3 normal-case text-center w-28">delivery fee ($)</th>
-                    <th className="py-2.5 px-3 normal-case text-center w-48">assign to driver</th>
-                    <th className="py-2.5 px-3 normal-case text-center">actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-[11.5px] text-slate-800">
-                  {currentCorridorOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-slate-50">
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{order.orderNo}</td>
-                      <td className="py-2.5 px-3">
-                        {order.sourceType === 'SOUTHERN_OLIVE' ? (
-                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-bold">🫒 Southern Olive</span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-bold">🏢 External 3PL</span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <strong className="text-slate-900 block">{order.customerName}</strong>
-                        <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                        {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
-                      </td>
-                      
-                      {/* Manual Delivery Fee Input */}
-                      <td className="py-2.5 px-3 text-center">
-                        <div className="inline-flex items-center justify-center gap-1">
-                          <span className="text-slate-400 font-mono text-xs">$</span>
-                          <input
-                            type="number"
-                            step="0.5"
-                            value={order.deliveryFeeUsd}
-                            onChange={(e) => handleUpdateDeliveryFee(order.id, parseFloat(e.target.value) || 0)}
-                            className="w-16 px-2 py-1 bg-white border border-slate-300 rounded text-center font-mono font-bold text-blue-700 text-xs focus:ring-1 focus:ring-blue-500"
-                          />
+                  {/* List of packages to attach */}
+                  <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100">
+                    {candidateEnRouteOrders.map((cand) => {
+                      const isCandidateChecked = enRouteSelectedOrderIds.includes(cand.id);
+                      return (
+                        <div key={cand.id} className={`p-2.5 flex items-center justify-between gap-3 text-xs ${isCandidateChecked ? 'bg-blue-50/70' : 'hover:bg-slate-50'}`}>
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="checkbox"
+                              checked={isCandidateChecked}
+                              onChange={() =>
+                                setEnRouteSelectedOrderIds(prev =>
+                                  prev.includes(cand.id) ? prev.filter(i => i !== cand.id) : [...prev, cand.id]
+                                )
+                              }
+                              className="w-4 h-4 rounded text-blue-600"
+                            />
+                            <div>
+                              <span className="font-mono font-bold text-[#1e3a2b]">{cand.orderNo}</span>
+                              <strong className="block text-slate-900">{cand.customerName} ({cand.destinationTown})</strong>
+                              <span className="text-[10.5px] text-slate-500">{cand.items}</span>
+                            </div>
+                          </div>
+                          <span className="font-mono font-bold text-blue-700">${cand.deliveryFeeUsd} fee</span>
                         </div>
-                      </td>
+                      );
+                    })}
 
-                      {/* Per-Order Driver Selection Dropdown */}
-                      <td className="py-2.5 px-3 text-center">
-                        <select
-                          value={order.assignedDriver && order.assignedDriver !== '-' ? order.assignedDriver : 'UNASSIGNED'}
-                          onChange={(e) => {
-                            const chosenDriver = e.target.value;
-                            const driverObj = staffList.find((s) => s.fullName === chosenDriver);
-                            const vehicle = driverObj?.assignedAsset?.split(' ')[0] || '-';
-                            setOrders((prev) =>
-                              prev.map((o) =>
-                                o.id === order.id
-                                  ? { ...o, assignedDriver: chosenDriver === 'UNASSIGNED' ? '-' : chosenDriver, vehiclePlate: vehicle }
-                                  : o
-                              )
-                            );
-                          }}
-                          className={`px-2 py-1 border rounded-lg text-xs font-bold transition-colors focus:outline-none ${order.assignedDriver && order.assignedDriver !== '-' ? 'bg-emerald-50 text-[#1e3a2b] border-emerald-300' : 'bg-white text-slate-600 border-slate-300'}`}
-                        >
-                          <option value="UNASSIGNED">-- Assign Driver --</option>
-                          {staffList.filter((s) => s.type === 'DRIVER').map((d) => (
-                            <option key={d.id} value={d.fullName}>
-                              {d.fullName} ({d.assignedAsset.split(' ')[0]})
-                            </option>
-                          ))}
-                        </select>
-                      </td>
+                    {candidateEnRouteOrders.length === 0 && (
+                      <div className="p-6 text-center text-slate-400 font-mono text-xs">
+                        No available unassigned packages in Corridor {enRouteSourceCorridorId} to attach.
+                      </div>
+                    )}
+                  </div>
 
-                      <td className="py-2.5 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedOrderForReroute(order)}
-                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10.5px] font-bold border border-slate-300"
-                        >
-                          🔄 Move
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                    <span className="font-mono text-slate-600">Selected to Attach: <strong>{enRouteSelectedOrderIds.length} pkgs</strong></span>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleConfirmAttachEnRoute}
+                        className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl text-xs shadow-xs"
+                      >
+                        ✓ Attach to This Driver's Run
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAttachEnRouteModal(false)}
+                        className="px-3 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-                  {currentCorridorOrders.length === 0 && (
-                    <tr>
-                      <td colSpan={8} className="py-8 text-center text-slate-400 font-mono text-xs">
-                        No orders currently queued for Corridor {selectedCorridorId}.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* =================================================================== */}
       {/* 2. SOUTHERN OLIVE ORDERS (INCOMING FEED — CLEAN TABLE)               */}
