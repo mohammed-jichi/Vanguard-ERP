@@ -54,7 +54,13 @@ export default function AuthenticOmegaSalesDashboard() {
   const [hiddenCategorySeries, setHiddenCategorySeries] = useState<string[]>([]);
   const [hiddenRevenueMonths, setHiddenRevenueMonths] = useState<string[]>([]);
   const [hiddenEmployees, setHiddenEmployees] = useState<string[]>([]);
+  
+  // Interactive Hover Tooltips across all charts
   const [hoveredCategoryMonth, setHoveredCategoryMonth] = useState<string | null>(null);
+  const [hoveredEmployeeMonth, setHoveredEmployeeMonth] = useState<string | null>(null);
+  const [hoveredSummaryMonth, setHoveredSummaryMonth] = useState<string | null>(null);
+  const [hoveredLinePoint, setHoveredLinePoint] = useState<{ chartId: string; label: string; amount: number; x: number; y: number } | null>(null);
+  const [hoveredHourlyPoint, setHoveredHourlyPoint] = useState<{ hour: string; val: string; x: number; y: number } | null>(null);
 
   const toggleCategorySeries = (seriesName: string) => {
     setHiddenCategorySeries(prev => 
@@ -229,12 +235,13 @@ export default function AuthenticOmegaSalesDashboard() {
     );
   };
 
-  // Helper for generating SVG Line Chart (matching exact Line Mode screenshots)
+  // Helper for generating SVG Line Chart (matching exact Line Mode screenshots with interactive hover tooltips)
   const renderLineSvg = (
     points: { label: string; amount: number }[],
     yMax: number,
     yTicks: string[],
-    yMin: number = 0
+    yMin: number = 0,
+    chartId: string = 'line-chart'
   ) => {
     const width = 560;
     const height = 180;
@@ -263,8 +270,10 @@ export default function AuthenticOmegaSalesDashboard() {
       }, '');
     }
 
+    const activePt = hoveredLinePoint && hoveredLinePoint.chartId === chartId ? hoveredLinePoint : null;
+
     return (
-      <div className="w-full overflow-x-auto py-1">
+      <div className="w-full overflow-x-auto py-1 relative">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full max-w-[580px] mx-auto h-44 select-none">
           {/* Horizontal Grid lines and Y labels */}
           {yTicks.map((tick, idx) => {
@@ -313,30 +322,82 @@ export default function AuthenticOmegaSalesDashboard() {
             strokeLinejoin="round" 
           />
 
-          {/* Data Points */}
-          {coords.map((pt, i) => (
-            <g key={i}>
-              <circle 
-                cx={pt.x} 
-                cy={pt.y} 
-                r="3.8" 
-                fill="#2e7d32" 
-                stroke="#ffffff" 
-                strokeWidth="1.8" 
+          {/* Data Points with interactive hover hitbox */}
+          {coords.map((pt, i) => {
+            const isHovered = activePt && activePt.label === pt.label;
+            return (
+              <g key={i} className="cursor-pointer">
+                {/* Hitbox for easy hover */}
+                <circle 
+                  cx={pt.x} 
+                  cy={pt.y} 
+                  r="14" 
+                  fill="transparent"
+                  onMouseEnter={() => setHoveredLinePoint({ chartId, label: pt.label, amount: pt.amount, x: pt.x, y: pt.y })}
+                  onMouseLeave={() => setHoveredLinePoint(null)}
+                  onClick={() => setHoveredLinePoint({ chartId, label: pt.label, amount: pt.amount, x: pt.x, y: pt.y })}
+                />
+                <circle 
+                  cx={pt.x} 
+                  cy={pt.y} 
+                  r={isHovered ? "6" : "3.8"} 
+                  fill={isHovered ? "#15803d" : "#2e7d32"} 
+                  stroke="#ffffff" 
+                  strokeWidth={isHovered ? "2.5" : "1.8"} 
+                  className="transition-all duration-150 pointer-events-none"
+                />
+                {/* X Axis Label */}
+                <text 
+                  x={pt.x} 
+                  y={height - paddingBottom + 16} 
+                  fill={isHovered ? "#0f172a" : "#334155"} 
+                  fontSize="9" 
+                  fontWeight={isHovered ? "bold" : "normal"}
+                  textAnchor="middle"
+                  className="truncate"
+                >
+                  {pt.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Floating Highcharts Tooltip on Dot Hover */}
+          {activePt && (
+            <g className="pointer-events-none transition-all duration-150">
+              <rect
+                x={Math.min(Math.max(activePt.x - 70, 10), width - 150)}
+                y={Math.max(activePt.y - 44, 6)}
+                width="140"
+                height="34"
+                rx="4"
+                fill="#0f172a"
+                opacity="0.94"
+                stroke="#334155"
+                strokeWidth="1"
               />
-              {/* X Axis Label */}
-              <text 
-                x={pt.x} 
-                y={height - paddingBottom + 16} 
-                fill="#334155" 
-                fontSize="9" 
+              <text
+                x={Math.min(Math.max(activePt.x, 80), width - 80)}
+                y={Math.max(activePt.y - 30, 20)}
+                fill="#cbd5e1"
+                fontSize="9"
+                fontWeight="500"
                 textAnchor="middle"
-                className="truncate"
               >
-                {pt.label}
+                {activePt.label}
+              </text>
+              <text
+                x={Math.min(Math.max(activePt.x, 80), width - 80)}
+                y={Math.max(activePt.y - 16, 34)}
+                fill="#4ade80"
+                fontSize="10"
+                fontWeight="bold"
+                textAnchor="middle"
+              >
+                {formatVal(activePt.amount)}
               </text>
             </g>
-          ))}
+          )}
         </svg>
       </div>
     );
@@ -965,18 +1026,38 @@ export default function AuthenticOmegaSalesDashboard() {
                   {monthlyBarData.map((d, i) => {
                     const maxVal = 3200000000;
                     const heightPct = d.val > 0 ? (d.val / maxVal) * 100 : 0;
+                    const isHovered = hoveredSummaryMonth === d.month;
+
                     return (
-                      <div key={i} className="flex-1 flex flex-col items-center justify-end h-full group relative">
+                      <div 
+                        key={i} 
+                        className="flex-1 flex flex-col items-center justify-end h-full group relative cursor-pointer"
+                        onMouseEnter={() => setHoveredSummaryMonth(d.month)}
+                        onMouseLeave={() => setHoveredSummaryMonth(null)}
+                      >
+                        {/* Interactive Tooltip Card */}
+                        {isHovered && (
+                          <div className="absolute bottom-full mb-2 z-20 bg-slate-900/95 backdrop-blur text-white rounded-lg px-2.5 py-1.5 shadow-xl text-[10.5px] pointer-events-none whitespace-nowrap animate-in fade-in duration-150 border border-slate-700">
+                            <div className="font-bold text-slate-100">{d.month} 2026</div>
+                            <div className="text-emerald-400 font-bold">{d.val > 0 ? `${d.val.toLocaleString()} LL` : '0 LL'}</div>
+                            <div className="text-slate-400 text-[9.5px]">LY: 0 ({d.pct})</div>
+                          </div>
+                        )}
+
                         {d.val > 0 && (
                           <span className="text-[10px] font-bold text-slate-700 mb-1">
                             {d.label}
                           </span>
                         )}
                         <div 
-                          className="w-full max-w-[42px] bg-[#2e6912] hover:bg-emerald-700 rounded-t transition-all"
+                          className={`w-full max-w-[42px] rounded-t transition-all duration-150 ${
+                            isHovered ? 'bg-emerald-600 ring-2 ring-emerald-400' : 'bg-[#2e6912] hover:bg-emerald-700'
+                          }`}
                           style={{ height: `${Math.max(heightPct, 3)}%` }}
                         ></div>
-                        <span className="text-[10px] text-slate-600 mt-2 truncate max-w-full text-center">
+                        <span className={`text-[10px] mt-2 truncate max-w-full text-center transition-colors ${
+                          isHovered ? 'text-slate-950 font-bold' : 'text-slate-600'
+                        }`}>
                           {d.month}
                         </span>
                       </div>
@@ -1088,7 +1169,9 @@ export default function AuthenticOmegaSalesDashboard() {
                     renderLineSvg(
                       categoryData,
                       60000000,
-                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0'],
+                      0,
+                      'sum-cat'
                     )
                   )}
                   {/* Table */}
@@ -1131,7 +1214,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       <div className="flex flex-wrap justify-center gap-2 my-2 text-[10.5px] text-slate-700">
                         {divisionData.filter(s => s.amount > 0).map((s, i) => (
                           <span key={i} className="inline-flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: s.color }}></span>
+                            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: s.color }}></span>
                             {s.name}
                           </span>
                         ))}
@@ -1141,7 +1224,9 @@ export default function AuthenticOmegaSalesDashboard() {
                     renderLineSvg(
                       divisionData,
                       60000000,
-                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0'],
+                      0,
+                      'sum-div'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1188,7 +1273,9 @@ export default function AuthenticOmegaSalesDashboard() {
                     renderLineSvg(
                       groupData,
                       60000000,
-                      ['60M', '50M', '40M', '30M', '20M', '10M', '0']
+                      ['60M', '50M', '40M', '30M', '20M', '10M', '0'],
+                      0,
+                      'sum-grp'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1241,7 +1328,8 @@ export default function AuthenticOmegaSalesDashboard() {
                       departmentData,
                       110000000,
                       ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M', '30M', '20M'],
-                      20000000
+                      20000000,
+                      'sum-dept'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1293,7 +1381,8 @@ export default function AuthenticOmegaSalesDashboard() {
                       discountData,
                       3000000,
                       ['2.7M', '2.7M', '2.7M', '2.7M', '2.7M', '2.7M'],
-                      2000000
+                      2000000,
+                      'sum-disc'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1378,7 +1467,8 @@ export default function AuthenticOmegaSalesDashboard() {
                       userData,
                       110000000,
                       ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M', '30M', '20M'],
-                      20000000
+                      20000000,
+                      'sum-user'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1429,7 +1519,8 @@ export default function AuthenticOmegaSalesDashboard() {
                       paymentData,
                       110000000,
                       ['110M', '100M', '90M', '80M', '70M', '60M', '50M', '40M'],
-                      20000000
+                      20000000,
+                      'sum-pay'
                     )
                   )}
                   <table className="omega-dense-table mt-2">
@@ -1532,7 +1623,8 @@ export default function AuthenticOmegaSalesDashboard() {
                   ],
                   60000000,
                   ['60M', '50M', '40M', '30M', '20M'],
-                  20000000
+                  20000000,
+                  'daily-summary'
                 )}
               </div>
             </div>
@@ -1824,30 +1916,38 @@ export default function AuthenticOmegaSalesDashboard() {
                       </thead>
                       <tbody>
                         {[
-                          { h: '00:00', val: '5,985,000 LL' },
-                          { h: '09:00', val: '101,250 LL' },
-                          { h: '10:00', val: '7,312,500 LL' },
-                          { h: '11:00', val: '2,025,000 LL' },
-                          { h: '12:00', val: '443,950 LL' },
-                          { h: '13:00', val: '1,767,500 LL' },
-                          { h: '14:00', val: '4,136,250 LL' },
-                          { h: '15:00', val: '238,000 LL' },
-                          { h: '16:00', val: '1,338,750 LL' },
-                          { h: '17:00', val: '5,332,250 LL' },
-                          { h: '18:00', val: '4,282,500 LL' },
-                        ].map((row, i) => (
-                          <tr key={i}>
-                            <td className="text-left font-semibold text-slate-700">{row.h}</td>
-                            <td className="text-right font-medium text-slate-900">{row.val}</td>
-                          </tr>
-                        ))}
+                          { h: '00:00', val: '5,985,000 LL', amount: 5985000, x: 60, y: 55 },
+                          { h: '09:00', val: '101,250 LL', amount: 101250, x: 108, y: 172 },
+                          { h: '10:00', val: '7,312,500 LL', amount: 7312500, x: 156, y: 28 },
+                          { h: '11:00', val: '2,025,000 LL', amount: 2025000, x: 204, y: 135 },
+                          { h: '12:00', val: '443,950 LL', amount: 443950, x: 252, y: 166 },
+                          { h: '13:00', val: '1,767,500 LL', amount: 1767500, x: 300, y: 140 },
+                          { h: '14:00', val: '4,136,250 LL', amount: 4136250, x: 348, y: 92 },
+                          { h: '15:00', val: '238,000 LL', amount: 238000, x: 396, y: 170 },
+                          { h: '16:00', val: '1,338,750 LL', amount: 1338750, x: 444, y: 148 },
+                          { h: '17:00', val: '5,332,250 LL', amount: 5332250, x: 492, y: 68 },
+                          { h: '18:00', val: '4,282,500 LL', amount: 4282500, x: 540, y: 89 },
+                        ].map((row, i) => {
+                          const isHovered = hoveredHourlyPoint?.hour === row.h;
+                          return (
+                            <tr 
+                              key={i} 
+                              className={`cursor-pointer transition-colors ${isHovered ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}
+                              onMouseEnter={() => setHoveredHourlyPoint({ hour: row.h, val: row.val, x: row.x, y: row.y })}
+                              onMouseLeave={() => setHoveredHourlyPoint(null)}
+                            >
+                              <td className={`text-left font-semibold ${isHovered ? 'text-emerald-700' : 'text-slate-700'}`}>{row.h}</td>
+                              <td className={`text-right font-medium ${isHovered ? 'text-emerald-800 font-bold' : 'text-slate-900'}`}>{row.val}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
 
                   {/* Right Smooth Curved Line Chart */}
-                  <div className="lg:col-span-8 overflow-x-auto">
-                    <svg viewBox="0 0 600 200" className="w-full min-w-[480px] h-48 select-none">
+                  <div className="lg:col-span-8 overflow-x-auto relative">
+                    <svg viewBox="0 0 600 205" className="w-full min-w-[480px] h-48 select-none">
                       {/* Grid Lines */}
                       {['8M', '7M', '6M', '5M', '4M', '3M', '2M', '1M', '0'].map((tick, i) => {
                         const y = 15 + i * 20;
@@ -1863,33 +1963,100 @@ export default function AuthenticOmegaSalesDashboard() {
                       {/* Vertical line */}
                       <line x1="45" y1="15" x2="45" y2="175" stroke="#cbd5e1" strokeWidth="1.2" />
 
-                      {/* Smooth curved path */}
+                      {/* Smooth curved path connecting all hourly coordinates */}
                       <path
-                        d="M 60 55 C 90 90, 110 170, 140 172 C 170 172, 180 30, 210 28 C 240 28, 260 160, 290 166 C 320 170, 350 100, 380 97 C 410 95, 430 168, 460 167 C 490 165, 520 65, 550 68"
+                        d="M 60 55 C 85 110, 95 170, 108 172 C 125 170, 140 32, 156 28 C 175 25, 190 130, 204 135 C 220 140, 238 165, 252 166 C 270 168, 285 142, 300 140 C 318 138, 335 95, 348 92 C 365 90, 382 168, 396 170 C 412 172, 430 150, 444 148 C 460 146, 478 70, 492 68 C 508 66, 526 88, 540 89"
                         fill="none"
                         stroke="#2e7d32"
                         strokeWidth="2.2"
                       />
 
-                      {/* Data Dots & X Labels */}
+                      {/* Data Dots & X Labels with Hover Hitbox */}
                       {[
-                        { x: 60, y: 55, label: '00:00' },
-                        { x: 140, y: 172, label: '' },
-                        { x: 210, y: 28, label: '10:00' },
-                        { x: 290, y: 166, label: '12:00' },
-                        { x: 380, y: 97, label: '14:00' },
-                        { x: 460, y: 167, label: '16:00' },
-                        { x: 550, y: 68, label: '18:00' },
-                      ].map((pt, i) => (
-                        <g key={i}>
-                          <circle cx={pt.x} cy={pt.y} r="3.5" fill="#2e7d32" stroke="#ffffff" strokeWidth="1.5" />
-                          {pt.label && (
-                            <text x={pt.x} y="190" fill="#475569" fontSize="9" textAnchor="middle">
-                              {pt.label}
-                            </text>
-                          )}
+                        { h: '00:00', val: '5,985,000 LL', x: 60, y: 55, showLabel: true },
+                        { h: '09:00', val: '101,250 LL', x: 108, y: 172, showLabel: false },
+                        { h: '10:00', val: '7,312,500 LL', x: 156, y: 28, showLabel: true },
+                        { h: '11:00', val: '2,025,000 LL', x: 204, y: 135, showLabel: false },
+                        { h: '12:00', val: '443,950 LL', x: 252, y: 166, showLabel: true },
+                        { h: '13:00', val: '1,767,500 LL', x: 300, y: 140, showLabel: false },
+                        { h: '14:00', val: '4,136,250 LL', x: 348, y: 92, showLabel: true },
+                        { h: '15:00', val: '238,000 LL', x: 396, y: 170, showLabel: false },
+                        { h: '16:00', val: '1,338,750 LL', x: 444, y: 148, showLabel: true },
+                        { h: '17:00', val: '5,332,250 LL', x: 492, y: 68, showLabel: false },
+                        { h: '18:00', val: '4,282,500 LL', x: 540, y: 89, showLabel: true },
+                      ].map((pt, i) => {
+                        const isHovered = hoveredHourlyPoint?.hour === pt.h;
+                        return (
+                          <g 
+                            key={i} 
+                            className="cursor-pointer"
+                            onMouseEnter={() => setHoveredHourlyPoint({ hour: pt.h, val: pt.val, x: pt.x, y: pt.y })}
+                            onMouseLeave={() => setHoveredHourlyPoint(null)}
+                            onClick={() => setHoveredHourlyPoint({ hour: pt.h, val: pt.val, x: pt.x, y: pt.y })}
+                          >
+                            {/* Hitbox */}
+                            <circle cx={pt.x} cy={pt.y} r="12" fill="transparent" />
+                            <circle 
+                              cx={pt.x} 
+                              cy={pt.y} 
+                              r={isHovered ? "5.5" : "3.5"} 
+                              fill={isHovered ? "#15803d" : "#2e7d32"} 
+                              stroke="#ffffff" 
+                              strokeWidth={isHovered ? "2.2" : "1.5"} 
+                              className="transition-all duration-150"
+                            />
+                            {pt.showLabel && (
+                              <text 
+                                x={pt.x} 
+                                y="194" 
+                                fill={isHovered ? "#0f172a" : "#475569"} 
+                                fontSize="9" 
+                                fontWeight={isHovered ? "bold" : "normal"}
+                                textAnchor="middle"
+                              >
+                                {pt.h}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+
+                      {/* Floating Tooltip inside SVG */}
+                      {hoveredHourlyPoint && (
+                        <g className="pointer-events-none transition-all duration-150">
+                          <rect
+                            x={Math.min(Math.max(hoveredHourlyPoint.x - 65, 10), 460)}
+                            y={Math.max(hoveredHourlyPoint.y - 42, 5)}
+                            width="130"
+                            height="34"
+                            rx="4"
+                            fill="#0f172a"
+                            opacity="0.95"
+                            stroke="#334155"
+                            strokeWidth="1"
+                          />
+                          <text
+                            x={Math.min(Math.max(hoveredHourlyPoint.x, 75), 525)}
+                            y={Math.max(hoveredHourlyPoint.y - 28, 19)}
+                            fill="#cbd5e1"
+                            fontSize="9"
+                            fontWeight="500"
+                            textAnchor="middle"
+                          >
+                            Hour: {hoveredHourlyPoint.hour}
+                          </text>
+                          <text
+                            x={Math.min(Math.max(hoveredHourlyPoint.x, 75), 525)}
+                            y={Math.max(hoveredHourlyPoint.y - 14, 33)}
+                            fill="#4ade80"
+                            fontSize="10"
+                            fontWeight="bold"
+                            textAnchor="middle"
+                          >
+                            {hoveredHourlyPoint.val}
+                          </text>
                         </g>
-                      ))}
+                      )}
                     </svg>
                   </div>
 
@@ -1916,7 +2083,8 @@ export default function AuthenticOmegaSalesDashboard() {
                   ],
                   60000000,
                   ['60M', '50M', '40M', '30M', '20M'],
-                  20000000
+                  20000000,
+                  'weekdays-sales'
                 )}
               </div>
             </div>
@@ -2209,7 +2377,21 @@ export default function AuthenticOmegaSalesDashboard() {
                       const activeSegments = col.segments.filter(seg => !hiddenEmployees.includes(seg.emp));
 
                       return (
-                        <g key={idx}>
+                        <g 
+                          key={idx}
+                          className="cursor-pointer"
+                          onMouseEnter={() => setHoveredEmployeeMonth(col.m)}
+                          onMouseLeave={() => setHoveredEmployeeMonth(null)}
+                        >
+                          {/* Hover hit area */}
+                          <rect
+                            x={x - 6}
+                            y="20"
+                            width={barWidth + 12}
+                            height="160"
+                            fill="transparent"
+                            className="hover:fill-blue-50/40"
+                          />
                           {activeSegments.map((seg, sIdx) => {
                             currentY -= seg.h;
                             return (
@@ -2231,6 +2413,34 @@ export default function AuthenticOmegaSalesDashboard() {
                       );
                     })}
                   </svg>
+
+                  {/* Floating Tooltip matching exact screenshot */}
+                  {hoveredEmployeeMonth && (
+                    <div className="absolute top-6 right-4 z-20 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-3 shadow-lg text-[11px] min-w-[190px] pointer-events-none animate-in fade-in duration-150">
+                      <div className="font-bold text-slate-900 mb-1.5 pb-1 border-b border-slate-100 flex items-center justify-between">
+                        <span>{hoveredEmployeeMonth} 2026</span>
+                        <span className="text-[10px] text-slate-500 font-normal">Breakdown</span>
+                      </div>
+                      <div className="space-y-1">
+                        {[
+                          { emp: 'Cashier N2', c: '#2e7d32', val: hoveredEmployeeMonth === 'January' ? '120.5 M' : hoveredEmployeeMonth === 'March' ? '360.0 M' : hoveredEmployeeMonth === 'April' ? '520.0 M' : '0' },
+                          { emp: 'Cashier NK', c: '#1976d2', val: hoveredEmployeeMonth === 'January' ? '800.0 M' : hoveredEmployeeMonth === 'February' ? '720.0 M' : hoveredEmployeeMonth === 'April' ? '240.0 M' : '0' },
+                          { emp: 'Cashier R', c: '#f59e0b', val: hoveredEmployeeMonth === 'January' ? '600.0 M' : hoveredEmployeeMonth === 'February' ? '920.0 M' : hoveredEmployeeMonth === 'March' ? '100.0 M' : '0' },
+                          { emp: 'Hiba Aloulou', c: '#d32f2f', val: hoveredEmployeeMonth === 'July' ? '2.40 B' : hoveredEmployeeMonth === 'August' ? '2.56 B' : hoveredEmployeeMonth === 'June' ? '600.0 M' : hoveredEmployeeMonth === 'September' ? '108.0 M' : '0' },
+                          { emp: 'Mahdi', c: '#7c3aed', val: hoveredEmployeeMonth === 'January' ? '3.44 B' : hoveredEmployeeMonth === 'July' ? '480.0 M' : hoveredEmployeeMonth === 'August' ? '440.0 M' : hoveredEmployeeMonth === 'September' ? '23.8 M' : '0' },
+                          { emp: 'Nour Yazbeck', c: '#0d9488', val: hoveredEmployeeMonth === 'May' ? '20.0 M' : hoveredEmployeeMonth === 'June' ? '40.0 M' : '0' },
+                        ].filter(item => !hiddenEmployees.includes(item.emp)).map((item, i) => (
+                          <div key={i} className="flex items-center justify-between gap-2 text-slate-700">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-sm inline-block flex-shrink-0" style={{ backgroundColor: item.c }} />
+                              <span className="truncate max-w-[100px]">{item.emp}:</span>
+                            </span>
+                            <span className="font-semibold text-slate-900">{item.val}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Legend with Clickable Strikethrough Filter */}
