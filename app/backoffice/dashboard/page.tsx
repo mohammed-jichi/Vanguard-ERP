@@ -23,7 +23,8 @@ import {
   ChevronsUp,
   Info,
   CheckCircle2,
-  X
+  X,
+  Search
 } from 'lucide-react';
 
 export default function AuthenticOmegaSalesDashboard() {
@@ -38,7 +39,9 @@ export default function AuthenticOmegaSalesDashboard() {
   const [chartMode, setChartMode] = useState<'pie' | 'line'>('pie');
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics' | 'vtrack'>('summary');
+  const [customerTopN, setCustomerTopN] = useState<number>(10);
+  const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('All Groups');
 
   // Enlarge state
   const [enlargedWidget, setEnlargedWidget] = useState<string | null>(null);
@@ -841,7 +844,7 @@ export default function AuthenticOmegaSalesDashboard() {
           </Link>
 
           <Link 
-            href="/backoffice/customers"
+            href="/customer-insights"
             target="_blank"
             className="omega-pill-btn"
           >
@@ -849,13 +852,13 @@ export default function AuthenticOmegaSalesDashboard() {
           </Link>
 
           {/* VTrack as requested by user instead of OTrack */}
-          <Link 
-            href="/backoffice/operations"
-            target="_blank"
-            className="omega-pill-btn"
+          <button 
+            type="button"
+            onClick={() => setActiveTab('vtrack')}
+            className={`omega-pill-btn ${activeTab === 'vtrack' ? 'active' : ''}`}
           >
             <Truck className="w-3.5 h-3.5" /> VTrack
-          </Link>
+          </button>
 
           <button 
             type="button"
@@ -2717,60 +2720,237 @@ export default function AuthenticOmegaSalesDashboard() {
           </div>
         )}
 
-        {/* TAB: CUSTOMERS */}
+        {/* TAB: CUSTOMERS (Authentic from Video V10) */}
         {activeTab === 'customers' && (
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <div className="omega-panel-header mb-3">
-              Customers Ledger Summary
+          <div className="space-y-4">
+            <div className="text-center font-bold text-slate-700 text-sm py-1">
+              Customers Statistics
             </div>
-            <table className="omega-dense-table">
-              <thead>
-                <tr className="header-row">
-                  <th className="text-left">Customer</th>
-                  <th className="text-left">Zone</th>
-                  <th className="text-right">Transactions</th>
-                  <th className="text-right">Total Billed</th>
-                  <th className="text-right">Balance Due</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="text-left font-semibold">Spinneys Lebanon</td>
-                  <td className="text-left">Beirut & Mount Lebanon</td>
-                  <td className="text-right">18</td>
-                  <td className="text-right font-bold">48,200,000 LL</td>
-                  <td className="text-right text-emerald-600">0.00 LL</td>
-                </tr>
-                <tr>
-                  <td className="text-left font-semibold">Carrefour Wholesale</td>
-                  <td className="text-left">City Centre Hub</td>
-                  <td className="text-right">12</td>
-                  <td className="text-right font-bold">38,500,000 LL</td>
-                  <td className="text-right text-emerald-600">0.00 LL</td>
-                </tr>
-              </tbody>
-            </table>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Left Column: Two Stacked Cards (Customers & Delivery Orders) */}
+              <div className="space-y-4">
+                {/* Upper Card: Customers */}
+                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                  <div className="omega-panel-header flex justify-between items-center text-xs">
+                    <span>Customers</span>
+                  </div>
+                  <div className="p-3 text-xs space-y-2">
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                      <span className="text-slate-600">Total Number of Customers:</span>
+                      <span className="font-bold text-slate-800">33</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                      <span className="text-slate-600">New Customers (September):</span>
+                      <span className="font-bold text-slate-800">0</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 py-1 border-b border-slate-100">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">MTD:</span>
+                        <span className="font-semibold">0</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">YTD:</span>
+                        <span className="font-semibold">31</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 py-1 border-b border-slate-100">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">LMTD:</span>
+                        <span className="font-semibold">0</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">LYTD:</span>
+                        <span className="font-semibold">33</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 py-1 border-b border-slate-100">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">LM:</span>
+                        <span className="font-semibold">0</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">LY:</span>
+                        <span className="font-semibold">2</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                      <span className="text-slate-600">Not Active Customers:</span>
+                      <span className="font-bold text-slate-800">2</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-600">Repeated Customers Rate:</span>
+                      <span className="font-bold text-slate-800">0%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lower Card: Delivery Orders */}
+                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                  <div className="omega-panel-header flex justify-between items-center text-xs">
+                    <span>Delivery Orders</span>
+                  </div>
+                  <div className="p-3 text-xs space-y-2">
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                      <span className="text-slate-600">Total Number of Delivery Orders:</span>
+                      <span className="font-bold text-slate-800">0</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                      <span className="text-slate-600">Delivery Orders Value:</span>
+                      <span className="font-bold text-slate-800">{formatVal(0)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-600">Average Delivery Value:</span>
+                      <span className="font-bold text-slate-800">{formatVal(0)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Column: Top Customers */}
+              <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                <div className="omega-panel-header flex justify-between items-center text-xs">
+                  <span>Customer</span>
+                  <div className="flex items-center gap-1.5">
+                    <span>Top</span>
+                    <input 
+                      type="number" 
+                      value={customerTopN} 
+                      onChange={(e) => setCustomerTopN(Number(e.target.value) || 10)}
+                      className="w-12 h-6 px-1.5 text-center text-xs border border-slate-300 rounded bg-white text-slate-900 font-bold"
+                    />
+                    <button className="p-1 hover:bg-slate-200 rounded text-slate-600" title="Apply filter">
+                      <Search className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-2 overflow-x-auto flex-1">
+                  <table className="omega-dense-table">
+                    <thead>
+                      <tr className="header-row">
+                        <th className="text-left">Customer</th>
+                        <th className="text-center">Nbr Of Orders</th>
+                        <th className="text-right">Top {customerTopN}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-left font-bold text-slate-800 font-arabic">مكسرات أبو حمزه</td>
+                        <td className="text-center font-semibold">1</td>
+                        <td className="text-right font-bold text-slate-900">{formatVal(23940000)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Right Column: Demographics */}
+              <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                <div className="omega-panel-header flex justify-between items-center text-xs">
+                  <span>Demographics</span>
+                  <span className="text-[11px] font-normal opacity-90">Lebanon (7)</span>
+                </div>
+                <div className="p-2 overflow-x-auto flex-1">
+                  <table className="omega-dense-table">
+                    <thead>
+                      <tr className="header-row">
+                        <th className="text-left">City</th>
+                        <th className="text-center">Total</th>
+                        <th className="text-right">%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { city: 'Bourj Albarajne', total: 1, pct: '14.29%' },
+                        { city: 'Choueifat', total: 1, pct: '14.29%' },
+                        { city: 'Dbaye', total: 1, pct: '14.29%' },
+                        { city: 'Jebaa', total: 1, pct: '14.29%' },
+                        { city: 'JEITA', total: 1, pct: '14.29%' },
+                        { city: 'الغبيري', total: 1, pct: '14.29%' },
+                        { city: 'الشركات الترويجية', total: 1, pct: '14.29%' },
+                      ].map((row, idx) => (
+                        <tr key={idx}>
+                          <td className="text-left font-medium text-slate-700">{row.city}</td>
+                          <td className="text-center font-semibold text-slate-800">{row.total}</td>
+                          <td className="text-right font-mono text-slate-600">{row.pct}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Lower Section: Sales By Customer By Group */}
+            <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-slate-800 text-xs">Sales By Customer By Group</span>
+                  <select 
+                    value={customerGroupFilter}
+                    onChange={(e) => setCustomerGroupFilter(e.target.value)}
+                    className="text-xs border border-slate-300 rounded px-2 py-1 bg-white font-medium text-slate-700"
+                  >
+                    <option value="All Groups">All Groups</option>
+                    <option value="Clients">Clients</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Maximize2 className="w-3.5 h-3.5 cursor-pointer hover:text-slate-600" />
+                </div>
+              </div>
+
+              {/* Chart Visual matching Omega */}
+              <div className="relative h-48 w-full bg-slate-50/50 border border-slate-100 rounded-lg p-4 flex flex-col justify-between">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-200 pb-1">
+                  <span>24M</span>
+                  <span>24M</span>
+                  <span>24M</span>
+                  <span>24M</span>
+                </div>
+                <div className="flex-1 relative flex items-center justify-center">
+                  <div className="flex flex-col items-center">
+                    <div className="w-3 h-3 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-100 animate-pulse"></div>
+                    <span className="text-xs font-bold text-slate-800 mt-2">مكسرات أبو حمزه (Clients)</span>
+                    <span className="text-[11px] font-mono text-blue-600 font-extrabold">{formatVal(23940000)} (100.0%)</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs text-slate-600">
+                  <span className="font-bold">Total Selected:</span>
+                  <span className="font-mono font-bold text-slate-900">{formatVal(23940000)} (100.00%)</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* TAB: TODAY */}
-        {activeTab === 'today' && (
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <div className="omega-panel-header mb-3">
-              Today&apos;s Live Register Statistics
+        {/* TAB: TODAY & VTRACK (Authentic from Video V9 & V8) */}
+        {(activeTab === 'today' || activeTab === 'vtrack') && (
+          <div className="space-y-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+              <p className="text-xs font-semibold text-amber-900">
+                Please activate VTrack in order to view today sales
+              </p>
+              <div className="mt-2">
+                <Link 
+                  href="/vtrack" 
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0b3056] text-white text-xs font-bold rounded shadow hover:bg-slate-800 transition"
+                >
+                  <Truck className="w-3.5 h-3.5" />
+                  <span>Open VTrack Live Dashboard</span>
+                </Link>
+              </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-              <div className="p-3 bg-slate-50 border rounded">
-                <div className="text-xs text-slate-500">Today&apos;s Billed Checks</div>
-                <div className="text-xl font-bold text-slate-800 mt-1">42 Invoices</div>
+
+            <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                <span className="font-bold text-xs text-slate-800">Payment Summary</span>
+                <select className="text-xs border border-slate-300 rounded px-2 py-1 bg-white font-medium text-slate-700">
+                  <option value="0">0 LL</option>
+                </select>
               </div>
-              <div className="p-3 bg-slate-50 border rounded">
-                <div className="text-xs text-slate-500">Today&apos;s Total Volume</div>
-                <div className="text-xl font-bold text-emerald-700 mt-1">131.9 M LL</div>
-              </div>
-              <div className="p-3 bg-slate-50 border rounded">
-                <div className="text-xs text-slate-500">Open Registers</div>
-                <div className="text-xl font-bold text-blue-700 mt-1">6 / 6 Active</div>
+              <div className="text-center py-6 text-xs text-slate-400">
+                No payment transactions recorded for the selected period
               </div>
             </div>
           </div>

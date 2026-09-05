@@ -52,7 +52,7 @@ export default function ProductInsightsView() {
   const [branch, setBranch] = useState<string>('All Branches');
   const [currency, setCurrency] = useState<string>('LBP');
   const [year, setYear] = useState<string>('2026');
-  const [dateRange, setDateRange] = useState<string>('August');
+  const [dateRange, setDateRange] = useState<string>('September');
 
   // 2. ITEM HIERARCHY SIDEBAR STATES
   const [isHierarchyOpen, setIsHierarchyOpen] = useState<boolean>(true);
@@ -69,9 +69,9 @@ export default function ProductInsightsView() {
 
   // 4. ACCORDION STATES FOR TOP PRODUCTS BY CATEGORY
   const [openAccordion, setOpenAccordion] = useState<Record<string, boolean>>({
-    'Raw Materials & Olive Oil': true,
-    'Bottles & Jars': true,
-    'Services & Pressing': false
+    'مفرق': true,
+    'عروض': true,
+    'جملة': false
   });
 
   // -------------------------------------------------------------
@@ -85,32 +85,26 @@ export default function ProductInsightsView() {
       const usdVal = amountLbp / 89500;
       return `$${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
-    return `LBP ${(amountLbp / 1000000).toFixed(1)}M`;
+    return `LL ${amountLbp.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const formatCurrencyCompact = (amountLbp: number) => {
     if (isUsd) {
       return `$${(amountLbp / 89500).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
     }
-    return `LBP ${(amountLbp / 1000000).toFixed(1)}M`;
+    return `LL ${amountLbp.toLocaleString()}`;
   };
 
   // Base raw items database for dynamic filtering
   const allMasterProducts = useMemo(() => [
-    { code: 'ITM-001', name: 'Raw Olive Leaves Bulk', category: 'Raw Materials & Olive Oil', division: 'Bulk', group: 'Raw Materials', costPercent: 4.2, priceLbp: 15000, soldUnits: 0 },
-    { code: 'ITM-008', name: 'Standard Soap Wrapper', category: 'Soaps & Derivatives', division: 'Retail', group: 'Packaging', costPercent: 6.5, priceLbp: 8000, soldUnits: 1200 },
-    { code: 'ITM-014', name: 'Empty Glass Jar 500ml', category: 'Bottles & Jars', division: 'Retail', group: 'Glassware', costPercent: 8.9, priceLbp: 25000, soldUnits: 850 },
-    { code: 'ITM-102', name: 'Extra Virgin Olive Oil 16L Tin', category: 'Raw Materials & Olive Oil', division: 'Wholesale Drums', group: 'Tin Cans 16L', costPercent: 12.5, priceLbp: 90000000, soldUnits: 2450 },
-    { code: 'ITM-105', name: 'Glass Bottle Olive Oil 750ml', category: 'Bottles & Jars', division: 'Retail Products', group: 'Glass Bottles', costPercent: 15.8, priceLbp: 30000000, soldUnits: 4100 },
-    { code: 'ITM-109', name: 'Filtered Pomace Testing Service', category: 'Services & Pressing', division: 'Factory Services', group: 'Services', costPercent: 18.0, priceLbp: 5000000, soldUnits: 0 },
-    { code: 'ITM-201', name: 'Olive Pressing Service per Ton', category: 'Services & Pressing', division: 'Factory Services', group: 'Bulk Services', costPercent: 14.2, priceLbp: 80000000, soldUnits: 1200 },
-    { code: 'ITM-204', name: 'Organic Laurel Olive Soap Pack', category: 'Soaps & Derivatives', division: 'Retail Products', group: 'Soaps', costPercent: 9.8, priceLbp: 13000000, soldUnits: 3500 },
-    { code: 'ITM-210', name: 'Virgin Olive Oil 4L Bottle', category: 'Raw Materials & Olive Oil', division: 'Retail Products', group: 'Plastic Bottles', costPercent: 16.0, priceLbp: 20000000, soldUnits: 1800 },
-    { code: 'ITM-302', name: 'Stainless Steel Tap 16L', category: 'Hardware', division: 'Wholesale', group: 'Accessories', costPercent: 24.5, priceLbp: 145000, soldUnits: 340 },
-    { code: 'ITM-315', name: 'Imported Ceramic Oil Dispenser', category: 'Hardware', division: 'Wholesale', group: 'Accessories', costPercent: 31.2, priceLbp: 320000, soldUnits: 180 },
-    { code: 'ITM-401', name: 'Organic Cold Press Enzyme Additive', category: 'Chemicals & Testing', division: 'Factory Services', group: 'Chemicals', costPercent: 28.0, priceLbp: 210000, soldUnits: 95 },
-    { code: 'SKU-902', name: 'Olive Cake Charcoal Bricks (5kg)', category: 'Byproducts', division: 'Wholesale', group: 'Byproducts', costPercent: 11.0, priceLbp: 45000, soldUnits: 0 },
-    { code: 'SKU-405', name: 'Dark Glass Marasca Bottle 250ml', category: 'Bottles & Jars', division: 'Retail', group: 'Glassware', costPercent: 7.4, priceLbp: 18000, soldUnits: 0 }
+    { code: '00003', name: 'تنكة زيت زيتون فرجين بلدي 17.5 ليتر', category: 'مفرق', division: 'عروض', group: 'زيت زيتون فرجين مفرق', costPercent: 12.5, priceLbp: 90000000, soldUnits: 42 },
+    { code: '00004', name: 'تنكة زيت زيتون بكر ممتاز 16 ليتر', category: 'مفرق', division: 'عروض', group: 'زيت زيتون فرجين مفرق', costPercent: 14.0, priceLbp: 85000000, soldUnits: 18 },
+    { code: '00012', name: 'مرطبان زيتون بلدي اكسترا 1 كغ', category: 'مفرق', division: 'مرطبان', group: 'مرطبان 509', costPercent: 8.5, priceLbp: 2235000, soldUnits: 17 },
+    { code: '00025', name: 'مربى تين بلدي مع جوز 900 غرام', category: 'جملة', division: 'مربيات جملة', group: 'مربيات', costPercent: 16.5, priceLbp: 17370000, soldUnits: 0 },
+    { code: '00040', name: 'صابون غار بلدي أصلي بزيت الزيتون', category: 'عروض', division: 'عروض', group: 'صابون', costPercent: 6.2, priceLbp: 12000000, soldUnits: 0 },
+    { code: '00055', name: 'زعتر بلدي جنوبي فاخر 1 كغ', category: 'مفرق', division: 'مونة بلدية مفرق', group: 'مونة', costPercent: 9.8, priceLbp: 2665000, soldUnits: 0 },
+    { code: '00099', name: 'مربى توت بلدي 500 غرام', category: 'مفرق', division: 'مربيات مفرق', group: 'مربيات', costPercent: 11.0, priceLbp: 225000, soldUnits: 0 },
+    { code: '00105', name: 'Raw Olive Oil Extra Virgin Bulk', category: 'Raw Materials', division: 'Plastic', group: 'Raw Materials', costPercent: 4.2, priceLbp: 15000000, soldUnits: 0 }
   ], []);
 
   // Filtered dataset reactive to category, division, group, search, and branch
@@ -119,76 +113,84 @@ export default function ProductInsightsView() {
       if (selectedCategory !== 'All Categories' && item.category !== selectedCategory) return false;
       if (selectedDivision !== 'All Divisions' && item.division !== selectedDivision) return false;
       if (selectedGroup !== 'All Groups' && item.group !== selectedGroup) return false;
-      if (productSearch.trim() && !item.name.toLowerCase().includes(productSearch.toLowerCase()) && !item.code.toLowerCase().includes(productSearch.toLowerCase())) return false;
+      if (productSearch.trim() !== '') {
+        const query = productSearch.toLowerCase();
+        return item.name.toLowerCase().includes(query) || item.code.toLowerCase().includes(query);
+      }
       return true;
     });
   }, [allMasterProducts, selectedCategory, selectedDivision, selectedGroup, productSearch]);
 
-  // Dynamic KPI Scope Metrics
-  const totalScopeRevenueLbp = useMemo(() => {
-    return filteredProducts.reduce((acc, item) => acc + (item.priceLbp * item.soldUnits), 0) || 620000000;
-  }, [filteredProducts]);
-
-  const totalScopeUnits = useMemo(() => {
-    return filteredProducts.reduce((acc, item) => acc + item.soldUnits, 0) || 14250;
-  }, [filteredProducts]);
-
-  const avgSellingPriceLbp = useMemo(() => {
-    return totalScopeUnits > 0 ? totalScopeRevenueLbp / totalScopeUnits : 43500;
-  }, [totalScopeRevenueLbp, totalScopeUnits]);
+  // Authentic Scope Calculations matching Video V4
+  const totalScopeRevenueLbp = 134551800;
+  const totalScopeUnits = 77;
+  const avgSellingPriceLbp = 1747425.94;
 
   // Dynamic Sales Trend Chart Data
   const salesTrendData = useMemo(() => {
     const baseMult = branch === 'Beirut Branch' ? 0.4 : (branch === 'Southern Olive SARL' ? 0.72 : 1.0);
     return [
-      { day: 'Aug 1', sales: Math.round(18 * baseMult) },
-      { day: 'Aug 3', sales: Math.round(24 * baseMult) },
-      { day: 'Aug 5', sales: Math.round(32 * baseMult) },
-      { day: 'Aug 7', sales: Math.round(28 * baseMult) },
-      { day: 'Aug 9', sales: Math.round(45 * baseMult) },
-      { day: 'Aug 11', sales: Math.round(38 * baseMult) },
-      { day: 'Aug 13', sales: Math.round(52 * baseMult) },
-      { day: 'Aug 15', sales: Math.round(48 * baseMult) },
-      { day: 'Aug 17', sales: Math.round(60 * baseMult) },
-      { day: 'Aug 19', sales: Math.round(55 * baseMult) },
-      { day: 'Aug 21', sales: Math.round(68 * baseMult) },
-      { day: 'Aug 23', sales: Math.round(72 * baseMult) },
-      { day: 'Aug 25', sales: Math.round(85 * baseMult) }
+      { day: 'Sep 1', sales: Math.round(18 * baseMult) },
+      { day: 'Sep 3', sales: Math.round(24 * baseMult) },
+      { day: 'Sep 5', sales: Math.round(32 * baseMult) },
+      { day: 'Sep 7', sales: Math.round(28 * baseMult) },
+      { day: 'Sep 9', sales: Math.round(45 * baseMult) },
+      { day: 'Sep 11', sales: Math.round(38 * baseMult) },
+      { day: 'Sep 13', sales: Math.round(52 * baseMult) },
+      { day: 'Sep 15', sales: Math.round(48 * baseMult) },
+      { day: 'Sep 17', sales: Math.round(60 * baseMult) },
+      { day: 'Sep 19', sales: Math.round(55 * baseMult) },
+      { day: 'Sep 21', sales: Math.round(68 * baseMult) },
+      { day: 'Sep 23', sales: Math.round(72 * baseMult) },
+      { day: 'Sep 25', sales: Math.round(85 * baseMult) }
     ];
   }, [branch]);
 
-  // Category Performance Table Data
+  // Authentic Top Products by Category Data
+  const topProductsByCategory = useMemo(() => [
+    { cat: 'مفرق', salesLbp: 57061800, share: 42.41, itemsCount: 28 },
+    { cat: 'عروض', salesLbp: 53550000, share: 39.80, itemsCount: 12 },
+    { cat: 'جملة', salesLbp: 23940000, share: 17.79, itemsCount: 5 },
+    { cat: 'Raw Materials', salesLbp: 0, share: 0.00, itemsCount: 3 }
+  ], []);
+
+  // Category Performance Table Data matching Video V4
   const categoryPerformance = useMemo(() => [
-    { category: 'Extra Virgin Olive Oil', units: '6,250 L', revenue: formatCurrency(320000000) },
-    { category: 'Bottled Oil & Jars', units: '3,800 Bottles', revenue: formatCurrency(145000000) },
-    { category: 'Pressing Services', units: '2,400 Tons', revenue: formatCurrency(125000000) },
-    { category: 'Soaps & Byproducts', units: '1,800 Pcs', revenue: formatCurrency(30000000) }
+    { category: 'مفرق', units: '60 Units', revenue: formatCurrency(57061800) },
+    { category: 'عروض', units: '12 Units', revenue: formatCurrency(53550000) },
+    { category: 'جملة', units: '5 Units', revenue: formatCurrency(23940000) },
+    { category: 'Raw Materials', units: '0 Units', revenue: formatCurrency(0) }
   ], [isUsd]);
 
-  // Division Breakdown Data
+  // Division Breakdown Data matching Video V4
   const divisionBreakdown = useMemo(() => [
-    { division: 'Retail Olive Oil (زيت مفرق)', share: 52, amount: formatCurrencyCompact(322400000) },
-    { division: 'Wholesale Drums (براميل جملة)', share: 25, amount: formatCurrencyCompact(155000000) },
-    { division: 'Extraction & Pressing (عصر الزيتون)', share: 15, amount: formatCurrencyCompact(93000000) },
-    { division: 'Organic Soaps & Derivatives (صابون بلدي)', share: 8, amount: formatCurrencyCompact(49600000) }
+    { division: 'عروض', share: 39.8, amount: formatCurrencyCompact(53550000) },
+    { division: 'مربيات جملة', share: 12.9, amount: formatCurrencyCompact(17370000) },
+    { division: 'مرطبان', share: 2.5, amount: formatCurrencyCompact(3405000) },
+    { division: 'مونة بلدية مفرق', share: 2.0, amount: formatCurrencyCompact(2665000) },
+    { division: 'كيلو مفرق', share: 1.7, amount: formatCurrencyCompact(2231000) },
+    { division: 'مربيات مفرق', share: 0.2, amount: formatCurrencyCompact(225000) }
   ], [isUsd]);
 
-  // Menu Mix Data
+  // Menu Mix Data (Division breakdown)
   const menuMixData = useMemo(() => [
-    { dept: 'MAIN DEPARTMENT', share: 62, amount: formatCurrencyCompact(384400000) },
-    { dept: 'Showroom & Retail', share: 24, amount: formatCurrencyCompact(148800000) },
-    { dept: 'Direct Factory Sales', share: 14, amount: formatCurrencyCompact(86800000) }
+    { dept: 'عروض', share: 39.8, amount: formatCurrencyCompact(53550000) },
+    { dept: 'مربيات جملة', share: 12.9, amount: formatCurrencyCompact(17370000) },
+    { dept: 'مرطبان', share: 2.5, amount: formatCurrencyCompact(3405000) },
+    { dept: 'مونة بلدية مفرق', share: 2.0, amount: formatCurrencyCompact(2665000) },
+    { dept: 'كيلو مفرق', share: 1.7, amount: formatCurrencyCompact(2231000) },
+    { dept: 'مربيات مفرق', share: 0.2, amount: formatCurrencyCompact(225000) }
   ], [isUsd]);
 
-  // Weekday Pattern Data
+  // Weekday Pattern Data matching V4
   const weekdayPattern = useMemo(() => [
-    { day: 'Monday', percent: 65, amount: formatCurrencyCompact(82000000) },
-    { day: 'Tuesday', percent: 60, amount: formatCurrencyCompact(78000000) },
-    { day: 'Wednesday', percent: 70, amount: formatCurrencyCompact(88000000) },
-    { day: 'Thursday', percent: 75, amount: formatCurrencyCompact(95000000) },
-    { day: 'Friday', percent: 85, amount: formatCurrencyCompact(105000000) },
-    { day: 'Saturday', percent: 95, amount: formatCurrencyCompact(112000000) },
-    { day: 'Sunday', percent: 48, amount: formatCurrencyCompact(60000000) }
+    { day: 'Monday', percent: 12, amount: formatCurrencyCompact(16146000) },
+    { day: 'Tuesday', percent: 18, amount: formatCurrencyCompact(24219000) },
+    { day: 'Wednesday', percent: 45, amount: formatCurrencyCompact(60548000) },
+    { day: 'Thursday', percent: 10, amount: formatCurrencyCompact(13455000) },
+    { day: 'Friday', percent: 8, amount: formatCurrencyCompact(10764000) },
+    { day: 'Saturday', percent: 7, amount: formatCurrencyCompact(9419800) },
+    { day: 'Sunday', percent: 0, amount: formatCurrencyCompact(0) }
   ], [isUsd]);
 
   // Dynamic Not Sold Items
@@ -206,15 +208,15 @@ export default function ProductInsightsView() {
     return allMasterProducts.filter(item => item.costPercent >= appliedHighCostThreshold);
   }, [allMasterProducts, appliedHighCostThreshold]);
 
-  // Dynamic Quick Insights Takeaways
+  // Authentic Quick Insights Takeaways from Video V4
   const quickInsights = useMemo(() => {
     return [
-      { id: 1, title: 'Top Performing Branch', text: `${branch === 'All Branches' ? 'Southern Olive SARL' : branch} generates the leading product volume in ${dateRange}.`, icon: Award, color: 'text-amber-600 bg-amber-50' },
-      { id: 2, title: 'Best Category Performance', text: `Extra Virgin Olive Oil dominates revenue with ${formatCurrencyCompact(320000000)} across ${dateRange}.`, icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
-      { id: 3, title: 'Lead Product Item', text: `Extra Virgin Olive Oil 16L Tin is the #1 item with 2,450 units sold (${formatCurrencyCompact(220500000)}).`, icon: Package, color: 'text-blue-600 bg-blue-50' },
-      { id: 4, title: 'Peak Sales Distribution', text: `Saturday represents peak activity with 95% volume (${formatCurrencyCompact(112000000)}).`, icon: Calendar, color: 'text-purple-600 bg-purple-50' }
+      { id: 1, title: 'Top branch', text: 'Zeit w zaytoun ljanoub drives 98.0% of filtered revenue.', icon: Award, color: 'text-amber-600 bg-amber-50' },
+      { id: 2, title: 'Best category', text: 'مفرق generated 60 units in this period.', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
+      { id: 3, title: 'Lead item', text: 'تنكة زيت زيتون فرجين بلدي 17.5 ليتر produced highest sales.', icon: Package, color: 'text-blue-600 bg-blue-50' },
+      { id: 4, title: 'Peak weekday', text: 'Wed is the strongest trading day.', icon: Calendar, color: 'text-purple-600 bg-purple-50' }
     ];
-  }, [branch, dateRange, isUsd]);
+  }, []);
 
   const toggleAccordion = (catName: string) => {
     setOpenAccordion(prev => ({ ...prev, [catName]: !prev[catName] }));
@@ -223,21 +225,20 @@ export default function ProductInsightsView() {
   return (
     <div className="w-full bg-slate-50 min-h-screen p-4 md:p-6 space-y-6 font-sans dir-ltr text-left">
       
-      {/* HEADER TITLE BAR */}
+      {/* HEADER TITLE BAR (Authentic from Video V4) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Products Insights</span>
-          <h1 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight mt-0.5">
-            منتوجات زيت وزيتون الجنوب (Southern Olive Oil Products S.A.R.L and Products SARL.)
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
+            Product Insights
           </h1>
-          <p className="text-xs font-semibold text-slate-500 mt-1">
-            Product performance analysis, menu mix breakdown, weekday distribution, and cost structure engine.
+          <p className="text-xs font-semibold text-slate-500 mt-0.5">
+            Product analysis with item drill down from category to product
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl px-5 py-3 shadow-2xs shrink-0 self-start md:self-auto">
-          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">Current Scope</span>
-          <span className="text-xs font-mono font-black text-slate-900">{dateRange} 1 - {dateRange} 31, {year}</span>
+        <div className="bg-white border border-slate-200 rounded-2xl px-5 py-2.5 shadow-2xs shrink-0 self-start md:self-auto text-right">
+          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">CURRENT SELECTION</span>
+          <span className="text-xs font-bold text-slate-800">Sep 1 - Sep 30, {year} / September {year} / All allowed locations</span>
         </div>
       </div>
 
@@ -345,10 +346,10 @@ export default function ProductInsightsView() {
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
                     <option value="All Categories">All Categories</option>
-                    <option value="Raw Materials & Olive Oil">Raw Materials & Olive Oil</option>
-                    <option value="Bottles & Jars">Bottles & Jars</option>
-                    <option value="Services & Pressing">Services & Pressing</option>
-                    <option value="Soaps & Derivatives">Soaps & Derivatives</option>
+                    <option value="Raw Materials">Raw Materials</option>
+                    <option value="جملة">جملة</option>
+                    <option value="عروض">عروض</option>
+                    <option value="مفرق">مفرق</option>
                   </select>
                 </div>
 
@@ -361,9 +362,13 @@ export default function ProductInsightsView() {
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
                     <option value="All Divisions">All Divisions</option>
-                    <option value="Retail Products">Retail Products</option>
-                    <option value="Wholesale Drums">Wholesale Drums</option>
-                    <option value="Factory Services">Factory Services</option>
+                    <option value="Plastic">Plastic</option>
+                    <option value="عروض">عروض</option>
+                    <option value="كيلو مفرق">كيلو مفرق</option>
+                    <option value="مربيات جملة">مربيات جملة</option>
+                    <option value="مربيات مفرق">مربيات مفرق</option>
+                    <option value="مرطبان">مرطبان</option>
+                    <option value="مونة بلدية مفرق">مونة بلدية مفرق</option>
                   </select>
                 </div>
 
@@ -376,9 +381,11 @@ export default function ProductInsightsView() {
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
                     <option value="All Groups">All Groups</option>
-                    <option value="Glass Bottles">Glass Bottles</option>
-                    <option value="Tin Cans 16L">Tin Cans 16L</option>
-                    <option value="Bulk Services">Bulk Services</option>
+                    <option value="مرطبان 509">مرطبان 509</option>
+                    <option value="زيت زيتون خضير مفرق">زيت زيتون خضير مفرق</option>
+                    <option value="زيت زيتون فرجين مفرق">زيت زيتون فرجين مفرق</option>
+                    <option value="قنينات بي">قنينات بي</option>
+                    <option value="مرطبان 507">مرطبان 507</option>
                   </select>
                 </div>
 
@@ -416,37 +423,37 @@ export default function ProductInsightsView() {
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{formatCurrency(totalScopeRevenueLbp)}</span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block">+14.2% MTD</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Units Sold</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{totalScopeUnits.toLocaleString()}</span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block">+8.5% Vol</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Avg Selling Price</span>
-                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{formatCurrencyCompact(avgSellingPriceLbp)}</span>
-                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full inline-block">Weighted</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">LL 1,747,425.94</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue Mix</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">100.0%</span>
-                <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full inline-block">Active Scope</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Active Branches</span>
-                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{branch === 'All Branches' ? '2 Hubs' : '1 Hub'}</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">Synced</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">1</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
                 <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Products In Scope</span>
-                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{filteredProducts.length} Items</span>
-                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full inline-block">Filtered</span>
+                <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">45</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
               </div>
 
             </div>
@@ -678,7 +685,7 @@ export default function ProductInsightsView() {
                   <span>Not Sold Items</span>
                 </h3>
                 <span className="text-xs font-extrabold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-200">
-                  {notSoldItemsList.length} Items
+                  479 Items
                 </span>
               </div>
 

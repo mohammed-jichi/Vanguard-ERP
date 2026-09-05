@@ -64,18 +64,18 @@ export default function CustomerInsightsPage() {
 
   const displayedBuyers = showAllBuyers ? topBuyersData : topBuyersData.slice(0, 5);
 
-  // At-Risk Customers Data
+  // At-Risk Customers Data (Authentic from Video V7)
   const atRiskCustomers = [
-    { name: 'شركة الجنوب للتجهيزات الزراعية', lastSale: '2025-06-12', pastLtv: 'LBP 420M' },
-    { name: 'مؤسسة زهرة الزيتون صيدا', lastSale: '2025-07-28', pastLtv: 'LBP 310M' },
-    { name: 'موزع النبطية الإقليمي', lastSale: '2025-08-02', pastLtv: 'LBP 275M' },
-    { name: 'مطعم وادي الحجير', lastSale: '2025-08-15', pastLtv: 'LBP 190M' }
+    { id: '00001', name: 'مكسرات أبو حمزه', balance: '-148,524,120.00', lastTx: '2026-09-02' },
+    { id: '00002', name: 'شركة الجنوب للتجهيزات الزراعية', balance: '0.00', lastTx: '2025-06-12' },
+    { id: '00003', name: 'مؤسسة زهرة الزيتون صيدا', balance: '0.00', lastTx: '2025-07-28' },
+    { id: '00004', name: 'موزع النبطية الإقليمي', balance: '0.00', lastTx: '2025-08-02' }
   ];
 
   // At-Risk Customers Real Excel CSV Export
   const handleExportAtRiskExcel = () => {
-    const csvHeader = "Customer Name,Last Sale Date,Past LTV\n";
-    const csvRows = atRiskCustomers.map(c => `"${c.name}","${c.lastSale}","${c.pastLtv}"`).join("\n");
+    const csvHeader = "Cust.ID,Customer,Balance,Last Transaction\n";
+    const csvRows = atRiskCustomers.map(c => `"${c.id}","${c.name}","${c.balance}","${c.lastTx}"`).join("\n");
     const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -273,8 +273,8 @@ export default function CustomerInsightsPage() {
                     <span className="font-mono font-black text-slate-900">0 / 0 / 0 / 31</span>
                   </div>
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-slate-500 font-semibold">Avg Spend / Cust:</span>
-                    <span className="font-mono font-black text-emerald-600">LBP 42.8M</span>
+                    <span className="text-slate-500 font-semibold">Avg Annual Spend / Cust:</span>
+                    <span className="font-mono font-black text-slate-800">0 LL</span>
                   </div>
                 </div>
               </div>
@@ -402,11 +402,11 @@ export default function CustomerInsightsPage() {
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">Customers With No Tags:</span>
-                    <span className="font-mono font-bold text-amber-600">4 Accounts</span>
+                    <span className="font-mono font-bold text-amber-600">31 Accounts</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">No City:</span>
-                    <span className="font-mono font-bold text-amber-600">2 Accounts</span>
+                    <span className="font-mono font-bold text-amber-600">33 Accounts</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">No Phone:</span>
@@ -414,7 +414,7 @@ export default function CustomerInsightsPage() {
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">No Email:</span>
-                    <span className="font-mono font-bold text-amber-600">5 Accounts</span>
+                    <span className="font-mono font-bold text-amber-600">30 Accounts</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">Blacklisted:</span>
@@ -422,12 +422,12 @@ export default function CustomerInsightsPage() {
                   </div>
                   <div className="flex items-center justify-between py-1">
                     <span className="text-slate-600 font-medium">Loyalty Members:</span>
-                    <span className="font-mono font-bold text-purple-600">24 Accounts</span>
+                    <span className="font-mono font-bold text-slate-500">0 Accounts</span>
                   </div>
                 </div>
               </div>
 
-              {/* PANEL 2: FINANCIAL VALUE & PURCHASE PATTERNS */}
+              {/* PANEL 2: FINANCIAL VALUE & PURCHASE PATTERNS (Authentic from Video V6) */}
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
@@ -446,11 +446,11 @@ export default function CustomerInsightsPage() {
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">With Balance:</span>
-                    <span className="font-mono font-bold text-slate-900">12 Accounts</span>
+                    <span className="font-mono font-bold text-slate-900">1 Account</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <span className="text-slate-600 font-medium">Total Balance:</span>
-                    <span className="font-mono font-bold text-amber-600">LBP 450.0M</span>
+                    <span className="font-mono font-bold text-rose-600">-148,524,120.00 LL</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
@@ -462,7 +462,7 @@ export default function CustomerInsightsPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="font-mono font-bold text-emerald-600">LBP 29.4M</span>
+                    <span className="font-mono font-bold text-slate-800">0.00 LL</span>
                   </div>
 
                   <div className="pt-2">
@@ -470,30 +470,22 @@ export default function CustomerInsightsPage() {
                     <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-slate-600 font-medium">Repeat Customers:</span>
-                        <span className="font-mono font-bold text-purple-600">25</span>
+                        <span className="font-mono font-bold text-slate-800">0</span>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-slate-600 font-medium">One-Time Buyers:</span>
-                        <span className="font-mono font-bold text-slate-700">6</span>
+                        <span className="font-mono font-bold text-slate-800">2</span>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
-                        <div className="flex items-center gap-1">
-                          <span className="text-slate-600 font-medium">Monthly Retention:</span>
-                          <div className="group relative inline-block">
-                            <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-blue-600" />
-                            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                              Customers retained from last month to this month, divided by last month's customers, multiplied by 100.
-                            </div>
-                          </div>
-                        </div>
-                        <span className="font-mono font-bold text-emerald-600">84.5%</span>
+                        <span className="text-slate-600 font-medium">No Transactions:</span>
+                        <span className="font-mono font-bold text-slate-800">33</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* PANEL 3: CUSTOMER VOICE & FEEDBACK */}
+              {/* PANEL 3: CUSTOMER VOICE & FEEDBACK (Authentic from Video V7) */}
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
@@ -512,52 +504,52 @@ export default function CustomerInsightsPage() {
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">CSAT Score:</span>
+                      <span className="text-slate-600 font-medium">CSAT:</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Satisfied feedback response divided by (satisfied + not satisfied response), multiplied by 100.
+                          Satisfied feedback responses divided by satisfied plus not satisfied responses, multiplied by 100.
                         </div>
                       </div>
                     </div>
-                    <span className="font-mono font-bold text-emerald-600">94.2%</span>
+                    <span className="font-mono font-bold text-emerald-600">94.48%</span>
                   </div>
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">Average Rating:</span>
+                      <span className="text-slate-600 font-medium">Rating:</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Average of feedback rating answers from the feedback dashboard rating question types.
+                          Average rating score from customer feedback answers.
                         </div>
                       </div>
                     </div>
-                    <span className="font-mono font-bold text-amber-500">4.8 / 5.0 ★</span>
+                    <span className="font-mono font-bold text-amber-500">4.68</span>
                   </div>
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Reviews / Ratings:</span>
-                    <span className="font-mono font-bold text-slate-800">128 Total</span>
+                    <span className="text-slate-600 font-medium">Ratings:</span>
+                    <span className="font-mono font-bold text-slate-800">71841</span>
                   </div>
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">NPS (Net Promoter Score):</span>
+                      <span className="text-slate-600 font-medium">NPS:</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Based on feedback type 12, promoters (9-10) - detractors (0-6), divided by total responses, multiplied by 100.
+                          Promoters minus detractors divided by total survey respondents.
                         </div>
                       </div>
                     </div>
-                    <span className="font-mono font-bold text-blue-600">+72 NPS</span>
+                    <span className="font-mono font-bold text-blue-600">78.77%</span>
                   </div>
 
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-600 font-medium">Open Complaints:</span>
-                    <span className="font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
-                      1 Case
+                    <span className="text-slate-600 font-medium">Complaints:</span>
+                    <span className="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                      383
                     </span>
                   </div>
                 </div>
@@ -734,17 +726,19 @@ export default function CustomerInsightsPage() {
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px] tracking-wide">
                       <tr>
-                        <th className="py-2.5 px-3">CUSTOMER</th>
-                        <th className="py-2.5 px-3">LAST SALE</th>
-                        <th className="py-2.5 px-3">PAST LTV</th>
+                        <th className="py-2.5 px-3">Cust.ID</th>
+                        <th className="py-2.5 px-3">Customer</th>
+                        <th className="py-2.5 px-3 text-right">Balance</th>
+                        <th className="py-2.5 px-3 text-right">Last Transaction</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800">
                       {atRiskCustomers.map((c, idx) => (
                         <tr key={idx} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 font-mono text-slate-500">{c.id}</td>
                           <td className="py-2 px-3 font-medium text-slate-900 truncate max-w-[130px]">{c.name}</td>
-                          <td className="py-2 px-3 font-mono text-rose-600 font-semibold">{c.lastSale}</td>
-                          <td className="py-2 px-3 font-mono text-slate-600">{c.pastLtv}</td>
+                          <td className="py-2 px-3 font-mono text-right font-bold text-slate-700">{c.balance}</td>
+                          <td className="py-2 px-3 font-mono text-right text-slate-500">{c.lastTx}</td>
                         </tr>
                       ))}
                     </tbody>
