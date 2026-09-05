@@ -61,6 +61,7 @@ export default function AuthenticOmegaSalesDashboard() {
   const [hoveredSummaryMonth, setHoveredSummaryMonth] = useState<string | null>(null);
   const [hoveredLinePoint, setHoveredLinePoint] = useState<{ chartId: string; label: string; amount: number; x: number; y: number } | null>(null);
   const [hoveredHourlyPoint, setHoveredHourlyPoint] = useState<{ hour: string; val: string; x: number; y: number } | null>(null);
+  const [hoveredHighlightCard, setHoveredHighlightCard] = useState<string | null>(null);
 
   const toggleCategorySeries = (seriesName: string) => {
     setHiddenCategorySeries(prev => 
@@ -366,35 +367,42 @@ export default function AuthenticOmegaSalesDashboard() {
           {activePt && (
             <g className="pointer-events-none transition-all duration-150">
               <rect
-                x={Math.min(Math.max(activePt.x - 70, 10), width - 150)}
-                y={Math.max(activePt.y - 44, 6)}
-                width="140"
-                height="34"
-                rx="4"
-                fill="#0f172a"
-                opacity="0.94"
-                stroke="#334155"
+                x={Math.min(Math.max(activePt.x - 70, 10), width - 155)}
+                y={Math.max(activePt.y - 48, 6)}
+                width="145"
+                height="38"
+                rx="3"
+                fill="#000000"
+                opacity="0.9"
+                stroke="#475569"
                 strokeWidth="1"
               />
               <text
-                x={Math.min(Math.max(activePt.x, 80), width - 80)}
-                y={Math.max(activePt.y - 30, 20)}
+                x={Math.min(Math.max(activePt.x - 62, 18), width - 147)}
+                y={Math.max(activePt.y - 34, 20)}
                 fill="#cbd5e1"
                 fontSize="9"
-                fontWeight="500"
-                textAnchor="middle"
+                fontWeight="bold"
+                textAnchor="start"
               >
                 {activePt.label}
               </text>
+              <rect
+                x={Math.min(Math.max(activePt.x - 62, 18), width - 147)}
+                y={Math.max(activePt.y - 24, 30)}
+                width="7"
+                height="7"
+                fill="#2e7d32"
+              />
               <text
-                x={Math.min(Math.max(activePt.x, 80), width - 80)}
-                y={Math.max(activePt.y - 16, 34)}
-                fill="#4ade80"
-                fontSize="10"
-                fontWeight="bold"
-                textAnchor="middle"
+                x={Math.min(Math.max(activePt.x - 51, 29), width - 136)}
+                y={Math.max(activePt.y - 18, 36)}
+                fill="#f8fafc"
+                fontSize="9"
+                fontWeight="normal"
+                textAnchor="start"
               >
-                {formatVal(activePt.amount)}
+                Sales: <tspan fontWeight="bold">{formatVal(activePt.amount)}</tspan>
               </text>
             </g>
           )}
@@ -907,11 +915,22 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
                   
                   {/* Card 1: Revenue YoY */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #1976d2' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #1976d2' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Revenue YoY</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('yoy')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'yoy' && (
+                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-64 border border-slate-700 leading-tight">
+                        Completed-month YoY: Net Sales from 2026 Jan-Aug vs 2025 Jan-Aug. Current month is excluded until it is complete.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
                       <span>+100.0%</span>
                       <span className="text-emerald-600 text-xs">▲</span>
@@ -922,11 +941,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
 
                   {/* Card 2: Best Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #2e7d32' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #2e7d32' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Best Month</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('best')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'best' && (
+                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
+                        Month with highest total net sales in the selected year.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
                       <span>January</span>
                       <span className="text-emerald-600 text-xs">▲</span>
@@ -937,11 +967,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
 
                   {/* Card 3: Softest Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #f59e0b' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #f59e0b' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Softest Month</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('softest')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'softest' && (
+                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
+                        Lowest net sales month recorded among active months.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
                       <span>May</span>
                       <span className="text-emerald-600 text-xs">▲</span>
@@ -952,11 +993,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
 
                   {/* Card 4: Top YoY Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #0f766e' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #0f766e' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Top YoY Month</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('topyoy')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'topyoy' && (
+                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
+                        Highest Year-over-Year growth compared to the previous year.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
                       <span>January</span>
                       <span className="text-emerald-600 text-xs">▲</span>
@@ -967,11 +1019,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
 
                   {/* Card 5: Best Category */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #7c3aed' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #7c3aed' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Best Category</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('category')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'category' && (
+                      <div className="absolute top-7 right-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-48 border border-slate-700 leading-tight">
+                        Category with the highest revenue contribution.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1">
                       مفرق
                     </div>
@@ -981,11 +1044,22 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
 
                   {/* Card 6: Peak Hour */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px]" style={{ borderTop: '3px solid #64748b' }}>
+                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #64748b' }}>
                     <div className="flex justify-between items-center text-xs text-slate-500">
                       <span>Peak Hour</span>
-                      <Info className="w-3 h-3 text-slate-400" />
+                      <div 
+                        className="cursor-pointer p-0.5"
+                        onMouseEnter={() => setHoveredHighlightCard('peakhour')}
+                        onMouseLeave={() => setHoveredHighlightCard(null)}
+                      >
+                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                      </div>
                     </div>
+                    {hoveredHighlightCard === 'peakhour' && (
+                      <div className="absolute top-7 right-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-48 border border-slate-700 leading-tight">
+                        Hour of highest average transaction volume.
+                      </div>
+                    )}
                     <div className="text-sm font-bold text-slate-900 my-1">
                       10:00
                     </div>
@@ -1021,48 +1095,73 @@ export default function AuthenticOmegaSalesDashboard() {
                   <span>Zeit w zaytoun ljanoub</span>
                 </div>
 
-                {/* Vertical Bars Container */}
-                <div className="h-56 flex items-end justify-between gap-2 px-6 pt-6 pb-2 border-b border-slate-200">
-                  {monthlyBarData.map((d, i) => {
-                    const maxVal = 3200000000;
-                    const heightPct = d.val > 0 ? (d.val / maxVal) * 100 : 0;
-                    const isHovered = hoveredSummaryMonth === d.month;
-
-                    return (
-                      <div 
-                        key={i} 
-                        className="flex-1 flex flex-col items-center justify-end h-full group relative cursor-pointer"
-                        onMouseEnter={() => setHoveredSummaryMonth(d.month)}
-                        onMouseLeave={() => setHoveredSummaryMonth(null)}
-                      >
-                        {/* Interactive Tooltip Card */}
-                        {isHovered && (
-                          <div className="absolute bottom-full mb-2 z-20 bg-slate-900/95 backdrop-blur text-white rounded-lg px-2.5 py-1.5 shadow-xl text-[10.5px] pointer-events-none whitespace-nowrap animate-in fade-in duration-150 border border-slate-700">
-                            <div className="font-bold text-slate-100">{d.month} 2026</div>
-                            <div className="text-emerald-400 font-bold">{d.val > 0 ? `${d.val.toLocaleString()} LL` : '0 LL'}</div>
-                            <div className="text-slate-400 text-[9.5px]">LY: 0 ({d.pct})</div>
-                          </div>
-                        )}
-
-                        {d.val > 0 && (
-                          <span className="text-[10px] font-bold text-slate-700 mb-1">
-                            {d.label}
-                          </span>
-                        )}
-                        <div 
-                          className={`w-full max-w-[42px] rounded-t transition-all duration-150 ${
-                            isHovered ? 'bg-emerald-600 ring-2 ring-emerald-400' : 'bg-[#2e6912] hover:bg-emerald-700'
-                          }`}
-                          style={{ height: `${Math.max(heightPct, 3)}%` }}
-                        ></div>
-                        <span className={`text-[10px] mt-2 truncate max-w-full text-center transition-colors ${
-                          isHovered ? 'text-slate-950 font-bold' : 'text-slate-600'
-                        }`}>
-                          {d.month}
+                {/* Vertical Bars Container with Authentic Highcharts Gridlines */}
+                <div className="relative h-60 px-6 pt-4 pb-2 border-b border-slate-200">
+                  {/* Background Horizontal Gridlines matching Video V2 */}
+                  <div className="absolute inset-x-6 top-4 bottom-7 flex flex-col justify-between pointer-events-none">
+                    {['4B', '3B', '2B', '1B', '0'].map((tick, tIdx) => (
+                      <div key={tIdx} className="w-full flex items-center">
+                        <span className="text-[9.5px] text-slate-400 font-medium w-6 text-right pr-2 select-none -mt-2">
+                          {tick}
                         </span>
+                        <div className="flex-1 border-b border-slate-100 h-0"></div>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+
+                  {/* Bars Container */}
+                  <div className="relative z-10 h-full flex items-end justify-between gap-2 pl-6">
+                    {monthlyBarData.map((d, i) => {
+                      const maxVal = 3500000000;
+                      const heightPct = d.val > 0 ? (d.val / maxVal) * 85 : 0;
+                      const isHovered = hoveredSummaryMonth === d.month;
+
+                      return (
+                        <div 
+                          key={i} 
+                          className="flex-1 flex flex-col items-center justify-end h-full group relative cursor-pointer"
+                          onMouseEnter={() => setHoveredSummaryMonth(d.month)}
+                          onMouseLeave={() => setHoveredSummaryMonth(null)}
+                        >
+                          {/* Authentic Highcharts Floating Tooltip matching Video V2 Frame 30 */}
+                          {isHovered && (
+                            <div className="absolute bottom-full mb-3 z-30 bg-black/90 text-white rounded px-3 py-2 shadow-2xl text-[11px] pointer-events-none whitespace-nowrap animate-in fade-in duration-150 border border-slate-700 min-w-[210px]">
+                              <div className="font-bold text-slate-200 text-xs mb-1 border-b border-slate-700/80 pb-0.5">
+                                {d.month}
+                              </div>
+                              <div className="flex items-center gap-1.5 text-slate-200">
+                                <span className="w-2.5 h-2.5 bg-[#2e6912] rounded-sm inline-block flex-shrink-0" />
+                                <span>Zeit w zaytoun ljanoub:</span>
+                                <span className="font-bold text-white ml-auto">
+                                  {d.val > 0 ? `${d.val.toLocaleString()}.00` : '0.00'}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-300 mt-0.5 pl-4">
+                                Change: <span className="text-emerald-400 font-semibold">{d.val > 0 ? `+${d.val.toLocaleString()}.00 (${d.pct})` : '0 (0.0%)'}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {d.val > 0 && (
+                            <span className="text-[10px] font-bold text-slate-700 mb-1">
+                              {d.label}
+                            </span>
+                          )}
+                          <div 
+                            className={`w-full max-w-[44px] rounded-t transition-all duration-150 ${
+                              isHovered ? 'bg-[#25570e] ring-2 ring-emerald-400 shadow-md' : 'bg-[#2e6912] hover:bg-[#25570e]'
+                            }`}
+                            style={{ height: `${Math.max(heightPct, 2)}%` }}
+                          ></div>
+                          <span className={`text-[10px] mt-2 truncate max-w-full text-center transition-colors ${
+                            isHovered ? 'text-slate-950 font-bold' : 'text-slate-600'
+                          }`}>
+                            {d.month}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Monthly Revenue Table */}
@@ -2021,39 +2120,47 @@ export default function AuthenticOmegaSalesDashboard() {
                         );
                       })}
 
-                      {/* Floating Tooltip inside SVG */}
+                      {/* Floating Tooltip inside SVG matching exact Video V1 Frame 20 */}
                       {hoveredHourlyPoint && (
                         <g className="pointer-events-none transition-all duration-150">
                           <rect
-                            x={Math.min(Math.max(hoveredHourlyPoint.x - 65, 10), 460)}
-                            y={Math.max(hoveredHourlyPoint.y - 42, 5)}
-                            width="130"
-                            height="34"
-                            rx="4"
-                            fill="#0f172a"
-                            opacity="0.95"
-                            stroke="#334155"
+                            x={Math.min(Math.max(hoveredHourlyPoint.x - 70, 10), 450)}
+                            y={Math.max(hoveredHourlyPoint.y - 48, 5)}
+                            width="145"
+                            height="38"
+                            rx="3"
+                            fill="#000000"
+                            opacity="0.9"
+                            stroke="#475569"
                             strokeWidth="1"
                           />
                           <text
-                            x={Math.min(Math.max(hoveredHourlyPoint.x, 75), 525)}
-                            y={Math.max(hoveredHourlyPoint.y - 28, 19)}
+                            x={Math.min(Math.max(hoveredHourlyPoint.x - 62, 18), 458)}
+                            y={Math.max(hoveredHourlyPoint.y - 34, 18)}
                             fill="#cbd5e1"
                             fontSize="9"
-                            fontWeight="500"
-                            textAnchor="middle"
-                          >
-                            Hour: {hoveredHourlyPoint.hour}
-                          </text>
-                          <text
-                            x={Math.min(Math.max(hoveredHourlyPoint.x, 75), 525)}
-                            y={Math.max(hoveredHourlyPoint.y - 14, 33)}
-                            fill="#4ade80"
-                            fontSize="10"
                             fontWeight="bold"
-                            textAnchor="middle"
+                            textAnchor="start"
                           >
-                            {hoveredHourlyPoint.val}
+                            {hoveredHourlyPoint.hour}
+                          </text>
+                          {/* Green square for series */}
+                          <rect
+                            x={Math.min(Math.max(hoveredHourlyPoint.x - 62, 18), 458)}
+                            y={Math.max(hoveredHourlyPoint.y - 24, 28)}
+                            width="7"
+                            height="7"
+                            fill="#2e7d32"
+                          />
+                          <text
+                            x={Math.min(Math.max(hoveredHourlyPoint.x - 51, 29), 469)}
+                            y={Math.max(hoveredHourlyPoint.y - 18, 34)}
+                            fill="#f8fafc"
+                            fontSize="9"
+                            fontWeight="normal"
+                            textAnchor="start"
+                          >
+                            Average Sales: <tspan fontWeight="bold">{hoveredHourlyPoint.val}</tspan>
                           </text>
                         </g>
                       )}
