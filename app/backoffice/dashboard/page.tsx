@@ -1487,34 +1487,627 @@ export default function AuthenticOmegaSalesDashboard() {
 
         {/* TAB: COMPARATIVE */}
         {activeTab === 'comparative' && (
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <div className="omega-panel-header mb-3">
-              Daily Summary (September 2026)
+          <div className="space-y-3.5">
+            
+            {/* 1. Daily Summary */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Daily Summary
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                {renderLineSvg(
+                  [
+                    { label: 'Tuesday, September 1', amount: 28000000 },
+                    { label: 'Wednesday, September 2', amount: 57000000 },
+                    { label: 'Thursday, September 3', amount: 22500000 },
+                    { label: 'Friday, September 4', amount: 24300000 },
+                  ],
+                  60000000,
+                  ['60M', '50M', '40M', '30M', '20M'],
+                  20000000
+                )}
+              </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="omega-dense-table">
-                <thead>
-                  <tr className="header-row">
-                    <th className="text-left">Branch</th>
-                    {Array.from({ length: 30 }, (_, i) => i + 1).map(d => (
-                      <th key={d} className="text-center">{d}</th>
-                    ))}
-                    <th className="text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-left font-semibold">Zeit w zaytoun ljanoub</td>
-                    {Array.from({ length: 30 }, (_, i) => i + 1).map(d => (
-                      <td key={d} className="text-right text-[10px]">
-                        {d <= 5 ? (22000000 + d * 1800000).toLocaleString() : '-'}
-                      </td>
-                    ))}
-                    <td className="text-right font-bold text-emerald-700">131,851,800</td>
-                  </tr>
-                </tbody>
-              </table>
+
+            {/* 2. Monthly Sales By Category */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Monthly Sales By Category
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                {/* Multi-series Bar Chart (Jan - Dec) */}
+                <div className="w-full overflow-x-auto py-2">
+                  <svg viewBox="0 0 920 220" className="w-full min-w-[760px] h-52 select-none">
+                    {/* Y-axis gridlines & labels */}
+                    {['4B', '3B', '2B', '1B', '0'].map((tick, i) => {
+                      const y = 20 + i * 40;
+                      return (
+                        <g key={i}>
+                          <line x1="45" y1={y} x2="900" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                          <text x="38" y={y + 4} fill="#64748b" fontSize="10" textAnchor="end" fontWeight="500">
+                            {tick}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Bars for Jan-Dec */}
+                    {[
+                      { m: 'January', segments: [{ c: '#1976d2', h: 84 }, { c: '#f59e0b', h: 22 }, { c: '#d32f2f', h: 18 }] },
+                      { m: 'February', segments: [{ c: '#1976d2', h: 33 }, { c: '#f59e0b', h: 35 }, { c: '#d32f2f', h: 16 }] },
+                      { m: 'March', segments: [{ c: '#2e7d32', h: 2 }, { c: '#f59e0b', h: 4.5 }, { c: '#d32f2f', h: 7 }] },
+                      { m: 'April', segments: [{ c: '#1976d2', h: 2 }, { c: '#f59e0b', h: 10 }, { c: '#d32f2f', h: 14 }] },
+                      { m: 'May', segments: [{ c: '#d32f2f', h: 8 }] },
+                      { m: 'June', segments: [{ c: '#f59e0b', h: 16 }, { c: '#d32f2f', h: 10.5 }] },
+                      { m: 'July', segments: [{ c: '#1976d2', h: 10 }, { c: '#f59e0b', h: 37 }, { c: '#d32f2f', h: 24 }] },
+                      { m: 'August', segments: [{ c: '#f59e0b', h: 39 }, { c: '#d32f2f', h: 35 }] },
+                      { m: 'September', segments: [{ c: '#1976d2', h: 1 }, { c: '#f59e0b', h: 2 }, { c: '#d32f2f', h: 2.5 }] },
+                      { m: 'October', segments: [] },
+                      { m: 'November', segments: [] },
+                      { m: 'December', segments: [{ c: '#ef9a9a', h: 6 }] },
+                    ].map((col, idx) => {
+                      const barWidth = 28;
+                      const x = 70 + idx * 70;
+                      let currentY = 180;
+                      return (
+                        <g key={idx}>
+                          {col.segments.map((seg, sIdx) => {
+                            currentY -= seg.h;
+                            return (
+                              <rect
+                                key={sIdx}
+                                x={x}
+                                y={currentY}
+                                width={barWidth}
+                                height={seg.h}
+                                fill={seg.c}
+                              />
+                            );
+                          })}
+                          <text x={x + barWidth / 2} y="196" fill="#475569" fontSize="9.5" textAnchor="middle">
+                            {col.m}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+
+                {/* Legend */}
+                <div className="flex flex-wrap justify-end gap-x-4 gap-y-1.5 px-4 py-2 text-[11px] text-slate-700 font-medium border-t border-slate-100">
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> 2026 Raw Materials</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#81c784] inline-block"></span> 2025 Raw Materials</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> 2026 جملة</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#90caf9] inline-block"></span> 2025 جملة</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> 2026 عروض</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#ffe082] inline-block"></span> 2025 عروض</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#d32f2f] inline-block"></span> 2026 مفرق</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#ef9a9a] inline-block"></span> 2025 مفرق</span>
+                </div>
+
+                {/* Comparison Table */}
+                <div className="overflow-x-auto mt-2">
+                  <table className="omega-dense-table">
+                    <thead>
+                      <tr className="header-row">
+                        <th className="text-left">Category</th>
+                        <th className="text-right">2026</th>
+                        <th className="text-right">2025</th>
+                        <th className="text-right">Difference</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-left font-semibold">Raw Materials</td>
+                        <td className="text-right">0</td>
+                        <td className="text-right">0</td>
+                        <td className="text-right font-semibold">0</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold">جملة</td>
+                        <td className="text-right">3,436,121,625</td>
+                        <td className="text-right">50,023,000</td>
+                        <td className="text-right font-semibold">3,386,098,625</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold">عروض</td>
+                        <td className="text-right">3,947,922,600</td>
+                        <td className="text-right">0</td>
+                        <td className="text-right font-semibold">3,947,922,600</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold">مفرق</td>
+                        <td className="text-right">3,522,529,075</td>
+                        <td className="text-right">103,890,400</td>
+                        <td className="text-right font-semibold">3,418,638,675</td>
+                      </tr>
+                      <tr className="header-row font-black">
+                        <th className="text-left">Total</th>
+                        <td className="text-right font-black">10,906,573,300</td>
+                        <td className="text-right font-black">153,913,400</td>
+                        <td className="text-right font-black text-slate-950">10,752,659,900</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
+
+            {/* 3. Average Sales by Hour */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Average Sales by Hour
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+                  
+                  {/* Left Hourly Table */}
+                  <div className="lg:col-span-4 overflow-y-auto max-h-[220px]">
+                    <table className="omega-dense-table">
+                      <thead>
+                        <tr className="header-row">
+                          <th className="text-left">Average of All Hours ↕</th>
+                          <th className="text-right">32,962,950 LL ↕</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { h: '00:00', val: '5,985,000 LL' },
+                          { h: '09:00', val: '101,250 LL' },
+                          { h: '10:00', val: '7,312,500 LL' },
+                          { h: '11:00', val: '2,025,000 LL' },
+                          { h: '12:00', val: '443,950 LL' },
+                          { h: '13:00', val: '1,767,500 LL' },
+                          { h: '14:00', val: '4,136,250 LL' },
+                          { h: '15:00', val: '238,000 LL' },
+                          { h: '16:00', val: '1,338,750 LL' },
+                          { h: '17:00', val: '5,332,250 LL' },
+                          { h: '18:00', val: '4,282,500 LL' },
+                        ].map((row, i) => (
+                          <tr key={i}>
+                            <td className="text-left font-semibold text-slate-700">{row.h}</td>
+                            <td className="text-right font-medium text-slate-900">{row.val}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Right Smooth Curved Line Chart */}
+                  <div className="lg:col-span-8 overflow-x-auto">
+                    <svg viewBox="0 0 600 200" className="w-full min-w-[480px] h-48 select-none">
+                      {/* Grid Lines */}
+                      {['8M', '7M', '6M', '5M', '4M', '3M', '2M', '1M', '0'].map((tick, i) => {
+                        const y = 15 + i * 20;
+                        return (
+                          <g key={i}>
+                            <line x1="45" y1={y} x2="580" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                            <text x="38" y={y + 3.5} fill="#64748b" fontSize="9" textAnchor="end" fontWeight="500">
+                              {tick}
+                            </text>
+                          </g>
+                        );
+                      })}
+                      {/* Vertical line */}
+                      <line x1="45" y1="15" x2="45" y2="175" stroke="#cbd5e1" strokeWidth="1.2" />
+
+                      {/* Smooth curved path */}
+                      <path
+                        d="M 60 55 C 90 90, 110 170, 140 172 C 170 172, 180 30, 210 28 C 240 28, 260 160, 290 166 C 320 170, 350 100, 380 97 C 410 95, 430 168, 460 167 C 490 165, 520 65, 550 68"
+                        fill="none"
+                        stroke="#2e7d32"
+                        strokeWidth="2.2"
+                      />
+
+                      {/* Data Dots & X Labels */}
+                      {[
+                        { x: 60, y: 55, label: '00:00' },
+                        { x: 140, y: 172, label: '' },
+                        { x: 210, y: 28, label: '10:00' },
+                        { x: 290, y: 166, label: '12:00' },
+                        { x: 380, y: 97, label: '14:00' },
+                        { x: 460, y: 167, label: '16:00' },
+                        { x: 550, y: 68, label: '18:00' },
+                      ].map((pt, i) => (
+                        <g key={i}>
+                          <circle cx={pt.x} cy={pt.y} r="3.5" fill="#2e7d32" stroke="#ffffff" strokeWidth="1.5" />
+                          {pt.label && (
+                            <text x={pt.x} y="190" fill="#475569" fontSize="9" textAnchor="middle">
+                              {pt.label}
+                            </text>
+                          )}
+                        </g>
+                      ))}
+                    </svg>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Sales by WeekDays */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Sales by WeekDays
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                {renderLineSvg(
+                  [
+                    { label: 'Tuesday', amount: 28000000 },
+                    { label: 'Wednesday', amount: 57000000 },
+                    { label: 'Thursday', amount: 22500000 },
+                    { label: 'Friday', amount: 24300000 },
+                  ],
+                  60000000,
+                  ['60M', '50M', '40M', '30M', '20M'],
+                  20000000
+                )}
+              </div>
+            </div>
+
+            {/* 5. Yearly Revenue */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Yearly Revenue
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                <div className="w-full overflow-x-auto py-2">
+                  <svg viewBox="0 0 800 240" className="w-full min-w-[600px] h-56 select-none">
+                    {/* Y-axis gridlines & labels */}
+                    {['12B', '10B', '8B', '6B', '4B', '2B', '0'].map((tick, i) => {
+                      const y = 20 + i * 30;
+                      return (
+                        <g key={i}>
+                          <line x1="45" y1={y} x2="780" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                          <text x="38" y={y + 4} fill="#64748b" fontSize="10" textAnchor="end" fontWeight="500">
+                            {tick}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* 2026 Multi-month Stacked Bar */}
+                    <g>
+                      {/* Stacked segments for 2026 total 10.9B */}
+                      <rect x="120" y="32" width="290" height="24" fill="#831843" /> {/* September */}
+                      <rect x="120" y="56" width="290" height="34" fill="#c2410c" /> {/* August */}
+                      <rect x="120" y="90" width="290" height="32" fill="#0284c7" /> {/* July */}
+                      <rect x="120" y="122" width="290" height="12" fill="#0d9488" /> {/* June */}
+                      <rect x="120" y="134" width="290" height="4" fill="#7c3aed" /> {/* May */}
+                      <rect x="120" y="138" width="290" height="12" fill="#dc2626" /> {/* April */}
+                      <rect x="120" y="150" width="290" height="6" fill="#f59e0b" /> {/* March */}
+                      <rect x="120" y="156" width="290" height="38" fill="#1976d2" /> {/* February */}
+                      <rect x="120" y="194" width="290" height="6" fill="#2e7d32" /> {/* January */}
+                      
+                      <text x="265" y="215" fill="#334155" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        2026
+                      </text>
+                    </g>
+
+                    {/* 2025 Thin Baseline Bar */}
+                    <g>
+                      <rect x="520" y="196" width="290" height="4" fill="#1e40af" />
+                      <text x="665" y="215" fill="#334155" fontSize="11" fontWeight="bold" textAnchor="middle">
+                        2025
+                      </text>
+                    </g>
+                  </svg>
+                </div>
+
+                {/* 12-Month Legend */}
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-2 px-4 py-2 border-t border-slate-100 text-[10.5px] text-slate-700 font-medium text-center">
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> January</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> February</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> March</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#dc2626] inline-block"></span> April</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#7c3aed] inline-block"></span> May</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#0d9488] inline-block"></span> June</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#0284c7] inline-block"></span> July</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#c2410c] inline-block"></span> August</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#831843] inline-block"></span> September</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#334155] inline-block"></span> October</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#84cc16] inline-block"></span> November</span>
+                  <span className="flex items-center gap-1 justify-center"><span className="w-2.5 h-2.5 bg-[#1e3a8a] inline-block"></span> December</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Void Summary */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Void Summary
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body overflow-x-auto">
+                <table className="omega-dense-table">
+                  <thead>
+                    <tr className="header-row">
+                      <th className="text-left sticky-col">Branch</th>
+                      <th className="text-right">January</th>
+                      <th className="text-right">February</th>
+                      <th className="text-right">March</th>
+                      <th className="text-right">April</th>
+                      <th className="text-right">May</th>
+                      <th className="text-right">June</th>
+                      <th className="text-right">July</th>
+                      <th className="text-right">August</th>
+                      <th className="text-right">September</th>
+                      <th className="text-right">October</th>
+                      <th className="text-right">November</th>
+                      <th className="text-right">December</th>
+                      <th className="text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th className="text-left font-semibold sticky-col bg-white">Zeit w zaytoun ljanoub</th>
+                      <td className="text-right">142,231,750</td>
+                      <td className="text-right">93,855,800</td>
+                      <td className="text-right">2,619,850</td>
+                      <td className="text-right">97,075,000</td>
+                      <td className="text-right">11,393,300</td>
+                      <td className="text-right">457,021,000</td>
+                      <td className="text-right">19,500,000</td>
+                      <td className="text-right">14,187,500</td>
+                      <td className="text-right">0</td>
+                      <td className="text-right">0</td>
+                      <td className="text-right">0</td>
+                      <td className="text-right">0</td>
+                      <td className="text-right font-bold text-slate-900">837,884,200</td>
+                    </tr>
+                    <tr className="header-row font-bold">
+                      <th className="text-left font-bold sticky-col">Total</th>
+                      <td className="text-right font-bold">142,231,750</td>
+                      <td className="text-right font-bold">93,855,800</td>
+                      <td className="text-right font-bold">2,619,850</td>
+                      <td className="text-right font-bold">97,075,000</td>
+                      <td className="text-right font-bold">11,393,300</td>
+                      <td className="text-right font-bold">457,021,000</td>
+                      <td className="text-right font-bold">19,500,000</td>
+                      <td className="text-right font-bold">14,187,500</td>
+                      <td className="text-right font-bold">0</td>
+                      <td className="text-right font-bold">0</td>
+                      <td className="text-right font-bold">0</td>
+                      <td className="text-right font-bold">0</td>
+                      <td className="text-right font-black text-slate-950">837,884,200</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 7. Comparative Monthly Sales By Employee */}
+            <div className="bg-white rounded-lg shadow-sm">
+              <div className="omega-panel-header">
+                Comparative Monthly Sales By Employee
+                <div className="omega-panel-actions">
+                  <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
+                  <span className="text-lg leading-none">⋮</span>
+                </div>
+              </div>
+              <div className="omega-panel-body">
+                {/* Stacked Bars by Employee */}
+                <div className="w-full overflow-x-auto py-2">
+                  <svg viewBox="0 0 920 220" className="w-full min-w-[760px] h-52 select-none">
+                    {/* Y-axis gridlines & labels */}
+                    {['4B', '3B', '2B', '1B', '0'].map((tick, i) => {
+                      const y = 20 + i * 40;
+                      return (
+                        <g key={i}>
+                          <line x1="45" y1={y} x2="900" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                          <text x="38" y={y + 4} fill="#64748b" fontSize="10" textAnchor="end" fontWeight="500">
+                            {tick}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Bars for Jan-Dec */}
+                    {[
+                      { m: 'January', segments: [{ c: '#2e7d32', h: 3 }, { c: '#1976d2', h: 20 }, { c: '#f59e0b', h: 15 }, { c: '#7c3aed', h: 86 }] },
+                      { m: 'February', segments: [{ c: '#2e7d32', h: 7 }, { c: '#1976d2', h: 18 }, { c: '#f59e0b', h: 23 }, { c: '#7c3aed', h: 36 }] },
+                      { m: 'March', segments: [{ c: '#2e7d32', h: 9 }, { c: '#f59e0b', h: 2.5 }, { c: '#7c3aed', h: 2 }] },
+                      { m: 'April', segments: [{ c: '#2e7d32', h: 13 }, { c: '#1976d2', h: 6 }, { c: '#7c3aed', h: 7.5 }] },
+                      { m: 'May', segments: [{ c: '#0d9488', h: 0.5 }, { c: '#7c3aed', h: 7.5 }] },
+                      { m: 'June', segments: [{ c: '#d32f2f', h: 15 }, { c: '#7c3aed', h: 10.5 }, { c: '#0d9488', h: 1 }] },
+                      { m: 'July', segments: [{ c: '#d32f2f', h: 60 }, { c: '#7c3aed', h: 12 }] },
+                      { m: 'August', segments: [{ c: '#d32f2f', h: 64 }, { c: '#7c3aed', h: 11 }] },
+                      { m: 'September', segments: [{ c: '#d32f2f', h: 4.5 }, { c: '#7c3aed', h: 1 }] },
+                      { m: 'October', segments: [] },
+                      { m: 'November', segments: [] },
+                      { m: 'December', segments: [] },
+                    ].map((col, idx) => {
+                      const barWidth = 34;
+                      const x = 65 + idx * 70;
+                      let currentY = 180;
+                      return (
+                        <g key={idx}>
+                          {col.segments.map((seg, sIdx) => {
+                            currentY -= seg.h;
+                            return (
+                              <rect
+                                key={sIdx}
+                                x={x}
+                                y={currentY}
+                                width={barWidth}
+                                height={seg.h}
+                                fill={seg.c}
+                              />
+                            );
+                          })}
+                          <text x={x + barWidth / 2} y="196" fill="#475569" fontSize="9.5" textAnchor="middle">
+                            {col.m}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+
+                {/* Legend */}
+                <div className="flex flex-wrap justify-start gap-x-6 gap-y-1.5 px-4 py-2 text-[11px] text-slate-700 font-medium border-t border-slate-100">
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#2e7d32] inline-block"></span> Cashier N2</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#1976d2] inline-block"></span> Cashier NK</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#f59e0b] inline-block"></span> Cashier R</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#d32f2f] inline-block"></span> Hiba Aloulou</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#7c3aed] inline-block"></span> Mahdi</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#0d9488] inline-block"></span> Nour Yazbeck</span>
+                </div>
+
+                {/* Employee Table */}
+                <div className="overflow-x-auto mt-2">
+                  <table className="omega-dense-table">
+                    <thead>
+                      <tr className="header-row">
+                        <th className="text-left sticky-col">Employee</th>
+                        <th className="text-right">January</th>
+                        <th className="text-right">February</th>
+                        <th className="text-right">March</th>
+                        <th className="text-right">April</th>
+                        <th className="text-right">May</th>
+                        <th className="text-right">June</th>
+                        <th className="text-right">July</th>
+                        <th className="text-right">August</th>
+                        <th className="text-right">September</th>
+                        <th className="text-right">October</th>
+                        <th className="text-right">November</th>
+                        <th className="text-right">December</th>
+                        <th className="text-right">Total</th>
+                        <th className="text-right">Monthly Average</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Cashier N2</td>
+                        <td className="text-right">74,960,900.00</td>
+                        <td className="text-right">177,901,600.00</td>
+                        <td className="text-right">226,406,100.00</td>
+                        <td className="text-right">322,850,450.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">802,119,050.00</td>
+                        <td className="text-right font-semibold text-slate-600">66,843,254.17</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Cashier NK</td>
+                        <td className="text-right">498,835,400.00</td>
+                        <td className="text-right">439,413,800.00</td>
+                        <td className="text-right">458,850.00</td>
+                        <td className="text-right">142,402,450.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">1,081,110,500.00</td>
+                        <td className="text-right font-semibold text-slate-600">90,092,541.67</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Cashier R</td>
+                        <td className="text-right">386,491,050.00</td>
+                        <td className="text-right">587,849,542.00</td>
+                        <td className="text-right">59,943,850.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">1,034,284,442.00</td>
+                        <td className="text-right font-semibold text-slate-600">86,190,370.17</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Hiba Aloulou</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">381,671,600.00</td>
+                        <td className="text-right">1,493,219,324.78</td>
+                        <td className="text-right">1,594,785,000.00</td>
+                        <td className="text-right">108,031,800.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">3,577,707,724.78</td>
+                        <td className="text-right font-semibold text-slate-600">298,142,310.40</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Mahdi</td>
+                        <td className="text-right">2,144,645,080.00</td>
+                        <td className="text-right">895,931,000.00</td>
+                        <td className="text-right">45,935,000.00</td>
+                        <td className="text-right">182,596,650.00</td>
+                        <td className="text-right">187,758,050.00</td>
+                        <td className="text-right">257,090,350.00</td>
+                        <td className="text-right">291,091,990.00</td>
+                        <td className="text-right">268,930,000.00</td>
+                        <td className="text-right">23,820,000.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">4,297,798,120.00</td>
+                        <td className="text-right font-semibold text-slate-600">358,149,843.33</td>
+                      </tr>
+                      <tr>
+                        <td className="text-left font-semibold sticky-col bg-white">Nour Yazbeck</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">4,832,000.00</td>
+                        <td className="text-right">24,083,800.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right">0.00</td>
+                        <td className="text-right font-bold text-slate-800">28,915,800.00</td>
+                        <td className="text-right font-semibold text-slate-600">2,409,650.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
