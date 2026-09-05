@@ -1,10 +1,21 @@
-import MainTileDashboard from '@/components/MainTileDashboard';
+'use client';
 
-export const metadata = {
-  title: 'Sales & POS Terminal - Vanguard ERP System',
-  description: 'Point of Sale & Sales Control Center',
-};
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function SalesPage() {
-  return <MainTileDashboard initialScreen="sales-pos" />;
+export default function SalesRedirectPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/backoffice/dashboard');
+  }, [router]);
+
+  return (
+    <div className="w-full h-screen bg-[#1e232d] flex items-center justify-center text-white">
+      <div className="flex items-center gap-3">
+        <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span className="text-sm font-bold font-mono">Redirecting to Sales Control Dashboard...</span>
+      </div>
+    </div>
+  );
 }
