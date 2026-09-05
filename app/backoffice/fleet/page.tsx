@@ -85,6 +85,8 @@ function SuperSonicFleetPageContent() {
   const [showAttachEnRouteModal, setShowAttachEnRouteModal] = useState(false);
   const [enRouteSourceCorridorId, setEnRouteSourceCorridorId] = useState<number>(2); // Default to Aramoun/Bchamoun (Corridor 2)
   const [enRouteSelectedOrderIds, setEnRouteSelectedOrderIds] = useState<string[]>([]);
+  const [enRouteOrderIds, setEnRouteOrderIds] = useState<string[]>([]);
+  const [showEnRoutePicker, setShowEnRoutePicker] = useState<boolean>(false);
 
   // Modals
   const [selectedVehicleForTelemetry, setSelectedVehicleForTelemetry] = useState<FleetVehicle | null>(null);
@@ -331,10 +333,6 @@ function SuperSonicFleetPageContent() {
       {/* 1. DISPATCH: EN-ROUTE CROSS-CORRIDOR BUNDLING & ONE-CLICK DISPATCH  */}
       {/* =================================================================== */}
       {activeTab === 'dispatch' && (() => {
-        // En-Route Stops State (Additional orders attached from other corridors)
-        const [enRouteOrderIds, setEnRouteOrderIds] = useState<string[]>([]);
-        const [showEnRoutePicker, setShowEnRoutePicker] = useState(false);
-
         // Combined orders list for this run: Primary Corridor Orders + Attached En-Route Stops
         const primaryOrders = orders.filter(
           (o) => o.corridorId === selectedCorridorId && o.status !== 'MOVED_TO_POS_PICKUP'
