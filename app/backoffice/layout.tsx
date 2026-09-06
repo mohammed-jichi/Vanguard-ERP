@@ -281,6 +281,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                       <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
                         End of Day (EOD) Z-Report
                       </Link>
+                      <Link href="/sales-manager-dashboard" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-blue-700 font-bold hover:bg-slate-200/70 transition-colors">
+                        <span>👔 Sales Manager Dashboard ↗</span>
+                        <span className="text-[9px] font-mono bg-blue-100 text-blue-800 px-1 py-0.2 rounded font-bold">CRM</span>
+                      </Link>
                       <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-[#1e3a2b] font-bold hover:bg-slate-200/70 transition-colors">
                         <span>POS Touch Terminal ↗</span>
                       </a>

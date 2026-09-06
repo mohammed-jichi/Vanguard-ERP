@@ -913,7 +913,7 @@ export default function AuthenticOmegaOperationsDashboard() {
                     <span>Sales Dashboard</span>
                   </Link>
                   <Link
-                    href="/customer-insights?tab=team"
+                    href="/sales-manager-dashboard"
                     target="_blank"
                     className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 transition"
                     onClick={() => setDropdownOpen(false)}
@@ -1169,7 +1169,7 @@ export default function AuthenticOmegaOperationsDashboard() {
             </Link>
 
             <Link
-              href="/customer-insights?tab=team"
+              href="/sales-manager-dashboard"
               target="_blank"
               className="inventory-tab-pill"
             >
