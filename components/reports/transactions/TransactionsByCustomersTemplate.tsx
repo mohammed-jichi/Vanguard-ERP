@@ -1,8 +1,23 @@
 import React from 'react';
 
-export const TransactionsByCustomersTemplate = () => {
+interface TransactionsByCustomersTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByCustomersTemplate: React.FC<TransactionsByCustomersTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   return (
     <div className="w-full flex flex-col items-center">
+      {!hideToolbar && (
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
@@ -72,6 +87,7 @@ export const TransactionsByCustomersTemplate = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Background wrapper to center the paper on screen */}
       <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
@@ -82,8 +98,8 @@ export const TransactionsByCustomersTemplate = () => {
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>28-Aug-2026</div>
-            <div>From Date: 01-Aug-2026 To Date: 28-Aug-2026</div>
+            <div>{executionDate}</div>
+            <div>{dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}</div>
             <div>Page 1 of 1</div>
           </div>
           <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">

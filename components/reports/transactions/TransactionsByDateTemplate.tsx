@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { ZoomIn, ZoomOut, Printer, Download, Settings } from 'lucide-react';
 
-export const TransactionsByDateTemplate = () => {
+interface TransactionsByDateTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   // UI States (Drafts - do not affect report yet)
   const [uiShowRate, setUiShowRate] = useState(false);
   const [uiGroupByDate, setUiGroupByDate] = useState(true);
@@ -41,7 +55,7 @@ export const TransactionsByDateTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
       
-      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      {/* Force high-contrast text rendering */}
       <style dangerouslySetInnerHTML={{__html: `
         .force-black {
           color: #000000 !important;
@@ -56,7 +70,7 @@ export const TransactionsByDateTemplate = () => {
         }
       `}} />
 
-      {/* 1. COMPACT FILTER & ACTION TOOLBAR */}
+      {!hideToolbar && (
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
         {/* Left side: Filters */}
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
@@ -146,8 +160,7 @@ export const TransactionsByDateTemplate = () => {
             </button>
           </div>
         </div>
-
-        {/* Right side: Action Toolbar */}
+{/* Right side: Action Toolbar */}
         <div className="flex items-center gap-2 shrink-0">
           <button 
             onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
@@ -183,6 +196,7 @@ export const TransactionsByDateTemplate = () => {
           </button>
         </div>
       </div>
+      )}
 
       {/* REPORT CONTAINER */}
       {/* Background wrapper to center the paper on screen */}
@@ -206,8 +220,8 @@ export const TransactionsByDateTemplate = () => {
             </div>
 
             <div className="flex justify-between items-center text-[11px] font-bold w-full">
-              <div>28-Aug-2026</div>
-              <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+              <div>{executionDate}</div>
+              <div>{dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}</div>
               <div>Page {currentPage} of 14</div>
             </div>
 

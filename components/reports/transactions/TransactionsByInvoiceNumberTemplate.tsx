@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { ZoomIn, ZoomOut, Printer, Download, Settings } from 'lucide-react';
 
-export const TransactionsByInvoiceNumberTemplate = () => {
+interface TransactionsByInvoiceNumberTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByInvoiceNumberTemplate: React.FC<TransactionsByInvoiceNumberTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   const [uiShowZeroTax, setUiShowZeroTax] = useState(false);
   const [activeShowZeroTax, setActiveShowZeroTax] = useState(false);
   
@@ -29,7 +43,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
       
-      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      {/* Force high-contrast text rendering */}
       <style dangerouslySetInnerHTML={{__html: `
         .force-black {
           color: #000000 !important;
@@ -44,7 +58,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
         }
       `}} />
 
-      {/* 1. COMPACT FILTER & ACTION TOOLBAR */}
+      {!hideToolbar && (
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
         {/* Left side: Filters */}
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
@@ -121,8 +135,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             </button>
           </div>
         </div>
-
-        {/* Right side: Action Toolbar */}
+{/* Right side: Action Toolbar */}
         <div className="flex items-center gap-2 shrink-0">
           <button 
             onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
@@ -158,6 +171,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
           </button>
         </div>
       </div>
+      )}
 
       {/* REPORT BODY */}
       {/* Background wrapper to center the paper on screen */}
@@ -176,7 +190,7 @@ export const TransactionsByInvoiceNumberTemplate = () => {
             <div className="text-center font-bold text-[12px] mb-4">Transactions by Invoice Number</div>
             
             <div className="flex justify-between items-center text-[11px] font-bold w-full">
-              <div>28-Aug-2026</div>
+              <div>{executionDate}</div>
               <div>From Invoice: 103070 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Invoice: 103080</div>
               <div>Page 1 of 1</div>
             </div>

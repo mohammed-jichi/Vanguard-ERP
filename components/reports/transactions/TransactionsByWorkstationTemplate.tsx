@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 
-export const TransactionsByWorkstationTemplate = () => {
+interface TransactionsByWorkstationTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByWorkstationTemplate: React.FC<TransactionsByWorkstationTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   const [uiRealDate, setUiRealDate] = useState(false);
   const [activeRealDate, setActiveRealDate] = useState(false);
 
@@ -8,6 +22,7 @@ export const TransactionsByWorkstationTemplate = () => {
 
   return (
     <div className="w-full flex flex-col items-center">
+      {!hideToolbar && (
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[700px]">
@@ -69,6 +84,7 @@ export const TransactionsByWorkstationTemplate = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Background wrapper to center the paper on screen */}
       <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">

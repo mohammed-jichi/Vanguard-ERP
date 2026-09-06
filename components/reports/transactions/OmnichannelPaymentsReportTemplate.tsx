@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 
-export const OmnichannelPaymentsReportTemplate = () => {
+interface OmnichannelPaymentsReportTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export const OmnichannelPaymentsReportTemplate: React.FC<OmnichannelPaymentsReportTemplateProps> = ({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 
@@ -26,7 +36,7 @@ export const OmnichannelPaymentsReportTemplate = () => {
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
       
-      {/* ☢️ القنبلة النووية: هيدا الكود بيجبر المتصفح يكتب بالأسود غصب عن أي كود تاني بالسيستم */}
+      {/* Force high-contrast text rendering */}
       <style dangerouslySetInnerHTML={{__html: `
         .force-black {
           color: #000000 !important;

@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 
-export const SummaryOfSalesByItemsTemplate = () => {
+interface SummaryOfSalesByItemsTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTemplateProps> = ({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');
@@ -29,27 +39,27 @@ export const SummaryOfSalesByItemsTemplate = () => {
       page: 1,
       items: [
         { code: 'Fixed Offer', desc: 'Fixed Offer', bar: '', id: '1289.0', qty: '24.00', price: '1.035E7', total: '248,400,000.00' },
-        { code: 'RICEBM1KG', desc: 'أرز بسمتي Manas', bar: '', id: '1062.0', qty: '3.50', price: '150000.0', total: '525,000.00' },
+        { code: 'RICEBM1KG', desc: 'Rice Basmati Rice Manas', bar: '', id: '1062.0', qty: '3.50', price: '150000.0', total: '525,000.00' },
         { code: 'P Blue Gallon 10', desc: 'P Blue Gallon 10 Liters', bar: '', id: '1260.0', qty: '24.00', price: '0.0', total: '0.00' },
         { code: 'P Blue Gallon 10', desc: 'P Blue Gallon 10 Liters', bar: '', id: '1260.0', qty: '23.00', price: '0.0', total: '0.00' },
         { code: 'P Blue Gallon 20', desc: 'P Blue Gallon 20 Liters', bar: '', id: '1259.0', qty: '46.00', price: '0.0', total: '0.00' },
         { code: 'P Blue Gallon 20', desc: 'P Blue Gallon 20 Liters', bar: '', id: '1259.0', qty: '47.00', price: '0.0', total: '0.00' },
-        { code: 'أرز امريكي', desc: 'أرز امريكي', bar: '', id: '661.0', qty: '2.00', price: '90000.0', total: '180,000.00' },
-        { code: 'أرز بسمتي البستان', desc: 'أرز بسمتي البستان 720غ', bar: '', id: '720.0', qty: '1.00', price: '120000.0', total: '120,000.00' },
-        { code: 'اكليل الجبل كيلو', desc: 'اكليل الجبل كيلو', bar: '', id: '486.0', qty: '0.20', price: '800000.0', total: '160,000.00' },
-        { code: 'EVOO1000MLDE', desc: 'تنكة زيت زيتون حصير بلدي 1000 مل', bar: '', id: '1017.0', qty: '5.00', price: '990000.0', total: '4,950,000.00' },
+        { code: 'Rice Standard ProductKgStandard Product', desc: 'Rice Standard ProductKgStandard Product', bar: '', id: '661.0', qty: '2.00', price: '90000.0', total: '180,000.00' },
+        { code: 'Rice Basmati Al-Bustan', desc: 'Rice Basmati Al-Bustan 720g', bar: '', id: '720.0', qty: '1.00', price: '120000.0', total: '120,000.00' },
+        { code: 'Standard ProductKgStandard Product Standard Product Bulk Kg', desc: 'Standard ProductKgStandard Product Standard Product Bulk Kg', bar: '', id: '486.0', qty: '0.20', price: '800000.0', total: '160,000.00' },
+        { code: 'EVOO1000MLDE', desc: 'Tin Olive Oil Haseer Local 1000 ml', bar: '', id: '1017.0', qty: '5.00', price: '990000.0', total: '4,950,000.00' },
       ]
     },
-    { page: 2, items: Array(10).fill({ code: 'VOO17.5L16KGR', desc: 'تنكة زيت زيتون فرجن بلدي 17.5 ليتر (16 كيلو)', bar: '', id: '11.0', qty: '45.00', price: '9000000.0', total: '18,000,000.00' }) },
-    { page: 3, items: Array(10).fill({ code: 'عرض العطاء جديد', desc: 'عرض العطاء جديد', bar: '', id: '793.0', qty: '32.00', price: '9000000.0', total: '288,000,000.00' }) },
+    { page: 2, items: Array(10).fill({ code: 'VOO17.5L16KGR', desc: 'Extra Virgin Olive Oil Tin 17.5L (16 Bulk Kg)', bar: '', id: '11.0', qty: '45.00', price: '9000000.0', total: '18,000,000.00' }) },
+    { page: 3, items: Array(10).fill({ code: 'Special Promo Offer', desc: 'Special Promo Offer', bar: '', id: '793.0', qty: '32.00', price: '9000000.0', total: '288,000,000.00' }) },
     {
       page: 4,
       items: [
-        { code: 'SEP1000GJAR510', desc: 'مرطبان مكدوس 1000غ', bar: '', id: '24.0', qty: '1.00', price: '450000.0', total: '450,000.00' },
-        { code: 'SEP650GJAR509', desc: 'مرطبان مكدوس 650غ', bar: '', id: '23.0', qty: '2.00', price: '270000.0', total: '540,000.00' },
-        { code: 'FVL350GJAR509', desc: 'مرطبان ورق عنب فرنسي 350غ', bar: '', id: '33.0', qty: '2.00', price: '190000.0', total: '380,000.00' },
-        { code: 'ملوخية 200 غرام', desc: 'ملوخية 200 غرام', bar: '', id: '590.0', qty: '2.00', price: '240000.0', total: '480,000.00' },
-        { code: 'نعنع يابس كيلو', desc: 'نعنع يابس كيلو', bar: '', id: '393.0', qty: '1.01', price: '450000.0', total: '454,500.00' },
+        { code: 'SEP1000GJAR510', desc: 'Jar Makdous 1000g', bar: '', id: '24.0', qty: '1.00', price: '450000.0', total: '450,000.00' },
+        { code: 'SEP650GJAR509', desc: 'Jar Makdous 650g', bar: '', id: '23.0', qty: '2.00', price: '270000.0', total: '540,000.00' },
+        { code: 'FVL350GJAR509', desc: 'Jar French Grape Leaves 350g', bar: '', id: '33.0', qty: '2.00', price: '190000.0', total: '380,000.00' },
+        { code: 'mlStandard Product 200 g', desc: 'mlStandard Product 200 g', bar: '', id: '590.0', qty: '2.00', price: '240000.0', total: '480,000.00' },
+        { code: 'Dried Mint Bulk Kg', desc: 'Dried Mint Bulk Kg', bar: '', id: '393.0', qty: '1.01', price: '450000.0', total: '454,500.00' },
       ]
     }
   ];
@@ -97,7 +107,7 @@ export const SummaryOfSalesByItemsTemplate = () => {
                 <option>Aug 28 2026 to Dec 10 2025</option>
               </select>
             ) : (
-              <input type="text" value={getDateDisplay()} readOnly className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[250px]" />
+              <input type="text" value={dynamicPeriodText || getDateDisplay()} readOnly className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[250px]" />
             )}
 
             <div className="flex items-center gap-2 ml-auto">

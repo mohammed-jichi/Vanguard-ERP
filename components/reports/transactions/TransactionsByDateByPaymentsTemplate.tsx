@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 
-export const TransactionsByDateByPaymentsTemplate = () => {
+interface TransactionsByDateByPaymentsTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByDateByPaymentsTemplate: React.FC<TransactionsByDateByPaymentsTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   const [uiSummary, setUiSummary] = useState(true); // Matches image_a50260.png state
   const [activeSummary, setActiveSummary] = useState(true);
 
@@ -10,6 +24,7 @@ export const TransactionsByDateByPaymentsTemplate = () => {
     <div className="w-full flex flex-col items-center">
       
       {/* Filters Container */}
+      {!hideToolbar && (
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
@@ -96,6 +111,7 @@ export const TransactionsByDateByPaymentsTemplate = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Report Body */}
       {/* Background wrapper to center the paper on screen */}
@@ -107,8 +123,8 @@ export const TransactionsByDateByPaymentsTemplate = () => {
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Date by Payments</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>28-Aug-26</div>
-            <div>From Date: 01-Aug-2026 To Date: 28-Aug-2026</div>
+            <div>{executionDate}</div>
+            <div>{dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}</div>
             <div>Page 1 of {activeSummary ? "3" : "12"}</div>
           </div>
           

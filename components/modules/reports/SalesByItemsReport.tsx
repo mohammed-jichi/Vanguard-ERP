@@ -158,7 +158,17 @@ export const GROUPS_LIST = [
   'CLASSIC-R/R',
 ] as const;
 
-export default function SalesByItemsReport() {
+interface SalesByItemsReportProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export default function SalesByItemsReport({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}: SalesByItemsReportProps = {}) {
   const [reportMode, setReportMode] = useState<string>('Sales by Items');
   const [period, setPeriod] = useState<string>('This Month');
   const [dateDisplay, setDateDisplay] = useState<string>('Aug, 2026');
@@ -171,163 +181,187 @@ export default function SalesByItemsReport() {
   const [removeGrouping, setRemoveGrouping] = useState<boolean>(false);
   const [showRemark, setShowRemark] = useState<boolean>(false);
 
-  // Common high-contrast input class (SOLID & CRISP - NO GHOSTING)
+  const isGroupByMode = reportMode === 'Sales by Items' || reportMode === 'Sales by Items (Group by Mode)';
+  const isSalesmanMode = reportMode === 'Sales by Item by Salesman';
+  const isSizeColorMode = reportMode === 'Sales by Item by Size by Color';
+
+  const handlePeriodChange = (val: string) => setPeriod(val);
+  const handleFilterReport = () => {};
+  const handleResetFilters = () => {};
+
   const solidInputClass = "bg-white border-2 border-slate-400 text-slate-900 font-semibold text-xs rounded px-2.5 py-1.5 focus:border-[#1a629b] focus:outline-none shadow-2xs opacity-100";
 
   return (
     <div className="w-full font-sans text-slate-800">
       
-      {/* 1. SOLID, HIGH-CONTRAST FILTER CARD */}
-      <div className="bg-white rounded-xl border-2 border-slate-300 shadow-sm p-4 mb-4 print:hidden">
-        
-        <div className="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-          <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-slate-700">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </div>
-          <div>
-            <div className="text-xs font-bold text-slate-900">Filters</div>
-            <div className="text-[11px] text-[#1a629b] font-bold">{reportMode}</div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-          
-          {/* Filter Inputs Area */}
-          <div className="md:col-span-9 space-y-2.5">
+      {!hideToolbar && (
+        <>
+          {/* 1. SOLID, HIGH-CONTRAST FILTER CARD */}
+          <div className="bg-white rounded-xl border-2 border-slate-300 shadow-sm p-4 mb-4 print:hidden">
             
-            {/* Mode Selector */}
-            <div>
-              <select
-                value={reportMode}
-                onChange={(e) => setReportMode(e.target.value)}
-                className={`w-full md:w-80 ${solidInputClass}`}
-              >
-                {REPORT_MODES.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+            <div className="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
+              <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-slate-700">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900">Filters</div>
+                <div className="text-[11px] text-[#1a629b] font-bold">{reportMode}</div>
+              </div>
             </div>
 
-            {/* Date Row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <select
-                value={period}
-                onChange={(e) => setPeriod(e.target.value)}
-                className={`min-w-[150px] ${solidInputClass}`}
-              >
-                {DATE_PERIODS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={dateDisplay}
-                onChange={(e) => setDateDisplay(e.target.value)}
-                className={`min-w-[180px] ${solidInputClass}`}
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+              {/* Report Mode */}
+              <div className="flex flex-col gap-1 md:col-span-3">
+                <label className="text-[11px] font-bold text-slate-700">Report Mode</label>
+                <select
+                  value={reportMode}
+                  onChange={(e) => setReportMode(e.target.value)}
+                  className={solidInputClass}
+                >
+                  {REPORT_MODES.map((mode) => (
+                    <option key={mode} value={mode}>{mode}</option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Conditional Filter Fields */}
-            {reportMode === 'Sales by Items' && (
-              <div className="space-y-2 pt-1">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Branch</label>
-                    <select value={branch} onChange={(e) => setBranch(e.target.value)} className={`w-full ${solidInputClass}`}>
+              {/* Date Period */}
+              <div className="flex flex-col gap-1 md:col-span-2">
+                <label className="text-[11px] font-bold text-slate-700">Period</label>
+                <select
+                  value={period}
+                  onChange={(e) => handlePeriodChange(e.target.value)}
+                  className={solidInputClass}
+                >
+                  {DATE_PERIODS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Date Display */}
+              <div className="flex flex-col gap-1 md:col-span-2">
+                <label className="text-[11px] font-bold text-slate-700">Date Info</label>
+                <input
+                  type="text"
+                  value={dateDisplay}
+                  onChange={(e) => setDateDisplay(e.target.value)}
+                  className={`min-w-[180px] ${solidInputClass}`}
+                />
+              </div>
+
+              {/* Conditional Filter Fields */}
+              {isGroupByMode && (
+                <>
+                  <div className="flex flex-col gap-1 md:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-700">Branch</label>
+                    <select value={branch} onChange={(e) => setBranch(e.target.value)} className={solidInputClass}>
                       <option value="All Branches">All Branches</option>
-                      <option value="choueifat">فرع الشويفات</option>
-                      <option value="beirut">فرع بيروت</option>
+                      <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Category</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className={`w-full ${solidInputClass}`}>
-                      {CATEGORIES_LIST.map((c) => (<option key={c} value={c}>{c}</option>))}
+                  <div className="flex flex-col gap-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Category</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className={solidInputClass}>
+                      {CATEGORIES_LIST.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Division</label>
-                    <select value={division} onChange={(e) => setDivision(e.target.value)} className={`w-full ${solidInputClass}`}>
-                      {DIVISIONS_LIST.map((d) => (<option key={d} value={d}>{d}</option>))}
+                  <div className="flex flex-col gap-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Division</label>
+                    <select value={division} onChange={(e) => setDivision(e.target.value)} className={solidInputClass}>
+                      {DIVISIONS_LIST.map((d) => <option key={d} value={d}>{d}</option>)}
                     </select>
                   </div>
-                </div>
+                  <div className="flex flex-col gap-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Group</label>
+                    <select value={group} onChange={(e) => setGroup(e.target.value)} className={solidInputClass}>
+                      {GROUPS_LIST.map((g) => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2 md:col-span-3 mt-4">
+                    <input
+                      type="checkbox"
+                      id="removeGrouping"
+                      checked={removeGrouping}
+                      onChange={(e) => setRemoveGrouping(e.target.checked)}
+                      className="w-4 h-4 text-[#1a629b] rounded border-2 border-slate-400"
+                    />
+                    <label htmlFor="removeGrouping" className="text-xs font-bold text-slate-700">Remove Grouping</label>
+                  </div>
+                </>
+              )}
 
-                <div className="flex flex-wrap items-center gap-4 pt-1">
-                  <div className="w-full md:w-64">
-                    <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Group</label>
-                    <select value={group} onChange={(e) => setGroup(e.target.value)} className={`w-full ${solidInputClass}`}>
-                      {GROUPS_LIST.map((g) => (<option key={g} value={g}>{g}</option>))}
-                    </select>
-                  </div>
-                  <div className="flex items-center gap-4 pt-4 text-xs font-bold text-slate-900">
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={removeGrouping} onChange={(e) => setRemoveGrouping(e.target.checked)} className="w-4 h-4 rounded text-[#1a629b]" />
-                      <span>Remove Grouping</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" checked={showRemark} onChange={(e) => setShowRemark(e.target.checked)} className="w-4 h-4 rounded text-[#1a629b]" />
-                      <span>Show Remark</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Salesman Mode */}
-            {reportMode === 'Sales by Item by Salesman' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 pt-1">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Salesman</label>
-                  <select value={salesman} onChange={(e) => setSalesman(e.target.value)} className={`w-full ${solidInputClass}`}>
-                    {SALESMEN_LIST.map((s) => (<option key={s} value={s}>{s}</option>))}
+              {isSalesmanMode && (
+                <div className="flex flex-col gap-1 md:col-span-3">
+                  <label className="text-[11px] font-bold text-slate-700">Salesman</label>
+                  <select value={salesman} onChange={(e) => setSalesman(e.target.value)} className={solidInputClass}>
+                    {SALESMEN_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Invoices</label>
-                  <select value={invoicesType} onChange={(e) => setInvoicesType(e.target.value)} className={`w-full ${solidInputClass}`}>
-                    {INVOICES_TYPES.map((i) => (<option key={i} value={i}>{i}</option>))}
+              )}
+
+              {isSizeColorMode && (
+                <div className="flex flex-col gap-1 md:col-span-3">
+                  <label className="text-[11px] font-bold text-slate-700">Invoices</label>
+                  <select value={invoicesType} onChange={(e) => setInvoicesType(e.target.value)} className={solidInputClass}>
+                    <option value="All Invoices">All Invoices</option>
+                    <option value="Paid Invoices">Paid Invoices</option>
+                    <option value="Unpaid Invoices">Unpaid Invoices</option>
                   </select>
                 </div>
-                <div className="flex items-center gap-1.5 pt-4 text-xs font-bold text-slate-900">
-                  <input type="checkbox" checked={showRemark} onChange={(e) => setShowRemark(e.target.checked)} className="w-4 h-4 rounded text-[#1a629b]" />
-                  <span>Show Remark</span>
-                </div>
+              )}
+
+              {/* Show Remark Checkbox */}
+              <div className="flex items-center gap-2 md:col-span-3 mt-4">
+                <input
+                  type="checkbox"
+                  id="showRemark"
+                  checked={showRemark}
+                  onChange={(e) => setShowRemark(e.target.checked)}
+                  className="w-4 h-4 text-[#1a629b] rounded border-2 border-slate-400"
+                />
+                <label htmlFor="showRemark" className="text-xs font-bold text-slate-700">Show Remark</label>
               </div>
-            )}
+
+              {/* Action Buttons */}
+              <div className="flex items-end gap-2 md:col-span-3 mt-2">
+                <button
+                  type="button"
+                  onClick={handleFilterReport}
+                  className="flex-1 bg-[#1a629b] hover:bg-[#154e7d] text-white font-bold py-1.5 px-3 rounded text-xs shadow-sm"
+                >
+                  Filter Report
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded border border-slate-300 text-xs shadow-2xs"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
 
           </div>
 
-          {/* Action Buttons */}
-          <div className="md:col-span-3 flex flex-col gap-2 justify-start pt-1">
-            <button type="button" className="w-full py-2 px-3 bg-[#2d3748] hover:bg-[#1a202c] text-white text-xs font-bold rounded shadow-sm">
-              Filter Report
-            </button>
-            <button type="button" className="w-full py-2 px-3 bg-[#4a2626] hover:bg-[#341818] text-white text-xs font-bold rounded shadow-sm">
-              Reset Filters
-            </button>
+          {/* 2. COMPACT TOOLBAR */}
+          <div className="flex items-center justify-between bg-white border border-slate-300 rounded-t-xl px-4 py-2 print:hidden">
+            <h3 className="text-xs font-bold text-slate-900">{reportMode}</h3>
+            <div className="flex items-center gap-1.5">
+              <button type="button" onClick={() => window.print()} className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
+                Print Report
+              </button>
+              <button type="button" className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
+                Export Report
+              </button>
+            </div>
           </div>
-
-        </div>
-      </div>
-
-      {/* 2. COMPACT TOOLBAR */}
-      <div className="flex items-center justify-between bg-white border border-slate-300 rounded-t-xl px-4 py-2 print:hidden">
-        <h3 className="text-xs font-bold text-slate-900">{reportMode}</h3>
-        <div className="flex items-center gap-1.5">
-          <button type="button" onClick={() => window.print()} className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
-            Print Report
-          </button>
-          <button type="button" className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
-            Export Report
-          </button>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* 3. STRICT VANGUARD A4 PRINT CONTAINER (NORMAL-CASE & CONDENSED) */}
-      <div className="w-full overflow-x-auto flex justify-center bg-slate-200/60 p-4 md:p-6 rounded-b-xl">
+      <div className={hideToolbar ? "w-full overflow-x-auto flex justify-center" : "w-full overflow-x-auto flex justify-center bg-slate-200/60 p-4 md:p-6 rounded-b-xl"}>
         <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 shadow-md text-[11px] font-['Arial','Helvetica',sans-serif] leading-none text-black select-none">
           
           {/* Header Metadata */}

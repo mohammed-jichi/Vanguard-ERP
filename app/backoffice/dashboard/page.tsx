@@ -199,6 +199,8 @@ export default function AuthenticOmegaSalesDashboard() {
     { month: 'December', val: 0, label: '0', pct: '0.0%' },
   ];
 
+  const totalAnnualSales = monthlyBarData.reduce((acc, m) => acc + m.val, 0);
+
   // Helper for generating SVG Pie Chart
   const renderPieSvg = (slices: { name: string; amount: number; color: string; pct: number }[]) => {
     let cumulative = 0;
@@ -465,103 +467,285 @@ export default function AuthenticOmegaSalesDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] text-[#1e293b] font-sans pb-16">
+    <div className="min-h-screen bg-[#edf3f9] text-[#0f172a] font-sans pb-16 branch-dashboard-shell">
       <style jsx global>{`
         /* Authentic Omega Light Styles */
-        .omega-panel-header {
-          background-color: #e9f1f8;
-          color: #1e293b;
+        :root {
+          --bd-bg: #edf3f9;
+          --bd-surface: #ffffff;
+          --bd-surface-soft: #f3f7fc;
+          --bd-surface-muted: #dbe4f0;
+          --bd-card: #e7eef8;
+          --bd-card-soft: #f8fbff;
+          --bd-border: rgba(15, 23, 42, 0.14);
+          --bd-text: #0f172a;
+          --bd-text-muted: #334155;
+          --bd-accent: #0f172a;
+          --bd-shadow: 0 20px 45px rgba(15, 23, 42, 0.09);
+        }
+
+        .branch-dashboard-shell {
+          background-color: #edf3f9;
+          color: #0f172a;
+        }
+
+        /* Omega Header Bar: Dark Charcoal #3e3e3e */
+        .omega-panel-header, .dashboard-branches-country {
+          background-color: #3e3e3e !important;
+          color: #ffffff !important;
           font-weight: 700;
           font-size: 14.5px;
           padding: 8px 14px;
-          border-top-left-radius: 6px;
-          border-top-right-radius: 6px;
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
           position: relative;
-          border: 1px solid #d8e5f2;
+          border: 1px solid #3e3e3e;
           border-bottom: none;
+          letter-spacing: 0.3px;
         }
+
         .omega-panel-actions {
-          position: absolute;
-          right: 12px;
           display: flex;
           align-items: center;
-          gap: 10px;
-          color: #475569;
+          gap: 12px;
+          color: #ffffff;
         }
-        .omega-panel-body {
+
+        .omega-panel-actions button {
+          color: #ffffff;
+          opacity: 0.9;
+          transition: opacity 0.15s;
+        }
+        .omega-panel-actions button:hover {
+          opacity: 1;
+        }
+
+        .omega-panel-body, .dashboard-branches-branches.body.other-tables {
           background: #ffffff;
-          border: 1px solid #d8e5f2;
-          border-bottom-left-radius: 6px;
-          border-bottom-right-radius: 6px;
-          padding: 10px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+          border: 1px solid #cbd5e1;
+          border-top: none;
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          padding: 12px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
-        .omega-dense-table {
+
+        /* Performance Highlights Panel */
+        .performance-highlights-panel {
+          padding: 10px 12px !important;
+        }
+
+        .performance-highlights-grid {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+        @media (max-width: 1280px) {
+          .performance-highlights-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        @media (max-width: 640px) {
+          .performance-highlights-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        .performance-highlight-card {
+          background: #ffffff;
+          border: 1px solid #d7dee8;
+          border-top: 3px solid #1976d2;
+          border-radius: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          justify-content: space-between;
+          min-height: 78px;
+          padding: 8px 10px 9px;
+          transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .performance-highlight-card:hover {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .performance-highlight-top {
+          align-items: center;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+          display: flex;
+          gap: 6px;
+          justify-content: space-between;
+          min-width: 0;
+          padding-bottom: 4px;
+        }
+
+        .performance-highlight-label {
+          color: #64748b;
+          font-size: 13px;
+          font-weight: 500;
+          line-height: 1.2;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .performance-highlight-value {
+          color: #111827;
+          display: inline-flex;
+          align-items: center;
+          font-size: 15px;
+          font-weight: 700;
+          gap: 4px;
+          line-height: 1.2;
+        }
+
+        .performance-highlight-sub {
+          color: #475569;
+          font-size: 11px;
+          line-height: 1.25;
+        }
+
+        .performance-highlight-separator {
+          color: #0f172a;
+          display: inline-block;
+          font-size: 12px;
+          font-weight: 900;
+          margin: 0 4px;
+        }
+
+        /* Omega Dense Tables */
+        .omega-dense-table, .monthly-revenue-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 11.5px;
+          font-size: 12px;
         }
-        .omega-dense-table th, .omega-dense-table td {
-          padding: 4px 8px;
+        .omega-dense-table th, .omega-dense-table td,
+        .monthly-revenue-table th, .monthly-revenue-table td {
+          padding: 6px 10px;
           border: 1px solid #e2e8f0;
           white-space: nowrap;
         }
-        .omega-dense-table tr.header-row {
-          background-color: #dce7f3;
-          color: #0f172a;
+        .omega-dense-table tr.header-row,
+        .monthly-revenue-table tr.table-total,
+        tr.header-row, tr.table-total {
+          background-color: #dbe4f0 !important;
+          color: #0f172a !important;
           font-weight: 700;
+          font-size: 12px;
+          border-bottom: 2px solid #cbd5e1;
         }
-        .omega-dense-table tbody tr:nth-child(even) {
-          background-color: #f8fafc;
+        .omega-dense-table tbody tr:nth-child(odd),
+        .monthly-revenue-table tbody tr:nth-of-type(odd),
+        table.table-striped tbody tr:nth-of-type(odd) {
+          background-color: rgb(234, 252, 255) !important;
         }
-        .omega-dense-table tbody tr:hover {
+        .omega-dense-table tbody tr:nth-child(even),
+        .monthly-revenue-table tbody tr:nth-of-type(even),
+        table.table-striped tbody tr:nth-of-type(even) {
+          background-color: #ffffff !important;
+        }
+        .omega-dense-table tbody tr:hover,
+        .monthly-revenue-table tbody tr:hover,
+        table.table-striped tbody tr:hover {
+          background-color: rgb(202, 232, 235) !important;
+        }
+
+        /* Sticky Column */
+        .sticky-col {
+          position: sticky !important;
+          left: 0 !important;
+          z-index: 12;
+          background-color: #f8fafc !important;
+          color: #0f172a !important;
+          min-width: 190px;
+          border-right: 2px solid #cbd5e1 !important;
+          box-shadow: 2px 0 4px -2px rgba(0,0,0,0.06);
+        }
+        tr.header-row .sticky-col,
+        tr.table-total .sticky-col {
+          background-color: #dbe4f0 !important;
+        }
+
+        /* Monthly revenue cells */
+        .monthly-revenue-cell {
+          min-width: 150px;
+          vertical-align: top;
+          text-align: right;
+        }
+        .monthly-revenue-current {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 3px;
+          font-weight: 700;
+          color: #0f172a;
+          font-size: 12px;
+        }
+        .monthly-revenue-previous {
+          display: block;
+          font-size: 10px;
+          color: #64748b;
+          margin-top: 2px;
+        }
+        .monthly-revenue-total-col {
+          min-width: 160px;
           background-color: #f1f5f9;
+          font-weight: 700;
+          text-align: right;
         }
 
         /* Nav Tabs */
         .omega-pill-btn {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
+          gap: 7px;
+          padding: 7px 15px;
           border-radius: 999px;
           font-size: 13px;
           font-weight: 600;
           border: 1px solid #cbd5e1;
-          background-color: #f8fafc;
+          background-color: #ffffff;
           color: #334155;
           cursor: pointer;
           transition: all 0.15s;
           white-space: nowrap;
           text-decoration: none;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
         .omega-pill-btn:hover {
-          background-color: #e2e8f0;
+          background-color: #f1f5f9;
+          border-color: #94a3b8;
+          color: #0f172a;
         }
         .omega-pill-btn.active {
-          background-color: #111827;
-          border-color: #111827;
+          background-color: #1e293b !important;
+          border-color: #1e293b !important;
           color: #ffffff !important;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
         .omega-circle-btn {
-          width: 32px;
-          height: 32px;
+          width: 36px;
+          height: 36px;
           border-radius: 999px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           border: 1px solid #cbd5e1;
-          background-color: #f8fafc;
+          background-color: #ffffff;
           color: #334155;
           cursor: pointer;
           transition: all 0.15s;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .omega-circle-btn:hover {
+          background-color: #f1f5f9;
+          border-color: #94a3b8;
         }
         .omega-circle-btn.active {
-          background-color: #111827;
-          border-color: #111827;
+          background-color: #1e293b;
+          border-color: #1e293b;
           color: #ffffff;
         }
       `}</style>
@@ -684,15 +868,15 @@ export default function AuthenticOmegaSalesDashboard() {
         {/* 4 SIGNATURE OMEGA METRIC CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 mb-3.5">
           
-          {/* Card 1: Green (#2e6912) */}
-          <div className="rounded-lg overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#2e6912' }}>
-            <div className="w-12 bg-black/25 flex items-center justify-center text-white/90">
-              <Calendar className="w-5 h-5" />
+          {/* Card 1: Green (#337718) */}
+          <div className="rounded-[10px] overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#337718' }}>
+            <div className="w-14 bg-white/20 flex items-center justify-center text-white">
+              <Calendar className="w-6 h-6" />
             </div>
-            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs">
+            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#337718' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Net Sales</span>
-                <span className="font-extrabold text-[13px]">{formatVal(0)}</span>
+                <span className="font-black text-[13.5px]">{formatVal(0)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Receipts</span>
@@ -709,12 +893,12 @@ export default function AuthenticOmegaSalesDashboard() {
             </div>
           </div>
 
-          {/* Card 2: Navy (#0b3056) */}
-          <div className="rounded-lg overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#0b3056' }}>
-            <div className="w-12 bg-black/25 flex items-center justify-center text-white/90">
-              <TrendingUp className="w-5 h-5" />
+          {/* Card 2: Navy (#003566) */}
+          <div className="rounded-[10px] overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#003566' }}>
+            <div className="w-14 bg-white/20 flex items-center justify-center text-white">
+              <TrendingUp className="w-6 h-6" />
             </div>
-            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs">
+            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#003566' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Gross Sales</span>
                 <span className="font-semibold">{formatVal(134551800, 'short')}</span>
@@ -729,21 +913,21 @@ export default function AuthenticOmegaSalesDashboard() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Net Sales</span>
-                <span className="font-extrabold text-[13px]">{formatVal(131851800, 'short')}</span>
+                <span className="font-black text-[13.5px]">{formatVal(131851800, 'short')}</span>
               </div>
             </div>
           </div>
 
-          {/* Card 3: Brown/Gold (#85681c) */}
-          <div className="rounded-lg overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#85681c' }}>
-            <div className="w-12 bg-black/25 flex items-center justify-center text-white/90">
-              <BookOpen className="w-5 h-5" />
+          {/* Card 3: Brown/Gold (#8a6a1f) */}
+          <div className="rounded-[10px] overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#8a6a1f' }}>
+            <div className="w-14 bg-white/20 flex items-center justify-center text-white">
+              <BookOpen className="w-6 h-6" />
             </div>
-            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs">
+            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#8a6a1f' }}>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">MTD:</span>
-                  <span className="font-semibold">{formatVal(131851800, 'short')}</span>
+                  <span className="font-black">{formatVal(131851800, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYM:</span>
@@ -753,7 +937,7 @@ export default function AuthenticOmegaSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">YTD:</span>
-                  <span className="font-semibold">{formatVal(11900000000, 'short')}</span>
+                  <span className="font-black">{formatVal(11900000000, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYTM:</span>
@@ -766,17 +950,17 @@ export default function AuthenticOmegaSalesDashboard() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">MTD Receipts</span>
-                <span className="font-extrabold text-[13px]">{formatVal(0)}</span>
+                <span className="font-black text-[13.5px]">{formatVal(0)}</span>
               </div>
             </div>
           </div>
 
-          {/* Card 4: Brick Red (#7d2811) */}
-          <div className="rounded-lg overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#7d2811' }}>
-            <div className="w-12 bg-black/25 flex items-center justify-center text-white/90">
-              <Ticket className="w-5 h-5" />
+          {/* Card 4: Dark Charcoal / Red-Brown (#852b12) */}
+          <div className="rounded-[10px] overflow-hidden flex shadow-sm h-[116px]" style={{ backgroundColor: '#852b12' }}>
+            <div className="w-14 bg-white/20 flex items-center justify-center text-white">
+              <Ticket className="w-6 h-6" />
             </div>
-            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs">
+            <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#852b12' }}>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Paid In:</span>
@@ -788,13 +972,13 @@ export default function AuthenticOmegaSalesDashboard() {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Voids:</span>
-                  <span className="font-semibold">{formatVal(0)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(0)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Refunds:</span>
-                  <span className="font-semibold">{formatVal(120000)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(120000)}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -810,11 +994,11 @@ export default function AuthenticOmegaSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Cust. Count:</span>
-                  <span className="font-semibold">42</span>
+                  <span className="font-bold">42</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Inv. Count:</span>
-                  <span className="font-semibold">42</span>
+                  <span className="font-bold">42</span>
                 </div>
               </div>
             </div>
@@ -823,13 +1007,13 @@ export default function AuthenticOmegaSalesDashboard() {
         </div>
 
         {/* REAL OMEGA NAVIGATION TABS STRIP */}
-        <div className="flex items-center gap-1.5 mb-3.5 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 mb-3.5 overflow-x-auto pb-1 dashboard-section-tabs-bar">
           <button 
             type="button"
             onClick={() => setActiveTab('summary')}
             className={`omega-pill-btn ${activeTab === 'summary' ? 'active' : ''}`}
           >
-            <Scale className="w-3.5 h-3.5" /> Summary
+            <Scale className="w-4 h-4" /> Summary
           </button>
 
           <button 
@@ -837,7 +1021,7 @@ export default function AuthenticOmegaSalesDashboard() {
             onClick={() => setActiveTab('comparative')}
             className={`omega-pill-btn ${activeTab === 'comparative' ? 'active' : ''}`}
           >
-            <TrendingUp className="w-3.5 h-3.5" /> Comparative
+            <TrendingUp className="w-4 h-4" /> Comparative
           </button>
 
           <Link 
@@ -845,7 +1029,7 @@ export default function AuthenticOmegaSalesDashboard() {
             target="_blank"
             className="omega-pill-btn"
           >
-            <Boxes className="w-3.5 h-3.5" /> Product Insights
+            <Boxes className="w-4 h-4" /> Product Insights
           </Link>
 
           <Link 
@@ -853,7 +1037,7 @@ export default function AuthenticOmegaSalesDashboard() {
             target="_blank"
             className="omega-pill-btn"
           >
-            <UserCircle2 className="w-3.5 h-3.5" /> Customer Insights
+            <UserCircle2 className="w-4 h-4" /> Customer Insights
           </Link>
 
           {/* VTrack opens in new tab */}
@@ -863,7 +1047,7 @@ export default function AuthenticOmegaSalesDashboard() {
             rel="noopener noreferrer"
             className="omega-pill-btn"
           >
-            <Truck className="w-3.5 h-3.5" /> VTrack
+            <Truck className="w-4 h-4" /> VTrack
           </Link>
 
           <button 
@@ -871,7 +1055,7 @@ export default function AuthenticOmegaSalesDashboard() {
             onClick={() => setActiveTab('customers')}
             className={`omega-pill-btn ${activeTab === 'customers' ? 'active' : ''}`}
           >
-            <Users className="w-3.5 h-3.5" /> Customers
+            <Users className="w-4 h-4" /> Customers
           </button>
 
           <button 
@@ -879,7 +1063,7 @@ export default function AuthenticOmegaSalesDashboard() {
             onClick={() => setActiveTab('today')}
             className={`omega-pill-btn ${activeTab === 'today' ? 'active' : ''}`}
           >
-            <Calendar className="w-3.5 h-3.5" /> Today
+            <Calendar className="w-4 h-4" /> Today
           </button>
 
           <button 
@@ -887,52 +1071,54 @@ export default function AuthenticOmegaSalesDashboard() {
             onClick={() => setActiveTab('geographics')}
             className={`omega-pill-btn ${activeTab === 'geographics' ? 'active' : ''}`}
           >
-            <Globe className="w-3.5 h-3.5" /> Geographics
+            <Globe className="w-4 h-4" /> Geographics
           </button>
 
           <div className="flex-1"></div>
 
           {/* Chart mode toggle buttons: Line and Pie */}
-          <button 
-            type="button"
-            onClick={() => setChartMode('line')}
-            className={`omega-circle-btn ${chartMode === 'line' ? 'active' : ''}`}
-            title="Line Mode"
-          >
-            <LineChartIcon className="w-3.5 h-3.5" />
-          </button>
+          <div className="dashboard-chart-mode-group flex items-center gap-2 pl-2">
+            <button 
+              type="button"
+              onClick={() => setChartMode('line')}
+              className={`omega-circle-btn ${chartMode === 'line' ? 'active' : ''}`}
+              title="Line Mode"
+            >
+              <LineChartIcon className="w-4 h-4" />
+            </button>
 
-          <button 
-            type="button"
-            onClick={() => setChartMode('pie')}
-            className={`omega-circle-btn ${chartMode === 'pie' ? 'active' : ''}`}
-            title="Pie Mode"
-          >
-            <PieChartIcon className="w-3.5 h-3.5" />
-          </button>
+            <button 
+              type="button"
+              onClick={() => setChartMode('pie')}
+              className={`omega-circle-btn ${chartMode === 'pie' ? 'active' : ''}`}
+              title="Pie Mode"
+            >
+              <PieChartIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* TAB: SUMMARY */}
         {activeTab === 'summary' && (
           <div>
             {/* Performance Highlights Banner */}
-            <div className="mb-3.5">
-              <div className="omega-panel-header">
-                Performance Highlights
+            <div className="mb-3.5 performance-highlights-section">
+              <div className="omega-panel-header dashboard-branches-country">
+                <span>Performance Highlights</span>
               </div>
-              <div className="omega-panel-body">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <div className="omega-panel-body performance-highlights-panel">
+                <div className="performance-highlights-grid">
                   
                   {/* Card 1: Revenue YoY */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #1976d2' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Revenue YoY</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#1976d2' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Revenue YoY</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('yoy')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'yoy' && (
@@ -940,25 +1126,29 @@ export default function AuthenticOmegaSalesDashboard() {
                         Completed-month YoY: Net Sales from 2026 Jan-Aug vs 2025 Jan-Aug. Current month is excluded until it is complete.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
+                    <div className="performance-highlight-value my-1">
                       <span>+100.0%</span>
-                      <span className="text-emerald-600 text-xs">▲</span>
+                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
+                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
+                      </svg>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      2026 Jan-Aug 10.7 B LL | 2025 Jan-Aug 0.00 LL
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>2026 Jan-Aug 10.7 B LL</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>2025 Jan-Aug 0.00 LL</span>
                     </div>
                   </div>
 
                   {/* Card 2: Best Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #2e7d32' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Best Month</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#2e7d32' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Best Month</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('best')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'best' && (
@@ -966,25 +1156,29 @@ export default function AuthenticOmegaSalesDashboard() {
                         Month with highest total net sales in the selected year.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
+                    <div className="performance-highlight-value my-1">
                       <span>January</span>
-                      <span className="text-emerald-600 text-xs">▲</span>
+                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
+                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
+                      </svg>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      3.1 B LL | +100.0% YoY
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>3.1 B LL</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>+100.0% YoY</span>
                     </div>
                   </div>
 
                   {/* Card 3: Softest Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #f59e0b' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Softest Month</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#f59e0b' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Softest Month</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('softest')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'softest' && (
@@ -992,25 +1186,29 @@ export default function AuthenticOmegaSalesDashboard() {
                         Lowest net sales month recorded among active months.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
+                    <div className="performance-highlight-value my-1">
                       <span>May</span>
-                      <span className="text-emerald-600 text-xs">▲</span>
+                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
+                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
+                      </svg>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      192.6 M LL | +100.0% YoY
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>192.6 M LL</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>+100.0% YoY</span>
                     </div>
                   </div>
 
                   {/* Card 4: Top YoY Month */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #0f766e' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Top YoY Month</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#0f766e' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Top YoY Month</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('topyoy')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'topyoy' && (
@@ -1018,25 +1216,29 @@ export default function AuthenticOmegaSalesDashboard() {
                         Highest Year-over-Year growth compared to the previous year.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1 flex items-center gap-1">
+                    <div className="performance-highlight-value my-1">
                       <span>January</span>
-                      <span className="text-emerald-600 text-xs">▲</span>
+                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
+                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
+                      </svg>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      3.1 B LL | +100.0% YoY
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>3.1 B LL</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>+100.0% YoY</span>
                     </div>
                   </div>
 
                   {/* Card 5: Best Category */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #7c3aed' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Best Category</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#7c3aed' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Best Category</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('category')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'category' && (
@@ -1044,24 +1246,26 @@ export default function AuthenticOmegaSalesDashboard() {
                         Category with the highest revenue contribution.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1">
-                      Retail
+                    <div className="performance-highlight-value my-1">
+                      <span>Retail</span>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      57.1 M LL
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>57.1 M LL</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>42.4% Share</span>
                     </div>
                   </div>
 
                   {/* Card 6: Peak Hour */}
-                  <div className="bg-white border border-slate-200 rounded p-2.5 flex flex-col justify-between min-h-[76px] relative group" style={{ borderTop: '3px solid #64748b' }}>
-                    <div className="flex justify-between items-center text-xs text-slate-500">
-                      <span>Peak Hour</span>
+                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#64748b' }}>
+                    <div className="performance-highlight-top">
+                      <span className="performance-highlight-label">Peak Hour</span>
                       <div 
                         className="cursor-pointer p-0.5"
                         onMouseEnter={() => setHoveredHighlightCard('peakhour')}
                         onMouseLeave={() => setHoveredHighlightCard(null)}
                       >
-                        <Info className="w-3 h-3 text-slate-400 hover:text-slate-700" />
+                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
                       </div>
                     </div>
                     {hoveredHighlightCard === 'peakhour' && (
@@ -1069,11 +1273,13 @@ export default function AuthenticOmegaSalesDashboard() {
                         Hour of highest average transaction volume.
                       </div>
                     )}
-                    <div className="text-sm font-bold text-slate-900 my-1">
-                      10:00
+                    <div className="performance-highlight-value my-1">
+                      <span>10:00</span>
                     </div>
-                    <div className="text-[10px] text-slate-500 leading-tight">
-                      7.3 M LL avg
+                    <div className="performance-highlight-sub leading-tight">
+                      <span>7.3 M LL avg</span>
+                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
+                      <span>12 Orders</span>
                     </div>
                   </div>
 
@@ -1082,26 +1288,26 @@ export default function AuthenticOmegaSalesDashboard() {
             </div>
 
             {/* Monthly Revenue Banner & Green Bar Chart */}
-            <div className={`mb-3.5 ${enlargedWidget === 'revenue' ? 'fixed inset-4 z-50 overflow-auto bg-white p-4 rounded-xl shadow-2xl' : ''}`}>
-              <div className="omega-panel-header">
-                Monthly Revenue
+            <div className={`mb-3.5 monthly-revenue-section ${enlargedWidget === 'revenue' ? 'fixed inset-4 z-50 overflow-auto bg-white p-4 rounded-xl shadow-2xl' : ''}`}>
+              <div className="omega-panel-header dashboard-branches-country">
+                <span>Monthly Revenue</span>
                 <div className="omega-panel-actions">
                   <button 
                     type="button" 
                     onClick={() => toggleEnlarge('revenue')}
-                    className="hover:text-blue-600"
+                    className="hover:text-blue-200"
                     title={enlargedWidget === 'revenue' ? 'Reduce' : 'Enlarge'}
                   >
                     {enlargedWidget === 'revenue' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                   </button>
-                  <span className="text-lg leading-none">⋮</span>
+                  <span className="text-lg leading-none cursor-pointer" title="Options">⋮</span>
                 </div>
               </div>
               <div className="omega-panel-body">
                 {/* Legend */}
                 <div className="flex items-center justify-center gap-2 mb-3 text-xs text-slate-700">
-                  <span className="w-3 h-3 bg-[#2e6912] rounded-sm inline-block"></span>
-                  <span>Southern Olive Oil Products S.A.R.L</span>
+                  <span className="w-3 h-3 bg-[#337718] rounded-sm inline-block"></span>
+                  <span className="font-medium">Southern Olive Oil Products S.A.R.L</span>
                 </div>
 
                 {/* Vertical Bars Container with Authentic Highcharts Gridlines */}
@@ -1132,14 +1338,14 @@ export default function AuthenticOmegaSalesDashboard() {
                           onMouseEnter={() => setHoveredSummaryMonth(d.month)}
                           onMouseLeave={() => setHoveredSummaryMonth(null)}
                         >
-                          {/* Authentic Highcharts Floating Tooltip matching Video V2 Frame 30 */}
+                          {/* Authentic Highcharts Floating Tooltip */}
                           {isHovered && (
                             <div className="absolute bottom-full mb-3 z-30 bg-black/90 text-white rounded px-3 py-2 shadow-2xl text-[11px] pointer-events-none whitespace-nowrap animate-in fade-in duration-150 border border-slate-700 min-w-[210px]">
                               <div className="font-bold text-slate-200 text-xs mb-1 border-b border-slate-700/80 pb-0.5">
                                 {d.month}
                               </div>
                               <div className="flex items-center gap-1.5 text-slate-200">
-                                <span className="w-2.5 h-2.5 bg-[#2e6912] rounded-sm inline-block flex-shrink-0" />
+                                <span className="w-2.5 h-2.5 bg-[#337718] rounded-sm inline-block flex-shrink-0" />
                                 <span>Southern Olive Oil Products S.A.R.L:</span>
                                 <span className="font-bold text-white ml-auto">
                                   {d.val > 0 ? `${d.val.toLocaleString()}.00` : '0.00'}
@@ -1158,7 +1364,7 @@ export default function AuthenticOmegaSalesDashboard() {
                           )}
                           <div 
                             className={`w-full max-w-[44px] rounded-t transition-all duration-150 ${
-                              isHovered ? 'bg-[#25570e] ring-2 ring-emerald-400 shadow-md' : 'bg-[#2e6912] hover:bg-[#25570e]'
+                              isHovered ? 'bg-[#25570e] ring-2 ring-emerald-400 shadow-md' : 'bg-[#337718] hover:bg-[#25570e]'
                             }`}
                             style={{ height: `${Math.max(heightPct, 2)}%` }}
                           ></div>
@@ -1173,11 +1379,11 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
 
-                {/* Monthly Revenue Table */}
-                <div className="overflow-x-auto mt-3">
-                  <table className="omega-dense-table">
+                {/* Monthly Revenue Table with Total Column */}
+                <div className="overflow-x-auto mt-3" id="sales_month_table">
+                  <table className="omega-dense-table monthly-revenue-table">
                     <thead>
-                      <tr className="header-row">
+                      <tr className="header-row table-total">
                         <th className="text-left font-bold sticky-col">Branch</th>
                         <th>January</th>
                         <th>February</th>
@@ -1191,54 +1397,73 @@ export default function AuthenticOmegaSalesDashboard() {
                         <th>October</th>
                         <th>November</th>
                         <th>December</th>
+                        <th className="text-right font-bold monthly-revenue-total-col">Total</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <th className="text-left font-semibold sticky-col bg-white">Southern Olive Oil Products S.A.R.L</th>
                         {monthlyBarData.map((m, idx) => (
-                          <td key={idx} className="text-right">
+                          <td key={idx} className="monthly-revenue-cell">
                             {m.val > 0 ? (
                               <div>
-                                <div className="font-bold flex items-center justify-end gap-0.5 text-slate-800">
-                                  {m.val.toLocaleString()}
-                                  <span className="text-emerald-600 text-[9px]">▲</span>
+                                <div className="monthly-revenue-current">
+                                  <span>{m.val.toLocaleString()}</span>
+                                  <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
-                                <div className="text-[9.5px] text-slate-400">
+                                <div className="monthly-revenue-previous">
                                   LY 0 ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="text-[9.5px] text-slate-400">LY 0 (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY 0 (0.0%)</div>
                               </div>
                             )}
                           </td>
                         ))}
+                        <td className="monthly-revenue-cell monthly-revenue-total-col">
+                          <div className="monthly-revenue-current">
+                            <span>{totalAnnualSales.toLocaleString()}</span>
+                            <span className="text-emerald-600 text-[10px]">▲</span>
+                          </div>
+                          <div className="monthly-revenue-previous font-normal">
+                            LY 0 (+100.0%)
+                          </div>
+                        </td>
                       </tr>
-                      <tr className="font-bold bg-slate-50">
-                        <th className="text-left font-bold sticky-col bg-slate-50">Total</th>
+                      <tr className="font-bold bg-slate-100 table-total">
+                        <th className="text-left font-bold sticky-col bg-slate-100">Total</th>
                         {monthlyBarData.map((m, idx) => (
-                          <td key={idx} className="text-right">
+                          <td key={idx} className="monthly-revenue-cell">
                             {m.val > 0 ? (
                               <div>
-                                <div className="font-bold flex items-center justify-end gap-0.5 text-slate-800">
-                                  {m.val.toLocaleString()}
-                                  <span className="text-emerald-600 text-[9px]">▲</span>
+                                <div className="monthly-revenue-current font-bold">
+                                  <span>{m.val.toLocaleString()}</span>
+                                  <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
-                                <div className="text-[9.5px] text-slate-400">
+                                <div className="monthly-revenue-previous">
                                   LY 0 ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="text-[9.5px] text-slate-400">LY 0 (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY 0 (0.0%)</div>
                               </div>
                             )}
                           </td>
                         ))}
+                        <td className="monthly-revenue-cell monthly-revenue-total-col font-bold">
+                          <div className="monthly-revenue-current font-bold">
+                            <span>{totalAnnualSales.toLocaleString()}</span>
+                            <span className="text-emerald-600 text-[10px]">▲</span>
+                          </div>
+                          <div className="monthly-revenue-previous font-normal">
+                            LY 0 (+100.0%)
+                          </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -3449,47 +3674,61 @@ export default function AuthenticOmegaSalesDashboard() {
         <ChevronsUp className="w-6 h-6 stroke-[2.5]" />
       </button>
 
-      {/* BRANCHES LAST EOD MODAL */}
+      {/* BRANCHES LAST EOD MODAL - AUTHENTIC OMEGA STYLE */}
       {eodModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white border border-slate-300 rounded-xl max-w-xl w-full p-5 text-slate-800 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-amber-600" />
-                <h3 className="font-bold text-base">Branches Last EOD Date & Status</h3>
-              </div>
-              <button onClick={() => setEodModalOpen(false)} className="text-slate-400 hover:text-slate-700">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="mt-3 overflow-x-auto">
-              <table className="omega-dense-table">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-slate-300 rounded-lg max-w-lg w-full p-4 text-slate-800 shadow-2xl">
+            <div style={{ padding: '6px', background: '#ffffff', borderRadius: '6px' }}>
+              <table className="w-full" style={{ marginBottom: 0, color: '#0f172a', background: '#ffffff', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className="header-row">
-                    <th>Branch</th>
-                    <th>Last EOD Date/Time</th>
-                    <th>Status</th>
-                    <th>Cashier</th>
+                  <tr style={{ borderBottom: '1px solid #d7dee8' }}>
+                    <th colSpan={2} style={{ textAlign: 'center', color: '#dc2626', fontSize: '16px', padding: '8px', fontWeight: 800 }}>
+                      End of Day Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="font-semibold">00001 - Southern Olive Oil Products S.A.R.L</td>
-                    <td>2026-09-04 23:45</td>
-                    <td><span className="text-emerald-700 font-bold">Closed</span></td>
-                    <td>Hiba Aloulou</td>
+                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#ffffff', padding: '10px 12px', textAlign: 'left' }}>
+                      00001 - Southern Olive Oil Products S.A.R.L :
+                    </th>
+                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#ffffff', padding: '10px 12px', fontWeight: 600 }}>
+                      04 Sep, 2026
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#f8fafc', padding: '10px 12px', textAlign: 'left' }}>
+                      00002 - Nabatieh Southern Hub :
+                    </th>
+                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#f8fafc', padding: '10px 12px', fontWeight: 600 }}>
+                      04 Sep, 2026
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#ffffff', padding: '10px 12px', textAlign: 'left' }}>
+                      00003 - Saida Distribution Depot :
+                    </th>
+                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#ffffff', padding: '10px 12px', fontWeight: 600 }}>
+                      03 Sep, 2026
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
+              <Link
+                href="/backoffice/end-of-day"
+                onClick={() => setEodModalOpen(false)}
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1"
+              >
+                <span>Execute End of Day Process →</span>
+              </Link>
               <button 
                 onClick={() => setEodModalOpen(false)}
-                className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white"
+                className="px-4 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition"
               >
-                Close
+                OK
               </button>
             </div>
           </div>

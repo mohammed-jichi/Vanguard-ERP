@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 
-export const TimeReportByDateTemplate = () => {
+interface TimeReportByDateTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> = ({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');

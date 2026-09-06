@@ -383,6 +383,10 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   {openSections.operations && (
                     <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
+                      <Link href="/backoffice/operations/dashboard" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/dashboard') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
+                        <span>📊 Operations & Inventory Dashboard</span>
+                        <span className="text-[9px] font-mono bg-blue-100 text-blue-800 px-1 py-0.2 rounded font-bold">Live</span>
+                      </Link>
                       <Link href="/backoffice/operations?tab=catalog" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
                         📦 Products & Master Catalog
                       </Link>

@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 
-export const ElectronicJournalTemplate = () => {
+interface ElectronicJournalTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export const ElectronicJournalTemplate: React.FC<ElectronicJournalTemplateProps> = ({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
 

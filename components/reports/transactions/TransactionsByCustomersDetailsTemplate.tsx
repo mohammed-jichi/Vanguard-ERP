@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 
-export const TransactionsByCustomersDetailsTemplate = () => {
+interface TransactionsByCustomersDetailsTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+}
+
+export const TransactionsByCustomersDetailsTemplate: React.FC<TransactionsByCustomersDetailsTemplateProps> = ({
+  hideToolbar = true,
+  dynamicPeriodText,
+  executionDate = '06-Sep-2026',
+  showRate = false,
+  groupByDate = true,
+}) => {
   const [uiSummary, setUiSummary] = useState(true);
   const [activeSummary, setActiveSummary] = useState(true);
 
@@ -8,6 +22,7 @@ export const TransactionsByCustomersDetailsTemplate = () => {
 
   return (
     <div className="w-full flex flex-col items-center">
+      {!hideToolbar && (
       <div className="filters-container w-full max-w-[1400px] bg-white rounded-lg border border-slate-200 shadow-sm p-4 mb-4 print:hidden">
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1000px]">
@@ -76,6 +91,7 @@ export const TransactionsByCustomersDetailsTemplate = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Background wrapper to center the paper on screen */}
       <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
@@ -86,7 +102,7 @@ export const TransactionsByCustomersDetailsTemplate = () => {
           <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
           <div className="text-center font-bold text-[12px] mb-4">Transactions by Customers Details</div>
           <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>28-Aug-26</div>
+            <div>{executionDate}</div>
             <div>From Date: 01-Jan-2026 To Date: 28-Aug-2026</div>
             <div>Page 1 of 2</div>
           </div>
@@ -118,18 +134,18 @@ export const TransactionsByCustomersDetailsTemplate = () => {
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">15,800,000.00</td>
-                    <td className="py-1 px-1 text-right">صندوق زيتون اخضر بلدي 650غ*12</td>
+                    <td className="py-1 px-1 text-right">Box Olives Green Local 650g*12</td>
                 </tr>
                 {!activeSummary && (
                   <>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق دبس خروب 1300غ*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق دبس رمان 500 مل*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق رب بندورة 650غ*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق رعتر أحمر حلبي 500غ*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق رعتر بلدي 600غ*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق زيتون اخضر محشي جزر و</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق زيتون اسود أول 650غ*12</td></tr>
-                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">صندوق سماق 350غ*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Molasses Carob Molasses 1300g*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Molasses Pomegranate Molasses 500 ml*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Tomato PasteStandard Product 650g*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Zaatar Red Standard Product 500g*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Zaatar Local 600g*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Olives Green Stuffed Standard Product Standard Product</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Black Olives Grade 1 650g*12</td></tr>
+                    <tr><td colSpan={8}></td><td className="py-1 px-1 text-right">Box Sumac 350g*12</td></tr>
                   </>
                 )}
               </tbody>

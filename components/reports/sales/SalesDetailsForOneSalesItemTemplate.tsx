@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 
-export const SalesDetailsForOneSalesItemTemplate = () => {
+interface SalesDetailsForOneSalesItemTemplateProps {
+  hideToolbar?: boolean;
+  dynamicPeriodText?: string;
+  executionDate?: string;
+}
+
+export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSalesItemTemplateProps> = ({
+  hideToolbar = false,
+  dynamicPeriodText,
+  executionDate
+}) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');
@@ -12,12 +22,12 @@ export const SalesDetailsForOneSalesItemTemplate = () => {
   const datePeriods = ["Today", "Yesterday", "This Month", "Last Month", "Date Range", "EOD Date"];
   
   const searchInventoryItems = [
-    { code: "EVOO17.5L16KGR", desc: "تنكة زيت زيتون خضير بلدي 17.5 ليتر (16 كيلو)" },
-    { code: "EVOO17.5L16KGWS", desc: "تنكة زيت زيتون خضير بلدي 17.5 ليتر (16 كيلو) جملة" },
-    { code: "VOO17.5L16KGR", desc: "تنكة زيت زيتون فرجن بلدي 17.5 ليتر(16 كيلو)" },
-    { code: "VOO17.5L16KGWS", desc: "تنكة زيت زيتون فرجن بلدي 17.5 ليتر(16 كيلو) جملة" },
-    { code: "EVOO8.75L8KG", desc: "نصف تنكة زيت زيتون خضير بلدي 8.5 ليتر (8 كيلو)" },
-    { code: "VOO8.75L8KGWS", desc: "نصف تنكة زيت زيتون فرجن بلدي 8.75 ليتر (8 كيلو)" }
+    { code: "EVOO17.5L16KGR", desc: "Tin Olive Oil Khodair Local 17.5 Liters (16 Bulk Kg)" },
+    { code: "EVOO17.5L16KGWS", desc: "Tin Olive Oil Khodair Local 17.5 Liters (16 Bulk Kg) Wholesale" },
+    { code: "VOO17.5L16KGR", desc: "Extra Virgin Olive Oil Tin 17.5L(16 Bulk Kg)" },
+    { code: "VOO17.5L16KGWS", desc: "Extra Virgin Olive Oil Tin 17.5L(16 Bulk Kg) Wholesale" },
+    { code: "EVOO8.75L8KG", desc: "Half Tin Olive Oil Khodair Local 8.5 Liters (8 Bulk Kg)" },
+    { code: "VOO8.75L8KGWS", desc: "Half Tin Olive Oil Virgin Local 8.75 Liters (8 Bulk Kg)" }
   ];
 
   const handleSelectItem = (item: { code: string; desc: string }) => {
@@ -118,7 +128,7 @@ export const SalesDetailsForOneSalesItemTemplate = () => {
             <div className="p-4">
               <div className="relative mb-4">
                 <span className="absolute left-3 top-2 text-slate-400">🔍</span>
-                <input type="text" defaultValue="تك" className="w-full border border-slate-300 rounded p-1.5 pl-9 text-[13px] force-black" />
+                <input type="text" defaultValue="Standard ProductKg" className="w-full border border-slate-300 rounded p-1.5 pl-9 text-[13px] force-black" />
               </div>
               <table className="w-full text-left text-[13px]">
                 <thead>
@@ -176,7 +186,7 @@ export const SalesDetailsForOneSalesItemTemplate = () => {
                 <option>28-Aug-2026</option>
               </select>
             ) : (
-              <input type="text" value={getDateDisplay()} readOnly className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[250px]" />
+              <input type="text" value={dynamicPeriodText || getDateDisplay()} readOnly className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[250px]" />
             )}
 
             <div className="flex items-center gap-2 ml-auto">

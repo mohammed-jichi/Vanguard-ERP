@@ -38,6 +38,13 @@ import { SummaryOfSalesByItemsTemplate } from './reports/sales/SummaryOfSalesByI
 import { SalesByItemsByGroupTemplate } from './reports/sales/SalesByItemsByGroupTemplate';
 import { SalesDetailsForOneSalesItemTemplate } from './reports/sales/SalesDetailsForOneSalesItemTemplate';
 import SalesByItemsMasterReport from './modules/reports/SalesByItemsReport';
+import { SummaryOfVoidsTemplate } from './reports/sales/SummaryOfVoidsTemplate';
+import { SummaryOfRefundsTemplate } from './reports/sales/SummaryOfRefundsTemplate';
+import { CustomerListStandardTemplate } from './reports/sales/CustomerListStandardTemplate';
+import { TodaysSalesTemplate } from './reports/sales/TodaysSalesTemplate';
+import { EmployeeAttendanceTemplate } from './reports/sales/EmployeeAttendanceTemplate';
+import { CustomerSalesDetailTemplate } from './reports/sales/CustomerSalesDetailTemplate';
+import { SalesByCustomerByItemsTemplate } from './reports/sales/SalesByCustomerByItemsTemplate';
 
 import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
 import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
@@ -162,7 +169,41 @@ const complexTransactionReports = [
   'Sales by Item by Salesman',
   'Sales By Items (service items only)',
   'Sales by Items by Customer',
-  'Sales by Item by Size by Color'
+  'Sales by Item by Size by Color',
+  'Summary of voids',
+  'Summary of refunds',
+  'Details of refunds',
+  'Customer List Standard',
+  'Not Active Customers',
+  'New Customers',
+  'Black List Customers',
+  "Today's Statistics",
+  "Today's Summary of payment",
+  "Today's summary by Employee",
+  "Today's Transactions",
+  'Preview Older Sales',
+  'Main Reading History',
+  'Employee attendance',
+  'Time And Attendance',
+  'Labor Cost',
+  'Sales by customer In Detail',
+  'Sales by zone',
+  'Delivery Sales Summary',
+  'Drivers History',
+  'Top N Customers by Amount',
+  'Sales By Customer By Items',
+  'Daily Sales By Items',
+  'Sales By Categories',
+  'Sales By Divisions',
+  'Sales Items by Transaction',
+  'Not Sold Items',
+  'Sold Serial Numbers',
+  'Sales By Category',
+  'Sales By Division',
+  'Sales By Groups',
+  'Sales By Items',
+  'Top N sold by Quantity',
+  'Top N sold by Amount'
 ];
 
 interface ReportsMasterDetailProps {
@@ -193,6 +234,70 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activeShowRate, setActiveShowRate] = useState<boolean>(false);
   const [activeGroupByDate, setActiveGroupByDate] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [activeTopDropdown, setActiveTopDropdown] = useState<string | null>(null);
+
+  // Report Specific Filter States
+  const [topNCount, setTopNCount] = useState<number>(10);
+  const [selectedCustomer, setSelectedCustomer] = useState<string>('All Customers');
+  const [selectedServer, setSelectedServer] = useState<string>('All Servers');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
+  const [selectedDivision, setSelectedDivision] = useState<string>('All Divisions');
+  const [selectedGroup, setSelectedGroup] = useState<string>('All Groups');
+  const [uiRealDate, setUiRealDate] = useState<boolean>(false);
+  const [uiShowGraph, setUiShowGraph] = useState<boolean>(false);
+  const [uiUseUnitCost, setUiUseUnitCost] = useState<boolean>(false);
+
+  // Active / Applied States (updated upon Filter Report button click)
+  const [activePeriod, setActivePeriod] = useState<string>('This Month');
+  const [activeFromDate, setActiveFromDate] = useState<string>('2026-08-01');
+  const [activeToDate, setActiveToDate] = useState<string>('2026-08-31');
+  const [activeBranch, setActiveBranch] = useState<string>('All Branches');
+  const [activeTopN, setActiveTopN] = useState<number>(10);
+  const [activeCustomer, setActiveCustomer] = useState<string>('All Customers');
+  const [activeServer, setActiveServer] = useState<string>('All Servers');
+  const [activeCategory, setActiveCategory] = useState<string>('All Categories');
+  const [activeDivision, setActiveDivision] = useState<string>('All Divisions');
+  const [activeGroup, setActiveGroup] = useState<string>('All Groups');
+  const [activeRealDate, setActiveRealDate] = useState<boolean>(false);
+  const [activeShowGraph, setActiveShowGraph] = useState<boolean>(false);
+  const [activeUseUnitCost, setActiveUseUnitCost] = useState<boolean>(false);
+
+  const currentDateFormatted = '06-Sep-2026';
+
+  const formatReportDate = (dStr: string) => {
+    if (!dStr) return '';
+    const parts = dStr.split('-');
+    if (parts.length === 3) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const mIdx = parseInt(parts[1], 10) - 1;
+      if (mIdx >= 0 && mIdx < 12) {
+        return `${parts[2]}-${months[mIdx]}-${parts[0]}`;
+      }
+    }
+    return dStr;
+  };
+
+  const getDynamicPeriodText = () => {
+    const isCustomerTop = selectedReport?.toLowerCase().includes('customer');
+    const topText = selectedReport?.toLowerCase().includes('top n') ? ` - Top: ${activeTopN} ${isCustomerTop ? 'Customers' : 'Items'}` : '';
+    const branchText = activeBranch && activeBranch !== 'All Branches' ? ` - Branch: ${activeBranch}` : '';
+
+    if (activePeriod === 'Today') return `Date: 06-Sep-2026${branchText}${topText}`;
+    if (activePeriod === 'Yesterday') return `Date: 05-Sep-2026${branchText}${topText}`;
+    if (activePeriod === 'This Month') return `Year: 2026 - Month: 8${branchText}${topText}`;
+    if (activePeriod === 'Last Month') return `Year: 2026 - Month: 7${branchText}${topText}`;
+    if (activePeriod === 'First Quarter') return `First Quarter 2026${branchText}${topText}`;
+    if (activePeriod === 'Second Quarter') return `Second Quarter 2026${branchText}${topText}`;
+    if (activePeriod === 'Third Quarter') return `Third Quarter 2026${branchText}${topText}`;
+    if (activePeriod === 'Fourth Quarter') return `Fourth Quarter 2026${branchText}${topText}`;
+    if (activePeriod === 'This Year') return `Year: 2026${branchText}${topText}`;
+    if (activePeriod === 'Last Year') return `Year: 2025${branchText}${topText}`;
+    if (activePeriod === 'Date Range') return `From Date: ${formatReportDate(activeFromDate)} To Date: ${formatReportDate(activeToDate)}${branchText}${topText}`;
+    if (activePeriod === 'EOD Date') return `EOD Date: ${formatReportDate(activeToDate)}${branchText}${topText}`;
+    return `From Date: ${formatReportDate(activeFromDate)} To Date: ${formatReportDate(activeToDate)}${branchText}${topText}`;
+  };
+
+  const dynamicPeriodText = getDynamicPeriodText();
 
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -248,23 +353,55 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   };
 
   const handleFilterReport = () => {
+    setActivePeriod(period);
+    setActiveFromDate(fromDate || '2026-08-01');
+    setActiveToDate(toDate || '2026-08-31');
+    setActiveBranch(selectedBranch);
+    setActiveTopN(topNCount);
+    setActiveCustomer(selectedCustomer);
+    setActiveServer(selectedServer);
+    setActiveCategory(selectedCategory);
+    setActiveDivision(selectedDivision);
+    setActiveGroup(selectedGroup);
+    setActiveRealDate(uiRealDate);
     setActiveShowRate(uiShowRate);
     setActiveGroupByDate(uiGroupByDate);
+    setActiveShowGraph(uiShowGraph);
+    setActiveUseUnitCost(uiUseUnitCost);
   };
 
   const handleResetFilters = () => {
     setPeriod('This Month');
-    setFromDate('');
-    setToDate('');
+    setFromDate('2026-08-01');
+    setToDate('2026-08-31');
     setSelectedBranch('All Branches');
     setInvoiceFilter('All Invoices');
+    setTopNCount(10);
+    setSelectedCustomer('All Customers');
+    setSelectedServer('All Servers');
+    setSelectedCategory('All Categories');
+    setSelectedDivision('All Divisions');
+    setSelectedGroup('All Groups');
+    setUiRealDate(false);
     setUiShowRate(false);
-    setUiGroupByDate(false);
+    setUiGroupByDate(true);
+    setUiShowGraph(false);
+    setUiUseUnitCost(false);
+    setActivePeriod('This Month');
+    setActiveFromDate('2026-08-01');
+    setActiveToDate('2026-08-31');
+    setActiveBranch('All Branches');
+    setActiveTopN(10);
+    setActiveCustomer('All Customers');
+    setActiveServer('All Servers');
+    setActiveCategory('All Categories');
+    setActiveDivision('All Divisions');
+    setActiveGroup('All Groups');
+    setActiveRealDate(false);
     setActiveShowRate(false);
-    setActiveGroupByDate(false);
-    document.querySelectorAll('.filters-container select').forEach(el => (el as HTMLSelectElement).selectedIndex = 0);
-    document.querySelectorAll('.filters-container input[type="text"]').forEach(el => (el as HTMLInputElement).value = '');
-    document.querySelectorAll('.filters-container input[type="checkbox"]').forEach(el => (el as HTMLInputElement).checked = false);
+    setActiveGroupByDate(true);
+    setActiveShowGraph(false);
+    setActiveUseUnitCost(false);
   };
 
   const showInvoiceFilter = selectedReport
@@ -440,6 +577,96 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
             <span>Return to Hub</span>
           </button>
+        </div>
+      </div>
+
+      {/* OMEGA TOP CATEGORY NAVIGATION TOOLBAR */}
+      <div className="bg-white border border-slate-200 rounded-xl p-2.5 shadow-xs flex flex-wrap items-center gap-2 w-full print:hidden z-30 relative mb-4">
+        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5 shrink-0">
+          <FileText size={15} className="text-[#195a96]" /> Omega Modules:
+        </span>
+        <div className="flex flex-wrap items-center gap-1.5 flex-1">
+          {reportMenuData.map((menu) => {
+            const isOpen = activeTopDropdown === menu.category;
+            return (
+              <div key={menu.category} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setActiveTopDropdown(isOpen ? null : menu.category)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                    isOpen
+                      ? 'bg-[#195a96] text-white border-[#195a96] shadow-sm ring-2 ring-blue-200'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <span>{menu.category}</span>
+                  <ChevronDown size={13} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isOpen && (
+                  <div 
+                    className="absolute left-0 top-full mt-1.5 w-72 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 p-2.5 max-h-[420px] overflow-y-auto"
+                    onMouseLeave={() => setActiveTopDropdown(null)}
+                  >
+                    <div className="text-[11px] font-bold text-slate-400 uppercase px-2 py-1 border-b border-slate-100 mb-1.5 flex items-center justify-between">
+                      <span>{menu.category}</span>
+                      <span className="text-[10px] text-slate-400">Omega ERP</span>
+                    </div>
+                    {menu.type === 'flat' ? (
+                      <div className="space-y-0.5">
+                        {menu.items.map((item) => (
+                          <button
+                            key={item}
+                            type="button"
+                            onClick={() => {
+                              handleSelectReportItem(item);
+                              setActiveTopDropdown(null);
+                            }}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-semibold flex items-center justify-between transition-colors ${
+                              selectedReport === item
+                                ? 'bg-blue-50 text-[#195a96] font-bold'
+                                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                            }`}
+                          >
+                            <span className="truncate">{item}</span>
+                            {selectedReport === item && <CheckCircle2 size={13} className="text-[#195a96] shrink-0" />}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {menu.groups.map((group) => (
+                          <div key={group.name} className="space-y-0.5">
+                            <div className="text-[10px] font-bold text-[#195a96] px-2 pt-1 uppercase tracking-wider">
+                              {group.name}
+                            </div>
+                            {group.items.map((item) => (
+                              <button
+                                key={item}
+                                type="button"
+                                onClick={() => {
+                                  handleSelectReportItem(item);
+                                  setActiveTopDropdown(null);
+                                }}
+                                className={`w-full text-left px-2.5 py-1 rounded-md text-xs font-semibold flex items-center justify-between transition-colors pl-4 ${
+                                  selectedReport === item
+                                    ? 'bg-blue-50 text-[#195a96] font-bold'
+                                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                              >
+                                <span className="truncate">{item}</span>
+                                {selectedReport === item && <CheckCircle2 size={13} className="text-[#195a96] shrink-0" />}
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -639,8 +866,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             /* ACTIVE REPORT DETAILED VIEW: TWO-CARD LAYOUT */
             <div className="w-full space-y-4">
 
-              {/* COMPACT SINGLE FILTER & ACTION BAR - Suppressed for complex self-contained reports */}
-              {!complexTransactionReports.includes(selectedReport || '') && (
+              {/* COMPACT SINGLE FILTER & ACTION BAR (OMEGA DYNAMIC FILTER ENGINE) */}
                 <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 gap-3 print:hidden w-full filters-container">
                   {/* Left side: Filter Inputs & Buttons */}
                   <div className="flex flex-wrap items-center gap-2 flex-1">
@@ -814,13 +1040,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <>
                       <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
                         <option>All Groups</option>
-                        <option>حبوب فلت</option>
-                        <option>زيت زيتون خضير مفرق</option>
+                        <option>Bulk Grains</option>
+                        <option>Olive Oil Retail 1L</option>
                       </select>
                       <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
                         <option>All Categories</option>
                         <option>Raw Materials</option>
-                        <option>جملة</option>
+                        <option>Wholesale</option>
                       </select>
                       <div className="w-full flex flex-wrap gap-6 items-center mt-1">
                         <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
@@ -840,9 +1066,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
                         <option>All Categories</option>
                         <option>Raw Materials</option>
-                        <option>جملة</option>
-                        <option>عروض</option>
-                        <option>مفرق</option>
+                        <option>Wholesale</option>
+                        <option>Promotions</option>
+                        <option>Retail</option>
                       </select>
                       <div className="w-full flex items-center gap-4 mt-1">
                         <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
@@ -979,55 +1205,231 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </button>
                   </div>
                 </div>
-              )}
 
               {/* REPORT DATA BODY */}
-              <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center"}>
-                <div className={complexTransactionReports.includes(selectedReport || '') ? "w-full" : "report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px] overflow-auto"} style={!complexTransactionReports.includes(selectedReport || '') ? { transform: `scale(${zoomLevel})` } : undefined}>
+              <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
+                <div 
+                  className="report-wrapper transition-transform duration-200 origin-top bg-white p-6 sm:p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 min-w-[794px] max-w-full overflow-auto inline-block" 
+                  style={{ transform: `scale(${zoomLevel})` }}
+                >
                   {selectedReport === 'Transactions by Date' ? (
-                    <TransactionsByDateTemplate />
+                    <TransactionsByDateTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Salesman' ? (
-                    <TransactionsBySalesmanTemplate />
+                    <TransactionsBySalesmanTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Employees by Payment' ? (
-                    <TransactionsByEmployeesByPaymentTemplate />
+                    <TransactionsByEmployeesByPaymentTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Date by Payments' ? (
-                    <TransactionsByDateByPaymentsTemplate />
+                    <TransactionsByDateByPaymentsTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Customers by Employee' ? (
-                    <TransactionsByCustomersByEmployeeTemplate />
+                    <TransactionsByCustomersByEmployeeTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Invoice Number' ? (
-                    <TransactionsByInvoiceNumberTemplate />
+                    <TransactionsByInvoiceNumberTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Duplicate Invoices' ? (
-                    <DuplicateInvoicesTemplate />
+                    <DuplicateInvoicesTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Customers' ? (
-                    <TransactionsByCustomersTemplate />
+                    <TransactionsByCustomersTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Customers by Groups' ? (
-                    <TransactionsByCustomersByGroupsTemplate />
+                    <TransactionsByCustomersByGroupsTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Customers details' ? (
-                    <TransactionsByCustomersDetailsTemplate />
+                    <TransactionsByCustomersDetailsTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Workstation' ? (
-                    <TransactionsByWorkstationTemplate />
+                    <TransactionsByWorkstationTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions by Employees' ? (
-                    <TransactionsByEmployeesTemplate />
+                    <TransactionsByEmployeesTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Transactions By Source' ? (
-                    <TransactionsBySourceTemplate />
+                    <TransactionsBySourceTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Credit Sales' ? (
-                    <CreditSalesTemplate />
+                    <CreditSalesTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                    />
                   ) : selectedReport === 'Credit Card Report' || selectedReport === 'Omnichannel Report' || selectedReport === 'Omnichannel Payments Report' ? (
-                    <OmnichannelPaymentsReportTemplate />
+                    <OmnichannelPaymentsReportTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Electronic Journal' || selectedReport === 'Electronic journal' || selectedReport === 'Terminal Electronic Journal' ? (
-                    <ElectronicJournalTemplate />
+                    <ElectronicJournalTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Time report by date' ? (
-                    <TimeReportByDateTemplate />
+                    <TimeReportByDateTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Timer Report Group by transaction count' || selectedReport === 'Time report - Average Check' || selectedReport === 'Time report By EOD date' || selectedReport === 'Transaction Report by Time' ? (
-                    <TimerReportTemplate />
+                    <TimerReportTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Summary of Sales By Items' ? (
-                    <SummaryOfSalesByItemsTemplate />
+                    <SummaryOfSalesByItemsTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Sales by Items By Group' || selectedReport === 'Sales by Items by Group' ? (
-                    <SalesByItemsByGroupTemplate />
+                    <SalesByItemsByGroupTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Sales details for one sales item' || selectedReport === 'Sales Details for One Sales Item' ? (
-                    <SalesDetailsForOneSalesItemTemplate />
-                  ) : selectedReport === 'Sales by Items' || selectedReport === 'Sales by Item by Salesman' || selectedReport === 'Sales By Items (service items only)' || selectedReport === 'Sales by Items by Customer' || selectedReport === 'Sales by Item by Size by Color' ? (
-                    <SalesByItemsMasterReport />
+                    <SalesDetailsForOneSalesItemTemplate
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Sales by Items' || selectedReport === 'Sales By Items' || selectedReport === 'Sales by Item by Salesman' || selectedReport === 'Sales By Items (service items only)' || selectedReport === 'Sales by Items by Customer' || selectedReport === 'Sales by Item by Size by Color' ? (
+                    <SalesByItemsMasterReport
+                      hideToolbar={true}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Summary of voids' ? (
+                    <SummaryOfVoidsTemplate
+                      hideToolbar={true}
+                      fromDate={activeFromDate}
+                      toDate={activeToDate}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Summary of refunds' || selectedReport === 'Details of refunds' ? (
+                    <SummaryOfRefundsTemplate
+                      hideToolbar={true}
+                      fromDate={activeFromDate}
+                      toDate={activeToDate}
+                      reportTitle={selectedReport}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Customer List Standard' || selectedReport === 'Not Active Customers' || selectedReport === 'New Customers' || selectedReport === 'Black List Customers' ? (
+                    <CustomerListStandardTemplate
+                      hideToolbar={true}
+                      reportTitle={selectedReport}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === "Today's Statistics" || selectedReport === "Today's Summary of payment" || selectedReport === "Today's summary by Employee" || selectedReport === "Today's Transactions" || selectedReport === 'Preview Older Sales' || selectedReport === 'Main Reading History' ? (
+                    <TodaysSalesTemplate
+                      hideToolbar={true}
+                      reportTitle={selectedReport}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Employee attendance' || selectedReport === 'Time And Attendance' || selectedReport === 'Labor Cost' ? (
+                    <EmployeeAttendanceTemplate
+                      hideToolbar={true}
+                      reportTitle={selectedReport}
+                      fromDate={activeFromDate}
+                      toDate={activeToDate}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Sales by customer In Detail' || selectedReport === 'Sales by zone' || selectedReport === 'Delivery Sales Summary' || selectedReport === 'Drivers History' || selectedReport === 'Top N Customers by Amount' ? (
+                    <CustomerSalesDetailTemplate
+                      hideToolbar={true}
+                      reportTitle={selectedReport}
+                      fromDate={activeFromDate}
+                      toDate={activeToDate}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
+                  ) : selectedReport === 'Sales By Customer By Items' || selectedReport === 'Daily Sales By Items' || selectedReport === 'Sales By Categories' || selectedReport === 'Sales By Divisions' || selectedReport === 'Sales Items by Transaction' || selectedReport === 'Not Sold Items' || selectedReport === 'Sold Serial Numbers' || selectedReport === 'Sales By Category' || selectedReport === 'Sales By Division' || selectedReport === 'Sales By Groups' || selectedReport === 'Top N sold by Quantity' || selectedReport === 'Top N sold by Amount' ? (
+                    <SalesByCustomerByItemsTemplate
+                      hideToolbar={true}
+                      reportTitle={selectedReport}
+                      fromDate={activeFromDate}
+                      toDate={activeToDate}
+                      dynamicPeriodText={dynamicPeriodText}
+                      executionDate={currentDateFormatted}
+                    />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
@@ -1038,7 +1440,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full min-w-[1000px]">
-                        <div>28-08-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -1180,8 +1583,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full min-w-[1000px]">
-                        <div>28-Aug-26</div>
-                        <div className="pl-16">Year: 2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -1255,7 +1658,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>28-Aug-26</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -1322,8 +1726,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-2 w-full">
-                        <div>28-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 2</div>
                       </div>
 
@@ -1923,8 +2327,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>28-Aug-26</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 2</div>
                       </div>
 
@@ -2175,9 +2579,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                         {/* PAGE 2 HEADER */}
                         <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full mt-8">
-                          <div>28-Aug-26</div>
-                          <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 28-Aug-2026</div>
-                          <div>Page 2 of 2</div>
+                          <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
+                        <div>Page 2 of 2</div>
                         </div>
                         
                         <div className="flex w-full border-t border-b border-black py-0.5 mb-1 mt-1 text-[11px] font-bold text-black">
@@ -2325,8 +2729,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-26</div>
-                        <div className="flex justify-center flex-1">From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 131</div>
                       </div>
 
@@ -2361,7 +2765,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-medium mb-1 w-full">
-                        <div>زيت زيتون فرجن 1 ليتر</div>
+                        <div>Extra Virgin Olive Oil 1L</div>
                         <div className="text-right">2.00</div>
                         <div className="text-right">640,653.75</div>
                         <div className="text-right">50.85</div>
@@ -2420,7 +2824,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr] gap-2 text-[11px] font-medium mb-1 w-full">
-                        <div>زيت زيتون خضير بلدي 1 ليتر</div>
+                        <div>Local Olive Oil 1L</div>
                         <div className="text-right">2.00</div>
                         <div className="text-right">979,000.00</div>
                         <div className="text-right">60.43</div>
@@ -2488,8 +2892,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-2026</div>
-                        <div>Years:2026 Month:8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -2533,9 +2937,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">0.00</div>
                         </div>
 
-                        <div>Category Name: جملة</div>
+                        <div>Category Name: Wholesale</div>
                         <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>مكعزلة جملة</div>
+                          <div>Labneh Balls Wholesale</div>
                           <div className="text-right">0.00</div>
                           <div className="text-right">0.00</div>
                           <div className="text-right">0.00</div>
@@ -2554,9 +2958,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">0.00</div>
                         </div>
 
-                        <div>Category Name: عروض</div>
+                        <div>Category Name: Promotions</div>
                         <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>عروض</div>
+                          <div>Promotions</div>
                           <div className="text-right">50.00</div>
                           <div className="text-right">486,000,000</div>
                           <div className="text-right">398,372,400.0</div>
@@ -2575,9 +2979,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">18.03</div>
                         </div>
 
-                        <div>Category Name: مفرق</div>
+                        <div>Category Name: Retail</div>
                         <div className="grid grid-cols-[2fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>براد</div>
+                          <div>Chilled Dairy</div>
                           <div className="text-right">1.27</div>
                           <div className="text-right">546,600.00</div>
                           <div className="text-right">397,944.00</div>
@@ -2585,7 +2989,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">148,656.00</div>
                           <div className="text-right">27.20</div>
                           
-                          <div>بهارات مفرق</div>
+                          <div>Retail Spices</div>
                           <div className="text-right">4.95</div>
                           <div className="text-right">3,570,000.0</div>
                           <div className="text-right">1,693,395.00</div>
@@ -2593,7 +2997,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">1,876,605.00</div>
                           <div className="text-right">52.57</div>
 
-                          <div>زيوت مفرق</div>
+                          <div>Retail Oils</div>
                           <div className="text-right">246.47</div>
                           <div className="text-right">781,995,700</div>
                           <div className="text-right">458,677,490.6</div>
@@ -2601,7 +3005,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">323,318,209.32</div>
                           <div className="text-right">41.35</div>
 
-                          <div>عسل مفرق</div>
+                          <div>Retail Honey</div>
                           <div className="text-right">6.00</div>
                           <div className="text-right">9,360,000.0</div>
                           <div className="text-right">4,354,560.00</div>
@@ -2609,7 +3013,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">5,005,440.00</div>
                           <div className="text-right">53.48</div>
 
-                          <div>كيلو مفرق</div>
+                          <div>Bulk Retail (Kg)</div>
                           <div className="text-right">37.90</div>
                           <div className="text-right">14,721,000.</div>
                           <div className="text-right">9,655,200.00</div>
@@ -2617,7 +3021,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">5,065,800.00</div>
                           <div className="text-right">34.41</div>
 
-                          <div>مجففات</div>
+                          <div>Dried Herbs & Goods</div>
                           <div className="text-right">1.00</div>
                           <div className="text-right">725,000.00</div>
                           <div className="text-right">405,000.00</div>
@@ -2625,7 +3029,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">320,000.00</div>
                           <div className="text-right">44.14</div>
 
-                          <div>محمصة مفرق</div>
+                          <div>Roasted Nuts Retail</div>
                           <div className="text-right">0.25</div>
                           <div className="text-right">393,750.00</div>
                           <div className="text-right">281,250.00</div>
@@ -2633,7 +3037,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">112,500.00</div>
                           <div className="text-right">28.57</div>
 
-                          <div>مربيات مفرق</div>
+                          <div>Retail Jams</div>
                           <div className="text-right">4.00</div>
                           <div className="text-right">990,000.00</div>
                           <div className="text-right">605,404.80</div>
@@ -2641,7 +3045,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">384,595.20</div>
                           <div className="text-right">38.85</div>
 
-                          <div>مرطبان</div>
+                          <div>Jar Products</div>
                           <div className="text-right">34.00</div>
                           <div className="text-right">11,285,000.</div>
                           <div className="text-right">6,755,290.56</div>
@@ -2673,8 +3077,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-2026</div>
-                        <div>Years:2026 Month:8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -2706,7 +3110,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         
                         <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>جملة</div>
+                          <div>Wholesale</div>
                           <div className="text-right">0.00</div>
                           <div className="text-right">0.00</div>
                           <div className="text-right">0.00</div>
@@ -2716,7 +3120,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         
                         <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>عروض</div>
+                          <div>Promotions</div>
                           <div className="text-right">50.00</div>
                           <div className="text-right">486,000,000.0</div>
                           <div className="text-right">398,372,400.00</div>
@@ -2726,7 +3130,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         
                         <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
-                          <div>مفرق</div>
+                          <div>Retail</div>
                           <div className="text-right">384.94</div>
                           <div className="text-right">830,032,050.0</div>
                           <div className="text-right">487,480,494.57</div>
@@ -2736,7 +3140,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         
                         <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mb-1">
-                          <div>عروض</div>
+                          <div>Promotions</div>
                           <div className="text-right">24.00</div>
                           <div className="text-right">248,400,000.0</div>
                           <div className="text-right">219,318,140.16</div>
@@ -2779,9 +3183,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-26</div>
-                        <div>From Date: 01-Aug-2026</div>
-                        <div>To Date: 28-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 8</div>
                       </div>
 
@@ -2847,12 +3250,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right font-normal">0.00</div>
                         </div>
 
-                        <div className="font-bold mt-1">جملة</div>
-                        <div className="font-bold">مكعزلة جملة</div>
+                        <div className="font-bold mt-1">Wholesale</div>
+                        <div className="font-bold">Labneh Balls Wholesale</div>
 
                         <div className="font-bold text-center w-full mt-1">SOOL</div>
                         <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
-                          <div className="font-bold">صندوق لبنة معزة مكعزلة سادة</div>
+                          <div className="font-bold">Goat Labneh Balls Plain Box</div>
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -2894,8 +3297,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
-                        <div>27-Aug-26</div>
-                        <div>Invoice # :103070</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -2935,7 +3338,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">-100.00</div>
                       </div>
                       <div className="grid grid-cols-[3fr_1fr_1.5fr_1fr_1.5fr_1fr_1.5fr_1.5fr] text-[11px] font-normal w-full">
-                        <div>تنكة زيت زيتون فرجن بلدي 17.5 ليتر</div>
+                        <div>Extra Virgin Olive Oil Tin 17.5L</div>
                         <div className="text-right">1.00</div>
                         <div className="text-right">5125230.00</div>
                         <div className="text-right">56.95</div>
@@ -3015,7 +3418,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
+                        <div>{currentDateFormatted}</div>
                         <div>From Date :01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
                         <div>Page 1 of1</div>
                       </div>
@@ -3058,7 +3461,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="grid grid-cols-[20%_10%_30%_20%_20%] font-bold mb-1 w-full">
                           <div>09/01/2026 12.16.10</div>
                           <div>-1.0</div>
-                          <div>قرفة سيجار مرطبان</div>
+                          <div>Cinnamon Sticks Jar</div>
                           <div className="text-center">200000.0</div>
                           <div className="text-right">-200000.0</div>
                         </div>
@@ -3092,8 +3495,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div>From Date: 01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3156,8 +3559,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>From Date: 01-Aug-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 27-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 4</div>
                       </div>
 
@@ -3330,8 +3733,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-4">
-                        <div>27/08/2026</div>
-                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3395,8 +3798,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-4">
-                        <div>27/08/2026</div>
-                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3471,8 +3874,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-4">
-                        <div>27/08/2026</div>
-                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3500,7 +3903,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="border-b border-dotted border-gray-400 pb-2 mb-2">
                         <div className="flex text-[10px] font-medium text-gray-700 mt-1 italic">
                           <div className="w-[15%] px-2"></div>
-                          <div className="w-[40%]">-&gt; زيت للمعمل (200 Liters)</div>
+                          <div className="w-[40%]">-&gt; Factory Olive Oil (200 Liters)</div>
                           <div className="w-[15%] text-right"></div>
                           <div className="w-[15%] text-right"></div>
                           <div className="w-[15%] text-right pr-2"></div>
@@ -3521,7 +3924,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="border-b border-dotted border-gray-400 pb-2 mb-2">
                         <div className="flex text-[10px] font-medium text-gray-700 mt-1 italic">
                           <div className="w-[15%] px-2"></div>
-                          <div className="w-[40%]">-&gt; 12 كيلو مكدوس</div>
+                          <div className="w-[40%]">-&gt; 12 Kg Makdous</div>
                           <div className="w-[15%] text-right"></div>
                           <div className="w-[15%] text-right"></div>
                           <div className="w-[15%] text-right pr-2"></div>
@@ -3557,11 +3960,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3658,11 +4058,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3745,11 +4142,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -3766,7 +4160,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Sample Data Row 1 */}
                       <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] mb-1 font-medium">
-                        <div>27-Aug-26</div>
+                        <div>{currentDateFormatted}</div>
                         <div>RCPT-1001</div>
                         <div>Hussein Deek</div>
                         <div>CASH USD</div>
@@ -3775,7 +4169,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Sample Data Row 2 */}
                       <div className="grid grid-cols-[100px_100px_1fr_150px_150px] gap-2 text-[11px] mb-8 font-medium">
-                        <div>27-Aug-26</div>
+                        <div>{currentDateFormatted}</div>
                         <div>RCPT-1002</div>
                         <div>Mr. Dayek</div>
                         <div>CASH</div>
@@ -3811,11 +4205,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 5</div>
                       </div>
 
@@ -3909,11 +4300,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4024,11 +4412,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4139,7 +4524,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
                         <div className="text-center">Year: 2026 - Month: 8</div>
                         <div className="text-right">Page 1 of 1</div>
                       </div>
@@ -4199,11 +4584,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4305,8 +4687,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4344,11 +4726,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="grid grid-cols-3 text-[11px] font-bold mb-1 items-center">
-                        <div>27-Aug-2026</div>
-                        <div className="text-center">
-                          <span className="mr-6">From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div className="text-right">Page 1 of 1</div>
                       </div>
 
@@ -4367,13 +4746,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Branch: Southern Olive Oil Products S.A.R.L
                       </div>
                       <div className="text-[11px] mb-1 font-bold">
-                        Category: عروض
+                        Category: Promotions
                       </div>
                       <div className="text-[11px] mb-1 font-bold">
-                        Division: عروض
+                        Division: Promotions
                       </div>
                       <div className="text-[11px] mb-2 font-bold">
-                        Group: عروض
+                        Group: Promotions
                       </div>
 
                       {/* Data Row */}
@@ -4397,11 +4776,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4468,7 +4844,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
                         <div className="text-center">Year: 2026 - Month: 8</div>
                         <div className="text-right">Page 1 of 1</div>
                       </div>
@@ -4515,11 +4891,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4542,13 +4915,13 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5" rowSpan={3}>
                                 Southern Olive Oil Products S.A.R.L<br/>Products
                               </td>
-                              <td className="border border-black p-1.5">مفرق</td>
+                              <td className="border border-black p-1.5">Retail</td>
                               <td className="border border-black p-1.5">54,542,762.47</td>
                               <td className="border border-black p-1.5 bg-[#cce5ff]">54,542,762.47</td>
                             </tr>
                             {/* Row 2 */}
                             <tr>
-                              <td className="border border-black p-1.5">عروض</td>
+                              <td className="border border-black p-1.5">Promotions</td>
                               <td className="border border-black p-1.5">1,537,687.50</td>
                               <td className="border border-black p-1.5 bg-[#cce5ff]">1,537,687.50</td>
                             </tr>
@@ -4581,11 +4954,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4610,28 +4980,28 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Division: Plastic</div><div className="text-right">0.00</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: بهارات مفرق</div><div className="text-right">14,232.73</div>
+                        <div>Division: Retail Spices</div><div className="text-right">14,232.73</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: زيوت مفرق</div><div className="text-right">52,866,758.13</div>
+                        <div>Division: Retail Oils</div><div className="text-right">52,866,758.13</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: عروض</div><div className="text-right">1,537,687.50</div>
+                        <div>Division: Promotions</div><div className="text-right">1,537,687.50</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: كيلو مفرق</div><div className="text-right">341,379.31</div>
+                        <div>Division: Bulk Retail (Kg)</div><div className="text-right">341,379.31</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: مربيات مفرق</div><div className="text-right">180,000.00</div>
+                        <div>Division: Retail Jams</div><div className="text-right">180,000.00</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: مرطبان</div><div className="text-right">1,014,995.92</div>
+                        <div>Division: Jar Products</div><div className="text-right">1,014,995.92</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-1 font-medium">
-                        <div>Division: مقطرات ومدبسات مفرق</div><div className="text-right">85,396.38</div>
+                        <div>Division: Distillates & Molasses Retail</div><div className="text-right">85,396.38</div>
                       </div>
                       <div className="grid grid-cols-[1fr_120px] text-[11px] mb-2 font-medium">
-                        <div>Division: مونة بلدية مفرق</div><div className="text-right">40,000.00</div>
+                        <div>Division: Local Pantry Retail</div><div className="text-right">40,000.00</div>
                       </div>
 
                       {/* Totals */}
@@ -4661,8 +5031,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4704,11 +5074,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4766,11 +5133,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: 01-Aug-2026</span>
-                          <span>To Date: 27-Aug-2026</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -4836,8 +5200,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
-                        <div>Year: 2026 - Month: 8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 4</div>
                       </div>
 
@@ -4860,7 +5224,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[11px] font-bold mb-1">Supplier :Abbas & Hussein Dirani</div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>11262</div>
-                        <div>مرطبان مربى تين معقود مع سمسم و جوز 800غ</div>
+                        <div>Fig Jam with Sesame & Walnuts 800g Jar</div>
                         <div className="text-right">1.00</div>
                         <div className="text-right">360,000.00</div>
                       </div>
@@ -4875,19 +5239,19 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[11px] font-bold mb-1">Supplier :C-Way Trading</div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>10706</div>
-                        <div>برغل اسمر خشن</div>
+                        <div>Coarse Brown Bulgur</div>
                         <div className="text-right">7.60</div>
                         <div className="text-right">760,000.00</div>
                       </div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>10707</div>
-                        <div>برغل اسمر ناعم</div>
+                        <div>Fine Brown Bulgur</div>
                         <div className="text-right">6.00</div>
                         <div className="text-right">720,000.00</div>
                       </div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>10746</div>
-                        <div>كيوي حامض</div>
+                        <div>Dried Kiwi</div>
                         <div className="text-right">1.00</div>
                         <div className="text-right">725,000.00</div>
                       </div>
@@ -4902,7 +5266,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[11px] font-bold mb-1">Supplier :Clatchy</div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>11276</div>
-                        <div>لوز صنوبري</div>
+                        <div>Pine Almonds</div>
                         <div className="text-right">0.25</div>
                         <div className="text-right">393,750.00</div>
                       </div>
@@ -4917,19 +5281,19 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[11px] font-bold mb-1">Supplier :Ezzeddin</div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>10661</div>
-                        <div>أرز أمريكي</div>
+                        <div>American Rice</div>
                         <div className="text-right">2.00</div>
                         <div className="text-right">180,000.00</div>
                       </div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>10675</div>
-                        <div>شعيرية</div>
+                        <div>Vermicelli</div>
                         <div className="text-right">2.00</div>
                         <div className="text-right">180,000.00</div>
                       </div>
                       <div className="grid grid-cols-[120px_1fr_60px_100px] gap-2 text-[11px] mb-1 font-medium">
                         <div>5601001120503</div>
-                        <div>نستله حليب مكثف محلى 370 غرام</div>
+                        <div>Sweetened Condensed Milk 370g</div>
                         <div className="text-right">1.00</div>
                         <div className="text-right">300,000.00</div>
                       </div>
@@ -4956,11 +5320,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -5074,7 +5435,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="grid grid-cols-4 text-[11px] font-bold mb-1 items-center">
-                        <div>27-Aug-2026</div>
+                        <div>{currentDateFormatted}</div>
                         <div className="text-center">Year: 2026 - Month: 8</div>
                         <div className="text-center">Prepared by: Mohammed</div>
                         <div className="text-right">Page 1 of 1</div>
@@ -5138,8 +5499,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -5251,11 +5612,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -5373,8 +5731,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div>Year: 2026 - Month: 8</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -5486,11 +5844,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-2026</div>
-                        <div className="flex gap-4">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 29</div>
                       </div>
 
@@ -5547,25 +5902,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Mohammed</div><div>22-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Fixed Offer</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان شطة حارة بلدي 1000ع</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Local Hot Pepper Paste 1000g Jar</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE صندوق زيتون اسود مقطع 650ع*12</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Sliced Black Olives Box 650g*12</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اسود بلدي 230ع</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Local Black Olives 230g Jar</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE زيتون اسود أول</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Black Olives Grade 1</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اخضر مقطع 350ع</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Sliced Green Olives 350g Jar</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE مرطبان زيتون اخضر مشوي 230ع</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Grilled Green Olives 230g Jar</div><div></div><div></div>
                       </div>
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
-                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE صندوق زيتون اخضر محشي ايزونا 350ع*12</div><div></div><div></div>
+                        <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Stuffed Green Olives Box 350g*12</div><div></div><div></div>
                       </div>
                     </div>
                   ) : selectedReport === 'Transactions on Hold' ? (
@@ -5581,7 +5936,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>27-Aug-26</div>
+                        <div>{currentDateFormatted}</div>
                         <div className="flex gap-4">
                           <span>From Date :01-Jan-2026</span>
                           <span>To Date: 31-Mar-2026</span>
@@ -5625,7 +5980,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[140px_40px_1fr_100px_100px] gap-2 text-[11px] font-bold mb-2">
                         <div>09/01/2026 12.16.10</div>
                         <div>-1.0</div>
-                        <div>قرفة سيجار مرطبان</div>
+                        <div>Cinnamon Sticks Jar</div>
                         <div className="text-right">200000.0</div>
                         <div className="text-right pr-2">-200000.0</div>
                       </div>
@@ -5661,8 +6016,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                       
                       <div className="flex justify-between items-center text-[12px] mb-2 font-bold">
-                        <div>27-Aug-26</div>
-                        <div>From Date: {fromDate || '01-Aug-2026'} To Date: {toDate || '27-Aug-2026'}</div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 3</div>
                       </div>
                       
@@ -5695,7 +6050,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Invoice Item Row */}
                       <div className="grid grid-cols-[130px_1fr_150px] text-[12px] mb-8 font-bold">
                         <div className="text-center">-0.90</div>
-                        <div>كزبرة ناعم كيلو</div>
+                        <div>Fine Coriander 1 Kg</div>
                         <div className="text-right pr-4">-630,000.00</div>
                       </div>
 
@@ -5733,11 +6088,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Meta Information Line */}
                       <div className="flex justify-between items-center text-[13px] mb-4 font-medium border-b border-slate-200 pb-2">
-                        <div>27-Aug-26</div>
-                        <div className="flex gap-16">
-                          <span>From Date: {fromDate || '01-Aug-2026'}</span>
-                          <span>To Date: {toDate || '27-Aug-2026'}</span>
-                        </div>
+                        <div>{currentDateFormatted}</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
 
@@ -5760,7 +6112,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Branch: Southern Olive Oil Products S.A.R.L
                       </div>
 
-                      <div className="text-[11px] font-bold text-center mb-2">تعداد خاطئ</div>
+                      <div className="text-[11px] font-bold text-center mb-2">Count Error</div>
 
                       {/* Row 1 */}
                       <div className="grid grid-cols-[110px_110px_100px_70px_1fr_50px_90px_100px] gap-2 text-[11px] text-black px-2 mb-1">
@@ -5768,10 +6120,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>22-Aug-2026 5.31 PM</div>
                         <div>Hiba Aloulou</div>
                         <div>103225</div>
-                        <div>عرض العطاء جديد</div>
+                        <div>Special Promotional Offer</div>
                         <div className="text-center">1.00</div>
                         <div className="text-right">9,000,000.00</div>
-                        <div className="pl-4">تعداد خاطئ</div>
+                        <div className="pl-4">Count Error</div>
                       </div>
 
                       {/* Row 2 */}
@@ -5780,10 +6132,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>13-Aug-2026 6.58 PM</div>
                         <div>Hiba Aloulou</div>
                         <div>103125</div>
-                        <div>ألفية زيت زيتون خضير بلدي 1000 مل</div>
+                        <div>Local Olive Oil 1000ml Bottle</div>
                         <div className="text-center">1.00</div>
                         <div className="text-right">990,000.00</div>
-                        <div className="pl-4">تعداد خاطئ</div>
+                        <div className="pl-4">Count Error</div>
                       </div>
 
                       {/* Row 3 */}
@@ -5792,10 +6144,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>13-Aug-2026 6.58 PM</div>
                         <div>Hiba Aloulou</div>
                         <div>103125</div>
-                        <div>حبوب اللقاح 360غ</div>
+                        <div>Bee Pollen 360g</div>
                         <div className="text-center">1.00</div>
                         <div className="text-right">900,000.00</div>
-                        <div className="pl-4">تعداد خاطئ</div>
+                        <div className="pl-4">Count Error</div>
                       </div>
 
                       {/* TOTALS SECTION */}
