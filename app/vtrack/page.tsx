@@ -38,8 +38,8 @@ export default function VTrackDashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'geographics' | 'today'>('overview');
 
   // Filters matching Video V8 & Enterprise specifications
-  const [selectedBranch, setSelectedBranch] = useState<string>('Zeit w zaytoun ljanoub');
-  const [selectedSubBranch, setSelectedSubBranch] = useState<string>('Zeit w zaytoun ljanoub');
+  const [selectedBranch, setSelectedBranch] = useState<string>('Southern Olive Oil Products S.A.R.L');
+  const [selectedSubBranch, setSelectedSubBranch] = useState<string>('Southern Olive Oil Products S.A.R.L');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('LBP');
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const [branchSearchOpen, setBranchSearchOpen] = useState<boolean>(false);
@@ -47,7 +47,7 @@ export default function VTrackDashboardPage() {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
 
   const branches = [
-    'Zeit w zaytoun ljanoub',
+    'Southern Olive Oil Products S.A.R.L',
     'Main Factory Southern Olive SARL (Choueifat)',
     'Beirut Hamra Distribution Hub',
     'Saida Southern Retail Center'
@@ -326,7 +326,7 @@ export default function VTrackDashboardPage() {
                     </div>
 
                     <div className="bg-[#0b2447] text-white px-3 py-2 text-xs font-bold flex items-center justify-between">
-                      <span>Zeit w zaytoun ljanoub (Choueifat & South)</span>
+                      <span>Southern Olive Oil Products S.A.R.L (Choueifat & South)</span>
                       <span className="font-mono">{formatCurrency(132460000)}</span>
                     </div>
 

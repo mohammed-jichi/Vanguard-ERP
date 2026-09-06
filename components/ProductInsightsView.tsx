@@ -211,7 +211,7 @@ export default function ProductInsightsView() {
   // Authentic Quick Insights Takeaways from Video V4
   const quickInsights = useMemo(() => {
     return [
-      { id: 1, title: 'Top branch', text: 'Zeit w zaytoun ljanoub drives 98.0% of filtered revenue.', icon: Award, color: 'text-amber-600 bg-amber-50' },
+      { id: 1, title: 'Top branch', text: 'Southern Olive Oil Products S.A.R.L drives 98.0% of filtered revenue.', icon: Award, color: 'text-amber-600 bg-amber-50' },
       { id: 2, title: 'Best category', text: 'مفرق generated 60 units in this period.', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
       { id: 3, title: 'Lead item', text: 'تنكة زيت زيتون فرجين بلدي 17.5 ليتر produced highest sales.', icon: Package, color: 'text-blue-600 bg-blue-50' },
       { id: 4, title: 'Peak weekday', text: 'Wed is the strongest trading day.', icon: Calendar, color: 'text-purple-600 bg-purple-50' }

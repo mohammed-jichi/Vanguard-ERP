@@ -580,7 +580,7 @@ export default function AuthenticOmegaSalesDashboard() {
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="00001">Zeit w zaytoun ljanoub</option>
+              <option value="00001">Southern Olive Oil Products S.A.R.L</option>
               <option value="ALL">All Branches (001 - 006)</option>
               <option value="001">001 - Choueifat Main Facility</option>
               <option value="002">002 - Beirut Wholesale Hub</option>
@@ -1100,7 +1100,7 @@ export default function AuthenticOmegaSalesDashboard() {
                 {/* Legend */}
                 <div className="flex items-center justify-center gap-2 mb-3 text-xs text-slate-700">
                   <span className="w-3 h-3 bg-[#2e6912] rounded-sm inline-block"></span>
-                  <span>Zeit w zaytoun ljanoub</span>
+                  <span>Southern Olive Oil Products S.A.R.L</span>
                 </div>
 
                 {/* Vertical Bars Container with Authentic Highcharts Gridlines */}
@@ -1139,7 +1139,7 @@ export default function AuthenticOmegaSalesDashboard() {
                               </div>
                               <div className="flex items-center gap-1.5 text-slate-200">
                                 <span className="w-2.5 h-2.5 bg-[#2e6912] rounded-sm inline-block flex-shrink-0" />
-                                <span>Zeit w zaytoun ljanoub:</span>
+                                <span>Southern Olive Oil Products S.A.R.L:</span>
                                 <span className="font-bold text-white ml-auto">
                                   {d.val > 0 ? `${d.val.toLocaleString()}.00` : '0.00'}
                                 </span>
@@ -1194,7 +1194,7 @@ export default function AuthenticOmegaSalesDashboard() {
                     </thead>
                     <tbody>
                       <tr>
-                        <th className="text-left font-semibold sticky-col bg-white">Zeit w zaytoun ljanoub</th>
+                        <th className="text-left font-semibold sticky-col bg-white">Southern Olive Oil Products S.A.R.L</th>
                         {monthlyBarData.map((m, idx) => (
                           <td key={idx} className="text-right">
                             {m.val > 0 ? (
@@ -2348,7 +2348,7 @@ export default function AuthenticOmegaSalesDashboard() {
                   </thead>
                   <tbody>
                     <tr>
-                      <th className="text-left font-semibold sticky-col bg-white">Zeit w zaytoun ljanoub</th>
+                      <th className="text-left font-semibold sticky-col bg-white">Southern Olive Oil Products S.A.R.L</th>
                       <td className="text-right">142,231,750</td>
                       <td className="text-right">93,855,800</td>
                       <td className="text-right">2,619,850</td>
@@ -3468,7 +3468,7 @@ export default function AuthenticOmegaSalesDashboard() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="font-semibold">00001 - Zeit w zaytoun ljanoub</td>
+                    <td className="font-semibold">00001 - Southern Olive Oil Products S.A.R.L</td>
                     <td>2026-09-04 23:45</td>
                     <td><span className="text-emerald-700 font-bold">Closed</span></td>
                     <td>Hiba Aloulou</td>
