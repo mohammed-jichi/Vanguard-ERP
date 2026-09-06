@@ -459,7 +459,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   </div>
                   <p className="text-[10px] text-slate-600 font-medium mt-0.5">Real-time mobile & geographics tracking active</p>
                 </div>
-                <a href="/vtrack" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700">
+                <a href="/vtrack" target="_blank" rel="noopener noreferrer" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700">
                   <div className="flex items-center gap-2">
                     <Map className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span>V-Track Geographics</span>

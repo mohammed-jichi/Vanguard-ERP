@@ -856,14 +856,15 @@ export default function AuthenticOmegaSalesDashboard() {
             <UserCircle2 className="w-3.5 h-3.5" /> Customer Insights
           </Link>
 
-          {/* VTrack as requested by user instead of OTrack */}
-          <button 
-            type="button"
-            onClick={() => setActiveTab('vtrack')}
-            className={`omega-pill-btn ${activeTab === 'vtrack' ? 'active' : ''}`}
+          {/* VTrack opens in new tab */}
+          <Link 
+            href="/vtrack"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="omega-pill-btn"
           >
             <Truck className="w-3.5 h-3.5" /> VTrack
-          </button>
+          </Link>
 
           <button 
             type="button"
@@ -2961,6 +2962,8 @@ export default function AuthenticOmegaSalesDashboard() {
                 </button>
                 <Link 
                   href="/vtrack" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold rounded shadow transition"
                 >
                   <Truck className="w-3.5 h-3.5 text-amber-400" />
@@ -3203,6 +3206,8 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="shrink-0 flex items-center gap-2">
                   <Link
                     href="/vtrack"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-lg shadow transition flex items-center gap-2"
                   >
                     <span>فتح منصة V-Track الكاملة</span>
@@ -3282,6 +3287,8 @@ export default function AuthenticOmegaSalesDashboard() {
               </div>
               <Link
                 href="/vtrack"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0b3056] text-white text-xs font-bold rounded shadow hover:bg-slate-800 transition shrink-0"
               >
                 <Truck className="w-3.5 h-3.5" />
