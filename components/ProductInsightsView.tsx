@@ -69,9 +69,9 @@ export default function ProductInsightsView() {
 
   // 4. ACCORDION STATES FOR TOP PRODUCTS BY CATEGORY
   const [openAccordion, setOpenAccordion] = useState<Record<string, boolean>>({
-    'مفرق': true,
-    'عروض': true,
-    'جملة': false
+    'Retail': true,
+    'Promotions': true,
+    'Wholesale': false
   });
 
   // -------------------------------------------------------------
@@ -97,13 +97,13 @@ export default function ProductInsightsView() {
 
   // Base raw items database for dynamic filtering
   const allMasterProducts = useMemo(() => [
-    { code: '00003', name: 'تنكة زيت زيتون فرجين بلدي 17.5 ليتر', category: 'مفرق', division: 'عروض', group: 'زيت زيتون فرجين مفرق', costPercent: 12.5, priceLbp: 90000000, soldUnits: 42 },
-    { code: '00004', name: 'تنكة زيت زيتون بكر ممتاز 16 ليتر', category: 'مفرق', division: 'عروض', group: 'زيت زيتون فرجين مفرق', costPercent: 14.0, priceLbp: 85000000, soldUnits: 18 },
-    { code: '00012', name: 'مرطبان زيتون بلدي اكسترا 1 كغ', category: 'مفرق', division: 'مرطبان', group: 'مرطبان 509', costPercent: 8.5, priceLbp: 2235000, soldUnits: 17 },
-    { code: '00025', name: 'مربى تين بلدي مع جوز 900 غرام', category: 'جملة', division: 'مربيات جملة', group: 'مربيات', costPercent: 16.5, priceLbp: 17370000, soldUnits: 0 },
-    { code: '00040', name: 'صابون غار بلدي أصلي بزيت الزيتون', category: 'عروض', division: 'عروض', group: 'صابون', costPercent: 6.2, priceLbp: 12000000, soldUnits: 0 },
-    { code: '00055', name: 'زعتر بلدي جنوبي فاخر 1 كغ', category: 'مفرق', division: 'مونة بلدية مفرق', group: 'مونة', costPercent: 9.8, priceLbp: 2665000, soldUnits: 0 },
-    { code: '00099', name: 'مربى توت بلدي 500 غرام', category: 'مفرق', division: 'مربيات مفرق', group: 'مربيات', costPercent: 11.0, priceLbp: 225000, soldUnits: 0 },
+    { code: '00003', name: 'Virgin Olive Oil Tin 17.5L', category: 'Retail', division: 'Promotions', group: 'Virgin Olive Oil Retail', costPercent: 12.5, priceLbp: 90000000, soldUnits: 42 },
+    { code: '00004', name: 'Extra Virgin Olive Oil Tin 16L', category: 'Retail', division: 'Promotions', group: 'Virgin Olive Oil Retail', costPercent: 14.0, priceLbp: 85000000, soldUnits: 18 },
+    { code: '00012', name: 'Extra Olive Jar 1kg', category: 'Retail', division: 'Jar', group: 'Jar 509', costPercent: 8.5, priceLbp: 2235000, soldUnits: 17 },
+    { code: '00025', name: 'Fig Jam with Walnuts 900g', category: 'Wholesale', division: 'Jams Wholesale', group: 'Jams', costPercent: 16.5, priceLbp: 17370000, soldUnits: 0 },
+    { code: '00040', name: 'Authentic Laurel Olive Oil Soap', category: 'Promotions', division: 'Promotions', group: 'Soaps', costPercent: 6.2, priceLbp: 12000000, soldUnits: 0 },
+    { code: '00055', name: 'Premium Southern Thyme (Zaatar) 1kg', category: 'Retail', division: 'Local Mooneh Retail', group: 'Mooneh', costPercent: 9.8, priceLbp: 2665000, soldUnits: 0 },
+    { code: '00099', name: 'Mulberry Jam 500g', category: 'Retail', division: 'Jams Retail', group: 'Jams', costPercent: 11.0, priceLbp: 225000, soldUnits: 0 },
     { code: '00105', name: 'Raw Olive Oil Extra Virgin Bulk', category: 'Raw Materials', division: 'Plastic', group: 'Raw Materials', costPercent: 4.2, priceLbp: 15000000, soldUnits: 0 }
   ], []);
 
@@ -148,38 +148,38 @@ export default function ProductInsightsView() {
 
   // Authentic Top Products by Category Data
   const topProductsByCategory = useMemo(() => [
-    { cat: 'مفرق', salesLbp: 57061800, share: 42.41, itemsCount: 28 },
-    { cat: 'عروض', salesLbp: 53550000, share: 39.80, itemsCount: 12 },
-    { cat: 'جملة', salesLbp: 23940000, share: 17.79, itemsCount: 5 },
+    { cat: 'Retail', salesLbp: 57061800, share: 42.41, itemsCount: 28 },
+    { cat: 'Promotions', salesLbp: 53550000, share: 39.80, itemsCount: 12 },
+    { cat: 'Wholesale', salesLbp: 23940000, share: 17.79, itemsCount: 5 },
     { cat: 'Raw Materials', salesLbp: 0, share: 0.00, itemsCount: 3 }
   ], []);
 
   // Category Performance Table Data matching Video V4
   const categoryPerformance = useMemo(() => [
-    { category: 'مفرق', units: '60 Units', revenue: formatCurrency(57061800) },
-    { category: 'عروض', units: '12 Units', revenue: formatCurrency(53550000) },
-    { category: 'جملة', units: '5 Units', revenue: formatCurrency(23940000) },
+    { category: 'Retail', units: '60 Units', revenue: formatCurrency(57061800) },
+    { category: 'Promotions', units: '12 Units', revenue: formatCurrency(53550000) },
+    { category: 'Wholesale', units: '5 Units', revenue: formatCurrency(23940000) },
     { category: 'Raw Materials', units: '0 Units', revenue: formatCurrency(0) }
   ], [isUsd]);
 
   // Division Breakdown Data matching Video V4
   const divisionBreakdown = useMemo(() => [
-    { division: 'عروض', share: 39.8, amount: formatCurrencyCompact(53550000) },
-    { division: 'مربيات جملة', share: 12.9, amount: formatCurrencyCompact(17370000) },
-    { division: 'مرطبان', share: 2.5, amount: formatCurrencyCompact(3405000) },
-    { division: 'مونة بلدية مفرق', share: 2.0, amount: formatCurrencyCompact(2665000) },
-    { division: 'كيلو مفرق', share: 1.7, amount: formatCurrencyCompact(2231000) },
-    { division: 'مربيات مفرق', share: 0.2, amount: formatCurrencyCompact(225000) }
+    { division: 'Promotions', share: 39.8, amount: formatCurrencyCompact(53550000) },
+    { division: 'Jams Wholesale', share: 12.9, amount: formatCurrencyCompact(17370000) },
+    { division: 'Jar', share: 2.5, amount: formatCurrencyCompact(3405000) },
+    { division: 'Local Mooneh Retail', share: 2.0, amount: formatCurrencyCompact(2665000) },
+    { division: 'Kg Retail', share: 1.7, amount: formatCurrencyCompact(2231000) },
+    { division: 'Jams Retail', share: 0.2, amount: formatCurrencyCompact(225000) }
   ], [isUsd]);
 
   // Menu Mix Data (Division breakdown)
   const menuMixData = useMemo(() => [
-    { dept: 'عروض', share: 39.8, amount: formatCurrencyCompact(53550000) },
-    { dept: 'مربيات جملة', share: 12.9, amount: formatCurrencyCompact(17370000) },
-    { dept: 'مرطبان', share: 2.5, amount: formatCurrencyCompact(3405000) },
-    { dept: 'مونة بلدية مفرق', share: 2.0, amount: formatCurrencyCompact(2665000) },
-    { dept: 'كيلو مفرق', share: 1.7, amount: formatCurrencyCompact(2231000) },
-    { dept: 'مربيات مفرق', share: 0.2, amount: formatCurrencyCompact(225000) }
+    { dept: 'Promotions', share: 39.8, amount: formatCurrencyCompact(53550000) },
+    { dept: 'Jams Wholesale', share: 12.9, amount: formatCurrencyCompact(17370000) },
+    { dept: 'Jar', share: 2.5, amount: formatCurrencyCompact(3405000) },
+    { dept: 'Local Mooneh Retail', share: 2.0, amount: formatCurrencyCompact(2665000) },
+    { dept: 'Kg Retail', share: 1.7, amount: formatCurrencyCompact(2231000) },
+    { dept: 'Jams Retail', share: 0.2, amount: formatCurrencyCompact(225000) }
   ], [isUsd]);
 
   // Weekday Pattern Data matching V4
@@ -212,8 +212,8 @@ export default function ProductInsightsView() {
   const quickInsights = useMemo(() => {
     return [
       { id: 1, title: 'Top branch', text: 'Southern Olive Oil Products S.A.R.L drives 98.0% of filtered revenue.', icon: Award, color: 'text-amber-600 bg-amber-50' },
-      { id: 2, title: 'Best category', text: 'مفرق generated 60 units in this period.', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
-      { id: 3, title: 'Lead item', text: 'تنكة زيت زيتون فرجين بلدي 17.5 ليتر produced highest sales.', icon: Package, color: 'text-blue-600 bg-blue-50' },
+      { id: 2, title: 'Best category', text: 'Retail generated 60 units in this period.', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
+      { id: 3, title: 'Lead item', text: 'Virgin Olive Oil Tin 17.5L produced highest sales.', icon: Package, color: 'text-blue-600 bg-blue-50' },
       { id: 4, title: 'Peak weekday', text: 'Wed is the strongest trading day.', icon: Calendar, color: 'text-purple-600 bg-purple-50' }
     ];
   }, []);
@@ -347,9 +347,9 @@ export default function ProductInsightsView() {
                   >
                     <option value="All Categories">All Categories</option>
                     <option value="Raw Materials">Raw Materials</option>
-                    <option value="جملة">جملة</option>
-                    <option value="عروض">عروض</option>
-                    <option value="مفرق">مفرق</option>
+                    <option value="Wholesale">Wholesale</option>
+                    <option value="Promotions">Promotions</option>
+                    <option value="Retail">Retail</option>
                   </select>
                 </div>
 
@@ -363,12 +363,12 @@ export default function ProductInsightsView() {
                   >
                     <option value="All Divisions">All Divisions</option>
                     <option value="Plastic">Plastic</option>
-                    <option value="عروض">عروض</option>
-                    <option value="كيلو مفرق">كيلو مفرق</option>
-                    <option value="مربيات جملة">مربيات جملة</option>
-                    <option value="مربيات مفرق">مربيات مفرق</option>
-                    <option value="مرطبان">مرطبان</option>
-                    <option value="مونة بلدية مفرق">مونة بلدية مفرق</option>
+                    <option value="Promotions">Promotions</option>
+                    <option value="Kg Retail">Kg Retail</option>
+                    <option value="Jams Wholesale">Jams Wholesale</option>
+                    <option value="Jams Retail">Jams Retail</option>
+                    <option value="Jar">Jar</option>
+                    <option value="Local Mooneh Retail">Local Mooneh Retail</option>
                   </select>
                 </div>
 
@@ -381,11 +381,11 @@ export default function ProductInsightsView() {
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
                     <option value="All Groups">All Groups</option>
-                    <option value="مرطبان 509">مرطبان 509</option>
-                    <option value="زيت زيتون خضير مفرق">زيت زيتون خضير مفرق</option>
-                    <option value="زيت زيتون فرجين مفرق">زيت زيتون فرجين مفرق</option>
-                    <option value="قنينات بي">قنينات بي</option>
-                    <option value="مرطبان 507">مرطبان 507</option>
+                    <option value="Jar 509">Jar 509</option>
+                    <option value="Khoudeir Olive Oil Retail">Khoudeir Olive Oil Retail</option>
+                    <option value="Virgin Olive Oil Retail">Virgin Olive Oil Retail</option>
+                    <option value="Bottles B">Bottles B</option>
+                    <option value="Jar 507">Jar 507</option>
                   </select>
                 </div>
 

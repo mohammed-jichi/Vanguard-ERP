@@ -84,16 +84,16 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
     {
       id: 'alt-1',
       titleEn: '⚠️ End of Month Closure Alert',
-      titleAr: '⚠️ تنبيه إغلاق الشهر المحاسبي',
+      titleAr: '⚠️ Month-end Closing Alert',
       descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
-      descAr: 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.'
+      descAr: 'Please reconcile JV entries and bank accounts prior to closing.'
     },
     {
       id: 'alt-2',
       titleEn: '🫒 Pressing Tank #4 Capacity Warning',
-      titleAr: '🫒 تنبيه سعة خزان المعصرة #4',
+      titleAr: '🫒 Pressing Tank #4 Capacity Alert',
       descEn: 'Tank #4 has reached 85% maximum storage capacity threshold.',
-      descAr: 'وصل خزان المعصرة رقم 4 إلى نسبة 85% من سعة التخزين.'
+      descAr: 'Pressing tank #4 has reached 85% capacity.'
     }
   ]);
   
@@ -107,16 +107,16 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
     if (!activeScreen || activeScreen === 'grid-dash') return;
 
     const screenTitles: Record<string, string> = {
-      'oil-pressing': 'معصرة الزيت والإنتاج',
-      'sales-pos': 'نقطة البيع الكاشير',
-      'sales-dash': 'لوحة تحكم المبيعات',
-      'inventory': 'المخزون والخزانات',
-      'acc-jv': 'سندات اليومية JV',
-      'acc-dash': 'لوحة المحاسبة',
-      'cust-dir': 'دليل العملاء',
-      'hr-payroll-dash': 'مسير الرواتب',
-      'supersonic-fleet': 'أسطول الشحن',
-      'delivery-goods': 'تسليم البضائع'
+      'oil-pressing': 'Oil Pressing & Production',
+      'sales-pos': 'POS Cashier Terminal',
+      'sales-dash': 'Sales Dashboard',
+      'inventory': 'Inventory & Tanks',
+      'acc-jv': 'Journal Vouchers JV',
+      'acc-dash': 'Accounting Dashboard',
+      'cust-dir': 'Customer Directory',
+      'hr-payroll-dash': 'Payroll Management',
+      'supersonic-fleet': 'Fleet Logistics',
+      'delivery-goods': 'Delivery of Goods'
     };
 
     const title = screenTitles[activeScreen] || activeScreen;
@@ -128,7 +128,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   }, [activeScreen]);
 
   return (
-    <div className="w-full flex flex-col font-sans dir-rtl select-none">
+    <div className="w-full flex flex-col font-sans dir-ltr select-none">
       
       {/* 1. TOP MAIN HEADER (DARK CHARCOAL/BLACK - VANGUARD BRANDED) */}
       <header className="w-full h-16 bg-[#181824] text-white border-b border-[#2b2b40] px-4 md:px-6 flex items-center justify-between shadow-md top-0 left-0 right-0 z-50 shrink-0 select-none">
@@ -161,7 +161,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
           <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>Southern Olive Oil Products S.A.R.L</span>
           <span className="text-[11px] text-white font-bold bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-full shadow-2xs" style={{ color: '#ffffff' }}>
-            منتوجات زيت وزيتون الجنوب
+            Southern Olive Oil Products S.A.R.L
           </span>
         </div>
 
@@ -397,7 +397,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
 
             {/* PROFILE DROPDOWN MENU */}
             {isProfileOpen && (
-              <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-rtl text-right' : 'dir-ltr text-left'}`}>
+              <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-ltr text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
                   <p className="text-gray-900 font-bold">
                     Mohammed
@@ -418,14 +418,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 {/* 5-LANGUAGE SELECTOR SYSTEM */}
                 <div className="p-2 border-t border-b border-gray-100 my-1 space-y-1">
                   <span className="text-[10px] uppercase font-bold text-gray-400 block px-1 mb-1">
-                    Select Language / اختر اللغة
+                    Select Language
                   </span>
                   {[
                     { code: 'en' as LanguageCode, label: 'English (US)', flag: '🇺🇸' },
                     { code: 'fr' as LanguageCode, label: 'Français', flag: '🇫🇷' },
                     { code: 'es' as LanguageCode, label: 'Español', flag: '🇪🇸' },
-                    { code: 'ar' as LanguageCode, label: 'العربية (RTL)', flag: '🇸🇦' },
-                    { code: 'fa' as LanguageCode, label: 'فارسی (RTL)', flag: '🇮🇷' },
+                    { code: 'ar' as LanguageCode, label: 'Arabic', flag: '🇸🇦' },
+                    { code: 'fa' as LanguageCode, label: 'Persian', flag: '🇮🇷' },
                   ].map((item) => (
                     <button
                       key={item.code}
@@ -512,13 +512,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
       {/* 3. QUICK MENU RIGHT-DRAWER (FROM 9-CUBES ICON) */}
       {isQuickMenuOpen && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex justify-end">
-          <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col dir-rtl font-sans animate-in slide-in-from-right duration-200">
+          <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col dir-ltr font-sans animate-in slide-in-from-right duration-200">
             
             {/* DRAWER HEADER */}
             <div className="bg-slate-950 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-amber-400" />
-                <h3 className="font-black text-sm">{language === 'ar' ? 'القائمة السريعة (Vanguard Quick Menu)' : 'Vanguard Quick Menu'}</h3>
+                <h3 className="font-black text-sm">Vanguard Quick Menu</h3>
               </div>
               <button onClick={() => setIsQuickMenuOpen(false)} className="text-gray-400 hover:text-white p-1">
                 <X className="w-5 h-5" />
@@ -626,9 +626,9 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                           {
                             id: 'alt-1',
                             titleEn: '⚠️ End of Month Closure Alert',
-                            titleAr: '⚠️ تنبيه إغلاق الشهر المحاسبي',
+                            titleAr: '⚠️ Month-end Closing Alert',
                             descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
-                            descAr: 'يرجى مطابقة قيود JV وحسابات البنوك قبل الإغلاق.'
+                            descAr: 'Please reconcile JV entries and bank accounts prior to closing.'
                           }
                         ])}
                         className="text-[11px] text-amber-600 hover:underline font-bold pt-1"
@@ -663,19 +663,19 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
                     <span className="text-[10px] text-gray-400 font-mono">Today, 10:45 AM</span>
                     <p className="font-bold text-gray-800">
-                      {language === 'ar' ? 'تحديث شعار الشركة لـ منتوجات زيت وزيتون الجنوب SARL' : 'Updated tenant branding & license settings'}
+                      'Updated tenant branding & license settings'
                     </p>
                   </div>
                   <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
                     <span className="text-[10px] text-gray-400 font-mono">Today, 09:30 AM</span>
                     <p className="font-bold text-gray-800">
-                      {language === 'ar' ? 'إنشاء إرسالية استلام زيت زيتون بكر ممتاز - 16 لتر' : 'Processed Extra Virgin Olive Oil Receipt Voucher #RC-9042'}
+                      'Processed Extra Virgin Olive Oil Receipt Voucher #RC-9042'
                     </p>
                   </div>
                   <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
                     <span className="text-[10px] text-gray-400 font-mono">Yesterday, 04:15 PM</span>
                     <p className="font-bold text-gray-800">
-                      {language === 'ar' ? 'تحديث قائمة أسعار المبيعات لنقطة البيع POS' : 'Updated POS Touch Terminal cashier price modes'}
+                      'Updated POS Touch Terminal cashier price modes'
                     </p>
                   </div>
 
@@ -707,10 +707,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   {/* SUPPORT CENTER */}
                   <div className="bg-amber-50/60 border border-amber-200 p-4 rounded-2xl space-y-2">
                     <h4 className="font-black text-amber-900 text-sm">
-                      {language === 'ar' ? 'مركز الدعم الفني والتعليمات (Support Center)' : 'Support Center'}
+                      'Support Center'
                     </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      {language === 'ar' ? 'افتح صفحة الدعم الرئيسية لمشاهدة الأدلة، الفيديو، والتعليمات.' : 'Open the main support page for guides, videos, and product help.'}
+                      'Open the main support page for guides, videos, and product help.'
                     </p>
                     <a
                       href="/support"
@@ -718,17 +718,17 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" /> {language === 'ar' ? 'الانتقال إلى Support Center' : 'Go to Support Center'}
+                      <ExternalLink className="w-3.5 h-3.5" /> Go to Support Center
                     </a>
                   </div>
 
                   {/* LIVE CHAT */}
                   <div className="bg-emerald-50/60 border border-emerald-200 p-4 rounded-2xl space-y-2">
                     <h4 className="font-black text-emerald-900 text-sm">
-                      {language === 'ar' ? 'المحادثة المباشرة (Live WhatsApp Chat)' : 'Live WhatsApp Chat'}
+                      'Live WhatsApp Chat'
                     </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      {language === 'ar' ? 'تواصل مباشرة مع فريق دعم Vanguard عبر واتساب.' : 'Connect directly with the Vanguard Support team via WhatsApp.'}
+                      'Connect directly with the Vanguard Support team via WhatsApp.'
                     </p>
                     <a
                       href="https://wa.me/96170000000"
@@ -736,23 +736,23 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <MessageSquare className="w-3.5 h-3.5" /> {language === 'ar' ? 'فتح الدردشة المباشرة' : 'Open WhatsApp Chat'}
+                      <MessageSquare className="w-3.5 h-3.5" /> Open WhatsApp Chat
                     </a>
                   </div>
 
                   {/* PHONE CALL */}
                   <div className="bg-sky-50/60 border border-sky-200 p-4 rounded-2xl space-y-2">
                     <h4 className="font-black text-sky-900 text-sm">
-                      {language === 'ar' ? 'الاتصال الفوري للدعم (Phone Support)' : 'Phone Support'}
+                      'Phone Support'
                     </h4>
                     <p className="text-gray-600 font-medium text-[11px]">
-                      {language === 'ar' ? 'تفعيل رابط الاتصال السريع بخط الدعم الفني.' : 'Direct telephone hotline for urgent Vanguard support.'}
+                      'Direct telephone hotline for urgent Vanguard support.'
                     </p>
                     <a
                       href="tel:+96170000000"
                       className="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <Phone className="w-3.5 h-3.5" /> {language === 'ar' ? 'اتصال بـ Vanguard (+961 70 000 000)' : 'Call Vanguard (+961 70 000 000)'}
+                      <Phone className="w-3.5 h-3.5" /> Call Vanguard (+961 70 000 000)
                     </a>
                   </div>
 
@@ -915,10 +915,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
       {/* MODAL 2: CHECKLIST UI */}
       {isChecklistOpen && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl font-sans dir-rtl">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl font-sans dir-ltr">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <CheckSquare className="w-5 h-5 text-emerald-600" /> قائمة تفقد مهام الورديات (Check List)
+                <CheckSquare className="w-5 h-5 text-emerald-600" /> Shift Tasks Checklist
               </h3>
               <button onClick={() => setIsChecklistOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X className="w-5 h-5" />
@@ -927,19 +927,19 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="space-y-2 text-xs font-bold text-gray-700">
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" defaultChecked className="rounded text-amber-600" />
-                <span>مطابقة رصيد الصندوق مع Z-Report اليومي</span>
+                <span>Reconcile cash drawer balance with daily Z-Report</span>
               </label>
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" defaultChecked className="rounded text-amber-600" />
-                <span>فحص نسبة الحموضة الحمضية لصهاريج الزيت</span>
+                <span>Test acidity ratio for olive oil holding tanks</span>
               </label>
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" className="rounded text-amber-600" />
-                <span>إرسال إشعارات تسليم البضائع لسائقي SuperSonic</span>
+                <span>Send dispatch notifications to SuperSonic drivers</span>
               </label>
             </div>
             <div className="pt-2 flex justify-end">
-              <button onClick={() => setIsChecklistOpen(false)} className="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">حفظ وإغلاق</button>
+              <button onClick={() => setIsChecklistOpen(false)} className="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">Save & Close</button>
             </div>
           </div>
         </div>
@@ -948,10 +948,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
       {/* MODAL 3: WATCH TUTORIALS POPUP */}
       {isTutorialsOpen && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl p-6 space-y-4 shadow-2xl font-sans dir-rtl">
+          <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl p-6 space-y-4 shadow-2xl font-sans dir-ltr">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <Video className="w-5 h-5 text-amber-600" /> دروس وسلسلة شرح Vanguard ERP (Watch Tutorials)
+                <Video className="w-5 h-5 text-amber-600" /> Vanguard ERP Video Tutorials
               </h3>
               <button onClick={() => setIsTutorialsOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X className="w-5 h-5" />
@@ -967,8 +967,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               ></iframe>
             </div>
             <div className="pt-2 flex justify-between items-center text-xs font-bold text-gray-500">
-              <span>دروس شرح المعاصر ونظام الكاشير المباشر</span>
-              <button onClick={() => setIsTutorialsOpen(false)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">إغلاق الفيديو</button>
+              <span>Watch tutorials for olive press and live POS cashier</span>
+              <button onClick={() => setIsTutorialsOpen(false)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">Close Video</button>
             </div>
           </div>
         </div>

@@ -187,7 +187,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
                   <Link href="/backoffice/inbox" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
                     <span className="text-sm">💬</span> <span>Notifications & Inbox</span>
                   </Link>
-                  <button type="button" onClick={() => { alert('Language: English / Arabic (العربية)'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                  <button type="button" onClick={() => { alert('Language: English (Default)'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
                     <span className="text-sm">🌐</span> <span>Language</span>
                   </button>
                   <button type="button" onClick={() => { alert('My Account Settings'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">

@@ -203,7 +203,7 @@ export default function VTrackDashboardPage() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    المنصة السحابية وتطبيق الموبايل من Vanguard Software لمتابعة المبيعات، الشفتات، والعمليات التشغيلية لحظياً من أي مكان.
+                    Cloud platform and mobile application by Vanguard Software for tracking sales, shifts, and live operations from anywhere.
                   </p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export default function VTrackDashboardPage() {
                   }`}
                 >
                   <Map className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Geographics & Fleet Map (خريطة التتبع)</span>
+                  <span>Geographics & Fleet Map</span>
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </button>
 
@@ -255,7 +255,7 @@ export default function VTrackDashboardPage() {
                   }`}
                 >
                   <Clock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Today POS Live Stream (عمليات اليوم)</span>
+                  <span>Today POS Live Stream</span>
                 </button>
               </div>
 
@@ -549,14 +549,14 @@ export default function VTrackDashboardPage() {
                     <div className="flex items-center gap-2">
                       <Globe className="w-5 h-5 text-blue-600" />
                       <h3 className="font-extrabold text-sm text-slate-900">
-                        الـ Geographics: تحويل البيانات التشغيلية اللحظية إلى عرض جغرافي تفاعلي
+                        Geographics: Real-time Operational Data Mapped Visually
                       </h3>
                       <span className="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-800">
                         V-DRIVER FLEET SYNC
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 font-medium max-w-4xl leading-relaxed">
-                      تعتمد ميزة الـ <strong>Geographics</strong> بشكل أساسي على الداتا المتولدة في وحدة الـ <strong>Today</strong> بنظام الـ POS الأساسي. أي طلبية دليفري أو عملية بيع تُسجل اليوم يتم سحبها وعرضها فوراً على الخريطة لتتبع حركة السائقين عبر نظام V-Driver ومراقبة التوزع المكاني للمبيعات ميدانياً.
+                      Geographics directly visualizes real-time data from the primary POS Today module. Any delivery order or checkout recorded today is projected immediately on the map to track V-Driver field couriers and analyze spatial delivery distribution.
                     </p>
                   </div>
 
@@ -770,14 +770,14 @@ export default function VTrackDashboardPage() {
                     <div className="flex items-center gap-2">
                       <Clock className="w-5 h-5 text-amber-600" />
                       <h3 className="font-extrabold text-sm text-slate-900">
-                        وحدة الـ Today في Vanguard POS: مصدر البيانات الحي والمباشر
+                        Vanguard POS Today Module: Real-time Live Operations Feed
                       </h3>
                       <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800">
                         REAL-TIME SOURCE
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 font-medium max-w-4xl leading-relaxed">
-                      لوحة تحكم لحظية تعطي ملخصاً شاملاً لكل ما يجري <strong>اليوم</strong> (إجمالي المبيعات المباشرة، الطلبات المفتوحة، حركة الصناديق، وحالة الشفتات). هذه البيانات هي التي تُغذي الـ Geographics فورياً.
+                      Real-time operational dashboard providing a comprehensive summary of Today (gross direct sales, open orders, cash drawer reconciliation, and active shifts). This data feeds directly into Geographics.
                     </p>
                   </div>
 
@@ -786,7 +786,7 @@ export default function VTrackDashboardPage() {
                     className="px-3 py-1.5 bg-[#0b2447] text-white text-xs font-bold rounded-lg shadow hover:bg-slate-800 transition flex items-center gap-1.5 shrink-0"
                   >
                     <Map className="w-3.5 h-3.5 text-blue-400" />
-                    <span>انتقل إلى خريطة الـ Geographics</span>
+                    <span>View Geographics Map</span>
                   </button>
                 </div>
 
@@ -840,7 +840,7 @@ export default function VTrackDashboardPage() {
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
                         <Scale className="w-3.5 h-3.5 text-blue-600" />
-                        حركة الصناديق ووسائل الدفع اليوم (Cash Drawer Reconciliation)
+                        Cash Drawer Reconciliation & Payment Breakdown (Today)
                       </span>
                       <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                         BALANCED
@@ -850,40 +850,40 @@ export default function VTrackDashboardPage() {
                     <div className="space-y-2.5 text-xs">
                       <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
                         <div>
-                          <span className="font-bold text-slate-900 block">نقد بالليرة اللبنانية (Cash LBP)</span>
-                          <span className="text-[10px] text-slate-500">رصيد درج الكاشير الفعلي</span>
+                          <span className="font-bold text-slate-900 block">Cash LBP (Lebanese Pounds)</span>
+                          <span className="text-[10px] text-slate-500">Actual Cashier Drawer Balance</span>
                         </div>
                         <div className="text-right">
                           <span className="font-mono font-extrabold text-slate-900 block">{formatCurrency(85000000)}</span>
-                          <span className="text-[10px] text-slate-500 font-semibold">64.17% من الإجمالي</span>
+                          <span className="text-[10px] text-slate-500 font-semibold">64.17% of Total</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
                         <div>
-                          <span className="font-bold text-slate-900 block">نقد بالدولار الأمريكي (Cash USD)</span>
-                          <span className="text-[10px] text-slate-500">خزينة الدولار بسعر 89,500 ليرة</span>
+                          <span className="font-bold text-slate-900 block">Cash USD (US Dollars)</span>
+                          <span className="text-[10px] text-slate-500">USD vault valued at official rate 89,500 LBP</span>
                         </div>
                         <div className="text-right">
                           <span className="font-mono font-extrabold text-emerald-700 block">$350.00 ({formatCurrency(31325000)})</span>
-                          <span className="text-[10px] text-slate-500 font-semibold">23.65% من الإجمالي</span>
+                          <span className="text-[10px] text-slate-500 font-semibold">23.65% of Total</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
                         <div>
-                          <span className="font-bold text-slate-900 block">مدفوعات إلكترونية و Whish Money</span>
-                          <span className="text-[10px] text-slate-500">تسويات مباشرة ومحافظ إلكترونية</span>
+                          <span className="font-bold text-slate-900 block">Electronic Payments & Whish Money</span>
+                          <span className="text-[10px] text-slate-500">Direct Settlements & Digital Wallets</span>
                         </div>
                         <div className="text-right">
                           <span className="font-mono font-extrabold text-blue-700 block">{formatCurrency(16135000)}</span>
-                          <span className="text-[10px] text-slate-500 font-semibold">12.18% من الإجمالي</span>
+                          <span className="text-[10px] text-slate-500 font-semibold">12.18% of Total</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-800">إجمالي مقبوضات اليوم:</span>
+                      <span className="font-bold text-slate-800">Total Collections Today:</span>
                       <span className="font-mono font-black text-slate-900 text-sm">{formatCurrency(132460000)}</span>
                     </div>
                   </div>
@@ -893,7 +893,7 @@ export default function VTrackDashboardPage() {
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
                         <Activity className="w-3.5 h-3.5 text-blue-600" />
-                        حالة الشفت المباشر وجاهزية الإرسال إلى V-Track
+                        Live Shift Status & V-Track Cloud Telemetry
                       </span>
                       <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                         SHIFT OPEN
@@ -902,30 +902,30 @@ export default function VTrackDashboardPage() {
 
                     <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-600">الشفت النشط:</span>
+                        <span className="text-slate-600">Active Shift:</span>
                         <span className="font-bold text-slate-900">Shift #2 - Morning / Afternoon</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-600">الكاشير المسؤول:</span>
-                        <span className="font-bold text-slate-900">نور الحاج (Nour Al-Hajj)</span>
+                        <span className="text-slate-600">Cashier in Charge:</span>
+                        <span className="font-bold text-slate-900">Nour Al-Hajj</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-600">وقت بدء الشفت:</span>
-                        <span className="font-mono font-bold text-slate-900">08:30 AM (اليوم)</span>
+                        <span className="text-slate-600">Shift Start Time:</span>
+                        <span className="font-mono font-bold text-slate-900">08:30 AM (Today)</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-600">الطلبات المفتوحة بالانتظار:</span>
-                        <span className="font-bold text-blue-700">14 طلبية جارية</span>
+                        <span className="text-slate-600">Pending Dispatch Orders:</span>
+                        <span className="font-bold text-blue-700">14 Active Orders</span>
                       </div>
                     </div>
 
                     <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs space-y-1">
                       <p className="font-bold text-emerald-900 flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        تحديث فوري مع نظام الخرائط V-Track Geographics
+                        Instant Sync with V-Track Geographics Fleet Engine
                       </p>
                       <p className="text-[11px] text-emerald-800 leading-relaxed font-medium">
-                        أي طلبية دليفري جديدة تُنشأ على الـ POS تظهر فوراً على شاشة السائق بتطبيق V-Driver وتنعكس لحظياً على خريطة Geographics لمراقبة مكان السائق ومسار التسليم.
+                        Any new delivery order created in POS appears instantly on the driver's V-Driver mobile app and reflects immediately on the Geographics map with live driver location and route tracking.
                       </p>
                     </div>
                   </div>

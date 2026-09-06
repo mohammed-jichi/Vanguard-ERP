@@ -422,27 +422,27 @@ export default function AuthenticOmegaSalesDashboard() {
   // Datasets for Pie & Line modes
   const categoryData = [
     { label: 'Raw Materials', name: 'Raw Materials', amount: 0, color: '#2e7d32', pct: 0.00 },
-    { label: 'جملة', name: 'جملة', amount: 23940000, color: '#1976d2', pct: 17.79 },
-    { label: 'عروض', name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { label: 'مفرق', name: 'مفرق', amount: 57061800, color: '#d32f2f', pct: 42.41 },
+    { label: 'Wholesale', name: 'Wholesale', amount: 23940000, color: '#1976d2', pct: 17.79 },
+    { label: 'Promotions', name: 'Promotions', amount: 53550000, color: '#f59e0b', pct: 39.80 },
+    { label: 'Retail', name: 'Retail', amount: 57061800, color: '#d32f2f', pct: 42.41 },
   ];
 
   const divisionData = [
     { label: 'Plastic', name: 'Plastic', amount: 0, color: '#2e7d32', pct: 0 },
-    { label: 'عروض', name: 'عروض', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { label: 'كيلو مفرق', name: 'كيلو مفرق', amount: 2231000, color: '#7c3aed', pct: 1.66 },
-    { label: 'مربيات جملة', name: 'مربيات جملة', amount: 17370000, color: '#b45309', pct: 12.91 },
-    { label: 'مربيات مفرق', name: 'مربيات مفرق', amount: 225000, color: '#991b1b', pct: 0.17 },
-    { label: 'مرطبان', name: 'مرطبان', amount: 3405000, color: '#1976d2', pct: 2.53 },
-    { label: 'مونة بلدية مفرق', name: 'مونة بلدية مفرق', amount: 2665000, color: '#84cc16', pct: 1.98 },
+    { label: 'Promotions', name: 'Promotions', amount: 53550000, color: '#f59e0b', pct: 39.80 },
+    { label: 'Kg Retail', name: 'Kg Retail', amount: 2231000, color: '#7c3aed', pct: 1.66 },
+    { label: 'Jams Wholesale', name: 'Jams Wholesale', amount: 17370000, color: '#b45309', pct: 12.91 },
+    { label: 'Jams Retail', name: 'Jams Retail', amount: 225000, color: '#991b1b', pct: 0.17 },
+    { label: 'Jar', name: 'Jar', amount: 3405000, color: '#1976d2', pct: 2.53 },
+    { label: 'Local Mooneh Retail', name: 'Local Mooneh Retail', amount: 2665000, color: '#84cc16', pct: 1.98 },
   ];
 
   const groupData = [
-    { label: 'مرطبان 509', name: 'مرطبان 509', amount: 2235000, color: '#2e7d32', pct: 1.66 },
-    { label: 'زيت زيتون خضير مفرق', name: 'زيت زيتون خضير مفرق', amount: 9360000, color: '#7c3aed', pct: 6.96 },
-    { label: 'زيت زيتون فرجين', name: 'زيت زيتون فرجين مفرق', amount: 39140000, color: '#0f766e', pct: 29.09 },
-    { label: 'قنينات بي', name: 'قنينات بي', amount: 0, color: '#ec4899', pct: 0.00 },
-    { label: 'مرطبان 507', name: 'مرطبان 507', amount: 0, color: '#1e3a8a', pct: 0.00 },
+    { label: 'Jar 509', name: 'Jar 509', amount: 2235000, color: '#2e7d32', pct: 1.66 },
+    { label: 'Khoudeir Olive Oil Retail', name: 'Khoudeir Olive Oil Retail', amount: 9360000, color: '#7c3aed', pct: 6.96 },
+    { label: 'Virgin Olive Oil', name: 'Virgin Olive Oil Retail', amount: 39140000, color: '#0f766e', pct: 29.09 },
+    { label: 'Bottles B', name: 'Bottles B', amount: 0, color: '#ec4899', pct: 0.00 },
+    { label: 'Jar 507', name: 'Jar 507', amount: 0, color: '#1e3a8a', pct: 0.00 },
   ];
 
   const departmentData = [
@@ -1045,7 +1045,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       </div>
                     )}
                     <div className="text-sm font-bold text-slate-900 my-1">
-                      مفرق
+                      Retail
                     </div>
                     <div className="text-[10px] text-slate-500 leading-tight">
                       57.1 M LL
@@ -1527,7 +1527,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       <tr className="header-row">
                         <th className="text-left">Discount</th>
                         <th className="text-right">Raw Materials</th>
-                        <th className="text-right">مفرق</th>
+                        <th className="text-right">Retail</th>
                         <th className="text-right">Total</th>
                       </tr>
                     </thead>
@@ -1669,9 +1669,9 @@ export default function AuthenticOmegaSalesDashboard() {
                     <tr className="header-row">
                       <th className="text-left">User Name</th>
                       <th className="text-right">Raw Materials</th>
-                      <th className="text-right">جملة</th>
-                      <th className="text-right">عروض</th>
-                      <th className="text-right">مفرق</th>
+                      <th className="text-right">Wholesale</th>
+                      <th className="text-right">Promotions</th>
+                      <th className="text-right">Retail</th>
                       <th className="text-right">Total</th>
                     </tr>
                   </thead>
@@ -1772,68 +1772,68 @@ export default function AuthenticOmegaSalesDashboard() {
                         { 
                           m: 'January', 
                           segments: [
-                            { series: '2026 جملة', c: '#1976d2', h: 60, val: '2,144,645,080' },
-                            { series: '2026 عروض', c: '#f59e0b', h: 32, val: '535,500,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 28, val: '424,787,350' },
+                            { series: '2026 Wholesale', c: '#1976d2', h: 60, val: '2,144,645,080' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 32, val: '535,500,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 28, val: '424,787,350' },
                           ] 
                         },
                         { 
                           m: 'February', 
                           segments: [
-                            { series: '2026 جملة', c: '#1976d2', h: 30, val: '895,931,000' },
-                            { series: '2026 عروض', c: '#f59e0b', h: 52, val: '880,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 24, val: '325,164,942' },
+                            { series: '2026 Wholesale', c: '#1976d2', h: 30, val: '895,931,000' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 52, val: '880,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 24, val: '325,164,942' },
                           ] 
                         },
                         { 
                           m: 'March', 
                           segments: [
                             { series: '2026 Raw Materials', c: '#2e7d32', h: 0, val: '0' },
-                            { series: '2026 عروض', c: '#f59e0b', h: 4, val: '120,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 14, val: '212,743,800' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 4, val: '120,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 14, val: '212,743,800' },
                           ] 
                         },
                         { 
                           m: 'April', 
                           segments: [
-                            { series: '2026 جملة', c: '#1976d2', h: 4, val: '50,000,000' },
-                            { series: '2026 عروض', c: '#f59e0b', h: 14, val: '250,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 22, val: '347,849,550' },
+                            { series: '2026 Wholesale', c: '#1976d2', h: 4, val: '50,000,000' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 14, val: '250,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 22, val: '347,849,550' },
                           ] 
                         },
                         { 
                           m: 'May', 
                           segments: [
-                            { series: '2026 مفرق', c: '#d32f2f', h: 10, val: '192,590,050' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 10, val: '192,590,050' },
                           ] 
                         },
                         { 
                           m: 'June', 
                           segments: [
-                            { series: '2026 عروض', c: '#f59e0b', h: 24, val: '420,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 14, val: '242,845,750' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 24, val: '420,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 14, val: '242,845,750' },
                           ] 
                         },
                         { 
                           m: 'July', 
                           segments: [
-                            { series: '2026 جملة', c: '#1976d2', h: 12, val: '250,000,000' },
-                            { series: '2026 عروض', c: '#f59e0b', h: 54, val: '930,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 38, val: '604,311,315' },
+                            { series: '2026 Wholesale', c: '#1976d2', h: 12, val: '250,000,000' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 54, val: '930,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 38, val: '604,311,315' },
                           ] 
                         },
                         { 
                           m: 'August', 
                           segments: [
-                            { series: '2026 عروض', c: '#f59e0b', h: 56, val: '980,000,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 52, val: '883,715,000' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 56, val: '980,000,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 52, val: '883,715,000' },
                           ] 
                         },
                         { 
                           m: 'September', 
                           segments: [
-                            { series: '2026 عروض', c: '#f59e0b', h: 4, val: '53,550,000' },
-                            { series: '2026 مفرق', c: '#d32f2f', h: 5, val: '78,301,800' },
+                            { series: '2026 Promotions', c: '#f59e0b', h: 4, val: '53,550,000' },
+                            { series: '2026 Retail', c: '#d32f2f', h: 5, val: '78,301,800' },
                           ] 
                         },
                         { m: 'October', segments: [] },
@@ -1841,8 +1841,8 @@ export default function AuthenticOmegaSalesDashboard() {
                         { 
                           m: 'December', 
                           segments: [
-                            { series: '2025 مفرق', c: '#ef9a9a', h: 8, val: '103,890,400' },
-                            { series: '2025 جملة', c: '#90caf9', h: 4, val: '50,023,000' },
+                            { series: '2025 Retail', c: '#ef9a9a', h: 8, val: '103,890,400' },
+                            { series: '2025 Wholesale', c: '#90caf9', h: 4, val: '50,023,000' },
                           ] 
                         },
                       ].map((col, idx) => {
@@ -1898,11 +1898,11 @@ export default function AuthenticOmegaSalesDashboard() {
                         <div className="space-y-1">
                           {[
                             { label: '2025 Raw Materials', c: '#81c784', val: '0' },
-                            { label: 'جملة', c: '#1976d2', val: hoveredCategoryMonth === 'January' ? '2.1 B' : hoveredCategoryMonth === 'February' ? '895.9 M' : hoveredCategoryMonth === 'December' ? '50.0 M' : '0' },
-                            { label: '2026 عروض', c: '#f59e0b', val: hoveredCategoryMonth === 'January' ? '535.5 M' : hoveredCategoryMonth === 'February' ? '880.0 M' : hoveredCategoryMonth === 'August' ? '980.0 M' : '0' },
-                            { label: '2025 عروض', c: '#ffe082', val: '0' },
-                            { label: '2026 مفرق', c: '#d32f2f', val: hoveredCategoryMonth === 'January' ? '424.8 M' : hoveredCategoryMonth === 'August' ? '883.7 M' : '0' },
-                            { label: '2025 مفرق', c: '#ef9a9a', val: hoveredCategoryMonth === 'December' ? '103.9 M' : '0' },
+                            { label: 'Wholesale', c: '#1976d2', val: hoveredCategoryMonth === 'January' ? '2.1 B' : hoveredCategoryMonth === 'February' ? '895.9 M' : hoveredCategoryMonth === 'December' ? '50.0 M' : '0' },
+                            { label: '2026 Promotions', c: '#f59e0b', val: hoveredCategoryMonth === 'January' ? '535.5 M' : hoveredCategoryMonth === 'February' ? '880.0 M' : hoveredCategoryMonth === 'August' ? '980.0 M' : '0' },
+                            { label: '2025 Promotions', c: '#ffe082', val: '0' },
+                            { label: '2026 Retail', c: '#d32f2f', val: hoveredCategoryMonth === 'January' ? '424.8 M' : hoveredCategoryMonth === 'August' ? '883.7 M' : '0' },
+                            { label: '2025 Retail', c: '#ef9a9a', val: hoveredCategoryMonth === 'December' ? '103.9 M' : '0' },
                           ].map((item, i) => (
                             <div key={i} className="flex items-center justify-between gap-2 text-slate-700">
                               <span className="flex items-center gap-1.5">
@@ -1922,12 +1922,12 @@ export default function AuthenticOmegaSalesDashboard() {
                     {[
                       { name: '2026 Raw Materials', c: '#2e7d32' },
                       { name: '2025 Raw Materials', c: '#81c784' },
-                      { name: '2026 جملة', c: '#1976d2' },
-                      { name: '2025 جملة', c: '#90caf9' },
-                      { name: '2026 عروض', c: '#f59e0b' },
-                      { name: '2025 عروض', c: '#ffe082' },
-                      { name: '2026 مفرق', c: '#d32f2f' },
-                      { name: '2025 مفرق', c: '#ef9a9a' },
+                      { name: '2026 Wholesale', c: '#1976d2' },
+                      { name: '2025 Wholesale', c: '#90caf9' },
+                      { name: '2026 Promotions', c: '#f59e0b' },
+                      { name: '2025 Promotions', c: '#ffe082' },
+                      { name: '2026 Retail', c: '#d32f2f' },
+                      { name: '2025 Retail', c: '#ef9a9a' },
                     ].map((item, i) => {
                       const isHidden = hiddenCategorySeries.includes(item.name);
                       return (
@@ -1972,19 +1972,19 @@ export default function AuthenticOmegaSalesDashboard() {
                         <td className="text-right font-semibold">0</td>
                       </tr>
                       <tr>
-                        <td className="text-left font-semibold">جملة</td>
+                        <td className="text-left font-semibold">Wholesale</td>
                         <td className="text-right">3,436,121,625</td>
                         <td className="text-right">50,023,000</td>
                         <td className="text-right font-semibold">3,386,098,625</td>
                       </tr>
                       <tr>
-                        <td className="text-left font-semibold">عروض</td>
+                        <td className="text-left font-semibold">Promotions</td>
                         <td className="text-right">3,947,922,600</td>
                         <td className="text-right">0</td>
                         <td className="text-right font-semibold">3,947,922,600</td>
                       </tr>
                       <tr>
-                        <td className="text-left font-semibold">مفرق</td>
+                        <td className="text-left font-semibold">Retail</td>
                         <td className="text-right">3,522,529,075</td>
                         <td className="text-right">103,890,400</td>
                         <td className="text-right font-semibold">3,418,638,675</td>
@@ -2841,7 +2841,7 @@ export default function AuthenticOmegaSalesDashboard() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="text-left font-bold text-slate-800 font-arabic">مكسرات أبو حمزه</td>
+                        <td className="text-left font-bold text-slate-800 font-arabic">Mkasarat Abou Hamzeh</td>
                         <td className="text-center font-semibold">1</td>
                         <td className="text-right font-bold text-slate-900">{formatVal(23940000)}</td>
                       </tr>
@@ -2872,8 +2872,8 @@ export default function AuthenticOmegaSalesDashboard() {
                         { city: 'Dbaye', total: 1, pct: '14.29%' },
                         { city: 'Jebaa', total: 1, pct: '14.29%' },
                         { city: 'JEITA', total: 1, pct: '14.29%' },
-                        { city: 'الغبيري', total: 1, pct: '14.29%' },
-                        { city: 'الشركات الترويجية', total: 1, pct: '14.29%' },
+                        { city: 'Ghobeiry', total: 1, pct: '14.29%' },
+                        { city: 'Promotional Companies', total: 1, pct: '14.29%' },
                       ].map((row, idx) => (
                         <tr key={idx}>
                           <td className="text-left font-medium text-slate-700">{row.city}</td>
@@ -2917,7 +2917,7 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="flex-1 relative flex items-center justify-center">
                   <div className="flex flex-col items-center">
                     <div className="w-3 h-3 bg-blue-600 rounded-full shadow-sm ring-4 ring-blue-100 animate-pulse"></div>
-                    <span className="text-xs font-bold text-slate-800 mt-2">مكسرات أبو حمزه (Clients)</span>
+                    <span className="text-xs font-bold text-slate-800 mt-2">Mkasarat Abou Hamzeh (Clients)</span>
                     <span className="text-[11px] font-mono text-blue-600 font-extrabold">{formatVal(23940000)} (100.0%)</span>
                   </div>
                 </div>
@@ -3200,7 +3200,7 @@ export default function AuthenticOmegaSalesDashboard() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
-                    المنصة السحابية وتطبيق الموبايل من Vanguard Software. يتيح للمدراء وأصحاب الأعمال متابعة المبيعات، الشفتات، التقارير المالية، والعمليات التشغيلية لحظياً من أي مكان مع إشعارات فورية وتتبع العمل عن بعد.
+                    Cloud platform and mobile application by Vanguard Software. Enables managers and business owners to track sales, shifts, financial reports, and live operations in real-time with instant alerts.
                   </p>
                 </div>
                 <div className="shrink-0 flex items-center gap-2">
@@ -3210,7 +3210,7 @@ export default function AuthenticOmegaSalesDashboard() {
                     rel="noopener noreferrer"
                     className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-lg shadow transition flex items-center gap-2"
                   >
-                    <span>فتح منصة V-Track الكاملة</span>
+                    <span>Open Full V-Track Platform</span>
                     <Truck className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -3237,9 +3237,9 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                   <Smartphone className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-900">متابعة الموبايل اللحظية</h4>
+                <h4 className="font-bold text-xs text-slate-900">Real-time Mobile Tracking</h4>
                 <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                  تطبيق الموبايل للمدراء لمتابعة إجمالي المبيعات، حركات الصناديق، وإغلاق الشفتات على مدار الساعة من أي جهاز.
+                  Mobile app for managers to monitor gross sales, cash drawer shifts, and end-of-day closings 24/7 on any device.
                 </p>
               </div>
 
@@ -3247,9 +3247,9 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                   <Map className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-900">الـ Geographics وتتبع الأسطول</h4>
+                <h4 className="font-bold text-xs text-slate-900">Geographics & Fleet Tracking</h4>
                 <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                  تحويل بيانات Today اللحظية إلى خريطة تفاعلية لتتبع حركة سيارات التوزيع (V-Driver) ومواقع الطلبات ميدانياً.
+                  Transforms real-time Today operational data into an interactive map tracking delivery drivers (V-Driver) and field order dispatches.
                 </p>
               </div>
 
@@ -3257,9 +3257,9 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
                   <Clock className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-xs text-slate-900">الربط اللحظي مع الـ POS (Today)</h4>
+                <h4 className="font-bold text-xs text-slate-900">Live Sync with Vanguard POS (Today)</h4>
                 <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                  أي طلبية دليفري أو عملية بيع تُسجل الآن على الـ POS تُعرض فوراً على الخريطة والتقارير السحابية دون أي تأخير.
+                  Any delivery order or sale recorded in the POS is streamed immediately to the live map and cloud reports without latency.
                 </p>
               </div>
             </div>
@@ -3275,14 +3275,14 @@ export default function AuthenticOmegaSalesDashboard() {
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-blue-600" />
                   <h3 className="font-extrabold text-sm text-slate-900">
-                    V-Track Geographics: تحويل العمليات اللحظية إلى عرض مكاني تفاعلي
+                    V-Track Geographics: Live Operational Data Mapped in Real-time
                   </h3>
                   <span className="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-800">
                     LIVE TODAY DATA
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium mt-1 max-w-3xl leading-relaxed">
-                  تعتمد الـ Geographics بشكل مباشر على بيانات وحدة الـ <strong>Today</strong> في نظام Vanguard POS. أي عملية بيع أو طلبية دليفري تُسجل اليوم يتم سحبها وعرضها فوراً على الخريطة لمراقبة حركة السائقين (V-Driver) وتوزع المبيعات جغرافياً.
+                  Geographics directly utilizes real-time feeds from Vanguard POS Today module. Every live sale and dispatch is projected immediately on the map for driver routing and regional density analysis.
                 </p>
               </div>
               <Link

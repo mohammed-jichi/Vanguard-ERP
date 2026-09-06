@@ -185,7 +185,7 @@ export default function Sidebar({
           {/* HAMBURGER TOGGLE ICON (☰) */}
           <button
             onClick={handleToggle}
-            title={isOpen ? "إغلاق القائمة (Collapse Sidebar)" : "فتح القائمة (Expand Sidebar)"}
+            title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
             className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-700 transition-colors"
           >
             <Menu className="w-5 h-5 text-gray-700" />
@@ -194,7 +194,7 @@ export default function Sidebar({
           {/* HOME ICON (🏠) */}
           <button
             onClick={() => handleNav('grid-dash')}
-            title="الرئيسية (Home Dashboard)"
+            title="Home Dashboard"
             className="p-1.5 hover:bg-amber-50 rounded-lg text-amber-600 transition-colors"
           >
             <Home className="w-5 h-5" />
@@ -223,7 +223,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('sales'); }}
-            title={language === 'ar' ? 'إدارة المبيعات ونقطة البيع' : 'Sales Control & POS'}
+            title='Sales Control & POS'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['sales'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -232,7 +232,7 @@ export default function Sidebar({
               <ShoppingCart className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate font-semibold">
-                  {language === 'ar' ? '1. إدارة المبيعات (Sales Control)' : '1. Sales Control & POS'}
+                  '1. Sales Control & POS'
                 </span>
               )}
             </div>
@@ -309,7 +309,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
-            title={language === 'ar' ? 'أسطول الشحن والسيارات' : 'SuperSonic Fleet Management'}
+            title='SuperSonic Fleet Management'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['supersonic'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -318,7 +318,7 @@ export default function Sidebar({
               <Truck className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{language === 'ar' ? '2. أسطول الشحن (SuperSonic)' : '2. SuperSonic Fleet Management'}</span>
+                  <span>2. SuperSonic Fleet Management</span>
                   <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
                 </span>
               )}
@@ -349,7 +349,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('social'); }}
-            title={language === 'ar' ? 'التواصل الاجتماعي والدعم' : 'Social Media CRM'}
+            title='Social Media CRM'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['social'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -358,7 +358,7 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{language === 'ar' ? '3. التواصل الاجتماعي (Social CRM)' : '3. Social CRM & Support'}</span>
+                  <span>3. Social CRM & Support</span>
                   <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">ENT</span>
                 </span>
               )}
@@ -382,7 +382,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('op'); }}
-            title={language === 'ar' ? 'مركز العمليات والمعاصر' : 'Operations & Pressing Center'}
+            title='Operations & Pressing Center'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['op'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -391,7 +391,7 @@ export default function Sidebar({
               <Factory className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate font-semibold">
-                  {language === 'ar' ? '4. مركز العمليات والمعاصر (Operations)' : '4. Operations & Pressing Center'}
+                  '4. Operations & Pressing Center'
                 </span>
               )}
             </div>
@@ -413,7 +413,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('cust'); }}
-            title={language === 'ar' ? 'إدارة العملاء والذمم' : 'Customer Management & AR'}
+            title='Customer Management & AR'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['cust'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -422,7 +422,7 @@ export default function Sidebar({
               <Users className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate font-semibold">
-                  {language === 'ar' ? '5. إدارة العملاء والذمم (CRM)' : '5. Customer Management & AR'}
+                  '5. Customer Management & AR'
                 </span>
               )}
             </div>
@@ -446,7 +446,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('acc'); }}
-            title={language === 'ar' ? 'المحاسبة والمالية' : 'Accounting & Finance'}
+            title='Accounting & Finance'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['acc'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -455,7 +455,7 @@ export default function Sidebar({
               <FileSpreadsheet className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate font-semibold">
-                  {language === 'ar' ? '6. المحاسبة والمالية (Accounting)' : '6. Accounting & Finance'}
+                  '6. Accounting & Finance'
                 </span>
               )}
             </div>
@@ -479,7 +479,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('hr'); }}
-            title={language === 'ar' ? 'الموارد البشرية والرواتب' : 'HR & Payroll Management'}
+            title='HR & Payroll Management'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['hr'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
             }`}
@@ -488,7 +488,7 @@ export default function Sidebar({
               <UserCheck className="w-4 h-4 text-[#195a96] shrink-0" />
               {isOpen && (
                 <span className="truncate font-semibold">
-                  {language === 'ar' ? '7. الموارد البشرية والرواتب (HR)' : '7. HR & Payroll Management'}
+                  '7. HR & Payroll Management'
                 </span>
               )}
             </div>
@@ -511,7 +511,7 @@ export default function Sidebar({
             className={`w-full flex items-center ${isOpen ? 'gap-2 px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200 transition-colors font-medium text-[12px] shadow-2xs`}
           >
             <Settings className="w-4 h-4 text-amber-600 shrink-0" />
-            {isOpen && <span>{language === 'ar' ? 'إعدادات الشعار والترخيص' : 'Identity & License Settings'}</span>}
+            {isOpen && <span>Identity & License Settings</span>}
           </button>
 
           <a
@@ -530,7 +530,7 @@ export default function Sidebar({
         <div className="p-2.5 border-t border-gray-200 bg-gray-50 text-[10px] text-gray-500 font-medium text-center space-y-0.5">
           <p className="text-gray-700 font-bold">Vanguard ERP System</p>
           <p className="text-amber-600 font-bold">
-            {language === 'ar' ? (currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب SARL') : (currentTenant.brandNameEn || 'Southern Olive Oil Products S.A.R.L & Products SARL')}
+            (currentTenant.brandNameEn || 'Southern Olive Oil Products S.A.R.L')
           </p>
         </div>
       )}

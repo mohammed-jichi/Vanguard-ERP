@@ -43,9 +43,9 @@ interface TenantContextType {
 
 const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   id: '00000000-0000-0000-0000-000000000001',
-  name: 'منتوجات زيت وزيتون الجنوب',
+  name: 'Southern Olive Oil Products S.A.R.L',
   slug: 'southern-olive',
-  brandNameAr: 'منتوجات زيت وزيتون الجنوب',
+  brandNameAr: 'Southern Olive Oil Products S.A.R.L',
   brandNameEn: 'Southern Olive Oil Products S.A.R.L',
   logoUrl: '/assets/images/logo.png',
   companyRegistrationNumber: 'CR-104928-LB',

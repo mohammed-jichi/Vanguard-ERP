@@ -50,26 +50,26 @@ export default function CustomerInsightsPage() {
 
   // Top 10 Buyers Data
   const topBuyersData = [
-    { name: 'مطعم وريزورت شمس الجنوب', category: 'VIP Wholesale', ltv: 'LBP 1,450M', ordersCount: 42, avgTicket: 'LBP 34.5M' },
-    { name: 'سوبرماركت التعاونية الكبرى', category: 'Retail Chain', ltv: 'LBP 1,120M', ordersCount: 38, avgTicket: 'LBP 29.4M' },
-    { name: 'شركة البركة للتوزيع والحلويات', category: 'Distributor', ltv: 'LBP 980M', ordersCount: 29, avgTicket: 'LBP 33.7M' },
-    { name: 'معصرة الخيام الحديثة', category: 'Industrial', ltv: 'LBP 850M', ordersCount: 24, avgTicket: 'LBP 35.4M' },
-    { name: 'فندق وزيتون صور السياحي', category: 'Hospitality (HORECA)', ltv: 'LBP 720M', ordersCount: 31, avgTicket: 'LBP 23.2M' },
-    { name: 'مؤسسة الجبل للتجارة العامة', category: 'Wholesale', ltv: 'LBP 680M', ordersCount: 20, avgTicket: 'LBP 34.0M' },
-    { name: 'محلات الزيتون الصافي مفرق', category: 'Retail Shop', ltv: 'LBP 540M', ordersCount: 18, avgTicket: 'LBP 30.0M' },
-    { name: 'شركة الساحل للمواد الغذائية', category: 'Distributor', ltv: 'LBP 490M', ordersCount: 15, avgTicket: 'LBP 32.6M' },
-    { name: 'مطعم الكرم الجنوبي النبطية', category: 'Hospitality', ltv: 'LBP 410M', ordersCount: 14, avgTicket: 'LBP 29.2M' },
-    { name: 'سوبرماركت الأرز بيروت', category: 'Retail Chain', ltv: 'LBP 390M', ordersCount: 12, avgTicket: 'LBP 32.5M' }
+    { name: 'Shams Al-Janoub Resort & Restaurant', category: 'VIP Wholesale', ltv: 'LBP 1,450M', ordersCount: 42, avgTicket: 'LBP 34.5M' },
+    { name: 'Al-Taawoniyah Grand Supermarket', category: 'Retail Chain', ltv: 'LBP 1,120M', ordersCount: 38, avgTicket: 'LBP 29.4M' },
+    { name: 'Al-Baraka Distribution & Confectionery', category: 'Distributor', ltv: 'LBP 980M', ordersCount: 29, avgTicket: 'LBP 33.7M' },
+    { name: 'Khiam Modern Pressing Facility', category: 'Industrial', ltv: 'LBP 850M', ordersCount: 24, avgTicket: 'LBP 35.4M' },
+    { name: 'Tyre Tourist Hotel & Olive Lounge', category: 'Hospitality (HORECA)', ltv: 'LBP 720M', ordersCount: 31, avgTicket: 'LBP 23.2M' },
+    { name: 'Al-Jabal General Trading Est.', category: 'Wholesale', ltv: 'LBP 680M', ordersCount: 20, avgTicket: 'LBP 34.0M' },
+    { name: 'Pure Olive Retail Stores', category: 'Retail Shop', ltv: 'LBP 540M', ordersCount: 18, avgTicket: 'LBP 30.0M' },
+    { name: 'Al-Sahel Food Supplies Co.', category: 'Distributor', ltv: 'LBP 490M', ordersCount: 15, avgTicket: 'LBP 32.6M' },
+    { name: 'Al-Karam Al-Janoubi Restaurant Nabatieh', category: 'Hospitality', ltv: 'LBP 410M', ordersCount: 14, avgTicket: 'LBP 29.2M' },
+    { name: 'Al-Arz Supermarket Beirut', category: 'Retail Chain', ltv: 'LBP 390M', ordersCount: 12, avgTicket: 'LBP 32.5M' }
   ];
 
   const displayedBuyers = showAllBuyers ? topBuyersData : topBuyersData.slice(0, 5);
 
   // At-Risk Customers Data (Authentic from Video V7)
   const atRiskCustomers = [
-    { id: '00001', name: 'مكسرات أبو حمزه', balance: '-148,524,120.00', lastTx: '2026-09-02' },
-    { id: '00002', name: 'شركة الجنوب للتجهيزات الزراعية', balance: '0.00', lastTx: '2025-06-12' },
-    { id: '00003', name: 'مؤسسة زهرة الزيتون صيدا', balance: '0.00', lastTx: '2025-07-28' },
-    { id: '00004', name: 'موزع النبطية الإقليمي', balance: '0.00', lastTx: '2025-08-02' }
+    { id: '00001', name: 'Mkasarat Abou Hamzeh', balance: '-148,524,120.00', lastTx: '2026-09-02' },
+    { id: '00002', name: 'South Agri-Equipment Supplies Co.', balance: '0.00', lastTx: '2025-06-12' },
+    { id: '00003', name: 'Zahrat Al-Zaytoun Est. Saida', balance: '0.00', lastTx: '2025-07-28' },
+    { id: '00004', name: 'Nabatieh Regional Distributor', balance: '0.00', lastTx: '2025-08-02' }
   ];
 
   // At-Risk Customers Real Excel CSV Export
@@ -88,23 +88,23 @@ export default function CustomerInsightsPage() {
 
   // Geographic Breakdown Data Tables
   const customersByCountry = [
-    { name: 'Lebanon (لبنان)', count: 31 },
-    { name: 'UAE (الإمارات)', count: 1 },
-    { name: 'Saudi Arabia (السعودية)', count: 1 }
+    { name: 'Lebanon', count: 31 },
+    { name: 'United Arab Emirates (UAE)', count: 1 },
+    { name: 'Saudi Arabia (KSA)', count: 1 }
   ];
 
   const customersByRegion = [
-    { name: 'South Lebanon (الجنوب)', count: 18 },
-    { name: 'Beirut & Mount Lebanon (بيروت والجبل)', count: 9 },
-    { name: 'Bekaa & North (البقاع والشمال)', count: 6 }
+    { name: 'South Lebanon', count: 18 },
+    { name: 'Beirut & Mount Lebanon', count: 9 },
+    { name: 'Bekaa & North', count: 6 }
   ];
 
   const customersByCity = [
-    { name: 'Tyre (صور)', count: 8 },
-    { name: 'Saida (صيدا)', count: 6 },
-    { name: 'Nabatieh (النبطية)', count: 4 },
-    { name: 'Beirut (بيروت)', count: 7 },
-    { name: 'Khiam (الخيام)', count: 4 }
+    { name: 'Tyre', count: 8 },
+    { name: 'Saida', count: 6 },
+    { name: 'Nabatieh', count: 4 },
+    { name: 'Beirut', count: 7 },
+    { name: 'Khiam', count: 4 }
   ];
 
   const customersByGroup = [
