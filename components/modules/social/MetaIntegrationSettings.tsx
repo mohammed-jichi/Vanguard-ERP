@@ -51,7 +51,7 @@ export default function MetaIntegrationSettings() {
               Meta Business Manager & Marketing API Configuration
             </h2>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600 font-medium">
             Southern Olive Oil Products S.A.R.L - Connect central Ad Account, 13 Facebook Pages, Instagram profiles & WhatsApp Business
           </p>
         </div>

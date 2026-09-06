@@ -5,7 +5,7 @@ export default function EmployeesDirectoryPage() {
     <div className="p-6 space-y-4 text-left">
       <div className="border-b border-slate-200 pb-3">
         <h1 className="text-xl font-bold text-slate-900">Employees & Personnel Directory</h1>
-        <p className="text-xs text-slate-500">Staff contracts, departmental assignments, and social security numbers</p>
+        <p className="text-xs text-slate-600 font-medium">Staff contracts, departmental assignments, and social security numbers</p>
       </div>
       <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center text-slate-500">
         <span className="text-3xl block mb-2">👥</span>

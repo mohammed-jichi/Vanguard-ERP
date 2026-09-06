@@ -329,7 +329,7 @@ export default function ProductInsightsView() {
                   <SlidersHorizontal className="w-4 h-4 text-blue-600" />
                   <span>Item Hierarchy</span>
                 </h3>
-                <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Drill down by category, division & product</p>
+                <p className="text-[11px] text-slate-600 font-semibold mt-0.5">Drill down by category, division & product</p>
               </div>
               {isHierarchyOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
             </div>

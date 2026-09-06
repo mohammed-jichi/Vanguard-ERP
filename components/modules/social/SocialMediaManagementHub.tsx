@@ -733,7 +733,7 @@ export default function SocialMediaManagementHub({
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-5">
           <div className="border-b border-slate-100 pb-3">
             <h2 className="text-sm font-bold text-slate-800">Ad Campaigns & CPL Analytics (Click Header to Toggle)</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Click any campaign row to view per-page contribution share (%)</p>
+            <p className="text-xs text-slate-600 font-medium mt-0.5">Click any campaign row to view per-page contribution share (%)</p>
           </div>
           <div className="space-y-3">
             {campaignsData.map((camp) => {

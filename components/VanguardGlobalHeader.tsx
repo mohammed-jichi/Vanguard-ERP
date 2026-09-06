@@ -217,7 +217,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     </div>
                     <div>
                       <h3 className="font-extrabold text-sm text-slate-900">System Settings</h3>
-                      <p className="text-[11px] text-slate-500 font-medium">Enterprise core configuration, accounting parameters, and sales control rules</p>
+                      <p className="text-[11px] text-slate-600 font-medium">Enterprise core configuration, accounting parameters, and sales control rules</p>
                     </div>
                   </div>
                   <button
