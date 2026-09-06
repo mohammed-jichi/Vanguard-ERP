@@ -29,7 +29,9 @@ import {
   Sun,
   Moon,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Truck,
+  Map
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
@@ -445,6 +447,25 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     </button>
                   ))}
                 </div>
+                <div className="p-2 border-b border-gray-100 bg-emerald-50/70 rounded-xl mb-1 text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                      <Truck className="w-3.5 h-3.5 text-blue-600" />
+                      V-Track Cloud
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      ACTIVE
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5">Real-time mobile & geographics tracking active</p>
+                </div>
+                <a href="/vtrack" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <Map className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span>V-Track Geographics</span>
+                  </div>
+                  <span className="text-[9.5px] font-mono text-emerald-600 font-black">LIVE</span>
+                </a>
                 <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>My Account</span>
