@@ -50,6 +50,7 @@ export default function SearchInventoryItemsModal({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
   const [filterSupplier, setFilterSupplier] = useState<string>('ALL');
+  const [filterSource, setFilterSource] = useState<string>('ALL');
 
   // Row state: quantities, remarks, selection
   const [rowQuantities, setRowQuantities] = useState<Record<string, number | string>>({});
@@ -310,7 +311,7 @@ export default function SearchInventoryItemsModal({
 
           {/* Collapsible Advanced Filters */}
           {showAdvancedFilters && (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs animate-fade-in">
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs animate-fade-in">
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Category</label>
                 <select
@@ -351,6 +352,19 @@ export default function SearchInventoryItemsModal({
                   <option value="Zahwe">Zahwe</option>
                   <option value="الضيعة">الضيعة</option>
                   <option value="مؤسسة عبده للتجارة">مؤسسة عبده للتجارة</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-600 mb-1">Source</label>
+                <select
+                  value={filterSource}
+                  onChange={(e) => setFilterSource(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                >
+                  <option value="ALL">All Sources</option>
+                  <option value="Local">Local</option>
+                  <option value="Vanguard Market place">Vanguard Market place</option>
                 </select>
               </div>
 

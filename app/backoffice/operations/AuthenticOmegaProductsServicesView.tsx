@@ -234,6 +234,9 @@ export default function AuthenticOmegaProductsServicesView() {
       // Brand
       if (selectedBrand !== 'All' && item.itemBrand !== selectedBrand) return false;
 
+      // Source
+      if (selectedSource !== 'All' && (item.source || 'Local') !== selectedSource) return false;
+
       // More Filters
       if (showDiscontinuedOnly && !item.isDiscontinued) return false;
       if (showAssemblyOnly && (!item.assemblyItems || item.assemblyItems.length === 0)) return false;
@@ -250,6 +253,7 @@ export default function AuthenticOmegaProductsServicesView() {
     selectedGroups,
     selectedSupplier,
     selectedBrand,
+    selectedSource,
     showDiscontinuedOnly,
     showAssemblyOnly,
     showBelowReorderOnly,
@@ -314,6 +318,7 @@ export default function AuthenticOmegaProductsServicesView() {
       lastSupplierName: 'SOOL',
       itemBrand: 'زيت و زيتون الجنوب',
       itemLeadTime: '2 Days',
+      source: 'Local',
       buyingFormat: 'UNIT',
       inventoryFormat: 'UNIT',
       usageFormat: 'UNIT',
@@ -1350,7 +1355,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
                           <label className="block text-slate-700 font-medium mb-1">Main Supplier*</label>
                           <div className="flex">
@@ -1397,6 +1402,33 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Add Brand"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Source</label>
+                          <div className="flex">
+                            <select
+                              value={editingProduct.source || 'Local'}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, source: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              <option value="">Select Source</option>
+                              {OMEGA_SOURCES.map((s) => (
+                                <option key={s.id} value={s.name}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              title="Add Source"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -1967,7 +1999,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
                           <label className="block text-slate-700 font-medium mb-1">Main Supplier*</label>
                           <div className="flex">
@@ -2014,6 +2046,33 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Add Brand"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Source</label>
+                          <div className="flex">
+                            <select
+                              value={editingProduct.source || 'Local'}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, source: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              <option value="">Select Source</option>
+                              {OMEGA_SOURCES.map((s) => (
+                                <option key={s.id} value={s.name}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              title="Add Source"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -2642,7 +2701,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                           <label className="block text-slate-700 font-medium mb-1">Item Brand</label>
                           <div className="flex">
@@ -2657,6 +2716,32 @@ export default function AuthenticOmegaProductsServicesView() {
                               {OMEGA_ITEM_BRANDS.map((b) => (
                                 <option key={b.id} value={b.name}>
                                   {b.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              className="px-2.5 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Source</label>
+                          <div className="flex">
+                            <select
+                              value={editingProduct.source || 'Local'}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, source: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white"
+                            >
+                              <option value="">Select Source</option>
+                              {OMEGA_SOURCES.map((s) => (
+                                <option key={s.id} value={s.name}>
+                                  {s.name}
                                 </option>
                               ))}
                             </select>

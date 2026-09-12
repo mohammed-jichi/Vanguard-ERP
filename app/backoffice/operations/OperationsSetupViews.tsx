@@ -38,6 +38,7 @@ import {
   INITIAL_PAYMENT_TYPES,
   INITIAL_CURRENCIES,
   INITIAL_BRANDS,
+  INITIAL_SOURCES,
   INITIAL_DELIVERY_PROVIDERS,
   LostGoodsReasonRecord,
   SizeGroupRecord,
@@ -47,6 +48,7 @@ import {
   PaymentTypeRecord,
   CurrencySetupRecord,
   InventoryBrandRecord,
+  InventorySourceRecord,
   DeliveryProviderRecord
 } from './operationsData';
 import OperationsPrimarySetupViews, { PrimarySetupSection } from './OperationsPrimarySetupViews';
@@ -70,6 +72,7 @@ interface OperationsSetupViewsProps {
     | 'payment_types'
     | 'currency_setup'
     | 'inventory_brands'
+    | 'inventory_sources'
     | 'delivery_providers';
 }
 
@@ -98,6 +101,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
   const [paymentTypes, setPaymentTypes] = useState<PaymentTypeRecord[]>(INITIAL_PAYMENT_TYPES);
   const [currencies, setCurrencies] = useState<CurrencySetupRecord[]>(INITIAL_CURRENCIES);
   const [brands, setBrands] = useState<InventoryBrandRecord[]>(INITIAL_BRANDS);
+  const [sources, setSources] = useState<InventorySourceRecord[]>(INITIAL_SOURCES);
   const [deliveryProviders, setDeliveryProviders] = useState<DeliveryProviderRecord[]>(INITIAL_DELIVERY_PROVIDERS);
 
   // Common UI states
@@ -177,6 +181,13 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
     active: true
   });
 
+  const [newSourceForm, setNewSourceForm] = useState({
+    sourceId: `SRC-${Math.floor(100 + Math.random() * 900)}`,
+    name: 'Local',
+    description: 'Domestic local production and suppliers',
+    type: 'LOCAL' as 'LOCAL' | 'MARKETPLACE'
+  });
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
@@ -206,6 +217,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
     if (section === 'payment_types') data = paymentTypes;
     if (section === 'currency_setup') data = currencies;
     if (section === 'inventory_brands') data = brands;
+    if (section === 'inventory_sources') data = sources;
     if (section === 'delivery_providers') data = deliveryProviders;
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -242,6 +254,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
             {section === 'payment_types' && <CreditCard className="w-6 h-6" />}
             {section === 'currency_setup' && <Coins className="w-6 h-6" />}
             {section === 'inventory_brands' && <Bookmark className="w-6 h-6" />}
+            {section === 'inventory_sources' && <Layers className="w-6 h-6" />}
             {section === 'delivery_providers' && <Truck className="w-6 h-6" />}
           </div>
           <div>
@@ -254,6 +267,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
               {section === 'payment_types' && 'Payment Types & Cash Registers'}
               {section === 'currency_setup' && 'Multi-Currency & FX Exchange Setup'}
               {section === 'inventory_brands' && 'Inventory Brands Registry'}
+              {section === 'inventory_sources' && 'All Sources & Channels Registry'}
               {section === 'delivery_providers' && 'Delivery Providers & Aggregators'}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -356,6 +370,16 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
             >
               <Plus className="w-4 h-4" />
               <span>New Brand</span>
+            </button>
+          )}
+
+          {section === 'inventory_sources' && (
+            <button
+              onClick={() => setActiveModal('new_source')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition shadow-md"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Source</span>
             </button>
           )}
 
@@ -805,6 +829,61 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                         className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold transition"
                       >
                         Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          VIEW 8B: INVENTORY SOURCES (ALL SOURCES / LOCAL / VANGUARD MARKET PLACE)
+          ========================================================================= */}
+      {section === 'inventory_sources' && (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3.5">#</th>
+                  <th className="px-4 py-3.5">Source ID</th>
+                  <th className="px-4 py-3.5">Source Name</th>
+                  <th className="px-4 py-3.5">Channel / Integration Classification</th>
+                  <th className="px-4 py-3.5">Description / Scope</th>
+                  <th className="px-4 py-3.5 text-center">Status</th>
+                  <th className="px-4 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 font-mono text-xs">
+                {sources.map((s, idx) => (
+                  <tr key={s.id} className="hover:bg-slate-50 transition">
+                    <td className="px-4 py-3 text-slate-500 font-bold">{idx + 1}</td>
+                    <td className="px-4 py-3 font-bold text-cyan-600">{s.sourceId}</td>
+                    <td className="px-4 py-3 font-sans font-bold text-slate-900">{s.name}</td>
+                    <td className="px-4 py-3 font-sans">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                        s.type === 'LOCAL'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-cyan-50 text-cyan-700 border-cyan-200'
+                      }`}>
+                        {s.type === 'LOCAL' ? 'Domestic Supply Origin' : 'Vanguard B2B Exchange Platform'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-sans text-slate-600 text-xs">{s.description}</td>
+                    <td className="px-4 py-3 text-center font-sans">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Active Channel
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-sans">
+                      <button
+                        onClick={() => showToast(`Configured source profile for ${s.name}`)}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold transition"
+                      >
+                        Configure
                       </button>
                     </td>
                   </tr>
@@ -1470,6 +1549,106 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL 7: NEW SOURCE
+          ========================================================================= */}
+      {activeModal === 'new_source' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 text-slate-900 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-cyan-600 font-bold">
+                <Layers className="w-5 h-5" />
+                <span>Add Inventory Source</span>
+              </div>
+              <button
+                onClick={() => setActiveModal(null)}
+                className="text-slate-500 hover:text-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSources([
+                  ...sources,
+                  {
+                    id: `SRC-${Date.now().toString().slice(-4)}`,
+                    sourceId: newSourceForm.sourceId,
+                    name: newSourceForm.name,
+                    description: newSourceForm.description,
+                    type: newSourceForm.type
+                  }
+                ]);
+                setActiveModal(null);
+                showToast(`Source "${newSourceForm.name}" added successfully!`);
+              }}
+              className="p-6 space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Source Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newSourceForm.name}
+                  onChange={(e) => setNewSourceForm({ ...newSourceForm, name: e.target.value })}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  placeholder="e.g. Local or Vanguard Market place"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Classification / Channel Type
+                </label>
+                <select
+                  value={newSourceForm.type}
+                  onChange={(e) =>
+                    setNewSourceForm({ ...newSourceForm, type: e.target.value as 'LOCAL' | 'MARKETPLACE' })
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                >
+                  <option value="LOCAL">Direct Domestic Supply (Local)</option>
+                  <option value="MARKETPLACE">Vanguard B2B Marketplace & Exchange</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Description / Channel Scope
+                </label>
+                <textarea
+                  rows={3}
+                  value={newSourceForm.description}
+                  onChange={(e) => setNewSourceForm({ ...newSourceForm, description: e.target.value })}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  placeholder="Operational details for this source..."
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-sm font-semibold transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition"
+                >
+                  Save Source
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

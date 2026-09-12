@@ -701,6 +701,10 @@ export default function Sidebar({
                             <Award className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                             <span>Inventory Brands</span>
                           </Link>
+                          <Link href="/backoffice/operations?section=inventory_sources" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                            <Layers className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
+                            <span>All Sources</span>
+                          </Link>
                           <Link href="/backoffice/operations?section=delivery_providers" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
                             <Truck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>Delivery Providers</span>

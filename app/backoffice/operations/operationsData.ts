@@ -471,6 +471,14 @@ export interface InventoryBrandRecord {
   country: string;
 }
 
+export interface InventorySourceRecord {
+  id: string;
+  sourceId: string;
+  name: string;
+  description: string;
+  type: 'LOCAL' | 'MARKETPLACE';
+}
+
 export interface DeliveryProviderRecord {
   id: string;
   providerId: string;
@@ -594,6 +602,11 @@ export const INITIAL_BRANDS: InventoryBrandRecord[] = [
   { id: 'BRD-39', brandId: 'BRD-SAM', name: 'سما فوودز', manufacturer: 'Sama Foods Co.', country: 'Lebanon' },
   { id: 'BRD-40', brandId: 'BRD-CRY', name: 'كريستال', manufacturer: 'Crystal Ghee & Oils', country: 'Lebanon' },
   { id: 'BRD-41', brandId: 'BRD-NIN', name: 'نينا', manufacturer: 'Nina Food Products', country: 'Lebanon' }
+];
+
+export const INITIAL_SOURCES: InventorySourceRecord[] = [
+  { id: 'SRC-01', sourceId: 'SRC-LOC', name: 'Local', description: 'Domestic local production and suppliers', type: 'LOCAL' },
+  { id: 'SRC-02', sourceId: 'SRC-VMP', name: 'Vanguard Market place', description: 'Vanguard integrated B2B marketplace and exchange', type: 'MARKETPLACE' }
 ];
 
 export const INITIAL_SIZES_GROUPS: SizeGroupRecord[] = [

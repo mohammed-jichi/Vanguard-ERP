@@ -72,6 +72,7 @@ export type OpsSectionKey =
   | 'payment_types'
   | 'currency_setup'
   | 'inventory_brands'
+  | 'inventory_sources'
   | 'delivery_providers';
 
 function OperationsCenterComponent() {
@@ -236,6 +237,7 @@ function OperationsCenterComponent() {
           activeSection === 'payment_types' ||
           activeSection === 'currency_setup' ||
           activeSection === 'inventory_brands' ||
+          activeSection === 'inventory_sources' ||
           activeSection === 'delivery_providers') && (
           <OperationsSetupViews section={activeSection as any} />
         )}

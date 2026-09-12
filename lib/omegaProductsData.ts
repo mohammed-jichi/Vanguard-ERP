@@ -119,6 +119,7 @@ export interface AuthenticProductRecord {
   lastSupplierName: string;
   itemBrand: string;
   itemLeadTime: string;
+  source?: string;
 
   // Unit Format
   buyingFormat: string;
@@ -284,11 +285,11 @@ export const OMEGA_ITEM_BRANDS = [
 export const ALL_ITEM_BRANDS_LIST = OMEGA_ITEM_BRANDS.map((b) => b.name);
 
 export const OMEGA_SOURCES = [
-  { id: 1, name: 'Manufactured' },
-  { id: 2, name: 'Purchased' },
-  { id: 3, name: 'Imported' },
-  { id: 4, name: 'Consignment' }
+  { id: 1, name: 'Local' },
+  { id: 2, name: 'Vanguard Market place' }
 ];
+
+export const ALL_SOURCES_LIST = OMEGA_SOURCES.map((s) => s.name);
 
 // Initial Authentic Products matching Screenshot 1 exactly
 export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
@@ -317,6 +318,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -439,6 +441,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -535,6 +538,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'سما فوودز',
     itemLeadTime: '2 Days',
+    source: 'Vanguard Market place',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -629,6 +633,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -723,6 +728,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'Alfa',
     itemLeadTime: '2 Days',
+    source: 'Vanguard Market place',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -817,6 +823,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'المنى',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -911,6 +918,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -1005,6 +1013,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -1099,6 +1108,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'تغذية',
     itemLeadTime: '2 Days',
+    source: 'Vanguard Market place',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -1194,6 +1204,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'راس الحصان',
     itemLeadTime: '3 Days',
+    source: 'Local',
     buyingFormat: 'GAL',
     inventoryFormat: 'GAL',
     usageFormat: 'GAL',
@@ -1288,6 +1299,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '1 Day',
+    source: 'Local',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',

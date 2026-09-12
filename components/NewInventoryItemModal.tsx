@@ -23,7 +23,7 @@ import {
   addInventoryItem,
   AuthenticInventoryItem
 } from '@/lib/omegaInventoryCatalog';
-import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
+import { OMEGA_ITEM_BRANDS, OMEGA_SOURCES } from '@/lib/omegaProductsData';
 
 interface NewInventoryItemModalProps {
   isOpen: boolean;
@@ -50,6 +50,7 @@ export default function NewInventoryItemModal({
   const [group, setGroup] = useState<string>('صناديق زعتر');
   const [supplier, setSupplier] = useState<string>('المورد الرئيسي (Main Store)');
   const [brand, setBrand] = useState<string>('زيت و زيتون الجنوب');
+  const [source, setSource] = useState<string>('Local');
   const [itemType, setItemType] = useState<string>('Inventory Item');
 
   // Units & conversions state
@@ -402,8 +403,8 @@ export default function NewInventoryItemModal({
                 </div>
               </div>
 
-              {/* Supplier, Item Brand & Item Type */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Supplier, Item Brand, Source & Item Type */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Default Supplier / Vendor</label>
                   <input
@@ -423,6 +424,20 @@ export default function NewInventoryItemModal({
                     {OMEGA_ITEM_BRANDS.map((b) => (
                       <option key={b.id} value={b.name}>
                         {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Source</label>
+                  <select
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:outline-none focus:border-blue-600 bg-white"
+                  >
+                    {OMEGA_SOURCES.map((s) => (
+                      <option key={s.id} value={s.name}>
+                        {s.name}
                       </option>
                     ))}
                   </select>
