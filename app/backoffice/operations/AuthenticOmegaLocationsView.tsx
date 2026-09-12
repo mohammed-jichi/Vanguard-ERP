@@ -160,6 +160,16 @@ export default function AuthenticOmegaLocationsView() {
   const [isMergeWarningOpen, setIsMergeWarningOpen] = useState(false);
   const [mergeConfirmationInput, setMergeConfirmationInput] = useState('');
 
+  // Valid answers: only accepts 'Merge Locations', 'MERGE LOCATIONS', or 'merge locations'
+  const isMergeConfirmationValid = useMemo(() => {
+    const trimmed = mergeConfirmationInput.trim();
+    return (
+      trimmed === 'MERGE LOCATIONS' ||
+      trimmed === 'Merge Locations' ||
+      trimmed === 'merge locations'
+    );
+  }, [mergeConfirmationInput]);
+
   // Zones Modals
   const [isNewZoneOpen, setIsNewZoneOpen] = useState(false);
   const [isEditZoneOpen, setIsEditZoneOpen] = useState(false);
@@ -360,8 +370,8 @@ export default function AuthenticOmegaLocationsView() {
   };
 
   const handleConfirmMerge = () => {
-    if (mergeConfirmationInput !== 'MERGE LOCATIONS') {
-      alert('Please type exactly: MERGE LOCATIONS to confirm');
+    if (!isMergeConfirmationValid) {
+      alert('Please type "Merge Locations", "MERGE LOCATIONS", or "merge locations" to confirm.');
       return;
     }
 
@@ -1159,6 +1169,11 @@ export default function AuthenticOmegaLocationsView() {
                   autoFocus
                   value={mergeConfirmationInput}
                   onChange={(e) => setMergeConfirmationInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && isMergeConfirmationValid) {
+                      handleConfirmMerge();
+                    }
+                  }}
                   className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all font-mono"
                   placeholder=""
                 />
@@ -1176,8 +1191,12 @@ export default function AuthenticOmegaLocationsView() {
                 <button
                   type="button"
                   onClick={handleConfirmMerge}
-                  disabled={mergeConfirmationInput !== 'MERGE LOCATIONS'}
-                  className="px-4 py-1.5 rounded-sm bg-[#4b5563] hover:bg-[#374151] disabled:opacity-40 text-white text-xs font-bold transition shadow-2xs cursor-pointer"
+                  disabled={!isMergeConfirmationValid}
+                  className={`px-4 py-1.5 rounded-sm text-xs font-bold transition shadow-xs ${
+                    isMergeConfirmationValid
+                      ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white cursor-pointer shadow-sm'
+                      : 'bg-[#4b5563] text-white opacity-40 cursor-not-allowed'
+                  }`}
                 >
                   OK
                 </button>
