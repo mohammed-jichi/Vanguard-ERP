@@ -1119,8 +1119,14 @@ export default function AuthenticOmegaLocationsView() {
           MODAL 4: MERGE WARNING DIALOG (Matching Screenshot 2 Pixel-by-Pixel)
           ======================================================================= */}
       {isMergeWarningOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-2xs animate-fade-in">
-          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden">
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 99999 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden relative"
+            style={{ zIndex: 100000 }}
+          >
             {/* Dark Header matching Screenshot 2 */}
             <div className="px-4 py-3 bg-[#1e1e1e] text-white flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wide">
