@@ -65,6 +65,7 @@ import AuthenticOmegaUnitsView from './AuthenticOmegaUnitsView';
 import AuthenticOmegaLocationsView from './AuthenticOmegaLocationsView';
 import AuthenticOmegaSuppliersView from './AuthenticOmegaSuppliersView';
 import AuthenticOmegaDepartmentsView from './AuthenticOmegaDepartmentsView';
+import AuthenticOmegaProductsServicesView from './AuthenticOmegaProductsServicesView';
 
 export type PrimarySetupSection =
   | 'quick_setup'
@@ -479,17 +480,22 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
       {section === 'departments' && <AuthenticOmegaDepartmentsView />}
 
       {/* =========================================================================
-          COMMON TOOLBAR FOR TABULAR SECTIONS (PRODUCTS, ETC.)
+          VIEW 1: PRODUCTS & SERVICES (100% AUTHENTIC OMEGA CLONED VIEW)
           ========================================================================= */}
-      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && section !== 'locations' && section !== 'suppliers' && section !== 'departments' && (
+      {section === 'products_services' && <AuthenticOmegaProductsServicesView />}
+
+      {/* =========================================================================
+          COMMON TOOLBAR FOR TABULAR SECTIONS
+          ========================================================================= */}
+      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && section !== 'locations' && section !== 'suppliers' && section !== 'departments' && section !== 'products_services' && (
         <div className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-blue-50 text-[#195a96] border border-blue-200">
-              {section === 'products_services' && <Package className="w-6 h-6" />}
+              <Package className="w-6 h-6" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 capitalize">
-                {section === 'products_services' && 'Products & Services'}
+                Inventory Catalog
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
                 Omega ERP System Setup • Southern Olive Oil Products S.A.R.L
@@ -498,7 +504,6 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* Search */}
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -506,34 +511,9 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#195a96]/20 focus:border-[#195a96]"
+                className="pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500"
               />
             </div>
-
-            {/* Filter by Group (for products) */}
-            {section === 'products_services' && (
-              <select
-                value={groupFilter}
-                onChange={(e) => setGroupFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-700 font-medium"
-              >
-                <option value="All">All Groups</option>
-                {groups.map((g) => (
-                  <option key={g.id} value={g.name}>{g.name}</option>
-                ))}
-              </select>
-            )}
-
-            {/* Add Modals Buttons */}
-            {section === 'products_services' && (
-              <button
-                onClick={() => setActiveModal('new_product')}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white text-xs font-bold transition shadow-xs"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New Product &amp; Service</span>
-              </button>
-            )}
 
             <button
               onClick={handleExport}
@@ -546,72 +526,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         </div>
       )}
 
-      {/* =========================================================================
-          VIEW 2: PRODUCTS & SERVICES TABLE
-          ========================================================================= */}
-      {section === 'products_services' && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#4d5b76] text-white font-bold uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="px-3 py-2.5">#</th>
-                  <th className="px-3 py-2.5">Description</th>
-                  <th className="px-3 py-2.5">Code</th>
-                  <th className="px-3 py-2.5">Barcode</th>
-                  <th className="px-3 py-2.5">Group</th>
-                  <th className="px-3 py-2.5 text-center">Qty OH</th>
-                  <th className="px-3 py-2.5">Unit</th>
-                  <th className="px-3 py-2.5 text-right">Selling Price SP</th>
-                  <th className="px-3 py-2.5 text-right">Selling Price</th>
-                  <th className="px-3 py-2.5 text-right">Cost</th>
-                  <th className="px-3 py-2.5">Buying Format</th>
-                  <th className="px-3 py-2.5">Function</th>
-                  <th className="px-3 py-2.5">Updated At</th>
-                  <th className="px-3 py-2.5 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredProducts.map((p, idx) => (
-                  <tr key={p.id} className="hover:bg-blue-50/40 transition">
-                    <td className="px-3 py-2.5 text-slate-400 font-mono">{idx + 1}</td>
-                    <td className="px-3 py-2.5 font-bold text-slate-900">{p.description}</td>
-                    <td className="px-3 py-2.5 font-mono text-blue-700 font-semibold">{p.code}</td>
-                    <td className="px-3 py-2.5 font-mono text-slate-600">{p.barcode}</td>
-                    <td className="px-3 py-2.5 font-medium text-slate-700">{p.group}</td>
-                    <td className="px-3 py-2.5 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded-full font-bold text-[11px] ${
-                        p.qtyOnHand > 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {p.qtyOnHand}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-600">{p.unit}</td>
-                    <td className="px-3 py-2.5 text-right font-bold text-slate-900">${p.sellingPriceSp.toFixed(2)}</td>
-                    <td className="px-3 py-2.5 text-right text-slate-600">{p.sellingPriceLbp.toLocaleString()} L.L.</td>
-                    <td className="px-3 py-2.5 text-right text-slate-500 font-mono">${p.cost.toFixed(2)}</td>
-                    <td className="px-3 py-2.5 text-slate-600">{p.buyingFormat}</td>
-                    <td className="px-3 py-2.5 text-slate-600">{p.function}</td>
-                    <td className="px-3 py-2.5 text-slate-400 text-[11px] font-mono">{p.updatedAt}</td>
-                    <td className="px-3 py-2.5 text-center">
-                      <button
-                        onClick={() => {
-                          setProducts(products.filter((item) => item.id !== p.id));
-                          showToast(`Product ${p.code} deleted`);
-                        }}
-                        className="text-slate-400 hover:text-rose-600 transition"
-                        title="Delete Product"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {/* (Legacy products table replaced by AuthenticOmegaProductsServicesView) */}
 
       {/* (Legacy groups table replaced by AuthenticOmegaInventoryGroupsView) */}
 
