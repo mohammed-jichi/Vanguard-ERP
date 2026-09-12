@@ -1147,14 +1147,14 @@ export default function AuthenticOmegaSuppliersView() {
                   Billing
                 </div>
                 <div className="p-4 space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-slate-700 font-medium mb-1">Supplier Currency*</label>
-                      <div className="flex gap-2">
+                      <div className="flex">
                         <select
                           value={formCurrency}
                           onChange={(e) => setFormCurrency(e.target.value)}
-                          className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                          className="flex-1 min-w-0 px-3 py-2 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
                           {currencies.map((cur) => (
                             <option key={cur.ID} value={cur.DESCRIPTION}>
@@ -1166,20 +1166,20 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={handleOpenNewCurrency}
                           title="Add New Currency"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
+                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-2xs border border-[#323f4b] shrink-0 flex items-center justify-center"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-slate-700 font-medium mb-1">Payments Terms*</label>
-                      <div className="flex gap-2">
+                      <div className="flex">
                         <select
                           value={formPaymentTerms}
                           onChange={(e) => setFormPaymentTerms(e.target.value)}
-                          className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                          className="flex-1 min-w-0 px-3 py-2 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
                           <option value="0">Select Payment Terms</option>
                           {paymentTerms.map((pt) => (
@@ -1192,9 +1192,9 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={handleOpenNewPaymentTerm}
                           title="Add New Payment Term"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
+                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-2xs border border-[#323f4b] shrink-0 flex items-center justify-center"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
                       </div>
                     </div>
@@ -1765,10 +1765,10 @@ export default function AuthenticOmegaSuppliersView() {
           style={{ zIndex: 70000 }}
         >
           <div
-            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden"
             style={{ zIndex: 70001 }}
           >
-            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+            <div className="px-6 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white">
               <h2 className="text-[17px] font-normal text-slate-800">New Payment Term</h2>
               <button
                 type="button"
@@ -1778,9 +1778,9 @@ export default function AuthenticOmegaSuppliersView() {
                 ×
               </button>
             </div>
-            <form onSubmit={handleSaveNewPaymentTerm} className="p-5 space-y-4 text-xs">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                <div className="md:col-span-7">
+            <form onSubmit={handleSaveNewPaymentTerm} className="p-6 space-y-4 text-xs">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3.5">
+                <div className="flex-[6] min-w-0">
                   <label className="block text-slate-700 font-medium mb-1">Description*</label>
                   <input
                     type="text"
@@ -1791,24 +1791,24 @@ export default function AuthenticOmegaSuppliersView() {
                     className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
-                <div className="md:col-span-5">
+                <div className="flex-[4] min-w-0">
                   <label className="block text-slate-700 font-medium mb-1">Nb. Of Days*</label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="number"
-                      required
-                      value={newPtDays}
-                      onChange={(e) => setNewPtDays(e.target.value)}
-                      className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
-                    />
-                    <button
-                      type="submit"
-                      className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition shrink-0"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save</span>
-                    </button>
-                  </div>
+                  <input
+                    type="number"
+                    required
+                    value={newPtDays}
+                    onChange={(e) => setNewPtDays(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div className="shrink-0">
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition h-[35px]"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save</span>
+                  </button>
                 </div>
               </div>
             </form>
