@@ -91,11 +91,59 @@ export default function AuthenticOmegaProductsServicesView() {
   const [isSortMenuOpen, setIsSortMenuOpen] = useState<boolean>(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
 
-  // More Filter Checkboxes
-  const [showDiscontinuedOnly, setShowDiscontinuedOnly] = useState<boolean>(false);
-  const [showAssemblyOnly, setShowAssemblyOnly] = useState<boolean>(false);
-  const [showBelowReorderOnly, setShowBelowReorderOnly] = useState<boolean>(false);
-  const [showWithoutBarcodeOnly, setShowWithoutBarcodeOnly] = useState<boolean>(false);
+  // More Filter Checkboxes (14 Authentic Omega ERP Specifications)
+  const [moreFilters, setMoreFilters] = useState<{
+    serialNumber: boolean;
+    ingredients: boolean;
+    colors: boolean;
+    sizes: boolean;
+    costZero: boolean;
+    sellingPriceZero: boolean;
+    logicalWarehouseNull: boolean;
+    defaultLocationNull: boolean;
+    serviceItems: boolean;
+    consignmentItems: boolean;
+    withoutReorderLevel: boolean;
+    masterItems: boolean;
+    discontinuedItems: boolean;
+    withExpiry: boolean;
+  }>({
+    serialNumber: false,
+    ingredients: false,
+    colors: false,
+    sizes: false,
+    costZero: false,
+    sellingPriceZero: false,
+    logicalWarehouseNull: false,
+    defaultLocationNull: false,
+    serviceItems: false,
+    consignmentItems: false,
+    withoutReorderLevel: false,
+    masterItems: false,
+    discontinuedItems: false,
+    withExpiry: false,
+  });
+
+  const activeMoreFiltersCount = useMemo(() => {
+    return Object.values(moreFilters).filter(Boolean).length;
+  }, [moreFilters]);
+
+  const MORE_FILTER_OPTIONS: Array<{ key: keyof typeof moreFilters; label: string }> = useMemo(() => [
+    { key: 'serialNumber', label: 'Items with Serial Number' },
+    { key: 'ingredients', label: 'Items with Ingredients' },
+    { key: 'colors', label: 'Items with Colors' },
+    { key: 'sizes', label: 'Items with Sizes' },
+    { key: 'costZero', label: 'Items with Cost = 0' },
+    { key: 'sellingPriceZero', label: 'Items with Selling price = 0' },
+    { key: 'logicalWarehouseNull', label: 'Items with Logical Warehouse Null' },
+    { key: 'defaultLocationNull', label: 'Items with Default location Null' },
+    { key: 'serviceItems', label: 'Service Items' },
+    { key: 'consignmentItems', label: 'Consignment Items' },
+    { key: 'withoutReorderLevel', label: 'Items without reorder level' },
+    { key: 'masterItems', label: 'Master Items' },
+    { key: 'discontinuedItems', label: 'Discontinued Items' },
+    { key: 'withExpiry', label: 'Items with Expiry' },
+  ], []);
 
   // Sorting
   const [sortField, setSortField] = useState<keyof AuthenticProductRecord>('id');
@@ -202,10 +250,22 @@ export default function AuthenticOmegaProductsServicesView() {
     setSelectedSupplier('All');
     setSelectedBrand('All');
     setSelectedSource('All');
-    setShowDiscontinuedOnly(false);
-    setShowAssemblyOnly(false);
-    setShowBelowReorderOnly(false);
-    setShowWithoutBarcodeOnly(false);
+    setMoreFilters({
+      serialNumber: false,
+      ingredients: false,
+      colors: false,
+      sizes: false,
+      costZero: false,
+      sellingPriceZero: false,
+      logicalWarehouseNull: false,
+      defaultLocationNull: false,
+      serviceItems: false,
+      consignmentItems: false,
+      withoutReorderLevel: false,
+      masterItems: false,
+      discontinuedItems: false,
+      withExpiry: false,
+    });
     showToast('Filters reset to default');
   };
 
@@ -237,11 +297,24 @@ export default function AuthenticOmegaProductsServicesView() {
       // Source
       if (selectedSource !== 'All' && (item.source || 'Local') !== selectedSource) return false;
 
-      // More Filters
-      if (showDiscontinuedOnly && !item.isDiscontinued) return false;
-      if (showAssemblyOnly && (!item.assemblyItems || item.assemblyItems.length === 0)) return false;
-      if (showBelowReorderOnly && item.qtyOH > 0) return false;
-      if (showWithoutBarcodeOnly && item.barcode) return false;
+      // More Filters (14 Authentic Omega ERP Specifications)
+      if (moreFilters.serialNumber && !item.hasSerialNumber && (!item.serialNumber || item.serialNumber.trim() === '')) return false;
+      if (moreFilters.ingredients && !item.hasIngredients && (!item.ingredients || item.ingredients.trim() === '')) return false;
+      if (moreFilters.colors && !item.hasColors && (!item.color || item.color.trim() === '')) return false;
+      if (moreFilters.sizes && !item.hasSizes && (!item.size || item.size.trim() === '')) return false;
+      if (moreFilters.costZero && (Number(item.cost || 0) > 0 || Number(item.unitCostUSD || 0) > 0 || Number(item.unitCostLL || 0) > 0)) return false;
+      if (moreFilters.sellingPriceZero && (Number(item.sellingPrice || 0) > 0 || Number(item.sellingPrice1USD || 0) > 0 || Number(item.sellingPrice1LL || 0) > 0)) return false;
+      if (moreFilters.logicalWarehouseNull && item.logicalWarehouseName && item.logicalWarehouseName !== '' && item.logicalWarehouseName !== 'None' && item.logicalWarehouseId > 0) return false;
+      if (moreFilters.defaultLocationNull && item.defaultLocationName && item.defaultLocationName !== '' && item.defaultLocationName !== 'None' && item.defaultLocationId > 0) return false;
+      if (moreFilters.serviceItems && !item.isService && item.function !== 'Service' && item.sellingFunction !== 'Service' && item.categoryName !== 'Services') return false;
+      if (moreFilters.consignmentItems && !item.isConsignment && item.source !== 'Consignment' && item.function !== 'Consignment') return false;
+      if (moreFilters.withoutReorderLevel) {
+        const hasReorder = (item.reorderLevel && item.reorderLevel > 0) || (item.stockRecords && item.stockRecords.some(s => s.reorderLevel && s.reorderLevel > 0));
+        if (hasReorder) return false;
+      }
+      if (moreFilters.masterItems && !item.isMasterItem && item.function !== 'Master Item' && item.sellingFunction !== 'Master Item') return false;
+      if (moreFilters.discontinuedItems && !item.isDiscontinued) return false;
+      if (moreFilters.withExpiry && !item.hasExpiry && (!item.expiryDate || item.expiryDate.trim() === '')) return false;
 
       return true;
     });
@@ -254,10 +327,7 @@ export default function AuthenticOmegaProductsServicesView() {
     selectedSupplier,
     selectedBrand,
     selectedSource,
-    showDiscontinuedOnly,
-    showAssemblyOnly,
-    showBelowReorderOnly,
-    showWithoutBarcodeOnly
+    moreFilters
   ]);
 
   // Sorted Products
@@ -390,7 +460,21 @@ export default function AuthenticOmegaProductsServicesView() {
       tax4: false,
       tax5: false,
       tax6: false,
-      autoDiscount: 0
+      autoDiscount: 0,
+      hasSerialNumber: false,
+      serialNumber: '',
+      hasIngredients: false,
+      ingredients: '',
+      hasColors: false,
+      color: '',
+      hasSizes: false,
+      size: '',
+      isService: false,
+      isConsignment: false,
+      reorderLevel: 10,
+      isMasterItem: false,
+      hasExpiry: false,
+      expiryDate: ''
     };
     setEditingProduct(newRecord);
     setActiveModalTab('main');
@@ -695,58 +779,83 @@ export default function AuthenticOmegaProductsServicesView() {
               ))}
             </select>
 
-            {/* More Menu Dropdown */}
+            {/* More Menu Dropdown (14 Authentic Omega ERP Specifications) */}
             <div className="relative" ref={moreRef}>
               <button
                 type="button"
                 onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                className="px-3 py-1 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-normal flex items-center gap-1 cursor-pointer transition"
+                className={`px-3 py-1 rounded-sm border text-xs font-normal flex items-center gap-1.5 cursor-pointer transition shadow-2xs ${
+                  activeMoreFiltersCount > 0
+                    ? 'border-blue-500 bg-blue-50/70 text-blue-700 font-semibold'
+                    : 'border-slate-300 bg-white hover:bg-slate-50 text-slate-700'
+                }`}
               >
                 <span>More</span>
+                {activeMoreFiltersCount > 0 && (
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                    {activeMoreFiltersCount}
+                  </span>
+                )}
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
               {isMoreMenuOpen && (
-                <div className="absolute left-0 mt-1 w-64 bg-white border border-slate-200 rounded-sm shadow-xl p-3 z-30 space-y-2 text-xs animate-fade-in">
-                  <div className="font-semibold text-slate-700 border-b border-slate-100 pb-1 mb-2">
-                    Advanced Filters
+                <div className="absolute left-0 mt-1 w-72 bg-white border border-slate-200 rounded-sm shadow-2xl p-3 z-30 space-y-1.5 text-xs animate-fade-in max-h-[420px] overflow-y-auto">
+                  <div className="flex items-center justify-between font-semibold text-slate-800 border-b border-slate-100 pb-1.5 mb-1">
+                    <span className="text-[12px]">More Filters ({activeMoreFiltersCount})</span>
+                    {activeMoreFiltersCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMoreFilters({
+                            serialNumber: false,
+                            ingredients: false,
+                            colors: false,
+                            sizes: false,
+                            costZero: false,
+                            sellingPriceZero: false,
+                            logicalWarehouseNull: false,
+                            defaultLocationNull: false,
+                            serviceItems: false,
+                            consignmentItems: false,
+                            withoutReorderLevel: false,
+                            masterItems: false,
+                            discontinuedItems: false,
+                            withExpiry: false,
+                          })
+                        }
+                        className="text-[10px] text-rose-600 hover:text-rose-800 cursor-pointer font-medium hover:underline"
+                      >
+                        Clear All
+                      </button>
+                    )}
                   </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showDiscontinuedOnly}
-                      onChange={(e) => setShowDiscontinuedOnly(e.target.checked)}
-                      className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
-                    />
-                    <span>Show Discontinued Only</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showAssemblyOnly}
-                      onChange={(e) => setShowAssemblyOnly(e.target.checked)}
-                      className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
-                    />
-                    <span>Assembly / Recipes Only</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showBelowReorderOnly}
-                      onChange={(e) => setShowBelowReorderOnly(e.target.checked)}
-                      className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
-                    />
-                    <span>Below Reorder Level Only</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showWithoutBarcodeOnly}
-                      onChange={(e) => setShowWithoutBarcodeOnly(e.target.checked)}
-                      className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
-                    />
-                    <span>Items Without Barcode Only</span>
-                  </label>
+                  <div className="space-y-0.5">
+                    {MORE_FILTER_OPTIONS.map((opt) => (
+                      <label
+                        key={opt.key}
+                        className="flex items-center gap-2 py-1 px-1.5 hover:bg-slate-50 rounded-xs cursor-pointer select-none transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={moreFilters[opt.key]}
+                          onChange={(e) =>
+                            setMoreFilters((prev) => ({ ...prev, [opt.key]: e.target.checked }))
+                          }
+                          className="w-3.5 h-3.5 rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                        />
+                        <span
+                          className={`text-[11.5px] ${
+                            moreFilters[opt.key]
+                              ? 'font-semibold text-blue-700'
+                              : 'text-slate-700'
+                          }`}
+                        >
+                          {opt.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -3408,18 +3517,139 @@ export default function AuthenticOmegaProductsServicesView() {
                   )}
 
                   {moreSubTab === 'advanced' && (
-                    <div className="border border-slate-200 rounded-sm p-4 space-y-3">
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={editingProduct.isDiscontinued}
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-4 text-xs">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(editingProduct.isDiscontinued)}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
+                          />
+                          <span className="font-semibold text-slate-800">Discontinued Item</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(editingProduct.isMasterItem)}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, isMasterItem: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="font-semibold text-slate-800">Master Item</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(editingProduct.isService)}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, isService: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="font-semibold text-slate-800">Service Item</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(editingProduct.isConsignment)}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, isConsignment: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                          />
+                          <span className="font-semibold text-slate-800">Consignment Item</span>
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Serial Number Tracking</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editingProduct.hasSerialNumber)}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, hasSerialNumber: e.target.checked })
+                              }
+                              className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                            />
+                            <input
+                              type="text"
+                              value={editingProduct.serialNumber || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, serialNumber: e.target.value, hasSerialNumber: Boolean(e.target.value) })
+                              }
+                              placeholder="e.g. SN-VNG-2026-001"
+                              className="w-full px-3 py-1 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Expiry Date Tracking</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editingProduct.hasExpiry)}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, hasExpiry: e.target.checked })
+                              }
+                              className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                            />
+                            <input
+                              type="date"
+                              value={editingProduct.expiryDate || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, expiryDate: e.target.value, hasExpiry: Boolean(e.target.value) })
+                              }
+                              className="w-full px-3 py-1 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Color Specification</label>
+                          <input
+                            type="text"
+                            value={editingProduct.color || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, color: e.target.value, hasColors: Boolean(e.target.value) })
+                            }
+                            placeholder="e.g. Dark Amber / Clear Crystal"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Size / Volume Format</label>
+                          <input
+                            type="text"
+                            value={editingProduct.size || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, size: e.target.value, hasSizes: Boolean(e.target.value) })
+                            }
+                            placeholder="e.g. 250ml / 500ml / 16L"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-700 font-medium mb-1">Ingredients Specification</label>
+                        <textarea
+                          rows={2}
+                          value={editingProduct.ingredients || ''}
                           onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
+                            setEditingProduct({ ...editingProduct, ingredients: e.target.value, hasIngredients: Boolean(e.target.value) })
                           }
-                          className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
+                          placeholder="e.g. Extra virgin olive oil, herbs, essences..."
+                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                         />
-                        <span className="font-semibold text-slate-800">Item Discontinued / Inactive</span>
-                      </label>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -3469,43 +3699,62 @@ export default function AuthenticOmegaProductsServicesView() {
                 ×
               </button>
             </div>
-            <div className="p-5 space-y-3 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showDiscontinuedOnly}
-                  onChange={(e) => setShowDiscontinuedOnly(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                />
-                <span className="text-slate-700 font-medium">Show Discontinued Items Only</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showAssemblyOnly}
-                  onChange={(e) => setShowAssemblyOnly(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                />
-                <span className="text-slate-700 font-medium">Show Assembly & Recipe Items Only</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showBelowReorderOnly}
-                  onChange={(e) => setShowBelowReorderOnly(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                />
-                <span className="text-slate-700 font-medium">Show Items Below Reorder Level Only</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showWithoutBarcodeOnly}
-                  onChange={(e) => setShowWithoutBarcodeOnly(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                />
-                <span className="text-slate-700 font-medium">Show Items Without Barcode Only</span>
-              </label>
+            <div className="p-5 space-y-2 text-xs max-h-[440px] overflow-y-auto">
+              <div className="flex items-center justify-between font-semibold text-slate-800 border-b border-slate-100 pb-1.5 mb-1">
+                <span>Filter by Specifications ({activeMoreFiltersCount} active)</span>
+                {activeMoreFiltersCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setMoreFilters({
+                        serialNumber: false,
+                        ingredients: false,
+                        colors: false,
+                        sizes: false,
+                        costZero: false,
+                        sellingPriceZero: false,
+                        logicalWarehouseNull: false,
+                        defaultLocationNull: false,
+                        serviceItems: false,
+                        consignmentItems: false,
+                        withoutReorderLevel: false,
+                        masterItems: false,
+                        discontinuedItems: false,
+                        withExpiry: false,
+                      })
+                    }
+                    className="text-[11px] text-rose-600 hover:text-rose-800 cursor-pointer font-medium hover:underline"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+              <div className="space-y-1">
+                {MORE_FILTER_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.key}
+                    className="flex items-center gap-2.5 py-1 px-1.5 hover:bg-slate-50 rounded-xs cursor-pointer select-none transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={moreFilters[opt.key]}
+                      onChange={(e) =>
+                        setMoreFilters((prev) => ({ ...prev, [opt.key]: e.target.checked }))
+                      }
+                      className="w-4 h-4 rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                    />
+                    <span
+                      className={`text-[12px] ${
+                        moreFilters[opt.key]
+                          ? 'font-bold text-blue-700'
+                          : 'text-slate-700 font-medium'
+                      }`}
+                    >
+                      {opt.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
 
               <div className="pt-3 flex justify-end gap-2 border-t border-slate-200">
                 <button

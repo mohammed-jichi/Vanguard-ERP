@@ -214,6 +214,22 @@ export interface AuthenticProductRecord {
   tax5: boolean;
   tax6: boolean;
   autoDiscount: number;
+
+  // Specifications & Advanced Tracking (Omega ERP More Filters)
+  hasSerialNumber?: boolean;
+  serialNumber?: string;
+  hasIngredients?: boolean;
+  ingredients?: string;
+  hasColors?: boolean;
+  color?: string;
+  hasSizes?: boolean;
+  size?: string;
+  isService?: boolean;
+  isConsignment?: boolean;
+  reorderLevel?: number;
+  isMasterItem?: boolean;
+  hasExpiry?: boolean;
+  expiryDate?: string;
 }
 
 // Hierarchy Master Options
@@ -414,7 +430,16 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    hasIngredients: true,
+    ingredients: 'White Distilled Vinegar 5%, Filtered Water',
+    hasColors: true,
+    color: 'Crystal Clear',
+    hasSizes: true,
+    size: '250ml',
+    reorderLevel: 24,
+    hasExpiry: true,
+    expiryDate: '2028-12-31'
   },
   {
     id: 17,
@@ -511,7 +536,16 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    hasIngredients: true,
+    ingredients: 'Pure Apple Cider Ferment 5% Acidity',
+    hasColors: true,
+    color: 'Golden Amber',
+    hasSizes: true,
+    size: '250ml',
+    reorderLevel: 12,
+    hasExpiry: true,
+    expiryDate: '2027-06-30'
   },
   {
     id: 18,
@@ -606,7 +640,12 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    hasIngredients: true,
+    ingredients: 'Organic Baladi Apples Cold Ferment',
+    hasSizes: true,
+    size: '250ml',
+    reorderLevel: 0
   },
   {
     id: 19,
@@ -680,7 +719,9 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     cost: 27170.61,
     function: 'Revenue',
     updatedAt: '21 Jul, 2026',
-    isDiscontinued: false,
+    isDiscontinued: true,
+    hasExpiry: true,
+    expiryDate: '2026-08-31',
     stockRecords: [],
     imageUrl: '',
     videoUrl: '',
@@ -718,7 +759,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     divisionName: 'مقطرات ومدبسات مفرق',
     groupId: 14,
     groupName: 'مقطرات مفرق 250مل',
-    sellingFunction: 'Revenue',
+    sellingFunction: 'Master Item',
     defaultLocationId: 12,
     defaultLocationName: 'Showroom',
     logicalWarehouseId: 1,
@@ -773,7 +814,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     unit: 'BOT',
     sellingPrice: 45000,
     cost: 27170.61,
-    function: 'Revenue',
+    function: 'Master Item',
     updatedAt: '21 Jul, 2026',
     isDiscontinued: false,
     stockRecords: [],
@@ -796,7 +837,12 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    isMasterItem: true,
+    hasColors: true,
+    color: 'Dark Burgundy',
+    hasSizes: true,
+    size: '250ml'
   },
   {
     id: 21,
@@ -823,7 +869,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     lastSupplierName: 'SOOL',
     itemBrand: 'المنى',
     itemLeadTime: '2 Days',
-    source: 'Local',
+    source: 'Consignment',
     buyingFormat: 'BOT',
     inventoryFormat: 'BOT',
     usageFormat: 'BOT',
@@ -868,7 +914,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     unit: 'BOT',
     sellingPrice: 100000,
     cost: 77162.40,
-    function: 'Revenue',
+    function: 'Consignment',
     updatedAt: '21 Jul, 2026',
     isDiscontinued: false,
     stockRecords: [],
@@ -891,7 +937,12 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    isConsignment: true,
+    hasIngredients: true,
+    ingredients: 'Organic Baladi Grapes Pressed Ferment',
+    hasExpiry: true,
+    expiryDate: '2027-09-01'
   },
   {
     id: 22,
@@ -911,8 +962,8 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     sellingFunction: 'Revenue',
     defaultLocationId: 12,
     defaultLocationName: 'Showroom',
-    logicalWarehouseId: 1,
-    logicalWarehouseName: 'Main Store',
+    logicalWarehouseId: 0,
+    logicalWarehouseName: '',
     mainSupplierId: 5,
     mainSupplierName: 'SOOL',
     lastSupplierName: 'SOOL',
@@ -986,7 +1037,9 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    hasColors: true,
+    color: 'Deep Pomegranate'
   },
   {
     id: 23,
@@ -1004,8 +1057,8 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     groupId: 14,
     groupName: 'مقطرات مفرق 250مل',
     sellingFunction: 'Revenue',
-    defaultLocationId: 12,
-    defaultLocationName: 'Showroom',
+    defaultLocationId: 0,
+    defaultLocationName: '',
     logicalWarehouseId: 1,
     logicalWarehouseName: 'Main Store',
     mainSupplierId: 5,
@@ -1081,7 +1134,9 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    hasSerialNumber: true,
+    serialNumber: 'SN-VNG-2026-901'
   },
   {
     id: 24,
@@ -1098,7 +1153,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     divisionName: 'مقطرات ومدبسات مفرق',
     groupId: 14,
     groupName: 'مقطرات مفرق 250مل',
-    sellingFunction: 'Revenue',
+    sellingFunction: 'Service',
     defaultLocationId: 12,
     defaultLocationName: 'Showroom',
     logicalWarehouseId: 1,
@@ -1176,7 +1231,8 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    isService: true
   },
   // Additional sample items for other groups
   {
@@ -1212,10 +1268,10 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     qtyInInventoryFormat: 1,
     packingProduction: 'Gallon 4L',
     qtyInPackingFormat: 1,
-    unitCostLL: 180000,
-    averageCostLL: 180000,
-    unitCostUSD: 2.0,
-    averageCostUSD: 2.0,
+    unitCostLL: 0,
+    averageCostLL: 0,
+    unitCostUSD: 0,
+    averageCostUSD: 0,
     additionalCostLL: 0,
     markupPct: 30,
     recommendedPriceLL: 234000,
@@ -1248,7 +1304,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     qtyOH: 12.0,
     unit: 'GAL',
     sellingPrice: 250000,
-    cost: 180000,
+    cost: 0,
     function: 'Revenue',
     updatedAt: '25 Jul, 2026',
     isDiscontinued: false,
@@ -1272,7 +1328,8 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     tax4: false,
     tax5: false,
     tax6: false,
-    autoDiscount: 0
+    autoDiscount: 0,
+    reorderLevel: 0
   },
   {
     id: 26,
@@ -1314,10 +1371,10 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     additionalCostLL: 0,
     markupPct: 35,
     recommendedPriceLL: 972000,
-    sellingPrice1LL: 1050000,
-    beforeTax1LL: 1050000,
-    profit1Pct: 45.83,
-    sellingPrice1USD: 11.67,
+    sellingPrice1LL: 0,
+    beforeTax1LL: 0,
+    profit1Pct: 0,
+    sellingPrice1USD: 0,
     sellingPrice2LL: 1050000,
     beforeTax2LL: 1050000,
     qtyPrice2: 1,
@@ -1342,7 +1399,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     rfidt2: '',
     qtyOH: 45.0,
     unit: 'BOT',
-    sellingPrice: 1050000,
+    sellingPrice: 0,
     cost: 720000,
     function: 'Revenue',
     updatedAt: '05 Aug, 2026',
