@@ -64,6 +64,7 @@ import AuthenticOmegaInventoryGroupsView from './AuthenticOmegaInventoryGroupsVi
 import AuthenticOmegaUnitsView from './AuthenticOmegaUnitsView';
 import AuthenticOmegaLocationsView from './AuthenticOmegaLocationsView';
 import AuthenticOmegaSuppliersView from './AuthenticOmegaSuppliersView';
+import AuthenticOmegaDepartmentsView from './AuthenticOmegaDepartmentsView';
 
 export type PrimarySetupSection =
   | 'quick_setup'
@@ -473,19 +474,22 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
       {section === 'suppliers' && <AuthenticOmegaSuppliersView />}
 
       {/* =========================================================================
-          COMMON TOOLBAR FOR TABULAR SECTIONS (PRODUCTS, LOCATIONS, ETC.)
+          VIEW 9: DEPARTMENTS (100% AUTHENTIC OMEGA CLONED VIEW)
           ========================================================================= */}
-      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && section !== 'locations' && section !== 'suppliers' && (
+      {section === 'departments' && <AuthenticOmegaDepartmentsView />}
+
+      {/* =========================================================================
+          COMMON TOOLBAR FOR TABULAR SECTIONS (PRODUCTS, ETC.)
+          ========================================================================= */}
+      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && section !== 'locations' && section !== 'suppliers' && section !== 'departments' && (
         <div className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-blue-50 text-[#195a96] border border-blue-200">
               {section === 'products_services' && <Package className="w-6 h-6" />}
-              {section === 'departments' && <Building className="w-6 h-6" />}
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 capitalize">
                 {section === 'products_services' && 'Products & Services'}
-                {section === 'departments' && 'Menus / Departments'}
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
                 Omega ERP System Setup • Southern Olive Oil Products S.A.R.L
@@ -528,16 +532,6 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
               >
                 <Plus className="w-4 h-4" />
                 <span>New Product &amp; Service</span>
-              </button>
-            )}
-
-            {section === 'departments' && (
-              <button
-                onClick={() => setActiveModal('new_department')}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white text-xs font-bold transition shadow-xs"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New Department</span>
               </button>
             )}
 
@@ -627,51 +621,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
 
       {/* (Legacy suppliers table replaced by AuthenticOmegaSuppliersView) */}
 
-      {/* =========================================================================
-          VIEW 9: DEPARTMENTS TABLE
-          ========================================================================= */}
-      {section === 'departments' && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#4d5b76] text-white font-bold uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="px-3 py-2.5">#</th>
-                  <th className="px-3 py-2.5">Description</th>
-                  <th className="px-3 py-2.5">Menu Type</th>
-                  <th className="px-3 py-2.5 text-center">Items Count</th>
-                  <th className="px-3 py-2.5 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredDepartments.map((d, idx) => (
-                  <tr key={d.id} className="hover:bg-slate-50 transition">
-                    <td className="px-3 py-2.5 text-slate-400 font-mono">{idx + 1}</td>
-                    <td className="px-3 py-2.5 font-bold text-slate-900">{d.description}</td>
-                    <td className="px-3 py-2.5">
-                      <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">
-                        {d.menuType}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-center font-bold text-slate-800">{d.itemsCount}</td>
-                    <td className="px-3 py-2.5 text-center">
-                      <button
-                        onClick={() => {
-                          setDepartments(departments.filter((item) => item.id !== d.id));
-                          showToast(`Department ${d.description} deleted`);
-                        }}
-                        className="text-slate-400 hover:text-rose-600 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {/* (Legacy departments table replaced by AuthenticOmegaDepartmentsView) */}
 
       {/* =========================================================================
           MODALS FOR CREATING RECORDS
