@@ -61,6 +61,7 @@ import AuthenticOmegaQuickSetupWizard from './QuickSetupWizard';
 import AuthenticOmegaInventoryCategoriesView from './AuthenticOmegaInventoryCategoriesView';
 import AuthenticOmegaInventoryDivisionsView from './AuthenticOmegaInventoryDivisionsView';
 import AuthenticOmegaInventoryGroupsView from './AuthenticOmegaInventoryGroupsView';
+import AuthenticOmegaUnitsView from './AuthenticOmegaUnitsView';
 
 export type PrimarySetupSection =
   | 'quick_setup'
@@ -455,14 +456,18 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
       {section === 'groups' && <AuthenticOmegaInventoryGroupsView />}
 
       {/* =========================================================================
-          COMMON TOOLBAR FOR TABULAR SECTIONS (PRODUCTS, UNITS, ETC.)
+          VIEW 6: UNITS (100% AUTHENTIC OMEGA CLONED VIEW)
           ========================================================================= */}
-      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && (
+      {section === 'units' && <AuthenticOmegaUnitsView />}
+
+      {/* =========================================================================
+          COMMON TOOLBAR FOR TABULAR SECTIONS (PRODUCTS, LOCATIONS, ETC.)
+          ========================================================================= */}
+      {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && (
         <div className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-blue-50 text-[#195a96] border border-blue-200">
               {section === 'products_services' && <Package className="w-6 h-6" />}
-              {section === 'units' && <Scale className="w-6 h-6" />}
               {section === 'locations' && <MapPin className="w-6 h-6" />}
               {section === 'suppliers' && <Users className="w-6 h-6" />}
               {section === 'departments' && <Building className="w-6 h-6" />}
@@ -470,7 +475,6 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
             <div>
               <h1 className="text-xl font-bold text-slate-900 capitalize">
                 {section === 'products_services' && 'Products & Services'}
-                {section === 'units' && 'Units of Measure'}
                 {section === 'locations' && 'Locations & Warehouses'}
                 {section === 'suppliers' && 'Suppliers & Cooperatives'}
                 {section === 'departments' && 'Menus / Departments'}
@@ -535,15 +539,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
 
 
 
-            {section === 'units' && (
-              <button
-                onClick={() => setActiveModal('new_unit')}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white text-xs font-bold transition shadow-xs"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New Unit</span>
-              </button>
-            )}
+
 
             {section === 'locations' && (
               <>
@@ -664,47 +660,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
 
       {/* (Legacy groups table replaced by AuthenticOmegaInventoryGroupsView) */}
 
-      {/* =========================================================================
-          VIEW 6: UNITS TABLE
-          ========================================================================= */}
-      {section === 'units' && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#4d5b76] text-white font-bold uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="px-3 py-2.5">#</th>
-                  <th className="px-3 py-2.5">Name</th>
-                  <th className="px-3 py-2.5">Description</th>
-                  <th className="px-3 py-2.5">Remarks</th>
-                  <th className="px-3 py-2.5 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredUnits.map((u, idx) => (
-                  <tr key={u.id} className="hover:bg-slate-50 transition">
-                    <td className="px-3 py-2.5 text-slate-400 font-mono">{idx + 1}</td>
-                    <td className="px-3 py-2.5 font-bold text-slate-900">{u.name}</td>
-                    <td className="px-3 py-2.5 text-slate-700">{u.description}</td>
-                    <td className="px-3 py-2.5 text-slate-500">{u.remarks}</td>
-                    <td className="px-3 py-2.5 text-center">
-                      <button
-                        onClick={() => {
-                          setUnits(units.filter((item) => item.id !== u.id));
-                          showToast(`Unit ${u.name} deleted`);
-                        }}
-                        className="text-slate-400 hover:text-rose-600 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {/* (Legacy units table replaced by AuthenticOmegaUnitsView) */}
 
       {/* =========================================================================
           VIEW 7: LOCATIONS TABLE
