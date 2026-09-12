@@ -43,15 +43,15 @@ export const SUPPLIER_OPTIONS = [
   'B GROUP',
   'C-Way Trading',
   'Clatchy',
-  'Ezzeddine',
-  'Koubeissi East.',
+  'Ezzeddin',
+  'Koubeissi Est.',
   'Mrs Randa',
   'Safa Bakery',
   'Sedi Hisham',
-  'SOUTH',
+  'SOOL',
   'Zahwe',
-  'The village',
-  'Abdo Trading Establishment'
+  'الضيعة',
+  'مؤسسة عبده للتجارة'
 ];
 
 export const CATEGORY_OPTIONS = [

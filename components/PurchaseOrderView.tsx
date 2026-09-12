@@ -153,43 +153,115 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
 // Available Suppliers catalog
 const SUPPLIERS_CATALOG = [
   {
-    name: 'Levant Tinplate Packaging Co.',
-    contact: 'Sami Salameh',
-    address: 'Dekwaneh Industrial Park, Beirut, Lebanon',
+    name: 'Abbas & Hussein Dirani',
+    contact: 'Abbas',
+    address: 'Beirut, Lebanon',
+    phone: '+961 1 550 120',
+    email: 'dirani@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'Abbas Dirani',
+    contact: 'Abbas Dirani',
+    address: 'South Lebanon',
+    phone: '+961 76 939 604',
+    email: 'abbas.dirani@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'B GROUP',
+    contact: 'B Group Logistics',
+    address: 'Beirut Port Freezone, Lebanon',
+    phone: '+961 1 445 670',
+    email: 'info@bgroup.com.lb',
+    emailCc: 'logistics@bgroup.com.lb'
+  },
+  {
+    name: 'C-Way Trading',
+    contact: 'C-Way Procurement',
+    address: 'Dekwaneh Industrial Park, Lebanon',
     phone: '+961 1 689 201',
-    email: 'contact@levanttin.com',
-    emailCc: 'logistics@levanttin.com'
+    email: 'orders@cwaytrading.com',
+    emailCc: 'accounts@cwaytrading.com'
   },
   {
-    name: 'Hasbaya & Marjeyoun Farmers Cooperative',
-    contact: 'Hajj Rida Abou Hamdan',
-    address: 'Hasbaya, South Governorate, Lebanon',
-    phone: '+961 7 550 123',
-    email: 'info@hasbayafarmers.org',
-    emailCc: 'coop@hasbayafarmers.org'
-  },
-  {
-    name: 'Mediterranean Glass Industries S.A.L',
-    contact: 'Karim Haddad',
-    address: 'Mkalles Industrial Zone, Beirut, Lebanon',
+    name: 'Clatchy',
+    contact: 'Clatchy Packaging',
+    address: 'Mkalles Industrial Zone, Lebanon',
     phone: '+961 1 432 890',
-    email: 'sales@medglass-lb.com',
-    emailCc: 'orders@medglass-lb.com'
+    email: 'contact@clatchy.com',
+    emailCc: 'support@clatchy.com'
   },
   {
-    name: 'Alfa Laval Levant Servicing',
-    contact: 'Ing. Pierre Ghosn',
-    address: 'Zouk Mikael Highway, Mount Lebanon',
-    phone: '+961 9 214 778',
-    email: 'service@alfalaval-levant.com',
-    emailCc: 'tech@alfalaval-levant.com'
+    name: 'Ezzeddin',
+    contact: 'Ezzeddin Est.',
+    address: 'Tyre Commercial Street, Lebanon',
+    phone: '+961 7 740 555',
+    email: 'ezzeddin@gmail.com',
+    emailCc: ''
   },
   {
-    name: 'Al Arz Trading Co.',
-    contact: 'Bilal Mansour',
-    address: 'Saida Seaside Boulevard, South Lebanon',
-    phone: '+961 7 722 411',
-    email: 'arz.trading@gmail.com',
+    name: 'Koubeissi Est.',
+    contact: 'Koubeissi',
+    address: 'Choueifat Industrial Zone, Lebanon',
+    phone: '+961 5 434 734',
+    email: 'koubeissi.est@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'Mrs Randa',
+    contact: 'Mrs Randa',
+    address: 'Nabatieh Governorate, Lebanon',
+    phone: '+961 7 760 120',
+    email: 'randa.olives@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'Safa Bakery',
+    contact: 'Safa Bakery Admin',
+    address: 'Beirut, Lebanon',
+    phone: '+961 1 820 400',
+    email: 'safabakery@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'Sedi Hisham',
+    contact: 'Abir',
+    address: 'Beirut, Lebanon',
+    phone: '+961 1 300 200',
+    email: 'sedihisham@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'SOOL',
+    contact: 'Southern Olive Oil Products Logistics',
+    address: 'Choueifat Main Facility, Lebanon',
+    phone: '+961 5 432 100',
+    email: 'procurement@sool.com.lb',
+    emailCc: 'logistics@sool.com.lb'
+  },
+  {
+    name: 'Zahwe',
+    contact: 'Zahwe Agriculture',
+    address: 'Kfarroummane, Nabatieh, Lebanon',
+    phone: '+961 70 798 854',
+    email: 'zahwe.farm@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'الضيعة',
+    contact: 'Al Dayaa Co.',
+    address: 'Marjeyoun District, South Lebanon',
+    phone: '+961 70 325 417',
+    email: 'aldayaa@gmail.com',
+    emailCc: ''
+  },
+  {
+    name: 'مؤسسة عبده للتجارة',
+    contact: 'Abdo Trading Est.',
+    address: 'Saida Coastal Highway, Lebanon',
+    phone: '+961 7 725 330',
+    email: 'abdo.trading@gmail.com',
     emailCc: ''
   }
 ];

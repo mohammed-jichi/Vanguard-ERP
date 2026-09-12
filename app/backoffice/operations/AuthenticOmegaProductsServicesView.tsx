@@ -1966,6 +1966,74 @@ export default function AuthenticOmegaProductsServicesView() {
                           </div>
                         </div>
                       </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Main Supplier*</label>
+                          <div className="flex">
+                            <select
+                              value={editingProduct.mainSupplierName}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
+                                <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
+                                  {s.SUPPLIERNAME}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              title="Add Supplier"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Item Brand</label>
+                          <div className="flex">
+                            <select
+                              value={editingProduct.itemBrand}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, itemBrand: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              <option value="">Select Item Brand</option>
+                              {OMEGA_ITEM_BRANDS.map((b) => (
+                                <option key={b.id} value={b.name}>
+                                  {b.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              title="Add Brand"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Item Lead Time</label>
+                          <input
+                            type="text"
+                            value={editingProduct.itemLeadTime}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, itemLeadTime: e.target.value })
+                            }
+                            placeholder="e.g. 2 Days"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 

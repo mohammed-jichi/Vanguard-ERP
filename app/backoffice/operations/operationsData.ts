@@ -529,10 +529,20 @@ export const INITIAL_LOCATIONS: LocationRecord[] = [
 ];
 
 export const INITIAL_SUPPLIERS: SupplierRecord[] = [
-  { id: 'SUP-01', name: 'Hasbaya & Marjeyoun Farmers Cooperative', contactPerson: 'Hajj Rida Abou Hamdan', phone: '+961 7 550 123', grade: 'A+', country: 'Lebanon', notes: 'Certified non-GMO ancient olive groves, 140 local families', balanceUsd: 4850.00, balanceLbp: 0, createdAt: '2023-10-01', updatedAt: '2026-09-02' },
-  { id: 'SUP-02', name: 'Mediterranean Glass Industries S.A.L', contactPerson: 'Karim Haddad', phone: '+961 1 432 890', grade: 'A', country: 'Lebanon', notes: 'Lead manufacturer of UV protected dark green glass containers', balanceUsd: 1240.00, balanceLbp: 110980000, createdAt: '2024-02-15', updatedAt: '2026-08-25' },
-  { id: 'SUP-03', name: 'Levant Tinplate Packaging Co.', contactPerson: 'Sami Salameh', phone: '+961 1 689 201', grade: 'A', country: 'Lebanon', notes: 'Food grade certified lithographed metal cans 16L and 10L', balanceUsd: 0.00, balanceLbp: 0, createdAt: '2024-03-01', updatedAt: '2026-08-29' },
-  { id: 'SUP-04', name: 'Alfa Laval Levant Servicing', contactPerson: 'Ing. Pierre Ghosn', phone: '+961 9 214 778', grade: 'A', country: 'Lebanon', notes: 'Mill maintenance, centrifuge servicing & decanter filter parts', balanceUsd: 650.00, balanceLbp: 0, createdAt: '2024-01-20', updatedAt: '2026-07-15' }
+  { id: 'SUP-01', name: 'Abbas & Hussein Dirani', contactPerson: 'Abbas', phone: '+961 1 550 120', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-01-26', updatedAt: '2026-01-26' },
+  { id: 'SUP-02', name: 'Abbas Dirani', contactPerson: 'Abbas Dirani', phone: '+961 76 939 604', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-01-26', updatedAt: '2026-01-26' },
+  { id: 'SUP-03', name: 'B GROUP', contactPerson: 'B Group', phone: '+961 1 445 670', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-23', updatedAt: '2025-12-23' },
+  { id: 'SUP-04', name: 'C-Way Trading', contactPerson: 'C-Way', phone: '+961 1 689 201', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-11', updatedAt: '2025-12-11' },
+  { id: 'SUP-05', name: 'Clatchy', contactPerson: 'Clatchy', phone: '+961 1 432 890', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-29', updatedAt: '2025-12-29' },
+  { id: 'SUP-06', name: 'Ezzeddin', contactPerson: 'Ezzeddin', phone: '+961 7 740 555', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-10', updatedAt: '2025-12-10' },
+  { id: 'SUP-07', name: 'Koubeissi Est.', contactPerson: 'Koubeissi', phone: '+961 5 434 734', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-02-09', updatedAt: '2026-02-09' },
+  { id: 'SUP-08', name: 'Mrs Randa', contactPerson: 'Mrs Randa', phone: '+961 7 760 120', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-12', updatedAt: '2025-12-12' },
+  { id: 'SUP-09', name: 'Safa Bakery', contactPerson: 'Safa Bakery', phone: '+961 1 820 400', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-04-03', updatedAt: '2026-04-03' },
+  { id: 'SUP-10', name: 'Sedi Hisham', contactPerson: 'Abir', phone: '+961 1 300 200', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-04-02', updatedAt: '2026-04-02' },
+  { id: 'SUP-11', name: 'SOOL', contactPerson: 'Southern Olive Oil', phone: '+961 5 432 100', grade: 'A+', country: 'Lebanon', notes: '', balanceUsd: 4850.00, balanceLbp: 0, createdAt: '2025-12-15', updatedAt: '2025-12-15' },
+  { id: 'SUP-12', name: 'Zahwe', contactPerson: 'Zahwe', phone: '+961 70 798 854', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-07', updatedAt: '2025-12-07' },
+  { id: 'SUP-13', name: 'الضيعة', contactPerson: 'الضيعة', phone: '+961 70 325 417', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-03-23', updatedAt: '2026-03-23' },
+  { id: 'SUP-14', name: 'مؤسسة عبده للتجارة', contactPerson: 'عبده للتجارة', phone: '+961 7 725 330', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-02-19', updatedAt: '2026-05-13' }
 ];
 
 export const INITIAL_DEPARTMENTS: DepartmentRecord[] = [

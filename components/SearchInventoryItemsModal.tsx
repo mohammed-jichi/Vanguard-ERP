@@ -337,9 +337,20 @@ export default function SearchInventoryItemsModal({
                   className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
                 >
                   <option value="ALL">All Suppliers</option>
-                  <option value="Zahwe">Zahwe</option>
+                  <option value="Abbas & Hussein Dirani">Abbas & Hussein Dirani</option>
+                  <option value="Abbas Dirani">Abbas Dirani</option>
+                  <option value="B GROUP">B GROUP</option>
+                  <option value="C-Way Trading">C-Way Trading</option>
+                  <option value="Clatchy">Clatchy</option>
+                  <option value="Ezzeddin">Ezzeddin</option>
+                  <option value="Koubeissi Est.">Koubeissi Est.</option>
+                  <option value="Mrs Randa">Mrs Randa</option>
+                  <option value="Safa Bakery">Safa Bakery</option>
+                  <option value="Sedi Hisham">Sedi Hisham</option>
                   <option value="SOOL">SOOL</option>
+                  <option value="Zahwe">Zahwe</option>
                   <option value="الضيعة">الضيعة</option>
+                  <option value="مؤسسة عبده للتجارة">مؤسسة عبده للتجارة</option>
                 </select>
               </div>
 

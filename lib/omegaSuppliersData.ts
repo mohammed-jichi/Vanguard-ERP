@@ -175,7 +175,7 @@ export const INITIAL_OMEGA_SUPPLIERS: SupplierItem[] = [
     SUPPLIERID: 11,
     BRAND_ID: 9606,
     BRANCHID: 1,
-    SUPPLIERNAME: 'مؤسسة عبده للتجاره',
+    SUPPLIERNAME: 'مؤسسة عبده للتجارة',
     CONTACTNAME: null,
     CONTACTTITLE: null,
     STREET: null,
@@ -578,3 +578,20 @@ export const OMEGA_PAYMENT_TYPES: PaymentTypeItem[] = [
 export const OMEGA_GRADES: GradeItem[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   .split('')
   .map((letter) => ({ value: letter, description: letter }));
+
+export const ALL_SUPPLIER_NAMES = [
+  'Abbas & Hussein Dirani',
+  'Abbas Dirani',
+  'B GROUP',
+  'C-Way Trading',
+  'Clatchy',
+  'Ezzeddin',
+  'Koubeissi Est.',
+  'Mrs Randa',
+  'Safa Bakery',
+  'Sedi Hisham',
+  'SOOL',
+  'Zahwe',
+  'الضيعة',
+  'مؤسسة عبده للتجارة'
+] as const;

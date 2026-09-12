@@ -76,46 +76,20 @@ export interface PurchaseInvoice {
 }
 
 const DEFAULT_SUPPLIERS = [
-  {
-    id: 'SUP-01',
-    name: 'Hasbaya & Marjeyoun Farmers Cooperative',
-    contact: 'Hajj Rida Abou Hamdan',
-    address: 'Hasbaya, South Governorate, Lebanon',
-    phone: '+961 7 550 123',
-    email: 'info@hasbayafarmers.org'
-  },
-  {
-    id: 'SUP-02',
-    name: 'Mediterranean Glass Industries S.A.L',
-    contact: 'Karim Haddad',
-    address: 'Mkalles Industrial Zone, Beirut, Lebanon',
-    phone: '+961 1 432 890',
-    email: 'sales@medglass-lb.com'
-  },
-  {
-    id: 'SUP-03',
-    name: 'Levant Tinplate Packaging Co.',
-    contact: 'Sami Salameh',
-    address: 'Dekwaneh Industrial Park, Beirut, Lebanon',
-    phone: '+961 1 689 201',
-    email: 'contact@levanttin.com'
-  },
-  {
-    id: 'SUP-04',
-    name: 'Alfa Laval Levant Servicing',
-    contact: 'Ing. Pierre Ghosn',
-    address: 'Zouk Mikael Highway, Mount Lebanon',
-    phone: '+961 9 214 778',
-    email: 'service@alfalaval-levant.com'
-  },
-  {
-    id: 'SUP-05',
-    name: 'Al Arz Trading Co.',
-    contact: 'Bilal Mansour',
-    address: 'Saida Seaside Boulevard, South Lebanon',
-    phone: '+961 7 722 411',
-    email: 'arz.trading@gmail.com'
-  }
+  { id: 'SUP-01', name: 'Abbas & Hussein Dirani', contact: 'Abbas', address: 'Beirut, Lebanon', phone: '+961 1 550 120', email: 'dirani@gmail.com' },
+  { id: 'SUP-02', name: 'Abbas Dirani', contact: 'Abbas Dirani', address: 'South Lebanon', phone: '+961 76 939 604', email: 'abbas.dirani@gmail.com' },
+  { id: 'SUP-03', name: 'B GROUP', contact: 'B Group Logistics', address: 'Beirut Port Freezone, Lebanon', phone: '+961 1 445 670', email: 'info@bgroup.com.lb' },
+  { id: 'SUP-04', name: 'C-Way Trading', contact: 'C-Way Procurement', address: 'Dekwaneh Industrial Park, Lebanon', phone: '+961 1 689 201', email: 'orders@cwaytrading.com' },
+  { id: 'SUP-05', name: 'Clatchy', contact: 'Clatchy Packaging', address: 'Mkalles Industrial Zone, Lebanon', phone: '+961 1 432 890', email: 'contact@clatchy.com' },
+  { id: 'SUP-06', name: 'Ezzeddin', contact: 'Ezzeddin Est.', address: 'Tyre Commercial Street, Lebanon', phone: '+961 7 740 555', email: 'ezzeddin@gmail.com' },
+  { id: 'SUP-07', name: 'Koubeissi Est.', contact: 'Koubeissi', address: 'Choueifat Industrial Zone, Lebanon', phone: '+961 5 434 734', email: 'koubeissi.est@gmail.com' },
+  { id: 'SUP-08', name: 'Mrs Randa', contact: 'Mrs Randa', address: 'Nabatieh Governorate, Lebanon', phone: '+961 7 760 120', email: 'randa.olives@gmail.com' },
+  { id: 'SUP-09', name: 'Safa Bakery', contact: 'Safa Bakery Admin', address: 'Beirut, Lebanon', phone: '+961 1 820 400', email: 'safabakery@gmail.com' },
+  { id: 'SUP-10', name: 'Sedi Hisham', contact: 'Abir', address: 'Beirut, Lebanon', phone: '+961 1 300 200', email: 'sedihisham@gmail.com' },
+  { id: 'SUP-11', name: 'SOOL', contact: 'Southern Olive Oil Products Logistics', address: 'Choueifat Main Facility, Lebanon', phone: '+961 5 432 100', email: 'procurement@sool.com.lb' },
+  { id: 'SUP-12', name: 'Zahwe', contact: 'Zahwe Agriculture', address: 'Kfarroummane, Nabatieh, Lebanon', phone: '+961 70 798 854', email: 'zahwe.farm@gmail.com' },
+  { id: 'SUP-13', name: 'الضيعة', contact: 'Al Dayaa Co.', address: 'Marjeyoun District, South Lebanon', phone: '+961 70 325 417', email: 'aldayaa@gmail.com' },
+  { id: 'SUP-14', name: 'مؤسسة عبده للتجارة', contact: 'Abdo Trading Est.', address: 'Saida Coastal Highway, Lebanon', phone: '+961 7 725 330', email: 'abdo.trading@gmail.com' }
 ];
 
 const PREDEFINED_CATALOG_ITEMS = [

@@ -36,7 +36,14 @@ export default function AuthenticOmegaSuppliersView() {
         const saved = localStorage.getItem('vanguard_omega_suppliers');
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length >= INITIAL_OMEGA_SUPPLIERS.length) {
+            return parsed.map((item: SupplierItem) => {
+              if (item.SUPPLIERID === 11 || item.SUPPLIERNAME === 'مؤسسة عبده للتجاره') {
+                return { ...item, SUPPLIERNAME: 'مؤسسة عبده للتجارة' };
+              }
+              return item;
+            });
+          }
         }
       } catch (e) {
         console.error('Error reading saved suppliers:', e);
