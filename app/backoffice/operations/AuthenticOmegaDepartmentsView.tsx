@@ -450,8 +450,14 @@ export default function AuthenticOmegaDepartmentsView() {
           MODAL: NEW MENU / DEPARTMENT (Matching Screenshot 2 Pixel-by-Pixel)
           ======================================================================= */}
       {isNewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in overflow-y-auto">
-          <div className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in overflow-y-auto"
+          style={{ zIndex: 50000 }}
+        >
+          <div
+            className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
+            style={{ zIndex: 50001 }}
+          >
             {/* Header */}
             <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
               <h2 className="text-[18px] font-normal text-[#4d5b76]">
@@ -618,8 +624,14 @@ export default function AuthenticOmegaDepartmentsView() {
           MODAL: EDIT MENU / DEPARTMENT (Matching Screenshot 3 Pixel-by-Pixel)
           ======================================================================= */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in overflow-y-auto">
-          <div className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in overflow-y-auto"
+          style={{ zIndex: 50000 }}
+        >
+          <div
+            className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
+            style={{ zIndex: 50001 }}
+          >
             {/* Header */}
             <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
               <h2 className="text-[18px] font-normal text-[#4d5b76]">
@@ -798,8 +810,14 @@ export default function AuthenticOmegaDepartmentsView() {
           MODAL: COLOR PICKER (48 Colors Palette from Omega Template)
           ======================================================================= */}
       {isColorPickerOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in">
-          <div className="bg-white border-2 border-[#4c5c7a] w-full max-w-[620px] rounded-[10px] shadow-2xl overflow-hidden">
+        <div
+          className="fixed inset-0 flex items-center justify-center p-4 bg-black/60 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 99999 }}
+        >
+          <div
+            className="bg-white border-2 border-[#4c5c7a] w-full max-w-[620px] rounded-[10px] shadow-2xl overflow-hidden relative"
+            style={{ zIndex: 100000 }}
+          >
             {/* Header */}
             <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
               <h3 className="text-[17px] font-normal text-[#4d5b76]">
