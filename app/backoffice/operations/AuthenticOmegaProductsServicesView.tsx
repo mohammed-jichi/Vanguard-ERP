@@ -74,9 +74,11 @@ export default function AuthenticOmegaProductsServicesView() {
     }
   }, [products]);
 
-  // Hierarchy Navigation States
-  const [selectedCategory, setSelectedCategory] = useState<string>('مفرق');
-  const [selectedDivision, setSelectedDivision] = useState<string>('مقطرات ومدبسات مفرق');
+  // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['مفرق']);
+  const [isMultiCategory, setIsMultiCategory] = useState<boolean>(false);
+  const [selectedDivisions, setSelectedDivisions] = useState<string[]>(['مقطرات ومدبسات مفرق']);
+  const [isMultiDivision, setIsMultiDivision] = useState<boolean>(false);
   const [selectedGroups, setSelectedGroups] = useState<string[]>(['مقطرات مفرق 250مل']);
   const [isMultiGroup, setIsMultiGroup] = useState<boolean>(false);
 
@@ -145,6 +147,18 @@ export default function AuthenticOmegaProductsServicesView() {
     { key: 'withExpiry', label: 'Items with Expiry' },
   ], []);
 
+  // Instant More Filter Toggle Handler (Click directly applies filter)
+  const handleToggleMoreFilter = (key: keyof typeof moreFilters) => {
+    setMoreFilters((prev) => {
+      const nextVal = !prev[key];
+      const opt = MORE_FILTER_OPTIONS.find((o) => o.key === key);
+      if (opt) {
+        showToast(nextVal ? `Filter applied: ${opt.label}` : `Filter removed: ${opt.label}`);
+      }
+      return { ...prev, [key]: nextVal };
+    });
+  };
+
   // Sorting
   const [sortField, setSortField] = useState<keyof AuthenticProductRecord>('id');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
@@ -193,40 +207,94 @@ export default function AuthenticOmegaProductsServicesView() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Divisions matching current category
+  // Divisions matching currently selected categories
   const availableDivisions = useMemo(() => {
     const divs = INITIAL_OMEGA_INV_DIVISIONS.filter(
-      (d) => d.CATEGORYNAME === selectedCategory || (selectedCategory === 'Raw Materials' && d.CATEGORYNAME === 'Raw Materials')
+      (d) =>
+        selectedCategories.includes(d.CATEGORYNAME) ||
+        (selectedCategories.includes('Raw Materials') && d.CATEGORYNAME === 'Raw Materials')
     );
     const uniqueNames: string[] = [];
     divs.forEach((d) => {
       if (!uniqueNames.includes(d.DIVISIONNAME)) uniqueNames.push(d.DIVISIONNAME);
     });
     return uniqueNames;
-  }, [selectedCategory]);
+  }, [selectedCategories]);
 
-  // Groups matching current division
+  // Groups matching currently selected divisions
   const availableGroups = useMemo(() => {
-    return INITIAL_OMEGA_INV_GROUPS.filter((g) => g.DIVISIONNAME === selectedDivision);
-  }, [selectedDivision]);
+    return INITIAL_OMEGA_INV_GROUPS.filter((g) => selectedDivisions.includes(g.DIVISIONNAME));
+  }, [selectedDivisions]);
 
-  // Update selectedDivision when category changes if needed
+  // Update selectedDivisions when categories change
   useEffect(() => {
-    if (availableDivisions.length > 0 && !availableDivisions.includes(selectedDivision)) {
-      setSelectedDivision(availableDivisions[0]);
+    if (availableDivisions.length > 0) {
+      if (!isMultiDivision) {
+        if (!availableDivisions.some((d) => selectedDivisions.includes(d))) {
+          setSelectedDivisions([availableDivisions[0]]);
+        }
+      } else {
+        const valid = selectedDivisions.filter((d) => availableDivisions.includes(d));
+        if (valid.length > 0) {
+          setSelectedDivisions(valid);
+        } else {
+          setSelectedDivisions([availableDivisions[0]]);
+        }
+      }
+    } else {
+      setSelectedDivisions([]);
     }
-  }, [availableDivisions, selectedDivision]);
+  }, [availableDivisions, isMultiDivision]);
 
-  // Update selectedGroups when division changes if needed
+  // Update selectedGroups when divisions change
   useEffect(() => {
     if (availableGroups.length > 0) {
-      if (!isMultiGroup || selectedGroups.length === 0) {
-        setSelectedGroups([availableGroups[0].GROUPNAME]);
+      if (!isMultiGroup) {
+        if (!availableGroups.some((g) => selectedGroups.includes(g.GROUPNAME))) {
+          setSelectedGroups([availableGroups[0].GROUPNAME]);
+        }
+      } else {
+        const valid = selectedGroups.filter((g) => availableGroups.some((ag) => ag.GROUPNAME === g));
+        if (valid.length > 0) {
+          setSelectedGroups(valid);
+        } else {
+          setSelectedGroups([availableGroups[0].GROUPNAME]);
+        }
       }
     } else {
       setSelectedGroups([]);
     }
   }, [availableGroups, isMultiGroup]);
+
+  // Handle category tab click
+  const handleCategoryClick = (catName: string) => {
+    if (isMultiCategory) {
+      if (selectedCategories.includes(catName)) {
+        if (selectedCategories.length > 1) {
+          setSelectedCategories(selectedCategories.filter((c) => c !== catName));
+        }
+      } else {
+        setSelectedCategories([...selectedCategories, catName]);
+      }
+    } else {
+      setSelectedCategories([catName]);
+    }
+  };
+
+  // Handle division tab click
+  const handleDivisionClick = (divName: string) => {
+    if (isMultiDivision) {
+      if (selectedDivisions.includes(divName)) {
+        if (selectedDivisions.length > 1) {
+          setSelectedDivisions(selectedDivisions.filter((d) => d !== divName));
+        }
+      } else {
+        setSelectedDivisions([...selectedDivisions, divName]);
+      }
+    } else {
+      setSelectedDivisions([divName]);
+    }
+  };
 
   // Handle group tab click
   const handleGroupClick = (groupName: string) => {
@@ -250,6 +318,12 @@ export default function AuthenticOmegaProductsServicesView() {
     setSelectedSupplier('All');
     setSelectedBrand('All');
     setSelectedSource('All');
+    setSelectedCategories(['مفرق']);
+    setIsMultiCategory(false);
+    setSelectedDivisions(['مقطرات ومدبسات مفرق']);
+    setIsMultiDivision(false);
+    setSelectedGroups(['مقطرات مفرق 250مل']);
+    setIsMultiGroup(false);
     setMoreFilters({
       serialNumber: false,
       ingredients: false,
@@ -283,8 +357,8 @@ export default function AuthenticOmegaProductsServicesView() {
 
       // Hierarchy match (if not searching globally)
       if (!searchQuery.trim()) {
-        if (selectedCategory && item.categoryName !== selectedCategory) return false;
-        if (selectedDivision && item.divisionName !== selectedDivision) return false;
+        if (selectedCategories.length > 0 && !selectedCategories.includes(item.categoryName)) return false;
+        if (selectedDivisions.length > 0 && !selectedDivisions.includes(item.divisionName)) return false;
         if (selectedGroups.length > 0 && !selectedGroups.includes(item.groupName)) return false;
       }
 
@@ -321,8 +395,8 @@ export default function AuthenticOmegaProductsServicesView() {
   }, [
     products,
     searchQuery,
-    selectedCategory,
-    selectedDivision,
+    selectedCategories,
+    selectedDivisions,
     selectedGroups,
     selectedSupplier,
     selectedBrand,
@@ -373,9 +447,9 @@ export default function AuthenticOmegaProductsServicesView() {
       secondLangItemComment: '',
       internalNote: '',
       categoryId: 2,
-      categoryName: selectedCategory || 'مفرق',
+      categoryName: selectedCategories[0] || 'مفرق',
       divisionId: 5,
-      divisionName: selectedDivision || 'مقطرات ومدبسات مفرق',
+      divisionName: selectedDivisions[0] || 'مقطرات ومدبسات مفرق',
       groupId: 14,
       groupName: selectedGroups[0] || 'مقطرات مفرق 250مل',
       sellingFunction: 'Revenue',
@@ -831,30 +905,24 @@ export default function AuthenticOmegaProductsServicesView() {
                     )}
                   </div>
                   <div className="space-y-0.5">
-                    {MORE_FILTER_OPTIONS.map((opt) => (
-                      <label
-                        key={opt.key}
-                        className="flex items-center gap-2 py-1 px-1.5 hover:bg-slate-50 rounded-xs cursor-pointer select-none transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={moreFilters[opt.key]}
-                          onChange={(e) =>
-                            setMoreFilters((prev) => ({ ...prev, [opt.key]: e.target.checked }))
-                          }
-                          className="w-3.5 h-3.5 rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
-                        />
-                        <span
-                          className={`text-[11.5px] ${
-                            moreFilters[opt.key]
-                              ? 'font-semibold text-blue-700'
-                              : 'text-slate-700'
+                    {MORE_FILTER_OPTIONS.map((opt) => {
+                      const isActive = moreFilters[opt.key];
+                      return (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          onClick={() => handleToggleMoreFilter(opt.key)}
+                          className={`w-full text-left flex items-center justify-between py-1.5 px-2.5 rounded-xs cursor-pointer select-none transition-colors ${
+                            isActive
+                              ? 'bg-blue-50/90 text-blue-700 font-semibold border-l-2 border-blue-600'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                           }`}
                         >
-                          {opt.label}
-                        </span>
-                      </label>
-                    ))}
+                          <span className="text-[11.5px] leading-snug">{opt.label}</span>
+                          {isActive && <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 ml-2" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -870,16 +938,56 @@ export default function AuthenticOmegaProductsServicesView() {
               <X className="w-3.5 h-3.5" />
             </button>
 
-            {/* Multi-Group Selection Checkbox */}
-            <label className="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer select-none ml-2">
-              <input
-                type="checkbox"
-                checked={isMultiGroup}
-                onChange={(e) => setIsMultiGroup(e.target.checked)}
-                className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
-              />
-              <span className="font-medium">Multi-Group Selection</span>
-            </label>
+            {/* Multi-Level Hierarchy Selection (Multi-Category, Multi-Division, Multi-Group) */}
+            <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
+              <label className="inline-flex items-center gap-1 text-xs text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isMultiCategory}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsMultiCategory(checked);
+                    if (!checked && selectedCategories.length > 1) {
+                      setSelectedCategories([selectedCategories[0]]);
+                    }
+                  }}
+                  className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                />
+                <span className="font-medium text-[11.5px]">Multi-Category</span>
+              </label>
+
+              <label className="inline-flex items-center gap-1 text-xs text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isMultiDivision}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsMultiDivision(checked);
+                    if (!checked && selectedDivisions.length > 1) {
+                      setSelectedDivisions([selectedDivisions[0]]);
+                    }
+                  }}
+                  className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                />
+                <span className="font-medium text-[11.5px]">Multi-Division</span>
+              </label>
+
+              <label className="inline-flex items-center gap-1 text-xs text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isMultiGroup}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsMultiGroup(checked);
+                    if (!checked && selectedGroups.length > 1) {
+                      setSelectedGroups([selectedGroups[0]]);
+                    }
+                  }}
+                  className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                />
+                <span className="font-medium text-[11.5px]">Multi-Group</span>
+              </label>
+            </div>
           </div>
 
           {/* Right Statistics Text */}
@@ -904,22 +1012,24 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1.5 flex-1 overflow-x-auto">
-            {OMEGA_PRODUCT_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => {
-                  setSelectedCategory(cat.name);
-                }}
-                className={`px-3.5 py-1 text-xs font-semibold rounded-xs transition-colors cursor-pointer whitespace-nowrap ${
-                  selectedCategory === cat.name
-                    ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
+            {OMEGA_PRODUCT_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategories.includes(cat.name);
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => handleCategoryClick(cat.name)}
+                  className={`px-3.5 py-1 text-xs font-semibold rounded-xs transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  {isSelected && isMultiCategory && <Check className="w-3 h-3 text-blue-600" />}
+                  <span>{cat.name}</span>
+                </button>
+              );
+            })}
           </div>
           <button
             type="button"
@@ -940,20 +1050,24 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1 flex-1 overflow-x-auto">
-            {availableDivisions.map((divName) => (
-              <button
-                key={divName}
-                type="button"
-                onClick={() => setSelectedDivision(divName)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-xs transition-colors cursor-pointer whitespace-nowrap ${
-                  selectedDivision === divName
-                    ? 'bg-white text-slate-900 border border-slate-300 font-semibold shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                }`}
-              >
-                {divName}
-              </button>
-            ))}
+            {availableDivisions.map((divName) => {
+              const isSelected = selectedDivisions.includes(divName);
+              return (
+                <button
+                  key={divName}
+                  type="button"
+                  onClick={() => handleDivisionClick(divName)}
+                  className={`px-3 py-1 text-[11px] font-medium rounded-xs transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-white text-slate-900 border border-slate-300 font-semibold shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  {isSelected && isMultiDivision && <Check className="w-3 h-3 text-blue-600" />}
+                  <span>{divName}</span>
+                </button>
+              );
+            })}
           </div>
           <button
             type="button"
@@ -3730,30 +3844,24 @@ export default function AuthenticOmegaProductsServicesView() {
                 )}
               </div>
               <div className="space-y-1">
-                {MORE_FILTER_OPTIONS.map((opt) => (
-                  <label
-                    key={opt.key}
-                    className="flex items-center gap-2.5 py-1 px-1.5 hover:bg-slate-50 rounded-xs cursor-pointer select-none transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={moreFilters[opt.key]}
-                      onChange={(e) =>
-                        setMoreFilters((prev) => ({ ...prev, [opt.key]: e.target.checked }))
-                      }
-                      className="w-4 h-4 rounded-xs border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
-                    />
-                    <span
-                      className={`text-[12px] ${
-                        moreFilters[opt.key]
-                          ? 'font-bold text-blue-700'
-                          : 'text-slate-700 font-medium'
+                {MORE_FILTER_OPTIONS.map((opt) => {
+                  const isActive = moreFilters[opt.key];
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => handleToggleMoreFilter(opt.key)}
+                      className={`w-full text-left flex items-center justify-between py-2 px-3 rounded-xs cursor-pointer select-none transition-colors border ${
+                        isActive
+                          ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-medium'
                       }`}
                     >
-                      {opt.label}
-                    </span>
-                  </label>
-                ))}
+                      <span className="text-[12px]">{opt.label}</span>
+                      {isActive && <Check className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="pt-3 flex justify-end gap-2 border-t border-slate-200">
