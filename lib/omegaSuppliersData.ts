@@ -51,6 +51,9 @@ export interface CurrencyItem {
   ID: number;
   DESCRIPTION: string;
   SYMBOL: string;
+  POS_RATE?: number | string;
+  BACKOFFICE_RATE?: number | string;
+  DECIMAL_NUMBER?: number | string;
 }
 
 export interface PaymentTermItem {
@@ -551,10 +554,10 @@ export const OMEGA_CUST_TITLES: CustTitleItem[] = [
 ];
 
 export const OMEGA_CURRENCIES: CurrencyItem[] = [
-  { ID: 2, DESCRIPTION: 'USD', SYMBOL: '$' },
-  { ID: 1, DESCRIPTION: 'LBP', SYMBOL: 'LL' },
-  { ID: 4088, DESCRIPTION: 'EURO', SYMBOL: 'EU' },
-  { ID: 4089, DESCRIPTION: 'Lebanese Pound', SYMBOL: 'L.B' }
+  { ID: 2, DESCRIPTION: 'USD', SYMBOL: '$', POS_RATE: 1, BACKOFFICE_RATE: 1, DECIMAL_NUMBER: 2 },
+  { ID: 1, DESCRIPTION: 'LBP', SYMBOL: 'LL', POS_RATE: 89500, BACKOFFICE_RATE: 89500, DECIMAL_NUMBER: 0 },
+  { ID: 4088, DESCRIPTION: 'EURO', SYMBOL: 'EU', POS_RATE: 1.08, BACKOFFICE_RATE: 1.08, DECIMAL_NUMBER: 2 },
+  { ID: 4089, DESCRIPTION: 'Lebanese Pound', SYMBOL: 'L.B', POS_RATE: 89500, BACKOFFICE_RATE: 89500, DECIMAL_NUMBER: 0 }
 ];
 
 export const OMEGA_PAYMENT_TERMS: PaymentTermItem[] = [
@@ -572,9 +575,6 @@ export const OMEGA_PAYMENT_TYPES: PaymentTypeItem[] = [
   { id: 4, description: 'Wire Transfer' }
 ];
 
-export const OMEGA_GRADES: GradeItem[] = [
-  { value: 'A', description: 'A' },
-  { value: 'B', description: 'B' },
-  { value: 'C', description: 'C' },
-  { value: 'D', description: 'D' }
-];
+export const OMEGA_GRADES: GradeItem[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  .split('')
+  .map((letter) => ({ value: letter, description: letter }));

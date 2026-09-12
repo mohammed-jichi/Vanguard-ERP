@@ -20,7 +20,10 @@ import {
   OMEGA_PAYMENT_TERMS,
   OMEGA_PAYMENT_TYPES,
   OMEGA_GRADES,
-  SupplierItem
+  SupplierItem,
+  CustTitleItem,
+  CurrencyItem,
+  PaymentTermItem
 } from '@/lib/omegaSuppliersData';
 
 export default function AuthenticOmegaSuppliersView() {
@@ -49,6 +52,78 @@ export default function AuthenticOmegaSuppliersView() {
       console.error('Error saving suppliers:', e);
     }
   }, [suppliers]);
+
+  // Customer Titles State (synced with localStorage)
+  const [custTitles, setCustTitles] = useState<CustTitleItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_omega_cust_titles');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.error('Error reading saved cust titles:', e);
+      }
+    }
+    return OMEGA_CUST_TITLES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vanguard_omega_cust_titles', JSON.stringify(custTitles));
+    } catch (e) {
+      console.error('Error saving cust titles:', e);
+    }
+  }, [custTitles]);
+
+  // Currencies State (synced with localStorage)
+  const [currencies, setCurrencies] = useState<CurrencyItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_omega_currencies');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.error('Error reading saved currencies:', e);
+      }
+    }
+    return OMEGA_CURRENCIES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vanguard_omega_currencies', JSON.stringify(currencies));
+    } catch (e) {
+      console.error('Error saving currencies:', e);
+    }
+  }, [currencies]);
+
+  // Payment Terms State (synced with localStorage)
+  const [paymentTerms, setPaymentTerms] = useState<PaymentTermItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_omega_payment_terms');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.error('Error reading saved payment terms:', e);
+      }
+    }
+    return OMEGA_PAYMENT_TERMS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vanguard_omega_payment_terms', JSON.stringify(paymentTerms));
+    } catch (e) {
+      console.error('Error saving payment terms:', e);
+    }
+  }, [paymentTerms]);
 
   // ---------------------------------------------------------------------------
   // Toolbar Search & Filter States
@@ -112,6 +187,29 @@ export default function AuthenticOmegaSuppliersView() {
   const [formGrade, setFormGrade] = useState<string>('');
   const [formWebsite, setFormWebsite] = useState('');
   const [formNotes, setFormNotes] = useState('');
+
+  // Titles Modal States (Screenshot 2 & 3)
+  const [isTitlesModalOpen, setIsTitlesModalOpen] = useState(false);
+  const [isNewTitleModalOpen, setIsNewTitleModalOpen] = useState(false);
+  const [isEditTitleModalOpen, setIsEditTitleModalOpen] = useState(false);
+  const [titleInput, setTitleInput] = useState('');
+  const [editingTitleId, setEditingTitleId] = useState<number | null>(null);
+
+  // New Currency Modal States (Screenshot 4)
+  const [isNewCurrencyModalOpen, setIsNewCurrencyModalOpen] = useState(false);
+  const [newCurDescription, setNewCurDescription] = useState('');
+  const [newCurSymbol, setNewCurSymbol] = useState('');
+  const [newCurPosRate, setNewCurPosRate] = useState('');
+  const [newCurBoRate, setNewCurBoRate] = useState('');
+  const [newCurDecimals, setNewCurDecimals] = useState('');
+
+  // New Payment Term Modal States (Screenshot 5)
+  const [isNewPaymentTermModalOpen, setIsNewPaymentTermModalOpen] = useState(false);
+  const [newPtDescription, setNewPtDescription] = useState('');
+  const [newPtDays, setNewPtDays] = useState('');
+
+  // Autogenerate Account Confirmation Modal State
+  const [isAutogenAccountConfirmOpen, setIsAutogenAccountConfirmOpen] = useState(false);
 
   // Merge Suppliers Modal
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
@@ -426,6 +524,132 @@ export default function AuthenticOmegaSuppliersView() {
     const month = months[d.getMonth()];
     const year = d.getFullYear();
     return `${day} ${month}, ${year}`;
+  };
+
+  // ---------------------------------------------------------------------------
+  // Titles Handlers (Matching Screenshots 2 & 3)
+  // ---------------------------------------------------------------------------
+  const handleOpenNewTitle = () => {
+    setTitleInput('');
+    setIsNewTitleModalOpen(true);
+  };
+
+  const handleSaveNewTitle = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!titleInput.trim()) {
+      alert('Title is required');
+      return;
+    }
+    const nextId = Math.max(0, ...custTitles.map((t) => t.ID)) + 1;
+    const newTitle: CustTitleItem = {
+      ID: nextId,
+      TITLEDESCRIPTION: titleInput.trim()
+    };
+    setCustTitles((prev) => [...prev, newTitle]);
+    setFormContactTitle(String(nextId));
+    setIsNewTitleModalOpen(false);
+    showToast(`Title "${newTitle.TITLEDESCRIPTION}" saved`);
+  };
+
+  const handleOpenEditTitle = (t: CustTitleItem) => {
+    setEditingTitleId(t.ID);
+    setTitleInput(t.TITLEDESCRIPTION);
+    setIsEditTitleModalOpen(true);
+  };
+
+  const handleSaveEditTitle = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!titleInput.trim()) {
+      alert('Title is required');
+      return;
+    }
+    setCustTitles((prev) =>
+      prev.map((t) => (t.ID === editingTitleId ? { ...t, TITLEDESCRIPTION: titleInput.trim() } : t))
+    );
+    setIsEditTitleModalOpen(false);
+    setEditingTitleId(null);
+    showToast('Title updated successfully');
+  };
+
+  const handleDeleteTitle = (t: CustTitleItem) => {
+    if (confirm(`Are you sure you want to delete title "${t.TITLEDESCRIPTION}"?`)) {
+      setCustTitles((prev) => prev.filter((item) => item.ID !== t.ID));
+      if (formContactTitle === String(t.ID)) {
+        setFormContactTitle('');
+      }
+      showToast(`Title "${t.TITLEDESCRIPTION}" deleted`);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Currency Handlers (Matching Screenshot 4)
+  // ---------------------------------------------------------------------------
+  const handleOpenNewCurrency = () => {
+    setNewCurDescription('');
+    setNewCurSymbol('');
+    setNewCurPosRate('');
+    setNewCurBoRate('');
+    setNewCurDecimals('');
+    setIsNewCurrencyModalOpen(true);
+  };
+
+  const handleSaveNewCurrency = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCurDescription.trim() || !newCurSymbol.trim()) {
+      alert('Description and Symbol are required');
+      return;
+    }
+    const nextId = Math.max(0, ...currencies.map((c) => c.ID)) + 1;
+    const newCur: CurrencyItem = {
+      ID: nextId,
+      DESCRIPTION: newCurDescription.trim(),
+      SYMBOL: newCurSymbol.trim(),
+      POS_RATE: newCurPosRate ? Number(newCurPosRate) : 1,
+      BACKOFFICE_RATE: newCurBoRate ? Number(newCurBoRate) : 1,
+      DECIMAL_NUMBER: newCurDecimals ? Number(newCurDecimals) : 2
+    };
+    setCurrencies((prev) => [...prev, newCur]);
+    setFormCurrency(newCur.DESCRIPTION);
+    setIsNewCurrencyModalOpen(false);
+    showToast(`Currency "${newCur.DESCRIPTION}" added successfully`);
+  };
+
+  // ---------------------------------------------------------------------------
+  // Payment Term Handlers (Matching Screenshot 5)
+  // ---------------------------------------------------------------------------
+  const handleOpenNewPaymentTerm = () => {
+    setNewPtDescription('');
+    setNewPtDays('');
+    setIsNewPaymentTermModalOpen(true);
+  };
+
+  const handleSaveNewPaymentTerm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPtDescription.trim() || !newPtDays.trim()) {
+      alert('Description and Number of Days are required');
+      return;
+    }
+    const nextId = Math.max(0, ...paymentTerms.map((p) => p.ID)) + 1;
+    const newPt: PaymentTermItem = {
+      ID: nextId,
+      TERM_ID: nextId,
+      PAYMENTTERM: newPtDescription.trim(),
+      DAYS: Number(newPtDays) || 0
+    };
+    setPaymentTerms((prev) => [...prev, newPt]);
+    setFormPaymentTerms(String(newPt.TERM_ID));
+    setIsNewPaymentTermModalOpen(false);
+    showToast(`Payment Term "${newPt.PAYMENTTERM}" added successfully`);
+  };
+
+  // ---------------------------------------------------------------------------
+  // Autogenerate Account Confirmation Handler
+  // ---------------------------------------------------------------------------
+  const handleConfirmAutogenAccount = () => {
+    const nextAcc = `411000${String(suppliers.length + 1).padStart(2, '0')}`;
+    setFormAccountNumber(nextAcc);
+    setIsAutogenAccountConfirmOpen(false);
+    showToast(`Accounting account autogenerated for supplier: ${nextAcc}`);
   };
 
   // ---------------------------------------------------------------------------
@@ -772,7 +996,7 @@ export default function AuthenticOmegaSuppliersView() {
                           className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
                           <option value="">Select title</option>
-                          {OMEGA_CUST_TITLES.map((t) => (
+                          {custTitles.map((t) => (
                             <option key={t.ID} value={t.ID}>
                               {t.TITLEDESCRIPTION}
                             </option>
@@ -780,6 +1004,8 @@ export default function AuthenticOmegaSuppliersView() {
                         </select>
                         <button
                           type="button"
+                          onClick={() => setIsTitlesModalOpen(true)}
+                          title="Manage Titles"
                           className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -930,7 +1156,7 @@ export default function AuthenticOmegaSuppliersView() {
                           onChange={(e) => setFormCurrency(e.target.value)}
                           className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
-                          {OMEGA_CURRENCIES.map((cur) => (
+                          {currencies.map((cur) => (
                             <option key={cur.ID} value={cur.DESCRIPTION}>
                               {cur.DESCRIPTION} ({cur.SYMBOL})
                             </option>
@@ -938,6 +1164,8 @@ export default function AuthenticOmegaSuppliersView() {
                         </select>
                         <button
                           type="button"
+                          onClick={handleOpenNewCurrency}
+                          title="Add New Currency"
                           className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -954,7 +1182,7 @@ export default function AuthenticOmegaSuppliersView() {
                           className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
                           <option value="0">Select Payment Terms</option>
-                          {OMEGA_PAYMENT_TERMS.map((pt) => (
+                          {paymentTerms.map((pt) => (
                             <option key={pt.ID} value={pt.TERM_ID}>
                               {pt.PAYMENTTERM}
                             </option>
@@ -962,6 +1190,8 @@ export default function AuthenticOmegaSuppliersView() {
                         </select>
                         <button
                           type="button"
+                          onClick={handleOpenNewPaymentTerm}
+                          title="Add New Payment Term"
                           className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -1039,10 +1269,7 @@ export default function AuthenticOmegaSuppliersView() {
                         />
                         <button
                           type="button"
-                          onClick={() => {
-                            const gen = 'ACC-' + Math.floor(100000 + Math.random() * 900000);
-                            setFormAccountNumber(gen);
-                          }}
+                          onClick={() => setIsAutogenAccountConfirmOpen(true)}
                           title="Autogenerate Account Number"
                           className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
                         >
@@ -1246,6 +1473,377 @@ export default function AuthenticOmegaSuppliersView() {
                       ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white cursor-pointer shadow-sm'
                       : 'bg-[#4b5563] text-white opacity-40 cursor-not-allowed'
                   }`}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: TITLES (Matching Screenshot 2 Pixel-by-Pixel)
+          ======================================================================= */}
+      {isTitlesModalOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 70000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            style={{ zIndex: 70001 }}
+          >
+            {/* Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h2 className="text-[17px] font-normal text-slate-800">Titles</h2>
+              <button
+                type="button"
+                onClick={() => setIsTitlesModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Table */}
+            <div className="p-5">
+              <div className="border border-[#edf1f5] rounded-sm overflow-hidden">
+                <div className="p-3 border-b border-[#edf1f5] flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleOpenNewTitle}
+                    className="bg-[#323f4b] hover:bg-[#242d35] text-white px-3 py-1.5 rounded-sm text-xs font-semibold flex items-center gap-1 shadow-xs cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>New</span>
+                  </button>
+                </div>
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead>
+                    <tr className="border-b border-[#edf1f5] bg-white font-bold text-slate-800 text-[12px]">
+                      <th className="py-2.5 px-3 w-12 font-semibold">#</th>
+                      <th className="py-2.5 px-3 font-semibold">Description</th>
+                      <th className="py-2.5 px-3 w-20 text-end"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#edf1f5]">
+                    {custTitles.map((t, idx) => (
+                      <tr key={t.ID} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-2.5 px-3 font-normal text-slate-800">{idx + 1}</td>
+                        <td className="py-2.5 px-3 font-medium text-slate-800">{t.TITLEDESCRIPTION}</td>
+                        <td className="py-2.5 px-3 text-end">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditTitle(t)}
+                              className="bg-[#323f4b] hover:bg-[#242d35] text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
+                              title="Edit Title"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteTitle(t)}
+                              className="bg-[#5c2828] hover:bg-[#481e1e] text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
+                              title="Delete Title"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: NEW TITLE (Matching Screenshot 3 Pixel-by-Pixel)
+          ======================================================================= */}
+      {isNewTitleModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h2 className="text-[17px] font-normal text-slate-800">New Title</h2>
+              <button
+                type="button"
+                onClick={() => setIsNewTitleModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleSaveNewTitle} className="p-5 space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder="New title..."
+                  value={titleInput}
+                  onChange={(e) => setTitleInput(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                />
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: EDIT TITLE
+          ======================================================================= */}
+      {isEditTitleModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h2 className="text-[17px] font-normal text-slate-800">Edit Title</h2>
+              <button
+                type="button"
+                onClick={() => setIsEditTitleModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleSaveEditTitle} className="p-5 space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={titleInput}
+                  onChange={(e) => setTitleInput(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                />
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: NEW CURRENCY (Matching Screenshot 4 Pixel-by-Pixel)
+          ======================================================================= */}
+      {isNewCurrencyModalOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 70000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            style={{ zIndex: 70001 }}
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h2 className="text-[17px] font-normal text-slate-800">New Currency</h2>
+              <button
+                type="button"
+                onClick={() => setIsNewCurrencyModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleSaveNewCurrency} className="p-5 space-y-4 text-xs">
+              {/* Row 1: Description*, Symbol* */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Description*</label>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={newCurDescription}
+                    onChange={(e) => setNewCurDescription(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Symbol*</label>
+                  <input
+                    type="text"
+                    required
+                    value={newCurSymbol}
+                    onChange={(e) => setNewCurSymbol(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: POS Rate*, BackOffice Rate*, Decimal Number* */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">POS Rate*</label>
+                  <input
+                    type="text"
+                    required
+                    value={newCurPosRate}
+                    onChange={(e) => setNewCurPosRate(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">BackOffice Rate*</label>
+                  <input
+                    type="text"
+                    required
+                    value={newCurBoRate}
+                    onChange={(e) => setNewCurBoRate(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Decimal Number*</label>
+                  <input
+                    type="text"
+                    required
+                    value={newCurDecimals}
+                    onChange={(e) => setNewCurDecimals(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: NEW PAYMENT TERM (Matching Screenshot 5 Pixel-by-Pixel)
+          ======================================================================= */}
+      {isNewPaymentTermModalOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 70000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            style={{ zIndex: 70001 }}
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h2 className="text-[17px] font-normal text-slate-800">New Payment Term</h2>
+              <button
+                type="button"
+                onClick={() => setIsNewPaymentTermModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleSaveNewPaymentTerm} className="p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                <div className="md:col-span-7">
+                  <label className="block text-slate-700 font-medium mb-1">Description*</label>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={newPtDescription}
+                    onChange={(e) => setNewPtDescription(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                  />
+                </div>
+                <div className="md:col-span-5">
+                  <label className="block text-slate-700 font-medium mb-1">Nb. Of Days*</label>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="number"
+                      required
+                      value={newPtDays}
+                      onChange={(e) => setNewPtDays(e.target.value)}
+                      className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition shrink-0"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: AUTOGENERATE ACCOUNT CONFIRMATION BOX
+          ======================================================================= */}
+      {isAutogenAccountConfirmOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 80001 }}
+          >
+            <div className="p-6 space-y-4 text-xs text-slate-700 bg-white">
+              <p className="leading-relaxed text-[13px] text-slate-800">
+                Are you sure you want to autogenerate accounting account for this supplier? Account will be created for companies linked with this brand after saving supplier
+              </p>
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsAutogenAccountConfirmOpen(false)}
+                  className="px-4 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmAutogenAccount}
+                  className="px-5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold cursor-pointer transition shadow-xs"
                 >
                   OK
                 </button>
