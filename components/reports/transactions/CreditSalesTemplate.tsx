@@ -65,8 +65,7 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
             className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" 
           />
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>Southern Olive Oil Products S.A.R.L</option>
-            <option>All Branches</option>
+            <option>Main Branch (الفرع الرئيسي)</option>
           </select>
 
           {/* Grouped Buttons */}
@@ -146,48 +145,75 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
                     <th className="py-1 px-1 text-left">Client Name</th>
                     <th className="py-1 px-1 text-left">Code</th>
                     <th className="py-1 px-1 text-left">Check</th>
-                    <th className="py-1 px-1 text-center">Date</th>
+                    {groupByDate && <th className="py-1 px-1 text-center">Date</th>}
                     <th className="py-1 px-1 text-right">Amount</th>
                     <th className="py-1 px-1 text-left pl-4">Payment Terms</th>
+                    {showRate && <th className="py-1 px-1 text-center">Cur</th>}
+                    {showRate && <th className="py-1 px-1 text-right">Rate</th>}
+                    {showRate && <th className="py-1 px-1 text-right">Total ($)</th>}
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="font-bold">
-                    <td colSpan={6} className="py-1 px-1 underline">Branch: Southern Olive Oil Products S.A.R.L</td>
+                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 underline">Branch: Main Branch</td>
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={6} className="py-1 px-1">GENERAL</td>
+                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">GENERAL</td>
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={6} className="py-1 px-1">GENERAL</td>
+                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">GENERAL</td>
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={6} className="py-1 px-1">Payment Type: CREDIT</td>
+                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">Payment Type: CREDIT</td>
                   </tr>
                   <tr>
                     <td className="py-1 px-1">Jichi Mohammed</td>
                     <td className="py-1 px-1"></td>
                     <td className="py-1 px-1">100105</td>
-                    <td className="py-1 px-1 text-center">01-Jan-26</td>
+                    {groupByDate && <td className="py-1 px-1 text-center">01-Jan-26</td>}
                     <td className="py-1 px-1 text-right">1,580,000.00</td>
-                    <td className="py-1 px-1 pl-4"></td>
+                    <td className="py-1 px-1 pl-4">30 Days</td>
+                    {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700">LBP</td>}
+                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">89,500.00</td>}
+                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">$17.65</td>}
                   </tr>
                   
                   {/* Totals */}
                   <tr className="font-bold">
-                    <td colSpan={4} className="py-1 px-1 text-right">Total By Payment Type:</td>
+                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Payment Type:</td>
                     <td className="py-1 px-1 text-right">1,580,000.00</td>
                     <td></td>
+                    {showRate && (
+                      <>
+                        <td className="py-1 px-1 text-center">LBP</td>
+                        <td className="py-1 px-1 text-right font-mono">89,500</td>
+                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
+                      </>
+                    )}
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={4} className="py-1 px-1 text-right">Total By Branch:</td>
+                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Branch:</td>
                     <td className="py-1 px-1 text-right">1,580,000.00</td>
                     <td></td>
+                    {showRate && (
+                      <>
+                        <td className="py-1 px-1 text-center">LBP</td>
+                        <td className="py-1 px-1 text-right font-mono">89,500</td>
+                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
+                      </>
+                    )}
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={4} className="py-1 px-1 text-right underline">Grand Total:</td>
+                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right underline">Grand Total:</td>
                     <td className="py-1 px-1 text-right">1,580,000.00</td>
                     <td></td>
+                    {showRate && (
+                      <>
+                        <td className="py-1 px-1 text-center">LBP</td>
+                        <td className="py-1 px-1 text-right font-mono">89,500</td>
+                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
+                      </>
+                    )}
                   </tr>
                 </tbody>
               </table>

@@ -13,18 +13,11 @@ export const DiscountSummaryTemplate: React.FC<DiscountSummaryTemplateProps> = (
 }) => {
   const discountRecords = [
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
-      managerDiscounts: '42,150,000.00',
-      loyaltyDiscounts: '38,200,000.00',
-      seasonalOffers: '24,463,558.18',
-      totalDiscount: '104,813,558.18',
-    },
-    {
-      branch: 'Southern Olive Oil Products - Beirut Branch',
-      managerDiscounts: '18,400,000.00',
-      loyaltyDiscounts: '21,100,000.00',
-      seasonalOffers: '15,250,000.00',
-      totalDiscount: '54,750,000.00',
+      branch: 'Main Branch',
+      managerDiscounts: '60,550,000.00',
+      loyaltyDiscounts: '59,300,000.00',
+      seasonalOffers: '39,713,558.18',
+      totalDiscount: '159,563,558.18',
     },
   ];
 

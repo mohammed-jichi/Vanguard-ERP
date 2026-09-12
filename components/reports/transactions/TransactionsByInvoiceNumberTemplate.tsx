@@ -105,8 +105,7 @@ export const TransactionsByInvoiceNumberTemplate: React.FC<TransactionsByInvoice
           </div>
 
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>All Branches</option>
-            <option>Southern Olive Oil Products S.A.R.L</option>
+            <option>Main Branch (الفرع الرئيسي)</option>
           </select>
 
           <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer select-none">
@@ -213,7 +212,7 @@ export const TransactionsByInvoiceNumberTemplate: React.FC<TransactionsByInvoice
                 </thead>
                 <tbody>
                   <tr className="font-bold">
-                    <td colSpan={10} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
+                    <td colSpan={10} className="py-1 px-1">Branch: Main Branch</td>
                   </tr>
                   {reportData.map((row, idx) => (
                     <tr key={idx} className="font-normal hover:bg-slate-50">

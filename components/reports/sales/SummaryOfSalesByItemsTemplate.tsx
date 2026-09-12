@@ -4,12 +4,20 @@ interface SummaryOfSalesByItemsTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
+  showRate?: boolean;
+  groupByDate?: boolean;
+  useUnitCost?: boolean;
+  topN?: number;
 }
 
 export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTemplateProps> = ({
   hideToolbar = false,
   dynamicPeriodText,
-  executionDate
+  executionDate,
+  showRate = false,
+  groupByDate = true,
+  useUnitCost = false,
+  topN = 10,
 }) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -124,8 +132,7 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               >
-                <option value="All Branches">All Branches</option>
-                <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
+                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
               </select>
             </div>
             
@@ -188,41 +195,59 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
               {/* Table */}
               <table className="w-full text-[11px] text-left border-collapse">
                 <thead>
-                  <tr className="border-b-2 border-black">
+                  <tr className="border-b-2 border-black font-bold">
                     <th className="py-1">Product code</th>
                     <th>Description</th>
                     <th>Barcode</th>
                     <th>Product ID</th>
                     <th className="text-right">Qty</th>
+                    {useUnitCost && <th className="text-right">Unit Cost</th>}
                     <th className="text-right">Unit Price</th>
-                    <th className="text-right">Total</th>
+                    <th className="text-right">Total (L.L.)</th>
+                    {showRate && <th className="text-right">Rate</th>}
+                    {showRate && <th className="text-right">Total ($)</th>}
+                    {useUnitCost && <th className="text-right">Profit</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {pageData.page === 1 && (
                     <tr>
-                      <td colSpan={7} className="font-bold py-1 pt-2">Branch: Southern Olive Oil Products S.A.R.L</td>
+                      <td colSpan={7 + (showRate ? 2 : 0) + (useUnitCost ? 2 : 0)} className="font-bold py-1 pt-2">Branch: Main Branch</td>
                     </tr>
                   )}
-                  {pageData.items.map((item, idx) => (
-                    <tr key={idx}>
-                      <td className="py-0.5">{item.code}</td>
-                      <td>{item.desc}</td>
-                      <td>{item.bar}</td>
-                      <td>{item.id}</td>
-                      <td className="text-right">{item.qty}</td>
-                      <td className="text-right">{item.price}</td>
-                      <td className="text-right">{item.total}</td>
-                    </tr>
-                  ))}
+                  {pageData.items.map((item, idx) => {
+                    const totalNum = parseFloat(item.total.replace(/,/g, '')) || 0;
+                    const totalUSD = (totalNum / 89500).toFixed(2);
+                    const costNum = totalNum * 0.7;
+                    const profitNum = (totalNum - costNum).toLocaleString();
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50">
+                        <td className="py-0.5 font-mono">{item.code}</td>
+                        <td>{item.desc}</td>
+                        <td className="font-mono">{item.bar}</td>
+                        <td className="font-mono">{item.id}</td>
+                        <td className="text-right font-bold">{item.qty}</td>
+                        {useUnitCost && <td className="text-right font-mono text-slate-600">{(parseFloat(item.price) * 0.7).toLocaleString()}</td>}
+                        <td className="text-right font-mono">{item.price}</td>
+                        <td className="text-right font-bold">{item.total}</td>
+                        {showRate && <td className="text-right font-mono text-slate-700">89,500</td>}
+                        {showRate && <td className="text-right font-mono font-bold text-emerald-800">${totalUSD}</td>}
+                        {useUnitCost && <td className="text-right font-mono text-blue-700 font-bold">{profitNum}</td>}
+                      </tr>
+                    );
+                  })}
                   
                   {/* Footer Totals */}
                   {pageData.page === 4 && (
-                    <tr className="font-bold">
+                    <tr className="font-bold border-t-2 border-black">
                       <td colSpan={4} className="text-center pt-4">Total By Branch:</td>
                       <td className="text-right pt-4">528.94</td>
+                      {useUnitCost && <td className="text-right pt-4">1,095,102,435.00</td>}
                       <td className="pt-4"></td>
-                      <td className="text-right pt-4">1,564,432,050.00</td>
+                      <td className="text-right pt-4 font-bold">1,564,432,050.00</td>
+                      {showRate && <td className="text-right pt-4 font-mono">89,500</td>}
+                      {showRate && <td className="text-right pt-4 font-bold font-mono text-emerald-800">$17,479.69</td>}
+                      {useUnitCost && <td className="text-right pt-4 font-bold text-blue-700 font-mono">469,329,615.00</td>}
                     </tr>
                   )}
                 </tbody>

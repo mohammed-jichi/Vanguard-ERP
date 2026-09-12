@@ -21,7 +21,7 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
 }) => {
   const refunds = [
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       eodDate: '11-08-2026',
       invoiceNumber: '103098',
       customer: 'Direct Retail Customer',
@@ -34,7 +34,7 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
       grandTotal: '-630,000.00',
     },
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       eodDate: '14-08-2026',
       invoiceNumber: '103142',
       customer: 'Al-Hajj Grocery',

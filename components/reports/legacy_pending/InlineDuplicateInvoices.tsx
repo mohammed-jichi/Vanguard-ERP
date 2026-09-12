@@ -46,7 +46,7 @@ export const InlineDuplicateInvoices: React.FC<InlineDuplicateInvoicesProps> = (
 
         {/* Branch Info */}
         <div className="text-[11px] font-bold mb-4">
-          Branch: Southern Olive Oil Products S.A.R.L
+          Branch: Main Branch
         </div>
 
         {/* Group 1 Header */}

@@ -53,8 +53,7 @@ export const ElectronicJournalTemplate: React.FC<ElectronicJournalTemplateProps>
         <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
           
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0 min-w-[240px]">
-            <option>Branch: Southern Olive Oil Products S.A.R.L</option>
-            <option>Branch: Beirut Warehouse</option>
+            <option>Branch: Main Branch (الفرع الرئيسي)</option>
           </select>
 
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0 min-w-[120px]">

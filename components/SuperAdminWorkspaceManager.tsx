@@ -244,14 +244,28 @@ export default function SuperAdminWorkspaceManager() {
         <div className="space-y-2">
           {displayTenants && displayTenants.length > 0 ? (
             displayTenants.map(tenant => (
-              <div key={tenant.id} className="p-4 border border-amber-500/30 font-bold text-lg text-amber-300 bg-slate-950 rounded-xl flex flex-wrap items-center justify-between gap-2 shadow">
+              <div key={tenant.id} className="p-4 border border-amber-500/30 font-bold text-lg text-amber-300 bg-slate-950 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
-                  <span>{tenant.brand_name_ar || tenant.name || 'منتوجات زيت وزيتون الجنوب'}</span>
+                  <div>
+                    <span className="text-white font-extrabold">{tenant.brand_name_ar || tenant.name || 'منتوجات زيت وزيتون الجنوب'}</span>
+                    <span className="block text-xs text-amber-400/90 font-mono mt-0.5">
+                      Lic: VNG-LIC-2026-SOUTHERN-OLIVE-ULTIMATE-UNLIMITED-X992
+                    </span>
+                  </div>
                 </div>
-                <span className="text-xs font-mono text-slate-300 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
-                  Tenant ID: {tenant.id}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-lg border border-emerald-800">
+                    100% UNLOCKED
+                  </span>
+                  <a
+                    href="/backoffice/license"
+                    className="text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 px-3 py-1 rounded-lg shadow transition-colors flex items-center gap-1"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>عرض الشهادة</span>
+                  </a>
+                </div>
               </div>
             ))
           ) : (

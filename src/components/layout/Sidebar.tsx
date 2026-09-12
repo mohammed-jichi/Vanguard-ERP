@@ -39,7 +39,7 @@ export default function Sidebar() {
             onClick={() => toggleSection('sales')}
             className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left"
           >
-            <span className="flex items-center gap-2"><span>🛒</span><span>1. Sales Control & POS</span></span>
+            <span className="flex items-center gap-2"><span>🛒</span><span>1. Sales Control</span></span>
             <span className="text-[10px] text-slate-400">{openSections.sales ? '▲' : '▼'}</span>
           </button>
           {openSections.sales && (
@@ -119,7 +119,7 @@ export default function Sidebar() {
         {/* 4. OPERATIONS */}
         <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white">
           <button type="button" onClick={() => toggleSection('operations')} className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left">
-            <span className="flex items-center gap-2"><span>⚙️</span><span>4. Operations & Pressing</span></span>
+            <span className="flex items-center gap-2"><span>⚙️</span><span>4. Operations Center</span></span>
             <span className="text-[10px] text-slate-400">{openSections.operations ? '▲' : '▼'}</span>
           </button>
         </div>

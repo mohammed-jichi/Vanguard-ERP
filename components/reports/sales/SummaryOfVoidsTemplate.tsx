@@ -132,10 +132,7 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
             onChange={(e) => setBranch(e.target.value)}
             className="border border-slate-400 rounded p-1.5 text-[13px] bg-white text-black font-bold focus:outline-none focus:ring-1 focus:ring-blue-600"
           >
-            <option value="All Branches">All Branches</option>
-            <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
-            <option value="Beirut Central Branch">Beirut Central Branch</option>
-            <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+            <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
           </select>
         </div>
 
@@ -201,7 +198,7 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
 
         {/* Branch Title */}
         <div className="text-xs font-bold underline mb-2 text-slate-900">
-          Branch: Southern Olive Oil Products S.A.R.L
+          Branch: Main Branch
         </div>
 
         {/* Native Table */}

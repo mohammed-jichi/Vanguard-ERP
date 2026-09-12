@@ -15,8 +15,11 @@ export const DuplicateInvoicesTemplate: React.FC<DuplicateInvoicesTemplateProps>
   showRate = false,
   groupByDate = true,
 }) => {
-  const [uiShowRate, setUiShowRate] = useState(false);
-  const [activeShowRate, setActiveShowRate] = useState(false);
+  const [uiShowRate, setUiShowRate] = useState(showRate);
+  const [activeShowRate, setActiveShowRate] = useState(showRate);
+
+  const isRateActive = showRate || activeShowRate;
+  const isGroupDate = groupByDate;
 
   const handleFilter = () => setActiveShowRate(uiShowRate);
 
@@ -70,7 +73,7 @@ export const DuplicateInvoicesTemplate: React.FC<DuplicateInvoicesTemplateProps>
               className="w-full border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
             />
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Main Branch (الفرع الرئيسي)</option></select>
             <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Invoices</option></select>
             <div className="flex items-center gap-2 mt-2">
               <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
@@ -105,19 +108,22 @@ export const DuplicateInvoicesTemplate: React.FC<DuplicateInvoicesTemplateProps>
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice #</th>
-                  <th className="py-1 px-1 text-left">Date</th>
-                  <th className="py-1 px-1 text-left">Time</th>
-                  <th className="py-1 px-1 text-right">Order #</th>
+                  {isGroupDate && <th className="py-1 px-1 text-left">Date</th>}
                   <th className="py-1 px-1 text-left">Cust. #</th>
-                  <th className="py-1 px-1 text-right">Amount</th>
+                  <th className="py-1 px-1 text-left">Customer Name</th>
+                  <th className="py-1 px-1 text-left">Order #</th>
+                  <th className="py-1 px-1 text-left">Print #</th>
+                  <th className="py-1 px-1 text-right">Sub Total</th>
                   <th className="py-1 px-1 text-right">Discount</th>
-                  <th className="py-1 px-1 text-left pl-2">TaxPay Type</th>
-                  <th className="py-1 px-1 text-right">TotalPrint#</th>
-                  {activeShowRate && <th className="py-1 px-1 text-right">Rate</th>}
+                  <th className="py-1 px-1 text-right">Tax</th>
+                  <th className="py-1 px-1 text-right">Total</th>
+                  {isRateActive && <th className="py-1 px-1 text-center">Cur</th>}
+                  {isRateActive && <th className="py-1 px-1 text-right">Rate</th>}
+                  {isRateActive && <th className="py-1 px-1 text-right">Total ($)</th>}
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={activeShowRate ? 10 : 9} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td></tr>
+                <tr className="font-bold"><td colSpan={10 + (isRateActive ? 3 : 0) + (isGroupDate ? 0 : -1)} className="py-1 px-1">Branch: Main Branch</td></tr>
               </tbody>
             </table>
           </div>

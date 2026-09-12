@@ -13,7 +13,7 @@ export const UserLogReportTemplate: React.FC<UserLogReportTemplateProps> = ({
 }) => {
   const logEntries = [
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       module: 'Adjustment',
       user: 'Mohammed Jichi',
       date: '01-Aug-2026 10:14 AM',
@@ -22,7 +22,7 @@ export const UserLogReportTemplate: React.FC<UserLogReportTemplateProps> = ({
       reference: '41',
     },
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       module: 'Sales Invoicing',
       user: 'Hiba Aloulou',
       date: '01-Aug-2026 11:30 AM',
@@ -31,7 +31,7 @@ export const UserLogReportTemplate: React.FC<UserLogReportTemplateProps> = ({
       reference: '103098',
     },
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       module: 'Sales Invoicing',
       user: 'Cashier R',
       date: '02-Aug-2026 02:45 PM',
@@ -40,7 +40,7 @@ export const UserLogReportTemplate: React.FC<UserLogReportTemplateProps> = ({
       reference: '103125',
     },
     {
-      branch: 'Southern Olive Oil Products - Choueifat',
+      branch: 'Main Branch',
       module: 'Cash Drawer',
       user: 'Hussein Mahdi',
       date: '02-Aug-2026 07:00 PM',
@@ -80,7 +80,7 @@ export const UserLogReportTemplate: React.FC<UserLogReportTemplateProps> = ({
           <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
             <tr>
               <td colSpan={6} className="py-1.5 px-2 font-bold underline bg-slate-50 text-slate-900">
-                Branch : Southern Olive Oil Products S.A.R.L
+                Branch : Main Branch
               </td>
             </tr>
             {logEntries.map((log, idx) => (

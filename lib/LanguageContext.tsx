@@ -14,10 +14,10 @@ export interface LanguageContextType {
 const translations: Record<LanguageCode, Record<string, string>> = {
   en: {
     'workspace': 'Workspace',
-    'sales_control': 'Sales Control & POS',
+    'sales_control': 'Sales Control',
     'supersonic_fleet': 'SuperSonic Fleet Management',
     'social_crm': 'Social Media CRM',
-    'operations_center': 'Operations & Pressing Center',
+    'operations_center': 'Operations Center',
     'olive_pressing': 'Olive Pressing & Production',
     'crm_debtors': 'Customer Management & AR',
     'accounting_finance': 'Accounting & Finance',

@@ -65,7 +65,7 @@ export const TransactionsByCustomersByEmployeeTemplate: React.FC<TransactionsByC
               className="w-full border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
             />
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Main Branch (الفرع الرئيسي)</option></select>
           </div>
           <div className="flex flex-col gap-2 min-w-[150px]">
             <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
@@ -107,7 +107,7 @@ export const TransactionsByCustomersByEmployeeTemplate: React.FC<TransactionsByC
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={12} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td></tr>
+                <tr className="font-bold"><td colSpan={12} className="py-1 px-1">Branch: Main Branch</td></tr>
               </tbody>
             </table>
           </div>

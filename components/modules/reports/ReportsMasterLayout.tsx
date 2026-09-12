@@ -293,10 +293,9 @@ export default function ReportsMasterLayout() {
             </div>
           </div>
 
+          {/* PERFECT VANGUARD PAPER (FLEXIBLE TO ALL PAPER SIZES) */}
           {/* ================================================================= */}
-          {/* PERFECT VANGUARD A4 PAPER (FIXED PROPORTIONS - NO SQUISHED TEXT)     */}
-          {/* ================================================================= */}
-          <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-md print:border-none print:shadow-none print:m-0 print:p-6 select-none">
+          <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-md print:w-full print:max-w-full print:min-h-0 print:border-none print:shadow-none print:m-0 print:p-0 select-none">
             
             {/* Header */}
             <div className="border-b border-black pb-2 mb-2">

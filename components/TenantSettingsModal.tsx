@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTenant } from '@/lib/TenantContext';
+import { useTenant, SOUTHERN_OLIVE_OFFICIAL_LICENSE } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
+import LicenseActivationCertificateModal from './LicenseActivationCertificateModal';
 import {
   Settings,
   Building,
@@ -13,7 +14,10 @@ import {
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Award,
+  Key,
+  Copy
 } from 'lucide-react';
 
 interface TenantSettingsModalProps {
@@ -31,6 +35,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [companyRegistrationNumber, setCompanyRegistrationNumber] = useState<string>('');
   const [taxIdentificationNumber, setTaxIdentificationNumber] = useState<string>('');
+  const [isCertModalOpen, setIsCertModalOpen] = useState<boolean>(false);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -269,6 +274,75 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             </div>
           </div>
 
+          {/* SECTION 3: VANGUARD ERP ENTERPRISE LICENSE & ACTIVATION STATUS */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h4 className="text-xs font-black text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-amber-600" /> {t('license_activation', '3. Vanguard ERP Enterprise License & Activation')}
+              </h4>
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> 100% UNLOCKED
+              </span>
+            </div>
+
+            <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 text-white border border-amber-500/40 space-y-3 shadow-md">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-amber-400" /> Authorized License Key
+                </span>
+                <span className="text-[10px] font-mono text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-md border border-slate-700">
+                  Perpetual Lifetime
+                </span>
+              </div>
+
+              <div className="bg-slate-950 p-2.5 rounded-xl border border-amber-500/30 flex items-center justify-between gap-2">
+                <code className="text-amber-300 font-mono text-xs font-bold break-all select-all">
+                  {SOUTHERN_OLIVE_OFFICIAL_LICENSE.licenseKey}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(SOUTHERN_OLIVE_OFFICIAL_LICENSE.licenseKey);
+                    alert('License Key copied to clipboard!');
+                  }}
+                  className="p-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg text-xs font-bold transition shrink-0 cursor-pointer"
+                  title="Copy Key"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-300">
+                <div className="space-y-0.5">
+                  <span className="text-slate-400 block text-[10px]">Authorized By:</span>
+                  <span className="text-white font-semibold">Vanguard ERP Global Licensing Authority</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCertModalOpen(true)}
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <Award className="w-3.5 h-3.5" />
+                    <span>View Official Certificate</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* QUICK SUMMARY OF ACTIVATED MODULES */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
+                <span>Enterprise Activation Scope:</span>
+                <span className="text-emerald-600 font-extrabold">All 18 Modules Unlocked</span>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                Inventory, Sales POS, Accounting, Wastage, Fleet, Production, V-Track, Reports, HR & Payroll, Loyalty, and Security Suite are fully authorized and unlimited for Southern Olive Oil Products S.A.R.L.
+              </p>
+            </div>
+          </div>
+
           {/* FOOTER ACTIONS */}
           <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
             <button
@@ -292,6 +366,11 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
         </form>
 
       </div>
+
+      <LicenseActivationCertificateModal
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+      />
     </div>
   );
 }

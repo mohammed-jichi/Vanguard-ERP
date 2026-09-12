@@ -23,104 +23,11 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
-
-interface BranchEod {
-  BRANCHID: number;
-  BARANCHNAME: string;
-  OMEGA_CUSTID: number;
-  end_of_day: string;
-  status: 'Closed' | 'Pending EOD' | 'In Shift';
-  cashier: string;
-  invoicesCount: number;
-  grossSales: number;
-  netSales: number;
-  cashUsd: number;
-  cashLbp: number;
-  cardPayments: number;
-  omnichannel: number;
-  taxVat: number;
-  voidsCount: number;
-  discounts: number;
-}
-
-const INITIAL_BRANCHES: BranchEod[] = [
-  {
-    BRANCHID: 1,
-    BARANCHNAME: '00001 - Southern Olive Oil Products S.A.R.L',
-    OMEGA_CUSTID: 22901,
-    end_of_day: 'Sep 04, 2026',
-    status: 'Pending EOD',
-    cashier: 'Hiba Aloulou (Register #1)',
-    invoicesCount: 142,
-    grossSales: 5290.00,
-    netSales: 4765.77,
-    cashUsd: 3120.00,
-    cashLbp: 144500000,
-    cardPayments: 510.00,
-    omnichannel: 230.00,
-    taxVat: 524.23,
-    voidsCount: 3,
-    discounts: 110.00
-  },
-  {
-    BRANCHID: 2,
-    BARANCHNAME: '00002 - Nabatieh Southern Hub',
-    OMEGA_CUSTID: 22902,
-    end_of_day: 'Sep 04, 2026',
-    status: 'Closed',
-    cashier: 'Karim Jaber (Register #2)',
-    invoicesCount: 96,
-    grossSales: 3450.00,
-    netSales: 3108.11,
-    cashUsd: 2100.00,
-    cashLbp: 89000000,
-    cardPayments: 340.00,
-    omnichannel: 110.00,
-    taxVat: 341.89,
-    voidsCount: 1,
-    discounts: 45.00
-  },
-  {
-    BRANCHID: 3,
-    BARANCHNAME: '00003 - Saida Distribution Depot',
-    OMEGA_CUSTID: 22903,
-    end_of_day: 'Sep 03, 2026',
-    status: 'Closed',
-    cashier: 'Rami Mroueh (Register #1)',
-    invoicesCount: 78,
-    grossSales: 2890.00,
-    netSales: 2603.60,
-    cashUsd: 1800.00,
-    cashLbp: 68500000,
-    cardPayments: 280.00,
-    omnichannel: 95.00,
-    taxVat: 286.40,
-    voidsCount: 0,
-    discounts: 30.00
-  },
-  {
-    BRANCHID: 4,
-    BARANCHNAME: '00004 - Tyre Coastal Center',
-    OMEGA_CUSTID: 22904,
-    end_of_day: 'Sep 03, 2026',
-    status: 'Closed',
-    cashier: 'Ziad Zaher (Register #1)',
-    invoicesCount: 64,
-    grossSales: 2150.00,
-    netSales: 1936.94,
-    cashUsd: 1400.00,
-    cashLbp: 52000000,
-    cardPayments: 190.00,
-    omnichannel: 60.00,
-    taxVat: 213.06,
-    voidsCount: 2,
-    discounts: 25.00
-  }
-];
+import { OmegaBranchEod, INITIAL_EOD_BRANCHES } from '@/lib/omegaEndOfDayData';
 
 export default function EndOfDayPage() {
   const { currentTenant } = useTenant();
-  const [branches, setBranches] = useState<BranchEod[]>(INITIAL_BRANCHES);
+  const [branches, setBranches] = useState<OmegaBranchEod[]>(INITIAL_EOD_BRANCHES);
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
@@ -152,7 +59,7 @@ export default function EndOfDayPage() {
     setConfirmModalOpen(false);
     setLoading(true);
 
-    // Simulate authentic Omega closing sequence & API response
+    // Simulate authentic Vanguard closing sequence & API response
     setTimeout(() => {
       setLoading(false);
       
@@ -179,7 +86,7 @@ export default function EndOfDayPage() {
   return (
     <div className="min-h-screen bg-[#edf3f9] text-[#0f172a] font-sans pb-16">
       <style jsx global>{`
-        /* Authentic Omega End of Day Styles */
+        /* Authentic Vanguard End of Day Styles */
         .end-of-day-card {
           background: #fff;
           border: 1px solid #dfe5ef;
@@ -202,7 +109,7 @@ export default function EndOfDayPage() {
             padding: 1rem;
           }
         }
-        .omega-table th {
+        .vanguard-table th {
           background-color: #3e3e3e;
           color: #ffffff;
           font-size: 12px;
@@ -211,14 +118,14 @@ export default function EndOfDayPage() {
           border: 1px solid #555;
           text-align: left;
         }
-        .omega-table td {
+        .vanguard-table td {
           font-size: 12px;
           padding: 7px 10px;
           border: 1px solid #e2e8f0;
         }
       `}</style>
 
-      {/* Toastr notification matching Omega toastr */}
+      {/* Toastr notification matching Vanguard toastr */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 animate-bounce transition-all">
           <div className={`flex items-start gap-3 p-4 rounded-xl shadow-2xl text-white min-w-[320px] ${toastMessage.type === 'success' ? 'bg-[#337718] border border-emerald-400' : 'bg-[#dc2626] border border-red-400'}`}>
@@ -234,7 +141,7 @@ export default function EndOfDayPage() {
         </div>
       )}
 
-      {/* Breadcrumb & Header matching Omega EndOfDayView */}
+      {/* Breadcrumb & Header matching Vanguard EndOfDayView */}
       <div className="px-4 lg:px-6 pt-5 pb-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
@@ -303,10 +210,10 @@ export default function EndOfDayPage() {
       </div>
 
       <div className="px-4 lg:px-6 mt-4 max-w-7xl">
-        {/* TAB 1: EXACT OMEGA END OF DAY VIEW */}
+        {/* TAB 1: EXACT VANGUARD END OF DAY VIEW */}
         {activeTab === 'closing' && (
           <div className="space-y-6">
-            {/* OMEGA AUTHENTIC END OF DAY CARD */}
+            {/* VANGUARD AUTHENTIC END OF DAY CARD */}
             <div className="end-of-day-card">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 {/* Branch Selection Field */}
@@ -375,7 +282,7 @@ export default function EndOfDayPage() {
                 <div className="end-of-day-loader">
                   <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-600">
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Communicating with Omega POS Engine & Finalizing Register Ledger...</span>
+                    <span>Communicating with Vanguard POS Engine & Finalizing Register Ledger...</span>
                   </div>
                 </div>
               )}
@@ -465,18 +372,18 @@ export default function EndOfDayPage() {
             <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Branches End of Day Status Matrix</h3>
-                <p className="text-xs text-slate-500">Live synchronization with Omega POS API (`getBranchesLastEodate`)</p>
+                <p className="text-xs text-slate-500">Live synchronization with Vanguard POS API (`getBranchesLastEodate`)</p>
               </div>
               <button
                 onClick={() => setStatusModalOpen(true)}
-                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm"
+                className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm cursor-pointer"
               >
-                Open Omega Modal View
+                Open Vanguard Status Matrix
               </button>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full omega-table">
+              <table className="w-full vanguard-table">
                 <thead>
                   <tr>
                     <th>Branch ID</th>
@@ -620,7 +527,7 @@ export default function EndOfDayPage() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full omega-table">
+              <table className="w-full vanguard-table">
                 <thead>
                   <tr>
                     <th>Z-Report #</th>
@@ -676,7 +583,7 @@ export default function EndOfDayPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. AUTHENTIC OMEGA CONFIRMATION POPUP (BOOTBOX CONFIRM)                   */}
+      {/* 1. AUTHENTIC VANGUARD CONFIRMATION POPUP (BOOTBOX CONFIRM)                   */}
       {/* ========================================================================= */}
       {confirmModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
@@ -731,12 +638,12 @@ export default function EndOfDayPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 2. AUTHENTIC OMEGA EOD STATUS MATRIX MODAL (`getBranchesLastEodate`)       */}
+      {/* 2. AUTHENTIC VANGUARD EOD STATUS MATRIX MODAL (`getBranchesLastEodate`)     */}
       {/* ========================================================================= */}
       {statusModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
           <div className="bg-white border border-slate-300 rounded-lg max-w-lg w-full p-4 text-slate-800 shadow-2xl">
-            {/* Authentic Omega Status Table layout matching BackofficeDashboardController.js */}
+            {/* Authentic Vanguard Status Table layout matching BackofficeDashboardController.js */}
             <div style={{ padding: '4px', background: '#ffffff', borderRadius: '6px' }}>
               <table className="w-full" style={{ marginBottom: 0, color: '#0f172a', background: '#ffffff', borderCollapse: 'collapse' }}>
                 <thead>
@@ -765,7 +672,7 @@ export default function EndOfDayPage() {
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
-              <span className="text-[11px] text-slate-500 font-medium">Synchronized with Omega Sales Control Core</span>
+              <span className="text-[11px] text-slate-500 font-medium">Synchronized with Vanguard Sales Control Core</span>
               <button
                 type="button"
                 onClick={() => setStatusModalOpen(false)}

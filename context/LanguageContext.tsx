@@ -24,10 +24,10 @@ const MASTER_DICTIONARY: Record<LanguageCode, Record<string, string>> = {
     branch_pressing: 'Central Pressing & Production Plant',
 
     // 7 Core Modules Navigation
-    mod_sales_pos: '1. Sales Control & POS',
+    mod_sales_pos: '1. Sales Control',
     mod_fleet: '2. SuperSonic Fleet Management',
     mod_social_crm: '3. Social CRM & Support',
-    mod_operations: '4. Operations & Pressing Center',
+    mod_operations: '4. Operations Center',
     mod_customers_ar: '5. Customer Management & AR',
     mod_accounting: '6. Accounting & Finance',
     mod_hr: '7. HR & Payroll Management',

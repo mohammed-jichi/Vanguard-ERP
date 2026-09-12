@@ -15,7 +15,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
   const [zoomLevel, setZoomLevel] = useState(1);
   const [reportType, setReportType] = useState('Sales by Items');
   const [filterPeriod, setFilterPeriod] = useState('This Month');
-  const [branch, setBranch] = useState('All Branches');
+  const [branch, setBranch] = useState('Main Branch');
   const [category, setCategory] = useState('All Categories');
   const [division, setDivision] = useState('All Divisions');
   const [group, setGroup] = useState('All Groups');
@@ -183,7 +183,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
     {
         "page": 1,
         "rows": [
-            {"type": "branch", "text": "Branch: Southern Olive Oil Products S.A.R.L"},
+            {"type": "branch", "text": "Branch: Main Branch"},
             {"type": "division", "text": "Division: Distillates Standard ProductJams Retail"},
             {"type": "group", "text": "Group: Distillates Retail 500ml"},
             {"type": "item", "desc": "White Vinegar 500ml", "bar": "5281234123528", "qty": "3.00", "total": "210,000.00", "remark": ""},
@@ -374,7 +374,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
             {"type": "item", "desc": "P Blue Gallon 10 Litres", "bar": "", "qty": "23.00", "total": "0.00", "remark": ""},
             {"type": "group_total", "text": "Total by Group: Plastic Gallon", "qty": "70.00", "total": "0.00"},
             {"type": "div_total", "text": "Total by Division: Plastic", "qty": "70.00", "total": "0.00"},
-            {"type": "branch_total", "text": "Total by Branch: Southern Olive Oil Products S.A.R.L", "qty": "528.94", "total": "1,564,432,050.00"}
+            {"type": "branch_total", "text": "Total by Branch: Main Branch", "qty": "528.94", "total": "1,564,432,050.00"}
         ]
     }
   ];
@@ -420,8 +420,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               >
-                <option value="All Branches">All Branches</option>
-                <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
+                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
               </select>
             </div>
             

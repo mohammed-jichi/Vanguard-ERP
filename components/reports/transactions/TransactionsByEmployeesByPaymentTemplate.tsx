@@ -77,7 +77,7 @@ export const TransactionsByEmployeesByPaymentTemplate: React.FC<TransactionsByEm
             />
             
             <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
-              <option>All Branches</option>
+              <option>Main Branch (الفرع الرئيسي)</option>
             </select>
             
             <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer">
@@ -131,7 +131,7 @@ export const TransactionsByEmployeesByPaymentTemplate: React.FC<TransactionsByEm
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={activeRealDate ? 6 : 5} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td></tr>
+                <tr className="font-bold"><td colSpan={activeRealDate ? 6 : 5} className="py-1 px-1">Branch: Main Branch</td></tr>
               </tbody>
             </table>
           </div>

@@ -124,7 +124,7 @@ export default function UniversalReportViewer({
             </thead>
             <tbody className="text-[11px] leading-tight font-sans">
               <tr>
-                <td colSpan={4} className="py-1 font-bold">Branch: Southern Olive Oil Products S.A.R.L (Choueifat)</td>
+                <td colSpan={4} className="py-1 font-bold">Branch: Main Branch</td>
               </tr>
               <tr>
                 <td className="py-[2px] px-1 pl-4">زيت زيتون خضير بلدي 17.5 ليتر</td>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import ProductInsightsView from './ProductInsightsView';
 import {
@@ -37,8 +37,15 @@ import {
   Activity,
   CheckCircle2,
   MapPin,
-  BarChart2
+  BarChart2,
+  Building2,
+  Phone,
+  Mail,
+  ArrowRight,
+  Factory,
+  Filter
 } from 'lucide-react';
+import { getBranchData, getAllBranchesList, ALL_BRANCHES_CONSOLIDATED, BranchInfo } from '@/lib/branchData';
 import {
   BarChart,
   Bar,
@@ -61,11 +68,23 @@ interface SalesDashboardProps {
 
 export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) {
   // Filter States
-  const [selectedBranch, setSelectedBranch] = useState<string>('منتجات زيت وزيتون الجنوب');
+  const [selectedBranch, setSelectedBranch] = useState<string>('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('LBP');
   const [selectedYear, setSelectedYear] = useState<string>('2026');
   const [selectedMonth, setSelectedMonth] = useState<string>('August');
   const [selectedDate, setSelectedDate] = useState<string>('All Days');
+  const [recalculating, setRecalculating] = useState<boolean>(false);
+  const [recalcToast, setRecalcToast] = useState<string | null>(null);
+  const [isEodModalOpen, setIsEodModalOpen] = useState<boolean>(false);
+
+  // Dynamic Branch Resolution
+  const currentBranchData: BranchInfo = useMemo(() => {
+    return getBranchData(selectedBranch);
+  }, [selectedBranch]);
+
+  const allBranchesList = useMemo(() => {
+    return getAllBranchesList();
+  }, []);
 
   // Active Sub-Tab State (default: summary)
   const [activeTab, setActiveTab] = useState<string>('summary');
@@ -108,53 +127,15 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { name: 'Clients', value: 248400000, color: '#10b981', percentage: '100.00%' }
   ];
 
-  // --- LIVE DATA: SUMMARY TAB ---
-  const monthlyRevenueData = [
-    { month: 'Jan', revenue: 420 },
-    { month: 'Feb', revenue: 380 },
-    { month: 'Mar', revenue: 510 },
-    { month: 'Apr', revenue: 490 },
-    { month: 'May', revenue: 580 },
-    { month: 'Jun', revenue: 620 },
-    { month: 'Jul', revenue: 690 },
-    { month: 'Aug', revenue: 750 },
-    { month: 'Sep', revenue: 610 },
-    { month: 'Oct', revenue: 540 },
-    { month: 'Nov', revenue: 480 },
-    { month: 'Dec', revenue: 710 }
-  ];
-
-  const categorySalesData = [
-    { name: 'Extra Virgin Olive Oil', value: 45, amount: 'LBP 91,035,000', color: '#1e3a8a' },
-    { name: 'Bottled Oil & Jars', value: 30, amount: 'LBP 60,690,000', color: '#0f766e' },
-    { name: 'Pressing Services', value: 15, amount: 'LBP 30,345,000', color: '#854d0e' },
-    { name: 'Soaps & Byproducts', value: 10, amount: 'LBP 20,230,000', color: '#4c1d95' }
-  ];
-
-  const divisionSalesData = [
-    { name: 'Retail Olive Oil (زيت مفرق)', value: 52, amount: 'LBP 322.4M', color: '#1e3a8a' },
-    { name: 'Wholesale Drums (براميل جملة)', value: 25, amount: 'LBP 155.0M', color: '#475569' },
-    { name: 'Extraction & Pressing (عصر الزيتون)', value: 15, amount: 'LBP 93.0M', color: '#0f766e' },
-    { name: 'Organic Soaps (صابون بلدي)', value: 8, amount: 'LBP 49.6M', color: '#854d0e' }
-  ];
-
-  const groupSalesData = [
-    { name: 'Glass Bottles', value: 40, amount: 'LBP 248.0M', color: '#0f766e' },
-    { name: 'Tin Cans 16L', value: 35, amount: 'LBP 217.0M', color: '#1e3a8a' },
-    { name: 'Plastic Containers', value: 15, amount: 'LBP 93.0M', color: '#854d0e' },
-    { name: 'Loose Bulk', value: 10, amount: 'LBP 62.0M', color: '#475569' }
-  ];
-
-  const departmentSalesData = [
-    { name: 'MAIN DEPARTMENT', value: 68, amount: 'LBP 421.6M', color: '#1e3a8a' },
-    { name: 'Showroom', value: 22, amount: 'LBP 136.4M', color: '#0f766e' },
-    { name: 'Direct Delivery', value: 10, amount: 'LBP 62.0M', color: '#854d0e' }
-  ];
-
-  const discountSummaryData = [
-    { name: 'AMOUNT DISCOUNT', value: 65, amount: 'LBP 1,625,000', color: '#1e3a8a' },
-    { name: 'PERCENTAGE DISCOUNT', value: 35, amount: 'LBP 875,000', color: '#4c1d95' }
-  ];
+  // --- LIVE DATA: SUMMARY TAB (DYNAMICALLY DERIVED FROM SELECTED BRANCH) ---
+  const monthlyRevenueData = currentBranchData.monthlyBarData;
+  const categorySalesData = currentBranchData.categorySalesData;
+  const divisionSalesData = currentBranchData.divisionSalesData;
+  const groupSalesData = currentBranchData.groupSalesData;
+  const departmentSalesData = currentBranchData.departmentSalesData;
+  const discountSummaryData = currentBranchData.discountSummaryData;
+  const userSummaryData = currentBranchData.userSummaryData;
+  const paymentSummaryData = currentBranchData.paymentSummaryData;
 
   const discountByCategoryData = [
     { type: 'AMOUNT DISCOUNT', raw: 'LBP 50,000', retail: 'LBP 950,000', promo: 'LBP 625,000', total: 'LBP 1,625,000' },
@@ -166,19 +147,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { reason: 'Price Correction', value: 50, amount: 'LBP 1,200,000', count: 6, color: '#854d0e' },
     { reason: 'Customer Cancellation', value: 30, amount: 'LBP 720,000', count: 4, color: '#4c1d95' },
     { reason: 'Cashier Error', value: 20, amount: 'LBP 480,000', count: 2, color: '#475569' }
-  ];
-
-  const userSummaryData = [
-    { user: 'Hiba Aloulou', value: 30, amount: 'LBP 186.0M', color: '#4c1d95' },
-    { user: 'Mahdi', value: 25, amount: 'LBP 155.0M', color: '#1e3a8a' },
-    { user: 'Cashier N2', value: 23, amount: 'LBP 142.6M', color: '#0f766e' },
-    { user: 'Nour Yazbeck', value: 22, amount: 'LBP 136.4M', color: '#475569' }
-  ];
-
-  const paymentSummaryData = [
-    { method: 'CASH LBP', value: 70, amount: 'LBP 434.0M', color: '#0f766e' },
-    { method: 'CASH USD', value: 25, amount: 'LBP 155.0M', color: '#1e3a8a' },
-    { method: 'Credit Card', value: 5, amount: 'LBP 31.0M', color: '#4c1d95' }
   ];
 
   const employeeByCategoryData = [
@@ -340,12 +308,41 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     { id: 'geographics', label: 'Geographics', icon: Globe }
   ];
 
+  const usdRate = 89500;
+  const formatVal = (lbpAmount: number, forceFormat?: 'full' | 'short') => {
+    if (selectedCurrency === 'USD') {
+      const usdVal = lbpAmount / usdRate;
+      if (forceFormat === 'short') {
+        if (Math.abs(usdVal) >= 1000000) return `$${(usdVal / 1000000).toFixed(1)}M`;
+        if (Math.abs(usdVal) >= 1000) return `$${(usdVal / 1000).toFixed(1)}K`;
+        return `$${usdVal.toFixed(2)}`;
+      }
+      return `$${usdVal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+    }
+    if (forceFormat === 'short') {
+      if (Math.abs(lbpAmount) >= 1000000000) {
+        return `${(lbpAmount / 1000000000).toFixed(1)} B LL`;
+      }
+      if (Math.abs(lbpAmount) >= 1000000) {
+        return `${(lbpAmount / 1000000).toFixed(1)} M LL`;
+      }
+      return `${lbpAmount.toLocaleString()} LL`;
+    }
+    return `LBP ${lbpAmount.toLocaleString()}`;
+  };
+
   const handleExportPDF = () => {
     window.print();
   };
 
   const handleRecalculate = () => {
-    alert('Sales balances and MTD/YTD metrics recalculated successfully!');
+    setRecalculating(true);
+    setRecalcToast(`Recalculating sales and balances for ${currentBranchData.name}...`);
+    setTimeout(() => {
+      setRecalculating(false);
+      setRecalcToast(`✓ Balances recalculated successfully for ${currentBranchData.name}`);
+      setTimeout(() => setRecalcToast(null), 3500);
+    }, 600);
   };
 
   // Interactive Legend Toggling State
@@ -458,9 +455,6 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
       </div>
     );
   };
-
-  // EOD Status Modal State
-  const [isEodModalOpen, setIsEodModalOpen] = useState<boolean>(false);
 
   // Hidden Pie Slices State (for dynamic 360-degree calculation & two-way toggling)
   const [hiddenPieItems, setHiddenPieItems] = useState<string[]>([]);
@@ -676,13 +670,23 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           {/* BRANCH DROPDOWN */}
           <select
             value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
+            onChange={(e) => {
+              setSelectedBranch(e.target.value);
+              const bName = e.target.value === 'ALL' ? 'All Branches (Consolidated Fleet)' : getBranchData(e.target.value).name;
+              setRecalcToast(`Switched view to ${bName}`);
+              setTimeout(() => setRecalcToast(null), 2500);
+            }}
             style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="منتجات زيت وزيتون الجنوب" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>منتجات زيت وزيتون الجنوب (Southern Olive Oil Products S.A.R.L)</option>
-            <option value="Beirut Central Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Central Branch</option>
-            <option value="Saida Production Press" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Saida Production Press</option>
+            {allBranchesList.length > 1 && (
+              <option value="ALL" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Branches (جميع الفروع الموحدة)</option>
+            )}
+            {allBranchesList.map((b) => (
+              <option key={b.id} value={b.id} style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>
+                {b.name} ({b.arabicName})
+              </option>
+            ))}
           </select>
 
           {/* CURRENCY DROPDOWN */}
@@ -754,7 +758,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <button
             onClick={() => setIsEodModalOpen(true)}
             title="Clock / Last EOD"
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs"
+            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs cursor-pointer"
           >
             <Clock className="w-4 h-4" />
           </button>
@@ -762,9 +766,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <button
             onClick={handleRecalculate}
             title="Refresh / Recalculate"
-            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs"
+            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin text-blue-600' : ''}`} />
           </button>
 
           <a
@@ -788,12 +792,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="bg-emerald-700 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
             <span className="text-[11px] uppercase tracking-wider font-extrabold text-emerald-200">Today's Net Sales</span>
-            <h2 className="text-2xl font-black text-white mt-1">LBP 42,500,000</h2>
+            <h2 className="text-2xl font-black text-white mt-1">{formatVal(currentBranchData.metrics.todaySales)}</h2>
           </div>
           <div className="border-t border-emerald-600/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-emerald-100">
             <div>
               <p className="text-[10px] text-emerald-300 font-bold uppercase">Receipts</p>
-              <p className="font-extrabold text-white">42.5M</p>
+              <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.todaySales, 'short')}</p>
             </div>
             <div>
               <p className="text-[10px] text-emerald-300 font-bold uppercase">Discounts</p>
@@ -812,21 +816,21 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-200">Net Sales Summary</span>
             <div className="mt-1">
               <span className="text-[10px] text-blue-300 uppercase font-bold">Net Sales Total</span>
-              <h2 className="text-2xl font-black text-white">LBP 202,300,000</h2>
+              <h2 className="text-2xl font-black text-white">{formatVal(currentBranchData.metrics.netSalesSummary)}</h2>
             </div>
           </div>
           <div className="border-t border-blue-700/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-blue-100">
             <div>
               <p className="text-[10px] text-blue-300 font-bold uppercase">Gross</p>
-              <p className="font-extrabold text-white">185M</p>
+              <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.netSalesSummary * 0.95, 'short')}</p>
             </div>
             <div>
               <p className="text-[10px] text-blue-300 font-bold uppercase">Discount</p>
-              <p className="font-extrabold text-white">2.5M</p>
+              <p className="font-extrabold text-white">{formatVal(2500000, 'short')}</p>
             </div>
             <div>
               <p className="text-[10px] text-blue-300 font-bold uppercase">Tax</p>
-              <p className="font-extrabold text-white">19.8M</p>
+              <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.netSalesSummary * 0.11, 'short')}</p>
             </div>
           </div>
         </div>
@@ -835,12 +839,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="bg-amber-600 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
             <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">MTD / YTD Performance</span>
-            <h2 className="text-2xl font-black text-white mt-1">LBP 620,000,000</h2>
+            <h2 className="text-2xl font-black text-white mt-1">{formatVal(currentBranchData.metrics.mtdRevenue)}</h2>
           </div>
           <div className="border-t border-amber-500/60 pt-3 grid grid-cols-2 gap-2 text-[11px] text-amber-100">
             <div>
               <p className="text-[10px] text-amber-200 font-bold uppercase">YTD Sales</p>
-              <p className="font-extrabold text-white">4.85B</p>
+              <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.ytdRevenue, 'short')}</p>
             </div>
             <div>
               <p className="text-[10px] text-amber-200 font-bold uppercase">Cust. Aged</p>
@@ -853,7 +857,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="bg-[#8c4a32] rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
             <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">Cashier Operations</span>
-            <h2 className="text-2xl font-black text-white mt-1">142 Invoices</h2>
+            <h2 className="text-2xl font-black text-white mt-1">{currentBranchData.metrics.invoicesCount} Invoices</h2>
           </div>
           <div className="border-t border-amber-800/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-amber-100">
             <div>
@@ -862,7 +866,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </div>
             <div>
               <p className="text-[10px] text-amber-200 font-bold uppercase">Avg Invoice</p>
-              <p className="font-extrabold text-white">1.45M</p>
+              <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.avgTicket, 'short')}</p>
             </div>
             <div>
               <p className="text-[10px] text-amber-200 font-bold uppercase">Voids/Ref</p>
@@ -872,6 +876,193 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
 
       </div>
+
+      {/* Toast Notification */}
+      {recalcToast && (
+        <div className="fixed top-5 right-6 z-50 bg-slate-900/95 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 text-xs font-bold flex items-center gap-2.5 backdrop-blur-sm animate-in fade-in slide-in-from-top-3 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{recalcToast}</span>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2.1 MULTI-BRANCH CONSOLIDATED FLEET HUB (شو، وين، مين، والأرقام)          */}
+      {/* ========================================================================= */}
+      {selectedBranch === 'ALL' ? (
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-md">
+                <Building2 className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-extrabold text-slate-900">
+                    Consolidated Multi-Branch Fleet Breakdown
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-200">
+                    All 6 Branches in One Place
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  تفصيل شامل للفروع: شو (نوع المنشأة) &middot; وين (الموقع والمحافظة) &middot; مين (المسؤول ورقم الهاتف) &middot; الأرقام (المبيعات، الفواتير، ونسبة الهدف)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                Enterprise Target Attainment: <span className="font-mono text-emerald-600 font-black">94.8%</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-sans text-xs">
+              <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
+                <tr>
+                  <th className="py-2.5 px-3">شو (Facility & Purpose)</th>
+                  <th className="py-2.5 px-3">وين (Location & Governorate)</th>
+                  <th className="py-2.5 px-3">مين (Manager & Contact)</th>
+                  <th className="py-2.5 px-3 text-right">Net Sales</th>
+                  <th className="py-2.5 px-3 text-right">Invoices</th>
+                  <th className="py-2.5 px-3 text-right">Avg Ticket</th>
+                  <th className="py-2.5 px-3 text-right">Target</th>
+                  <th className="py-2.5 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                {allBranchesList.map((branch, idx) => (
+                  <tr key={branch.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50 hover:bg-slate-100/70 transition-colors'}>
+                    <td className="py-3 px-3">
+                      <div className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-800 font-mono text-xs font-bold shrink-0 mt-0.5">
+                          {branch.code.slice(-2)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>{branch.name}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">({branch.code})</span>
+                          </div>
+                          <div className="text-[11px] text-blue-700 font-semibold mt-0.5">
+                            {branch.nameAr}
+                          </div>
+                          <div className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                            {branch.type}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-bold text-slate-800 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        <span>{branch.governorate} &middot; {branch.city}</span>
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5 max-w-xs">
+                        {branch.address}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-bold text-slate-900">
+                        {branch.manager}
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-medium">
+                        {branch.role}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 text-[10px] font-mono text-slate-600">
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-slate-400" />
+                          {branch.phone}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3 text-right font-mono font-bold text-emerald-700 text-xs">
+                      {formatVal(branch.metrics.netSalesSummary)}
+                    </td>
+                    <td className="py-3 px-3 text-right font-mono font-bold text-slate-700 text-xs">
+                      {branch.metrics.invoicesCount}
+                    </td>
+                    <td className="py-3 px-3 text-right font-mono font-bold text-amber-700 text-xs">
+                      {formatVal(branch.metrics.avgTicket, 'short')}
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 font-mono">
+                        {branch.targetAttainment}%
+                      </span>
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBranch(branch.id);
+                          setRecalcToast(`Filtered dashboard to ${branch.name}`);
+                          setTimeout(() => setRecalcToast(null), 2500);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1 mx-auto cursor-pointer shadow-2xs"
+                        title="Filter Dashboard to This Branch"
+                      >
+                        <span>Filter</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start md:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-400 shrink-0 font-mono font-bold text-sm">
+              {currentBranchData.code.slice(-2)}
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-400/30 font-mono">
+                  {currentBranchData.code}
+                </span>
+                <h2 className="text-base md:text-lg font-black text-white">
+                  {currentBranchData.name}
+                </h2>
+                <span className="text-xs text-slate-300 font-semibold">
+                  ({currentBranchData.nameAr})
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  {currentBranchData.status}
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-slate-300">
+                <span className="flex items-center gap-1 font-medium text-amber-200">
+                  <Factory className="w-3.5 h-3.5 text-amber-400" />
+                  {currentBranchData.type}
+                </span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-red-400" />
+                  {currentBranchData.governorate} &middot; {currentBranchData.city} &middot; {currentBranchData.address}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Phone className="w-3.5 h-3.5 text-blue-400" />
+                  {currentBranchData.manager} ({currentBranchData.phone})
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedBranch('ALL');
+                setRecalcToast('Switched to All Branches (Consolidated Fleet)');
+                setTimeout(() => setRecalcToast(null), 2500);
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>View All Branches Fleet</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 3. SUB-NAVIGATION TABS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs select-none">
@@ -2076,7 +2267,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         expandedWidget === 'user-summary' ? userSummaryData :
                         expandedWidget === 'payment-summary' ? paymentSummaryData :
                         categorySalesData
-                      ).map((entry, index) => (
+                      ).map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>

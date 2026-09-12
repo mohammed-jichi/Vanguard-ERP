@@ -13,7 +13,13 @@ import {
   Filter,
   ZoomIn,
   ZoomOut,
-  Settings
+  Settings,
+  BarChart3,
+  Star,
+  X,
+  FileSpreadsheet,
+  Layers,
+  Sliders
 } from 'lucide-react';
 
 import { TransactionsBySalesmanTemplate } from './reports/transactions/TransactionsBySalesmanTemplate';
@@ -211,12 +217,19 @@ interface ReportsMasterDetailProps {
 }
 
 export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps) {
-  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [selectedReport, setSelectedReport] = useState<string | null>('Transactions by Date');
 
   useEffect(() => {
     (window as any).setSelectedReport = (reportName: string) => {
       setSelectedReport(reportName);
     };
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const rep = urlParams.get('report');
+      if (rep) {
+        setSelectedReport(rep);
+      }
+    }
   }, []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
@@ -234,7 +247,6 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activeShowRate, setActiveShowRate] = useState<boolean>(false);
   const [activeGroupByDate, setActiveGroupByDate] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [activeTopDropdown, setActiveTopDropdown] = useState<string | null>(null);
 
   // Report Specific Filter States
   const [topNCount, setTopNCount] = useState<number>(10);
@@ -243,15 +255,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
   const [selectedDivision, setSelectedDivision] = useState<string>('All Divisions');
   const [selectedGroup, setSelectedGroup] = useState<string>('All Groups');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('LBP');
   const [uiRealDate, setUiRealDate] = useState<boolean>(false);
   const [uiShowGraph, setUiShowGraph] = useState<boolean>(false);
   const [uiUseUnitCost, setUiUseUnitCost] = useState<boolean>(false);
+  const [uiSummary, setUiSummary] = useState<boolean>(false);
+  const [uiShowZeroTax, setUiShowZeroTax] = useState<boolean>(false);
+  const [uiShowComment, setUiShowComment] = useState<boolean>(false);
+
+  // UI Interactive Overlays & Menus
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState<boolean>(false);
+  const [isReportBuilderOpen, setIsReportBuilderOpen] = useState<boolean>(false);
+  const [customCategories, setCustomCategories] = useState<{ name: string; reports: string[] }[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_custom_report_categories');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [
+      { name: 'VIP Reports', reports: ['Sales Summary', 'Tax Summary', 'Top N sold by Amount', 'Summary of voids'] }
+    ];
+  });
+  const [newCustomCatName, setNewCustomCatName] = useState<string>('');
+  const [selectedCatReports, setSelectedCatReports] = useState<string[]>([]);
+  const [customCatSearch, setCustomCatSearch] = useState<string>('');
 
   // Active / Applied States (updated upon Filter Report button click)
   const [activePeriod, setActivePeriod] = useState<string>('This Month');
   const [activeFromDate, setActiveFromDate] = useState<string>('2026-08-01');
   const [activeToDate, setActiveToDate] = useState<string>('2026-08-31');
   const [activeBranch, setActiveBranch] = useState<string>('All Branches');
+  const [activeCurrency, setActiveCurrency] = useState<string>('LBP');
   const [activeTopN, setActiveTopN] = useState<number>(10);
   const [activeCustomer, setActiveCustomer] = useState<string>('All Customers');
   const [activeServer, setActiveServer] = useState<string>('All Servers');
@@ -261,6 +296,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activeRealDate, setActiveRealDate] = useState<boolean>(false);
   const [activeShowGraph, setActiveShowGraph] = useState<boolean>(false);
   const [activeUseUnitCost, setActiveUseUnitCost] = useState<boolean>(false);
+  const [activeSummary, setActiveSummary] = useState<boolean>(false);
+  const [activeShowZeroTax, setActiveShowZeroTax] = useState<boolean>(false);
+  const [activeShowComment, setActiveShowComment] = useState<boolean>(false);
 
   const currentDateFormatted = '06-Sep-2026';
 
@@ -322,35 +360,76 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     window.print();
   };
 
-  const handleExportCSV = () => {
-    const table = document.querySelector('table');
-    if (!table) {
-      alert('No table data found to export.');
+  const handleExport = (format: 'pdf' | 'csv' | 'xlsx' | 'docx') => {
+    setIsExportMenuOpen(false);
+    if (format === 'pdf') {
+      window.print();
       return;
     }
-    
-    let csv = [];
-    const rows = table.querySelectorAll('tr');
-    
-    for (let i = 0; i < rows.length; i++) {
-      let rowData = [];
-      const cols = rows[i].querySelectorAll('td, th');
-      for (let j = 0; j < cols.length; j++) {
-        let data = (cols[j] as HTMLElement).innerText.replace(/"/g, '""').replace(/\n/g, ' ');
-        rowData.push('"' + data + '"');
-      }
-      csv.push(rowData.join(','));
+
+    const table = document.querySelector('.report-wrapper table') || document.querySelector('table');
+    if (!table) {
+      alert('No report table data found to export.');
+      return;
     }
-    
-    const csvFile = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const downloadLink = document.createElement('a');
-    downloadLink.download = `Vanguard_Report_${new Date().getTime()}.csv`;
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = 'none';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+
+    const reportTitle = selectedReport ? selectedReport.replace(/\s+/g, '_') : 'Vanguard_Report';
+    const timestamp = new Date().toISOString().slice(0, 10);
+
+    if (format === 'csv') {
+      let csv = [];
+      const rows = table.querySelectorAll('tr');
+      for (let i = 0; i < rows.length; i++) {
+        let rowData = [];
+        const cols = rows[i].querySelectorAll('td, th');
+        for (let j = 0; j < cols.length; j++) {
+          let data = (cols[j] as HTMLElement).innerText.replace(/"/g, '""').replace(/\n/g, ' ');
+          rowData.push('"' + data + '"');
+        }
+        csv.push(rowData.join(','));
+      }
+      const csvFile = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `${reportTitle}_${timestamp}.csv`;
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } else if (format === 'xlsx') {
+      const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="utf-8"/><style>table { border-collapse: collapse; } th, td { border: 1px solid #999; padding: 4px; text-align: left; }</style></head>
+        <body>${table.outerHTML}</body></html>
+      `;
+      const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `${reportTitle}_${timestamp}.xls`;
+      downloadLink.href = window.URL.createObjectURL(blob);
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } else if (format === 'docx') {
+      const wrapper = document.querySelector('.report-wrapper');
+      const contentHtml = wrapper ? wrapper.innerHTML : table.outerHTML;
+      const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="utf-8"/><style>body { font-family: Arial, sans-serif; font-size: 11pt; } table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #999; padding: 4px; }</style></head>
+        <body>${contentHtml}</body></html>
+      `;
+      const blob = new Blob([html], { type: 'application/msword;charset=utf-8;' });
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `${reportTitle}_${timestamp}.doc`;
+      downloadLink.href = window.URL.createObjectURL(blob);
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
   };
+
+  const handleExportCSV = () => handleExport('csv');
 
   const handleFilterReport = () => {
     setActivePeriod(period);
@@ -368,6 +447,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setActiveGroupByDate(uiGroupByDate);
     setActiveShowGraph(uiShowGraph);
     setActiveUseUnitCost(uiUseUnitCost);
+    setActiveSummary(uiSummary);
+    setActiveShowZeroTax(uiShowZeroTax);
+    setActiveShowComment(uiShowComment);
+    setActiveCurrency(selectedCurrency);
   };
 
   const handleResetFilters = () => {
@@ -382,11 +465,16 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setSelectedCategory('All Categories');
     setSelectedDivision('All Divisions');
     setSelectedGroup('All Groups');
+    setSelectedCurrency('LBP');
     setUiRealDate(false);
     setUiShowRate(false);
     setUiGroupByDate(true);
     setUiShowGraph(false);
     setUiUseUnitCost(false);
+    setUiSummary(false);
+    setUiShowZeroTax(false);
+    setUiShowComment(false);
+
     setActivePeriod('This Month');
     setActiveFromDate('2026-08-01');
     setActiveToDate('2026-08-31');
@@ -397,16 +485,32 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setActiveCategory('All Categories');
     setActiveDivision('All Divisions');
     setActiveGroup('All Groups');
+    setActiveCurrency('LBP');
     setActiveRealDate(false);
     setActiveShowRate(false);
     setActiveGroupByDate(true);
     setActiveShowGraph(false);
     setActiveUseUnitCost(false);
+    setActiveSummary(false);
+    setActiveShowZeroTax(false);
+    setActiveShowComment(false);
   };
 
   const showInvoiceFilter = selectedReport
     ? !['void', 'refund', 'attendance', 'list', 'log', 'meter', 'no sale'].some(keyword => selectedReport.toLowerCase().includes(keyword))
     : false;
+
+  const allAvailableReports = React.useMemo(() => {
+    const set = new Set<string>();
+    reportMenuData.forEach(menu => {
+      if (menu.type === 'flat') {
+        menu.items.forEach(i => set.add(i));
+      } else {
+        menu.groups.forEach(g => g.items.forEach(i => set.add(i)));
+      }
+    });
+    return Array.from(set).sort();
+  }, []);
 
   return (
     <div className="w-full space-y-6 font-sans dir-ltr">
@@ -556,11 +660,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {selectedReport && (
             <button
               onClick={() => setSelectedReport(null)}
-              className="text-xs text-slate-500 hover:text-slate-800 font-medium px-2.5 py-1.5 hover:bg-slate-100 rounded-lg border border-transparent hover:border-slate-200 transition-colors cursor-pointer"
+              className="text-xs text-slate-600 hover:text-slate-900 font-semibold px-3 py-1.5 hover:bg-slate-100 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
             >
               Close Report
             </button>
@@ -572,101 +676,32 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               if (onBack) onBack();
               else if (typeof window !== 'undefined') window.history.back();
             }}
-            className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-bold transition-all cursor-pointer border border-slate-300 shadow-2xs shrink-0"
+            className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-all cursor-pointer border border-slate-300 shadow-2xs shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
             <span>Return to Hub</span>
           </button>
-        </div>
-      </div>
 
-      {/* OMEGA TOP CATEGORY NAVIGATION TOOLBAR */}
-      <div className="bg-white border border-slate-200 rounded-xl p-2.5 shadow-xs flex flex-wrap items-center gap-2 w-full print:hidden z-30 relative mb-4">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2 py-1 flex items-center gap-1.5 shrink-0">
-          <FileText size={15} className="text-[#195a96]" /> Omega Modules:
-        </span>
-        <div className="flex flex-wrap items-center gap-1.5 flex-1">
-          {reportMenuData.map((menu) => {
-            const isOpen = activeTopDropdown === menu.category;
-            return (
-              <div key={menu.category} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setActiveTopDropdown(isOpen ? null : menu.category)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                    isOpen
-                      ? 'bg-[#195a96] text-white border-[#195a96] shadow-sm ring-2 ring-blue-200'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <span>{menu.category}</span>
-                  <ChevronDown size={13} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
+          {/* REPORTS BUILDER BUTTON */}
+          <button
+            type="button"
+            onClick={() => setIsReportBuilderOpen(true)}
+            className="px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white transition-all cursor-pointer shadow-xs border border-[#195a96] shrink-0"
+            title="Open Reports Builder"
+          >
+            <BarChart3 size={14} />
+            <span>Reports Builder</span>
+          </button>
 
-                {isOpen && (
-                  <div 
-                    className="absolute left-0 top-full mt-1.5 w-72 bg-white border border-slate-200 rounded-xl shadow-2xl z-50 p-2.5 max-h-[420px] overflow-y-auto"
-                    onMouseLeave={() => setActiveTopDropdown(null)}
-                  >
-                    <div className="text-[11px] font-bold text-slate-400 uppercase px-2 py-1 border-b border-slate-100 mb-1.5 flex items-center justify-between">
-                      <span>{menu.category}</span>
-                      <span className="text-[10px] text-slate-400">Omega ERP</span>
-                    </div>
-                    {menu.type === 'flat' ? (
-                      <div className="space-y-0.5">
-                        {menu.items.map((item) => (
-                          <button
-                            key={item}
-                            type="button"
-                            onClick={() => {
-                              handleSelectReportItem(item);
-                              setActiveTopDropdown(null);
-                            }}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-semibold flex items-center justify-between transition-colors ${
-                              selectedReport === item
-                                ? 'bg-blue-50 text-[#195a96] font-bold'
-                                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                            }`}
-                          >
-                            <span className="truncate">{item}</span>
-                            {selectedReport === item && <CheckCircle2 size={13} className="text-[#195a96] shrink-0" />}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {menu.groups.map((group) => (
-                          <div key={group.name} className="space-y-0.5">
-                            <div className="text-[10px] font-bold text-[#195a96] px-2 pt-1 uppercase tracking-wider">
-                              {group.name}
-                            </div>
-                            {group.items.map((item) => (
-                              <button
-                                key={item}
-                                type="button"
-                                onClick={() => {
-                                  handleSelectReportItem(item);
-                                  setActiveTopDropdown(null);
-                                }}
-                                className={`w-full text-left px-2.5 py-1 rounded-md text-xs font-semibold flex items-center justify-between transition-colors pl-4 ${
-                                  selectedReport === item
-                                    ? 'bg-blue-50 text-[#195a96] font-bold'
-                                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                                }`}
-                              >
-                                <span className="truncate">{item}</span>
-                                {selectedReport === item && <CheckCircle2 size={13} className="text-[#195a96] shrink-0" />}
-                              </button>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* TOOLBAR SETTINGS BUTTON */}
+          <button
+            type="button"
+            onClick={() => setIsSettingsOpen(true)}
+            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-300 cursor-pointer shrink-0 shadow-2xs"
+            title="Toolbar Settings"
+          >
+            <Settings size={15} />
+          </button>
         </div>
       </div>
 
@@ -866,7 +901,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             /* ACTIVE REPORT DETAILED VIEW: TWO-CARD LAYOUT */
             <div className="w-full space-y-4">
 
-              {/* COMPACT SINGLE FILTER & ACTION BAR (OMEGA DYNAMIC FILTER ENGINE) */}
+              {/* COMPACT SINGLE FILTER & ACTION BAR (VANGUARD DYNAMIC FILTER ENGINE) */}
                 <div className="flex flex-col lg:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 gap-3 print:hidden w-full filters-container">
                   {/* Left side: Filter Inputs & Buttons */}
                   <div className="flex flex-wrap items-center gap-2 flex-1">
@@ -917,10 +952,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
                   >
-                    <option className="!text-black !font-bold bg-white">All Branches</option>
-                    <option className="!text-black !font-bold bg-white">Beirut Central Branch</option>
-                    <option className="!text-black !font-bold bg-white">Choueifat Press Branch</option>
-                    <option className="!text-black !font-bold bg-white">Jbaa Hub</option>
+                    <option className="!text-black !font-bold bg-white">Main Branch</option>
                   </select>
 
                   {showInvoiceFilter && !['Profit by category summary', 'Profit by category by department', 'Profit by item summary', 'Profit by Invoices Summary', 'Profit By Invoices'].includes(selectedReport || '') && (
@@ -935,38 +967,147 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </select>
                   )}
 
+                  {/* DYNAMIC FILTERS PER REPORT TYPE (OMEGA ERP MATCHING) */}
+                  {(selectedReport === 'Transactions by Date' || selectedReport === 'Transactions by Salesman' || selectedReport === 'Credit Sales') && (
+                    <>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiShowRate} 
+                          onChange={(e) => setUiShowRate(e.target.checked)} 
+                        />
+                        Show Rate
+                      </label>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiGroupByDate} 
+                          onChange={(e) => setUiGroupByDate(e.target.checked)} 
+                        />
+                        Group By Date
+                      </label>
+                    </>
+                  )}
+
+                  {selectedReport === 'Summary of Sales by Items' && (
+                    <>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiShowRate} 
+                          onChange={(e) => setUiShowRate(e.target.checked)} 
+                        />
+                        Show Rate
+                      </label>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiUseUnitCost} 
+                          onChange={(e) => setUiUseUnitCost(e.target.checked)} 
+                        />
+                        Use Unit Cost
+                      </label>
+                    </>
+                  )}
+
+                  {(selectedReport === 'Top N sold by Quantity' || selectedReport === 'Top N sold by Amount' || selectedReport === 'Top Customers by Quantity' || selectedReport === 'Top Customers by Amount') && (
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="text-[12px] font-bold text-slate-700">Top #:</span>
+                      <input 
+                        type="number" 
+                        value={topNCount} 
+                        onChange={(e) => setTopNCount(Math.max(1, Number(e.target.value) || 10))} 
+                        className="w-16 border border-slate-400 rounded p-1 text-[13px] font-bold !bg-white !text-black shadow-sm" 
+                        min="1" 
+                        max="100" 
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1 ml-1">
+                    <select
+                      value={selectedCurrency}
+                      onChange={(e) => setSelectedCurrency(e.target.value)}
+                      className="border border-slate-400 rounded p-1.5 text-[13px] w-20 !text-black !font-bold !bg-white shadow-sm cursor-pointer"
+                      title="Display Currency"
+                    >
+                      <option value="LBP">LBP</option>
+                      <option value="USD">USD</option>
+                    </select>
+                  </div>
+
                   {selectedReport === 'Duplicate Invoices' && (
-                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        checked={uiShowRate}
+                        onChange={(e) => setUiShowRate(e.target.checked)}
+                      />
                       Show Rate
                     </label>
                   )}
 
                   {selectedReport === 'Statistics by Workstation' && (
-                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        checked={uiRealDate}
+                        onChange={(e) => setUiRealDate(e.target.checked)}
+                      />
                       Real Date
                     </label>
                   )}
 
                   {selectedReport === 'Sales by Employee by Category' && (
                     <>
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiRealDate}
+                          onChange={(e) => setUiRealDate(e.target.checked)}
+                        />
                         Real Date
                       </label>
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiShowGraph}
+                          onChange={(e) => setUiShowGraph(e.target.checked)}
+                        />
                         Show Graph
                       </label>
                     </>
                   )}
 
                   {selectedReport === 'Tax Summary' && (
-                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                      Real Date
-                    </label>
+                    <>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiRealDate}
+                          onChange={(e) => setUiRealDate(e.target.checked)}
+                        />
+                        Real Date
+                      </label>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiShowZeroTax}
+                          onChange={(e) => setUiShowZeroTax(e.target.checked)}
+                        />
+                        Show Zero Tax
+                      </label>
+                    </>
                   )}
 
                   {selectedReport === 'Discount By Description by Employee' && (
@@ -981,41 +1122,49 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   )}
 
                   {(selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment' || selectedReport === 'Summary of Payment by Department' || selectedReport === 'Summary of payment by workstation') && (
-                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-4 cursor-pointer">
-                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        checked={uiRealDate}
+                        onChange={(e) => setUiRealDate(e.target.checked)}
+                      />
                       Real Date
                     </label>
                   )}
 
                   {selectedReport === 'Summary of Payment by Employee' && (
-                    <div className="flex flex-col gap-2 w-full">
-                      <div className="flex items-center gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
-                          <option>All Invoices</option>
-                        </select>
-                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                          Real Date
-                        </label>
-                      </div>
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer mt-1">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                    <div className="flex flex-wrap items-center gap-3">
+                      <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[180px] font-bold bg-white">
+                        <option>All Invoices</option>
+                      </select>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiRealDate}
+                          onChange={(e) => setUiRealDate(e.target.checked)}
+                        />
+                        Real Date
+                      </label>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiSummary}
+                          onChange={(e) => setUiSummary(e.target.checked)}
+                        />
                         Summary
                       </label>
                     </div>
                   )}
 
                   {selectedReport === 'Paid In/Out' && (
-                    <div className="flex flex-col gap-2 w-full">
-                      <div className="flex gap-4">
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
-                          <option>All Servers</option>
-                        </select>
-                        <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[200px] font-bold bg-white">
-                          <option>All Servers</option>
-                        </select>
-                      </div>
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer mt-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <select className="border border-slate-300 rounded p-1.5 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500 w-[160px] font-bold bg-white">
+                        <option>All Servers</option>
+                      </select>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                         <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
                         All Dates
                       </label>
@@ -1038,169 +1187,236 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                   {selectedReport === 'Profit by item summary' && (
                     <>
-                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
-                        <option>All Groups</option>
-                        <option>Bulk Grains</option>
-                        <option>Olive Oil Retail 1L</option>
+                      <select 
+                        value={selectedGroup}
+                        onChange={(e) => setSelectedGroup(e.target.value)}
+                        className="border border-slate-300 rounded p-1.5 text-sm w-40 !bg-white !text-slate-900 font-medium cursor-pointer shadow-2xs"
+                      >
+                        <option value="All Groups">All Groups</option>
+                        <option value="Bulk Grains">Bulk Grains</option>
+                        <option value="Olive Oil Retail 1L">Olive Oil Retail 1L</option>
                       </select>
-                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
-                        <option>All Categories</option>
-                        <option>Raw Materials</option>
-                        <option>Wholesale</option>
+                      <select 
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="border border-slate-300 rounded p-1.5 text-sm w-40 !bg-white !text-slate-900 font-medium cursor-pointer shadow-2xs"
+                      >
+                        <option value="All Categories">All Categories</option>
+                        <option value="Raw Materials">Raw Materials</option>
+                        <option value="Wholesale">Wholesale</option>
                       </select>
-                      <div className="w-full flex flex-wrap gap-6 items-center mt-1">
-                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
-                          Use Unit Cost
-                        </label>
-                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
-                          Group by supplier by location
-                        </label>
-                      </div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiUseUnitCost}
+                          onChange={(e) => setUiUseUnitCost(e.target.checked)}
+                        />
+                        Use Unit Cost
+                      </label>
                     </>
                   )}
 
                   {selectedReport === 'Profit by category summary' && (
                     <>
-                      <select className="border border-slate-300 rounded p-1.5 text-sm w-48 !bg-white !text-slate-900 !outline-none focus:ring-2 focus:ring-[#195a96] font-medium cursor-pointer shadow-2xs">
-                        <option>All Categories</option>
-                        <option>Raw Materials</option>
-                        <option>Wholesale</option>
-                        <option>Promotions</option>
-                        <option>Retail</option>
+                      <select 
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="border border-slate-300 rounded p-1.5 text-sm w-44 !bg-white !text-slate-900 font-medium cursor-pointer shadow-2xs"
+                      >
+                        <option value="All Categories">All Categories</option>
+                        <option value="Raw Materials">Raw Materials</option>
+                        <option value="Wholesale">Wholesale</option>
+                        <option value="Promotions">Promotions</option>
+                        <option value="Retail">Retail</option>
                       </select>
-                      <div className="w-full flex items-center gap-4 mt-1">
-                        <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                          <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                          Use Unit Cost
-                        </label>
-                      </div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          checked={uiUseUnitCost}
+                          onChange={(e) => setUiUseUnitCost(e.target.checked)}
+                        />
+                        Use Unit Cost
+                      </label>
                     </>
                   )}
 
                   {selectedReport === 'Profit by category by department' && (
-                    <div className="w-full flex items-center gap-4 mt-1">
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                        Use Unit Cost
-                      </label>
-                    </div>
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        checked={uiUseUnitCost}
+                        onChange={(e) => setUiUseUnitCost(e.target.checked)}
+                      />
+                      Use Unit Cost
+                    </label>
                   )}
 
                   {selectedReport === 'Sales summary by day' && (
-                    <div className="w-full flex items-center gap-4 mt-1">
-                      <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
-                        Summary
-                      </label>
-                    </div>
-                  )}
-
-                  {selectedReport === 'Daily Sales' && (
-                    <div className="flex gap-4 items-center mt-2">
-                    </div>
+                    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        checked={uiSummary}
+                        onChange={(e) => setUiSummary(e.target.checked)}
+                      />
+                      Summary
+                    </label>
                   )}
 
                   {selectedReport === 'Comparative Yearly Sales' && (
-                    <div className="flex gap-16 mt-2 w-full">
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
-                          <option>All Branches</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
-                          <option>All Years</option>
-                        </select>
-                      </div>
+                    <div className="flex gap-4 items-center">
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-36">
+                        <option>All Branches</option>
+                      </select>
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-28">
+                        <option>All Years</option>
+                      </select>
                     </div>
                   )}
 
                   {selectedReport === 'Comparative Monthly Sales' && (
-                    <div className="flex gap-16 mt-2 w-full">
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
-                          <option>All Branches</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-[250px]">
-                          <option>2026</option>
-                          <option>2025</option>
-                          <option>All Years</option>
-                        </select>
-                      </div>
+                    <div className="flex gap-4 items-center">
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-36">
+                        <option>All Branches</option>
+                      </select>
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-28">
+                        <option>2026</option>
+                        <option>2025</option>
+                        <option>All Years</option>
+                      </select>
                     </div>
                   )}
 
                   {selectedReport === 'Comparative Monthly Sales by Employee' && (
-                    <div className="flex gap-4 mt-2 w-full">
-                      <div className="flex flex-col gap-2 w-1/3">
-                        <label className="text-[12px] font-bold text-slate-700">Branch</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
-                          <option>All Branches</option>
-                          <option>Southern Olive Oil Products S.A.R.L</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-2 w-1/3">
-                        <label className="text-[12px] font-bold text-slate-700">Year</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
-                          <option>2026</option>
-                          <option>2025</option>
-                          <option>All Years</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-2 w-1/3">
-                        <label className="text-[12px] font-bold text-slate-700">Employee</label>
-                        <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer w-full">
-                          <option>All Employees</option>
-                          <option>Cashier N2</option>
-                          <option>Cashier NK</option>
-                          <option>Cashier R</option>
-                          <option>Hiba Aloulou</option>
-                          <option>Mahdi</option>
-                          <option>Nour Yazbeck</option>
-                        </select>
-                      </div>
+                    <div className="flex gap-3 items-center">
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-32">
+                        <option>Main Branch</option>
+                      </select>
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-24">
+                        <option>2026</option>
+                        <option>2025</option>
+                      </select>
+                      <select className="border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold bg-white w-32">
+                        <option>All Employees</option>
+                        <option>Cashier N2</option>
+                        <option>Mahdi</option>
+                      </select>
                     </div>
                   )}
 
-                    <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
+                    <div className="flex items-center gap-2 ml-auto sm:ml-0">
                       <button
+                        id="runReportClick"
+                        type="button"
                         onClick={handleFilterReport}
-                        className="px-3 py-1.5 bg-[#475569] hover:bg-[#334155] text-white rounded text-xs font-bold transition-colors cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
                       >
-                        Filter
+                        <Filter size={13} />
+                        <span>Filter Report</span>
                       </button>
                       <button
+                        type="button"
                         onClick={handleResetFilters}
-                        className="px-3 py-1.5 bg-[#5c3a3a] hover:bg-[#4a2e2e] text-white rounded text-xs font-bold transition-colors cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1"
                       >
-                        Reset
+                        <RotateCcw size={12} />
+                        <span>Reset Filters</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Right side: Action Toolbar */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button onClick={handleZoomIn} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom In">
+                  {/* Right side: Action Toolbar (Omega ERP report-actions matching) */}
+                  <div className="flex items-center gap-1.5 shrink-0 relative">
+                    <button 
+                      type="button"
+                      onClick={handleZoomIn} 
+                      className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
+                      title="Zoom In"
+                    >
                       <ZoomIn size={15} />
                     </button>
-                    <button onClick={handleZoomOut} className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer" title="Zoom Out">
+                    <button 
+                      type="button"
+                      onClick={handleZoomOut} 
+                      className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
+                      title="Zoom Out"
+                    >
                       <ZoomOut size={15} />
                     </button>
-                    <button onClick={handlePrint} className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1">
-                      <Printer size={14} /> Print
+                    <button 
+                      type="button"
+                      onClick={handlePrint} 
+                      className="bg-[#195a96] hover:bg-[#154b7d] text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                    >
+                      <Printer size={14} />
+                      <span>Print Report</span>
                     </button>
-                    <button onClick={handleExportCSV} className="bg-[#475569] hover:bg-[#334155] text-white px-2.5 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1">
-                      <Download size={14} /> Export
-                    </button>
-                    <button onClick={() => setIsSettingsOpen(true)} className="p-1.5 bg-slate-600 text-white rounded hover:bg-slate-700 text-xs cursor-pointer" title="Settings">
+                    
+                    {/* EXPORT REPORT WITH MULTI-FORMAT DROPDOWN */}
+                    <div className="relative">
+                      <button 
+                        type="button"
+                        onClick={() => setIsExportMenuOpen(prev => !prev)} 
+                        className="bg-[#195a96] hover:bg-[#154b7d] text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                      >
+                        <Download size={14} />
+                        <span>Export Report</span>
+                        <ChevronDown size={12} className={`transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isExportMenuOpen && (
+                        <div 
+                          className="absolute right-0 top-full mt-1.5 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-1.5 space-y-1"
+                          onMouseLeave={() => setIsExportMenuOpen(false)}
+                        >
+                          <div className="text-[10px] font-bold text-slate-400 uppercase px-2.5 py-1 border-b border-slate-100">
+                            Select Format
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleExport('xlsx')}
+                            className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-700 hover:bg-emerald-50 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <FileSpreadsheet size={14} />
+                            <span>Excel Sheet (.xlsx)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleExport('csv')}
+                            className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <Download size={14} />
+                            <span>CSV Data (.csv)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleExport('pdf')}
+                            className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-700 hover:bg-rose-50 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <Printer size={14} />
+                            <span>PDF Document (.pdf)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleExport('docx')}
+                            className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-700 hover:bg-blue-50 flex items-center gap-2 cursor-pointer transition-colors"
+                          >
+                            <FileText size={14} />
+                            <span>Word Document (.doc)</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={() => setIsSettingsOpen(true)} 
+                      className="p-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded text-xs cursor-pointer shadow-xs" 
+                      title="Toolbar Settings"
+                    >
                       <Settings size={14} />
                     </button>
                   </div>
@@ -1348,11 +1564,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
                     />
-                  ) : selectedReport === 'Summary of Sales By Items' ? (
+                  ) : selectedReport === 'Summary of Sales By Items' || selectedReport === 'Summary of Sales by Items' ? (
                     <SummaryOfSalesByItemsTemplate
                       hideToolbar={true}
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                      useUnitCost={activeUseUnitCost}
+                      topN={activeTopN}
                     />
                   ) : selectedReport === 'Sales by Items By Group' || selectedReport === 'Sales by Items by Group' ? (
                     <SalesByItemsByGroupTemplate
@@ -1420,6 +1640,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       toDate={activeToDate}
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
+                      topN={activeTopN}
                     />
                   ) : selectedReport === 'Sales By Customer By Items' || selectedReport === 'Daily Sales By Items' || selectedReport === 'Sales By Categories' || selectedReport === 'Sales By Divisions' || selectedReport === 'Sales Items by Transaction' || selectedReport === 'Not Sold Items' || selectedReport === 'Sold Serial Numbers' || selectedReport === 'Sales By Category' || selectedReport === 'Sales By Division' || selectedReport === 'Sales By Groups' || selectedReport === 'Top N sold by Quantity' || selectedReport === 'Top N sold by Amount' ? (
                     <SalesByCustomerByItemsTemplate
@@ -1429,6 +1650,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       toDate={activeToDate}
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
+                      showRate={activeShowRate}
+                      groupByDate={activeGroupByDate}
+                      useUnitCost={activeUseUnitCost}
+                      topN={activeTopN}
                     />
                   ) : selectedReport === 'Comparative Monthly Sales by Employee' ? (
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
@@ -2912,7 +3137,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Data Section (Strictly normal font weight for labels and rows, tightly packed) */}
                       <div className="text-[11px] font-normal leading-tight w-full">
-                        <div>Branch: Southern Olive Oil Products S.A.R.L</div>
+                        <div>Branch: Main Branch</div>
                         <div>Department: MAIN DEPARTMENT</div>
                         <div>Category Name: Raw Materials</div>
 
@@ -3097,7 +3322,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Data Section (Strictly normal font weight, tightly packed) */}
                       <div className="text-[11px] font-normal leading-tight w-full">
-                        <div>Branch: Southern Olive Oil Products S.A.R.L</div>
+                        <div>Branch: Main Branch</div>
 
                         <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
                           <div>Raw Materials</div>
@@ -3190,9 +3415,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Main Table Header (Thin lines) */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] text-[11px] font-bold text-black w-full">
+                        <div className={`grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} text-[11px] font-bold text-black w-full`}>
                           <div>Product Desc</div>
                           <div className="text-right">Qty</div>
+                          {activeUseUnitCost && <div className="text-right">Unit Cost</div>}
                           <div className="text-right">Total Price</div>
                           <div className="text-right">Total Cost</div>
                           <div className="text-right">Total Cost %</div>
@@ -3209,9 +3435,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-bold">Plastic</div>
 
                         <div className="font-bold text-center w-full mt-1">SOOL</div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                        <div className={`grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full items-center`}>
                           <div className="font-bold">P Blue Gallon 10 Liters</div>
                           <div className="text-right font-normal">23.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">225,000.00</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">5,175,000.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3220,9 +3447,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
 
                         <div className="font-bold text-center w-full mt-1">SOOL</div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                        <div className={`grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full items-center`}>
                           <div className="font-bold">P Blue Gallon 20 Litres</div>
                           <div className="text-right font-normal">47.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">270,000.00</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">12,690,000.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3230,9 +3458,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right font-normal">0.00</div>
                         </div>
 
-                        <div className="border-t border-dashed border-black grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mt-1 pt-0.5">
+                        <div className={`border-t border-dashed border-black grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full mt-1 pt-0.5`}>
                           <div className="font-bold">Total By Division:</div>
                           <div className="text-right font-normal">70.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">-</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">17,865,000.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3240,9 +3469,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right font-normal">0.00</div>
                         </div>
                         
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full">
+                        <div className={`grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full`}>
                           <div className="font-bold">Total By Category:</div>
                           <div className="text-right font-normal">70.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">-</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">17,865,000.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3254,9 +3484,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-bold">Labneh Balls Wholesale</div>
 
                         <div className="font-bold text-center w-full mt-1">SOOL</div>
-                        <div className="grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full items-center">
+                        <div className={`grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full items-center`}>
                           <div className="font-bold">Goat Labneh Balls Plain Box</div>
                           <div className="text-right font-normal">0.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">0.00</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3264,9 +3495,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right font-normal">0.00</div>
                         </div>
 
-                        <div className="border-t border-dashed border-black grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr] w-full mt-1 pt-0.5 mb-16">
+                        <div className={`border-t border-dashed border-black grid ${activeUseUnitCost ? 'grid-cols-[2fr_0.8fr_1.2fr_1.2fr_1.2fr_1fr_1.2fr_1fr]' : 'grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_1.5fr_1fr]'} w-full mt-1 pt-0.5 mb-16`}>
                           <div className="font-bold">Total By Division:</div>
                           <div className="text-right font-normal">0.00</div>
+                          {activeUseUnitCost && <div className="text-right font-normal font-mono">-</div>}
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
                           <div className="text-right font-normal">0.00</div>
@@ -3576,7 +3808,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Data Section */}
                       <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch: Southern Olive Oil Products S.A.R.L</div>
+                        <div className="mb-2 font-bold">Branch: Main Branch</div>
                         
                         {/* 01-Aug-2026 */}
                         <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
@@ -3997,9 +4229,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>INV</div>
                         <div>Mahdi</div>
                         <div>2000</div>
-                        <div className="text-right">-2.484E8</div>
-                        <div>L.L.</div>
-                        <div className="text-right">-248,400,000.00</div>
+                        <div className="text-right font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
+                        <div className="font-bold">{activeCurrency === 'USD' ? 'USD' : 'L.L.'}</div>
+                        <div className="text-right font-mono">{activeCurrency === 'USD' ? '-248,400,000.00 L.L.' : '-$2,760.00 USD'}</div>
                       </div>
 
                       {/* Dotted border separator */}
@@ -4008,32 +4240,32 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Subtotal for Hiba Aloulou */}
                       <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-1">
                         <div>Total for Hiba Aloulou:</div>
-                        <div>-248,400,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
                       {/* Date Subtotal */}
                       <div className="flex justify-between text-[11px] font-bold text-slate-900 mb-4">
                         <div>25-Aug-2026:</div>
-                        <div>-248,400,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
                       {/* Server Subtotal */}
                       <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-4">
                         <div>Total for Mahdi:</div>
-                        <div>-248,400,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
                       {/* Branch Subtotal */}
                       <div className="flex justify-between text-[11px] font-bold text-slate-900 mb-4">
                         <div>Total for Southern Olive Oil Products S.A.R.L:</div>
-                        <div>-248,400,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
                       {/* Grand Total Footer */}
                       <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
                       <div className="flex justify-between text-[11px] font-bold">
                         <div>Total:</div>
-                        <div>-248,400,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
@@ -4072,7 +4304,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div>Workstation</div>
                           <div>Reason</div>
                           <div>Pay Mode</div>
-                          <div className="text-right">Amount</div>
+                          <div className="text-right">Amount ({activeCurrency === 'USD' ? 'USD' : 'L.L.'})</div>
                         </div>
                       </div>
 
@@ -4090,11 +4322,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>1</div>
                         <div>Opening Float</div>
                         <div>CASH</div>
-                        <div className="text-right">500,000.00</div>
+                        <div className="text-right font-mono">{activeCurrency === 'USD' ? '$5.56' : '500,000.00'}</div>
                       </div>
                       <div className="flex justify-between text-[11px] font-bold mb-3 pl-2 border-t border-dashed border-black pt-1">
                         <div>Total Paid In</div>
-                        <div>500,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '$5.56' : '500,000.00'}</div>
                       </div>
 
                       {/* Paid Outs Section */}
@@ -4106,18 +4338,18 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>1</div>
                         <div>Supplies Expense</div>
                         <div>CASH</div>
-                        <div className="text-right">150,000.00</div>
+                        <div className="text-right font-mono">{activeCurrency === 'USD' ? '$1.67' : '150,000.00'}</div>
                       </div>
                       <div className="flex justify-between text-[11px] font-bold mb-4 pl-2 border-t border-dashed border-black pt-1">
                         <div>Total Paid Out</div>
-                        <div>150,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '$1.67' : '150,000.00'}</div>
                       </div>
 
                       {/* Grand Total Footer */}
                       <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
                       <div className="flex justify-between text-[11px] font-bold">
                         <div>Net Paid In / Out:</div>
-                        <div>350,000.00</div>
+                        <div className="font-mono">{activeCurrency === 'USD' ? '$3.89' : '350,000.00'}</div>
                       </div>
 
                       {/* PRINT FOOTER */}
@@ -4223,53 +4455,74 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         Southern Olive Oil Products S.A.R.L
                       </div>
 
-                      {/* 01-Aug-26 Group */}
-                      <div className="text-[11px] font-bold mb-1">01-Aug-26</div>
-                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
-                      <div className="flex justify-between text-[11px] mb-1 font-medium">
-                        <div>CASH</div>
-                        <div>157,490,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-1">
-                        <div>Total for Hiba Aloulou</div>
-                        <div>157,490,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-4">
-                        <div>01-Aug-2026</div>
-                        <div>157,490,000.00</div>
-                      </div>
+                      {/* Detailed vs Summary Mode */}
+                      {activeSummary ? (
+                        <div className="space-y-3 mb-6">
+                          <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-2">Employee Payment Summary</div>
+                          <div className="flex justify-between text-[11px] font-medium border-b border-slate-200 pb-1.5">
+                            <span>Hiba Aloulou (3 Batches, 100% Cash)</span>
+                            <span className="font-mono font-bold">271,465,000.00</span>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-medium border-b border-slate-200 pb-1.5">
+                            <span>Mahdi (5 Batches, Cash & USD)</span>
+                            <span className="font-mono font-bold">894,320,000.00</span>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-medium border-b border-slate-200 pb-1.5">
+                            <span>Cashier NK (4 Batches, Cash)</span>
+                            <span className="font-mono font-bold">345,266,600.00</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* 01-Aug-26 Group */}
+                          <div className="text-[11px] font-bold mb-1">01-Aug-26</div>
+                          <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                          <div className="flex justify-between text-[11px] mb-1 font-medium">
+                            <div>CASH</div>
+                            <div>157,490,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-1">
+                            <div>Total for Hiba Aloulou</div>
+                            <div>157,490,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-4">
+                            <div>01-Aug-2026</div>
+                            <div>157,490,000.00</div>
+                          </div>
 
-                      {/* 02-Aug-26 Group */}
-                      <div className="text-[11px] font-bold mb-1">02-Aug-26</div>
-                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
-                      <div className="flex justify-between text-[11px] mb-1 font-medium">
-                        <div>CASH</div>
-                        <div>11,520,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-1">
-                        <div>Total for Hiba Aloulou</div>
-                        <div>11,520,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-4">
-                        <div>02-Aug-2026</div>
-                        <div>11,520,000.00</div>
-                      </div>
+                          {/* 02-Aug-26 Group */}
+                          <div className="text-[11px] font-bold mb-1">02-Aug-26</div>
+                          <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                          <div className="flex justify-between text-[11px] mb-1 font-medium">
+                            <div>CASH</div>
+                            <div>11,520,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-1">
+                            <div>Total for Hiba Aloulou</div>
+                            <div>11,520,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-4">
+                            <div>02-Aug-2026</div>
+                            <div>11,520,000.00</div>
+                          </div>
 
-                      {/* 03-Aug-26 Group */}
-                      <div className="text-[11px] font-bold mb-1">03-Aug-26</div>
-                      <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
-                      <div className="flex justify-between text-[11px] mb-1 font-medium">
-                        <div>CASH</div>
-                        <div>102,455,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-1">
-                        <div>Total for Hiba Aloulou</div>
-                        <div>102,455,000.00</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] font-bold mb-8">
-                        <div>03-Aug-2026</div>
-                        <div>102,455,000.00</div>
-                      </div>
+                          {/* 03-Aug-26 Group */}
+                          <div className="text-[11px] font-bold mb-1">03-Aug-26</div>
+                          <div className="text-[11px] mb-1 font-medium">Hiba Aloulou</div>
+                          <div className="flex justify-between text-[11px] mb-1 font-medium">
+                            <div>CASH</div>
+                            <div>102,455,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-1">
+                            <div>Total for Hiba Aloulou</div>
+                            <div>102,455,000.00</div>
+                          </div>
+                          <div className="flex justify-between text-[11px] font-bold mb-8">
+                            <div>03-Aug-2026</div>
+                            <div>102,455,000.00</div>
+                          </div>
+                        </>
+                      )}
 
                       {/* Grand Total Footer */}
                       <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1"></div>
@@ -4539,7 +4792,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Data Rows */}
@@ -4743,7 +4996,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Groupings */}
                       <div className="text-[11px] mb-1 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
                       <div className="text-[11px] mb-1 font-bold">
                         Category: Promotions
@@ -4793,7 +5046,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Grouping: Branch */}
                       <div className="text-[11px] mb-1 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Grouping: Description */}
@@ -4859,7 +5112,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Data Rows */}
@@ -4969,7 +5222,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch & Department Info */}
                       <div className="text-[11px] mb-1 font-medium">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
                       <div className="text-[11px] mb-2 font-medium">
                         Department: MAIN DEPARTMENT
@@ -5094,30 +5347,47 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
+                      </div>
+
+                      {/* Standard Tax Row */}
+                      <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] mb-1 font-medium">
+                        <div>VAT 11%</div>
+                        <div>Standard Rate Taxable</div>
+                        <div className="text-right">11.00%</div>
+                        <div className="text-right">420,000,000.00</div>
+                        <div className="text-right">46,200,000.00</div>
+                        <div className="text-right">466,200,000.00</div>
+                        <div className="text-right">420,000,000.00</div>
                       </div>
 
                       {/* Zero Tax Row */}
-                      <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] mb-1 font-medium">
-                        <div>VAT 0%</div>
-                        <div>Non Taxable / Exempted</div>
-                        <div className="text-right">0.00%</div>
-                        <div className="text-right">1,511,051,600.00</div>
-                        <div className="text-right">0.00</div>
-                        <div className="text-right">0.00</div>
-                        <div className="text-right">1,511,051,600.00</div>
-                      </div>
+                      {activeShowZeroTax ? (
+                        <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] mb-1 font-medium text-slate-800">
+                          <div>VAT 0%</div>
+                          <div>Non Taxable / Exempted</div>
+                          <div className="text-right">0.00%</div>
+                          <div className="text-right">1,091,051,600.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">0.00</div>
+                          <div className="text-right">1,091,051,600.00</div>
+                        </div>
+                      ) : (
+                        <div className="text-[10px] italic text-slate-500 py-1 pl-2">
+                          * Zero Tax (0%) entries excluded (check "Show Zero Tax" in filter bar to include non-taxable sales)
+                        </div>
+                      )}
 
                       <div className="border-t border-black my-2"></div>
 
                       {/* Total Row */}
                       <div className="grid grid-cols-[100px_1fr_80px_140px_120px_140px_140px] gap-2 text-[11px] font-bold">
                         <div className="col-span-2">Total Branch:</div>
-                        <div className="text-right">0.00%</div>
-                        <div className="text-right">1,511,051,600.00</div>
-                        <div className="text-right">0.00</div>
-                        <div className="text-right">0.00</div>
-                        <div className="text-right">1,511,051,600.00</div>
+                        <div className="text-right">{activeShowZeroTax ? '3.06%' : '11.00%'}</div>
+                        <div className="text-right">{activeShowZeroTax ? '1,511,051,600.00' : '420,000,000.00'}</div>
+                        <div className="text-right">46,200,000.00</div>
+                        <div className="text-right">{activeShowZeroTax ? '1,557,251,600.00' : '466,200,000.00'}</div>
+                        <div className="text-right">{activeShowZeroTax ? '1,511,051,600.00' : '420,000,000.00'}</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Delivery Orders by Date and Branch' ? (
@@ -5343,7 +5613,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Info */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Employee: Hiba Aloulou */}
@@ -5455,7 +5725,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Data Rows */}
@@ -5631,7 +5901,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title Underlined */}
                       <div className="text-[11px] mb-2 font-bold underline">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Workstation: 1 */}
@@ -5750,7 +6020,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Branch Title */}
                       <div className="text-[11px] mb-2 font-bold">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       {/* Department: MAIN DEPARTMENT */}
@@ -6109,7 +6379,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* BRANCH & REASON GROUPING */}
                       <div className="text-[12px] font-bold underline mb-4 px-2">
-                        Branch: Southern Olive Oil Products S.A.R.L
+                        Branch: Main Branch
                       </div>
 
                       <div className="text-[11px] font-bold text-center mb-2">Count Error</div>
@@ -6273,32 +6543,290 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
         )}
 
-        {/* CUSTOM CATEGORY MODAL */}
+        {/* CUSTOM CATEGORY MODAL (OMEGA ERP MATCHING) */}
         {isCustomCategoryOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60]">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg flex flex-col">
-              {/* Custom Category Header */}
-              <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                <h2 className="text-[16px] font-bold text-slate-800">Custom Category</h2>
-                <button onClick={() => setIsCustomCategoryOpen(false)} className="text-gray-500 hover:text-gray-700 font-bold text-lg cursor-pointer">×</button>
-              </div>
-
-              {/* Custom Category Body */}
-              <div className="p-4 bg-gray-50 flex flex-col gap-4">
-                <div className="bg-white p-4 rounded border border-gray-200 shadow-sm flex flex-col gap-4">
-                  <div className="flex flex-col gap-2 w-full">
-                    <label className="text-[13px] font-bold text-slate-800">Category Name</label>
-                    <div className="flex gap-2">
-                      <input type="text" className="flex-1 border border-slate-300 rounded p-2 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
-                      <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-medium hover:bg-slate-700 cursor-pointer">Save</button>
-                    </div>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex justify-center items-center z-[70] p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col overflow-hidden border border-slate-200">
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                    <Star size={18} className="fill-amber-500 text-amber-500" />
                   </div>
-                  
-                  <div className="relative w-full mt-2 border-t border-gray-100 pt-4">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 top-4 text-slate-400">🔍</span>
-                    <input type="text" placeholder="Search Report" className="w-full border border-slate-300 rounded p-2 pl-8 text-[13px] text-slate-700 focus:outline-none focus:border-blue-500" />
+                  <div>
+                    <h2 className="text-[15px] font-bold text-slate-800">Custom Category Manager</h2>
+                    <p className="text-[11px] text-slate-400 font-medium">Create tailored report groups for top navigation toolbar</p>
                   </div>
                 </div>
+                <button 
+                  type="button"
+                  onClick={() => setIsCustomCategoryOpen(false)} 
+                  className="w-8 h-8 rounded-lg hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 bg-slate-50 flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                  <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">New Category Name</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Fast Audit, Priority Sales..." 
+                      value={newCustomCatName}
+                      onChange={(e) => setNewCustomCatName(e.target.value)}
+                      className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 font-medium focus:outline-none focus:border-[#195a96] focus:ring-1 focus:ring-[#195a96] bg-white"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if (!newCustomCatName.trim()) {
+                          alert('Please enter a category name.');
+                          return;
+                        }
+                        if (selectedCatReports.length === 0) {
+                          alert('Please select at least one report to include in this category.');
+                          return;
+                        }
+                        const newCat = { name: newCustomCatName.trim(), reports: selectedCatReports };
+                        const updated = [...customCategories, newCat];
+                        setCustomCategories(updated);
+                        if (typeof window !== 'undefined') {
+                          localStorage.setItem('vanguard_custom_report_categories', JSON.stringify(updated));
+                        }
+                        setNewCustomCatName('');
+                        setSelectedCatReports([]);
+                        setIsCustomCategoryOpen(false);
+                      }}
+                      className="px-4 py-2 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0"
+                    >
+                      Save Category
+                    </button>
+                  </div>
+                </div>
+
+                {/* Report Selection */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider">
+                      Select Reports ({selectedCatReports.length} selected)
+                    </label>
+                    {selectedCatReports.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCatReports([])}
+                        className="text-[11px] text-rose-600 font-bold hover:underline cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input 
+                      type="text" 
+                      placeholder="Search reports to include..." 
+                      value={customCatSearch}
+                      onChange={(e) => setCustomCatSearch(e.target.value)}
+                      className="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#195a96] bg-white"
+                    />
+                  </div>
+
+                  <div className="max-h-52 overflow-y-auto space-y-1 pr-1 border border-slate-100 rounded-lg p-2 bg-slate-50/50">
+                    {allAvailableReports
+                      .filter(r => !customCatSearch || r.toLowerCase().includes(customCatSearch.toLowerCase()))
+                      .map(reportName => {
+                        const isChecked = selectedCatReports.includes(reportName);
+                        return (
+                          <label 
+                            key={reportName} 
+                            className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+                              isChecked ? 'bg-blue-50 text-[#195a96] font-bold border border-blue-200' : 'hover:bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            <span className="truncate">{reportName}</span>
+                            <input 
+                              type="checkbox" 
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedCatReports(prev => [...prev, reportName]);
+                                } else {
+                                  setSelectedCatReports(prev => prev.filter(r => r !== reportName));
+                                }
+                              }}
+                              className="rounded border-slate-300 w-4 h-4 accent-[#195a96] shrink-0" 
+                            />
+                          </label>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Existing Custom Categories */}
+                {customCategories.length > 0 && (
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+                    <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">Existing Categories</label>
+                    <div className="space-y-1.5">
+                      {customCategories.map((cat, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                          <div>
+                            <span className="font-bold text-slate-800">{cat.name}</span>
+                            <span className="text-[11px] text-slate-500 ml-2">({cat.reports.length} reports)</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = customCategories.filter((_, i) => i !== idx);
+                              setCustomCategories(updated);
+                              if (typeof window !== 'undefined') {
+                                localStorage.setItem('vanguard_custom_report_categories', JSON.stringify(updated));
+                              }
+                            }}
+                            className="text-rose-600 hover:text-rose-800 text-[11px] font-bold hover:underline cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* REPORTS BUILDER MODAL (OMEGA ERP MATCHING openReportBuilder) */}
+        {isReportBuilderOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex justify-center items-center z-[70] p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden border border-slate-200">
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#195a96] flex items-center justify-center font-bold">
+                    <BarChart3 size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-[15px] font-bold text-slate-800">Vanguard Reports Builder Engine</h2>
+                    <p className="text-[11px] text-slate-400 font-medium">Custom Matrix & Pivot Analytics Designer (Sales Control Core)</p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setIsReportBuilderOpen(false)} 
+                  className="w-8 h-8 rounded-lg hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 bg-slate-50 flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Model Selection */}
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+                    <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">1. Data Source Model</label>
+                    <select className="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 bg-white">
+                      <option>Sales Invoices & Cashier POS</option>
+                      <option>Item Sales by Division / Category</option>
+                      <option>Financial & Tax Records (VAT 11%)</option>
+                      <option>Customer Accounts & Aging</option>
+                      <option>Inventory Movement & Production</option>
+                    </select>
+                  </div>
+
+                  {/* Dimension Grouping */}
+                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-2">
+                    <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">2. Primary Grouping</label>
+                    <select className="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 bg-white">
+                      <option>Group by Date & Time</option>
+                      <option>Group by Cashier / Salesman</option>
+                      <option>Group by Product Category</option>
+                      <option>Group by Payment Method</option>
+                      <option>Group by Customer Account</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Metrics & Dynamic Columns */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                  <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">3. Calculated Metrics & Dynamic Columns</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Gross Amount
+                    </label>
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      VAT Tax (11%)
+                    </label>
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Net Amount
+                    </label>
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Dual Currency (USD/LBP)
+                    </label>
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Unit Cost & Profit
+                    </label>
+                    <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      Quantity Sold
+                    </label>
+                  </div>
+                </div>
+
+                {/* Preset Filters */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                  <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">4. Default Scope</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-[11px] font-medium text-slate-500 block mb-1">Date Period</span>
+                      <select className="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 bg-white">
+                        <option>This Month</option>
+                        <option>Today</option>
+                        <option>This Year</option>
+                      </select>
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-medium text-slate-500 block mb-1">Branch Target</span>
+                      <select className="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold text-slate-800 bg-white">
+                        <option>Main Branch</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setIsReportBuilderOpen(false)}
+                  className="px-4 py-2 text-slate-600 hover:text-slate-800 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedReport('Transactions by Date');
+                    setActiveShowRate(true);
+                    setActiveGroupByDate(true);
+                    setIsReportBuilderOpen(false);
+                  }}
+                  className="px-5 py-2 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+                >
+                  <BarChart3 size={14} />
+                  <span>Generate Matrix Report</span>
+                </button>
               </div>
             </div>
           </div>

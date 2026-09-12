@@ -210,11 +210,17 @@ export default function VTrackDashboardPage() {
 
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="px-2.5 py-1 bg-white/10 rounded-lg text-slate-200 border border-white/15">
-                  <strong>License ID:</strong> VT-2026-ENT-9948
+                  <strong>Master Key:</strong> VNG-LIC-2026-SOUTHERN-OLIVE-ULTIMATE-UNLIMITED-X992
                 </span>
                 <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg border border-emerald-500/30 font-bold">
                   Enterprise Unlimited
                 </span>
+                <Link
+                  href="/backoffice/license"
+                  className="px-2.5 py-1 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 rounded-lg border border-amber-500/40 font-bold transition"
+                >
+                  View Certificate &rarr;
+                </Link>
               </div>
             </div>
 

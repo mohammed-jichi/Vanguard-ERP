@@ -7,6 +7,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
+export interface TenantLicense {
+  licenseKey: string;
+  licenseNumber: string;
+  certificateId: string;
+  authorizedEntity: string;
+  tier: string;
+  status: 'ACTIVE' | 'LICENSED_PERPETUAL';
+  issuedAt: string;
+  expiresAt: string;
+  authorizedBy: string;
+  digitalSignature: string;
+  digitalSeal: string;
+  maxUsers: string;
+  maxBranches: string;
+  maxTerminals: string;
+  unlockedModules: string[];
+}
+
 export interface TenantCompany {
   id: string;
   name: string;
@@ -21,7 +39,45 @@ export interface TenantCompany {
   aiUsageCount: number;
   aiUsageLimit: number;
   createdAt?: string;
+  license?: TenantLicense;
 }
+
+export const SOUTHERN_OLIVE_OFFICIAL_LICENSE: TenantLicense = {
+  licenseKey: 'VNG-LIC-2026-SOUTHERN-OLIVE-ULTIMATE-UNLIMITED-X992',
+  licenseNumber: 'VNG-ENT-001-2026-X9',
+  certificateId: 'CERT-VNG-AUTH-104928-2026',
+  authorizedEntity: 'Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م)',
+  tier: 'Enterprise Unlimited Suite (Lifetime Perpetual)',
+  status: 'LICENSED_PERPETUAL',
+  issuedAt: '2026-01-01T00:00:00.000Z',
+  expiresAt: 'PERPETUAL_LIFETIME (Permanent Full Activation)',
+  authorizedBy: 'Vanguard ERP Systems Global Licensing Authority',
+  digitalSignature: 'SHA256:7e8a9f0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f',
+  digitalSeal: 'VANGUARD-ERP-CERTIFIED-SECURE-MASTER-AUTHORITY-2026',
+  maxUsers: 'UNLIMITED (Zero Cap)',
+  maxBranches: 'UNLIMITED (All Locations & Plants)',
+  maxTerminals: 'UNLIMITED (All POS & Mobile Handhelds)',
+  unlockedModules: [
+    'INVENTORY_WAREHOUSE_CONTROL',
+    'PROCUREMENTS_RECEIVING_GRN',
+    'SALES_TOUCH_POS_TERMINAL',
+    'WASTAGE_SHRINKAGE_ANALYTICS',
+    'FINANCIALS_GENERAL_LEDGER',
+    'OIL_PRESSING_PRODUCTION_FACILITY',
+    'SUPERSONIC_FLEET_LOGISTICS',
+    'VTRACK_CLOUD_MOBILE_PLATFORM',
+    'HR_PAYROLL_ATTENDANCE',
+    'MERITS_LOYALTY_REWARDS',
+    'OPERATIONS_CENTER_REPORTS_ALL_10_CATEGORIES',
+    'PRODUCT_REQUISITIONS_REQUESTS',
+    'EXECUTIVE_BI_DECISION_DASHBOARD',
+    'SUPPLIER_INVOICING_QUOTATIONS',
+    'INTER_LOCATION_TRANSFERS',
+    'MAXIMUM_SECURITY_SUITE_RLS',
+    'AI_ASSISTANT_DEMAND_FORECASTING',
+    'MULTI_CURRENCY_EXCHANGE_VAT_FILINGS'
+  ]
+};
 
 export interface TenantUser {
   id: string;
@@ -53,7 +109,8 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
-  aiUsageLimit: 1000
+  aiUsageLimit: 1000,
+  license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
 };
 
 const INITIAL_COMPANIES: TenantCompany[] = [
@@ -160,12 +217,24 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
+        // Enforce Vanguard ERP Authorized License
+        const savedLicense = localStorage.getItem('vanguard_activation_license');
+        if (!savedLicense) {
+          localStorage.setItem('vanguard_activation_license', JSON.stringify(SOUTHERN_OLIVE_OFFICIAL_LICENSE));
+        }
+        
         const saved = localStorage.getItem('vanguard_tenant_branding');
         if (saved) {
           const parsed = JSON.parse(saved);
           setCurrentTenant(prev => ({
             ...prev,
-            ...parsed
+            ...parsed,
+            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
+          }));
+        } else {
+          setCurrentTenant(prev => ({
+            ...prev,
+            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
           }));
         }
       } catch (e) {

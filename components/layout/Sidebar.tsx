@@ -37,7 +37,7 @@ function SidebarContent() {
             onClick={() => toggleSection('sales')}
             className="w-full px-3 py-2 bg-slate-50 hover:bg-slate-100 flex items-center justify-between font-bold text-slate-800 text-xs text-left"
           >
-            <span className="flex items-center gap-2"><span>🛒</span><span>1. Sales Control & POS</span></span>
+            <span className="flex items-center gap-2"><span>🛒</span><span>1. Sales Control</span></span>
             <span className="text-[10px] text-slate-400">{openSections.sales ? '▲' : '▼'}</span>
           </button>
           {openSections.sales && (
@@ -45,6 +45,7 @@ function SidebarContent() {
               <Link href="/backoffice/dashboard" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">Dashboard Overview</Link>
               <Link href="/backoffice/reportview" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">Sales Reports Matrix</Link>
               <Link href="/backoffice/online-orders" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">Online Orders Control</Link>
+              <Link href="/backoffice/end-of-day" className="block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-medium text-[11.5px]">End of Day</Link>
             </div>
           )}
         </div>

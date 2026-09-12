@@ -172,7 +172,7 @@ export default function SalesByItemsReport({
   const [reportMode, setReportMode] = useState<string>('Sales by Items');
   const [period, setPeriod] = useState<string>('This Month');
   const [dateDisplay, setDateDisplay] = useState<string>('Aug, 2026');
-  const [branch, setBranch] = useState<string>('All Branches');
+  const [branch, setBranch] = useState<string>('Main Branch');
   const [category, setCategory] = useState<string>('All Categories');
   const [division, setDivision] = useState<string>('All Divisions');
   const [group, setGroup] = useState<string>('All Groups');
@@ -257,8 +257,7 @@ export default function SalesByItemsReport({
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="text-[11px] font-bold text-slate-700">Branch</label>
                     <select value={branch} onChange={(e) => setBranch(e.target.value)} className={solidInputClass}>
-                      <option value="All Branches">All Branches</option>
-                      <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
+                      <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-3">
@@ -396,7 +395,7 @@ export default function SalesByItemsReport({
             
             <tbody className="text-[11px] leading-tight">
               <tr>
-                <td colSpan={4} className="py-1 font-bold">Branch: Southern Olive Oil Products S.A.R.L (Choueifat)</td>
+                <td colSpan={4} className="py-1 font-bold">Branch: Main Branch</td>
               </tr>
               <tr>
                 <td colSpan={4} className="py-0.5 font-bold pl-2 border-b border-dashed border-slate-300">

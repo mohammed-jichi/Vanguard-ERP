@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { 
   Calendar, 
@@ -29,17 +29,34 @@ import {
   Map,
   Smartphone,
   ShieldCheck,
-  Navigation
+  Navigation,
+  Building2,
+  Phone,
+  Mail,
+  ArrowRight,
+  Filter
 } from 'lucide-react';
+import { getBranchData, getAllBranchesList, BranchInfo } from '@/lib/branchData';
 
-export default function AuthenticOmegaSalesDashboard() {
+export default function AuthenticVanguardSalesDashboard() {
   // Filters
-  const [selectedBranch, setSelectedBranch] = useState('00001');
+  const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<'LBP' | 'USD'>('LBP');
   const [selectedYear, setSelectedYear] = useState('2026');
   const [selectedMonth, setSelectedMonth] = useState('9'); // September
   const [selectedDay, setSelectedDay] = useState('ALL');
   
+  // Dynamic Branch Resolution
+  const currentBranchData: BranchInfo = useMemo(() => {
+    return getBranchData(selectedBranch);
+  }, [selectedBranch]);
+
+  const allBranchesList = useMemo(() => {
+    return getAllBranchesList();
+  }, []);
+
+  const [recalcToast, setRecalcToast] = useState<string | null>(null);
+
   // Chart Mode: Pie or Line (toggled from the top right pill bar)
   const [chartMode, setChartMode] = useState<'pie' | 'line'>('pie');
 
@@ -135,6 +152,8 @@ export default function AuthenticOmegaSalesDashboard() {
     setRecalculating(true);
     setTimeout(() => {
       setRecalculating(false);
+      setRecalcToast(`Recalculated live metrics for ${currentBranchData.name}`);
+      setTimeout(() => setRecalcToast(null), 3500);
     }, 600);
   };
 
@@ -183,22 +202,8 @@ export default function AuthenticOmegaSalesDashboard() {
     { id: '15', label: 'Tuesday 15' },
   ];
 
-  // Monthly Revenue Data (Green bar chart values from screenshot)
-  const monthlyBarData = [
-    { month: 'January', val: 3104932430, label: '3.1B', pct: '+100.0%' },
-    { month: 'February', val: 2101095942, label: '2.1B', pct: '+100.0%' },
-    { month: 'March', val: 332743800, label: '333M', pct: '+100.0%' },
-    { month: 'April', val: 647849550, label: '648M', pct: '+100.0%' },
-    { month: 'May', val: 192590050, label: '193M', pct: '+100.0%' },
-    { month: 'June', val: 662845750, label: '663M', pct: '+100.0%' },
-    { month: 'July', val: 1784311315, label: '1.8B', pct: '+100.0%' },
-    { month: 'August', val: 1863715000, label: '1.9B', pct: '+100.0%' },
-    { month: 'September', val: 131851800, label: '132M', pct: '+100.0%' },
-    { month: 'October', val: 0, label: '0', pct: '0.0%' },
-    { month: 'November', val: 0, label: '0', pct: '0.0%' },
-    { month: 'December', val: 0, label: '0', pct: '0.0%' },
-  ];
-
+  // Monthly Revenue Data (derived dynamically from selected branch)
+  const monthlyBarData = currentBranchData.monthlyBarData;
   const totalAnnualSales = monthlyBarData.reduce((acc, m) => acc + m.val, 0);
 
   // Helper for generating SVG Pie Chart
@@ -421,55 +426,37 @@ export default function AuthenticOmegaSalesDashboard() {
     );
   };
 
-  // Datasets for Pie & Line modes
-  const categoryData = [
-    { label: 'Raw Materials', name: 'Raw Materials', amount: 0, color: '#2e7d32', pct: 0.00 },
-    { label: 'Wholesale', name: 'Wholesale', amount: 23940000, color: '#1976d2', pct: 17.79 },
-    { label: 'Promotions', name: 'Promotions', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { label: 'Retail', name: 'Retail', amount: 57061800, color: '#d32f2f', pct: 42.41 },
-  ];
-
-  const divisionData = [
-    { label: 'Plastic', name: 'Plastic', amount: 0, color: '#2e7d32', pct: 0 },
-    { label: 'Promotions', name: 'Promotions', amount: 53550000, color: '#f59e0b', pct: 39.80 },
-    { label: 'Kg Retail', name: 'Kg Retail', amount: 2231000, color: '#7c3aed', pct: 1.66 },
-    { label: 'Jams Wholesale', name: 'Jams Wholesale', amount: 17370000, color: '#b45309', pct: 12.91 },
-    { label: 'Jams Retail', name: 'Jams Retail', amount: 225000, color: '#991b1b', pct: 0.17 },
-    { label: 'Jar', name: 'Jar', amount: 3405000, color: '#1976d2', pct: 2.53 },
-    { label: 'Local Mooneh Retail', name: 'Local Mooneh Retail', amount: 2665000, color: '#84cc16', pct: 1.98 },
-  ];
-
-  const groupData = [
-    { label: 'Jar 509', name: 'Jar 509', amount: 2235000, color: '#2e7d32', pct: 1.66 },
-    { label: 'Khoudeir Olive Oil Retail', name: 'Khoudeir Olive Oil Retail', amount: 9360000, color: '#7c3aed', pct: 6.96 },
-    { label: 'Virgin Olive Oil', name: 'Virgin Olive Oil Retail', amount: 39140000, color: '#0f766e', pct: 29.09 },
-    { label: 'Bottles B', name: 'Bottles B', amount: 0, color: '#ec4899', pct: 0.00 },
-    { label: 'Jar 507', name: 'Jar 507', amount: 0, color: '#1e3a8a', pct: 0.00 },
-  ];
-
-  const departmentData = [
-    { label: 'MAIN DEPARTMENT', name: 'MAIN DEPARTMENT', amount: 107911800, color: '#2e7d32', pct: 81.84 },
-    { label: 'Showroom', name: 'Showroom', amount: 23940000, color: '#1976d2', pct: 18.16 },
-  ];
-
-  const discountData = [
-    { label: 'DISCOUNT', name: 'DISCOUNT', amount: 2700000, color: '#2e7d32', pct: 100.00 },
-  ];
-
-  const userData = [
-    { label: 'Hiba Aloulou', name: 'Hiba Aloulou', amount: 108031800, color: '#2e7d32', pct: 81.93 },
-    { label: 'Mahdi', name: 'Mahdi', amount: 23820000, color: '#1976d2', pct: 18.07 },
-  ];
-
-  const paymentData = [
-    { label: 'CASH', name: 'CASH', amount: 107911800, color: '#2e7d32', pct: 81.84 },
-    { label: 'CASH USD', name: 'CASH USD', amount: 23940000, color: '#1976d2', pct: 18.16 },
-  ];
+  // Datasets for Pie & Line modes dynamically derived from current selected branch
+  const categoryData = currentBranchData.categoryData;
+  const divisionData = currentBranchData.divisionData;
+  const groupData = currentBranchData.groupData;
+  const departmentData = currentBranchData.departmentData;
+  const discountData = currentBranchData.discountSummaryData.map(d => ({
+    label: d.name,
+    name: d.name,
+    amount: d.amount,
+    color: d.color,
+    pct: d.pct
+  }));
+  const userData = currentBranchData.userSummaryData.map(u => ({
+    label: u.user,
+    name: u.user,
+    amount: u.amount,
+    color: u.color,
+    pct: u.pct
+  }));
+  const paymentData = currentBranchData.paymentSummaryData.map(p => ({
+    label: p.method,
+    name: p.method,
+    amount: p.amount,
+    color: p.color,
+    pct: p.pct
+  }));
 
   return (
     <div className="min-h-screen bg-[#edf3f9] text-[#0f172a] font-sans pb-16 branch-dashboard-shell">
       <style jsx global>{`
-        /* Authentic Omega Light Styles */
+        /* Authentic Vanguard Light Styles */
         :root {
           --bd-bg: #edf3f9;
           --bd-surface: #ffffff;
@@ -489,8 +476,8 @@ export default function AuthenticOmegaSalesDashboard() {
           color: #0f172a;
         }
 
-        /* Omega Header Bar: Dark Charcoal #3e3e3e */
-        .omega-panel-header, .dashboard-branches-country {
+        /* Vanguard Header Bar: Dark Charcoal #3e3e3e */
+        .vanguard-panel-header, .vanguard-panel-header, .dashboard-branches-country {
           background-color: #3e3e3e !important;
           color: #ffffff !important;
           font-weight: 700;
@@ -507,23 +494,23 @@ export default function AuthenticOmegaSalesDashboard() {
           letter-spacing: 0.3px;
         }
 
-        .omega-panel-actions {
+        .vanguard-panel-actions {
           display: flex;
           align-items: center;
           gap: 12px;
           color: #ffffff;
         }
 
-        .omega-panel-actions button {
+        .vanguard-panel-actions button {
           color: #ffffff;
           opacity: 0.9;
           transition: opacity 0.15s;
         }
-        .omega-panel-actions button:hover {
+        .vanguard-panel-actions button:hover {
           opacity: 1;
         }
 
-        .omega-panel-body, .dashboard-branches-branches.body.other-tables {
+        .vanguard-panel-body, .dashboard-branches-branches.body.other-tables {
           background: #ffffff;
           border: 1px solid #cbd5e1;
           border-top: none;
@@ -615,19 +602,19 @@ export default function AuthenticOmegaSalesDashboard() {
           margin: 0 4px;
         }
 
-        /* Omega Dense Tables */
-        .omega-dense-table, .monthly-revenue-table {
+        /* Vanguard Dense Tables */
+        .vanguard-dense-table, .vanguard-dense-table, .monthly-revenue-table {
           width: 100%;
           border-collapse: collapse;
           font-size: 12px;
         }
-        .omega-dense-table th, .omega-dense-table td,
+        .vanguard-dense-table th, .vanguard-dense-table td,
         .monthly-revenue-table th, .monthly-revenue-table td {
           padding: 6px 10px;
           border: 1px solid #e2e8f0;
           white-space: nowrap;
         }
-        .omega-dense-table tr.header-row,
+        .vanguard-dense-table tr.header-row,
         .monthly-revenue-table tr.table-total,
         tr.header-row, tr.table-total {
           background-color: #dbe4f0 !important;
@@ -636,17 +623,17 @@ export default function AuthenticOmegaSalesDashboard() {
           font-size: 12px;
           border-bottom: 2px solid #cbd5e1;
         }
-        .omega-dense-table tbody tr:nth-child(odd),
+        .vanguard-dense-table tbody tr:nth-child(odd),
         .monthly-revenue-table tbody tr:nth-of-type(odd),
         table.table-striped tbody tr:nth-of-type(odd) {
           background-color: rgb(234, 252, 255) !important;
         }
-        .omega-dense-table tbody tr:nth-child(even),
+        .vanguard-dense-table tbody tr:nth-child(even),
         .monthly-revenue-table tbody tr:nth-of-type(even),
         table.table-striped tbody tr:nth-of-type(even) {
           background-color: #ffffff !important;
         }
-        .omega-dense-table tbody tr:hover,
+        .vanguard-dense-table tbody tr:hover,
         .monthly-revenue-table tbody tr:hover,
         table.table-striped tbody tr:hover {
           background-color: rgb(202, 232, 235) !important;
@@ -697,7 +684,7 @@ export default function AuthenticOmegaSalesDashboard() {
         }
 
         /* Nav Tabs */
-        .omega-pill-btn {
+        .vanguard-pill-btn {
           display: inline-flex;
           align-items: center;
           gap: 7px;
@@ -714,18 +701,18 @@ export default function AuthenticOmegaSalesDashboard() {
           text-decoration: none;
           box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        .omega-pill-btn:hover {
+        .vanguard-pill-btn:hover {
           background-color: #f1f5f9;
           border-color: #94a3b8;
           color: #0f172a;
         }
-        .omega-pill-btn.active {
+        .vanguard-pill-btn.active {
           background-color: #1e293b !important;
           border-color: #1e293b !important;
           color: #ffffff !important;
           box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
-        .omega-circle-btn {
+        .vanguard-circle-btn {
           width: 36px;
           height: 36px;
           border-radius: 999px;
@@ -739,11 +726,11 @@ export default function AuthenticOmegaSalesDashboard() {
           transition: all 0.15s;
           box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        .omega-circle-btn:hover {
+        .vanguard-circle-btn:hover {
           background-color: #f1f5f9;
           border-color: #94a3b8;
         }
-        .omega-circle-btn.active {
+        .vanguard-circle-btn.active {
           background-color: #1e293b;
           border-color: #1e293b;
           color: #ffffff;
@@ -758,20 +745,24 @@ export default function AuthenticOmegaSalesDashboard() {
         {/* Topbar Filter Strip */}
         <div className="bg-white border border-slate-200 rounded-lg p-2.5 mb-3.5 flex flex-wrap items-center gap-2.5 shadow-sm">
           {/* Branch Select */}
-          <div className="flex-1 min-w-[220px]">
+          <div className="flex-1 min-w-[260px]">
             <select 
               value={selectedBranch}
-              onChange={(e) => setSelectedBranch(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
+              onChange={(e) => {
+                setSelectedBranch(e.target.value);
+                setRecalculating(true);
+                setTimeout(() => setRecalculating(false), 400);
+              }}
+              className="w-full bg-white border border-blue-300 rounded px-2.5 py-1.5 text-xs text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs"
             >
-              <option value="00001">Southern Olive Oil Products S.A.R.L</option>
-              <option value="ALL">All Branches (001 - 006)</option>
-              <option value="001">001 - Choueifat Main Facility</option>
-              <option value="002">002 - Beirut Wholesale Hub</option>
-              <option value="003">003 - Saida Southern Center</option>
-              <option value="004">004 - Zahle Bekaa Branch</option>
-              <option value="005">005 - Tripoli North Depot</option>
-              <option value="006">006 - Nabatieh Center</option>
+              {allBranchesList.length > 1 && (
+                <option value="ALL">🏢 All Branches (كافة الفروع موحدة)</option>
+              )}
+              {allBranchesList.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} ({b.arabicName})
+                </option>
+              ))}
             </select>
           </div>
 
@@ -782,7 +773,7 @@ export default function AuthenticOmegaSalesDashboard() {
               onChange={(e) => setSelectedCurrency(e.target.value as 'LBP' | 'USD')}
               className="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-xs text-slate-800 font-medium focus:outline-none"
             >
-              <option value="LBP">LBP</option>
+              <option value="LBP">LBP (ل.ل)</option>
               <option value="USD">USD ($)</option>
             </select>
           </div>
@@ -849,10 +840,11 @@ export default function AuthenticOmegaSalesDashboard() {
           <button 
             type="button"
             onClick={handleRecalculate}
-            className="border border-slate-300 hover:bg-slate-100 p-1.5 rounded text-slate-700 transition"
+            className="border border-blue-400 bg-blue-50/50 hover:bg-blue-100 p-1.5 rounded text-blue-700 transition flex items-center gap-1.5 px-2.5 font-bold text-xs"
             title="Recalculate Data by Selected Branch and Month"
           >
-            <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin text-blue-600' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin text-blue-600' : 'text-blue-600'}`} />
+            <span>Recalculate</span>
           </button>
 
           {/* Reports link */}
@@ -865,7 +857,22 @@ export default function AuthenticOmegaSalesDashboard() {
           </Link>
         </div>
 
-        {/* 4 SIGNATURE OMEGA METRIC CARDS */}
+        {/* Recalculate Toast Alert */}
+        {recalcToast && (
+          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg p-2.5 mb-3 text-xs font-bold flex items-center justify-between animate-in fade-in">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              {recalcToast}
+            </span>
+            <button onClick={() => setRecalcToast(null)} className="text-emerald-700 hover:text-emerald-950">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+
+
+        {/* 4 SIGNATURE VANGUARD METRIC CARDS (DYNAMIC PER SELECTED BRANCH) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 mb-3.5">
           
           {/* Card 1: Green (#337718) */}
@@ -876,19 +883,19 @@ export default function AuthenticOmegaSalesDashboard() {
             <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#337718' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Net Sales</span>
-                <span className="font-black text-[13.5px]">{formatVal(0)}</span>
+                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.todayNetSales)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Receipts</span>
-                <span className="font-semibold">{formatVal(0)}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.todayReceipts)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Discounts</span>
-                <span className="font-semibold">{formatVal(0)}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.todayDiscounts)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Refunds</span>
-                <span className="font-semibold">{formatVal(0)}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.todayRefunds)}</span>
               </div>
             </div>
           </div>
@@ -901,19 +908,19 @@ export default function AuthenticOmegaSalesDashboard() {
             <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#003566' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Gross Sales</span>
-                <span className="font-semibold">{formatVal(134551800, 'short')}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.grossSales, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Discount</span>
-                <span className="font-semibold">{formatVal(2700000, 'short')}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.discount, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Tax</span>
-                <span className="font-semibold">{formatVal(0)}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.tax)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Net Sales</span>
-                <span className="font-black text-[13.5px]">{formatVal(131851800, 'short')}</span>
+                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.netSales, 'short')}</span>
               </div>
             </div>
           </div>
@@ -927,30 +934,30 @@ export default function AuthenticOmegaSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">MTD:</span>
-                  <span className="font-black">{formatVal(131851800, 'short')}</span>
+                  <span className="font-black">{formatVal(currentBranchData.mtdSales, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYM:</span>
-                  <span className="font-semibold">{formatVal(0)}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.lymSales, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">YTD:</span>
-                  <span className="font-black">{formatVal(11900000000, 'short')}</span>
+                  <span className="font-black">{formatVal(currentBranchData.ytdSales, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYTM:</span>
-                  <span className="font-semibold">{formatVal(0)}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.lytmSales, 'short')}</span>
                 </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Customer Aged</span>
-                <span className="font-semibold">{formatVal(-104500000, 'short')}</span>
+                <span className="font-semibold">{formatVal(currentBranchData.customerAged, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">MTD Receipts</span>
-                <span className="font-black text-[13.5px]">{formatVal(0)}</span>
+                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.mtdReceipts, 'short')}</span>
               </div>
             </div>
           </div>
@@ -964,41 +971,41 @@ export default function AuthenticOmegaSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Paid In:</span>
-                  <span className="font-semibold">{formatVal(0)}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.paidIn)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Paid out:</span>
-                  <span className="font-semibold">{formatVal(-40200000, 'short')}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.paidOut, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Voids:</span>
-                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(0)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(currentBranchData.voids)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Refunds:</span>
-                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(120000)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#f1e5dd] text-red-600 font-bold text-[11px]">{formatVal(currentBranchData.refunds)}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Avg. Invoice:</span>
-                  <span className="font-semibold">{formatVal(3100000, 'short')}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.avgInvoice, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Avg. by Cust:</span>
-                  <span className="font-semibold">{formatVal(3100000, 'short')}</span>
+                  <span className="font-semibold">{formatVal(currentBranchData.avgByCust, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Cust. Count:</span>
-                  <span className="font-bold">42</span>
+                  <span className="font-bold">{currentBranchData.custCount}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Inv. Count:</span>
-                  <span className="font-bold">42</span>
+                  <span className="font-bold">{currentBranchData.invCount}</span>
                 </div>
               </div>
             </div>
@@ -1006,12 +1013,12 @@ export default function AuthenticOmegaSalesDashboard() {
 
         </div>
 
-        {/* REAL OMEGA NAVIGATION TABS STRIP */}
+        {/* REAL VANGUARD NAVIGATION TABS STRIP */}
         <div className="flex items-center gap-2 mb-3.5 overflow-x-auto pb-1 dashboard-section-tabs-bar">
           <button 
             type="button"
             onClick={() => setActiveTab('summary')}
-            className={`omega-pill-btn ${activeTab === 'summary' ? 'active' : ''}`}
+            className={`vanguard-pill-btn ${activeTab === 'summary' ? 'active' : ''}`}
           >
             <Scale className="w-4 h-4" /> Summary
           </button>
@@ -1019,7 +1026,7 @@ export default function AuthenticOmegaSalesDashboard() {
           <button 
             type="button"
             onClick={() => setActiveTab('comparative')}
-            className={`omega-pill-btn ${activeTab === 'comparative' ? 'active' : ''}`}
+            className={`vanguard-pill-btn ${activeTab === 'comparative' ? 'active' : ''}`}
           >
             <TrendingUp className="w-4 h-4" /> Comparative
           </button>
@@ -1027,7 +1034,7 @@ export default function AuthenticOmegaSalesDashboard() {
           <Link 
             href="/product-insights"
             target="_blank"
-            className="omega-pill-btn"
+            className="vanguard-pill-btn"
           >
             <Boxes className="w-4 h-4" /> Product Insights
           </Link>
@@ -1035,9 +1042,17 @@ export default function AuthenticOmegaSalesDashboard() {
           <Link 
             href="/customer-insights"
             target="_blank"
-            className="omega-pill-btn"
+            className="vanguard-pill-btn"
           >
             <UserCircle2 className="w-4 h-4" /> Customer Insights
+          </Link>
+
+          <Link 
+            href="/customer-insights?tab=team"
+            target="_blank"
+            className="vanguard-pill-btn"
+          >
+            <Users className="w-4 h-4" /> Sales Team Performance
           </Link>
 
           {/* VTrack opens in new tab */}
@@ -1045,7 +1060,7 @@ export default function AuthenticOmegaSalesDashboard() {
             href="/vtrack"
             target="_blank"
             rel="noopener noreferrer"
-            className="omega-pill-btn"
+            className="vanguard-pill-btn"
           >
             <Truck className="w-4 h-4" /> VTrack
           </Link>
@@ -1053,7 +1068,7 @@ export default function AuthenticOmegaSalesDashboard() {
           <button 
             type="button"
             onClick={() => setActiveTab('customers')}
-            className={`omega-pill-btn ${activeTab === 'customers' ? 'active' : ''}`}
+            className={`vanguard-pill-btn ${activeTab === 'customers' ? 'active' : ''}`}
           >
             <Users className="w-4 h-4" /> Customers
           </button>
@@ -1061,7 +1076,7 @@ export default function AuthenticOmegaSalesDashboard() {
           <button 
             type="button"
             onClick={() => setActiveTab('today')}
-            className={`omega-pill-btn ${activeTab === 'today' ? 'active' : ''}`}
+            className={`vanguard-pill-btn ${activeTab === 'today' ? 'active' : ''}`}
           >
             <Calendar className="w-4 h-4" /> Today
           </button>
@@ -1069,7 +1084,7 @@ export default function AuthenticOmegaSalesDashboard() {
           <button 
             type="button"
             onClick={() => setActiveTab('geographics')}
-            className={`omega-pill-btn ${activeTab === 'geographics' ? 'active' : ''}`}
+            className={`vanguard-pill-btn ${activeTab === 'geographics' ? 'active' : ''}`}
           >
             <Globe className="w-4 h-4" /> Geographics
           </button>
@@ -1081,7 +1096,7 @@ export default function AuthenticOmegaSalesDashboard() {
             <button 
               type="button"
               onClick={() => setChartMode('line')}
-              className={`omega-circle-btn ${chartMode === 'line' ? 'active' : ''}`}
+              className={`vanguard-circle-btn ${chartMode === 'line' ? 'active' : ''}`}
               title="Line Mode"
             >
               <LineChartIcon className="w-4 h-4" />
@@ -1090,7 +1105,7 @@ export default function AuthenticOmegaSalesDashboard() {
             <button 
               type="button"
               onClick={() => setChartMode('pie')}
-              className={`omega-circle-btn ${chartMode === 'pie' ? 'active' : ''}`}
+              className={`vanguard-circle-btn ${chartMode === 'pie' ? 'active' : ''}`}
               title="Pie Mode"
             >
               <PieChartIcon className="w-4 h-4" />
@@ -1103,10 +1118,10 @@ export default function AuthenticOmegaSalesDashboard() {
           <div>
             {/* Performance Highlights Banner */}
             <div className="mb-3.5 performance-highlights-section">
-              <div className="omega-panel-header dashboard-branches-country">
+              <div className="vanguard-panel-header dashboard-branches-country">
                 <span>Performance Highlights</span>
               </div>
-              <div className="omega-panel-body performance-highlights-panel">
+              <div className="vanguard-panel-body performance-highlights-panel">
                 <div className="performance-highlights-grid">
                   
                   {/* Card 1: Revenue YoY */}
@@ -1289,9 +1304,9 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* Monthly Revenue Banner & Green Bar Chart */}
             <div className={`mb-3.5 monthly-revenue-section ${enlargedWidget === 'revenue' ? 'fixed inset-4 z-50 overflow-auto bg-white p-4 rounded-xl shadow-2xl' : ''}`}>
-              <div className="omega-panel-header dashboard-branches-country">
+              <div className="vanguard-panel-header dashboard-branches-country">
                 <span>Monthly Revenue</span>
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <button 
                     type="button" 
                     onClick={() => toggleEnlarge('revenue')}
@@ -1303,7 +1318,7 @@ export default function AuthenticOmegaSalesDashboard() {
                   <span className="text-lg leading-none cursor-pointer" title="Options">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 {/* Legend */}
                 <div className="flex items-center justify-center gap-2 mb-3 text-xs text-slate-700">
                   <span className="w-3 h-3 bg-[#337718] rounded-sm inline-block"></span>
@@ -1381,7 +1396,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
                 {/* Monthly Revenue Table with Total Column */}
                 <div className="overflow-x-auto mt-3" id="sales_month_table">
-                  <table className="omega-dense-table monthly-revenue-table">
+                  <table className="vanguard-dense-table monthly-revenue-table">
                     <thead>
                       <tr className="header-row table-total">
                         <th className="text-left font-bold sticky-col">Branch</th>
@@ -1476,16 +1491,16 @@ export default function AuthenticOmegaSalesDashboard() {
               
               {/* Sales By Category */}
               <div className={`bg-white rounded-lg shadow-sm ${enlargedWidget === 'cat' ? 'fixed inset-6 z-50 overflow-auto p-4' : ''}`}>
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Sales By Category
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <button type="button" onClick={() => toggleEnlarge('cat')}>
                       {enlargedWidget === 'cat' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(categoryData)}
@@ -1508,7 +1523,7 @@ export default function AuthenticOmegaSalesDashboard() {
                     )
                   )}
                   {/* Table */}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Categories ↕</th>
@@ -1531,16 +1546,16 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Sales By Division */}
               <div className={`bg-white rounded-lg shadow-sm ${enlargedWidget === 'div' ? 'fixed inset-6 z-50 overflow-auto p-4' : ''}`}>
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Sales By Division
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <button type="button" onClick={() => toggleEnlarge('div')}>
                       {enlargedWidget === 'div' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(divisionData)}
@@ -1562,7 +1577,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-div'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Divisions ↕</th>
@@ -1590,16 +1605,16 @@ export default function AuthenticOmegaSalesDashboard() {
               
               {/* Sales By Group */}
               <div className={`bg-white rounded-lg shadow-sm ${enlargedWidget === 'grp' ? 'fixed inset-6 z-50 overflow-auto p-4' : ''}`}>
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Sales By Group
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <button type="button" onClick={() => toggleEnlarge('grp')}>
                       {enlargedWidget === 'grp' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     renderPieSvg(groupData)
                   ) : (
@@ -1611,7 +1626,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-grp'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Groups ↕</th>
@@ -1634,16 +1649,16 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Sales By Department */}
               <div className={`bg-white rounded-lg shadow-sm ${enlargedWidget === 'dept' ? 'fixed inset-6 z-50 overflow-auto p-4' : ''}`}>
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Sales By Department
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <button type="button" onClick={() => toggleEnlarge('dept')}>
                       {enlargedWidget === 'dept' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(departmentData)}
@@ -1665,7 +1680,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-dept'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Departments ↕</th>
@@ -1693,14 +1708,14 @@ export default function AuthenticOmegaSalesDashboard() {
               
               {/* Discount Summary */}
               <div className="bg-white rounded-lg shadow-sm">
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Discount Summary
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(discountData)}
@@ -1718,7 +1733,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-disc'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Discounts ↕</th>
@@ -1739,15 +1754,15 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Discount By Category Summary */}
               <div className="bg-white rounded-lg shadow-sm">
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Discount By Category Summary
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
-                  <table className="omega-dense-table">
+                <div className="vanguard-panel-body">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">Discount</th>
@@ -1775,14 +1790,14 @@ export default function AuthenticOmegaSalesDashboard() {
               
               {/* User Summary */}
               <div className="bg-white rounded-lg shadow-sm">
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   User Summary
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(userData)}
@@ -1804,7 +1819,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-user'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Users ↕</th>
@@ -1827,14 +1842,14 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Payment Summary */}
               <div className="bg-white rounded-lg shadow-sm">
-                <div className="omega-panel-header">
+                <div className="vanguard-panel-header">
                   Payment Summary
-                  <div className="omega-panel-actions">
+                  <div className="vanguard-panel-actions">
                     <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                     <span className="text-lg leading-none">⋮</span>
                   </div>
                 </div>
-                <div className="omega-panel-body">
+                <div className="vanguard-panel-body">
                   {chartMode === 'pie' ? (
                     <>
                       {renderPieSvg(paymentData)}
@@ -1856,7 +1871,7 @@ export default function AuthenticOmegaSalesDashboard() {
                       'sum-pay'
                     )
                   )}
-                  <table className="omega-dense-table mt-2">
+                  <table className="vanguard-dense-table mt-2">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Payments ↕</th>
@@ -1881,15 +1896,15 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* Sales By Employee By Category (Full Width) */}
             <div className="mb-6 bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Sales By Employee By Category
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
-                <table className="omega-dense-table">
+              <div className="vanguard-panel-body">
+                <table className="vanguard-dense-table">
                   <thead>
                     <tr className="header-row">
                       <th className="text-left">User Name</th>
@@ -1939,14 +1954,14 @@ export default function AuthenticOmegaSalesDashboard() {
             
             {/* 1. Daily Summary */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Daily Summary
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 {renderLineSvg(
                   [
                     { label: 'Tuesday, September 1', amount: 28000000 },
@@ -1964,14 +1979,14 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 2. Monthly Sales By Category */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Monthly Sales By Category
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 <div className="flex flex-col lg:flex-row items-start gap-4">
                   {/* Left Chart Area */}
                   <div className="flex-1 w-full relative overflow-x-auto">
@@ -2180,7 +2195,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
                 {/* Comparison Table */}
                 <div className="overflow-x-auto mt-2">
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">Category</th>
@@ -2228,19 +2243,19 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 3. Average Sales by Hour */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Average Sales by Hour
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
                   
                   {/* Left Hourly Table */}
                   <div className="lg:col-span-4 overflow-y-auto max-h-[220px]">
-                    <table className="omega-dense-table">
+                    <table className="vanguard-dense-table">
                       <thead>
                         <tr className="header-row">
                           <th className="text-left">Average of All Hours ↕</th>
@@ -2407,14 +2422,14 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 4. Sales by WeekDays */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Sales by WeekDays
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 {renderLineSvg(
                   [
                     { label: 'Tuesday', amount: 28000000 },
@@ -2432,14 +2447,14 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 5. Yearly Revenue */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Yearly Revenue
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 <div className="w-full overflow-x-auto py-2">
                   <svg viewBox="0 0 800 240" className="w-full min-w-[600px] h-56 select-none">
                     {/* Y-axis gridlines & labels */}
@@ -2545,15 +2560,15 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 6. Void Summary */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Void Summary
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body overflow-x-auto">
-                <table className="omega-dense-table">
+              <div className="vanguard-panel-body overflow-x-auto">
+                <table className="vanguard-dense-table">
                   <thead>
                     <tr className="header-row">
                       <th className="text-left sticky-col">Branch</th>
@@ -2612,14 +2627,14 @@ export default function AuthenticOmegaSalesDashboard() {
 
             {/* 7. Comparative Monthly Sales By Employee */}
             <div className="bg-white rounded-lg shadow-sm">
-              <div className="omega-panel-header">
+              <div className="vanguard-panel-header">
                 Comparative Monthly Sales By Employee
-                <div className="omega-panel-actions">
+                <div className="vanguard-panel-actions">
                   <span className="cursor-pointer"><Maximize2 className="w-4 h-4" /></span>
                   <span className="text-lg leading-none">⋮</span>
                 </div>
               </div>
-              <div className="omega-panel-body">
+              <div className="vanguard-panel-body">
                 {/* Stacked Bars by Employee */}
                 <div className="w-full overflow-x-auto py-2">
                   <svg viewBox="0 0 920 220" className="w-full min-w-[760px] h-52 select-none">
@@ -2819,7 +2834,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
                 {/* Employee Table */}
                 <div className="overflow-x-auto mt-2">
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left sticky-col">Employee</th>
@@ -2963,7 +2978,7 @@ export default function AuthenticOmegaSalesDashboard() {
               <div className="space-y-4">
                 {/* Upper Card: Customers */}
                 <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-                  <div className="omega-panel-header flex justify-between items-center text-xs">
+                  <div className="vanguard-panel-header flex justify-between items-center text-xs">
                     <span>Customers</span>
                   </div>
                   <div className="p-3 text-xs space-y-2">
@@ -3018,7 +3033,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
                 {/* Lower Card: Delivery Orders */}
                 <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-                  <div className="omega-panel-header flex justify-between items-center text-xs">
+                  <div className="vanguard-panel-header flex justify-between items-center text-xs">
                     <span>Delivery Orders</span>
                   </div>
                   <div className="p-3 text-xs space-y-2">
@@ -3040,7 +3055,7 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Middle Column: Top Customers */}
               <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div className="omega-panel-header flex justify-between items-center text-xs">
+                <div className="vanguard-panel-header flex justify-between items-center text-xs">
                   <span>Customer</span>
                   <div className="flex items-center gap-1.5">
                     <span>Top</span>
@@ -3056,7 +3071,7 @@ export default function AuthenticOmegaSalesDashboard() {
                   </div>
                 </div>
                 <div className="p-2 overflow-x-auto flex-1">
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">Customer</th>
@@ -3077,12 +3092,12 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* Right Column: Demographics */}
               <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div className="omega-panel-header flex justify-between items-center text-xs">
+                <div className="vanguard-panel-header flex justify-between items-center text-xs">
                   <span>Demographics</span>
                   <span className="text-[11px] font-normal opacity-90">Lebanon (7)</span>
                 </div>
                 <div className="p-2 overflow-x-auto flex-1">
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">City</th>
@@ -3131,7 +3146,7 @@ export default function AuthenticOmegaSalesDashboard() {
                 </div>
               </div>
 
-              {/* Chart Visual matching Omega */}
+              {/* Chart Visual matching Vanguard */}
               <div className="relative h-48 w-full bg-slate-50/50 border border-slate-100 rounded-lg p-4 flex flex-col justify-between">
                 <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-200 pb-1">
                   <span>24M</span>
@@ -3316,7 +3331,7 @@ export default function AuthenticOmegaSalesDashboard() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">Order #</th>
@@ -3443,15 +3458,25 @@ export default function AuthenticOmegaSalesDashboard() {
 
               {/* License Details Strip */}
               <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between text-[11px] text-slate-300 gap-2">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-3">
                   <span><strong>License Tier:</strong> Enterprise Unlimited</span>
                   <span>|</span>
                   <span><strong>Account:</strong> Southern Olive Oil Products S.A.R.L</span>
                   <span>|</span>
-                  <span><strong>Status:</strong> <span className="text-emerald-400 font-bold">ACTIVE</span></span>
+                  <span><strong>Key:</strong> <code className="text-amber-300 font-mono font-bold">VNG-LIC-2026-SOUTHERN-OLIVE-ULTIMATE-UNLIMITED-X992</code></span>
+                  <span>|</span>
+                  <span><strong>Status:</strong> <span className="text-emerald-400 font-bold">ACTIVE & UNLOCKED</span></span>
                 </div>
-                <div className="text-slate-400 font-mono">
-                  Sync Latency: 12ms (Real-time WebSockets)
+                <div className="flex items-center gap-3">
+                  <a
+                    href="/backoffice/license"
+                    className="text-amber-300 hover:text-amber-200 font-bold underline flex items-center gap-1"
+                  >
+                    View Official Certificate &rarr;
+                  </a>
+                  <div className="text-slate-400 font-mono">
+                    Sync: 12ms
+                  </div>
                 </div>
               </div>
             </div>
@@ -3600,10 +3625,10 @@ export default function AuthenticOmegaSalesDashboard() {
               {/* Right: Regional Performance & Active Fleet Details */}
               <div className="lg:col-span-5 bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
                 <div className="space-y-3">
-                  <div className="omega-panel-header">
+                  <div className="vanguard-panel-header">
                     Geographics Regional Performance (Today & MTD)
                   </div>
-                  <table className="omega-dense-table">
+                  <table className="vanguard-dense-table">
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">Governorate / Branch</th>
@@ -3674,7 +3699,7 @@ export default function AuthenticOmegaSalesDashboard() {
         <ChevronsUp className="w-6 h-6 stroke-[2.5]" />
       </button>
 
-      {/* BRANCHES LAST EOD MODAL - AUTHENTIC OMEGA STYLE */}
+      {/* BRANCHES LAST EOD MODAL - AUTHENTIC VANGUARD STYLE */}
       {eodModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
           <div className="bg-white border border-slate-300 rounded-lg max-w-lg w-full p-4 text-slate-800 shadow-2xl">
@@ -3688,30 +3713,16 @@ export default function AuthenticOmegaSalesDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#ffffff', padding: '10px 12px', textAlign: 'left' }}>
-                      00001 - Southern Olive Oil Products S.A.R.L :
-                    </th>
-                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#ffffff', padding: '10px 12px', fontWeight: 600 }}>
-                      04 Sep, 2026
-                    </td>
-                  </tr>
-                  <tr>
-                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#f8fafc', padding: '10px 12px', textAlign: 'left' }}>
-                      00002 - Nabatieh Southern Hub :
-                    </th>
-                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#f8fafc', padding: '10px 12px', fontWeight: 600 }}>
-                      04 Sep, 2026
-                    </td>
-                  </tr>
-                  <tr>
-                    <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: '#ffffff', padding: '10px 12px', textAlign: 'left' }}>
-                      00003 - Saida Distribution Depot :
-                    </th>
-                    <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: '#ffffff', padding: '10px 12px', fontWeight: 600 }}>
-                      03 Sep, 2026
-                    </td>
-                  </tr>
+                  {allBranchesList.map((branch, idx) => (
+                    <tr key={branch.code}>
+                      <th style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 'normal', color: '#1f2937', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', padding: '10px 12px', textAlign: 'left' }}>
+                        {branch.code} - {branch.name} :
+                      </th>
+                      <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', padding: '10px 12px', fontWeight: 600 }}>
+                        04 Sep, 2026
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -91,7 +91,7 @@ export const TransactionsBySalesmanTemplate: React.FC<TransactionsBySalesmanTemp
               defaultValue="Aug, 2026" 
               className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm text-center" 
             />
-            <select className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
+            <select className="force-black w-full border border-slate-400 rounded p-1.5 text-[13px] focus:outline-none focus:border-blue-600 shadow-sm cursor-pointer"><option>Main Branch (الفرع الرئيسي)</option></select>
           </div>
           <div className="flex flex-col gap-2 min-w-[150px]">
             <button className="px-4 py-2 bg-[#475569] text-white rounded text-[13px] font-bold hover:bg-slate-700 w-full transition-colors cursor-pointer">Filter Report</button>
@@ -120,50 +120,77 @@ export const TransactionsBySalesmanTemplate: React.FC<TransactionsBySalesmanTemp
               <thead>
                 <tr className="font-bold text-black border-b border-black">
                   <th className="py-1 px-1 text-left">Invoice #</th>
-                  <th className="py-1 px-1 text-left">Date</th>
+                  {groupByDate && <th className="py-1 px-1 text-left">Date</th>}
                   <th className="py-1 px-1 text-right">Amount</th>
                   <th className="py-1 px-1 text-right">Discount</th>
                   <th className="py-1 px-1 text-right">Tax</th>
                   <th className="py-1 px-1 text-right">Total</th>
+                  {showRate && <th className="py-1 px-1 text-center">Cur</th>}
+                  {showRate && <th className="py-1 px-1 text-right">Rate</th>}
+                  {showRate && <th className="py-1 px-1 text-right">Total ($)</th>}
                 </tr>
               </thead>
               <tbody>
                 <tr className="font-bold">
-                  <td colSpan={6} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
+                  <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">Branch: Main Branch</td>
                 </tr>
                 <tr className="font-bold">
-                  <td colSpan={6} className="py-1 px-1 pl-4">Salesman: Nour Yazbeck</td>
+                  <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 pl-4">Salesman: Nour Yazbeck</td>
                 </tr>
                 {reportData.map((row, idx) => (
                   <tr key={idx} className="font-normal hover:bg-slate-50">
                     <td className="py-1 px-1">{row.invoice}</td>
-                    <td className="py-1 px-1">{row.date}</td>
+                    {groupByDate && <td className="py-1 px-1">{row.date}</td>}
                     <td className="py-1 px-1 text-right">{row.amount}</td>
                     <td className="py-1 px-1 text-right">{row.discount}</td>
                     <td className="py-1 px-1 text-right">{row.tax}</td>
                     <td className="py-1 px-1 text-right">{row.total}</td>
+                    {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700">LBP</td>}
+                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">89,500.00</td>}
+                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">${(parseFloat(row.total.replace(/,/g, '')) / 89500).toFixed(2)}</td>}
                   </tr>
                 ))}
                 <tr className="font-bold border-t border-black">
-                  <td colSpan={2} className="py-1 px-1 text-right">Salesman Total:</td>
+                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Salesman Total:</td>
                   <td className="py-1 px-1 text-right">12,285,000.00</td>
                   <td className="py-1 px-1 text-right">900,000.00</td>
                   <td className="py-1 px-1 text-right">0.00</td>
                   <td className="py-1 px-1 text-right">11,385,000.00</td>
+                  {showRate && (
+                    <>
+                      <td className="py-1 px-1 text-center font-bold">LBP</td>
+                      <td className="py-1 px-1 text-right font-mono">89,500</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
+                    </>
+                  )}
                 </tr>
                 <tr className="font-bold border-t border-black">
-                  <td colSpan={2} className="py-1 px-1 text-right">Branch Total:</td>
+                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Branch Total:</td>
                   <td className="py-1 px-1 text-right">12,285,000.00</td>
                   <td className="py-1 px-1 text-right">900,000.00</td>
                   <td className="py-1 px-1 text-right">0.00</td>
                   <td className="py-1 px-1 text-right">11,385,000.00</td>
+                  {showRate && (
+                    <>
+                      <td className="py-1 px-1 text-center font-bold">LBP</td>
+                      <td className="py-1 px-1 text-right font-mono">89,500</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
+                    </>
+                  )}
                 </tr>
                 <tr className="font-bold border-t border-double border-black">
-                  <td colSpan={2} className="py-1 px-1 text-right">Grand Total:</td>
+                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Grand Total:</td>
                   <td className="py-1 px-1 text-right">12,285,000.00</td>
                   <td className="py-1 px-1 text-right">900,000.00</td>
                   <td className="py-1 px-1 text-right">0.00</td>
                   <td className="py-1 px-1 text-right">11,385,000.00</td>
+                  {showRate && (
+                    <>
+                      <td className="py-1 px-1 text-center font-bold">LBP</td>
+                      <td className="py-1 px-1 text-right font-mono">89,500</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
+                    </>
+                  )}
                 </tr>
               </tbody>
             </table>

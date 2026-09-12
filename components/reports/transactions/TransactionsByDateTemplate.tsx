@@ -17,12 +17,15 @@ export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProp
   groupByDate = true,
 }) => {
   // UI States (Drafts - do not affect report yet)
-  const [uiShowRate, setUiShowRate] = useState(false);
-  const [uiGroupByDate, setUiGroupByDate] = useState(true);
+  const [uiShowRate, setUiShowRate] = useState(showRate);
+  const [uiGroupByDate, setUiGroupByDate] = useState(groupByDate);
   
-  // Active States (Applied to table after click)
-  const [activeShowRate, setActiveShowRate] = useState(false);
-  const [activeGroupByDate, setActiveGroupByDate] = useState(false);
+  // Active States (Applied to table after click or from parent)
+  const [activeShowRate, setActiveShowRate] = useState(showRate);
+  const [activeGroupByDate, setActiveGroupByDate] = useState(groupByDate);
+
+  const isRateActive = showRate || activeShowRate;
+  const isGroupDate = groupByDate !== undefined ? groupByDate : activeGroupByDate;
   
   // Core Visibility State (Auto-rendered by default)
   const [isFiltered, setIsFiltered] = useState(true);
@@ -120,8 +123,7 @@ export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProp
           />
 
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>Southern Olive Oil Products S.A.R.L</option>
-            <option>All Branches</option>
+            <option>Main Branch (الفرع الرئيسي)</option>
           </select>
 
           <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
@@ -230,7 +232,7 @@ export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProp
               <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
                 <thead>
                   <tr className="font-bold text-black border-b border-black">
-                    <th className="py-1 px-1 text-left">Date</th>
+                    {isGroupDate && <th className="py-1 px-1 text-left">Date</th>}
                     <th className="py-1 px-1 text-left">Time</th>
                     <th className="py-1 px-1 text-left">Invoice #</th>
                     <th className="py-1 px-1 text-left">Cust. #</th>
@@ -242,18 +244,19 @@ export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProp
                     <th className="py-1 px-1 text-right">Tax</th>
                     <th className="py-1 px-1 text-left pl-2">Payment Type</th>
                     <th className="py-1 px-1 text-right">Total</th>
-                    {activeShowRate && <th className="py-1 px-1 text-center">Cur</th>}
-                    {activeShowRate && <th className="py-1 px-1 text-right">Rate</th>}
+                    {isRateActive && <th className="py-1 px-1 text-center">Cur</th>}
+                    {isRateActive && <th className="py-1 px-1 text-right">Rate</th>}
+                    {isRateActive && <th className="py-1 px-1 text-right">Total ($)</th>}
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="font-bold">
-                    <td colSpan={activeShowRate ? 14 : 12} className="py-1 px-1 underline">Branch: Southern Olive Oil Products S.A.R.L</td>
+                    <td colSpan={12 + (isRateActive ? 3 : 0) - (isGroupDate ? 0 : 1)} className="py-1 px-1 underline">Branch: Main Branch</td>
                   </tr>
                   
                   {reportData.map((row, index) => (
                     <tr key={index}>
-                      <td className="py-1 px-1">{row.date}</td>
+                      {isGroupDate && <td className="py-1 px-1">{row.date}</td>}
                       <td className="py-1 px-1">{row.time}</td>
                       <td className="py-1 px-1">{row.invoice}</td>
                       <td className="py-1 px-1">{row.custId}</td>
@@ -265,29 +268,42 @@ export const TransactionsByDateTemplate: React.FC<TransactionsByDateTemplateProp
                       <td className="py-1 px-1 text-right">{row.tax}</td>
                       <td className="py-1 px-1 pl-2">{row.payType}</td>
                       <td className="py-1 px-1 text-right font-bold">{row.total}</td>
-                      {activeShowRate && <td className="py-1 px-1 text-center font-bold text-slate-700">{row.currency || 'LBP'}</td>}
-                      {activeShowRate && <td className="py-1 px-1 text-right font-mono text-slate-700">{row.rate || '89,500'}</td>}
+                      {isRateActive && <td className="py-1 px-1 text-center font-bold text-slate-700">{row.currency || 'LBP'}</td>}
+                      {isRateActive && <td className="py-1 px-1 text-right font-mono text-slate-700">{row.rate || '89,500'}</td>}
+                      {isRateActive && <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">${(parseFloat(row.total.replace(/,/g, '')) / 89500).toFixed(2)}</td>}
                     </tr>
                   ))}
 
                   {/* Summary Totals */}
                   <tr className="font-bold border-t border-black">
-                    <td colSpan={7} className="py-1 px-1 text-right">Total By Branch:</td>
+                    <td colSpan={isGroupDate ? 7 : 6} className="py-1 px-1 text-right">Total By Branch:</td>
                     <td className="py-1 px-1 text-right">12,285,000.00</td>
                     <td className="py-1 px-1 text-right">900,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td></td>
                     <td className="py-1 px-1 text-right">11,385,000.00</td>
-                    {activeShowRate && <td colSpan={2}></td>}
+                    {isRateActive && (
+                      <>
+                        <td className="py-1 px-1 text-center">LBP</td>
+                        <td className="py-1 px-1 text-right font-mono">89,500</td>
+                        <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
+                      </>
+                    )}
                   </tr>
                   <tr className="font-bold border-t border-double border-black">
-                    <td colSpan={7} className="py-1 px-1 text-right">Grand Total:</td>
+                    <td colSpan={isGroupDate ? 7 : 6} className="py-1 px-1 text-right">Grand Total:</td>
                     <td className="py-1 px-1 text-right">12,285,000.00</td>
                     <td className="py-1 px-1 text-right">900,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td></td>
                     <td className="py-1 px-1 text-right">11,385,000.00</td>
-                    {activeShowRate && <td colSpan={2}></td>}
+                    {isRateActive && (
+                      <>
+                        <td className="py-1 px-1 text-center">LBP</td>
+                        <td className="py-1 px-1 text-right font-mono">89,500</td>
+                        <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
+                      </>
+                    )}
                   </tr>
                 </tbody>
               </table>

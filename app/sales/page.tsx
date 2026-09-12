@@ -1,21 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import AuthenticOmegaSalesWorkstation from '../backoffice/operations/SalesView';
 
-export default function SalesRedirectPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/backoffice/dashboard');
-  }, [router]);
-
-  return (
-    <div className="w-full h-screen bg-[#1e232d] flex items-center justify-center text-white">
-      <div className="flex items-center gap-3">
-        <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span className="text-sm font-bold font-mono">Redirecting to Sales Control Dashboard...</span>
-      </div>
-    </div>
-  );
+export default function StandaloneOmegaSalesPage() {
+  return <AuthenticOmegaSalesWorkstation withOmegaSidebar={true} />;
 }

@@ -9,6 +9,7 @@ interface CustomerSalesDetailTemplateProps {
   reportTitle?: string;
   fromDate?: string;
   toDate?: string;
+  topN?: number;
 }
 
 export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplateProps> = ({
@@ -18,6 +19,7 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
   reportTitle = 'Sales by customer In Detail',
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
+  topN = 10,
 }) => {
   const isZoneReport = reportTitle.toLowerCase().includes('zone');
   const isDeliverySummary = reportTitle.toLowerCase().includes('delivery');
@@ -135,7 +137,7 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {customerDetailRows.map((c, idx) => (
+              {(isTopCustomers && topN ? customerDetailRows.slice(0, topN) : customerDetailRows).map((c, idx) => (
                 <tr key={idx} className="hover:bg-slate-50">
                   <td className="py-2 px-2 font-bold text-slate-900">{c.customer}</td>
                   <td className="py-2 px-2 font-mono text-slate-600">{c.invoice}</td>

@@ -40,7 +40,7 @@ export const FallbackMeterReport: React.FC<FallbackMeterReportProps> = ({ fromDa
 
         {/* Main Branch Title */}
         <div className="text-[11px] mb-1">
-          Branch: Southern Olive Oil Products S.A.R.L
+          Branch: Main Branch
         </div>
 
         {/* EOD Group: 01-Aug-2026 */}

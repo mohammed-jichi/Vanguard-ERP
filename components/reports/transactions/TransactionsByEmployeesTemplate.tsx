@@ -90,7 +90,7 @@ export const TransactionsByEmployeesTemplate: React.FC<TransactionsByEmployeesTe
               </label>
             </div>
 
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Southern Olive Oil Products S.A.R.L</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Main Branch (الفرع الرئيسي)</option></select>
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-[12px] font-bold text-slate-800 cursor-pointer">
                 <input type="checkbox" checked={uiRealDate} onChange={(e) => setUiRealDate(e.target.checked)} className="rounded border-slate-300 w-3.5 h-3.5 accent-[#195a96]" />
@@ -240,7 +240,7 @@ export const TransactionsByEmployeesTemplate: React.FC<TransactionsByEmployeesTe
                     <td className="py-1 px-1"></td>
                 </tr>
                 <tr className="font-bold border-t border-double border-black">
-                    <td colSpan={5} className="py-1 px-1">Total for Branch: Southern Olive Oil Products S.A.R.L</td>
+                    <td colSpan={5} className="py-1 px-1">Total for Branch: Main Branch</td>
                     <td className="py-1 px-1 text-right">23,020,000.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>
                     <td className="py-1 px-1 text-right">0.00</td>

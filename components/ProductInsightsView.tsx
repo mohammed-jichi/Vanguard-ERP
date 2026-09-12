@@ -49,7 +49,7 @@ const SalesTrendTooltip = ({ active, payload, label }: any) => {
 
 export default function ProductInsightsView() {
   // 1. TOP FILTER STATES
-  const [branch, setBranch] = useState<string>('All Branches');
+  const [branch, setBranch] = useState<string>('Main Branch');
   const [currency, setCurrency] = useState<string>('LBP');
   const [year, setYear] = useState<string>('2026');
   const [dateRange, setDateRange] = useState<string>('September');
@@ -254,9 +254,7 @@ export default function ProductInsightsView() {
               style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
               className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
             >
-              <option value="All Branches" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Branches</option>
-              <option value="Southern Olive SARL" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive SARL</option>
-              <option value="Beirut Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Beirut Branch</option>
+              <option value="Main Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Main Branch (الفرع الرئيسي)</option>
             </select>
           </div>
 

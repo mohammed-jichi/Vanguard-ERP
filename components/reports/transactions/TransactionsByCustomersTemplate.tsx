@@ -64,7 +64,7 @@ export const TransactionsByCustomersTemplate: React.FC<TransactionsByCustomersTe
               className="w-full border border-slate-300 rounded p-1.5 !text-black !font-bold !bg-white !opacity-100 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               style={{ backgroundColor: '#ffffff', color: '#000000', opacity: 1, fontWeight: 700 }} 
             />
-            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Branches</option></select>
+            <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>Main Branch (الفرع الرئيسي)</option></select>
             <select className="w-full border border-slate-400 rounded p-1.5 text-[13px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"><option>All Invoices</option></select>
             <input 
               type="text" 
@@ -118,7 +118,7 @@ export const TransactionsByCustomersTemplate: React.FC<TransactionsByCustomersTe
                 </tr>
               </thead>
               <tbody>
-                <tr className="font-bold"><td colSpan={9} className="py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td></tr>
+                <tr className="font-bold"><td colSpan={9} className="py-1 px-1">Branch: Main Branch</td></tr>
                 <tr className="font-bold"><td colSpan={9} className="py-1 px-1">Customer: Colonel Mahmoud Abboud Colonel Abboud</td></tr>
                 <tr className="font-bold"><td colSpan={9} className="py-1 px-1">Sale Date: 2026-08-22</td></tr>
                 <tr>

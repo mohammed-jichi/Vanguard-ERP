@@ -14,7 +14,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [filterPeriod, setFilterPeriod] = useState('This Month');
-  const [branch, setBranch] = useState('Southern Olive Oil Products S.A.R.L');
+  const [branch, setBranch] = useState('Main Branch');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ code: string; desc: string } | null>(null);
 
@@ -203,8 +203,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               >
-                <option value="All Branches">All Branches</option>
-                <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
+                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
               </select>
             </div>
             
@@ -309,7 +308,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
                   {pageIndex === 0 && (
                     <>
                       <tr>
-                        <td colSpan={10} className="font-bold py-1 px-1">Branch: Southern Olive Oil Products S.A.R.L</td>
+                        <td colSpan={10} className="font-bold py-1 px-1">Branch: Main Branch</td>
                       </tr>
                       {/* CONDITIONAL ITEM NAME HEADER: Only show if an item is explicitly selected */}
                       {selectedItem && (

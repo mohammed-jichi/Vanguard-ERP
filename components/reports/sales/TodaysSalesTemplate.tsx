@@ -61,7 +61,7 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
 
       <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
         <span>Operating Date: Today (Current Shift)</span>
-        <span>Branch: Choueifat Main Facility & Showroom</span>
+        <span>Branch: Main Branch</span>
         <span>Page 1 of 1</span>
       </div>
 

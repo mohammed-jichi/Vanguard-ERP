@@ -1,32 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import Sidebar from '@/components/Sidebar';
 
-export default function MasterBackofficeLayout({ children }: { children: React.ReactNode }) {
+function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentOpsSection = searchParams.get('section') || 'dashboard';
 
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [quickDrawerOpen, setQuickDrawerOpen] = useState(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'UPDATES' | 'ALERTS' | 'ACTIVITIES' | 'HELP' | 'DARK'>('UPDATES');
-
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    sales: true,
-    fleet: true,
-    social: true,
-    operations: true,
-    customers: true,
-    accounting: true,
-    hr: true,
-  });
-
-  const toggleSection = (key: string) => {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const isLinkActive = (href: string) => pathname === href || (pathname && pathname.startsWith(href));
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] font-sans text-slate-800 text-left select-none relative print:bg-white print:m-0 print:p-0">
@@ -230,277 +217,20 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
       {/* 2. BODY WORKSPACE */}
       <div className="flex-1 flex overflow-hidden print:overflow-visible print:m-0 print:p-0">
 
-        {/* Master Left Sidebar */}
-        {sidebarVisible && (
-          <aside
-            style={{
-              background: '#e9eee9',
-            }}
-            className="w-[280px] text-slate-800 flex flex-col justify-between print:hidden select-none shrink-0 h-[calc(100vh-68px)] overflow-y-auto custom-scrollbar border-r border-[#1e3a2b]/20 shadow-xs"
-          >
-            <div>
-              <div className="p-3.5 border-b border-[#1e3a2b]/15 bg-white/70">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#1e3a2b] shadow-xs"></span>
-                  <span className="font-bold text-[#0f172a] text-xs tracking-tight">Main Navigation Modules</span>
-                </div>
-              </div>
-
-              <nav className="p-2 space-y-1.5 text-xs font-semibold">
-
-                {/* 1. SALES CONTROL & POS */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('sales')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>🛒</span>
-                      <span>1. Sales Control & POS</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.sales ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.sales && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/dashboard" className={`block px-2.5 py-1.5 rounded transition-colors ${pathname === '/backoffice/dashboard' ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        Dashboard Overview
-                      </Link>
-                      <Link href="/backoffice/reportview" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/reportview') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        <span>Sales Reports Matrix</span>
-                        <span className="text-[9.5px] font-mono bg-[#1e3a2b]/15 text-[#1e3a2b] px-1.5 py-0.5 rounded font-bold">93 Rep</span>
-                      </Link>
-                      <Link href="/backoffice/inbox" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/inbox') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        <span>Operations Inbox</span>
-                        <span className="text-[9.5px] font-mono bg-amber-500/20 text-amber-900 px-1.5 py-0.5 rounded font-bold">2 New</span>
-                      </Link>
-                      <Link href="/backoffice/online-orders" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/online-orders') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        Online Orders Control
-                      </Link>
-                      <Link href="/backoffice/end-of-day" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/end-of-day') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        End of Day (EOD) Z-Report
-                      </Link>
-                      <Link href="/sales-manager-dashboard" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-blue-700 font-bold hover:bg-slate-200/70 transition-colors">
-                        <span>👔 Sales Manager Dashboard ↗</span>
-                        <span className="text-[9px] font-mono bg-blue-100 text-blue-800 px-1 py-0.2 rounded font-bold">CRM</span>
-                      </Link>
-                      <a href="/pos" target="_blank" className="flex items-center justify-between px-2.5 py-1.5 rounded text-[#1e3a2b] font-bold hover:bg-slate-200/70 transition-colors">
-                        <span>POS Touch Terminal ↗</span>
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                {/* 2. SUPERSONIC FLEET */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('fleet')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>🚚</span>
-                      <span>2. SuperSonic Fleet</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.fleet ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.fleet && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/fleet?tab=southern-olive" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🫒 Southern Olive Oil Orders
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=3pl-orders" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🏢 SuperSonic 3PL Orders
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=dispatch" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        📋 Corridors & Dispatch
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=path-cards" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🗂️ Route Cards
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=vendors" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🤝 Vendor & Merchant Accounts
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=accounting" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        💰 SuperSonic Accounting & Finance
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=hr" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        👔 SuperSonic HR & Staff Registry
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=complaints" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🎧 Customer Complaints & Care
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=settlements" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        💵 COD, Whish & Settlements
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=radar" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        📡 Live Fleet Radar & GPS
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=pod" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        ✍️ Proof of Delivery (POD)
-                      </Link>
-                      <Link href="/backoffice/fleet?tab=vehicles" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🚐 Vehicles & Odometer Log
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. SOCIAL CRM */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('social')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>💬</span>
-                      <span>3. Social CRM & Support</span>
-                    </div>
-                    <span className="text-[9px] bg-[#1e3a2b]/15 text-[#1e3a2b] px-1 rounded font-bold">ENT</span>
-                  </button>
-
-                  {openSections.social && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/social-crm" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/social-crm') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Social Management Hub
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* 4. OPERATIONS */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('operations')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>⚙️</span>
-                      <span>4. Operations & Pressing</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.operations ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.operations && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/operations/dashboard" className={`flex items-center justify-between px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/operations/dashboard') ? 'bg-[#1e3a2b] text-white font-bold shadow-2xs' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'}`}>
-                        <span>📊 Operations & Inventory Dashboard</span>
-                        <span className="text-[9px] font-mono bg-blue-100 text-blue-800 px-1 py-0.2 rounded font-bold">Live</span>
-                      </Link>
-                      <Link href="/backoffice/operations?tab=catalog" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        📦 Products & Master Catalog
-                      </Link>
-                      <Link href="/backoffice/operations?tab=pressing" className="flex items-center justify-between px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        <span>🫒 Olive Pressing & Harvest Runs</span>
-                        <span className="text-[9px] font-mono bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">2026</span>
-                      </Link>
-                      <Link href="/backoffice/operations?tab=transfers" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🔄 Stock Transfers & Requisitions
-                      </Link>
-                      <Link href="/backoffice/operations?tab=adjustments" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        ⚖️ Physical Count & Adjustments
-                      </Link>
-                      <Link href="/backoffice/operations?tab=suppliers" className="block px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        🤝 Suppliers & Grove Farmers
-                      </Link>
-                      <Link href="/backoffice/operations?tab=reorder" className="flex items-center justify-between px-2.5 py-1.5 rounded text-slate-700 hover:text-slate-950 hover:bg-slate-200/70 transition-colors">
-                        <span>🔔 Reorder Guide & Stock Alerts</span>
-                        <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-1 py-0.2 rounded font-bold">Alert</span>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* 5. CUSTOMERS */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('customers')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>👥</span>
-                      <span>5. Customer Management & AR</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.customers ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.customers && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/customers" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/customers') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Master Directory & KYC
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* 6. ACCOUNTING */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('accounting')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>📈</span>
-                      <span>6. Accounting & Finance</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.accounting ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.accounting && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/accounting" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/accounting') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        General Ledger & COA
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* 7. HR */}
-                <div className="border border-slate-300/80 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection('hr')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-slate-900 hover:bg-slate-100 text-[11.5px] font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>🪪</span>
-                      <span>7. HR & Payroll Management</span>
-                    </div>
-                    <span className="text-[9px] text-[#1e3a2b]">{openSections.hr ? '▲' : '▼'}</span>
-                  </button>
-
-                  {openSections.hr && (
-                    <div className="pl-6 pr-2 py-1 space-y-0.5 border-t border-slate-200 bg-[#f8fafc] text-[11px]">
-                      <Link href="/backoffice/hr" className={`block px-2.5 py-1.5 rounded transition-colors ${isLinkActive('/backoffice/hr') ? 'bg-[#1e3a2b] text-white font-bold' : 'text-slate-700 hover:text-slate-950'}`}>
-                        Employees & BLOM Payroll
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-              </nav>
-            </div>
-
-            <div className="p-3 border-t border-[#1e3a2b]/20 bg-white/70 text-xs flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-[#1e3a2b] text-white font-bold flex items-center justify-center text-[10px] shadow-xs">
-                  M
-                </div>
-                <span className="font-bold text-[#0f172a]">Mohammed</span>
-              </div>
-              <span className="text-[10px] text-[#1e3a2b] font-mono bg-[#1e3a2b]/15 px-2 py-0.5 rounded-full font-bold">Online</span>
-            </div>
-          </aside>
-        )}
+        {/* Master Left Sidebar (Unified with Product Insights & Customer Insights) */}
+        <Sidebar
+          activeScreen={pathname}
+          isOpen={sidebarVisible}
+          onToggleOpen={(open) => setSidebarVisible(open)}
+          className="h-[calc(100vh-68px)]"
+        />
 
         {/* Main Canvas Viewport */}
-        <main className="flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f3f5f8] p-4 md:p-6 custom-scrollbar print:overflow-visible print:m-0 print:p-0 print:bg-white">
+        <main className={`flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-[#f3f5f8] ${
+          (pathname === '/backoffice/operations' && (currentOpsSection === 'dashboard' || currentOpsSection === 'reports')) || pathname === '/backoffice/operations/dashboard'
+            ? 'p-0'
+            : 'p-4 md:p-6'
+        } custom-scrollbar print:overflow-visible print:m-0 print:p-0 print:bg-white`}>
           {children}
         </main>
 
@@ -570,7 +300,7 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
 
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">Sales Control & POS</span>
+                      <span className="font-bold text-slate-900">Sales Control</span>
                       <span className="text-[10px] text-slate-400 font-mono">31 Aug 2026</span>
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -718,5 +448,13 @@ export default function MasterBackofficeLayout({ children }: { children: React.R
       </div>
 
     </div>
+  );
+}
+
+export default function MasterBackofficeLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="flex flex-col w-full min-h-screen bg-[#f3f5f8] p-4 text-xs text-slate-500">Loading Vanguard Backoffice...</div>}>
+      <MasterBackofficeLayoutContent>{children}</MasterBackofficeLayoutContent>
+    </Suspense>
   );
 }
