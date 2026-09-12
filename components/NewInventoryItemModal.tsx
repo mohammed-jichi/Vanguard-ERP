@@ -23,6 +23,7 @@ import {
   addInventoryItem,
   AuthenticInventoryItem
 } from '@/lib/omegaInventoryCatalog';
+import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
 
 interface NewInventoryItemModalProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export default function NewInventoryItemModal({
   const [division, setDivision] = useState<string>('مقطرات ومدبسات مفرق');
   const [group, setGroup] = useState<string>('صناديق زعتر');
   const [supplier, setSupplier] = useState<string>('المورد الرئيسي (Main Store)');
-  const [brand, setBrand] = useState<string>('زيت وزيتون الجنوب');
+  const [brand, setBrand] = useState<string>('زيت و زيتون الجنوب');
   const [itemType, setItemType] = useState<string>('Inventory Item');
 
   // Units & conversions state
@@ -401,8 +402,8 @@ export default function NewInventoryItemModal({
                 </div>
               </div>
 
-              {/* Supplier & Item Type */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Supplier, Item Brand & Item Type */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Default Supplier / Vendor</label>
                   <input
@@ -411,6 +412,20 @@ export default function NewInventoryItemModal({
                     onChange={(e) => setSupplier(e.target.value)}
                     className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:outline-none focus:border-blue-600"
                   />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Item Brand</label>
+                  <select
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:outline-none focus:border-blue-600 bg-white"
+                  >
+                    {OMEGA_ITEM_BRANDS.map((b) => (
+                      <option key={b.id} value={b.name}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Item Type</label>

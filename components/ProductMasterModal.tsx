@@ -44,6 +44,7 @@ import {
 } from 'lucide-react';
 
 import { STRICT_UOM_LIST, validateUomQuantity, getUomInputStep } from '@/lib/uomValidation';
+import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
 
 interface ProductMasterModalProps {
   isOpen: boolean;
@@ -100,7 +101,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
   // Classification & Routing
   const [itemGroup, setItemGroup] = useState<string>('منتوجات الزيت والكبس');
   const [itemCategory, setItemCategory] = useState<string>('زيتون وزيت ممتاز');
-  const [brandId, setBrandId] = useState<string>('BRAND-001');
+  const [brandId, setBrandId] = useState<string>('زيت و زيتون الجنوب');
   const [supplierId, setSupplierId] = useState<string>('SUP-102');
   const [warehouseLocation, setWarehouseLocation] = useState<string>('Main Warehouse - Tank Room A');
   const [productionNotes, setProductionNotes] = useState<string>('محصول موسم 2026 - نسبة الحموضة أقل من 0.4% - خالي من المواد الحافظة');
@@ -461,9 +462,11 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                       onChange={(e) => setBrandId(e.target.value)}
                       className="w-full bg-[#0a1209] border border-[#3b5438] rounded-xl p-2.5 text-white font-bold focus:border-amber-400 focus:outline-none"
                     >
-                      <option value="BRAND-001">منتوجات زيت وزيتون الجنوب (Vanguard)</option>
-                      <option value="BRAND-002">معاصر الجنوب الذهبية (Golden Olive Press)</option>
-                      <option value="BRAND-003">مزارع صور والبقاع (Tyre & Bekaa Farms)</option>
+                      {OMEGA_ITEM_BRANDS.map((b) => (
+                        <option key={b.id} value={b.name}>
+                          {b.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 

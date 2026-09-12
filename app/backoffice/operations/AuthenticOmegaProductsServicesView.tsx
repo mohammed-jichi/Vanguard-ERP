@@ -312,7 +312,7 @@ export default function AuthenticOmegaProductsServicesView() {
       mainSupplierId: 5,
       mainSupplierName: 'SOOL',
       lastSupplierName: 'SOOL',
-      itemBrand: 'Southern Olive',
+      itemBrand: 'زيت و زيتون الجنوب',
       itemLeadTime: '2 Days',
       buyingFormat: 'UNIT',
       inventoryFormat: 'UNIT',

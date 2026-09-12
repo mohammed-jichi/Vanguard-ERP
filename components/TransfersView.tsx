@@ -35,6 +35,7 @@ import {
   Barcode
 } from 'lucide-react';
 import SearchInventoryItemsModal, { SelectedTransferItemPayload } from '@/components/SearchInventoryItemsModal';
+import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
 
 export interface TransferItem {
   id: string;
@@ -264,7 +265,7 @@ export default function TransfersView() {
   
   const [fromBranch, setFromBranch] = useState('Main Branch');
   const [fromLocation, setFromLocation] = useState('Choueifat Main Facility');
-  const [toBrand, setToBrand] = useState('Vanguard Artisan Foods');
+  const [toBrand, setToBrand] = useState('زيت و زيتون الجنوب');
   const [toBranch, setToBranch] = useState('Main Branch');
   const [toLocation, setToLocation] = useState('Choueifat Main Facility');
   const [isInterBrand, setIsInterBrand] = useState(false);
@@ -1040,9 +1041,11 @@ export default function TransfersView() {
                       onChange={(e) => setToBrand(e.target.value)}
                       className="w-full bg-amber-50 border border-amber-300 text-amber-950 rounded-lg px-3 py-1.5 font-bold focus:outline-none focus:border-amber-600"
                     >
-                      <option value="Vanguard Artisan Foods">Vanguard Artisan Foods</option>
-                      <option value="Al-Wazir Gourmet Provisions">Al-Wazir Gourmet Provisions</option>
-                      <option value="Phoenician Heritage Oils">Phoenician Heritage Oils</option>
+                      {OMEGA_ITEM_BRANDS.map((b) => (
+                        <option key={b.id} value={b.name}>
+                          {b.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 )}
