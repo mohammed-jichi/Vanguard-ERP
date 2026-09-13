@@ -59,6 +59,8 @@ import {
   ProductAssemblyItem,
   ProductIncludedItem,
   ProductUsedInItem,
+  ProductCostVariationRecord,
+  ProductSupplierPricingRecord,
   OMEGA_BOM_TEMPLATES,
   BOMTemplateProduct
 } from '@/lib/omegaProductsData';
@@ -200,7 +202,24 @@ export default function AuthenticOmegaProductsServicesView() {
   const [activeModalTab, setActiveModalTab] = useState<
     'main' | 'stock' | 'media' | 'assembly' | 'included' | 'usedIn' | 'history' | 'sales' | 'more'
   >('main');
-  const [historySubTab, setHistorySubTab] = useState<'movements' | 'priceLogs' | 'audit'>('movements');
+  const [historySubTab, setHistorySubTab] = useState<
+    'movements' | 'costVariation' | 'supplierPricing' | 'audit'
+  >('movements');
+
+  // Supplier Pricing Modal (Screenshot 8: New Item Supplier Pricing)
+  const [isNewSupplierPricingModalOpen, setIsNewSupplierPricingModalOpen] = useState<boolean>(false);
+  const [newSuppPriceSupplierId, setNewSuppPriceSupplierId] = useState<number>(1);
+  const [newSuppPriceBuyingUnit, setNewSuppPriceBuyingUnit] = useState<string>('BOX');
+  const [newSuppPriceAmount, setNewSuppPriceAmount] = useState<number | string>('');
+  const [newSuppPriceCurrency, setNewSuppPriceCurrency] = useState<'LBP' | 'USD' | 'EUR'>('LBP');
+  const [newSuppPriceDate, setNewSuppPriceDate] = useState<string>('13-Sep-2026');
+  const [newSuppPriceSupplierCode, setNewSuppPriceSupplierCode] = useState<string>('');
+  const [newSuppPriceTarget, setNewSuppPriceTarget] = useState<number | string>('');
+  const [newSuppPriceFree, setNewSuppPriceFree] = useState<number | string>('');
+  const [newSuppPriceDiscountPct, setNewSuppPriceDiscountPct] = useState<number | string>(0);
+  const [newSuppPriceDiscountNotes, setNewSuppPriceDiscountNotes] = useState<string>('');
+  const [newSuppPriceBonusPct, setNewSuppPriceBonusPct] = useState<number | string>('');
+  const [newSuppPriceBonusNotes, setNewSuppPriceBonusNotes] = useState<string>('');
   const [moreSubTab, setMoreSubTab] = useState<'accounts' | 'taxes' | 'advanced'>('accounts');
   const [stockSubTab, setStockSubTab] = useState<'qtyOH' | 'reorderLevel'>('qtyOH');
   const [newReorderWarehouse, setNewReorderWarehouse] = useState<string>('Main Store');
@@ -898,6 +917,91 @@ export default function AuthenticOmegaProductsServicesView() {
     link.click();
     document.body.removeChild(link);
     showToast('Exported Inventory Productions Report (REP_I_0041) to CSV');
+  };
+
+  // Handlers for Tab 7 History -> Supplier Pricing
+  const handleClearSupplierPricing = () => {
+    if (!editingProduct) return;
+    setEditingProduct({
+      ...editingProduct,
+      supplierPricings: []
+    });
+    showToast('Cleared supplier pricing grid. Clean "Make vs. Buy" manufacturing state restored.');
+  };
+
+  const handleLoadSampleOutsourceSupplierPrice = () => {
+    if (!editingProduct) return;
+    const sampleRecord: ProductSupplierPricingRecord = {
+      id: Date.now(),
+      supplierId: 5,
+      supplierName: 'SOOL Packaging Co.',
+      buyingUnit: editingProduct.buyingFormat || 'BOX',
+      price: 520000,
+      currency: 'LBP',
+      date: '13-Sep-2026',
+      supplierCode: 'WHT-VIN-12',
+      target: 100,
+      free: 5,
+      discountPct: 2,
+      discountNotes: 'Prompt 10-day payment discount',
+      bonusPct: 1,
+      bonusNotes: 'End-of-quarter volume rebate'
+    };
+    setEditingProduct({
+      ...editingProduct,
+      supplierPricings: [sampleRecord]
+    });
+    showToast('Loaded sample outsourced contract packaging price (SOOL - WHT-VIN-12)');
+  };
+
+  const handleRemoveSupplierPricing = (id: number) => {
+    if (!editingProduct || !editingProduct.supplierPricings) return;
+    setEditingProduct({
+      ...editingProduct,
+      supplierPricings: editingProduct.supplierPricings.filter((sp) => sp.id !== id)
+    });
+    showToast('Removed vendor pricing record');
+  };
+
+  const handleAddSupplierPricingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    const supp = INITIAL_OMEGA_SUPPLIERS.find((s) => s.SUPPLIERID === newSuppPriceSupplierId) || INITIAL_OMEGA_SUPPLIERS[0];
+    const priceNum = Number(newSuppPriceAmount) || 0;
+
+    const newRecord: ProductSupplierPricingRecord = {
+      id: Date.now(),
+      supplierId: supp.SUPPLIERID,
+      supplierName: supp.SUPPLIERNAME,
+      buyingUnit: newSuppPriceBuyingUnit || editingProduct.buyingFormat || 'BOX',
+      price: priceNum,
+      currency: newSuppPriceCurrency,
+      date: newSuppPriceDate || '13-Sep-2026',
+      supplierCode: newSuppPriceSupplierCode.trim() || editingProduct.code,
+      target: newSuppPriceTarget ? Number(newSuppPriceTarget) : undefined,
+      free: newSuppPriceFree ? Number(newSuppPriceFree) : undefined,
+      discountPct: newSuppPriceDiscountPct ? Number(newSuppPriceDiscountPct) : 0,
+      discountNotes: newSuppPriceDiscountNotes.trim() || undefined,
+      bonusPct: newSuppPriceBonusPct ? Number(newSuppPriceBonusPct) : undefined,
+      bonusNotes: newSuppPriceBonusNotes.trim() || undefined
+    };
+
+    setEditingProduct({
+      ...editingProduct,
+      supplierPricings: [...(editingProduct.supplierPricings || []), newRecord]
+    });
+
+    setIsNewSupplierPricingModalOpen(false);
+    setNewSuppPriceAmount('');
+    setNewSuppPriceSupplierCode('');
+    setNewSuppPriceTarget('');
+    setNewSuppPriceFree('');
+    setNewSuppPriceDiscountPct(0);
+    setNewSuppPriceDiscountNotes('');
+    setNewSuppPriceBonusPct('');
+    setNewSuppPriceBonusNotes('');
+    showToast(`Saved supplier pricing for ${supp.SUPPLIERNAME}`);
   };
 
   // Handlers for Quick Adding Hierarchy / Master Entities
@@ -7353,16 +7457,17 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               )}
 
-              {/* TAB 7: HISTORY (3 Sub-Pages: Movements, Price Log, Audit Trail) */}
+              {/* TAB 7: HISTORY (4 Sub-Tabs: Movements, Cost Variation, Supplier Pricing, Audit Trail) */}
               {activeModalTab === 'history' && (
                 <div className="space-y-4">
-                  <div className="flex gap-2 border-b border-slate-200 pb-2">
+                  {/* Sub-Tab Navigation Strip */}
+                  <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
                     <button
                       type="button"
                       onClick={() => setHistorySubTab('movements')}
-                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                      className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         historySubTab === 'movements'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-[#323f4b] text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -7370,30 +7475,51 @@ export default function AuthenticOmegaProductsServicesView() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setHistorySubTab('priceLogs')}
-                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
-                        historySubTab === 'priceLogs'
-                          ? 'bg-[#323f4b] text-white'
+                      onClick={() => setHistorySubTab('costVariation')}
+                      className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                        historySubTab === 'costVariation'
+                          ? 'bg-[#323f4b] text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
-                      Cost & Price Log
+                      <span>Cost Variation</span>
+                      <span className="px-1.5 py-0.2 bg-rose-500 text-white rounded-full text-[10px] font-bold">
+                        Invoice #120
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHistorySubTab('supplierPricing')}
+                      className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                        historySubTab === 'supplierPricing'
+                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      <span>Supplier Pricing</span>
+                      <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 rounded font-mono text-[10px]">
+                        Make vs. Buy
+                      </span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setHistorySubTab('audit')}
-                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                      className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'audit'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-[#323f4b] text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
-                      Audit Trail
+                      <span>Audit Trail</span>
+                      <span className="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded font-mono text-[10px]">
+                        Immutable
+                      </span>
                     </button>
                   </div>
 
+                  {/* 1. INVENTORY MOVEMENTS SUB-TAB */}
                   {historySubTab === 'movements' && (
-                    <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
                       <table className="w-full text-left text-xs border-collapse">
                         <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                           <tr>
@@ -7401,7 +7527,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <th className="px-3 py-2">Type</th>
                             <th className="px-3 py-2">Reference</th>
                             <th className="px-3 py-2 text-right">Qty Change</th>
-                            <th className="px-3 py-2 text-right">Balance</th>
+                            <th className="px-3 py-2 text-right">Balance After</th>
                             <th className="px-3 py-2">Location</th>
                             <th className="px-3 py-2">User</th>
                           </tr>
@@ -7410,19 +7536,23 @@ export default function AuthenticOmegaProductsServicesView() {
                           {editingProduct.movements && editingProduct.movements.length > 0 ? (
                             editingProduct.movements.map((m) => (
                               <tr key={m.id} className="hover:bg-slate-50">
-                                <td className="px-3 py-2">{m.date}</td>
+                                <td className="px-3 py-2 font-mono text-[11px]">{m.date}</td>
                                 <td className="px-3 py-2 font-medium">{m.type}</td>
-                                <td className="px-3 py-2 font-mono text-[11px]">{m.reference}</td>
+                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                  {m.reference}
+                                </td>
                                 <td
-                                  className={`px-3 py-2 text-right font-bold ${
+                                  className={`px-3 py-2 text-right font-bold font-mono ${
                                     m.qtyChange < 0 ? 'text-red-600' : 'text-emerald-700'
                                   }`}
                                 >
-                                  {m.qtyChange > 0 ? `+${m.qtyChange}` : m.qtyChange}
+                                  {m.qtyChange > 0 ? `+${m.qtyChange}` : m.qtyChange} {m.unit}
                                 </td>
-                                <td className="px-3 py-2 text-right font-semibold">{m.balanceAfter}</td>
+                                <td className="px-3 py-2 text-right font-bold font-mono text-slate-800">
+                                  {m.balanceAfter} {m.unit}
+                                </td>
                                 <td className="px-3 py-2">{m.location}</td>
-                                <td className="px-3 py-2 text-slate-500">{m.user}</td>
+                                <td className="px-3 py-2 text-slate-600">{m.user}</td>
                               </tr>
                             ))
                           ) : (
@@ -7437,81 +7567,363 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   )}
 
-                  {historySubTab === 'priceLogs' && (
-                    <div className="border border-slate-200 rounded-sm overflow-hidden">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                          <tr>
-                            <th className="px-3 py-2">Date</th>
-                            <th className="px-3 py-2 text-right">Old Cost</th>
-                            <th className="px-3 py-2 text-right">New Cost</th>
-                            <th className="px-3 py-2 text-right">Old Price</th>
-                            <th className="px-3 py-2 text-right">New Price</th>
-                            <th className="px-3 py-2">Changed By</th>
-                            <th className="px-3 py-2">Reason</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200">
-                          {editingProduct.priceLogs && editingProduct.priceLogs.length > 0 ? (
-                            editingProduct.priceLogs.map((p) => (
-                              <tr key={p.id} className="hover:bg-slate-50">
-                                <td className="px-3 py-2">{p.date}</td>
-                                <td className="px-3 py-2 text-right">{p.oldCostLL.toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right font-bold">{p.newCostLL.toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right">{p.oldPriceLL.toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right font-bold text-emerald-700">
-                                  {p.newPriceLL.toLocaleString()}
-                                </td>
-                                <td className="px-3 py-2">{p.changedBy}</td>
-                                <td className="px-3 py-2 text-slate-500">{p.reason}</td>
-                              </tr>
-                            ))
-                          ) : (
+                  {/* 2. COST VARIATION SUB-TAB (ROOT CAUSE OF 48.9B ERROR & AP ALERT) */}
+                  {historySubTab === 'costVariation' && (
+                    <div className="space-y-3">
+                      {/* Root Cause Analysis Banner */}
+                      <div className="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-sm text-xs text-rose-950 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 font-bold text-rose-900 text-sm">
+                            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                            <span>Root Cause Isolated: 48,956,400,000 LBP Receiving Injection (Invoice #120)</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded">
+                            PURCHASES INVOICE #120
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] pt-1">
+                          <div className="p-2.5 bg-white border border-rose-200 rounded-xs space-y-1">
+                            <div className="font-bold text-slate-900">What Happened (The Receiving Error)</div>
+                            <p className="text-slate-700 leading-relaxed">
+                              On <strong>13-Sep-2026 09:15</strong>, user <strong>Mohammed Jichi</strong> entered <strong>Purchase Invoice #120</strong> in the <strong>Purchases Module</strong> at <strong>Zeit w zaytoun ljanoub</strong>. The total invoice amount was accidentally entered into the <code>Unit Cost</code> field (or a barcode scanner misfired). Because Omega automatically updates the moving average cost upon receiving goods, this invoice instantly overwrote master cost with <strong>48,956,400,000.00 LL</strong>.
+                            </p>
+                          </div>
+
+                          <div className="p-2.5 bg-white border border-amber-300 rounded-xs space-y-1">
+                            <div className="font-bold text-amber-900">Accounting Integrity Alert (Accounts Payable)</div>
+                            <p className="text-slate-700 leading-relaxed">
+                              While clicking <em>&quot;Recalculate Production Item Cost&quot;</em> on the Main tab realigned the master item profile for future sales, <strong>Purchase Invoice #120 is still logged in the Purchases ledger</strong>. Your balance sheet currently reflects an erroneous <strong>48.9 Billion LBP Accounts Payable liability</strong> to the supplier.
+                            </p>
+                            <p className="text-amber-950 font-semibold pt-1 border-t border-amber-200">
+                              ⚠️ Action Required: Navigate to Operations &gt; Purchases, open Invoice #120, and correct the unit cost to fix Accounts Payable.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Cost Variation Matrix Table */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 flex items-center justify-between font-semibold text-slate-800 text-xs">
+                          <span>Cost Variation Log &amp; Form Tracking</span>
+                          <span className="text-[11px] font-normal text-slate-500">
+                            Tracks every automated &amp; manual moving average cost change
+                          </span>
+                        </div>
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                             <tr>
-                              <td colSpan={7} className="px-3 py-6 text-center text-slate-400">
-                                No price changes recorded.
-                              </td>
+                              <th className="px-3 py-2">Date &amp; Time</th>
+                              <th className="px-3 py-2">Form Module</th>
+                              <th className="px-3 py-2">Ref #</th>
+                              <th className="px-3 py-2 text-right">Old Unit Cost LL</th>
+                              <th className="px-3 py-2 text-right">New Unit Cost LL</th>
+                              <th className="px-3 py-2">Branch</th>
+                              <th className="px-3 py-2">User</th>
+                              <th className="px-3 py-2 text-center">Audit Status</th>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+                            {editingProduct.costVariations && editingProduct.costVariations.length > 0 ? (
+                              editingProduct.costVariations.map((cv) => (
+                                <tr
+                                  key={cv.id}
+                                  className={`hover:bg-slate-50 ${
+                                    cv.isCorrupted ? 'bg-rose-50/70' : cv.id === 1 ? 'bg-emerald-50/50' : ''
+                                  }`}
+                                >
+                                  <td className="px-3 py-2 text-slate-700">{cv.date}</td>
+                                  <td className="px-3 py-2 font-sans font-semibold text-slate-900">{cv.form}</td>
+                                  <td className="px-3 py-2 font-semibold text-[#195a96]">{cv.refNo}</td>
+                                  <td className="px-3 py-2 text-right text-slate-600">
+                                    {cv.oldCostLL.toLocaleString()}
+                                  </td>
+                                  <td
+                                    className={`px-3 py-2 text-right font-bold ${
+                                      cv.isCorrupted ? 'text-rose-700 text-xs animate-pulse' : 'text-slate-900'
+                                    }`}
+                                  >
+                                    {cv.newCostLL.toLocaleString()}
+                                  </td>
+                                  <td className="px-3 py-2 font-sans text-slate-600">{cv.branch}</td>
+                                  <td className="px-3 py-2 font-sans font-medium text-slate-800">{cv.user}</td>
+                                  <td className="px-3 py-2 text-center font-sans">
+                                    {cv.isCorrupted ? (
+                                      <span className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px]">
+                                        CORRUPTED INVOICE ENTRY
+                                      </span>
+                                    ) : cv.id === 1 ? (
+                                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">
+                                        REALIGNED VIA BOM (543,960 LL)
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px]">
+                                        INITIAL MASTER PROFILE
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan={8} className="px-3 py-6 text-center text-slate-400 font-sans">
+                                  No cost variations recorded.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   )}
 
-                  {historySubTab === 'audit' && (
-                    <div className="border border-slate-200 rounded-sm overflow-hidden">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                          <tr>
-                            <th className="px-3 py-2">Timestamp</th>
-                            <th className="px-3 py-2">Action</th>
-                            <th className="px-3 py-2">Field</th>
-                            <th className="px-3 py-2">Old Value</th>
-                            <th className="px-3 py-2">New Value</th>
-                            <th className="px-3 py-2">User</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200">
-                          {editingProduct.auditLogs && editingProduct.auditLogs.length > 0 ? (
-                            editingProduct.auditLogs.map((a) => (
-                              <tr key={a.id} className="hover:bg-slate-50">
-                                <td className="px-3 py-2 text-slate-500">{a.timestamp}</td>
-                                <td className="px-3 py-2 font-medium">{a.action}</td>
-                                <td className="px-3 py-2">{a.field}</td>
-                                <td className="px-3 py-2 text-slate-500">{a.oldValue}</td>
-                                <td className="px-3 py-2 font-bold text-blue-700">{a.newValue}</td>
-                                <td className="px-3 py-2">{a.user}</td>
+                  {/* 3. SUPPLIER PRICING SUB-TAB (MAKE VS. BUY MATRIX & VENDOR PRICING) */}
+                  {historySubTab === 'supplierPricing' && (
+                    <div className="space-y-3">
+                      {/* Make vs Buy Integrity Conflict Banner */}
+                      <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-sm text-xs text-amber-950 space-y-1.5">
+                        <div className="flex items-center justify-between font-bold text-amber-900">
+                          <div className="flex items-center gap-2">
+                            <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
+                            <span>&quot;Make vs. Buy&quot; Integrity Conflict (Critical Supply Chain Rule)</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-amber-200 text-amber-900 font-mono text-[10px] font-bold rounded">
+                            MANUFACTURING SKU
+                          </span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] leading-relaxed">
+                          This 12-pack case (<strong>{editingProduct.description}</strong>) is actively manufactured in your <strong>Choueifat plant</strong> using raw bulk vinegar, empty bottles, and factory labor configured in the <strong>Item Assembly</strong> tab. Because you manufacture it internally, you do <strong>not</strong> buy it from an external supplier. Therefore, this Supplier Pricing grid for the finished box should remain <strong>empty</strong>.
+                        </p>
+                        <p className="text-slate-600 text-[11px] italic">
+                          You only use this matrix for raw materials (bottles, caps, bulk vinegar) or if you decide to outsource the production of this box to an external contract packager.
+                        </p>
+                      </div>
+
+                      {/* Action Bar */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                        <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div className="font-semibold text-slate-800 text-xs">
+                            Vendor Procurement Pricing Matrix ({editingProduct.supplierPricings?.length || 0} contracts)
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewSuppPriceBuyingUnit(editingProduct.buyingFormat || 'BOX');
+                                setIsNewSupplierPricingModalOpen(true);
+                              }}
+                              className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ New Item Supplier Pricing</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleLoadSampleOutsourceSupplierPrice}
+                              className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                              title="Simulate third-party contract packing agreement"
+                            >
+                              <Tag className="w-3.5 h-3.5" />
+                              <span>Demo Outsource Contract</span>
+                            </button>
+                            {editingProduct.supplierPricings && editingProduct.supplierPricings.length > 0 && (
+                              <button
+                                type="button"
+                                onClick={handleClearSupplierPricing}
+                                className="px-2.5 py-1 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-sm font-semibold text-xs cursor-pointer transition"
+                              >
+                                Clear Grid
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Supplier Pricing Table */}
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs border-collapse">
+                            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                              <tr>
+                                <th className="px-3 py-2 w-10 text-center">#</th>
+                                <th className="px-3 py-2">Supplier</th>
+                                <th className="px-3 py-2">Buying Unit</th>
+                                <th className="px-3 py-2 text-right">Agreed Price</th>
+                                <th className="px-3 py-2 text-center">Currency</th>
+                                <th className="px-3 py-2">Supplier Code (B2B)</th>
+                                <th className="px-3 py-2 text-center">Target / Free Deal</th>
+                                <th className="px-3 py-2 text-right">Discount %</th>
+                                <th className="px-3 py-2 text-right">Effective Unit Cost LL</th>
+                                <th className="px-3 py-2 text-center w-12">Actions</th>
                               </tr>
-                            ))
-                          ) : (
+                            </thead>
+                            <tbody className="divide-y divide-slate-200">
+                              {editingProduct.supplierPricings && editingProduct.supplierPricings.length > 0 ? (
+                                editingProduct.supplierPricings.map((sp, idx) => {
+                                  const base = sp.currency === 'USD' ? sp.price * (editingProduct.secondCurrencyRate || 90000) : sp.price;
+                                  const effective = Math.round(base * (1 - (sp.discountPct || 0) / 100));
+                                  return (
+                                    <tr key={sp.id} className="hover:bg-slate-50">
+                                      <td className="px-3 py-2 text-center font-mono text-slate-400">{idx + 1}</td>
+                                      <td className="px-3 py-2 font-medium text-slate-900">{sp.supplierName}</td>
+                                      <td className="px-3 py-2 font-mono text-slate-600">{sp.buyingUnit}</td>
+                                      <td className="px-3 py-2 text-right font-mono font-bold">
+                                        {sp.price.toLocaleString()}
+                                      </td>
+                                      <td className="px-3 py-2 text-center font-mono text-slate-700">
+                                        <span className="px-1.5 py-0.5 bg-slate-100 rounded font-semibold text-[10px]">
+                                          {sp.currency}
+                                        </span>
+                                      </td>
+                                      <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                        {sp.supplierCode}
+                                      </td>
+                                      <td className="px-3 py-2 text-center font-mono">
+                                        {sp.target && sp.free ? (
+                                          <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded font-bold text-[10px]">
+                                            Buy {sp.target}, Get {sp.free} Free
+                                          </span>
+                                        ) : (
+                                          <span className="text-slate-400">-</span>
+                                        )}
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono">
+                                        {sp.discountPct ? `${sp.discountPct}%` : '0%'}
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono font-bold text-emerald-700">
+                                        {effective.toLocaleString()} LL
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveSupplierPricing(sp.id)}
+                                          className="text-slate-400 hover:text-red-700 cursor-pointer p-1"
+                                          title="Delete contract"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr>
+                                  <td colSpan={10} className="px-4 py-8 text-center text-slate-500 space-y-1">
+                                    <div className="font-semibold text-slate-700">
+                                      No Vendor Pricing Configured (Standard Manufactured Good)
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 max-w-md mx-auto">
+                                      This grid is intentionally empty because this product is manufactured in Choueifat. External vendor pricing is only configured for purchased raw materials or outsourced contract packing.
+                                    </p>
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. AUDIT TRAIL SUB-TAB (IMMUTABLE DATABASE LOGS & 48.9B COMMITTED AUDIT) */}
+                  {historySubTab === 'audit' && (
+                    <div className="space-y-3">
+                      {/* Isolating the 48-Billion LBP Error Matrix Guide */}
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-2">
+                        <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <span>How to Read the Audit Trail Matrix (Isolating the 48-Billion LBP Error)</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+                          <div className="p-2 bg-white border border-slate-200 rounded-xs">
+                            <span className="font-bold text-slate-900 block mb-0.5">1. Target Transaction</span>
+                            <span className="text-slate-600">
+                              Field: <code>Cost / Unit Cost LL</code> | New Value: <code>48,956,400,000</code> | User: <strong>Mohammed Jichi</strong> on <strong>13-Sep-2026</strong>.
+                            </span>
+                          </div>
+                          <div className="p-2 bg-white border border-slate-200 rounded-xs">
+                            <span className="font-bold text-slate-900 block mb-0.5">2. Action Types</span>
+                            <span className="text-slate-600">
+                              <strong>Update:</strong> Manual override or moving-avg cost recalculation. <strong>Insert:</strong> Entry during record creation. <strong>API/Sync:</strong> System integration.
+                            </span>
+                          </div>
+                          <div className="p-2 bg-white border border-slate-200 rounded-xs">
+                            <span className="font-bold text-emerald-800 block mb-0.5">3. Correction Log Committed</span>
+                            <span className="text-slate-600">
+                              Top row shows Action: <strong>Update</strong>, Old Value: <code>48956400000</code>, New Value: <code>543960</code>. Permanent DB commit verified.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Audit Log Table */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                             <tr>
-                              <td colSpan={6} className="px-3 py-6 text-center text-slate-400">
-                                No audit events logged.
-                              </td>
+                              <th className="px-3 py-2">Timestamp</th>
+                              <th className="px-3 py-2">Action</th>
+                              <th className="px-3 py-2">Field Name</th>
+                              <th className="px-3 py-2 text-right">Old Value</th>
+                              <th className="px-3 py-2 text-right">New Value</th>
+                              <th className="px-3 py-2">User Account</th>
                             </tr>
-                          )}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y divide-slate-200">
+                            {editingProduct.auditLogs && editingProduct.auditLogs.length > 0 ? (
+                              editingProduct.auditLogs.map((a) => {
+                                const isCorrupted = a.oldValue === '48956400000' || a.newValue === '48956400000';
+                                const isCorrection = a.oldValue === '48956400000' && a.newValue === '543960';
+                                return (
+                                  <tr
+                                    key={a.id}
+                                    className={`hover:bg-slate-50 ${
+                                      isCorrection
+                                        ? 'bg-emerald-50/70 font-semibold'
+                                        : isCorrupted
+                                        ? 'bg-rose-50/70'
+                                        : ''
+                                    }`}
+                                  >
+                                    <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{a.timestamp}</td>
+                                    <td className="px-3 py-2">
+                                      <span
+                                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                          a.action === 'Update'
+                                            ? 'bg-blue-100 text-blue-800'
+                                            : 'bg-slate-100 text-slate-700'
+                                        }`}
+                                      >
+                                        {a.action}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2 font-medium text-slate-900">{a.field}</td>
+                                    <td className="px-3 py-2 text-right font-mono text-slate-600">
+                                      {Number(a.oldValue) ? Number(a.oldValue).toLocaleString() : a.oldValue}
+                                    </td>
+                                    <td
+                                      className={`px-3 py-2 text-right font-mono font-bold ${
+                                        isCorrection
+                                          ? 'text-emerald-700'
+                                          : isCorrupted
+                                          ? 'text-rose-700 text-xs'
+                                          : 'text-[#195a96]'
+                                      }`}
+                                    >
+                                      {Number(a.newValue) ? Number(a.newValue).toLocaleString() : a.newValue}
+                                    </td>
+                                    <td className="px-3 py-2 font-medium text-slate-800">{a.user}</td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan={6} className="px-3 py-6 text-center text-slate-400">
+                                  No audit events logged.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -9645,6 +10057,244 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: NEW ITEM SUPPLIER PRICING (SCREENSHOT 8 AUTHENTIC CLONE)
+          ======================================================================= */}
+      {isNewSupplierPricingModalOpen && editingProduct && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 85000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
+            style={{ zIndex: 85001 }}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+              <h3 className="font-semibold text-slate-700 text-sm">
+                New Item Supplier Pricing
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsNewSupplierPricingModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Form Content */}
+            <form onSubmit={handleAddSupplierPricingSubmit} className="p-4 space-y-4 overflow-y-auto">
+              {/* Card 1: Supplier Pricing */}
+              <div className="border border-slate-200 rounded-sm p-3.5 bg-white space-y-3 shadow-2xs">
+                <div className="font-semibold text-slate-700 text-xs border-b border-slate-100 pb-1.5">
+                  Supplier Pricing
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Supplier & Plus */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Supplier</label>
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={newSuppPriceSupplierId}
+                        onChange={(e) => setNewSuppPriceSupplierId(Number(e.target.value))}
+                        className="flex-1 border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      >
+                        <option value="" disabled>Select supplier</option>
+                        {suppliersList.map((s) => (
+                          <option key={s.SUPPLIERID} value={s.SUPPLIERID}>
+                            {s.SUPPLIERNAME}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddSupplierModalOpen(true)}
+                        className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs cursor-pointer flex items-center justify-center transition"
+                        title="Add New Supplier"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Buying Format Unit */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Buying Format Unit</label>
+                    <select
+                      value={newSuppPriceBuyingUnit}
+                      onChange={(e) => setNewSuppPriceBuyingUnit(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    >
+                      <option value="BOX">BOX</option>
+                      <option value="PCS">PCS</option>
+                      <option value="KG">KG</option>
+                      <option value="LTR">LTR</option>
+                      <option value="PACK">PACK</option>
+                      <option value="CARTON">CARTON</option>
+                      <option value="BAG">BAG</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Price */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Price</label>
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder=""
+                      value={newSuppPriceAmount}
+                      onChange={(e) => setNewSuppPriceAmount(e.target.value)}
+                      required
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+
+                  {/* Currency */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Currency</label>
+                    <select
+                      value={newSuppPriceCurrency}
+                      onChange={(e) => setNewSuppPriceCurrency(e.target.value as 'LBP' | 'USD' | 'EUR')}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    >
+                      <option value="LBP">LBP</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                  </div>
+
+                  {/* Date */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Date</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={newSuppPriceDate}
+                        onChange={(e) => setNewSuppPriceDate(e.target.value)}
+                        className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96] pr-7"
+                      />
+                      <Calendar className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: More */}
+              <div className="border border-slate-200 rounded-sm p-3.5 bg-white space-y-3 shadow-2xs">
+                <div className="font-semibold text-slate-700 text-xs border-b border-slate-100 pb-1.5">
+                  More
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Supplier Code */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Supplier Code</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceSupplierCode}
+                      onChange={(e) => setNewSuppPriceSupplierCode(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+
+                  {/* Target */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Target</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceTarget}
+                      onChange={(e) => setNewSuppPriceTarget(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+
+                  {/* Free */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Free</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceFree}
+                      onChange={(e) => setNewSuppPriceFree(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Discount % */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Discount %</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={newSuppPriceDiscountPct}
+                      onChange={(e) => setNewSuppPriceDiscountPct(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+
+                  {/* Discount Notes (spans 2 cols) */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs text-slate-600 mb-1">Discount Notes</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceDiscountNotes}
+                      onChange={(e) => setNewSuppPriceDiscountNotes(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Bonus % */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Bonus %</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceBonusPct}
+                      onChange={(e) => setNewSuppPriceBonusPct(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+
+                  {/* Bonus Notes (spans 2 cols) */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs text-slate-600 mb-1">Bonus Notes</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceBonusNotes}
+                      onChange={(e) => setNewSuppPriceBonusNotes(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

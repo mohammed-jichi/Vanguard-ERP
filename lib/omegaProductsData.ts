@@ -91,6 +91,36 @@ export interface ProductPriceLogRecord {
   reason: string;
 }
 
+export interface ProductCostVariationRecord {
+  id: number;
+  date: string;
+  form: string; // e.g. 'Purchases' | 'Recalculation' | 'Initial Entry'
+  refNo: string; // e.g. 'Purchase Invoice #120' or 'BOM Recalculation'
+  oldCostLL: number;
+  newCostLL: number;
+  branch: string; // e.g. 'Zeit w zaytoun ljanoub'
+  user: string; // e.g. 'Mohammed Jichi'
+  note?: string;
+  isCorrupted?: boolean;
+}
+
+export interface ProductSupplierPricingRecord {
+  id: number;
+  supplierId: number;
+  supplierName: string;
+  buyingUnit: string;
+  price: number;
+  currency: 'LBP' | 'USD' | 'EUR';
+  date: string;
+  supplierCode: string;
+  target?: number;
+  free?: number;
+  discountPct?: number;
+  discountNotes?: string;
+  bonusPct?: number;
+  bonusNotes?: string;
+}
+
 export interface ProductAuditLogRecord {
   id: number;
   timestamp: string;
@@ -223,6 +253,8 @@ export interface AuthenticProductRecord {
   // History & Audit
   movements: ProductMovementRecord[];
   priceLogs: ProductPriceLogRecord[];
+  costVariations?: ProductCostVariationRecord[];
+  supplierPricings?: ProductSupplierPricingRecord[];
   auditLogs: ProductAuditLogRecord[];
 
   // Performance
@@ -541,11 +573,54 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
       { id: 102, date: '01 Aug, 2026', type: 'Sale', reference: 'INV-4890', qtyChange: -24, balanceAfter: 0, unit: 'BOT', location: 'Showroom', user: 'POS Kassem' }
     ],
     priceLogs: [
-      { id: 201, date: '21 Jul, 2026', oldCostLL: 25000, newCostLL: 26676.72, oldPriceLL: 40000, newPriceLL: 45000, changedBy: 'Admin', reason: 'Supplier Price Adjustment' }
+      { id: 201, date: '13-Sep-2026', oldCostLL: 48956400000, newCostLL: 543960, oldPriceLL: 1080000, newPriceLL: 1080000, changedBy: 'Mohammed Jichi', reason: 'Recalculate Production Item Cost (BOM Alignment)' },
+      { id: 202, date: '13-Sep-2026', oldCostLL: 543960, newCostLL: 48956400000, oldPriceLL: 1080000, newPriceLL: 1080000, changedBy: 'Mohammed Jichi', reason: 'Purchases Receiving Error (Invoice #120)' },
+      { id: 203, date: '21-Jul-2026', oldCostLL: 25000, newCostLL: 543960, oldPriceLL: 40000, newPriceLL: 1080000, changedBy: 'Admin', reason: 'Supplier Price Adjustment' }
     ],
+    costVariations: [
+      {
+        id: 1,
+        date: '13-Sep-2026 10:45',
+        form: 'Assembly / Production',
+        refNo: 'BOM Recalculation',
+        oldCostLL: 48956400000,
+        newCostLL: 543960,
+        branch: 'Zeit w zaytoun ljanoub',
+        user: 'Mohammed Jichi',
+        note: 'Recalculate Production Item Cost executed. Master profile cost realigned with Choueifat production BOM.',
+        isCorrupted: false
+      },
+      {
+        id: 2,
+        date: '13-Sep-2026 09:15',
+        form: 'Purchases',
+        refNo: 'Purchase Invoice #120',
+        oldCostLL: 543960,
+        newCostLL: 48956400000,
+        branch: 'Zeit w zaytoun ljanoub',
+        user: 'Mohammed Jichi',
+        note: 'Receiving Error: Total invoice amount entered into unit cost field during goods receipt. Corrupted moving average cost.',
+        isCorrupted: true
+      },
+      {
+        id: 3,
+        date: '21-Jul-2026 14:00',
+        form: 'Initial Setup',
+        refNo: 'SYSTEM-INIT',
+        oldCostLL: 0,
+        newCostLL: 543960,
+        branch: 'Zeit w zaytoun ljanoub',
+        user: 'Admin',
+        note: 'Initial master item profile creation.',
+        isCorrupted: false
+      }
+    ],
+    supplierPricings: [],
     auditLogs: [
-      { id: 301, timestamp: '21 Jul, 2026 14:22', action: 'Update', field: 'Selling Price 1 LL', oldValue: '40000', newValue: '45000', user: 'Admin' },
-      { id: 302, timestamp: '21 Jul, 2026 14:22', action: 'Update', field: 'Cost LL', oldValue: '25000', newValue: '26676.72', user: 'Admin' }
+      { id: 301, timestamp: '13-Sep-2026 10:45', action: 'Update', field: 'Cost / Unit Cost LL', oldValue: '48956400000', newValue: '543960', user: 'Mohammed Jichi' },
+      { id: 302, timestamp: '13-Sep-2026 09:15', action: 'Update', field: 'Cost / Unit Cost LL', oldValue: '543960', newValue: '48956400000', user: 'Mohammed Jichi' },
+      { id: 303, timestamp: '21-Jul-2026 14:22', action: 'Update', field: 'Selling Price 1 LL', oldValue: '40000', newValue: '1080000', user: 'Admin' },
+      { id: 304, timestamp: '21-Jul-2026 14:22', action: 'Insert', field: 'Master Item Created', oldValue: '-', newValue: 'CWV250MLB103', user: 'Admin' }
     ],
     salesPerformance: [
       { month: 'Jan', monthIndex: 1, qtyThisYear: 120, salesThisYearLL: 5400000, qtyLastYear: 95, salesLastYearLL: 3800000 },
