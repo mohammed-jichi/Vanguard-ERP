@@ -43,7 +43,9 @@ import {
   CheckCircle2,
   ShieldCheck,
   Gift,
-  Tag
+  Tag,
+  FileText,
+  ArrowUpRight
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -56,6 +58,7 @@ import {
   ProductReorderRule,
   ProductAssemblyItem,
   ProductIncludedItem,
+  ProductUsedInItem,
   OMEGA_BOM_TEMPLATES,
   BOMTemplateProduct
 } from '@/lib/omegaProductsData';
@@ -195,7 +198,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const [isNewModalOpen, setIsNewModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [activeModalTab, setActiveModalTab] = useState<
-    'main' | 'stock' | 'media' | 'assembly' | 'included' | 'history' | 'sales' | 'more'
+    'main' | 'stock' | 'media' | 'assembly' | 'included' | 'usedIn' | 'history' | 'sales' | 'more'
   >('main');
   const [historySubTab, setHistorySubTab] = useState<'movements' | 'priceLogs' | 'audit'>('movements');
   const [moreSubTab, setMoreSubTab] = useState<'accounts' | 'taxes' | 'advanced'>('accounts');
@@ -213,6 +216,21 @@ export default function AuthenticOmegaProductsServicesView() {
   const [selectedIncludedItemId, setSelectedIncludedItemId] = useState<number>(0);
   const [newIncludedQty, setNewIncludedQty] = useState<number>(1);
   const [newIncludedDiscountPct, setNewIncludedDiscountPct] = useState<number>(0);
+
+  // Used In / Upward Dependency State
+  const [isAddUsedInModalOpen, setIsAddUsedInModalOpen] = useState<boolean>(false);
+  const [newUsedInParentCode, setNewUsedInParentCode] = useState<string>('');
+  const [newUsedInParentDesc, setNewUsedInParentDesc] = useState<string>('');
+  const [newUsedInQty, setNewUsedInQty] = useState<number>(1);
+  const [newUsedInRelationType, setNewUsedInRelationType] = useState<
+    'Palletization' | 'Bundle/Kit' | 'Inverted Breakdown (Hazard)'
+  >('Palletization');
+
+  // Inventory Productions Report Modal (REP_I_0041 - Authentic Omega Print/Export Clone)
+  const [isInventoryProductionsReportOpen, setIsInventoryProductionsReportOpen] = useState<boolean>(false);
+  const [inventoryProductionsReportMode, setInventoryProductionsReportMode] = useState<
+    'omega_anomaly' | 'case_assembly' | 'pallet_master'
+  >('omega_anomaly');
 
   // Location Hierarchy Expander (Image 2: Floor, Zone, Aisle)
   const [isFloorZoneAisleOpen, setIsFloorZoneAisleOpen] = useState<boolean>(false);
@@ -746,6 +764,140 @@ export default function AuthenticOmegaProductsServicesView() {
     setNewIncludedQty(1);
     setNewIncludedDiscountPct(0);
     showToast(`Added "${targetProduct.description}" to bundle`);
+  };
+
+  // Handlers for Tab 6: Used In (Reverse Engineering Supply Chain & Upward Dependencies)
+  const handleClearUsedIn = () => {
+    if (!editingProduct) return;
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: []
+    });
+    showToast('Purged all parent linkages. Clean forward supply chain hierarchy verified.');
+  };
+
+  const handleLoadSamplePalletUsedIn = () => {
+    if (!editingProduct) return;
+    const palletCost = (editingProduct.unitCostLL || 543960) * 100;
+    const palletLink: ProductUsedInItem = {
+      id: Date.now() + 1,
+      parentProductId: 991,
+      parentProductCode: 'PALLET-WV500ML',
+      parentDescription: 'طبلية خل ابيض 500مل (100 صندوق) - PALLET 100 BOXES',
+      qtyConsumed: 100,
+      unit: 'BOX',
+      componentCostLL: editingProduct.unitCostLL || 543960,
+      impactOnParentCostLL: palletCost,
+      relationType: 'Palletization'
+    };
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: [palletLink]
+    });
+    showToast('Loaded valid Palletization upward linkage (100 Boxes per Export Pallet)');
+  };
+
+  const handleLoadSampleKitUsedIn = () => {
+    if (!editingProduct) return;
+    const kitLink: ProductUsedInItem = {
+      id: Date.now() + 2,
+      parentProductId: 992,
+      parentProductCode: 'KIT-REST-01',
+      parentDescription: 'مجموعة تجهيز مطاعم (صندوق خل + صندوق دبس) - RESTAURANT SUPPLY COMBO',
+      qtyConsumed: 1,
+      unit: 'BOX',
+      componentCostLL: editingProduct.unitCostLL || 543960,
+      impactOnParentCostLL: editingProduct.unitCostLL || 543960,
+      relationType: 'Bundle/Kit'
+    };
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: [kitLink]
+    });
+    showToast('Loaded valid Wholesale Kitting upward linkage (1 Box per Restaurant Kit)');
+  };
+
+  const handleLoadAnomalyUsedIn = () => {
+    if (!editingProduct) return;
+    const anomalyLink: ProductUsedInItem = {
+      id: Date.now() + 3,
+      parentProductId: 106,
+      parentProductCode: 'CWV500MLB106',
+      parentDescription: 'خل ابيض 500مل (قنينة مفرق)',
+      qtyConsumed: 0.08,
+      unit: 'BOX',
+      componentCostLL: editingProduct.unitCostLL || 543960,
+      impactOnParentCostLL: 45692.64,
+      relationType: 'Inverted Breakdown (Hazard)'
+    };
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: [anomalyLink]
+    });
+    showToast('Simulated Omega REP_I_0041 Anomaly: Single bottle consuming 0.08 BOX (Backward Linkage)');
+  };
+
+  const handleRemoveUsedInItem = (id: number) => {
+    if (!editingProduct || !editingProduct.usedInItems) return;
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: editingProduct.usedInItems.filter((item) => item.id !== id)
+    });
+    showToast('Removed parent item dependency');
+  };
+
+  const handleAddUsedInSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct || !newUsedInParentCode.trim()) return;
+
+    const unitCost = editingProduct.unitCostLL || 543960;
+    const qty = newUsedInQty || 1;
+    const totalImpact = unitCost * qty;
+
+    const newItem: ProductUsedInItem = {
+      id: Date.now(),
+      parentProductId: Date.now() % 10000,
+      parentProductCode: newUsedInParentCode.trim().toUpperCase(),
+      parentDescription: newUsedInParentDesc.trim() || newUsedInParentCode.trim(),
+      qtyConsumed: qty,
+      unit: 'BOX',
+      componentCostLL: unitCost,
+      impactOnParentCostLL: totalImpact,
+      relationType: newUsedInRelationType
+    };
+
+    setEditingProduct({
+      ...editingProduct,
+      usedInItems: [...(editingProduct.usedInItems || []), newItem]
+    });
+
+    setIsAddUsedInModalOpen(false);
+    setNewUsedInParentCode('');
+    setNewUsedInParentDesc('');
+    setNewUsedInQty(1);
+    setNewUsedInRelationType('Palletization');
+    showToast(`Added parent connection: ${newItem.parentProductCode}`);
+  };
+
+  const handlePrintInventoryProductionsReport = () => {
+    window.print();
+  };
+
+  const handleExportInventoryProductionsReport = () => {
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      'Product Code,Product Description,Qty,Unit,Cost,Avg. Cost\n' +
+      'CWV500MLB106,خل ابيض 500مل,-,-,-,-\n' +
+      'CWV500ML*12B106,صندوق خل ابيض 500مل*12قنينة,0.08,BOX,45692.64,45692.64\n' +
+      'Total By Product,-,-,-,45692.64,45692.64\n';
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'Inventory_Productions_REP_I_0041.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Exported Inventory Productions Report (REP_I_0041) to CSV');
   };
 
   // Handlers for Quick Adding Hierarchy / Master Entities
@@ -1510,6 +1662,18 @@ export default function AuthenticOmegaProductsServicesView() {
                   >
                     <DollarSign className="w-3.5 h-3.5 text-slate-500" />
                     <span>Bulk Price Adjustment</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsMenuOpen(false);
+                      setInventoryProductionsReportMode('omega_anomaly');
+                      setIsInventoryProductionsReportOpen(true);
+                    }}
+                    className="w-full text-left px-3 py-2 text-[#195a96] hover:bg-blue-50 flex items-center gap-2 cursor-pointer font-semibold border-t border-slate-100"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-[#195a96]" />
+                    <span>Inventory Productions [REP_I_0041]</span>
                   </button>
                 </div>
               )}
@@ -4164,6 +4328,18 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => {
+                    setInventoryProductionsReportMode('omega_anomaly');
+                    setIsInventoryProductionsReportOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-sm bg-[#195a96] hover:bg-[#144777] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  title="View Authentic Omega Inventory Productions Ingredients Report (REP_I_0041)"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Report [REP_I_0041]</span>
+                </button>
+                <button
+                  type="button"
                   onClick={handleSaveProduct}
                   className="px-4 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
@@ -4188,6 +4364,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 { key: 'media', label: 'Pictures & Videos' },
                 { key: 'assembly', label: 'Item Assembly' },
                 { key: 'included', label: 'Included Items' },
+                { key: 'usedIn', label: 'Used In' },
                 { key: 'history', label: 'History' },
                 { key: 'sales', label: 'Sales Performance' },
                 { key: 'more', label: 'More' }
@@ -6866,7 +7043,317 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               )}
 
-              {/* TAB 6: HISTORY (3 Sub-Pages: Movements, Price Log, Audit Trail) */}
+              {/* TAB 6: USED IN (REVERSE SUPPLY CHAIN & UPWARD DEPENDENCIES) */}
+              {activeModalTab === 'usedIn' && (
+                <div className="space-y-4">
+                  {/* 1. Core Architectural Concept Banner */}
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-2">
+                    <div className="flex items-center justify-between font-bold text-slate-800 text-sm">
+                      <div className="flex items-center gap-2">
+                        <ArrowUpRight className="w-4 h-4 text-[#195a96]" />
+                        <span>The &quot;Where Used&quot; Hierarchy (Reverse Supply Chain View)</span>
+                      </div>
+                      <span className="text-[10px] font-mono bg-blue-100 text-[#195a96] px-2 py-0.5 rounded font-bold">
+                        OMEGA UPWARD DEPENDENCY TRACEABILITY
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-[11px] leading-relaxed">
+                      <div className="p-2.5 bg-white border border-slate-200 rounded-xs">
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+                          <Layers className="w-3.5 h-3.5 text-blue-600" />
+                          <span>1. Upward BOM & Financial Impact Tracking</span>
+                        </div>
+                        <p className="text-slate-600">
+                          Unlike <em>Item Assembly</em> (which tracks what raw materials create this item), this tab tracks <strong>which larger parent products consume this 12-pack case</strong>. If you modify this box&apos;s Unit Cost, gross weight, or case dimensions, Omega uses these linkages to determine which parent SKUs are structurally or financially impacted.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-white border border-slate-200 rounded-xs">
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>2. Expected State for Finished Commercial Goods</span>
+                        </div>
+                        <p className="text-slate-600">
+                          Because <strong>{editingProduct.description}</strong> is a <strong>finished commercial good</strong> manufactured in Choueifat for wholesale dispatch and retail sales, this grid should typically remain <strong>completely empty</strong>. You are at the terminal end of the manufacturing pipeline.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Structural Integrity & Backward Linkage Risk Banners */}
+                  {(() => {
+                    const hasBackwardHazard = Boolean(
+                      editingProduct.usedInItems?.some((i) => i.relationType === 'Inverted Breakdown (Hazard)')
+                    );
+                    const hasUsedIn = Boolean(editingProduct.usedInItems && editingProduct.usedInItems.length > 0);
+
+                    if (hasBackwardHazard) {
+                      return (
+                        <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-sm text-xs text-rose-950 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 font-bold text-rose-800 text-sm">
+                              <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 animate-bounce" />
+                              <span>Critical Risk: Backward Linkage Error Detected (The Omega Database Anomaly)</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded animate-pulse">
+                              INVERTED BOM HAZARD
+                            </span>
+                          </div>
+                          <div className="text-slate-700 text-[11px] leading-relaxed space-y-1">
+                            <p>
+                              <strong>As identified in Omega Report <code>REP_I_0041</code>:</strong> Parent Product <strong>CWV500MLB106</strong> (<em>خل ابيض 500مل</em> - single bottle) is configured to consume <strong>0.08 BOX</strong> of this finished 12-pack case.
+                            </p>
+                            <p className="text-rose-900 font-semibold">
+                              <strong>Why this is fatal:</strong> Your database relationships are inverted. The system mathematically assumes that producing an individual raw bottle requires consuming a finished 12-pack box. This creates an impossible circular loop, triggers unboxing bottlenecks at POS checkout, and invalidates Choueifat&apos;s forward production batches.
+                            </p>
+                            <p className="text-slate-600 italic">
+                              Single bottle sales must be handled via <strong>Unit Format Divisibility</strong> (1 BOX = 12 BOT), never via backward disassembly manufacturing.
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between pt-1 border-t border-rose-200">
+                            <span className="text-[11px] text-slate-600 italic">
+                              Purge the inverted bottle linkage to restore forward-moving production logic.
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleClearUsedIn}
+                              className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-sm text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5" />
+                              <span>🛡️ 1-Click Fix: Purge Backward Linkage (Enforce Forward Flow)</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (!hasUsedIn) {
+                      return (
+                        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-sm text-xs text-emerald-950 space-y-1.5">
+                          <div className="flex items-center justify-between font-bold text-emerald-800">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                              <span>Core Architecture Fully Validated: Clean End-of-Pipeline Good</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold rounded">
+                              HIERARCHY INTEGRITY VERIFIED
+                            </span>
+                          </div>
+                          <p className="text-slate-700 text-[11px] leading-relaxed">
+                            The <strong>Used In</strong> grid is <strong>appropriately empty</strong> for this 12-pack case (<strong>{editingProduct.description}</strong>). Because this SKU represents the finished output of factory bottling runs, zero upward consumption ensures forward-moving production logic remains 100% intact.
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs text-blue-950 space-y-1.5">
+                        <div className="flex items-center justify-between font-bold text-blue-900">
+                          <div className="flex items-center gap-2">
+                            <Layers className="w-5 h-5 text-blue-600 shrink-0" />
+                            <span>Valid Upward Parent Consumption Active</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-800 font-mono text-[10px] font-bold rounded">
+                            UPWARD LINK ACTIVE
+                          </span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] leading-relaxed">
+                          This 12-pack case is linked into a legitimate higher-level parent SKU (such as an export master pallet or wholesale restaurant combo). Changes to this box&apos;s cost or weight will automatically cascade upward.
+                        </p>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 3. Valid System Connections Guidance & Action Bar */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                    <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span>Parent Products Consuming This Item</span>
+                        <span className="text-xs font-normal text-slate-500">
+                          ({editingProduct.usedInItems?.length || 0} parent linkages)
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddUsedInModalOpen(true)}
+                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Add Parent Dependency</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLoadSamplePalletUsedIn}
+                          className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                          title="Simulate valid bulk pallet packaging (PALLET-WV500ML containing 100 boxes)"
+                        >
+                          <Package className="w-3.5 h-3.5" />
+                          <span>Demo Valid Pallet Link (100 Boxes)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLoadSampleKitUsedIn}
+                          className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                          title="Simulate wholesale restaurant supply starter kit containing 1 box"
+                        >
+                          <Gift className="w-3.5 h-3.5" />
+                          <span>Demo Valid Restaurant Kit (1 Box)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLoadAnomalyUsedIn}
+                          className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                          title="Simulate the exact Omega REP_I_0041 report anomaly where a single bottle consumes 0.08 Box"
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          <span>Simulate Omega Anomaly (0.08 Box)</span>
+                        </button>
+                        {editingProduct.usedInItems && editingProduct.usedInItems.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearUsedIn}
+                            className="px-2.5 py-1 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-sm font-semibold text-xs cursor-pointer transition"
+                          >
+                            Clear Grid
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInventoryProductionsReportMode('omega_anomaly');
+                            setIsInventoryProductionsReportOpen(true);
+                          }}
+                          className="px-3 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-sm font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                          title="Open the authentic Omega Inventory Productions (REP_I_0041) print report modal"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>📄 View Productions Report [REP_I_0041]</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Notice on Valid Upward Reasons */}
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] text-slate-600 flex items-center gap-2">
+                      <Info className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <span>
+                        <strong>When this grid should NOT be empty:</strong> Only under <strong>Palletization</strong> (master export pallet containing 100 boxes) or <strong>Wholesale Kitting</strong> (e.g. restaurant supply combo). If raw vinegar or single bottles appear here, production relationships are inverted.
+                      </span>
+                    </div>
+
+                    {/* 4. Parent Consuming Products Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                          <tr>
+                            <th className="px-3 py-2 w-10 text-center">#</th>
+                            <th className="px-3 py-2">Parent Product Code</th>
+                            <th className="px-3 py-2">Parent Product Description</th>
+                            <th className="px-3 py-2 text-right">Qty Consumed</th>
+                            <th className="px-3 py-2">Unit</th>
+                            <th className="px-3 py-2 text-right">Component Cost LL</th>
+                            <th className="px-3 py-2 text-right">Impact on Parent Cost LL</th>
+                            <th className="px-3 py-2 text-center">Relationship Type</th>
+                            <th className="px-3 py-2 text-center w-12">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          {editingProduct.usedInItems && editingProduct.usedInItems.length > 0 ? (
+                            editingProduct.usedInItems.map((item, idx) => (
+                              <tr
+                                key={item.id}
+                                className={`hover:bg-slate-50 ${
+                                  item.relationType === 'Inverted Breakdown (Hazard)' ? 'bg-rose-50/60' : ''
+                                }`}
+                              >
+                                <td className="px-3 py-2 text-center font-mono text-slate-400">
+                                  {idx + 1}
+                                </td>
+                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                  {item.parentProductCode}
+                                </td>
+                                <td className="px-3 py-2 font-medium text-slate-900">
+                                  {item.parentDescription}
+                                </td>
+                                <td className="px-3 py-2 text-right font-bold font-mono">
+                                  {item.qtyConsumed}
+                                </td>
+                                <td className="px-3 py-2 font-mono text-slate-600">
+                                  {item.unit}
+                                </td>
+                                <td className="px-3 py-2 text-right font-mono text-slate-700">
+                                  {item.componentCostLL.toLocaleString()}
+                                </td>
+                                <td className="px-3 py-2 text-right font-bold font-mono text-slate-900">
+                                  {item.impactOnParentCostLL.toLocaleString()}
+                                </td>
+                                <td className="px-3 py-2 text-center">
+                                  {item.relationType === 'Palletization' && (
+                                    <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded font-bold text-[10px]">
+                                      Palletization (Bulk Export)
+                                    </span>
+                                  )}
+                                  {item.relationType === 'Bundle/Kit' && (
+                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-[10px]">
+                                      Wholesale Kit / Bundle
+                                    </span>
+                                  )}
+                                  {item.relationType === 'Inverted Breakdown (Hazard)' && (
+                                    <span className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px] animate-pulse">
+                                      ⚠️ Backward Linkage (Hazard)
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-3 py-2 text-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveUsedInItem(item.id)}
+                                    className="text-slate-400 hover:text-red-700 cursor-pointer transition p-1"
+                                    title="Disconnect Linkage"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={9} className="px-4 py-8 text-center text-slate-500 space-y-1">
+                                <div className="font-semibold text-slate-700">
+                                  No Parent Products Linked (Terminal Finished Good)
+                                </div>
+                                <p className="text-[11px] text-slate-400 max-w-md mx-auto">
+                                  This grid is intentionally empty because this 12-pack case is manufactured directly for wholesale dispatch and retail point-of-sale. Only master pallets or wholesale combo kits should configure upward dependencies here.
+                                </p>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                        {editingProduct.usedInItems && editingProduct.usedInItems.length > 0 && (
+                          <tfoot className="bg-slate-50 font-semibold border-t-2 border-slate-200">
+                            <tr>
+                              <td colSpan={6} className="px-3 py-2.5 text-right text-slate-700">
+                                Total Parent Consumption Value:
+                              </td>
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                                {editingProduct.usedInItems
+                                  .reduce((sum, item) => sum + item.impactOnParentCostLL, 0)
+                                  .toLocaleString()}{' '}
+                                LBP
+                              </td>
+                              <td colSpan={2}></td>
+                            </tr>
+                          </tfoot>
+                        )}
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 7: HISTORY (3 Sub-Pages: Movements, Price Log, Audit Trail) */}
               {activeModalTab === 'history' && (
                 <div className="space-y-4">
                   <div className="flex gap-2 border-b border-slate-200 pb-2">
@@ -8768,6 +9255,396 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: ADD PARENT CONSUMING ITEM (UPWARD SUPPLY CHAIN LINKAGE)
+          ======================================================================= */}
+      {isAddUsedInModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 80001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+              <div className="flex items-center gap-2">
+                <ArrowUpRight className="w-4 h-4 text-[#195a96]" />
+                <h4 className="font-semibold text-slate-800 text-sm">Add Parent Consuming Product</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddUsedInModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleAddUsedInSubmit} className="p-4 space-y-3.5 text-xs">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Parent Product Code*</label>
+                <input
+                  type="text"
+                  required
+                  value={newUsedInParentCode}
+                  onChange={(e) => setNewUsedInParentCode(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                  placeholder="e.g. PALLET-WV500ML or KIT-REST-01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Parent Product Description*</label>
+                <input
+                  type="text"
+                  required
+                  value={newUsedInParentDesc}
+                  onChange={(e) => setNewUsedInParentDesc(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  placeholder="e.g. طبلية خل ابيض 500مل (100 صندوق)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Quantity Consumed*</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required
+                    value={newUsedInQty}
+                    onChange={(e) => setNewUsedInQty(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Relationship Type*</label>
+                  <select
+                    value={newUsedInRelationType}
+                    onChange={(e) => setNewUsedInRelationType(e.target.value as any)}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  >
+                    <option value="Palletization">Palletization (Bulk Export)</option>
+                    <option value="Bundle/Kit">Wholesale Kit / Bundle</option>
+                    <option value="Inverted Breakdown (Hazard)">Inverted Breakdown (Hazard)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Impact Preview */}
+              {(() => {
+                const cost = editingProduct?.unitCostLL || 543960;
+                const total = Math.round(cost * (newUsedInQty || 1));
+                return (
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] space-y-1">
+                    <div className="flex justify-between text-slate-600">
+                      <span>This Case Unit Cost:</span>
+                      <span className="font-mono">{cost.toLocaleString()} LBP</span>
+                    </div>
+                    <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
+                      <span>Extended Impact on Parent Cost:</span>
+                      <span className="font-mono text-[#195a96]">{total.toLocaleString()} LBP</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddUsedInModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Dependency</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: INVENTORY PRODUCTIONS REPORT (REP_I_0041 - AUTHENTIC OMEGA PRINT/EXPORT)
+          Direct Pixel-Perfect Clone of User's Uploaded Screenshot
+          ======================================================================= */}
+      {isInventoryProductionsReportOpen && (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          style={{ zIndex: 90000 }}
+        >
+          <div
+            className="bg-white border border-slate-400 w-full max-w-2xl text-slate-900 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
+            style={{ zIndex: 90001 }}
+          >
+            {/* Modal Title Bar */}
+            <div className="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+              <h3 className="text-base font-semibold text-slate-800">Inventory Productions</h3>
+              <button
+                type="button"
+                onClick={() => setIsInventoryProductionsReportOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-2xl leading-none cursor-pointer"
+                title="Close Window"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Action Bar (Print / Export Buttons matching screenshot top-right) */}
+            <div className="px-6 py-2.5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+              {/* Report View Selector */}
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className="text-slate-500 font-medium mr-1">Report View:</span>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('omega_anomaly')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'omega_anomaly'
+                      ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Omega Anomaly (CWV500MLB106 - Exact Photo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('case_assembly')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'case_assembly'
+                      ? 'bg-blue-100 text-blue-900 border border-blue-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Forward Case BOM (12-Pack)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('pallet_master')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'pallet_master'
+                      ? 'bg-purple-100 text-purple-900 border border-purple-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Export Pallet (100 Boxes)
+                </button>
+              </div>
+
+              {/* Exact Dark Action Buttons from Screenshot */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintInventoryProductionsReport}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                >
+                  Print
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportInventoryProductionsReport}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                >
+                  Export
+                </button>
+              </div>
+            </div>
+
+            {/* Document Preview Sheet (Pixel-Perfect Physical Print Sheet) */}
+            <div className="p-6 overflow-y-auto bg-slate-100/70 flex-1">
+              <div className="bg-white border border-slate-300 rounded-xs shadow-xs p-8 max-w-xl mx-auto min-h-[500px] flex flex-col justify-between font-sans text-xs">
+                <div>
+                  {/* Company Header (Centered Blue) */}
+                  <div className="text-center font-bold text-blue-700 text-sm tracking-wide">
+                    Zeit w zaytoun ljanoub
+                  </div>
+
+                  {/* Report Title (Centered Bold) */}
+                  <div className="text-center font-bold text-slate-900 text-sm mt-3">
+                    Inventory Items Ingredients
+                  </div>
+
+                  {/* Date and Page Header */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-800 font-mono mt-4">
+                    <span>13-Sep-2026</span>
+                    <span>Page 1 of 1</span>
+                  </div>
+
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b-2 border-slate-900 mt-1"></div>
+
+                  {/* Column Headers */}
+                  <div className="grid grid-cols-12 text-[11px] font-bold text-slate-900 py-1.5">
+                    <span className="col-span-3">Product Code</span>
+                    <span className="col-span-4">Product Description</span>
+                    <span className="col-span-1 text-right">Qty</span>
+                    <span className="col-span-1 text-center">Unit</span>
+                    <span className="col-span-1 text-right">Cost</span>
+                    <span className="col-span-2 text-right">Avg. Cost</span>
+                  </div>
+
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b border-slate-900"></div>
+
+                  {/* Report Body Content (Mode Switchable) */}
+                  {inventoryProductionsReportMode === 'omega_anomaly' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">CWV500MLB106</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>خل ابيض 500مل</span>
+                        </div>
+                      </div>
+
+                      {/* Consumed Child Items (The Inverted Box Anomaly) */}
+                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
+                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
+                        <span className="col-span-4 font-sans text-[11px]">صندوق خل ابيض 500مل*12قنينة</span>
+                        <span className="col-span-1 text-right font-bold">0.08</span>
+                        <span className="col-span-1 text-center font-sans">BOX</span>
+                        <span className="col-span-1 text-right">45,692.64</span>
+                        <span className="col-span-2 text-right">45,692.64</span>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">45,692.64</span>
+                        <span className="col-span-2 text-right font-mono">45,692.64</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {inventoryProductionsReportMode === 'case_assembly' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">CWV500ML*12B106</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>صندوق خل ابيض 500مل*12قنينة</span>
+                        </div>
+                      </div>
+
+                      {/* True Manufacturing Components */}
+                      <div className="space-y-1">
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">VIN-1LTR</span>
+                          <span className="col-span-4 font-sans text-[11px]">COMMERCIAL WHITE VINEGAR 1 LITRE</span>
+                          <span className="col-span-1 text-right font-bold">6.00</span>
+                          <span className="col-span-1 text-center font-sans">LTR</span>
+                          <span className="col-span-1 text-right">15,660.00</span>
+                          <span className="col-span-2 text-right">93,960.00</span>
+                        </div>
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">BOT-500ML</span>
+                          <span className="col-span-4 font-sans text-[11px]">Empty Glass Bottle 500ml</span>
+                          <span className="col-span-1 text-right font-bold">12.00</span>
+                          <span className="col-span-1 text-center font-sans">BOT</span>
+                          <span className="col-span-1 text-right">30,000.00</span>
+                          <span className="col-span-2 text-right">360,000.00</span>
+                        </div>
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">SERV-01</span>
+                          <span className="col-span-4 font-sans text-[11px]">SERVICES 1 (Choueifat Labor & Line)</span>
+                          <span className="col-span-1 text-right font-bold">1.00</span>
+                          <span className="col-span-1 text-center font-sans">SERV</span>
+                          <span className="col-span-1 text-right">90,000.00</span>
+                          <span className="col-span-2 text-right">90,000.00</span>
+                        </div>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">543,960.00</span>
+                        <span className="col-span-2 text-right font-mono">543,960.00</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {inventoryProductionsReportMode === 'pallet_master' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">PALLET-WV500ML</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>طبلية خل ابيض 500مل (100 صندوق)</span>
+                        </div>
+                      </div>
+
+                      {/* Pallet Master Linkage */}
+                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
+                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
+                        <span className="col-span-4 font-sans text-[11px]">صندوق خل ابيض 500مل*12قنينة</span>
+                        <span className="col-span-1 text-right font-bold">100.00</span>
+                        <span className="col-span-1 text-center font-sans">BOX</span>
+                        <span className="col-span-1 text-right">543,960.00</span>
+                        <span className="col-span-2 text-right">54,396,000.00</span>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">54,396,000.00</span>
+                        <span className="col-span-2 text-right font-mono">54,396,000.00</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Section */}
+                <div className="pt-24">
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b-2 border-slate-900 mb-1"></div>
+
+                  <div className="flex items-center justify-between text-[10px] text-slate-800">
+                    <span className="font-mono font-bold">REP_I_0041</span>
+                    <span className="text-blue-700 font-medium">
+                      Copyright © 2026 Omega Software, Inc. All Rights Reserved.
+                    </span>
+                    <span className="text-blue-700 font-mono">&quot;www.omegapos.com&quot;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

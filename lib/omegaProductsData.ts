@@ -56,6 +56,18 @@ export interface ProductIncludedItem {
   sellingPriceLL: number;
 }
 
+export interface ProductUsedInItem {
+  id: number;
+  parentProductId: number;
+  parentProductCode: string;
+  parentDescription: string;
+  qtyConsumed: number;
+  unit: string;
+  componentCostLL: number;
+  impactOnParentCostLL: number;
+  relationType: 'Palletization' | 'Bundle/Kit' | 'Inverted Breakdown (Hazard)';
+}
+
 export interface ProductMovementRecord {
   id: number;
   date: string;
@@ -205,6 +217,7 @@ export interface AuthenticProductRecord {
   quantityToPrepareUnit?: string;
   assemblyItems: ProductAssemblyItem[];
   includedItems: ProductIncludedItem[];
+  usedInItems?: ProductUsedInItem[];
   reorderRules?: ProductReorderRule[];
 
   // History & Audit
@@ -522,6 +535,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
       { id: 3, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1', qtyNeeded: 1, unit: 'SERV', unitCostLL: 90000, totalCostLL: 90000, mainIngredient: false }
     ],
     includedItems: [],
+    usedInItems: [],
     movements: [
       { id: 101, date: '21 Jul, 2026', type: 'Adjustment', reference: 'ADJ-2026-001', qtyChange: 24, balanceAfter: 24, unit: 'BOT', location: 'Showroom', user: 'Admin' },
       { id: 102, date: '01 Aug, 2026', type: 'Sale', reference: 'INV-4890', qtyChange: -24, balanceAfter: 0, unit: 'BOT', location: 'Showroom', user: 'POS Kassem' }
