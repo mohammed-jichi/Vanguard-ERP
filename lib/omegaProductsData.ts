@@ -499,7 +499,7 @@ export const OMEGA_BOM_TEMPLATES: BOMTemplateProduct[] = [
 export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
   {
     id: 15,
-    description: 'خل ابيض تجاري 12×500مل (صندوق)',
+    description: 'صندوق خل ابيض 500مل*12قنينة',
     code: 'CWV250MLB103',
     otherDescription: 'COMMERCIAL WHITE VINEGAR 12X500ML',
     itemComment: '',

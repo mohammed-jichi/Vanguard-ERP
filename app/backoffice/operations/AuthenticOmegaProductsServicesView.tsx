@@ -80,29 +80,35 @@ import { INITIAL_OMEGA_UNITS, UnitItem } from '@/lib/omegaUnitsData';
 import { OMEGA_BRANCHES, BranchOption } from '@/lib/omegaDepartmentsData';
 
 export default function AuthenticOmegaProductsServicesView() {
-  // Master Products State (synced with localStorage)
-  const [products, setProducts] = useState<AuthenticProductRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('vanguard_omega_products_catalog');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        }
-      } catch (e) {
-        console.error('Error reading saved products:', e);
-      }
-    }
-    return INITIAL_OMEGA_PRODUCTS;
-  });
+  // Master Products State (hydrated cleanly after mount to eliminate SSR mismatch)
+  const [products, setProducts] = useState<AuthenticProductRecord[]>(INITIAL_OMEGA_PRODUCTS);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   useEffect(() => {
+    setIsMounted(true);
     try {
-      localStorage.setItem('vanguard_omega_products_catalog', JSON.stringify(products));
+      // Purge legacy/stale v1 key if it contains conflicting outdated records
+      localStorage.removeItem('vanguard_omega_products_catalog');
+      const saved = localStorage.getItem('vanguard_omega_products_catalog_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProducts(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading saved products:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    try {
+      localStorage.setItem('vanguard_omega_products_catalog_v2', JSON.stringify(products));
     } catch (e) {
       console.error('Error saving products:', e);
     }
-  }, [products]);
+  }, [products, isMounted]);
 
   // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group)
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['مفرق']);
