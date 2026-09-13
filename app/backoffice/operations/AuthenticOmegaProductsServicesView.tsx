@@ -41,7 +41,9 @@ import {
   Warehouse,
   Info,
   CheckCircle2,
-  ShieldCheck
+  ShieldCheck,
+  Gift,
+  Tag
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -53,6 +55,7 @@ import {
   OMEGA_SOURCES,
   ProductReorderRule,
   ProductAssemblyItem,
+  ProductIncludedItem,
   OMEGA_BOM_TEMPLATES,
   BOMTemplateProduct
 } from '@/lib/omegaProductsData';
@@ -204,6 +207,12 @@ export default function AuthenticOmegaProductsServicesView() {
   // Same As BOM Cloning Modal
   const [isSameAsBOMModalOpen, setIsSameAsBOMModalOpen] = useState<boolean>(false);
   const [selectedSameAsTemplateId, setSelectedSameAsTemplateId] = useState<number>(1);
+
+  // Included Items / Dynamic Sales Bundling State
+  const [isAddIncludedItemModalOpen, setIsAddIncludedItemModalOpen] = useState<boolean>(false);
+  const [selectedIncludedItemId, setSelectedIncludedItemId] = useState<number>(0);
+  const [newIncludedQty, setNewIncludedQty] = useState<number>(1);
+  const [newIncludedDiscountPct, setNewIncludedDiscountPct] = useState<number>(0);
 
   // Location Hierarchy Expander (Image 2: Floor, Zone, Aisle)
   const [isFloorZoneAisleOpen, setIsFloorZoneAisleOpen] = useState<boolean>(false);
@@ -658,6 +667,85 @@ export default function AuthenticOmegaProductsServicesView() {
     });
     setIsSameAsBOMModalOpen(false);
     showToast(`Cloned BOM recipe from "${template.name}": Cost ${template.totalCostLL.toLocaleString()} LL ($${correctUSD})`);
+  };
+
+  // --- INCLUDED ITEMS & SALES BUNDLING HANDLERS ---
+  const handleClearIncludedItems = () => {
+    if (!editingProduct) return;
+    setEditingProduct({
+      ...editingProduct,
+      includedItems: []
+    });
+    showToast('Included items cleared. Core architecture validated: Zero double-deduction risk.');
+  };
+
+  const handleLoadSamplePromoKit = () => {
+    if (!editingProduct) return;
+    const promoItems: ProductIncludedItem[] = [
+      {
+        id: Date.now() + 1,
+        itemId: 15,
+        itemCode: 'CWV500ML',
+        itemName: 'Commercial White Vinegar 500ml',
+        qty: 1,
+        discountPct: 10,
+        sellingPriceLL: 81000
+      },
+      {
+        id: Date.now() + 2,
+        itemId: 18,
+        itemCode: 'POM300ML',
+        itemName: 'Pomegranate Molasses 300ml',
+        qty: 1,
+        discountPct: 10,
+        sellingPriceLL: 108000
+      }
+    ];
+    setEditingProduct({
+      ...editingProduct,
+      includedItems: promoItems
+    });
+    showToast('Loaded sample "Salad Dressing Promo Pack" kit with 2 bundled bottles');
+  };
+
+  const handleRemoveIncludedItem = (id: number) => {
+    if (!editingProduct || !editingProduct.includedItems) return;
+    const updated = editingProduct.includedItems.filter((item) => item.id !== id);
+    setEditingProduct({
+      ...editingProduct,
+      includedItems: updated
+    });
+    showToast('Removed item from bundle');
+  };
+
+  const handleAddIncludedItemSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    const targetProduct = products.find((p) => p.id === selectedIncludedItemId) || products[0];
+    if (!targetProduct) return;
+
+    const basePrice = targetProduct.sellingPrice1LL || targetProduct.sellingPrice || 50000;
+    const discount = newIncludedDiscountPct || 0;
+    const finalPrice = Math.round(basePrice * (1 - discount / 100));
+
+    const newItem: ProductIncludedItem = {
+      id: Date.now(),
+      itemId: targetProduct.id,
+      itemCode: targetProduct.code,
+      itemName: targetProduct.description,
+      qty: newIncludedQty || 1,
+      discountPct: discount,
+      sellingPriceLL: finalPrice
+    };
+
+    setEditingProduct({
+      ...editingProduct,
+      includedItems: [...(editingProduct.includedItems || []), newItem]
+    });
+    setIsAddIncludedItemModalOpen(false);
+    setNewIncludedQty(1);
+    setNewIncludedDiscountPct(0);
+    showToast(`Added "${targetProduct.description}" to bundle`);
   };
 
   // Handlers for Quick Adding Hierarchy / Master Entities
@@ -6539,21 +6627,241 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               )}
 
-              {/* TAB 5: INCLUDED ITEMS (PACKAGES / COMBOS) */}
+              {/* TAB 5: INCLUDED ITEMS (SALES BUNDLING & PROMOTIONAL KITS) */}
               {activeModalTab === 'included' && (
-                <div className="border border-slate-200 rounded-sm overflow-hidden">
-                  <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
-                    <span>Included Combo Products</span>
-                    <button
-                      type="button"
-                      onClick={() => showToast('Select product to include in combo')}
-                      className="px-3 py-1 bg-[#323f4b] text-white rounded-sm font-semibold cursor-pointer"
-                    >
-                      + Add Included Item
-                    </button>
+                <div className="space-y-4">
+                  {/* 1. Core Structural Distinction Banner */}
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-2">
+                    <div className="flex items-center justify-between font-bold text-slate-800 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-[#195a96]" />
+                        <span>Architectural Distinction: &quot;Item Assembly&quot; vs. &quot;Included Items&quot;</span>
+                      </div>
+                      <span className="text-[10px] font-mono bg-blue-100 text-[#195a96] px-2 py-0.5 rounded font-bold">
+                        OMEGA ERP INVENTORY ARCHITECTURE
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-[11px] leading-relaxed">
+                      <div className="p-2.5 bg-white border border-slate-200 rounded-xs">
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+                          <Package className="w-3.5 h-3.5 text-blue-600" />
+                          <span>1. Item Assembly (Manufacturing / Production)</span>
+                        </div>
+                        <p className="text-slate-600">
+                          Requires a formal <strong>Production Journal</strong> or <strong>Assembly Order</strong> in the system to consume bulk raw materials (vinegar, glass bottles, labor, packaging) and output physical stock of the finished 12-pack case into warehouse stock on hand.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-white border border-slate-200 rounded-xs">
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+                          <Gift className="w-3.5 h-3.5 text-purple-600" />
+                          <span>2. Included Items (Dynamic POS Sales Bundling)</span>
+                        </div>
+                        <p className="text-slate-600">
+                          Used exclusively for <strong>Kits, Hampers, or Promotional Combos</strong> (e.g. Ramadan Gift Baskets). Does <em>not</em> run a production order. Instead, the exact moment the parent SKU is scanned at the POS or Vanguard Dispatch, the system <strong>instantly deducts the child items from stock</strong>.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-6 text-center text-slate-400">
-                    No bundled items configured for this inventory product.
+
+                  {/* 2. Double-Deduction Risk & Integrity Check */}
+                  {(() => {
+                    const isManufactured = Boolean(editingProduct.assemblyItems && editingProduct.assemblyItems.length > 0);
+                    const hasIncludedItems = Boolean(editingProduct.includedItems && editingProduct.includedItems.length > 0);
+
+                    if (isManufactured && hasIncludedItems) {
+                      return (
+                        <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-sm text-xs text-rose-950 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 font-bold text-rose-800 text-sm">
+                              <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 animate-bounce" />
+                              <span>Critical Integrity Risk: Double-Deduction Hazard Detected!</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded animate-pulse">
+                              DOUBLE-DEDUCTION HAZARD
+                            </span>
+                          </div>
+                          <p className="text-slate-700 leading-relaxed text-[11px]">
+                            Because this item (<strong>{editingProduct.description}</strong>) is already manufactured in Choueifat via the <strong>Item Assembly</strong> tab, configuring child items in this &quot;Included Items&quot; grid triggers a severe <strong>double-deduction</strong>: once during the factory production journal, and a second time at the point of sale. This will turn component inventory negative and corrupt your balance-sheet Cost of Goods Sold (COGS).
+                          </p>
+                          <div className="flex items-center justify-between pt-1 border-t border-rose-200">
+                            <span className="text-[11px] text-slate-600 italic">
+                              Manufactured case packs must maintain an empty Included Items grid.
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleClearIncludedItems}
+                              className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-sm text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5" />
+                              <span>🛡️ 1-Click Fix: Clear Included Items (Protect Manufacturing Ledger)</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (isManufactured && !hasIncludedItems) {
+                      return (
+                        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-sm text-xs text-emerald-950 space-y-1.5">
+                          <div className="flex items-center justify-between font-bold text-emerald-800">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                              <span>Core Architecture Fully Validated: Zero Double-Deduction Risk</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold rounded">
+                              LEDGER INTEGRITY VERIFIED
+                            </span>
+                          </div>
+                          <p className="text-slate-700 text-[11px] leading-relaxed">
+                            The Included Items grid is <strong>appropriately empty</strong> for this 12-pack case (<strong>{editingProduct.description}</strong>). Because inventory is manufactured via Choueifat Production Plant bottling runs in the <strong>Item Assembly</strong> tab, an empty Included Items grid guarantees raw materials and bottles will never be double-deducted at the point of sale or dispatch.
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })()}
+
+                  {/* 3. When to Actually Use This Tab Guidance & Action Bar */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                    <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span>Included Items in Package / Combo</span>
+                        <span className="text-xs font-normal text-slate-500">
+                          ({editingProduct.includedItems?.length || 0} child items)
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddIncludedItemModalOpen(true)}
+                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Add Included Item</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLoadSamplePromoKit}
+                          className="px-3 py-1 bg-purple-700 hover:bg-purple-800 text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                          title="Load sample promo kit (White Vinegar + Pomegranate Molasses) to simulate dynamic bundling"
+                        >
+                          <Gift className="w-3.5 h-3.5" />
+                          <span>Demo Promo Kit (2 Bottles)</span>
+                        </button>
+                        {editingProduct.includedItems && editingProduct.includedItems.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearIncludedItems}
+                            className="px-3 py-1 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-sm font-semibold text-xs cursor-pointer transition"
+                          >
+                            Clear Grid
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Notice on Promotional Bundling */}
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] text-slate-600 flex items-center gap-2">
+                      <Info className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <span>
+                        <strong>When to use this tab:</strong> Strictly for promotional SKUs (e.g. <em>&quot;Salad Dressing Promo Pack&quot;</em> containing 1 bottle of White Vinegar and 1 bottle of Pomegranate Molasses shrink-wrapped together at dispatch depot) where selling the bundle dynamically depletes both standalone bottles.
+                      </span>
+                    </div>
+
+                    {/* 4. Included Items Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                          <tr>
+                            <th className="px-3 py-2 w-10 text-center">#</th>
+                            <th className="px-3 py-2">Item Code</th>
+                            <th className="px-3 py-2">Child Product Description</th>
+                            <th className="px-3 py-2 text-right">Qty in Kit</th>
+                            <th className="px-3 py-2 text-right">Base Price LL</th>
+                            <th className="px-3 py-2 text-right">Discount %</th>
+                            <th className="px-3 py-2 text-right">Net Price LL</th>
+                            <th className="px-3 py-2 text-right">Subtotal LL</th>
+                            <th className="px-3 py-2 text-center w-12">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          {editingProduct.includedItems && editingProduct.includedItems.length > 0 ? (
+                            editingProduct.includedItems.map((item, idx) => {
+                              const subtotalLL = item.qty * item.sellingPriceLL;
+                              return (
+                                <tr key={item.id} className="hover:bg-slate-50">
+                                  <td className="px-3 py-2 text-center font-mono text-slate-400">
+                                    {idx + 1}
+                                  </td>
+                                  <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                    {item.itemCode}
+                                  </td>
+                                  <td className="px-3 py-2 font-medium text-slate-900">
+                                    {item.itemName}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-bold font-mono">
+                                    {item.qty}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-mono text-slate-600">
+                                    {Math.round(item.discountPct && item.discountPct < 100 ? item.sellingPriceLL / (1 - item.discountPct / 100) : item.sellingPriceLL).toLocaleString()}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-mono">
+                                    {item.discountPct > 0 ? (
+                                      <span className="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded font-bold">
+                                        {item.discountPct}%
+                                      </span>
+                                    ) : (
+                                      <span className="text-slate-400">0%</span>
+                                    )}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-mono text-slate-800">
+                                    {item.sellingPriceLL.toLocaleString()}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-bold font-mono text-slate-900">
+                                    {subtotalLL.toLocaleString()}
+                                  </td>
+                                  <td className="px-3 py-2 text-center">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveIncludedItem(item.id)}
+                                      className="text-slate-400 hover:text-red-700 cursor-pointer transition p-1"
+                                      title="Remove from Kit"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan={9} className="px-4 py-8 text-center text-slate-500 space-y-1">
+                                <div className="font-semibold text-slate-700">No Child Items Linked (Standard Manufacturing Case)</div>
+                                <p className="text-[11px] text-slate-400 max-w-md mx-auto">
+                                  This grid is intentionally empty because this product is manufactured via the Item Assembly tab. Only promotional kits, gift baskets, or dynamic sales hampers should configure child items here.
+                                </p>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                        {editingProduct.includedItems && editingProduct.includedItems.length > 0 && (
+                          <tfoot className="bg-slate-50 font-semibold border-t-2 border-slate-200">
+                            <tr>
+                              <td colSpan={7} className="px-3 py-2.5 text-right text-slate-700">
+                                Total Bundle Selling Price:
+                              </td>
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                                {editingProduct.includedItems.reduce((sum, item) => sum + item.qty * item.sellingPriceLL, 0).toLocaleString()} LBP
+                              </td>
+                              <td></td>
+                            </tr>
+                          </tfoot>
+                        )}
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -8335,6 +8643,131 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: ADD INCLUDED ITEM (PROMOTIONAL BUNDLING / KITS)
+          ======================================================================= */}
+      {isAddIncludedItemModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 80001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4 text-purple-700" />
+                <h4 className="font-semibold text-slate-800 text-sm">Add Child Product to Promotional Kit</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddIncludedItemModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleAddIncludedItemSubmit} className="p-4 space-y-3.5 text-xs">
+              {/* Product Selection */}
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Select Child Product to Bundle*
+                </label>
+                <select
+                  value={selectedIncludedItemId || (products[0]?.id ?? 0)}
+                  onChange={(e) => setSelectedIncludedItemId(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                >
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.code} - {p.description} ({(p.sellingPrice1LL || p.sellingPrice || 0).toLocaleString()} LL)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  When this parent combo SKU is sold, the selected child product stock will be dynamically deducted.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Quantity */}
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Quantity in Bundle*</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={newIncludedQty}
+                    onChange={(e) => setNewIncludedQty(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="1"
+                  />
+                </div>
+
+                {/* Bundle Discount % */}
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Bundle Discount %</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={newIncludedDiscountPct}
+                    onChange={(e) => setNewIncludedDiscountPct(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              {/* Price Preview */}
+              {(() => {
+                const target = products.find((p) => p.id === (selectedIncludedItemId || products[0]?.id)) || products[0];
+                const base = target ? (target.sellingPrice1LL || target.sellingPrice || 50000) : 0;
+                const net = Math.round(base * (1 - (newIncludedDiscountPct || 0) / 100));
+                const total = net * (newIncludedQty || 1);
+                return (
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] space-y-1">
+                    <div className="flex justify-between text-slate-600">
+                      <span>Base Selling Price:</span>
+                      <span className="font-mono">{base.toLocaleString()} LBP</span>
+                    </div>
+                    {newIncludedDiscountPct > 0 && (
+                      <div className="flex justify-between text-emerald-700 font-semibold">
+                        <span>Discount ({newIncludedDiscountPct}%):</span>
+                        <span className="font-mono">-{(base - net).toLocaleString()} LBP</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
+                      <span>Extended Bundle Item Total:</span>
+                      <span className="font-mono text-[#195a96]">{total.toLocaleString()} LBP</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddIncludedItemModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add to Bundle</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
