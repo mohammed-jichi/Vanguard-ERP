@@ -140,6 +140,25 @@ export interface ProductMonthlySales {
   salesLastYearLL: number;
 }
 
+export interface ProductSalesTransactionRecord {
+  id: number;
+  date: string;
+  receiptNumber: string;
+  source: 'Vanguard Supersonic Dispatch (API)' | 'Omega Walk-in POS' | 'Wholesale Route Van' | 'B2B Portal';
+  channel: string;
+  qtySold: number;
+  unit: string;
+  priceType: 'Selling Price 1 (Standard)' | 'Selling Price 2 (Bulk/Wholesale)' | 'Cashier Override' | 'Promo Special';
+  unitSellingPrice: number;
+  stampedHistoricalCost: number;
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  marginPct: number;
+  isCorruptedCostTrap: boolean;
+  syncStatus: 'Synced (API Verified)' | 'Live POS Stamped' | 'Reconciled';
+}
+
 export interface AuthenticProductRecord {
   id: number;
   description: string;
@@ -259,6 +278,7 @@ export interface AuthenticProductRecord {
 
   // Performance
   salesPerformance: ProductMonthlySales[];
+  salesTransactions?: ProductSalesTransactionRecord[];
 
   // More Accounts & Taxes
   assetAccount: string;
@@ -635,6 +655,80 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
       { month: 'Oct', monthIndex: 10, qtyThisYear: 140, salesThisYearLL: 6300000, qtyLastYear: 150, salesLastYearLL: 6000000 },
       { month: 'Nov', monthIndex: 11, qtyThisYear: 130, salesThisYearLL: 5850000, qtyLastYear: 125, salesLastYearLL: 5000000 },
       { month: 'Dec', monthIndex: 12, qtyThisYear: 190, salesThisYearLL: 8550000, qtyLastYear: 170, salesLastYearLL: 6800000 }
+    ],
+    salesTransactions: [
+      {
+        id: 9001,
+        date: '13-Sep-2026 11:18:40',
+        receiptNumber: 'DSP-API-84102',
+        source: 'Vanguard Supersonic Dispatch (API)',
+        channel: 'Dispatch Van #03 (Choueifat Depot Route)',
+        qtySold: 10,
+        unit: 'BOX',
+        priceType: 'Selling Price 1 (Standard)',
+        unitSellingPrice: 1080000,
+        stampedHistoricalCost: 543960,
+        totalRevenue: 10800000,
+        totalCost: 5439600,
+        grossProfit: 5360400,
+        marginPct: 49.63,
+        isCorruptedCostTrap: false,
+        syncStatus: 'Synced (API Verified)'
+      },
+      {
+        id: 9002,
+        date: '13-Sep-2026 10:52:14',
+        receiptNumber: 'POS-REC-9402',
+        source: 'Omega Walk-in POS',
+        channel: 'Branch: Zeit w zaytoun ljanoub (POS Terminal #02)',
+        qtySold: 2,
+        unit: 'BOX',
+        priceType: 'Selling Price 1 (Standard)',
+        unitSellingPrice: 1080000,
+        stampedHistoricalCost: 48956400000,
+        totalRevenue: 2160000,
+        totalCost: 97912800000,
+        grossProfit: -97910640000,
+        marginPct: -4532.9,
+        isCorruptedCostTrap: true,
+        syncStatus: 'Live POS Stamped'
+      },
+      {
+        id: 9003,
+        date: '12-Sep-2026 15:30:10',
+        receiptNumber: 'DSP-API-83994',
+        source: 'Vanguard Supersonic Dispatch (API)',
+        channel: 'Supermarket Wholesale Route (Bulk Volume)',
+        qtySold: 25,
+        unit: 'BOX',
+        priceType: 'Selling Price 2 (Bulk/Wholesale)',
+        unitSellingPrice: 950000,
+        stampedHistoricalCost: 543960,
+        totalRevenue: 23750000,
+        totalCost: 13599000,
+        grossProfit: 10151000,
+        marginPct: 42.74,
+        isCorruptedCostTrap: false,
+        syncStatus: 'Synced (API Verified)'
+      },
+      {
+        id: 9004,
+        date: '11-Sep-2026 18:45:00',
+        receiptNumber: 'POS-REC-9388',
+        source: 'Omega Walk-in POS',
+        channel: 'POS Terminal #01 (Cashier Override: 5% Courtesy Discount)',
+        qtySold: 1,
+        unit: 'BOX',
+        priceType: 'Cashier Override',
+        unitSellingPrice: 1026000,
+        stampedHistoricalCost: 543960,
+        totalRevenue: 1026000,
+        totalCost: 543960,
+        grossProfit: 482040,
+        marginPct: 46.98,
+        isCorruptedCostTrap: false,
+        syncStatus: 'Live POS Stamped'
+      }
     ],
     assetAccount: '120101',
     expenseAccount: '510101',

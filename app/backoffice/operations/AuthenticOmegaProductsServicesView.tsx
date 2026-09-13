@@ -61,6 +61,7 @@ import {
   ProductUsedInItem,
   ProductCostVariationRecord,
   ProductSupplierPricingRecord,
+  ProductSalesTransactionRecord,
   OMEGA_BOM_TEMPLATES,
   BOMTemplateProduct
 } from '@/lib/omegaProductsData';
@@ -203,8 +204,9 @@ export default function AuthenticOmegaProductsServicesView() {
     'main' | 'stock' | 'media' | 'assembly' | 'included' | 'usedIn' | 'history' | 'sales' | 'more'
   >('main');
   const [historySubTab, setHistorySubTab] = useState<
-    'movements' | 'costVariation' | 'supplierPricing' | 'audit'
+    'movements' | 'costVariation' | 'supplierPricing' | 'salesPerformance' | 'audit'
   >('movements');
+  const [salesPerfFilter, setSalesPerfFilter] = useState<'all' | 'corruptedOnly' | 'apiOnly' | 'posOnly'>('all');
 
   // Supplier Pricing Modal (Screenshot 8: New Item Supplier Pricing)
   const [isNewSupplierPricingModalOpen, setIsNewSupplierPricingModalOpen] = useState<boolean>(false);
@@ -1004,6 +1006,43 @@ export default function AuthenticOmegaProductsServicesView() {
     showToast(`Saved supplier pricing for ${supp.SUPPLIERNAME}`);
   };
 
+  // Handler for Tab 7 History -> Sales Performance Simulation
+  const handleSimulateLiveDispatchSale = () => {
+    if (!editingProduct) return;
+    const currentCost = editingProduct.unitCostLL || 543960;
+    const sp1 = editingProduct.sellingPrice1LL || 1080000;
+    const qty = 5;
+    const revenue = qty * sp1;
+    const totalCost = qty * currentCost;
+    const grossProfit = revenue - totalCost;
+    const marginPct = Number(((grossProfit / revenue) * 100).toFixed(2));
+
+    const newTx: ProductSalesTransactionRecord = {
+      id: Date.now(),
+      date: '13-Sep-2026 11:35:00',
+      receiptNumber: `DSP-API-${Math.floor(10000 + Math.random() * 90000)}`,
+      source: 'Vanguard Supersonic Dispatch (API)',
+      channel: 'Fleet Van #05 (South Highway Route)',
+      qtySold: qty,
+      unit: editingProduct.buyingFormat || 'BOX',
+      priceType: 'Selling Price 1 (Standard)',
+      unitSellingPrice: sp1,
+      stampedHistoricalCost: currentCost,
+      totalRevenue: revenue,
+      totalCost: totalCost,
+      grossProfit: grossProfit,
+      marginPct: marginPct,
+      isCorruptedCostTrap: false,
+      syncStatus: 'Synced (API Verified)'
+    };
+
+    setEditingProduct({
+      ...editingProduct,
+      salesTransactions: [newTx, ...(editingProduct.salesTransactions || [])]
+    });
+    showToast('Synced new 5-box order from Next.js Supersonic Dispatch API (Cost stamped: 543,960 LL)');
+  };
+
   // Handlers for Quick Adding Hierarchy / Master Entities
   const handleAddGroupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1365,6 +1404,21 @@ export default function AuthenticOmegaProductsServicesView() {
     const start = (currentPage - 1) * itemsPerPage;
     return sortedProducts.slice(start, start + itemsPerPage);
   }, [sortedProducts, currentPage]);
+
+  // Filtered Sales Transactions for Tab 7 History -> Sales Performance
+  const filteredSalesTransactions = useMemo(() => {
+    if (!editingProduct?.salesTransactions) return [];
+    if (salesPerfFilter === 'corruptedOnly') {
+      return editingProduct.salesTransactions.filter((tx) => tx.isCorruptedCostTrap);
+    }
+    if (salesPerfFilter === 'apiOnly') {
+      return editingProduct.salesTransactions.filter((tx) => tx.source.includes('Dispatch'));
+    }
+    if (salesPerfFilter === 'posOnly') {
+      return editingProduct.salesTransactions.filter((tx) => tx.source.includes('POS'));
+    }
+    return editingProduct.salesTransactions;
+  }, [editingProduct, salesPerfFilter]);
 
   const handleSort = (field: keyof AuthenticProductRecord) => {
     if (sortField === field) {
@@ -7503,6 +7557,20 @@ export default function AuthenticOmegaProductsServicesView() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setHistorySubTab('salesPerformance')}
+                      className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                        historySubTab === 'salesPerformance'
+                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      <span>Sales Performance</span>
+                      <span className="px-1.5 py-0.2 bg-purple-100 text-purple-900 rounded font-mono text-[10px]">
+                        Cost Trap Audit
+                      </span>
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setHistorySubTab('audit')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'audit'
@@ -7823,7 +7891,211 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   )}
 
-                  {/* 4. AUDIT TRAIL SUB-TAB (IMMUTABLE DATABASE LOGS & 48.9B COMMITTED AUDIT) */}
+                  {/* 4. SALES PERFORMANCE SUB-TAB (TRANSACTIONAL VELOCITY, HISTORICAL COST TRAP, & VANGUARD SYNC) */}
+                  {historySubTab === 'salesPerformance' && (
+                    <div className="space-y-4">
+                      {/* Banner 1: The Historical Cost Trap (Critical Integrity Check) */}
+                      <div className="p-3.5 bg-rose-50 border border-rose-300 rounded-sm text-xs text-rose-950 space-y-2">
+                        <div className="flex items-center justify-between font-bold text-rose-900">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                            <span>The Historical Cost Trap (Critical Immutability & Margin Integrity Check)</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-rose-200 text-rose-900 font-mono text-[10px] font-bold rounded">
+                            IMMUTABLE LEDGER
+                          </span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] leading-relaxed">
+                          <strong>Mechanical Rule:</strong> In Omega ERP and Vanguard ERP, sales rows permanently lock their financial data at the exact moment of the transaction. When a customer checkout occurs, the system stamps the active Cost from the <strong>Main</strong> tab directly onto that receipt line to determine profit margin.
+                        </p>
+                        <div className="p-2.5 bg-white border border-rose-200 rounded-xs text-[11px] space-y-1">
+                          <span className="font-bold text-rose-800 block">
+                            The 48-Billion LBP Impact on Live Receipts:
+                          </span>
+                          <p className="text-slate-600 leading-normal">
+                            Earlier today, <strong>Purchase Invoice #120</strong> corrupted the master unit cost to <strong>48,956,400,000.00 LL</strong>. When receipt <code className="text-rose-700 font-bold font-mono">POS-REC-9402</code> below was processed during that window, the register stamped that 48-Billion cost onto 2 sold boxes, registering a catastrophic historical loss of <strong>-97,910,640,000 LL</strong>.
+                          </p>
+                          <p className="text-slate-800 font-semibold italic text-[10.5px]">
+                            ⚠️ Critical Invariant: Because this transaction ledger is completely immutable, fixing the Main tab cost (which you executed via BOM recalculation) does NOT retroactively alter historical receipts. Corrupted receipts permanently display the historical cost stamped at checkout.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Banner 2: Calculation Method & Cross-Platform Sync */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm space-y-1.5">
+                          <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                            <BarChart2 className="w-4 h-4 text-[#195a96]" />
+                            <span>Calculation Method (Revenue and Yield Audit)</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-relaxed">
+                            • <strong>Gross Revenue:</strong> Computed via extended formula: <code>Qty Sold × Triggered Selling Price</code> (e.g. 1,080,000 LL for SP1).<br />
+                            • <strong>Gross Margin:</strong> <code>Gross Revenue - (Qty Sold × Stamped Historical Cost)</code>.<br />
+                            • <strong>Audit Utility:</strong> Audit whether cashiers or dispatch drivers are manually overriding prices or accidentally triggering bulk discounts (such as <strong>Selling Price 2</strong> at 950,000 LL) on single-box orders.
+                          </p>
+                        </div>
+
+                        <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-sm space-y-1.5">
+                          <div className="font-bold text-blue-900 flex items-center gap-1.5">
+                            <Truck className="w-4 h-4 text-blue-700" />
+                            <span>Cross-Platform Connections (Vanguard ERP Sync)</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-relaxed">
+                            • <strong>Central Data Aggregator:</strong> Real-time integration ingesting orders closed in your custom <strong>Next.js Supersonic Dispatch</strong> module via API alongside walk-in retail checkouts at <strong>Omega POS</strong>.<br />
+                            • <strong>Payload Integrity:</strong> If a network blip drops a Vanguard API payload, this tab allows you to instantly reconcile missing quantity movement against physical dispatch logs.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Interactive Transaction Matrix */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                        <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-800 text-xs">
+                              Transactional Sales Ledger & Margin Audit
+                            </span>
+                            <span className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded-full font-mono text-[10px] font-bold">
+                              {filteredSalesTransactions.length} receipts
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 text-[11px]">
+                              <span className="text-slate-500">Filter:</span>
+                              <select
+                                value={salesPerfFilter}
+                                onChange={(e) => setSalesPerfFilter(e.target.value as any)}
+                                className="border border-slate-300 rounded-xs px-2 py-1 bg-white text-xs text-slate-700"
+                              >
+                                <option value="all">All Sales Receipts</option>
+                                <option value="corruptedOnly">⚠️ Corrupted Cost Trap Only</option>
+                                <option value="apiOnly">Next.js Dispatch API Only</option>
+                                <option value="posOnly">Omega POS Walk-in Only</option>
+                              </select>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleSimulateLiveDispatchSale}
+                              className="px-2.5 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                              title="Simulate order processed via Next.js Supersonic Dispatch API"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ Simulate Dispatch API Sale (5 Boxes)</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Transaction Table */}
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs border-collapse">
+                            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                              <tr>
+                                <th className="px-3 py-2 text-center w-10">#</th>
+                                <th className="px-3 py-2">Timestamp & Receipt #</th>
+                                <th className="px-3 py-2">Source & Channel</th>
+                                <th className="px-3 py-2 text-center">Qty Sold</th>
+                                <th className="px-3 py-2">Price Triggered</th>
+                                <th className="px-3 py-2 text-right">Unit SP (LL)</th>
+                                <th className="px-3 py-2 text-right">Stamped Cost (LL)</th>
+                                <th className="px-3 py-2 text-right">Gross Revenue</th>
+                                <th className="px-3 py-2 text-right">Profit / Loss (LL)</th>
+                                <th className="px-3 py-2 text-right">Margin %</th>
+                                <th className="px-3 py-2 text-center">Sync Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+                              {filteredSalesTransactions.map((tx, idx) => {
+                                const isCorrupted = tx.isCorruptedCostTrap;
+                                return (
+                                  <tr
+                                    key={tx.id}
+                                    className={`hover:bg-slate-50 transition ${
+                                      isCorrupted ? 'bg-rose-50/80 font-semibold' : ''
+                                    }`}
+                                  >
+                                    <td className="px-3 py-2 text-center text-slate-400 font-sans">{idx + 1}</td>
+                                    <td className="px-3 py-2 font-sans">
+                                      <div className="font-bold text-slate-900 font-mono">{tx.receiptNumber}</div>
+                                      <div className="text-[10px] text-slate-500 font-sans">{tx.date}</div>
+                                    </td>
+                                    <td className="px-3 py-2 font-sans">
+                                      <div className="font-medium text-slate-900 flex items-center gap-1">
+                                        {tx.source.includes('Dispatch') ? (
+                                          <Truck className="w-3 h-3 text-[#195a96] shrink-0" />
+                                        ) : (
+                                          <Package className="w-3 h-3 text-slate-500 shrink-0" />
+                                        )}
+                                        <span>{tx.source}</span>
+                                      </div>
+                                      <div className="text-[10px] text-slate-500">{tx.channel}</div>
+                                    </td>
+                                    <td className="px-3 py-2 text-center font-bold text-slate-900">
+                                      {tx.qtySold} {tx.unit}
+                                    </td>
+                                    <td className="px-3 py-2 font-sans">
+                                      <span
+                                        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                                          tx.priceType.includes('Price 1')
+                                            ? 'bg-blue-100 text-blue-800'
+                                            : tx.priceType.includes('Price 2')
+                                            ? 'bg-purple-100 text-purple-800'
+                                            : 'bg-amber-100 text-amber-800'
+                                        }`}
+                                      >
+                                        {tx.priceType}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2 text-right font-bold text-slate-900">
+                                      {tx.unitSellingPrice.toLocaleString()}
+                                    </td>
+                                    <td
+                                      className={`px-3 py-2 text-right font-bold ${
+                                        isCorrupted ? 'text-rose-700 bg-rose-100/60' : 'text-slate-700'
+                                      }`}
+                                    >
+                                      {tx.stampedHistoricalCost.toLocaleString()}
+                                    </td>
+                                    <td className="px-3 py-2 text-right font-bold text-slate-900">
+                                      {tx.totalRevenue.toLocaleString()}
+                                    </td>
+                                    <td
+                                      className={`px-3 py-2 text-right font-bold ${
+                                        tx.grossProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'
+                                      }`}
+                                    >
+                                      {tx.grossProfit >= 0 ? '+' : ''}
+                                      {tx.grossProfit.toLocaleString()}
+                                    </td>
+                                    <td
+                                      className={`px-3 py-2 text-right font-bold ${
+                                        tx.marginPct >= 0 ? 'text-emerald-700' : 'text-rose-700'
+                                      }`}
+                                    >
+                                      {tx.marginPct}%
+                                    </td>
+                                    <td className="px-3 py-2 text-center font-sans">
+                                      <span
+                                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                          tx.syncStatus.includes('Verified')
+                                            ? 'bg-emerald-100 text-emerald-800'
+                                            : 'bg-slate-100 text-slate-700'
+                                        }`}
+                                      >
+                                        {tx.syncStatus}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. AUDIT TRAIL SUB-TAB (IMMUTABLE DATABASE LOGS & 48.9B COMMITTED AUDIT) */}
                   {historySubTab === 'audit' && (
                     <div className="space-y-3">
                       {/* Isolating the 48-Billion LBP Error Matrix Guide */}
