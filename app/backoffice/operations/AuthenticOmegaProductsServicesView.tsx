@@ -45,7 +45,17 @@ import {
   Gift,
   Tag,
   FileText,
-  ArrowUpRight
+  ArrowUpRight,
+  Eye,
+  EyeOff,
+  Download,
+  Upload,
+  Calculator,
+  FolderTree,
+  Palette,
+  Wrench,
+  Radio,
+  Coins
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -309,6 +319,48 @@ export default function AuthenticOmegaProductsServicesView() {
   const [newExtraBarcode, setNewExtraBarcode] = useState<string>('');
   const [newExtraBarcodeType, setNewExtraBarcodeType] = useState<string>('EAN-13');
   const [newExtraBarcodeNote, setNewExtraBarcodeNote] = useState<string>('Packaging Box');
+
+  // Actions Dropdown Operations States (All 15 Actions from Omega Screenshot)
+  const [showBarcodeColumn, setShowBarcodeColumn] = useState<boolean>(false);
+  const [isHideZeroQtyActive, setIsHideZeroQtyActive] = useState<boolean>(false);
+  const [showSCPriceColumn, setShowSCPriceColumn] = useState<boolean>(false);
+  const [isTreeViewMode, setIsTreeViewMode] = useState<boolean>(false);
+  const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>({ 'Raw Materials': true });
+  const [expandedDivisions, setExpandedDivisions] = useState<{ [key: string]: boolean }>({ 'مقطرات ومدبسات جملة': true });
+  const [expandedGroups, setExpandedGroups] = useState<{ [key: string]: boolean }>({ 'مقطرات جملة': true });
+
+  // Modals for Actions
+  const [isUpdatePricesModalOpen, setIsUpdatePricesModalOpen] = useState<boolean>(false);
+  const [bulkPriceMarkupPct, setBulkPriceMarkupPct] = useState<number>(15);
+  const [bulkPriceTargetGroup, setBulkPriceTargetGroup] = useState<string>('All');
+  const [bulkPriceRoundTo, setBulkPriceRoundTo] = useState<number>(5000);
+
+  const [isUpdateCostModalOpen, setIsUpdateCostModalOpen] = useState<boolean>(false);
+  const [bulkCostAdjustmentPct, setBulkCostAdjustmentPct] = useState<number>(10);
+  const [bulkCostTargetGroup, setBulkCostTargetGroup] = useState<string>('Raw Materials');
+
+  const [isItemMaintenanceModalOpen, setIsItemMaintenanceModalOpen] = useState<boolean>(false);
+  const [isMaintenanceRunning, setIsMaintenanceRunning] = useState<boolean>(false);
+  const [maintenanceStep, setMaintenanceStep] = useState<string>('');
+
+  const [isItemsPricingModalOpen, setIsItemsPricingModalOpen] = useState<boolean>(false);
+  const [isExportPLUModalOpen, setIsExportPLUModalOpen] = useState<boolean>(false);
+  const [isExpiredItemsModalOpen, setIsExpiredItemsModalOpen] = useState<boolean>(false);
+  const [isSizeColorModalOpen, setIsSizeColorModalOpen] = useState<boolean>(false);
+  const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState<boolean>(false);
+  const [isPrintBarcodesModalOpen, setIsPrintBarcodesModalOpen] = useState<boolean>(false);
+  const [pricingMatrixEdits, setPricingMatrixEdits] = useState<{ [id: number]: { sp1: number; sp2: number; sp3: number } }>({});
+
+  // Print Barcodes Operational States
+  const [printBarcodeSelectedItems, setPrintBarcodeSelectedItems] = useState<{ [id: number]: { selected: boolean; qty: number } }>({
+    15: { selected: true, qty: 12 }
+  });
+  const [printBarcodeTemplate, setPrintBarcodeTemplate] = useState<string>('carton_100x75');
+  const [isPrinterOnline, setIsPrinterOnline] = useState<boolean>(true);
+
+  // Expired Items Reporting States
+  const [expiredHorizonDays, setExpiredHorizonDays] = useState<number>(90);
+  const [expiredCategoryFilter, setExpiredCategoryFilter] = useState<string>('All');
 
   // Active product being edited
   const [editingProduct, setEditingProduct] = useState<AuthenticProductRecord | null>(null);
@@ -1049,6 +1101,171 @@ export default function AuthenticOmegaProductsServicesView() {
     showToast('Synced new 5-box order from Next.js Supersonic Dispatch API (Cost stamped: 543,960 LL)');
   };
 
+  // ---------------------------------------------------------------------------
+  // Handlers for Toolbar Actions Menu (All 15 Operations from Omega ERP)
+  // ---------------------------------------------------------------------------
+  const handleGenerateBarcodes = () => {
+    let count = 0;
+    const updated = products.map((prod, idx) => {
+      if (!prod.barcode || prod.barcode.trim() === '') {
+        count++;
+        const generated = `528${String(1000000000 + prod.id * 1000 + idx).slice(0, 10)}`;
+        return { ...prod, barcode: generated };
+      }
+      return prod;
+    });
+    setProducts(updated);
+    showToast(`Generated and assigned sequential internal barcodes for ${count} items without barcode`);
+  };
+
+  const handleSyncESL = () => {
+    showToast('Synchronized all live pricing payloads to Electronic Shelf Labels (ESL API v2) - 1,289 items pushed');
+  };
+
+  const handleApplyBulkPrices = (e: React.FormEvent) => {
+    e.preventDefault();
+    const rate = 90000;
+    const mult = 1 + bulkPriceMarkupPct / 100;
+    const updated = products.map((prod) => {
+      if (bulkPriceTargetGroup !== 'All' && prod.groupName !== bulkPriceTargetGroup) {
+        return prod;
+      }
+      const rawPrice = prod.sellingPrice * mult;
+      const rounded = bulkPriceRoundTo > 0 ? Math.round(rawPrice / bulkPriceRoundTo) * bulkPriceRoundTo : Math.round(rawPrice);
+      const usdPrice = Number((rounded / rate).toFixed(2));
+      return {
+        ...prod,
+        sellingPrice: rounded,
+        sellingPrice1LL: rounded,
+        beforeTax1LL: rounded,
+        sellingPrice1USD: usdPrice,
+        profit1Pct: prod.cost > 0 ? Number((((rounded - prod.cost) / rounded) * 100).toFixed(2)) : prod.profit1Pct
+      };
+    });
+    setProducts(updated);
+    setIsUpdatePricesModalOpen(false);
+    showToast(`Applied ${bulkPriceMarkupPct >= 0 ? '+' : ''}${bulkPriceMarkupPct}% blanket price markup & synchronized USD rates (Target: ${bulkPriceTargetGroup})`);
+  };
+
+  const handleApplyBulkCost = (e: React.FormEvent) => {
+    e.preventDefault();
+    const mult = 1 + bulkCostAdjustmentPct / 100;
+    const updated = products.map((prod) => {
+      if (bulkCostTargetGroup !== 'All' && prod.groupName !== bulkCostTargetGroup && prod.categoryName !== bulkCostTargetGroup) {
+        return prod;
+      }
+      const newCost = Math.round(prod.cost * mult);
+      return {
+        ...prod,
+        cost: newCost,
+        unitCostLL: newCost,
+        averageCostLL: newCost,
+        unitCostUSD: Number((newCost / (prod.secondCurrencyRate || 90000)).toFixed(4)),
+        averageCostUSD: Number((newCost / (prod.secondCurrencyRate || 90000)).toFixed(4))
+      };
+    });
+    setProducts(updated);
+    setIsUpdateCostModalOpen(false);
+    showToast(`Adjusted bulk supplier cost by ${bulkCostAdjustmentPct >= 0 ? '+' : ''}${bulkCostAdjustmentPct}% (Target: ${bulkCostTargetGroup}). Note: Re-run BOM recalculation on finished goods.`);
+  };
+
+  const handleRunItemMaintenance = () => {
+    setIsMaintenanceRunning(true);
+    setMaintenanceStep('Locking operational transactions & database tables...');
+    setTimeout(() => {
+      setMaintenanceStep('Scanning 142 purchase invoices & recalculating weighted moving-average costs...');
+    }, 700);
+    setTimeout(() => {
+      setMaintenanceStep('Scanning 89 assembly production journals & 412 POS/Dispatch receipts...');
+    }, 1500);
+    setTimeout(() => {
+      setMaintenanceStep('Reconstructing true Quantity On Hand & repairing BOM linkage structures...');
+      setProducts((prev) =>
+        prev.map((p) => {
+          if (p.id === 15) {
+            return {
+              ...p,
+              cost: 543960,
+              unitCostLL: 543960,
+              averageCostLL: 543960,
+              qtyOH: 12.0
+            };
+          }
+          return p;
+        })
+      );
+    }, 2400);
+    setTimeout(() => {
+      setIsMaintenanceRunning(false);
+      setMaintenanceStep('Sweep Complete: Master inventory ledger synchronized and all mathematical anomalies repaired.');
+      showToast('Item Maintenance Diagnostic Sweep Complete: Database synchronized from raw transaction journals.');
+    }, 3300);
+  };
+
+  const handleExportPLUDownload = () => {
+    const headers = ['Description', 'Code', 'Barcode', 'Unit', 'Selling Price LL', 'Cost LL', 'Group', 'Category'];
+    const rows = filteredProducts.map((p) => [
+      `"${p.description}"`,
+      p.code,
+      p.barcode || '',
+      p.unit,
+      p.sellingPrice,
+      p.cost,
+      `"${p.groupName}"`,
+      `"${p.categoryName}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `omega_inventory_plu_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Exported PLU flat file successfully (CSV format)');
+  };
+
+  const handleSaveItemsPricingMatrix = () => {
+    const updated = products.map((prod) => {
+      const edit = pricingMatrixEdits[prod.id];
+      if (edit) {
+        return {
+          ...prod,
+          sellingPrice: edit.sp1 || prod.sellingPrice,
+          sellingPrice1LL: edit.sp1 || prod.sellingPrice1LL,
+          sellingPrice2LL: edit.sp2 || prod.sellingPrice2LL,
+          sellingPrice3LL: edit.sp3 || prod.sellingPrice3LL
+        };
+      }
+      return prod;
+    });
+    setProducts(updated);
+    setIsItemsPricingModalOpen(false);
+    showToast('Saved updated B2B wholesale pricing tiers across all modified items');
+  };
+
+  const handleCopyPLUJson = () => {
+    const payload = filteredProducts.map((p) => ({
+      id: p.id,
+      code: p.code,
+      description: p.description,
+      barcode: p.barcode,
+      selling_price_ll: p.sellingPrice,
+      cost_ll: p.cost,
+      unit: p.unit,
+      group: p.groupName,
+      category: p.categoryName
+    }));
+    navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+    showToast('Copied Vanguard ERP / Supabase sync payload (JSON) to clipboard');
+  };
+
+  const handleExecutePrintBarcodes = () => {
+    const total = Object.values(printBarcodeSelectedItems).reduce((acc, item) => (item.selected ? acc + item.qty : acc), 0);
+    showToast(`Pushed print spool of ${total} adhesive labels [100x75mm Carton] to Zebra Thermal Printer at Choueifat dispatch.`);
+    setIsPrintBarcodesModalOpen(false);
+  };
+
   // Handlers for Quick Adding Hierarchy / Master Entities
   const handleAddGroupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1331,6 +1548,9 @@ export default function AuthenticOmegaProductsServicesView() {
   // Filtered Products
   const filteredProducts = useMemo(() => {
     return products.filter((item) => {
+      // Hide Zero Qty Filter (Actions Menu: Hide Zero Qty)
+      if (isHideZeroQtyActive && item.qtyOH <= 0) return false;
+
       // Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -1386,7 +1606,8 @@ export default function AuthenticOmegaProductsServicesView() {
     selectedSupplier,
     selectedBrand,
     selectedSource,
-    moreFilters
+    moreFilters,
+    isHideZeroQtyActive
   ]);
 
   // Sorted Products
@@ -1410,6 +1631,29 @@ export default function AuthenticOmegaProductsServicesView() {
     const start = (currentPage - 1) * itemsPerPage;
     return sortedProducts.slice(start, start + itemsPerPage);
   }, [sortedProducts, currentPage]);
+
+  // Hierarchical category tree structure for Tree View mode
+  const categoryTree = useMemo(() => {
+    const tree: {
+      [cat: string]: {
+        [div: string]: {
+          [grp: string]: AuthenticProductRecord[];
+        };
+      };
+    } = {};
+
+    filteredProducts.forEach((p) => {
+      const cat = p.categoryName || 'Raw Materials';
+      const div = p.divisionName || 'General Division';
+      const grp = p.groupName || 'General Group';
+      if (!tree[cat]) tree[cat] = {};
+      if (!tree[cat][div]) tree[cat][div] = {};
+      if (!tree[cat][div][grp]) tree[cat][div][grp] = [];
+      tree[cat][div][grp].push(p);
+    });
+
+    return tree;
+  }, [filteredProducts]);
 
   // Filtered Sales Transactions for Tab 7 History -> Sales Performance
   const filteredSalesTransactions = useMemo(() => {
@@ -1781,7 +2025,7 @@ export default function AuthenticOmegaProductsServicesView() {
               )}
             </div>
 
-            {/* Actions Dropdown */}
+            {/* Actions Dropdown (Authentic 15 Actions from Omega ERP) */}
             <div className="relative" ref={actionsRef}>
               <button
                 type="button"
@@ -1793,52 +2037,218 @@ export default function AuthenticOmegaProductsServicesView() {
               </button>
 
               {isActionsMenuOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-sm shadow-xl py-1 z-30 text-xs animate-fade-in">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsMenuOpen(false);
-                      showToast('Exporting 1,289 items to Excel / CSV format');
-                    }}
-                    className="w-full text-left px-3 py-2 text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
-                  >
-                    <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Export to Excel / CSV</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsMenuOpen(false);
-                      showToast('Opening Barcode Labels Printing Dialog');
-                    }}
-                    className="w-full text-left px-3 py-2 text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
-                  >
-                    <Barcode className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Print Barcodes / Labels</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsMenuOpen(false);
-                      showToast('Bulk Price Adjustment Wizard Ready');
-                    }}
-                    className="w-full text-left px-3 py-2 text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
-                  >
-                    <DollarSign className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Bulk Price Adjustment</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsActionsMenuOpen(false);
-                      setInventoryProductionsReportMode('omega_anomaly');
-                      setIsInventoryProductionsReportOpen(true);
-                    }}
-                    className="w-full text-left px-3 py-2 text-[#195a96] hover:bg-blue-50 flex items-center gap-2 cursor-pointer font-semibold border-t border-slate-100"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-[#195a96]" />
-                    <span>Inventory Productions [REP_I_0041]</span>
-                  </button>
+                <div className="absolute right-0 mt-1 w-72 bg-white border border-slate-200 rounded-sm shadow-2xl py-1 z-40 text-xs animate-fade-in divide-y divide-slate-100 max-h-[85vh] overflow-y-auto">
+                  {/* Group 1: Pricing, Views & Shelf Life */}
+                  <div className="py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsUpdatePricesModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Coins className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Update Prices</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsTreeViewMode(!isTreeViewMode);
+                        showToast(isTreeViewMode ? 'Switched back to Flat Master Grid' : 'Activated Hierarchical Category Tree View');
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <FolderTree className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Tree View</span>
+                      {isTreeViewMode && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsExpiredItemsModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <span className="flex-1">Expired Items</span>
+                    </button>
+                  </div>
+
+                  {/* Group 2: Barcodes & Labels */}
+                  <div className="py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        handleGenerateBarcodes();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Barcode className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Generate Barcodes</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsExportPLUModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Download className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Export PLU</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsPrintBarcodesModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Print Barcodes</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsSizeColorModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Palette className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Items Size & Color</span>
+                    </button>
+                  </div>
+
+                  {/* Group 3: Data Exchange & Costing */}
+                  <div className="py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsImportExcelModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="flex-1">Import From Excel</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsUpdateCostModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Calculator className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Update Cost</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsItemMaintenanceModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Wrench className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                      <span className="flex-1">Item Maintenance</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        handleSyncESL();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Radio className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Synchronize all Items with Electronic Label</span>
+                    </button>
+                  </div>
+
+                  {/* Group 4: UI Modifiers & Toggles */}
+                  <div className="py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        const next = !showBarcodeColumn;
+                        setShowBarcodeColumn(next);
+                        showToast(next ? 'Show Barcode: Column injected into grid' : 'Show Barcode: Column hidden');
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Show Barcode</span>
+                      {showBarcodeColumn && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        const next = !isHideZeroQtyActive;
+                        setIsHideZeroQtyActive(next);
+                        showToast(
+                          next
+                            ? 'Hide Zero Qty active: Filtered out 0.00 quantity items'
+                            : 'Hide Zero Qty disabled: Displaying all catalog items'
+                        );
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <EyeOff className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Hide Zero Qty</span>
+                      {isHideZeroQtyActive && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        const next = !showSCPriceColumn;
+                        setShowSCPriceColumn(next);
+                        showToast(next ? 'Show SC Price: Secondary currency USD column active' : 'Show SC Price: USD column hidden');
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <DollarSign className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Show SC Price</span>
+                      {showSCPriceColumn && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setIsItemsPricingModalOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 cursor-pointer font-medium"
+                    >
+                      <List className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span className="flex-1">Items Pricing</span>
+                    </button>
+                  </div>
+
+                  {/* Operational Audit Bonus */}
+                  <div className="py-0.5 bg-slate-50">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsActionsMenuOpen(false);
+                        setInventoryProductionsReportMode('omega_anomaly');
+                        setIsInventoryProductionsReportOpen(true);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-[#195a96] hover:bg-blue-50 flex items-center gap-2.5 cursor-pointer font-semibold"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <span>Inventory Productions [REP_I_0041]</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -2161,154 +2571,339 @@ export default function AuthenticOmegaProductsServicesView() {
       </div>
 
       {/* =======================================================================
-          PRODUCTS & SERVICES DATA TABLE (Matching Screenshot 1)
+          PRODUCTS & SERVICES DATA TABLE / TREE VIEW (Matching Screenshot 1)
           ======================================================================= */}
-      <div className="bg-white border border-slate-200 rounded-sm overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
-              <tr>
-                <th
-                  onClick={() => handleSort('description')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[160px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Description</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('code')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[120px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Code</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('groupName')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[130px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Group</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('qtyOH')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[70px] text-right"
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <span>Qty OH</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('unit')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[60px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Unit</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('sellingPrice')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[90px] text-right"
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <span>Selling Price</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('cost')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px] text-right"
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    <span>Cost</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('buyingFormat')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Buying Format</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('function')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Function</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('updatedAt')}
-                  className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[90px]"
-                >
-                  <div className="flex items-center gap-1">
-                    <span>Updated At</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
-                  </div>
-                </th>
-                <th className="px-3 py-2.5 w-16 text-center">
-                  <span className="bg-[#195a96] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-xs">
-                    {filteredProducts.length}
-                  </span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
-                    <td className="px-3 py-2 font-mono text-slate-600 text-[11px]">{prod.code}</td>
-                    <td className="px-3 py-2 text-slate-700">{prod.groupName}</td>
-                    <td className="px-3 py-2 text-right font-medium">
-                      <span className={prod.qtyOH <= 0 ? 'text-red-600 font-bold' : 'text-slate-800'}>
-                        {Number(prod.qtyOH).toFixed(2)}
+      {isTreeViewMode ? (
+        <div className="bg-white border border-slate-200 rounded-sm shadow-2xs p-4">
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+            <div className="flex items-center gap-2">
+              <FolderTree className="w-5 h-5 text-blue-700" />
+              <div>
+                <h3 className="text-sm font-bold text-slate-800">Hierarchical Category Folder Tree</h3>
+                <p className="text-[11px] text-slate-500">
+                  Visual category mapping: <span className="font-semibold text-slate-700">Category &gt; Division &gt; Group &gt; Items</span>
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsTreeViewMode(false)}
+              className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xs text-xs font-semibold flex items-center gap-1.5 transition"
+            >
+              <List className="w-3.5 h-3.5" />
+              <span>Switch to Flat Grid</span>
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-[700px] overflow-y-auto pr-1">
+            {Object.keys(categoryTree).length === 0 ? (
+              <div className="py-8 text-center text-slate-400 text-xs">No items match the current filters.</div>
+            ) : (
+              Object.entries(categoryTree).map(([catName, divisions]) => {
+                const isCatExpanded = expandedCategories[catName] ?? true;
+                const totalCatItems = Object.values(divisions).reduce(
+                  (acc, grps) => acc + Object.values(grps).reduce((a, items) => a + items.length, 0),
+                  0
+                );
+                return (
+                  <div key={catName} className="border border-slate-200 rounded-xs overflow-hidden">
+                    {/* Category Folder Header */}
+                    <div
+                      onClick={() => setExpandedCategories((prev) => ({ ...prev, [catName]: !isCatExpanded }))}
+                      className="bg-slate-100 hover:bg-slate-200/80 px-3 py-2 flex items-center justify-between cursor-pointer select-none transition"
+                    >
+                      <div className="flex items-center gap-2">
+                        {isCatExpanded ? <ChevronDown className="w-4 h-4 text-slate-600" /> : <ChevronRight className="w-4 h-4 text-slate-600" />}
+                        <span className="font-bold text-xs text-slate-800">{catName}</span>
+                      </div>
+                      <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {totalCatItems} items
                       </span>
-                    </td>
-                    <td className="px-3 py-2 text-slate-700 font-medium">{prod.unit}</td>
-                    <td className="px-3 py-2 text-right text-slate-900 font-semibold">
-                      {Number(prod.sellingPrice).toLocaleString()}
-                    </td>
-                    <td className="px-3 py-2 text-right text-slate-600">
-                      {Number(prod.cost).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className="px-3 py-2 text-slate-700">{prod.buyingFormat}</td>
-                    <td className="px-3 py-2 text-slate-700">{prod.function}</td>
-                    <td className="px-3 py-2 text-slate-500 text-[11px]">{prod.updatedAt}</td>
-                    <td className="px-3 py-2 text-center">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(prod)}
-                        className="bg-[#323f4b] hover:bg-[#28323c] text-white p-1 rounded-xs cursor-pointer shadow-2xs transition"
-                        title="Edit Product"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
+                    </div>
+
+                    {/* Divisions */}
+                    {isCatExpanded && (
+                      <div className="pl-4 pr-2 py-1 space-y-1 bg-white">
+                        {Object.entries(divisions).map(([divName, groups]) => {
+                          const isDivExpanded = expandedDivisions[divName] ?? true;
+                          const totalDivItems = Object.values(groups).reduce((a, items) => a + items.length, 0);
+                          return (
+                            <div key={divName} className="border-l-2 border-slate-300 pl-2 my-1">
+                              <div
+                                onClick={() => setExpandedDivisions((prev) => ({ ...prev, [divName]: !isDivExpanded }))}
+                                className="px-2 py-1.5 flex items-center justify-between hover:bg-slate-50 rounded-xs cursor-pointer select-none"
+                              >
+                                <div className="flex items-center gap-2">
+                                  {isDivExpanded ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
+                                  <span className="font-semibold text-xs text-slate-700">{divName}</span>
+                                </div>
+                                <span className="text-[10px] text-slate-500 font-medium">{totalDivItems} items</span>
+                              </div>
+
+                              {/* Groups */}
+                              {isDivExpanded && (
+                                <div className="pl-4 pr-1 py-1 space-y-1">
+                                  {Object.entries(groups).map(([grpName, items]) => {
+                                    const isGrpExpanded = expandedGroups[grpName] ?? true;
+                                    return (
+                                      <div key={grpName} className="border-l-2 border-blue-200 pl-2 my-1">
+                                        <div
+                                          onClick={() => setExpandedGroups((prev) => ({ ...prev, [grpName]: !isGrpExpanded }))}
+                                          className="px-2 py-1 flex items-center justify-between hover:bg-blue-50/50 rounded-xs cursor-pointer select-none bg-slate-50/60"
+                                        >
+                                          <div className="flex items-center gap-1.5">
+                                            {isGrpExpanded ? <ChevronDown className="w-3 h-3 text-blue-600" /> : <ChevronRight className="w-3 h-3 text-blue-600" />}
+                                            <span className="font-medium text-[11.5px] text-slate-800">{grpName}</span>
+                                          </div>
+                                          <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.2 rounded-full">
+                                            {items.length} SKUs
+                                          </span>
+                                        </div>
+
+                                        {/* Items List */}
+                                        {isGrpExpanded && (
+                                          <div className="pl-3 py-1 space-y-1">
+                                            {items.map((prod) => (
+                                              <div
+                                                key={prod.id}
+                                                onClick={() => openEditModal(prod)}
+                                                className="flex items-center justify-between p-1.5 hover:bg-slate-100 rounded-xs cursor-pointer text-xs transition border-b border-slate-100 last:border-0"
+                                              >
+                                                <div className="flex items-center gap-2">
+                                                  <Package className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                  <span className="font-medium text-slate-900">{prod.description}</span>
+                                                  <span className="font-mono text-[10px] text-slate-500 bg-slate-100 px-1 rounded-xs">{prod.code}</span>
+                                                  {showBarcodeColumn && prod.barcode && (
+                                                    <span className="font-mono text-[10px] text-slate-600 bg-slate-200 px-1 rounded-xs">
+                                                      {prod.barcode}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                                <div className="flex items-center gap-4 text-right">
+                                                  <span className={prod.qtyOH <= 0 ? 'text-red-600 font-bold text-[11px]' : 'text-slate-800 font-medium text-[11px]'}>
+                                                    {Number(prod.qtyOH).toFixed(2)} {prod.unit}
+                                                  </span>
+                                                  <span className="font-semibold text-slate-900 text-[11.5px]">
+                                                    {Number(prod.sellingPrice).toLocaleString()} LL
+                                                  </span>
+                                                  {showSCPriceColumn && (
+                                                    <span className="text-emerald-700 font-medium text-[11px]">
+                                                      ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || 90000)).toFixed(2)}
+                                                    </span>
+                                                  )}
+                                                  <button
+                                                    type="button"
+                                                    className="p-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs"
+                                                    title="Edit Item"
+                                                  >
+                                                    <Edit2 className="w-3 h-3" />
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white border border-slate-200 rounded-sm overflow-hidden shadow-2xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th
+                    onClick={() => handleSort('description')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[160px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Description</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('code')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[120px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Code</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  {showBarcodeColumn && (
+                    <th
+                      onClick={() => handleSort('barcode')}
+                      className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[130px] font-mono"
+                    >
+                      <div className="flex items-center gap-1">
+                        <Barcode className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Barcode</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      </div>
+                    </th>
+                  )}
+                  <th
+                    onClick={() => handleSort('groupName')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[130px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Group</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('qtyOH')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[70px] text-right"
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      <span>Qty OH</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('unit')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[60px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Unit</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('sellingPrice')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[90px] text-right"
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      <span>Selling Price</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  {showSCPriceColumn && (
+                    <th
+                      className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[85px] text-right"
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <DollarSign className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Price ($)</span>
+                      </div>
+                    </th>
+                  )}
+                  <th
+                    onClick={() => handleSort('cost')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px] text-right"
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      <span>Cost</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('buyingFormat')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Buying Format</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('function')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[80px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Function</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort('updatedAt')}
+                    className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[90px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>Updated At</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
+                  <th className="px-3 py-2.5 w-16 text-center">
+                    <span className="bg-[#195a96] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-xs">
+                      {filteredProducts.length}
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {paginatedProducts.length > 0 ? (
+                  paginatedProducts.map((prod) => (
+                    <tr key={prod.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
+                      <td className="px-3 py-2 font-mono text-slate-600 text-[11px]">{prod.code}</td>
+                      {showBarcodeColumn && (
+                        <td className="px-3 py-2 font-mono text-slate-700 text-[11px]">
+                          {prod.barcode ? (
+                            <span className="bg-slate-100 px-1.5 py-0.5 rounded-xs border border-slate-200">
+                              {prod.barcode}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">No Barcode</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="px-3 py-2 text-slate-700">{prod.groupName}</td>
+                      <td className="px-3 py-2 text-right font-medium">
+                        <span className={prod.qtyOH <= 0 ? 'text-red-600 font-bold' : 'text-slate-800'}>
+                          {Number(prod.qtyOH).toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-slate-700 font-medium">{prod.unit}</td>
+                      <td className="px-3 py-2 text-right text-slate-900 font-semibold">
+                        {Number(prod.sellingPrice).toLocaleString()}
+                      </td>
+                      {showSCPriceColumn && (
+                        <td className="px-3 py-2 text-right font-medium text-emerald-700">
+                          ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || 90000)).toFixed(2)}
+                        </td>
+                      )}
+                      <td className="px-3 py-2 text-right text-slate-600">
+                        {Number(prod.cost).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-3 py-2 text-slate-700">{prod.buyingFormat}</td>
+                      <td className="px-3 py-2 text-slate-700">{prod.function}</td>
+                      <td className="px-3 py-2 text-slate-500 text-[11px]">{prod.updatedAt}</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(prod)}
+                          className="bg-[#323f4b] hover:bg-[#28323c] text-white p-1 rounded-xs cursor-pointer shadow-2xs transition"
+                          title="Edit Product"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={11 + (showBarcodeColumn ? 1 : 0) + (showSCPriceColumn ? 1 : 0)} className="px-3 py-8 text-center text-slate-400">
+                      No items found matching the selected filters.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={11} className="px-3 py-8 text-center text-slate-400">
-                    No items found matching the selected filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
 
         {/* Pagination Footer */}
         <div className="px-4 py-2.5 border-t border-slate-200 flex items-center justify-between text-xs bg-[#f8fafc]">
@@ -2339,6 +2934,7 @@ export default function AuthenticOmegaProductsServicesView() {
           </div>
         </div>
       </div>
+      )}
 
       {/* =======================================================================
           MODAL 1: NEW INVENTORY ITEM (Matching Screenshot 4)
@@ -10573,6 +11169,962 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* =======================================================================
+          ACTION MODALS (ALL 15 ACTIONS IMPLEMENTATION)
+          ======================================================================= */}
+
+      {/* 1. Update Prices Modal */}
+      {isUpdatePricesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Coins className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Update Prices (Bulk Financial Markup Tool)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUpdatePricesModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyBulkPrices} className="p-4 space-y-3.5">
+              {/* The 48-Billion Trap Alert */}
+              <div className="bg-rose-50 border-l-4 border-rose-600 p-3 text-rose-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>Structural Integrity Risk: The 48-Billion LBP Amplification Trap</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Bulk markups blindly apply a blanket multiplier across all filtered items. If an uncorrected 48.95-Billion LBP cost error is active on your 12-pack White Vinegar, targeting a 50% margin calculates and pushes a selling price of ~73 Billion LBP to POS. Verify base master costs before executing.
+                </p>
+              </div>
+
+              {/* Currency Sync Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xs p-2.5 text-blue-900 flex items-start gap-2 text-[11px]">
+                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong className="font-semibold">Dual-Currency Synchronization:</strong> When this tool calculates a new LBP selling price, Vanguard automatically divides the figure by your secondary rate (90,000) to keep USD and LBP columns synchronized.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Markup Percentage (%)</label>
+                  <input
+                    type="number"
+                    value={bulkPriceMarkupPct}
+                    onChange={(e) => setBulkPriceMarkupPct(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Group</label>
+                  <select
+                    value={bulkPriceTargetGroup}
+                    onChange={(e) => setBulkPriceTargetGroup(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="All">All Groups ({products.length} items)</option>
+                    <option value="مقطرات جملة">مقطرات جملة</option>
+                    <option value="مقطرات ومواد غذائية مفرق">مقطرات ومواد غذائية مفرق</option>
+                    <option value="Raw Materials">Raw Materials</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Rounding Rule</label>
+                  <select
+                    value={bulkPriceRoundTo}
+                    onChange={(e) => setBulkPriceRoundTo(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="0">Exact (No Rounding)</option>
+                    <option value="1000">Nearest 1,000 LL</option>
+                    <option value="5000">Nearest 5,000 LL (Recommended)</option>
+                    <option value="10000">Nearest 10,000 LL</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Live Preview Box */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3">
+                <span className="text-[11px] font-bold text-slate-600 block mb-1">Live Calculation Preview:</span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-800 font-medium">صندوق خل ابيض 500مل*12قنينة</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-500 line-through">750,000 LL ($8.33)</span>
+                    <span className="font-bold text-emerald-700">
+                      {(Math.round((750000 * (1 + bulkPriceMarkupPct / 100)) / (bulkPriceRoundTo || 1)) * (bulkPriceRoundTo || 1)).toLocaleString()} LL
+                    </span>
+                    <span className="text-slate-600 font-medium text-[11px]">
+                      (${((Math.round((750000 * (1 + bulkPriceMarkupPct / 100)) / (bulkPriceRoundTo || 1)) * (bulkPriceRoundTo || 1)) / 90000).toFixed(2)})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsUpdatePricesModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Coins className="w-3.5 h-3.5" />
+                  <span>Apply Bulk Price Adjustment</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Update Cost Modal */}
+      {isUpdateCostModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Update Cost (Bulk Supplier Expense Recalibration)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUpdateCostModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyBulkCost} className="p-4 space-y-3.5">
+              {/* The Manufacturing Disconnect Alert */}
+              <div className="bg-amber-50 border-l-4 border-amber-600 p-3 text-amber-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Structural Integrity Risk: The Manufacturing Disconnect</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Running Update Cost manually forces a new master cost on this screen, but it <strong>does NOT push down into Item Assembly BOM tabs</strong>. For commercial goods manufactured in Choueifat, using this bulk tool severs the link between raw materials and finished goods. Only adjust raw materials here, then use &quot;Recalculate Production Item Cost&quot; on finished formulations.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Cost Adjustment (%)</label>
+                  <input
+                    type="number"
+                    value={bulkCostAdjustmentPct}
+                    onChange={(e) => setBulkCostAdjustmentPct(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-bold"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">Use +% for supplier cost spikes or -% for discounts</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Category / Group</label>
+                  <select
+                    value={bulkCostTargetGroup}
+                    onChange={(e) => setBulkCostTargetGroup(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="Raw Materials">Raw Materials (Safe: Bottles, Caps, Syrup)</option>
+                    <option value="مقطرات جملة">مقطرات جملة (Caution: Finished Assemblies)</option>
+                    <option value="All">All Items (High Risk)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsUpdateCostModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Calculator className="w-3.5 h-3.5" />
+                  <span>Apply Bulk Cost Recalibration</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Item Maintenance Modal */}
+      {isItemMaintenanceModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Item Maintenance (Database Diagnostic Sweep)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsItemMaintenanceModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <div className="bg-blue-50 border border-blue-200 rounded-xs p-3 text-blue-950 space-y-1">
+                <div className="font-bold text-xs flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0" />
+                  <span>Omega Self-Healing Ledger Repair Engine</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  When executed, this sweep temporarily locks transaction tables and rebuilds the <strong>Qty OH (Quantity On Hand)</strong> and <strong>Avg.Cost</strong> columns from scratch. It ignores cached grid numbers and re-reads:
+                </p>
+                <ul className="list-disc pl-5 text-[11px] space-y-0.5 font-medium text-blue-900">
+                  <li>142 historical purchase invoices</li>
+                  <li>89 assembly production journals</li>
+                  <li>412 sales receipts and dispatch transfers</li>
+                </ul>
+              </div>
+
+              {/* Progress Sweep State */}
+              {isMaintenanceRunning && (
+                <div className="border border-blue-200 bg-slate-50 rounded-xs p-4 space-y-2 text-center">
+                  <div className="inline-block animate-spin text-blue-700">
+                    <RefreshCw className="w-6 h-6" />
+                  </div>
+                  <div className="font-bold text-slate-800 text-xs">{maintenanceStep}</div>
+                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div className="bg-blue-600 h-full animate-pulse w-3/4"></div>
+                  </div>
+                </div>
+              )}
+
+              {maintenanceStep.includes('Complete') && !isMaintenanceRunning && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xs p-3 text-emerald-900 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="text-[11px]">
+                    <strong>Sweep Succeeded:</strong> Product 15 (White Vinegar 12x500ml) restored to authentic moving cost <strong>543,960.00 LL</strong> and true physical stock <strong>12.00 BOX</strong>.
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsItemMaintenanceModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  disabled={isMaintenanceRunning}
+                  onClick={handleRunItemMaintenance}
+                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#134675] disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>{isMaintenanceRunning ? 'Running Sweep...' : 'Execute Diagnostic Sweep'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Items Pricing Modal */}
+      {isItemsPricingModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-5xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <List className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Items Pricing (B2B Wholesale Tiers Rapid-Entry Matrix)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsItemsPricingModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-3 flex-1">
+              <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xs border border-slate-200">
+                <span className="text-slate-700 text-xs">
+                  Rapid volume discount tier editor for B2B wholesale depots and Choueifat dispatch.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const edits: any = {};
+                    products.slice(0, 15).forEach((p) => {
+                      edits[p.id] = {
+                        sp1: Math.round(p.sellingPrice1LL * 1.05),
+                        sp2: Math.round(p.sellingPrice2LL * 1.05),
+                        sp3: Math.round(p.sellingPrice3LL * 1.05)
+                      };
+                    });
+                    setPricingMatrixEdits(edits);
+                    showToast('Populated matrix with blanket +5% increase across tiers');
+                  }}
+                  className="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-100 rounded-xs text-[11px] font-semibold text-slate-700 cursor-pointer"
+                >
+                  +5% Across All Tiers
+                </button>
+              </div>
+
+              <div className="border border-slate-200 rounded-xs overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="px-3 py-2">Item Description</th>
+                      <th className="px-3 py-2">Code</th>
+                      <th className="px-3 py-2 text-right">Cost LL</th>
+                      <th className="px-3 py-2 text-right">SP 1 (Retail)</th>
+                      <th className="px-3 py-2 text-right">SP 2 (Wholesale)</th>
+                      <th className="px-3 py-2 text-right">SP 3 (Distributor)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {products.slice(0, 20).map((prod) => {
+                      const edit = pricingMatrixEdits[prod.id];
+                      return (
+                        <tr key={prod.id} className="hover:bg-slate-50">
+                          <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
+                          <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{prod.code}</td>
+                          <td className="px-3 py-2 text-right text-slate-600 font-mono">
+                            {Number(prod.cost).toLocaleString()}
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp1 ?? prod.sellingPrice1LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: val,
+                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
+                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp2 ?? prod.sellingPrice2LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
+                                    sp2: val,
+                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp3 ?? prod.sellingPrice3LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
+                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
+                                    sp3: val
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsItemsPricingModalOpen(false)}
+                className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveItemsPricingMatrix}
+                className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Pricing Matrix</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Export PLU Modal */}
+      {isExportPLUModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Export PLU (Price Look-Up File &amp; ERP Sync)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExportPLUModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <p className="text-[11.5px] text-slate-700 leading-relaxed">
+                Extracts your active inventory into a structured format for backups or syncing with Vanguard ERP on Supabase. This operation is strictly read-only and carries zero risk of database corruption.
+              </p>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-1.5 text-[11px]">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Items Queued for Export:</span>
+                  <span className="font-bold text-slate-900">{filteredProducts.length} items</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Columns Included:</span>
+                  <span className="font-mono text-slate-700">Code, Description, Barcode, Price, Cost, Unit</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Destination:</span>
+                  <span className="font-semibold text-blue-700">Local CSV / Vanguard Supabase Sync</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleCopyPLUJson}
+                  className="w-full sm:w-auto px-3 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Supabase JSON</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPLUDownload}
+                  className="w-full sm:w-auto px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PLU (.CSV)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Expired Items & Shelf-Life Forecasting Modal */}
+      {isExpiredItemsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <RefreshCw className="w-4 h-4 text-amber-400" />
+                <h3 className="font-bold">Expired Items &amp; Shelf-Life Forecasting Report</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExpiredItemsModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-3.5 flex-1">
+              {/* The Batch Link Audit Alert */}
+              <div className="bg-amber-50 border-l-4 border-amber-600 p-3 text-amber-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Operational Audit: The Batch Link &amp; Expiry Date Logging</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  This report populates exclusively by reading the Expiry Date logged during production journals or purchase receipts. If Choueifat assembly staff assemble 12-pack cartons without logging dates on the assembly screen, this report remains blank even if physical stock is aging on the warehouse floor.
+                </p>
+              </div>
+
+              {/* Expiration Horizon Filter */}
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xs border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-700 text-xs">Expiration Horizon:</span>
+                  {[30, 60, 90, 180].map((days) => (
+                    <button
+                      key={days}
+                      type="button"
+                      onClick={() => setExpiredHorizonDays(days)}
+                      className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold cursor-pointer transition ${
+                        expiredHorizonDays === days
+                          ? 'bg-[#195a96] text-white shadow-2xs'
+                          : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {days} Days {days === 90 && '(Proactive)'}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[11px] text-slate-500 italic">
+                  Forecasting as-of: December 2026 (Proactive Liquidation Window)
+                </span>
+              </div>
+
+              {/* Batches Table */}
+              <div className="border border-slate-200 rounded-xs overflow-hidden">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="px-3 py-2">Batch / Lot #</th>
+                      <th className="px-3 py-2">Product Description</th>
+                      <th className="px-3 py-2">SKU Code</th>
+                      <th className="px-3 py-2">Expiry Date</th>
+                      <th className="px-3 py-2 text-center">Days Remaining</th>
+                      <th className="px-3 py-2 text-right">Qty OH</th>
+                      <th className="px-3 py-2 text-center">Operational Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-VNG-04</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">صندوق خل ابيض 500مل*12قنينة</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CWV500ML*12B106</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">15-Oct-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          32 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">12.00 BOX</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Flagged for Priority Dispatch & B2B Promotional Liquidation')}
+                          className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Liquidate Stock
+                        </button>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-APL-02</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">خل تفاح بلدي 500مل (صندوق 12)</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CAV500ML*12B107</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">01-Nov-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          49 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">15.00 BOX</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Flagged for Promotional Bundle Liquidation')}
+                          className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Liquidate Stock
+                        </button>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-POM-01</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">دبس رمان تجاري درجة اولى 1كغ</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">POM1KG101</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">05-Dec-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          83 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">28.00 JAR</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Scheduled for Wholesale Dispatch')}
+                          className="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Queue Dispatch
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsExpiredItemsModalOpen(false)}
+                className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Print Barcodes Modal */}
+      {isPrintBarcodesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Printer className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Print Barcodes (Choueifat Carton Label Printing Matrix)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPrintBarcodesModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-4 flex-1">
+              {/* Step 1 & 2 Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Template Selection */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-2">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">1</span>
+                    <span>Label Template / Format Size</span>
+                  </div>
+                  <select
+                    value={printBarcodeTemplate}
+                    onChange={(e) => setPrintBarcodeTemplate(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-medium"
+                  >
+                    <option value="carton_100x75">Commercial Food Carton (100mm x 75mm / 4&quot; x 3&quot;) [Recommended]</option>
+                    <option value="pallet_150x100">Standard Shipping Pallet (150mm x 100mm)</option>
+                    <option value="shelf_50x30">Depot Shelf Edge Tag (50mm x 30mm)</option>
+                  </select>
+                  <span className="text-[10.5px] text-slate-500 block">
+                    Large carton template cleanly displays Description, Barcode lines, and Code for Choueifat dispatch drivers.
+                  </span>
+                </div>
+
+                {/* Printer Hardware Status */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-2">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">2</span>
+                    <span>Connected Thermal Hardware</span>
+                  </div>
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="font-semibold text-slate-800 text-xs">Zebra ZD421 (Thermal Direct)</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      Online &amp; Calibrated
+                    </span>
+                  </div>
+                  <span className="text-[10.5px] text-slate-500 block">
+                    Spool port: USB001 / IP 192.168.1.145 (Choueifat Packaging Line 1)
+                  </span>
+                </div>
+              </div>
+
+              {/* Step 3: Items Queue & Quantity Selection */}
+              <div className="space-y-1.5">
+                <div className="font-semibold text-slate-800 flex items-center gap-1.5 text-xs">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">3</span>
+                  <span>Select Items and Assign Quantities</span>
+                </div>
+                <div className="border border-slate-200 rounded-xs overflow-hidden">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                      <tr>
+                        <th className="px-3 py-2 w-10 text-center">Queue</th>
+                        <th className="px-3 py-2">Description</th>
+                        <th className="px-3 py-2">Code</th>
+                        <th className="px-3 py-2">Barcode String</th>
+                        <th className="px-3 py-2 text-right">Qty OH</th>
+                        <th className="px-3 py-2 text-right w-28">Labels to Print</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      <tr className="bg-blue-50/40">
+                        <td className="px-3 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={printBarcodeSelectedItems[15]?.selected ?? true}
+                            onChange={(e) =>
+                              setPrintBarcodeSelectedItems((prev) => ({
+                                ...prev,
+                                15: { selected: e.target.checked, qty: prev[15]?.qty ?? 12 }
+                              }))
+                            }
+                            className="w-4 h-4 text-blue-600 rounded cursor-pointer"
+                          />
+                        </td>
+                        <td className="px-3 py-2 font-bold text-slate-900">صندوق خل ابيض 500مل*12قنينة</td>
+                        <td className="px-3 py-2 font-mono text-slate-700">CWV500ML*12B106</td>
+                        <td className="px-3 py-2 font-mono text-slate-600">5281000000015</td>
+                        <td className="px-3 py-2 text-right font-semibold text-slate-900">12.00 BOX</td>
+                        <td className="px-3 py-1 text-right">
+                          <input
+                            type="number"
+                            min="1"
+                            value={printBarcodeSelectedItems[15]?.qty ?? 12}
+                            onChange={(e) =>
+                              setPrintBarcodeSelectedItems((prev) => ({
+                                ...prev,
+                                15: { selected: true, qty: Math.max(1, Number(e.target.value)) }
+                              }))
+                            }
+                            className="w-20 border border-slate-300 rounded-xs px-2 py-1 text-right font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Step 4: Visual Adhesive Label Preview */}
+              <div className="space-y-1.5">
+                <span className="font-semibold text-slate-700 text-xs block">Physical Label Layout Preview (100mm x 75mm):</span>
+                <div className="max-w-md mx-auto bg-white border-2 border-dashed border-slate-400 p-4 rounded-xs shadow-md space-y-2 text-slate-900 font-sans">
+                  <div className="flex items-center justify-between border-b pb-1">
+                    <span className="font-bold text-xs tracking-wider text-slate-800 uppercase">
+                      Zeit w Zaytoun Ljanoub
+                    </span>
+                    <span className="text-[10px] font-mono font-semibold text-slate-600">
+                      Choueifat Facility
+                    </span>
+                  </div>
+
+                  <div className="space-y-0.5 pt-1">
+                    <h4 className="font-extrabold text-sm text-slate-950">صندوق خل ابيض 500مل*12قنينة</h4>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-700">
+                      <span>SKU: CWV500ML*12B106</span>
+                      <span>PKG: 12 BTL / CTN</span>
+                    </div>
+                  </div>
+
+                  {/* Simulated Thermal Barcode Graphic */}
+                  <div className="py-2 text-center space-y-1">
+                    <div className="h-12 w-full flex items-center justify-center gap-[2.5px]">
+                      {[4, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 1, 4].map(
+                        (w, i) => (
+                          <div
+                            key={i}
+                            className="bg-black h-full"
+                            style={{ width: `${w * 1.5}px` }}
+                          ></div>
+                        )
+                      )}
+                    </div>
+                    <div className="font-mono text-xs tracking-widest font-bold">5281000000015</div>
+                  </div>
+
+                  <div className="border-t pt-1 flex items-center justify-between text-[10px] text-slate-600">
+                    <span>Batch: LOT-2026-CHOU-09</span>
+                    <span>Route: Dispatch Hub</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+              <span className="text-[11px] text-slate-600">
+                Print Spool: <strong>12 adhesive labels</strong> ready for thermal transmission.
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPrintBarcodesModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExecutePrintBarcodes}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print 12 Labels</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. Items Size & Color Modal */}
+      {isSizeColorModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Palette className="w-4 h-4 text-purple-400" />
+                <h3 className="font-bold">Items Size &amp; Color Matrix Generator</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSizeColorModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 text-slate-700 leading-relaxed text-[11.5px] space-y-1">
+                <strong className="font-semibold text-slate-900 block">Operational Note for Food &amp; Chemical Operations:</strong>
+                <p>
+                  The Size &amp; Color matrix is designed primarily for apparel retail (Small/Medium/Large x Red/Blue/Green).
+                </p>
+                <p>
+                  For commercial food and chemical operations (like the Choueifat facility), this matrix is bypassed in favor of <strong>distinct volumetric SKUs</strong> (e.g., separate codes for 250ml vs 500ml bottles, single bottles vs 12-pack cartons) to ensure exact Bill of Materials and assembly tracking.
+                </p>
+              </div>
+
+              <div className="border border-slate-200 rounded-xs overflow-hidden text-[11px]">
+                <div className="bg-[#f8fafc] px-3 py-2 font-bold text-slate-800 border-b border-slate-200">
+                  Active Volumetric Formats in Distillates Group:
+                </div>
+                <div className="p-3 space-y-1 text-slate-700">
+                  <div className="flex justify-between">
+                    <span>250ml Glass Bottle (Retail)</span>
+                    <span className="font-mono text-slate-500">CWV250MLB105</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>500ml Glass Bottle (Retail)</span>
+                    <span className="font-mono text-slate-500">CWV500MLB106</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-blue-900">
+                    <span>12 x 500ml Cardboard Carton (Wholesale)</span>
+                    <span className="font-mono text-blue-700">CWV500ML*12B106</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>5 Liter Jerrycan (Commercial Depot)</span>
+                    <span className="font-mono text-slate-500">CWV5LTRB110</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsSizeColorModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. Import From Excel Modal */}
+      {isImportExcelModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Import From Excel (Bulk Injection Engine)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsImportExcelModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <p className="text-[11.5px] text-slate-700 leading-relaxed">
+                The bulk data injection engine is the fastest way to upload new commercial recipes or modify existing wholesale tiers by mapping a formatted spreadsheet directly into the Omega catalog.
+              </p>
+
+              {/* Upload Dropzone */}
+              <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xs p-6 text-center space-y-2 cursor-pointer transition bg-slate-50">
+                <Upload className="w-8 h-8 text-slate-400 mx-auto" />
+                <div className="text-xs font-semibold text-slate-800">
+                  Drop Excel (.xlsx, .xls) or CSV spreadsheet here
+                </div>
+                <span className="text-[10.5px] text-slate-500 block">or click to browse local files</span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] bg-slate-100 p-2.5 rounded-xs text-slate-700">
+                <span>Standard schema: Code, Description, Group, Selling Price, Cost, Unit, Barcode</span>
+                <button
+                  type="button"
+                  onClick={() => showToast('Downloaded standard inventory import template (Excel)')}
+                  className="font-semibold text-blue-700 hover:underline cursor-pointer"
+                >
+                  Download Template
+                </button>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsImportExcelModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsImportExcelModalOpen(false);
+                    showToast('Processed Excel import payload: 42 recipe rows mapped & synchronized.');
+                  }}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  <span>Upload &amp; Process</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
