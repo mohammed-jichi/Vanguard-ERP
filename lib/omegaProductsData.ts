@@ -236,6 +236,37 @@ export interface AuthenticProductRecord {
   zone?: string;
   aisle?: string;
   moreBarcodes?: Array<{ id: number; barcode: string; note?: string }>;
+
+  // Customs, Logistics & Freight Integrity
+  hsCode?: string;
+  pluForScale?: string;
+  dimensionsLength?: number;
+  dimensionsWidth?: number;
+  dimensionsHeight?: number;
+  dimensionsWeight?: number;
+  dimensionsVolume?: number;
+  itemSorting?: number;
+  isBestSelling?: boolean;
+
+  // Compliance, API & Lifecycle Flags
+  hasExpiryDate?: boolean;
+  sellOnline?: boolean;
+  forExport?: boolean;
+  hideIfZero?: boolean;
+  supportSerialNumber?: boolean;
+  consignment?: boolean;
+  printLabelOnSales?: boolean;
+  isRefundable?: boolean;
+  isOpenDescription?: boolean;
+  isWeeklyAdjust?: boolean;
+  isDailyAdjust?: boolean;
+  isHideInReport?: boolean;
+  isElectronicLabelTag?: boolean;
+  isYearlySubscription?: boolean;
+
+  // Media Management
+  mainImage?: string;
+  additionalImages?: string[];
 }
 
 // Hierarchy Master Options
@@ -257,7 +288,9 @@ export const OMEGA_LOGICAL_WAREHOUSES = [
   { id: 1, name: 'Main Store' },
   { id: 2, name: 'Showroom Store' },
   { id: 3, name: 'Kitchen / Factory' },
-  { id: 4, name: 'Raw Materials Store' }
+  { id: 4, name: 'Raw Materials Store' },
+  { id: 5, name: 'Choueifat Production Plant' },
+  { id: 6, name: 'Wholesale Dispatch Staging' }
 ];
 
 export const OMEGA_ITEM_BRANDS = [

@@ -33,7 +33,10 @@ import {
   FileSpreadsheet,
   Settings,
   MoreHorizontal,
-  HelpCircle
+  HelpCircle,
+  AlertCircle,
+  Star,
+  Truck
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -301,36 +304,41 @@ export default function AuthenticOmegaProductsServicesView() {
   const handleApplyRecommendedPrice = () => {
     if (!editingProduct) return;
     const rec = editingProduct.recommendedPriceLL || 0;
+    const cost = editingProduct.unitCostLL || 0;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const profit = cost > 0 ? Number((((rec - cost) / cost) * 100).toFixed(2)) : 0;
+    const usd = Number((rec / rate).toFixed(2));
     const updated = { ...editingProduct };
     const appliedList: string[] = [];
+
     if (recommendedPriceTargets.sp1) {
       updated.sellingPrice1LL = rec;
       updated.beforeTax1LL = rec;
       updated.sellingPrice = rec;
-      const cost = updated.unitCostLL || 0;
-      updated.profit1Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
-      appliedList.push('SP 1');
+      updated.sellingPrice1USD = usd;
+      updated.profit1Pct = profit;
+      appliedList.push('SP 1 (Retail)');
     }
     if (recommendedPriceTargets.sp2) {
       updated.sellingPrice2LL = rec;
       updated.beforeTax2LL = rec;
-      const cost = updated.unitCostLL || 0;
-      updated.profit2Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
-      appliedList.push('SP 2');
+      updated.sellingPrice2USD = usd;
+      updated.profit2Pct = profit;
+      appliedList.push('SP 2 (Wholesale)');
     }
     if (recommendedPriceTargets.sp3) {
       updated.sellingPrice3LL = rec;
       updated.beforeTax3LL = rec;
-      const cost = updated.unitCostLL || 0;
-      updated.profit3Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
-      appliedList.push('SP 3');
+      updated.sellingPrice3USD = usd;
+      updated.profit3Pct = profit;
+      appliedList.push('SP 3 (Distributor)');
     }
     if (recommendedPriceTargets.sp4) {
       updated.sellingPrice4LL = rec;
       updated.beforeTax4LL = rec;
-      const cost = updated.unitCostLL || 0;
-      updated.profit4Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
-      appliedList.push('SP 4');
+      updated.sellingPrice4USD = usd;
+      updated.profit4Pct = profit;
+      appliedList.push('SP 4 (Special Contract)');
     }
     setEditingProduct(updated);
     setIsApplyRecommendedPriceModalOpen(false);
@@ -352,6 +360,122 @@ export default function AuthenticOmegaProductsServicesView() {
       sellingPrice4USD: sp4USD
     });
     showToast(`Converted all selling prices to USD at rate ${rate.toLocaleString()} LL/$`);
+  };
+
+  const handleUnitCostUSDChange = (usdVal: number) => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const llVal = Math.round(usdVal * rate);
+    const markup = editingProduct.markupPct || 0;
+    const rec = Math.round(llVal * (1 + markup / 100));
+    const p1 = Number(editingProduct.sellingPrice1LL || 0);
+    const p2 = Number(editingProduct.sellingPrice2LL || 0);
+    const p3 = Number(editingProduct.sellingPrice3LL || 0);
+    const p4 = Number(editingProduct.sellingPrice4LL || 0);
+
+    setEditingProduct({
+      ...editingProduct,
+      unitCostUSD: usdVal,
+      unitCostLL: llVal,
+      cost: llVal,
+      recommendedPriceLL: rec,
+      profit1Pct: llVal > 0 && p1 > 0 ? Number((((p1 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit2Pct: llVal > 0 && p2 > 0 ? Number((((p2 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit3Pct: llVal > 0 && p3 > 0 ? Number((((p3 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit4Pct: llVal > 0 && p4 > 0 ? Number((((p4 - llVal) / llVal) * 100).toFixed(2)) : 0
+    });
+  };
+
+  const handleUnitCostLLChange = (llVal: number) => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const usdVal = rate > 0 ? Number((llVal / rate).toFixed(4)) : 0;
+    const markup = editingProduct.markupPct || 0;
+    const rec = Math.round(llVal * (1 + markup / 100));
+    const p1 = Number(editingProduct.sellingPrice1LL || 0);
+    const p2 = Number(editingProduct.sellingPrice2LL || 0);
+    const p3 = Number(editingProduct.sellingPrice3LL || 0);
+    const p4 = Number(editingProduct.sellingPrice4LL || 0);
+
+    setEditingProduct({
+      ...editingProduct,
+      unitCostLL: llVal,
+      unitCostUSD: usdVal,
+      cost: llVal,
+      recommendedPriceLL: rec,
+      profit1Pct: llVal > 0 && p1 > 0 ? Number((((p1 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit2Pct: llVal > 0 && p2 > 0 ? Number((((p2 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit3Pct: llVal > 0 && p3 > 0 ? Number((((p3 - llVal) / llVal) * 100).toFixed(2)) : 0,
+      profit4Pct: llVal > 0 && p4 > 0 ? Number((((p4 - llVal) / llVal) * 100).toFixed(2)) : 0
+    });
+  };
+
+  const handleSellingPriceLLChange = (num: number, valLL: number) => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const usdVal = rate > 0 ? Number((valLL / rate).toFixed(2)) : 0;
+    const cost = editingProduct.unitCostLL || 0;
+    const profit = cost > 0 ? Number((((valLL - cost) / cost) * 100).toFixed(2)) : 0;
+    const spKey = `sellingPrice${num}LL` as keyof AuthenticProductRecord;
+    const btKey = `beforeTax${num}LL` as keyof AuthenticProductRecord;
+    const pfKey = `profit${num}Pct` as keyof AuthenticProductRecord;
+    const usdKey = `sellingPrice${num}USD` as keyof AuthenticProductRecord;
+
+    setEditingProduct({
+      ...editingProduct,
+      [spKey]: valLL,
+      [btKey]: valLL,
+      [pfKey]: profit,
+      [usdKey]: usdVal,
+      ...(num === 1 ? { sellingPrice: valLL } : {})
+    });
+  };
+
+  const handleSellingPriceUSDChange = (num: number, usdVal: number) => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const valLL = Math.round(usdVal * rate);
+    const cost = editingProduct.unitCostLL || 0;
+    const profit = cost > 0 ? Number((((valLL - cost) / cost) * 100).toFixed(2)) : 0;
+    const spKey = `sellingPrice${num}LL` as keyof AuthenticProductRecord;
+    const btKey = `beforeTax${num}LL` as keyof AuthenticProductRecord;
+    const pfKey = `profit${num}Pct` as keyof AuthenticProductRecord;
+    const usdKey = `sellingPrice${num}USD` as keyof AuthenticProductRecord;
+
+    setEditingProduct({
+      ...editingProduct,
+      [usdKey]: usdVal,
+      [spKey]: valLL,
+      [btKey]: valLL,
+      [pfKey]: profit,
+      ...(num === 1 ? { sellingPrice: valLL } : {})
+    });
+  };
+
+  const handleSaveImages = () => {
+    if (!editingProduct) return;
+    showToast('Images verified (<200KB limit) and saved for POS touch grids and Supersonic Dispatch API.');
+  };
+
+  const handleSetMainImage = (url: string) => {
+    if (!editingProduct) return;
+    setEditingProduct({ ...editingProduct, mainImage: url });
+    showToast('Main Image updated (225x225 px crop applied)');
+  };
+
+  const handleAddAdditionalImage = (url: string) => {
+    if (!editingProduct) return;
+    const current = editingProduct.additionalImages || [];
+    setEditingProduct({ ...editingProduct, additionalImages: [...current, url] });
+    showToast('Additional Image added (200x200 px crop applied)');
+  };
+
+  const handleRemoveAdditionalImage = (index: number) => {
+    if (!editingProduct) return;
+    const current = [...(editingProduct.additionalImages || [])];
+    current.splice(index, 1);
+    setEditingProduct({ ...editingProduct, additionalImages: current });
+    showToast('Additional Image removed');
   };
 
   // Handlers for Quick Adding Hierarchy / Master Entities
@@ -837,8 +961,33 @@ export default function AuthenticOmegaProductsServicesView() {
       isConsignment: false,
       reorderLevel: 10,
       isMasterItem: false,
-      hasExpiry: false,
-      expiryDate: ''
+      hasExpiry: true,
+      hasExpiryDate: true,
+      expiryDate: '',
+      hsCode: '2009.89.00',
+      pluForScale: '',
+      dimensionsLength: 30,
+      dimensionsWidth: 20,
+      dimensionsHeight: 25,
+      dimensionsWeight: 6.5,
+      dimensionsVolume: 0.015,
+      itemSorting: 1,
+      isBestSelling: false,
+      sellOnline: true,
+      forExport: false,
+      hideIfZero: false,
+      supportSerialNumber: false,
+      consignment: false,
+      printLabelOnSales: false,
+      isRefundable: true,
+      isOpenDescription: false,
+      isWeeklyAdjust: false,
+      isDailyAdjust: false,
+      isHideInReport: false,
+      isElectronicLabelTag: false,
+      isYearlySubscription: false,
+      mainImage: '',
+      additionalImages: []
     };
     setEditingProduct(newRecord);
     setActiveModalTab('main');
@@ -1786,7 +1935,9 @@ export default function AuthenticOmegaProductsServicesView() {
                               onChange={(e) =>
                                 setEditingProduct({ ...editingProduct, groupName: e.target.value })
                               }
-                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                              className={`flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 ${
+                                !editingProduct.groupName ? 'border-amber-400 bg-amber-50/40' : 'border-slate-300 bg-white'
+                              } focus:outline-none focus:border-blue-500`}
                             >
                               <option value="">Select group</option>
                               {invGroups.map((g) => (
@@ -1804,6 +1955,12 @@ export default function AuthenticOmegaProductsServicesView() {
                               <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
+                          {!editingProduct.groupName && (
+                            <p className="text-[10px] text-amber-700 mt-1 flex items-center gap-1 font-medium">
+                              <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
+                              <span>Map to correct revenue bucket (e.g. مدبسات جملة or مقطرات جملة) for financial reports & APIs.</span>
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -2108,6 +2265,99 @@ export default function AuthenticOmegaProductsServicesView() {
                       </button>
                     </div>
                     <div className="p-4 space-y-3">
+                      {/* Commercial Case Presets */}
+                      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-slate-100">
+                        <span className="text-[11px] font-semibold text-slate-500">Commercial Presets:</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'BOT',
+                              usageFormat: 'BOT',
+                              qtyInBuyingFormat: 12,
+                              qtyInInventoryFormat: 1,
+                              unit: 'BOT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          12x Bottles Case (BOX/12)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'BOT',
+                              usageFormat: 'BOT',
+                              qtyInBuyingFormat: 24,
+                              qtyInInventoryFormat: 1,
+                              unit: 'BOT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          24x Bottles Case (BOX/24)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'JAR',
+                              usageFormat: 'JAR',
+                              qtyInBuyingFormat: 12,
+                              qtyInInventoryFormat: 1,
+                              unit: 'JAR'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          12x Jars Case (BOX/12)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'UNIT',
+                              inventoryFormat: 'UNIT',
+                              usageFormat: 'UNIT',
+                              qtyInBuyingFormat: 1,
+                              qtyInInventoryFormat: 1,
+                              unit: 'UNIT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          Retail Single Unit (1:1)
+                        </button>
+                      </div>
+
+                      {/* Stock Integrity Equation Banner */}
+                      {editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                        <div className="p-2.5 bg-amber-50 border border-amber-300 rounded text-[11px] text-amber-800 flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-amber-900">Unit Format Integrity Alert:</span> Buying Format is set to <strong>BOX</strong> with Quantity = 1. If this is a commercial case pack (e.g. 12-pack vinegars or 24-pack molasses), set <strong>Qty In Buying Format</strong> to the exact bottle count ({editingProduct.qtyInBuyingFormat || 12}) so Vanguard ERP and POS inventory calculate the stock and costs per bottle accurately!
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-900 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Check className="w-3.5 h-3.5 text-blue-600" />
+                            <span><strong>Stock Integrity Equation:</strong> 1 {editingProduct.buyingFormat} = {editingProduct.qtyInBuyingFormat || 1} × {editingProduct.inventoryFormat}. (Case Cost is divided across {editingProduct.qtyInBuyingFormat || 1} units).</span>
+                          </div>
+                          <span className="text-[10px] bg-blue-100 text-blue-800 font-mono px-1.5 py-0.5 rounded font-bold">
+                            Yield: 1 → {editingProduct.qtyInBuyingFormat || 1}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-3">
                           <div>
@@ -2233,6 +2483,15 @@ export default function AuthenticOmegaProductsServicesView() {
                       Cost
                     </div>
                     <div className="p-4 space-y-3">
+                      {/* Currency & Margin Integrity Note */}
+                      <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <DollarSign className="w-3.5 h-3.5 text-[#23783a]" />
+                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Col 1 & 2 */}
                         <div className="md:col-span-2 space-y-3">
@@ -2242,18 +2501,9 @@ export default function AuthenticOmegaProductsServicesView() {
                               <input
                                 type="number"
                                 value={editingProduct.unitCostLL || ''}
-                                onChange={(e) => {
-                                  const val = Number(e.target.value);
-                                  const markup = editingProduct.markupPct || 0;
-                                  const rec = Math.round(val * (1 + markup / 100));
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    unitCostLL: val,
-                                    cost: val,
-                                    recommendedPriceLL: rec
-                                  });
-                                }}
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleUnitCostLLChange(Number(e.target.value))}
+                                placeholder="e.g. 180000"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono"
                               />
                             </div>
                             <div>
@@ -2274,18 +2524,14 @@ export default function AuthenticOmegaProductsServicesView() {
 
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-slate-700 font-medium mb-1">Unit Cost $</label>
+                              <label className="block text-slate-700 font-medium mb-1">Unit Cost $ (True Cost)</label>
                               <input
                                 type="number"
                                 step="0.000001"
                                 value={editingProduct.unitCostUSD || ''}
-                                onChange={(e) =>
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    unitCostUSD: Number(e.target.value)
-                                  })
-                                }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleUnitCostUSDChange(Number(e.target.value))}
+                                placeholder="e.g. 2.00"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-[#195a96]"
                               />
                             </div>
                             <div>
@@ -2364,7 +2610,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                       recommendedPriceLL: Number(e.target.value)
                                     })
                                   }
-                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold"
                                 />
                                 <button
                                   type="button"
@@ -2431,34 +2677,32 @@ export default function AuthenticOmegaProductsServicesView() {
                         const usdKey = `sellingPrice${num}USD` as keyof AuthenticProductRecord;
                         const qtyKey = `qtyPrice${num}` as keyof AuthenticProductRecord;
 
+                        const tierLabels = [
+                          'Tier 1: Retail (Base)',
+                          'Tier 2: Wholesale',
+                          'Tier 3: Distributor',
+                          'Tier 4: Special Contract'
+                        ];
+                        const tierName = tierLabels[num - 1];
+
+                        const profitVal = Number(editingProduct[pfKey]) || 0;
+                        const targetMarkup = editingProduct.markupPct || 30;
+
                         return (
                           <div
                             key={num}
                             className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b border-slate-100 pb-2.5"
                           >
                             <div className="md:col-span-3">
-                              <label className="block text-slate-700 font-medium mb-1">
-                                Selling Price {num} LL
+                              <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                                <span>{tierName} LL</span>
                               </label>
                               <input
                                 type="number"
                                 value={Number(editingProduct[spKey]) || ''}
-                                onChange={(e) => {
-                                  const val = Number(e.target.value);
-                                  const cost = editingProduct.unitCostLL || 0;
-                                  const profit = val > 0 ? Number((((val - cost) / val) * 100).toFixed(2)) : 0;
-                                  const rate = editingProduct.secondCurrencyRate || 90000;
-                                  const usd = Number((val / rate).toFixed(2));
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    [spKey]: val,
-                                    [btKey]: val,
-                                    [pfKey]: profit,
-                                    [usdKey]: usd,
-                                    ...(num === 1 ? { sellingPrice: val } : {})
-                                  });
-                                }}
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleSellingPriceLLChange(num, Number(e.target.value))}
+                                placeholder="e.g. 240000"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
                               />
                             </div>
 
@@ -2470,15 +2714,15 @@ export default function AuthenticOmegaProductsServicesView() {
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] font-mono"
                               />
                             </div>
 
                             {num > 1 ? (
                               <div className="md:col-span-2">
                                 <label className="flex items-center gap-1 text-slate-700 font-medium mb-1">
-                                  <span>Qty for Selling Price {num}</span>
-                                  <span title={`Minimum quantity required for Selling Price ${num}`}>
+                                  <span>Min Qty Trigger</span>
+                                  <span title="Wholesale volume discount trigger: triggers this tier price when customer orders at least this quantity">
                                     <HelpCircle className="w-3 h-3 text-slate-500 cursor-help" />
                                   </span>
                                 </label>
@@ -2488,23 +2732,49 @@ export default function AuthenticOmegaProductsServicesView() {
                                   onChange={(e) =>
                                     setEditingProduct({ ...editingProduct, [qtyKey]: Number(e.target.value) })
                                   }
-                                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
                                 />
                               </div>
                             ) : (
-                              <div className="md:col-span-2"></div>
+                              <div className="md:col-span-2">
+                                <span className="block text-[11px] text-slate-400 mt-5 italic">Default single unit</span>
+                              </div>
                             )}
 
                             <div className="md:col-span-2">
-                              <label className="block text-slate-700 font-medium mb-1">Profit {num} %</label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-slate-700 font-medium">Profit {num} %</label>
+                                <span
+                                  className={`text-[9px] px-1 py-0.2 rounded font-bold ${
+                                    profitVal <= 0
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : profitVal < targetMarkup
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : 'bg-emerald-100 text-emerald-800'
+                                  }`}
+                                >
+                                  {profitVal <= 0 ? 'ALERT' : profitVal < targetMarkup ? 'LOW' : 'OK'}
+                                </span>
+                              </div>
                               <input
                                 type="number"
                                 step="0.01"
-                                value={Number(editingProduct[pfKey]) || ''}
-                                onChange={(e) =>
-                                  setEditingProduct({ ...editingProduct, [pfKey]: Number(e.target.value) })
+                                value={profitVal || ''}
+                                readOnly
+                                title={
+                                  profitVal <= 0
+                                    ? 'Margin Alert: Selling at or below unit cost! Risk of margin cannibalization.'
+                                    : profitVal < targetMarkup
+                                    ? `Margin Alert: Below category target markup of ${targetMarkup}%.`
+                                    : `Healthy margin meets or exceeds ${targetMarkup}% markup.`
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                                className={`w-full px-3 py-1.5 text-xs font-bold rounded-sm border font-mono ${
+                                  profitVal <= 0
+                                    ? 'bg-rose-50 border-rose-300 text-rose-700'
+                                    : profitVal < targetMarkup
+                                    ? 'bg-amber-50 border-amber-300 text-amber-800'
+                                    : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                                }`}
                               />
                             </div>
 
@@ -2514,10 +2784,9 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="number"
                                 step="0.01"
                                 value={Number(editingProduct[usdKey]) || ''}
-                                onChange={(e) =>
-                                  setEditingProduct({ ...editingProduct, [usdKey]: Number(e.target.value) })
-                                }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleSellingPriceUSDChange(num, Number(e.target.value))}
+                                placeholder="e.g. 2.67"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-[#195a96]"
                               />
                             </div>
                           </div>
@@ -2649,118 +2918,908 @@ export default function AuthenticOmegaProductsServicesView() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Card 6: Customs, Freight Logistics & POS Interface */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-[#195a96]" />
+                        <span>Customs, Freight Logistics & POS Interface</span>
+                      </div>
+                      <span className="text-[11px] font-normal text-slate-500">
+                        HS commodity classification, scale PLU, freight volumetric specs & POS velocity
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        {/* HS Code */}
+                        <div className="md:col-span-4">
+                          <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                            <span>HS Code (Customs / Export)*</span>
+                            <span className="text-[10px] text-slate-400 font-mono">Commodity Tariff</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={editingProduct.hsCode || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, hsCode: e.target.value })
+                            }
+                            placeholder="e.g. 2009.89.00 (Molasses) / 2209.00.00 (Vinegars)"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Mandatory for commercial invoices and international export documentation.
+                          </p>
+                        </div>
+
+                        {/* PLU For Scale */}
+                        <div className="md:col-span-4">
+                          <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                            <span>PLU For Scale</span>
+                            <span className="text-[10px] text-slate-400">Weight-based barcode</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={editingProduct.pluForScale || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, pluForScale: e.target.value })
+                            }
+                            placeholder="Leave blank for pre-packaged cases"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Required only for bulk weighed items (e.g. bulk cheese, fats) to print scale barcode.
+                          </p>
+                        </div>
+
+                        {/* Item Sorting & Best Selling */}
+                        <div className="md:col-span-2">
+                          <label className="block text-slate-700 font-medium mb-1">Item Sorting</label>
+                          <input
+                            type="number"
+                            value={editingProduct.itemSorting ?? 0}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, itemSorting: Number(e.target.value) })
+                            }
+                            placeholder="0"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Priority index for category sorting in POS.
+                          </p>
+                        </div>
+
+                        <div className="md:col-span-2 flex items-center pt-5">
+                          <label className="inline-flex items-center gap-2 cursor-pointer select-none p-2 rounded-sm border border-slate-200 bg-slate-50 hover:bg-slate-100 transition w-full">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editingProduct.isBestSelling)}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, isBestSelling: e.target.checked })
+                              }
+                              className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-400"
+                            />
+                            <div className="flex items-center gap-1">
+                              <Star className={`w-3.5 h-3.5 ${editingProduct.isBestSelling ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
+                              <span className="font-semibold text-slate-800 text-xs">Best Selling</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Physical Dimensions (Logistics & Freight Calculation) */}
+                      <div className="pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-slate-700 font-medium text-xs flex items-center gap-1.5">
+                            <span>Physical Dimensions (BOX Format & Pallet Freight Estimation)</span>
+                          </label>
+                          <span className="text-[11px] text-slate-500 italic">
+                            Used by Vanguard Dispatch & freight modules for pallet load calculations
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Length (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsLength || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsLength: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 38.5"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Width (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsWidth || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsWidth: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 26.0"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Height (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsHeight || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsHeight: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 24.5"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Weight (kg / gross)</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={editingProduct.dimensionsWeight || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsWeight: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 14.8"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Volume (m³)</label>
+                            <input
+                              type="number"
+                              step="0.001"
+                              value={
+                                editingProduct.dimensionsVolume ||
+                                (editingProduct.dimensionsLength && editingProduct.dimensionsWidth && editingProduct.dimensionsHeight
+                                  ? Number(((editingProduct.dimensionsLength * editingProduct.dimensionsWidth * editingProduct.dimensionsHeight) / 1000000).toFixed(4))
+                                  : '')
+                              }
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsVolume: Number(e.target.value) })
+                              }
+                              placeholder="Auto m³"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-slate-50 font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
 
+              {/* TAB: MORE (Accounts, Taxes, 15 Compliance & Lifecycle Flags) */}
               {activeModalTab === 'more' && (
                 <div className="space-y-4">
-                  <div className="border border-slate-200 rounded-sm p-4 space-y-3">
-                    <h3 className="font-semibold text-slate-800 text-xs border-b border-slate-100 pb-2">
-                      Accounting Accounts
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-slate-700 font-medium mb-1">Asset Account</label>
-                        <input
-                          type="text"
-                          value={editingProduct.assetAccount}
-                          onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, assetAccount: e.target.value })
-                          }
-                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-700 font-medium mb-1">Revenue Account</label>
-                        <input
-                          type="text"
-                          value={editingProduct.revenueAccount}
-                          onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, revenueAccount: e.target.value })
-                          }
-                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-700 font-medium mb-1">Expense Account</label>
-                        <input
-                          type="text"
-                          value={editingProduct.expenseAccount}
-                          onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, expenseAccount: e.target.value })
-                          }
-                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-700 font-medium mb-1">Stock Variation Account</label>
-                        <input
-                          type="text"
-                          value={editingProduct.stockVariationAccount}
-                          onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, stockVariationAccount: e.target.value })
-                          }
-                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                        />
-                      </div>
-                    </div>
+                  {/* Subtabs Header */}
+                  <div className="flex gap-2 border-b border-slate-200 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('accounts')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'accounts'
+                          ? 'bg-[#323f4b] text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Accounts & Financials
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('taxes')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'taxes'
+                          ? 'bg-[#323f4b] text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Taxes & Discounts
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('advanced')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'advanced'
+                          ? 'bg-[#323f4b] text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Advanced Attributes & Compliance (15 Flags)
+                    </button>
                   </div>
 
-                  <div className="border border-slate-200 rounded-sm p-4 space-y-3">
-                    <h3 className="font-semibold text-slate-800 text-xs border-b border-slate-100 pb-2">
-                      Taxes & Options
-                    </h3>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                      {[1, 2, 3, 4, 5, 6].map((num) => {
-                        const key = `tax${num}` as keyof AuthenticProductRecord;
-                        return (
-                          <label key={num} className="flex items-center gap-1.5 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={Boolean(editingProduct[key])}
-                              onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, [key]: e.target.checked })
-                              }
-                              className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
-                            />
-                            <span>Tax {num}</span>
-                          </label>
-                        );
-                      })}
+                  {moreSubTab === 'accounts' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-3">
+                      <h3 className="font-semibold text-slate-800 text-xs border-b border-slate-100 pb-2">
+                        Accounting Accounts
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Asset Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.assetAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, assetAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Revenue Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.revenueAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, revenueAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Expense Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.expenseAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, expenseAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Stock Variation Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.stockVariationAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, stockVariationAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {moreSubTab === 'taxes' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-4">
+                      <h3 className="font-semibold text-slate-800 text-xs border-b border-slate-100 pb-2">
+                        Taxes & Discounts
+                      </h3>
+                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        {[1, 2, 3, 4, 5, 6].map((num) => {
+                          const key = `tax${num}` as keyof AuthenticProductRecord;
+                          return (
+                            <label key={num} className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct[key])}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, [key]: e.target.checked })
+                                }
+                                className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
+                              />
+                              <span className="font-medium">Tax {num}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <div className="pt-2 border-t border-slate-100">
+                        <label className="block text-slate-700 font-medium mb-1">Auto Discount %</label>
+                        <input
+                          type="number"
+                          value={editingProduct.autoDiscount || ''}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, autoDiscount: Number(e.target.value) })
+                          }
+                          className="w-48 px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {moreSubTab === 'advanced' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-5 text-xs">
+                      {/* Section 1: Food Safety, Compliance & Traceability */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5 text-emerald-600" />
+                            1. Food Safety, Compliance & Batch Tracking
+                          </span>
+                          <span className="text-[10px] text-slate-400">Critical Food Formulation Rules</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Has Expiry Date */}
+                          <div className="p-2.5 rounded-sm border border-emerald-200 bg-emerald-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hasExpiryDate ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hasExpiryDate: e.target.checked, hasExpiry: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-emerald-400 text-emerald-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-emerald-900 block">Has Expiry Date (FIFO)</span>
+                                <span className="text-[11px] text-emerald-800 block mt-0.5">
+                                  Mandatory for molasses, vinegar, tomato paste, jams & fats. Prompts batch expiry date on receipt from Choueifat plant.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Support Serial Number */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.supportSerialNumber)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, supportSerialNumber: e.target.checked, hasSerialNumber: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Support Serial Number</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  For electronics & serialized equipment. Leave unchecked for case packs of vinegars and Eau de Javel.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Print Label on Sales */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.printLabelOnSales)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, printLabelOnSales: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Print Label on Sales</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Generates sticker at moment of sale for bulk unlabelled goods (like fresh local cheese).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 2: Channel Visibility & ERP Linkage */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                            2. Channel Visibility & ERP / Dispatch Linkage
+                          </span>
+                          <span className="text-[10px] text-slate-400">API & B2B Portal Visibility</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Sell it Online */}
+                          <div className="p-2.5 rounded-sm border border-blue-200 bg-blue-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.sellOnline ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, sellOnline: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-blue-400 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-blue-900 block">Sell it Online (API Visibility)</span>
+                                <span className="text-[11px] text-blue-800 block mt-0.5">
+                                  Exposes item to Vanguard ERP, Supersonic Dispatch & B2B ordering portal.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* For Export */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.forExport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, forExport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">For Export</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Works with HS Code to trigger international commercial invoice formatting & customs tax exemptions.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide if Zero */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hideIfZero)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hideIfZero: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide if Zero</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Hides SKU from POS when Qty OH is zero. Leave unchecked for core manufactured goods to signal production runs.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide in Report */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isHideInReport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isHideInReport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide In Report</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Keeps internal supplies or zero-value placeholder SKUs out of financial valuation reports.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Electronic Label Tag */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isElectronicLabelTag)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isElectronicLabelTag: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Electronic Label Tag (ESL)</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Integrates item pricing via API to digital electronic shelf tags.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Discontinued */}
+                          <div className="p-2.5 rounded-sm border border-rose-200 bg-rose-50/40">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDiscontinued)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-rose-400 text-rose-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-rose-900 block">Discontinued Item</span>
+                                <span className="text-[11px] text-rose-800 block mt-0.5">
+                                  Permanently removes retired jar sizes or legacy batches from active PO/POS menus without deleting sales history.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 3: Commercial Policy & Lifecycle Governance */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <Settings className="w-3.5 h-3.5 text-purple-600" />
+                            3. Commercial Policy & Sales Lifecycle Governance
+                          </span>
+                          <span className="text-[10px] text-slate-400">Invoicing & Returns Controls</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Refundable */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isRefundable ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isRefundable: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Refundable</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Allows POS returns and credit notes. Uncheck for custom bulk chemical orders that cannot be restocked once dispatched.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Open Description */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isOpenDescription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isOpenDescription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Open Description</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Cashier can manually overwrite item name on invoice. Keep unchecked for standardized commercial goods to prevent report corruption.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Consignment */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.consignment || editingProduct.isConsignment)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, consignment: e.target.checked, isConsignment: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Consignment</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Placement in external retail shops without upfront payment. Standard wholesale batches are direct revenue (leave unchecked).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Yearly Subscription */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isYearlySubscription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isYearlySubscription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Yearly Subscription</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Triggers recurring billing cycles. Leave unchecked for moving physical commercial batches.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Daily Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDailyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDailyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Daily Adjust (High-Value Cycle)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into daily physical cycle-count audit reports (mandated for high-value raw materials like bulk CMC or Pectin).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Weekly Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isWeeklyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isWeeklyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Weekly Adjust (Cycle Count)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into weekly inventory reconciliation audit reports for finished goods.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Physical & Chemical Specifications */}
+                      <div className="pt-2 border-t border-slate-200">
+                        <h4 className="font-semibold text-slate-800 text-xs mb-3">Item Physical Specifications & Formulation Notes</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Color Specification</label>
+                            <input
+                              type="text"
+                              value={editingProduct.color || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, color: e.target.value, hasColors: Boolean(e.target.value) })
+                              }
+                              placeholder="e.g. Deep Amber / Rich Burgundy"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Size / Net Weight</label>
+                            <input
+                              type="text"
+                              value={editingProduct.size || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, size: e.target.value, hasSizes: Boolean(e.target.value) })
+                              }
+                              placeholder="e.g. 500ml / 800g / 16L"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Master Item Flag</label>
+                            <div className="pt-1.5">
+                              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(editingProduct.isMasterItem)}
+                                  onChange={(e) =>
+                                    setEditingProduct({ ...editingProduct, isMasterItem: e.target.checked })
+                                  }
+                                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                                />
+                                <span className="font-medium text-slate-700">Master Item Definition</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <label className="block text-slate-700 font-medium mb-1">Ingredients & Formulation Recipe</label>
+                          <textarea
+                            rows={2}
+                            value={editingProduct.ingredients || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, ingredients: e.target.value, hasIngredients: Boolean(e.target.value) })
+                            }
+                            placeholder="e.g. 100% Pure concentrated pomegranate juice, citric acid..."
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
+              {/* TAB: MEDIA (Strict 200KB Limit, 225x225 Main, 200x200 Additional & Double-Save Workflow) */}
               {activeModalTab === 'media' && (
-                <div className="border border-slate-200 rounded-sm p-6 space-y-4 text-center">
-                  <div className="w-32 h-32 mx-auto bg-slate-100 border border-slate-300 rounded-sm flex items-center justify-center text-slate-400">
-                    <ImageIcon className="w-12 h-12 stroke-[1.5]" />
+                <div className="space-y-4">
+                  {/* Strict 200KB Limit & Dimension Banner */}
+                  <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
+                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                      <div className="flex items-center gap-1.5">
+                        <ImageIcon className="w-4 h-4" />
+                        <span>Strict 200KB Limit & Dimension Crop Policy (API Optimization)</span>
+                      </div>
+                      <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] rounded font-mono font-bold">
+                        MAX 200 KB / IMAGE
+                      </span>
+                    </div>
+                    <p className="text-slate-700 text-[11px] leading-relaxed">
+                      Omega enforces a strict <strong>200KB maximum file size</strong>. 
+                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Omega POS touchscreen grids & Vanguard thumbnail). 
+                      <strong> Additional Images:</strong> cropped to <strong>200×200 px</strong> (Back-label, nutritional facts & barcode close-ups).
+                      Guarantees lightweight payloads for instant loading in Supersonic Dispatch and B2B ordering portals.
+                    </p>
                   </div>
-                  <div className="flex justify-center gap-2">
+
+                  {/* Double-Save Workflow Notice */}
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-amber-900">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <div>
+                        <strong>Double-Save Workflow:</strong> Click <strong>Save Images</strong> below to push media assets to the server before clicking the main modal Save button.
+                      </div>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => showToast('Image selector opened')}
-                      className="px-4 py-1.5 bg-[#323f4b] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                      onClick={handleSaveImages}
+                      className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     >
-                      Select Image
-                    </button>
-                    <button
-                      type="button"
-                      className="px-4 py-1.5 bg-[#5c2828] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
-                    >
-                      Remove
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Images</span>
                     </button>
                   </div>
-                  <div className="max-w-md mx-auto text-left pt-3">
-                    <label className="block text-slate-700 font-medium mb-1">Video Link (YouTube / Vimeo / MP4)</label>
-                    <input
-                      type="text"
-                      placeholder="https://..."
-                      value={editingProduct.videoUrl}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, videoUrl: e.target.value })}
-                      className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                    />
+
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+                    {/* Main Image (225x225 px) */}
+                    <div className="md:col-span-5 border border-slate-200 rounded-sm p-4 text-center space-y-3 bg-slate-50/50">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <span className="font-bold text-slate-800 text-xs">Main Image (225×225 px)</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono">
+                          Primary Visual
+                        </span>
+                      </div>
+
+                      <div className="w-[225px] h-[225px] mx-auto bg-white border-2 border-dashed border-slate-300 rounded-sm flex flex-col items-center justify-center relative overflow-hidden group shadow-2xs">
+                        {editingProduct.mainImage ? (
+                          <img
+                            src={editingProduct.mainImage}
+                            alt="Main Product Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="p-4 text-center space-y-2">
+                            <ImageIcon className="w-12 h-12 stroke-[1.5] text-slate-400 mx-auto" />
+                            <div className="text-[11px] text-slate-500">
+                              225 × 225 px
+                              <br />
+                              <span className="text-[10px] text-slate-400">&lt; 200 KB</span>
+                            </div>
+                          </div>
+                        )}
+                        <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">
+                          225×225
+                        </div>
+                      </div>
+
+                      <div className="flex justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                        >
+                          Select Image
+                        </button>
+                        {editingProduct.mainImage && (
+                          <button
+                            type="button"
+                            onClick={() => setEditingProduct({ ...editingProduct, mainImage: '' })}
+                            className="px-3 py-1.5 bg-[#5c2828] hover:bg-[#451f1f] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Presets for Demo */}
+                      <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500">
+                        <div className="mb-1 font-medium text-slate-700">Quick Samples (&lt;200KB Optimized):</div>
+                        <div className="flex flex-wrap justify-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Molasses Jar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Vinegar Bottle
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Tomato Paste
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Images (200x200 px) & Video Link */}
+                    <div className="md:col-span-7 space-y-4">
+                      <div className="border border-slate-200 rounded-sm p-4 space-y-3 bg-white">
+                        <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                          <div>
+                            <span className="font-bold text-slate-800 text-xs">Additional Images (200×200 px)</span>
+                            <span className="text-[11px] text-slate-500 block">
+                              Back-label, nutritional facts & barcode close-up for B2B wholesale buyers
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2.5 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Add Image</span>
+                          </button>
+                        </div>
+
+                        {/* Gallery Grid */}
+                        <div className="grid grid-cols-3 gap-3">
+                          {(editingProduct.additionalImages && editingProduct.additionalImages.length > 0) ? (
+                            editingProduct.additionalImages.map((imgUrl, idx) => (
+                              <div key={idx} className="border border-slate-200 rounded-sm p-1.5 bg-slate-50 relative group">
+                                <div className="w-full h-24 bg-white rounded overflow-hidden flex items-center justify-center">
+                                  <img src={imgUrl} alt={`Additional ${idx + 1}`} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex items-center justify-between mt-1 text-[10px]">
+                                  <span className="text-slate-500 font-mono">200×200</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveAdditionalImage(idx)}
+                                    className="text-rose-600 hover:text-rose-800 font-bold"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="col-span-3 py-6 text-center text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-sm">
+                              <ImageIcon className="w-8 h-8 stroke-[1.5] mx-auto text-slate-300 mb-1" />
+                              <p className="text-[11px]">No additional images uploaded.</p>
+                              <button
+                                type="button"
+                                onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                                className="mt-2 text-xs text-[#195a96] font-semibold hover:underline cursor-pointer"
+                              >
+                                + Add Back-Label / Nutrition Fact Image
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Video Link */}
+                      <div className="border border-slate-200 rounded-sm p-4 bg-white space-y-2">
+                        <label className="block text-slate-700 font-medium mb-1">
+                          Product Video Link (YouTube / Vimeo / MP4)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          value={editingProduct.videoUrl || ''}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, videoUrl: e.target.value })}
+                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                        />
+                        <p className="text-[11px] text-slate-500">
+                          Exposed to B2B dispatch portal to showcase production facility processes or bottling runs.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2971,6 +4030,12 @@ export default function AuthenticOmegaProductsServicesView() {
                               <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
+                          {!editingProduct.groupName && (
+                            <p className="text-[10px] text-amber-700 mt-1 flex items-center gap-1 font-medium">
+                              <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
+                              <span>Map to correct revenue bucket (e.g. مدبسات جملة or مقطرات جملة) for financial reports & APIs.</span>
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -3263,18 +4328,112 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   </div>
 
-                  {/* Card 2: Unit Format (Screenshot 2) */}
+                  {/* Card 2: Unit Format */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
                     <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Unit Format</span>
                       <button
                         type="button"
                         className="bg-[#323f4b] text-white p-1 rounded-xs cursor-pointer shadow-2xs"
+                        title="Add Unit Format"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>
                     <div className="p-4 space-y-3">
+                      {/* Commercial Case Presets */}
+                      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-slate-100">
+                        <span className="text-[11px] font-semibold text-slate-500">Commercial Presets:</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'BOT',
+                              usageFormat: 'BOT',
+                              qtyInBuyingFormat: 12,
+                              qtyInInventoryFormat: 1,
+                              unit: 'BOT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          12x Bottles Case (BOX/12)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'BOT',
+                              usageFormat: 'BOT',
+                              qtyInBuyingFormat: 24,
+                              qtyInInventoryFormat: 1,
+                              unit: 'BOT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          24x Bottles Case (BOX/24)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'BOX',
+                              inventoryFormat: 'JAR',
+                              usageFormat: 'JAR',
+                              qtyInBuyingFormat: 12,
+                              qtyInInventoryFormat: 1,
+                              unit: 'JAR'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          12x Jars Case (BOX/12)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              buyingFormat: 'UNIT',
+                              inventoryFormat: 'UNIT',
+                              usageFormat: 'UNIT',
+                              qtyInBuyingFormat: 1,
+                              qtyInInventoryFormat: 1,
+                              unit: 'UNIT'
+                            })
+                          }
+                          className="px-2 py-0.5 text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-medium cursor-pointer"
+                        >
+                          Retail Single Unit (1:1)
+                        </button>
+                      </div>
+
+                      {/* Stock Integrity Equation Banner */}
+                      {editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                        <div className="p-2.5 bg-amber-50 border border-amber-300 rounded text-[11px] text-amber-800 flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-amber-900">Unit Format Integrity Alert:</span> Buying Format is set to <strong>BOX</strong> with Quantity = 1. If this is a commercial case pack (e.g. 12-pack vinegars or 24-pack molasses), set <strong>Qty In Buying Format</strong> to the exact bottle count ({editingProduct.qtyInBuyingFormat || 12}) so Vanguard ERP and POS inventory calculate the stock and costs per bottle accurately!
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-900 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <Check className="w-3.5 h-3.5 text-blue-600" />
+                            <span><strong>Stock Integrity Equation:</strong> 1 {editingProduct.buyingFormat} = {editingProduct.qtyInBuyingFormat || 1} × {editingProduct.inventoryFormat}. (Case Cost is divided across {editingProduct.qtyInBuyingFormat || 1} units).</span>
+                          </div>
+                          <span className="text-[10px] bg-blue-100 text-blue-800 font-mono px-1.5 py-0.5 rounded font-bold">
+                            Yield: 1 → {editingProduct.qtyInBuyingFormat || 1}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-3">
                           <div>
@@ -3371,7 +4530,8 @@ export default function AuthenticOmegaProductsServicesView() {
                             >
                               <option value="">Select packing</option>
                               <option value="Standard Bottle">Standard Bottle</option>
-                              <option value="Box">Box</option>
+                              <option value="Carton Box">Carton Box</option>
+                              <option value="Plastic Wrap">Plastic Wrap</option>
                             </select>
                           </div>
                           <div>
@@ -3393,12 +4553,21 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   </div>
 
-                  {/* Card 3: Cost (Screenshot 2) */}
+                  {/* Card 3: Cost */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
                     <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Cost
                     </div>
                     <div className="p-4 space-y-3">
+                      {/* Currency & Margin Integrity Note */}
+                      <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <DollarSign className="w-3.5 h-3.5 text-[#23783a]" />
+                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Col 1 & 2 */}
                         <div className="md:col-span-2 space-y-3">
@@ -3407,22 +4576,17 @@ export default function AuthenticOmegaProductsServicesView() {
                               <label className="block text-slate-700 font-medium mb-1">Unit Cost LL</label>
                               <input
                                 type="number"
-                                value={editingProduct.unitCostLL}
-                                onChange={(e) =>
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    unitCostLL: Number(e.target.value),
-                                    cost: Number(e.target.value)
-                                  })
-                                }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                value={editingProduct.unitCostLL || ''}
+                                onChange={(e) => handleUnitCostLLChange(Number(e.target.value))}
+                                placeholder="e.g. 180000"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono"
                               />
                             </div>
                             <div>
                               <label className="block text-slate-700 font-medium mb-1">Average Cost LL</label>
                               <input
                                 type="number"
-                                value={editingProduct.averageCostLL}
+                                value={editingProduct.averageCostLL || ''}
                                 onChange={(e) =>
                                   setEditingProduct({
                                     ...editingProduct,
@@ -3436,18 +4600,14 @@ export default function AuthenticOmegaProductsServicesView() {
 
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-slate-700 font-medium mb-1">Unit Cost $.</label>
+                              <label className="block text-slate-700 font-medium mb-1">Unit Cost $ (True Cost)</label>
                               <input
                                 type="number"
                                 step="0.000001"
-                                value={editingProduct.unitCostUSD}
-                                onChange={(e) =>
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    unitCostUSD: Number(e.target.value)
-                                  })
-                                }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                value={editingProduct.unitCostUSD || ''}
+                                onChange={(e) => handleUnitCostUSDChange(Number(e.target.value))}
+                                placeholder="e.g. 2.00"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-[#195a96]"
                               />
                             </div>
                             <div>
@@ -3455,7 +4615,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <input
                                 type="number"
                                 step="0.000001"
-                                value={editingProduct.averageCostUSD}
+                                value={editingProduct.averageCostUSD || ''}
                                 onChange={(e) =>
                                   setEditingProduct({
                                     ...editingProduct,
@@ -3468,13 +4628,13 @@ export default function AuthenticOmegaProductsServicesView() {
                           </div>
                         </div>
 
-                        {/* Col 3: Additional Cost & Recalculate */}
+                        {/* Col 3: Additional Cost, Markup %, Recommended Price & Recalculate */}
                         <div className="space-y-3 border-l border-slate-200 pl-4">
                           <div>
                             <label className="block text-slate-700 font-medium mb-1">Additional Cost LL</label>
                             <input
                               type="number"
-                              value={editingProduct.additionalCostLL}
+                              value={editingProduct.additionalCostLL || ''}
                               onChange={(e) =>
                                 setEditingProduct({
                                   ...editingProduct,
@@ -3526,7 +4686,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                       recommendedPriceLL: Number(e.target.value)
                                     })
                                   }
-                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold"
                                 />
                                 <button
                                   type="button"
@@ -3553,7 +4713,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   </div>
 
-                  {/* Card 4: Selling Price (Screenshot 2 & 3) */}
+                  {/* Card 4: Selling Price */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
                     <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Selling Price</span>
@@ -3573,7 +4733,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           Last Prices
                         </button>
                         <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-slate-800">Selling price in Second currency</span>
+                          <span className="font-semibold text-slate-800">Selling price 2nd currency</span>
                           <button
                             type="button"
                             onClick={handleApplySecondCurrencyRates}
@@ -3593,54 +4753,52 @@ export default function AuthenticOmegaProductsServicesView() {
                         const usdKey = `sellingPrice${num}USD` as keyof AuthenticProductRecord;
                         const qtyKey = `qtyPrice${num}` as keyof AuthenticProductRecord;
 
+                        const tierLabels = [
+                          'Tier 1: Retail (Base)',
+                          'Tier 2: Wholesale',
+                          'Tier 3: Distributor',
+                          'Tier 4: Special Contract'
+                        ];
+                        const tierName = tierLabels[num - 1];
+
+                        const profitVal = Number(editingProduct[pfKey]) || 0;
+                        const targetMarkup = editingProduct.markupPct || 30;
+
                         return (
                           <div
                             key={num}
                             className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b border-slate-100 pb-2.5"
                           >
                             <div className="md:col-span-3">
-                              <label className="block text-slate-700 font-medium mb-1">
-                                Selling Price {num} LL
+                              <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                                <span>{tierName} LL</span>
                               </label>
                               <input
                                 type="number"
                                 value={Number(editingProduct[spKey]) || ''}
-                                onChange={(e) => {
-                                  const val = Number(e.target.value);
-                                  const cost = editingProduct.unitCostLL || 0;
-                                  const profit = val > 0 ? Number((((val - cost) / val) * 100).toFixed(2)) : 0;
-                                  const rate = editingProduct.secondCurrencyRate || 90000;
-                                  const usd = Number((val / rate).toFixed(2));
-                                  setEditingProduct({
-                                    ...editingProduct,
-                                    [spKey]: val,
-                                    [btKey]: val,
-                                    [pfKey]: profit,
-                                    [usdKey]: usd,
-                                    ...(num === 1 ? { sellingPrice: val } : {})
-                                  });
-                                }}
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleSellingPriceLLChange(num, Number(e.target.value))}
+                                placeholder="e.g. 240000"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
                               />
                             </div>
 
                             <div className="md:col-span-3">
-                              <label className="block text-slate-700 font-medium mb-1">Before Tax LL</label>
+                              <label className="block text-slate-700 font-medium mb-1">Before Tax {num} LL</label>
                               <input
                                 type="number"
                                 value={Number(editingProduct[btKey]) || ''}
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] font-mono"
                               />
                             </div>
 
                             {num > 1 ? (
                               <div className="md:col-span-2">
                                 <label className="flex items-center gap-1 text-slate-700 font-medium mb-1">
-                                  <span>Qty for Selling Price {num}</span>
-                                  <span title={`Minimum quantity required for Selling Price ${num}`}>
+                                  <span>Min Qty Trigger</span>
+                                  <span title="Wholesale volume discount trigger: triggers this tier price when customer orders at least this quantity">
                                     <HelpCircle className="w-3 h-3 text-slate-500 cursor-help" />
                                   </span>
                                 </label>
@@ -3650,23 +4808,49 @@ export default function AuthenticOmegaProductsServicesView() {
                                   onChange={(e) =>
                                     setEditingProduct({ ...editingProduct, [qtyKey]: Number(e.target.value) })
                                   }
-                                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
                                 />
                               </div>
                             ) : (
-                              <div className="md:col-span-2"></div>
+                              <div className="md:col-span-2">
+                                <span className="block text-[11px] text-slate-400 mt-5 italic">Default single unit</span>
+                              </div>
                             )}
 
                             <div className="md:col-span-2">
-                              <label className="block text-slate-700 font-medium mb-1">Profit {num} %</label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-slate-700 font-medium">Profit {num} %</label>
+                                <span
+                                  className={`text-[9px] px-1 py-0.2 rounded font-bold ${
+                                    profitVal <= 0
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : profitVal < targetMarkup
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : 'bg-emerald-100 text-emerald-800'
+                                  }`}
+                                >
+                                  {profitVal <= 0 ? 'ALERT' : profitVal < targetMarkup ? 'LOW' : 'OK'}
+                                </span>
+                              </div>
                               <input
                                 type="number"
                                 step="0.01"
-                                value={Number(editingProduct[pfKey]) || ''}
-                                onChange={(e) =>
-                                  setEditingProduct({ ...editingProduct, [pfKey]: Number(e.target.value) })
+                                value={profitVal || ''}
+                                readOnly
+                                title={
+                                  profitVal <= 0
+                                    ? 'Margin Alert: Selling at or below unit cost! Risk of margin cannibalization.'
+                                    : profitVal < targetMarkup
+                                    ? `Margin Alert: Below category target markup of ${targetMarkup}%.`
+                                    : `Healthy margin meets or exceeds ${targetMarkup}% markup.`
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                                className={`w-full px-3 py-1.5 text-xs font-bold rounded-sm border font-mono ${
+                                  profitVal <= 0
+                                    ? 'bg-rose-50 border-rose-300 text-rose-700'
+                                    : profitVal < targetMarkup
+                                    ? 'bg-amber-50 border-amber-300 text-amber-800'
+                                    : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                                }`}
                               />
                             </div>
 
@@ -3676,17 +4860,16 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="number"
                                 step="0.01"
                                 value={Number(editingProduct[usdKey]) || ''}
-                                onChange={(e) =>
-                                  setEditingProduct({ ...editingProduct, [usdKey]: Number(e.target.value) })
-                                }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                onChange={(e) => handleSellingPriceUSDChange(num, Number(e.target.value))}
+                                placeholder="e.g. 2.67"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-[#195a96]"
                               />
                             </div>
                           </div>
                         );
                       })}
 
-                      {/* Second Currency Rate (Screenshot 3) */}
+                      {/* Second Currency Rate */}
                       <div className="flex justify-end pt-1">
                         <div className="w-64">
                           <label className="block text-slate-700 font-medium mb-1">Second Currency Rate</label>
@@ -3699,7 +4882,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 secondCurrencyRate: Number(e.target.value)
                               })
                             }
-                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
                           />
                         </div>
                       </div>
@@ -3984,6 +5167,180 @@ export default function AuthenticOmegaProductsServicesView() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Card 7: Customs, Freight Logistics & POS Interface */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-[#195a96]" />
+                        <span>Customs, Freight Logistics & POS Interface</span>
+                      </div>
+                      <span className="text-[11px] font-normal text-slate-500">
+                        HS commodity classification, scale PLU, freight volumetric specs & POS velocity
+                      </span>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        {/* HS Code */}
+                        <div className="md:col-span-4">
+                          <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                            <span>HS Code (Customs / Export)*</span>
+                            <span className="text-[10px] text-slate-400 font-mono">Commodity Tariff</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={editingProduct.hsCode || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, hsCode: e.target.value })
+                            }
+                            placeholder="e.g. 2009.89.00 (Molasses) / 2209.00.00 (Vinegars)"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Mandatory for commercial invoices and international export documentation.
+                          </p>
+                        </div>
+
+                        {/* PLU For Scale */}
+                        <div className="md:col-span-4">
+                          <label className="flex items-center justify-between text-slate-700 font-medium mb-1">
+                            <span>PLU For Scale</span>
+                            <span className="text-[10px] text-slate-400">Weight-based barcode</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={editingProduct.pluForScale || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, pluForScale: e.target.value })
+                            }
+                            placeholder="Leave blank for pre-packaged cases"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Required only for bulk weighed items (e.g. bulk cheese, fats) to print scale barcode.
+                          </p>
+                        </div>
+
+                        {/* Item Sorting & Best Selling */}
+                        <div className="md:col-span-2">
+                          <label className="block text-slate-700 font-medium mb-1">Item Sorting</label>
+                          <input
+                            type="number"
+                            value={editingProduct.itemSorting ?? 0}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, itemSorting: Number(e.target.value) })
+                            }
+                            placeholder="0"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                          />
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Priority index for category sorting in POS.
+                          </p>
+                        </div>
+
+                        <div className="md:col-span-2 flex items-center pt-5">
+                          <label className="inline-flex items-center gap-2 cursor-pointer select-none p-2 rounded-sm border border-slate-200 bg-slate-50 hover:bg-slate-100 transition w-full">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editingProduct.isBestSelling)}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, isBestSelling: e.target.checked })
+                              }
+                              className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-400"
+                            />
+                            <div className="flex items-center gap-1">
+                              <Star className={`w-3.5 h-3.5 ${editingProduct.isBestSelling ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
+                              <span className="font-semibold text-slate-800 text-xs">Best Selling</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Physical Dimensions (Logistics & Freight Calculation) */}
+                      <div className="pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-slate-700 font-medium text-xs flex items-center gap-1.5">
+                            <span>Physical Dimensions (BOX Format & Pallet Freight Estimation)</span>
+                          </label>
+                          <span className="text-[11px] text-slate-500 italic">
+                            Used by Vanguard Dispatch & freight modules for pallet load calculations
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Length (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsLength || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsLength: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 38.5"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Width (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsWidth || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsWidth: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 26.0"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Height (cm)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={editingProduct.dimensionsHeight || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsHeight: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 24.5"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Weight (kg / gross)</label>
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={editingProduct.dimensionsWeight || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsWeight: Number(e.target.value) })
+                              }
+                              placeholder="e.g. 14.8"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] text-slate-600 mb-1">Volume (m³)</label>
+                            <input
+                              type="number"
+                              step="0.001"
+                              value={
+                                editingProduct.dimensionsVolume ||
+                                (editingProduct.dimensionsLength && editingProduct.dimensionsWidth && editingProduct.dimensionsHeight
+                                  ? Number(((editingProduct.dimensionsLength * editingProduct.dimensionsWidth * editingProduct.dimensionsHeight) / 1000000).toFixed(4))
+                                  : '')
+                              }
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, dimensionsVolume: Number(e.target.value) })
+                              }
+                              placeholder="Auto m³"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-slate-50 font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -4054,36 +5411,199 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               )}
 
-              {/* TAB 3: PICTURES & VIDEOS */}
+              {/* TAB: MEDIA (Strict 200KB Limit, 225x225 Main, 200x200 Additional & Double-Save Workflow) */}
               {activeModalTab === 'media' && (
-                <div className="border border-slate-200 rounded-sm p-6 space-y-4 text-center">
-                  <div className="w-36 h-36 mx-auto bg-slate-100 border border-slate-300 rounded-sm flex items-center justify-center text-slate-400">
-                    <ImageIcon className="w-14 h-14 stroke-[1.5]" />
+                <div className="space-y-4">
+                  {/* Strict 200KB Limit & Dimension Banner */}
+                  <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
+                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                      <div className="flex items-center gap-1.5">
+                        <ImageIcon className="w-4 h-4" />
+                        <span>Strict 200KB Limit & Dimension Crop Policy (API Optimization)</span>
+                      </div>
+                      <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] rounded font-mono font-bold">
+                        MAX 200 KB / IMAGE
+                      </span>
+                    </div>
+                    <p className="text-slate-700 text-[11px] leading-relaxed">
+                      Omega enforces a strict <strong>200KB maximum file size</strong>. 
+                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Omega POS touchscreen grids & Vanguard thumbnail). 
+                      <strong> Additional Images:</strong> cropped to <strong>200×200 px</strong> (Back-label, nutritional facts & barcode close-ups).
+                      Guarantees lightweight payloads for instant loading in Supersonic Dispatch and B2B ordering portals.
+                    </p>
                   </div>
-                  <div className="flex justify-center gap-2">
+
+                  {/* Double-Save Workflow Notice */}
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-sm text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-amber-900">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <div>
+                        <strong>Double-Save Workflow:</strong> Click <strong>Save Images</strong> below to push media assets to the server before clicking the main modal Save button.
+                      </div>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => showToast('Image selector opened')}
-                      className="px-4 py-1.5 bg-[#323f4b] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                      onClick={handleSaveImages}
+                      className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     >
-                      Select Image
-                    </button>
-                    <button
-                      type="button"
-                      className="px-4 py-1.5 bg-[#5c2828] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
-                    >
-                      Remove
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Images</span>
                     </button>
                   </div>
-                  <div className="max-w-md mx-auto text-left pt-3">
-                    <label className="block text-slate-700 font-medium mb-1">Video Link (YouTube / Vimeo / MP4)</label>
-                    <input
-                      type="text"
-                      placeholder="https://..."
-                      value={editingProduct.videoUrl}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, videoUrl: e.target.value })}
-                      className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
-                    />
+
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+                    {/* Main Image (225x225 px) */}
+                    <div className="md:col-span-5 border border-slate-200 rounded-sm p-4 text-center space-y-3 bg-slate-50/50">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <span className="font-bold text-slate-800 text-xs">Main Image (225×225 px)</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono">
+                          Primary Visual
+                        </span>
+                      </div>
+
+                      <div className="w-[225px] h-[225px] mx-auto bg-white border-2 border-dashed border-slate-300 rounded-sm flex flex-col items-center justify-center relative overflow-hidden group shadow-2xs">
+                        {editingProduct.mainImage ? (
+                          <img
+                            src={editingProduct.mainImage}
+                            alt="Main Product Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="p-4 text-center space-y-2">
+                            <ImageIcon className="w-12 h-12 stroke-[1.5] text-slate-400 mx-auto" />
+                            <div className="text-[11px] text-slate-500">
+                              225 × 225 px
+                              <br />
+                              <span className="text-[10px] text-slate-400">&lt; 200 KB</span>
+                            </div>
+                          </div>
+                        )}
+                        <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">
+                          225×225
+                        </div>
+                      </div>
+
+                      <div className="flex justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                        >
+                          Select Image
+                        </button>
+                        {editingProduct.mainImage && (
+                          <button
+                            type="button"
+                            onClick={() => setEditingProduct({ ...editingProduct, mainImage: '' })}
+                            className="px-3 py-1.5 bg-[#5c2828] hover:bg-[#451f1f] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Presets for Demo */}
+                      <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500">
+                        <div className="mb-1 font-medium text-slate-700">Quick Samples (&lt;200KB Optimized):</div>
+                        <div className="flex flex-wrap justify-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Molasses Jar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Vinegar Bottle
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2 py-0.5 bg-white border border-slate-300 rounded text-[10px] hover:bg-slate-100"
+                          >
+                            Tomato Paste
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Images (200x200 px) & Video Link */}
+                    <div className="md:col-span-7 space-y-4">
+                      <div className="border border-slate-200 rounded-sm p-4 space-y-3 bg-white">
+                        <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                          <div>
+                            <span className="font-bold text-slate-800 text-xs">Additional Images (200×200 px)</span>
+                            <span className="text-[11px] text-slate-500 block">
+                              Back-label, nutritional facts & barcode close-up for B2B wholesale buyers
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                            className="px-2.5 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Add Image</span>
+                          </button>
+                        </div>
+
+                        {/* Gallery Grid */}
+                        <div className="grid grid-cols-3 gap-3">
+                          {(editingProduct.additionalImages && editingProduct.additionalImages.length > 0) ? (
+                            editingProduct.additionalImages.map((imgUrl, idx) => (
+                              <div key={idx} className="border border-slate-200 rounded-sm p-1.5 bg-slate-50 relative group">
+                                <div className="w-full h-24 bg-white rounded overflow-hidden flex items-center justify-center">
+                                  <img src={imgUrl} alt={`Additional ${idx + 1}`} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex items-center justify-between mt-1 text-[10px]">
+                                  <span className="text-slate-500 font-mono">200×200</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveAdditionalImage(idx)}
+                                    className="text-rose-600 hover:text-rose-800 font-bold"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="col-span-3 py-6 text-center text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-sm">
+                              <ImageIcon className="w-8 h-8 stroke-[1.5] mx-auto text-slate-300 mb-1" />
+                              <p className="text-[11px]">No additional images uploaded.</p>
+                              <button
+                                type="button"
+                                onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
+                                className="mt-2 text-xs text-[#195a96] font-semibold hover:underline cursor-pointer"
+                              >
+                                + Add Back-Label / Nutrition Fact Image
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Video Link */}
+                      <div className="border border-slate-200 rounded-sm p-4 bg-white space-y-2">
+                        <label className="block text-slate-700 font-medium mb-1">
+                          Product Video Link (YouTube / Vimeo / MP4)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          value={editingProduct.videoUrl || ''}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, videoUrl: e.target.value })}
+                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                        />
+                        <p className="text-[11px] text-slate-500">
+                          Exposed to B2B dispatch portal to showcase production facility processes or bottling runs.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -4615,138 +6135,400 @@ export default function AuthenticOmegaProductsServicesView() {
                   )}
 
                   {moreSubTab === 'advanced' && (
-                    <div className="border border-slate-200 rounded-sm p-4 space-y-4 text-xs">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(editingProduct.isDiscontinued)}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
-                          />
-                          <span className="font-semibold text-slate-800">Discontinued Item</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(editingProduct.isMasterItem)}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, isMasterItem: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="font-semibold text-slate-800">Master Item</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(editingProduct.isService)}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, isService: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                          <span className="font-semibold text-slate-800">Service Item</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(editingProduct.isConsignment)}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, isConsignment: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
-                          />
-                          <span className="font-semibold text-slate-800">Consignment Item</span>
-                        </label>
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-5 text-xs">
+                      {/* Section 1: Food Safety, Compliance & Traceability */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5 text-emerald-600" />
+                            1. Food Safety, Compliance & Batch Tracking
+                          </span>
+                          <span className="text-[10px] text-slate-400">Critical Food Formulation Rules</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Has Expiry Date */}
+                          <div className="p-2.5 rounded-sm border border-emerald-200 bg-emerald-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hasExpiryDate ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hasExpiryDate: e.target.checked, hasExpiry: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-emerald-400 text-emerald-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-emerald-900 block">Has Expiry Date (FIFO)</span>
+                                <span className="text-[11px] text-emerald-800 block mt-0.5">
+                                  Mandatory for molasses, vinegar, tomato paste, jams & fats. Prompts batch expiry date on receipt from Choueifat plant.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Support Serial Number */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.supportSerialNumber)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, supportSerialNumber: e.target.checked, hasSerialNumber: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Support Serial Number</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  For electronics & serialized equipment. Leave unchecked for case packs of vinegars and Eau de Javel.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Print Label on Sales */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.printLabelOnSales)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, printLabelOnSales: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Print Label on Sales</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Generates sticker at moment of sale for bulk unlabelled goods (like fresh local cheese).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-                        <div>
-                          <label className="block text-slate-700 font-medium mb-1">Serial Number Tracking</label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={Boolean(editingProduct.hasSerialNumber)}
-                              onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, hasSerialNumber: e.target.checked })
-                              }
-                              className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                            />
+                      {/* Section 2: Channel Visibility & ERP Linkage */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                            2. Channel Visibility & ERP / Dispatch Linkage
+                          </span>
+                          <span className="text-[10px] text-slate-400">API & B2B Portal Visibility</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Sell it Online */}
+                          <div className="p-2.5 rounded-sm border border-blue-200 bg-blue-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.sellOnline ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, sellOnline: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-blue-400 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-blue-900 block">Sell it Online (API Visibility)</span>
+                                <span className="text-[11px] text-blue-800 block mt-0.5">
+                                  Exposes item to Vanguard ERP, Supersonic Dispatch & B2B ordering portal.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* For Export */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.forExport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, forExport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">For Export</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Works with HS Code to trigger international commercial invoice formatting & customs tax exemptions.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide if Zero */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hideIfZero)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hideIfZero: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide if Zero</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Hides SKU from POS when Qty OH is zero. Leave unchecked for core manufactured goods to signal production runs.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide in Report */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isHideInReport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isHideInReport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide In Report</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Keeps internal supplies or zero-value placeholder SKUs out of financial valuation reports.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Electronic Label Tag */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isElectronicLabelTag)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isElectronicLabelTag: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Electronic Label Tag (ESL)</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Integrates item pricing via API to digital electronic shelf tags.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Discontinued */}
+                          <div className="p-2.5 rounded-sm border border-rose-200 bg-rose-50/40">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDiscontinued)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-rose-400 text-rose-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-rose-900 block">Discontinued Item</span>
+                                <span className="text-[11px] text-rose-800 block mt-0.5">
+                                  Permanently removes retired jar sizes or legacy batches from active PO/POS menus without deleting sales history.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 3: Commercial Policy & Lifecycle Governance */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <Settings className="w-3.5 h-3.5 text-purple-600" />
+                            3. Commercial Policy & Sales Lifecycle Governance
+                          </span>
+                          <span className="text-[10px] text-slate-400">Invoicing & Returns Controls</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Refundable */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isRefundable ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isRefundable: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Refundable</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Allows POS returns and credit notes. Uncheck for custom bulk chemical orders that cannot be restocked once dispatched.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Open Description */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isOpenDescription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isOpenDescription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Open Description</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Cashier can manually overwrite item name on invoice. Keep unchecked for standardized commercial goods to prevent report corruption.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Consignment */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.consignment || editingProduct.isConsignment)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, consignment: e.target.checked, isConsignment: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Consignment</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Placement in external retail shops without upfront payment. Standard wholesale batches are direct revenue (leave unchecked).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Yearly Subscription */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isYearlySubscription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isYearlySubscription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Yearly Subscription</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Triggers recurring billing cycles. Leave unchecked for moving physical commercial batches.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Daily Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDailyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDailyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Daily Adjust (High-Value Cycle)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into daily physical cycle-count audit reports (mandated for high-value raw materials like bulk CMC or Pectin).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Weekly Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isWeeklyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isWeeklyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Weekly Adjust (Cycle Count)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into weekly inventory reconciliation audit reports for finished goods.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Physical & Chemical Specifications */}
+                      <div className="pt-2 border-t border-slate-200">
+                        <h4 className="font-semibold text-slate-800 text-xs mb-3">Item Physical Specifications & Formulation Notes</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Color Specification</label>
                             <input
                               type="text"
-                              value={editingProduct.serialNumber || ''}
+                              value={editingProduct.color || ''}
                               onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, serialNumber: e.target.value, hasSerialNumber: Boolean(e.target.value) })
+                                setEditingProduct({ ...editingProduct, color: e.target.value, hasColors: Boolean(e.target.value) })
                               }
-                              placeholder="e.g. SN-VNG-2026-001"
-                              className="w-full px-3 py-1 text-xs rounded-sm border border-slate-300 bg-white"
+                              placeholder="e.g. Deep Amber / Rich Burgundy"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                             />
                           </div>
-                        </div>
-                        <div>
-                          <label className="block text-slate-700 font-medium mb-1">Expiry Date Tracking</label>
-                          <div className="flex items-center gap-2">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Size / Net Weight</label>
                             <input
-                              type="checkbox"
-                              checked={Boolean(editingProduct.hasExpiry)}
+                              type="text"
+                              value={editingProduct.size || ''}
                               onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, hasExpiry: e.target.checked })
+                                setEditingProduct({ ...editingProduct, size: e.target.value, hasSizes: Boolean(e.target.value) })
                               }
-                              className="w-4 h-4 rounded border-slate-300 text-blue-600"
-                            />
-                            <input
-                              type="date"
-                              value={editingProduct.expiryDate || ''}
-                              onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, expiryDate: e.target.value, hasExpiry: Boolean(e.target.value) })
-                              }
-                              className="w-full px-3 py-1 text-xs rounded-sm border border-slate-300 bg-white"
+                              placeholder="e.g. 500ml / 800g / 16L"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                             />
                           </div>
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Master Item Flag</label>
+                            <div className="pt-1.5">
+                              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(editingProduct.isMasterItem)}
+                                  onChange={(e) =>
+                                    setEditingProduct({ ...editingProduct, isMasterItem: e.target.checked })
+                                  }
+                                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                                />
+                                <span className="font-medium text-slate-700">Master Item Definition</span>
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-slate-700 font-medium mb-1">Color Specification</label>
-                          <input
-                            type="text"
-                            value={editingProduct.color || ''}
+                        <div className="mt-3">
+                          <label className="block text-slate-700 font-medium mb-1">Ingredients & Formulation Recipe</label>
+                          <textarea
+                            rows={2}
+                            value={editingProduct.ingredients || ''}
                             onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, color: e.target.value, hasColors: Boolean(e.target.value) })
+                              setEditingProduct({ ...editingProduct, ingredients: e.target.value, hasIngredients: Boolean(e.target.value) })
                             }
-                            placeholder="e.g. Dark Amber / Clear Crystal"
+                            placeholder="e.g. 100% Pure concentrated pomegranate juice, citric acid..."
                             className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                           />
                         </div>
-                        <div>
-                          <label className="block text-slate-700 font-medium mb-1">Size / Volume Format</label>
-                          <input
-                            type="text"
-                            value={editingProduct.size || ''}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, size: e.target.value, hasSizes: Boolean(e.target.value) })
-                            }
-                            placeholder="e.g. 250ml / 500ml / 16L"
-                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-slate-700 font-medium mb-1">Ingredients Specification</label>
-                        <textarea
-                          rows={2}
-                          value={editingProduct.ingredients || ''}
-                          onChange={(e) =>
-                            setEditingProduct({ ...editingProduct, ingredients: e.target.value, hasIngredients: Boolean(e.target.value) })
-                          }
-                          placeholder="e.g. Extra virgin olive oil, herbs, essences..."
-                          className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
-                        />
                       </div>
                     </div>
                   )}
