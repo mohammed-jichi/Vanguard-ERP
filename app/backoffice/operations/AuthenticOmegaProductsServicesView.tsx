@@ -31,7 +31,9 @@ import {
   ShieldAlert,
   SlidersHorizontal,
   FileSpreadsheet,
-  Settings
+  Settings,
+  MoreHorizontal,
+  HelpCircle
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -45,7 +47,14 @@ import {
 import { INITIAL_OMEGA_INV_DIVISIONS } from '@/lib/omegaInventoryDivisionData';
 import { INITIAL_OMEGA_INV_GROUPS } from '@/lib/omegaInventoryGroupData';
 import { INITIAL_OMEGA_SUPPLIERS, SupplierItem } from '@/lib/omegaSuppliersData';
-import { INITIAL_OMEGA_LOCATIONS, LocationItem } from '@/lib/omegaLocationsData';
+import {
+  INITIAL_OMEGA_LOCATIONS,
+  LocationItem,
+  INITIAL_OMEGA_ZONES,
+  ZoneItem,
+  INITIAL_OMEGA_AISLES,
+  AisleItem
+} from '@/lib/omegaLocationsData';
 import { INITIAL_OMEGA_UNITS, UnitItem } from '@/lib/omegaUnitsData';
 import { OMEGA_BRANCHES, BranchOption } from '@/lib/omegaDepartmentsData';
 
@@ -176,8 +185,289 @@ export default function AuthenticOmegaProductsServicesView() {
   const [historySubTab, setHistorySubTab] = useState<'movements' | 'priceLogs' | 'audit'>('movements');
   const [moreSubTab, setMoreSubTab] = useState<'accounts' | 'taxes' | 'advanced'>('accounts');
 
+  // Location Hierarchy Expander (Image 2: Floor, Zone, Aisle)
+  const [isFloorZoneAisleOpen, setIsFloorZoneAisleOpen] = useState<boolean>(false);
+
+  // Apply Recommended Price Modal (Image 3)
+  const [isApplyRecommendedPriceModalOpen, setIsApplyRecommendedPriceModalOpen] = useState<boolean>(false);
+  const [recommendedPriceTargets, setRecommendedPriceTargets] = useState<{
+    sp1: boolean;
+    sp2: boolean;
+    sp3: boolean;
+    sp4: boolean;
+  }>({
+    sp1: true,
+    sp2: true,
+    sp3: true,
+    sp4: true
+  });
+
+  // Additional Interactive Modals from Audios & Images
+  const [isLastPricesModalOpen, setIsLastPricesModalOpen] = useState<boolean>(false);
+  const [isPriceVariationsModalOpen, setIsPriceVariationsModalOpen] = useState<boolean>(false);
+  const [isMoreBarcodesModalOpen, setIsMoreBarcodesModalOpen] = useState<boolean>(false);
+  const [isPurchaseHistoryModalOpen, setIsPurchaseHistoryModalOpen] = useState<boolean>(false);
+  const [isVanguardMarketplaceModalOpen, setIsVanguardMarketplaceModalOpen] = useState<boolean>(false);
+
+  // Quick Addition Modals for '+' buttons
+  const [isAddGroupModalOpen, setIsAddGroupModalOpen] = useState<boolean>(false);
+  const [isAddLocationModalOpen, setIsAddLocationModalOpen] = useState<boolean>(false);
+  const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState<boolean>(false);
+  const [isAddBrandModalOpen, setIsAddBrandModalOpen] = useState<boolean>(false);
+  const [isAddZoneModalOpen, setIsAddZoneModalOpen] = useState<boolean>(false);
+  const [isAddAisleModalOpen, setIsAddAisleModalOpen] = useState<boolean>(false);
+
+  // Dynamic Lists for Quick Adds
+  const [invGroups, setInvGroups] = useState(INITIAL_OMEGA_INV_GROUPS);
+  const [locationsList, setLocationsList] = useState(INITIAL_OMEGA_LOCATIONS);
+  const [zonesList, setZonesList] = useState(INITIAL_OMEGA_ZONES);
+  const [aislesList, setAislesList] = useState(INITIAL_OMEGA_AISLES);
+  const [suppliersList, setSuppliersList] = useState(INITIAL_OMEGA_SUPPLIERS);
+  const [brandsList, setBrandsList] = useState(OMEGA_ITEM_BRANDS);
+
+  // Quick Add Form States
+  const [newGroupName, setNewGroupName] = useState<string>('');
+  const [newLocationName, setNewLocationName] = useState<string>('');
+  const [newSupplierName, setNewSupplierName] = useState<string>('');
+  const [newBrandName, setNewBrandName] = useState<string>('');
+  const [newZoneName, setNewZoneName] = useState<string>('');
+  const [newAisleName, setNewAisleName] = useState<string>('');
+  const [newExtraBarcode, setNewExtraBarcode] = useState<string>('');
+  const [newExtraBarcodeType, setNewExtraBarcodeType] = useState<string>('EAN-13');
+  const [newExtraBarcodeNote, setNewExtraBarcodeNote] = useState<string>('Packaging Box');
+
   // Active product being edited
   const [editingProduct, setEditingProduct] = useState<AuthenticProductRecord | null>(null);
+
+  // Handlers for Group-Level Actions (Audios 2 & 3)
+  const handleSaveSellingFunctionForGroup = () => {
+    if (!editingProduct) return;
+    const targetGroup = editingProduct.groupName;
+    const fn = editingProduct.sellingFunction;
+    setProducts((prev) =>
+      prev.map((p) => (p.groupName === targetGroup ? { ...p, sellingFunction: fn, function: fn } : p))
+    );
+    showToast(`Selling Function "${fn}" saved for all items in group "${targetGroup}"`);
+  };
+
+  const handleSaveLogicalWarehouseForGroup = () => {
+    if (!editingProduct) return;
+    const targetGroup = editingProduct.groupName;
+    const whId = editingProduct.logicalWarehouseId;
+    const whName = editingProduct.logicalWarehouseName;
+    setProducts((prev) =>
+      prev.map((p) => (p.groupName === targetGroup ? { ...p, logicalWarehouseId: whId, logicalWarehouseName: whName } : p))
+    );
+    showToast(`Logical Warehouse "${whName}" applied to all items in group "${targetGroup}"`);
+  };
+
+  const handleSaveDefaultLocationForGroup = () => {
+    if (!editingProduct) return;
+    const targetGroup = editingProduct.groupName;
+    const locId = editingProduct.defaultLocationId;
+    const locName = editingProduct.defaultLocationName;
+    setProducts((prev) =>
+      prev.map((p) => (p.groupName === targetGroup ? { ...p, defaultLocationId: locId, defaultLocationName: locName } : p))
+    );
+    showToast(`Default Location "${locName}" saved for all items in group "${targetGroup}"`);
+  };
+
+  const handleSaveMarkupForGroup = () => {
+    if (!editingProduct) return;
+    const targetGroup = editingProduct.groupName;
+    const markup = editingProduct.markupPct || 0;
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.groupName === targetGroup) {
+          const rec = Math.round((p.unitCostLL || 0) * (1 + markup / 100));
+          return { ...p, markupPct: markup, recommendedPriceLL: rec };
+        }
+        return p;
+      })
+    );
+    showToast(`Markup ${markup}% saved for all items in group "${targetGroup}"`);
+  };
+
+  const handleSaveSupplierForGroup = () => {
+    if (!editingProduct) return;
+    const targetGroup = editingProduct.groupName;
+    const supp = editingProduct.mainSupplierName;
+    setProducts((prev) =>
+      prev.map((p) => (p.groupName === targetGroup ? { ...p, mainSupplierName: supp, lastSupplierName: supp } : p))
+    );
+    showToast(`Main supplier "${supp}" saved for all items in group "${targetGroup}"`);
+  };
+
+  const handleApplyRecommendedPrice = () => {
+    if (!editingProduct) return;
+    const rec = editingProduct.recommendedPriceLL || 0;
+    const updated = { ...editingProduct };
+    const appliedList: string[] = [];
+    if (recommendedPriceTargets.sp1) {
+      updated.sellingPrice1LL = rec;
+      updated.beforeTax1LL = rec;
+      updated.sellingPrice = rec;
+      const cost = updated.unitCostLL || 0;
+      updated.profit1Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
+      appliedList.push('SP 1');
+    }
+    if (recommendedPriceTargets.sp2) {
+      updated.sellingPrice2LL = rec;
+      updated.beforeTax2LL = rec;
+      const cost = updated.unitCostLL || 0;
+      updated.profit2Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
+      appliedList.push('SP 2');
+    }
+    if (recommendedPriceTargets.sp3) {
+      updated.sellingPrice3LL = rec;
+      updated.beforeTax3LL = rec;
+      const cost = updated.unitCostLL || 0;
+      updated.profit3Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
+      appliedList.push('SP 3');
+    }
+    if (recommendedPriceTargets.sp4) {
+      updated.sellingPrice4LL = rec;
+      updated.beforeTax4LL = rec;
+      const cost = updated.unitCostLL || 0;
+      updated.profit4Pct = rec > 0 ? Number((((rec - cost) / rec) * 100).toFixed(2)) : 0;
+      appliedList.push('SP 4');
+    }
+    setEditingProduct(updated);
+    setIsApplyRecommendedPriceModalOpen(false);
+    showToast(`Applied recommended price L.L. ${rec.toLocaleString()} to ${appliedList.join(', ')}`);
+  };
+
+  const handleApplySecondCurrencyRates = () => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const sp1USD = Number(((editingProduct.sellingPrice1LL || 0) / rate).toFixed(2));
+    const sp2USD = Number(((editingProduct.sellingPrice2LL || 0) / rate).toFixed(2));
+    const sp3USD = Number(((editingProduct.sellingPrice3LL || 0) / rate).toFixed(2));
+    const sp4USD = Number(((editingProduct.sellingPrice4LL || 0) / rate).toFixed(2));
+    setEditingProduct({
+      ...editingProduct,
+      sellingPrice1USD: sp1USD,
+      sellingPrice2USD: sp2USD,
+      sellingPrice3USD: sp3USD,
+      sellingPrice4USD: sp4USD
+    });
+    showToast(`Converted all selling prices to USD at rate ${rate.toLocaleString()} LL/$`);
+  };
+
+  // Handlers for Quick Adding Hierarchy / Master Entities
+  const handleAddGroupSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGroupName.trim() || !editingProduct) return;
+    const newG = {
+      ID: Math.max(...invGroups.map((g) => g.ID), 0) + 1,
+      GROUPNAME: newGroupName.trim(),
+      DIVISIONNAME: editingProduct.divisionName,
+      itemsCount: 0
+    } as any;
+    setInvGroups([...invGroups, newG]);
+    setEditingProduct({ ...editingProduct, groupName: newG.GROUPNAME });
+    setNewGroupName('');
+    setIsAddGroupModalOpen(false);
+    showToast(`New group "${newG.GROUPNAME}" added and selected`);
+  };
+
+  const handleAddLocationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLocationName.trim() || !editingProduct) return;
+    const newL: LocationItem = {
+      ID: Math.max(...locationsList.map((l) => l.ID), 0) + 1,
+      LOCATIONID: Math.max(...locationsList.map((l) => l.LOCATIONID), 0) + 1,
+      LOCATIONDESCRIPTION: newLocationName.trim(),
+      BRANCHID: 1
+    };
+    setLocationsList([...locationsList, newL]);
+    setEditingProduct({ ...editingProduct, defaultLocationId: newL.LOCATIONID, defaultLocationName: newL.LOCATIONDESCRIPTION });
+    setNewLocationName('');
+    setIsAddLocationModalOpen(false);
+    showToast(`New location "${newL.LOCATIONDESCRIPTION}" added and selected`);
+  };
+
+  const handleAddSupplierSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSupplierName.trim() || !editingProduct) return;
+    const newS = {
+      SUPPLIERID: Math.max(...suppliersList.map((s) => s.SUPPLIERID), 0) + 1,
+      SUPPLIERNAME: newSupplierName.trim()
+    } as any;
+    setSuppliersList([...suppliersList, newS]);
+    setEditingProduct({ ...editingProduct, mainSupplierId: newS.SUPPLIERID, mainSupplierName: newS.SUPPLIERNAME, lastSupplierName: newS.SUPPLIERNAME });
+    setNewSupplierName('');
+    setIsAddSupplierModalOpen(false);
+    showToast(`New supplier "${newS.SUPPLIERNAME}" added and selected`);
+  };
+
+  const handleAddBrandSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBrandName.trim() || !editingProduct) return;
+    const newB = {
+      id: Math.max(...brandsList.map((b) => b.id), 0) + 1,
+      name: newBrandName.trim()
+    };
+    setBrandsList([...brandsList, newB]);
+    setEditingProduct({ ...editingProduct, itemBrand: newB.name });
+    setNewBrandName('');
+    setIsAddBrandModalOpen(false);
+    showToast(`New brand "${newB.name}" added and selected`);
+  };
+
+  const handleAddZoneSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newZoneName.trim() || !editingProduct) return;
+    const newZ: ZoneItem = {
+      id: Math.max(...zonesList.map((z) => z.id), 0) + 1,
+      name: newZoneName.trim()
+    };
+    setZonesList([...zonesList, newZ]);
+    setEditingProduct({ ...editingProduct, zone: newZ.name });
+    setNewZoneName('');
+    setIsAddZoneModalOpen(false);
+    showToast(`New zone "${newZ.name}" added and selected`);
+  };
+
+  const handleAddAisleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAisleName.trim() || !editingProduct) return;
+    const newA: AisleItem = {
+      id: Math.max(...aislesList.map((a) => a.id), 0) + 1,
+      name: newAisleName.trim()
+    };
+    setAislesList([...aislesList, newA]);
+    setEditingProduct({ ...editingProduct, aisle: newA.name });
+    setNewAisleName('');
+    setIsAddAisleModalOpen(false);
+    showToast(`New aisle "${newA.name}" added and selected`);
+  };
+
+  const handleAddExtraBarcode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newExtraBarcode.trim() || !editingProduct) return;
+    const curList = editingProduct.moreBarcodes || [];
+    const item = {
+      id: Date.now(),
+      barcode: newExtraBarcode.trim(),
+      note: `${newExtraBarcodeType} - ${newExtraBarcodeNote}`
+    };
+    setEditingProduct({
+      ...editingProduct,
+      moreBarcodes: [...curList, item]
+    });
+    setNewExtraBarcode('');
+    showToast(`Added barcode ${item.barcode}`);
+  };
+
+  const handleDeleteExtraBarcode = (id: number) => {
+    if (!editingProduct) return;
+    setEditingProduct({
+      ...editingProduct,
+      moreBarcodes: (editingProduct.moreBarcodes || []).filter((b) => b.id !== id)
+    });
+    showToast('Barcode removed');
+  };
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -1392,7 +1682,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <input
                               type="text"
                               required
-                              placeholder="Search in Omega Marketplace"
+                              placeholder="Search in Vanguard Marketplace"
                               value={editingProduct.description}
                               onChange={(e) =>
                                 setEditingProduct({ ...editingProduct, description: e.target.value })
@@ -1401,8 +1691,9 @@ export default function AuthenticOmegaProductsServicesView() {
                             />
                             <button
                               type="button"
-                              title="Search in Omega Marketplace"
-                              className="px-2.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer"
+                              onClick={() => setIsVanguardMarketplaceModalOpen(true)}
+                              title="Search in Vanguard Marketplace"
+                              className="px-2.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs"
                             >
                               <Search className="w-3.5 h-3.5" />
                             </button>
@@ -1498,7 +1789,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
                               <option value="">Select group</option>
-                              {INITIAL_OMEGA_INV_GROUPS.map((g) => (
+                              {invGroups.map((g) => (
                                 <option key={g.ID} value={g.GROUPNAME}>
                                   {g.GROUPNAME}
                                 </option>
@@ -1506,8 +1797,9 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={() => setIsAddGroupModalOpen(true)}
                               title="Add Group"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -1516,19 +1808,29 @@ export default function AuthenticOmegaProductsServicesView() {
 
                         <div>
                           <label className="block text-slate-700 font-medium mb-1">Selling Function</label>
-                          <select
-                            value={editingProduct.sellingFunction}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, sellingFunction: e.target.value })
-                            }
-                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
-                          >
-                            {OMEGA_SELLING_FUNCTIONS.map((f) => (
-                              <option key={f.id} value={f.name}>
-                                {f.name}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="flex gap-2">
+                            <select
+                              value={editingProduct.sellingFunction}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, sellingFunction: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              {OMEGA_SELLING_FUNCTIONS.map((f) => (
+                                <option key={f.id} value={f.name}>
+                                  {f.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={handleSaveSellingFunctionForGroup}
+                              title="Save selling function for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
 
@@ -1544,7 +1846,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
                               <option value="">Select location</option>
-                              {INITIAL_OMEGA_LOCATIONS.map((l: LocationItem) => (
+                              {locationsList.map((l: LocationItem) => (
                                 <option key={l.LOCATIONID} value={l.LOCATIONDESCRIPTION}>
                                   {l.LOCATIONDESCRIPTION}
                                 </option>
@@ -1552,31 +1854,132 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={handleSaveDefaultLocationForGroup}
+                              title="Save default location for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsAddLocationModalOpen(true)}
                               title="Add Location"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsFloorZoneAisleOpen(!isFloorZoneAisleOpen)}
+                              title="Toggle Floor, Zone, Aisle"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
+                            >
+                              ...
                             </button>
                           </div>
                         </div>
 
                         <div>
                           <label className="block text-slate-700 font-medium mb-1">Logical Warehouse *</label>
-                          <select
-                            value={editingProduct.logicalWarehouseName}
-                            onChange={(e) =>
-                              setEditingProduct({ ...editingProduct, logicalWarehouseName: e.target.value })
-                            }
-                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
-                          >
-                            {OMEGA_LOGICAL_WAREHOUSES.map((w) => (
-                              <option key={w.id} value={w.name}>
-                                {w.name}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="flex gap-2">
+                            <select
+                              value={editingProduct.logicalWarehouseName}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, logicalWarehouseName: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            >
+                              {OMEGA_LOGICAL_WAREHOUSES.map((w) => (
+                                <option key={w.id} value={w.name}>
+                                  {w.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={handleSaveLogicalWarehouseForGroup}
+                              title="Apply logical warehouse to all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
+
+                      {/* Floor, Zone, Aisle Expandable Row (Image 2) */}
+                      {isFloorZoneAisleOpen && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-sm animate-fade-in">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Floor</label>
+                            <input
+                              type="text"
+                              value={editingProduct.floor || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, floor: e.target.value })
+                              }
+                              placeholder="Floor"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Zone</label>
+                            <div className="flex">
+                              <select
+                                value={editingProduct.zone || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, zone: e.target.value })
+                                }
+                                className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                              >
+                                <option value="">Select zone</option>
+                                {zonesList.map((z) => (
+                                  <option key={z.id} value={z.name}>
+                                    {z.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => setIsAddZoneModalOpen(true)}
+                                title="Add Zone"
+                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Aisle</label>
+                            <div className="flex">
+                              <select
+                                value={editingProduct.aisle || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, aisle: e.target.value })
+                                }
+                                className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                              >
+                                <option value="">Select aisle</option>
+                                {aislesList.map((a) => (
+                                  <option key={a.id} value={a.name}>
+                                    {a.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => setIsAddAisleModalOpen(true)}
+                                title="Add Aisle"
+                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
@@ -1585,11 +1988,11 @@ export default function AuthenticOmegaProductsServicesView() {
                             <select
                               value={editingProduct.mainSupplierName}
                               onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value })
+                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value, lastSupplierName: e.target.value })
                               }
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
-                              {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
+                              {suppliersList.map((s: SupplierItem) => (
                                 <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
                                   {s.SUPPLIERNAME}
                                 </option>
@@ -1597,6 +2000,23 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={handleSaveSupplierForGroup}
+                              title="Save supplier for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsPurchaseHistoryModalOpen(true)}
+                              title="Purchase History"
+                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
+                            >
+                              <History className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
@@ -1616,7 +2036,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
                               <option value="">Select Item Brand</option>
-                              {OMEGA_ITEM_BRANDS.map((b) => (
+                              {brandsList.map((b) => (
                                 <option key={b.id} value={b.name}>
                                   {b.name}
                                 </option>
@@ -1624,6 +2044,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={() => setIsAddBrandModalOpen(true)}
                               title="Add Brand"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
@@ -1802,6 +2223,429 @@ export default function AuthenticOmegaProductsServicesView() {
                             />
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Cost (Image 1) */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                      Cost
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Col 1 & 2 */}
+                        <div className="md:col-span-2 space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Unit Cost LL</label>
+                              <input
+                                type="number"
+                                value={editingProduct.unitCostLL || ''}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const markup = editingProduct.markupPct || 0;
+                                  const rec = Math.round(val * (1 + markup / 100));
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    unitCostLL: val,
+                                    cost: val,
+                                    recommendedPriceLL: rec
+                                  });
+                                }}
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Average Cost LL</label>
+                              <input
+                                type="number"
+                                value={editingProduct.averageCostLL || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    averageCostLL: Number(e.target.value)
+                                  })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Unit Cost $</label>
+                              <input
+                                type="number"
+                                step="0.000001"
+                                value={editingProduct.unitCostUSD || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    unitCostUSD: Number(e.target.value)
+                                  })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Average Cost $</label>
+                              <input
+                                type="number"
+                                step="0.000001"
+                                value={editingProduct.averageCostUSD || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    averageCostUSD: Number(e.target.value)
+                                  })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Col 3: Additional Cost, Markup %, Recommended Price & Recalculate */}
+                        <div className="space-y-3 border-l border-slate-200 pl-4">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Additional Cost LL</label>
+                            <input
+                              type="number"
+                              value={editingProduct.additionalCostLL || ''}
+                              onChange={(e) =>
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  additionalCostLL: Number(e.target.value)
+                                })
+                              }
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Markup %</label>
+                              <div className="flex gap-1">
+                                <input
+                                  type="number"
+                                  value={editingProduct.markupPct ?? 0}
+                                  onChange={(e) => {
+                                    const m = Number(e.target.value);
+                                    const cost = editingProduct.unitCostLL || 0;
+                                    const rec = Math.round(cost * (1 + m / 100));
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      markupPct: m,
+                                      recommendedPriceLL: rec
+                                    });
+                                  }}
+                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleSaveMarkupForGroup}
+                                  title="Save Markup % for all items in same group"
+                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                >
+                                  <Save className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Recommended Price</label>
+                              <div className="flex gap-1">
+                                <input
+                                  type="number"
+                                  value={editingProduct.recommendedPriceLL || ''}
+                                  onChange={(e) =>
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      recommendedPriceLL: Number(e.target.value)
+                                    })
+                                  }
+                                  className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setIsApplyRecommendedPriceModalOpen(true)}
+                                  title="Apply recommended price to selling prices"
+                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                >
+                                  <Save className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handleRecalculateCost}
+                            className="w-full py-2 bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs rounded-sm flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            <span>Recalculate Production Item Cost</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 4: Selling Price (Image 1) */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                      <span>Selling Price</span>
+                      <div className="flex items-center gap-4 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setIsPriceVariationsModalOpen(true)}
+                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                        >
+                          Price Variations
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsLastPricesModalOpen(true)}
+                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                        >
+                          Last Prices
+                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-slate-800">Selling price 2nd currency</span>
+                          <button
+                            type="button"
+                            onClick={handleApplySecondCurrencyRates}
+                            title="Calculate USD prices at second currency rate"
+                            className="p-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                          >
+                            <Save className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {[1, 2, 3, 4].map((num) => {
+                        const spKey = `sellingPrice${num}LL` as keyof AuthenticProductRecord;
+                        const btKey = `beforeTax${num}LL` as keyof AuthenticProductRecord;
+                        const pfKey = `profit${num}Pct` as keyof AuthenticProductRecord;
+                        const usdKey = `sellingPrice${num}USD` as keyof AuthenticProductRecord;
+                        const qtyKey = `qtyPrice${num}` as keyof AuthenticProductRecord;
+
+                        return (
+                          <div
+                            key={num}
+                            className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center border-b border-slate-100 pb-2.5"
+                          >
+                            <div className="md:col-span-3">
+                              <label className="block text-slate-700 font-medium mb-1">
+                                Selling Price {num} LL
+                              </label>
+                              <input
+                                type="number"
+                                value={Number(editingProduct[spKey]) || ''}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const cost = editingProduct.unitCostLL || 0;
+                                  const profit = val > 0 ? Number((((val - cost) / val) * 100).toFixed(2)) : 0;
+                                  const rate = editingProduct.secondCurrencyRate || 90000;
+                                  const usd = Number((val / rate).toFixed(2));
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    [spKey]: val,
+                                    [btKey]: val,
+                                    [pfKey]: profit,
+                                    [usdKey]: usd,
+                                    ...(num === 1 ? { sellingPrice: val } : {})
+                                  });
+                                }}
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+
+                            <div className="md:col-span-3">
+                              <label className="block text-slate-700 font-medium mb-1">Before Tax {num} LL</label>
+                              <input
+                                type="number"
+                                value={Number(editingProduct[btKey]) || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                              />
+                            </div>
+
+                            {num > 1 ? (
+                              <div className="md:col-span-2">
+                                <label className="flex items-center gap-1 text-slate-700 font-medium mb-1">
+                                  <span>Qty for Selling Price {num}</span>
+                                  <span title={`Minimum quantity required for Selling Price ${num}`}>
+                                    <HelpCircle className="w-3 h-3 text-slate-500 cursor-help" />
+                                  </span>
+                                </label>
+                                <input
+                                  type="number"
+                                  value={Number(editingProduct[qtyKey] || 1)}
+                                  onChange={(e) =>
+                                    setEditingProduct({ ...editingProduct, [qtyKey]: Number(e.target.value) })
+                                  }
+                                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                                />
+                              </div>
+                            ) : (
+                              <div className="md:col-span-2"></div>
+                            )}
+
+                            <div className="md:col-span-2">
+                              <label className="block text-slate-700 font-medium mb-1">Profit {num} %</label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={Number(editingProduct[pfKey]) || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, [pfKey]: Number(e.target.value) })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                              />
+                            </div>
+
+                            <div className="md:col-span-2">
+                              <label className="block text-slate-700 font-medium mb-1">Selling Price {num} $</label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={Number(editingProduct[usdKey]) || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, [usdKey]: Number(e.target.value) })
+                                }
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Second Currency Rate */}
+                      <div className="flex justify-end pt-1">
+                        <div className="w-64">
+                          <label className="block text-slate-700 font-medium mb-1">Second Currency Rate</label>
+                          <input
+                            type="number"
+                            value={editingProduct.secondCurrencyRate || 90000}
+                            onChange={(e) =>
+                              setEditingProduct({
+                                ...editingProduct,
+                                secondCurrencyRate: Number(e.target.value)
+                              })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 5: Barcodes (Image 1) */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                      Barcodes
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        <div className="md:col-span-5">
+                          <label className="block text-slate-700 font-medium mb-1">Barcode</label>
+                          <div className="flex">
+                            <input
+                              type="text"
+                              value={editingProduct.barcode || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, barcode: e.target.value })
+                              }
+                              className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white"
+                            />
+                            <button
+                              type="button"
+                              title="Barcode Scanner / Generate"
+                              className="px-2.5 py-1.5 bg-[#4c5c7a] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Barcode className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="md:col-span-4">
+                          <label className="block text-slate-700 font-medium mb-1">Alternative Barcode 2</label>
+                          <input
+                            type="text"
+                            value={editingProduct.alternativeBarcode2 || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, alternativeBarcode2: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+
+                        <div className="md:col-span-3">
+                          <label className="block text-slate-700 font-medium mb-1">RFIDT 1</label>
+                          <input
+                            type="text"
+                            value={editingProduct.rfidt1 || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, rfidt1: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        <div className="md:col-span-5">
+                          <label className="block text-slate-700 font-medium mb-1">Alternative Barcode 3</label>
+                          <input
+                            type="text"
+                            value={editingProduct.alternativeBarcode3 || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, alternativeBarcode3: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+
+                        <div className="md:col-span-4 pt-4">
+                          <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(editingProduct.applySp2Qty2)}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, applySp2Qty2: e.target.checked })
+                              }
+                              className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 cursor-pointer"
+                            />
+                            <span className="font-medium text-slate-700">Apply sp2 qty2</span>
+                          </label>
+                        </div>
+
+                        <div className="md:col-span-3">
+                          <label className="block text-slate-700 font-medium mb-1">RFIDT 2</label>
+                          <input
+                            type="text"
+                            value={editingProduct.rfidt2 || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, rfidt2: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsMoreBarcodesModalOpen(true)}
+                          className="px-3.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>More Barcodes</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -2112,7 +2956,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               }
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
-                              {INITIAL_OMEGA_INV_GROUPS.map((g) => (
+                              {invGroups.map((g) => (
                                 <option key={g.ID} value={g.GROUPNAME}>
                                   {g.GROUPNAME}
                                 </option>
@@ -2120,7 +2964,9 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              onClick={() => setIsAddGroupModalOpen(true)}
+                              title="Add Group"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -2145,10 +2991,11 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              title="Copy value"
-                              className="px-2 py-1.5 bg-[#23783a] text-white rounded-sm cursor-pointer"
+                              onClick={handleSaveSellingFunctionForGroup}
+                              title="Save selling function for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
-                              <Copy className="w-3.5 h-3.5" />
+                              <Save className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -2165,7 +3012,8 @@ export default function AuthenticOmegaProductsServicesView() {
                               }
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
-                              {INITIAL_OMEGA_LOCATIONS.map((l: LocationItem) => (
+                              <option value="">Select location</option>
+                              {locationsList.map((l: LocationItem) => (
                                 <option key={l.LOCATIONID} value={l.LOCATIONDESCRIPTION}>
                                   {l.LOCATIONDESCRIPTION}
                                 </option>
@@ -2173,24 +3021,27 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              title="Copy"
-                              className="px-2 py-1.5 bg-[#23783a] text-white cursor-pointer"
+                              onClick={handleSaveDefaultLocationForGroup}
+                              title="Save default location for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
                             >
-                              <Copy className="w-3.5 h-3.5" />
+                              <Save className="w-3.5 h-3.5" />
                             </button>
                             <button
                               type="button"
+                              onClick={() => setIsAddLocationModalOpen(true)}
                               title="Add Location"
-                              className="px-2.5 py-1.5 bg-[#323f4b] text-white cursor-pointer"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
                             <button
                               type="button"
-                              title="More"
-                              className="px-2.5 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                              onClick={() => setIsFloorZoneAisleOpen(!isFloorZoneAisleOpen)}
+                              title="Toggle Floor, Zone, Aisle"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
                             >
-                              <span>...</span>
+                              ...
                             </button>
                           </div>
                         </div>
@@ -2213,14 +3064,89 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              title="Copy"
-                              className="px-2 py-1.5 bg-[#23783a] text-white rounded-sm cursor-pointer"
+                              onClick={handleSaveLogicalWarehouseForGroup}
+                              title="Apply logical warehouse to all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
-                              <Copy className="w-3.5 h-3.5" />
+                              <Save className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
                       </div>
+
+                      {/* Floor, Zone, Aisle Expandable Row (Image 2) */}
+                      {isFloorZoneAisleOpen && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-sm animate-fade-in">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Floor</label>
+                            <input
+                              type="text"
+                              value={editingProduct.floor || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, floor: e.target.value })
+                              }
+                              placeholder="Floor"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Zone</label>
+                            <div className="flex">
+                              <select
+                                value={editingProduct.zone || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, zone: e.target.value })
+                                }
+                                className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                              >
+                                <option value="">Select zone</option>
+                                {zonesList.map((z) => (
+                                  <option key={z.id} value={z.name}>
+                                    {z.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => setIsAddZoneModalOpen(true)}
+                                title="Add Zone"
+                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Aisle</label>
+                            <div className="flex">
+                              <select
+                                value={editingProduct.aisle || ''}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, aisle: e.target.value })
+                                }
+                                className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
+                              >
+                                <option value="">Select aisle</option>
+                                {aislesList.map((a) => (
+                                  <option key={a.id} value={a.name}>
+                                    {a.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => setIsAddAisleModalOpen(true)}
+                                title="Add Aisle"
+                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
@@ -2229,11 +3155,11 @@ export default function AuthenticOmegaProductsServicesView() {
                             <select
                               value={editingProduct.mainSupplierName}
                               onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value })
+                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value, lastSupplierName: e.target.value })
                               }
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
-                              {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
+                              {suppliersList.map((s: SupplierItem) => (
                                 <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
                                   {s.SUPPLIERNAME}
                                 </option>
@@ -2241,6 +3167,23 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={handleSaveSupplierForGroup}
+                              title="Save supplier for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsPurchaseHistoryModalOpen(true)}
+                              title="Purchase History"
+                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
+                            >
+                              <History className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
@@ -2260,7 +3203,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                             >
                               <option value="">Select Item Brand</option>
-                              {OMEGA_ITEM_BRANDS.map((b) => (
+                              {brandsList.map((b) => (
                                 <option key={b.id} value={b.name}>
                                   {b.name}
                                 </option>
@@ -2268,6 +3211,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
+                              onClick={() => setIsAddBrandModalOpen(true)}
                               title="Add Brand"
                               className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
@@ -2547,21 +3491,26 @@ export default function AuthenticOmegaProductsServicesView() {
                               <div className="flex gap-1">
                                 <input
                                   type="number"
-                                  value={editingProduct.markupPct}
-                                  onChange={(e) =>
+                                  value={editingProduct.markupPct ?? 0}
+                                  onChange={(e) => {
+                                    const m = Number(e.target.value);
+                                    const cost = editingProduct.unitCostLL || 0;
+                                    const rec = Math.round(cost * (1 + m / 100));
                                     setEditingProduct({
                                       ...editingProduct,
-                                      markupPct: Number(e.target.value)
-                                    })
-                                  }
+                                      markupPct: m,
+                                      recommendedPriceLL: rec
+                                    });
+                                  }}
                                   className="flex-1 px-2 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                                 />
                                 <button
                                   type="button"
-                                  title="Copy"
-                                  className="px-2 py-1 bg-[#23783a] text-white rounded-xs cursor-pointer"
+                                  onClick={handleSaveMarkupForGroup}
+                                  title="Save Markup % for all items in same group"
+                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
-                                  <Copy className="w-3 h-3" />
+                                  <Save className="w-3 h-3" />
                                 </button>
                               </div>
                             </div>
@@ -2570,7 +3519,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <div className="flex gap-1">
                                 <input
                                   type="number"
-                                  value={editingProduct.recommendedPriceLL}
+                                  value={editingProduct.recommendedPriceLL || ''}
                                   onChange={(e) =>
                                     setEditingProduct({
                                       ...editingProduct,
@@ -2581,10 +3530,11 @@ export default function AuthenticOmegaProductsServicesView() {
                                 />
                                 <button
                                   type="button"
-                                  title="Copy"
-                                  className="px-2 py-1 bg-[#23783a] text-white rounded-xs cursor-pointer"
+                                  onClick={() => setIsApplyRecommendedPriceModalOpen(true)}
+                                  title="Apply recommended price to selling prices"
+                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
-                                  <Copy className="w-3 h-3" />
+                                  <Save className="w-3 h-3" />
                                 </button>
                               </div>
                             </div>
@@ -2608,19 +3558,29 @@ export default function AuthenticOmegaProductsServicesView() {
                     <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Selling Price</span>
                       <div className="flex items-center gap-4 text-xs">
-                        <button type="button" className="text-[#195a96] hover:underline font-medium">
+                        <button
+                          type="button"
+                          onClick={() => setIsPriceVariationsModalOpen(true)}
+                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                        >
                           Price Variations
                         </button>
-                        <button type="button" className="text-[#195a96] hover:underline font-medium">
+                        <button
+                          type="button"
+                          onClick={() => setIsLastPricesModalOpen(true)}
+                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                        >
                           Last Prices
                         </button>
                         <div className="flex items-center gap-1.5">
                           <span className="font-semibold text-slate-800">Selling price in Second currency</span>
                           <button
                             type="button"
-                            className="p-1 bg-[#23783a] text-white rounded-xs cursor-pointer"
+                            onClick={handleApplySecondCurrencyRates}
+                            title="Calculate USD prices at second currency rate"
+                            className="p-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
                           >
-                            <Copy className="w-3 h-3" />
+                            <Save className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -2644,14 +3604,22 @@ export default function AuthenticOmegaProductsServicesView() {
                               </label>
                               <input
                                 type="number"
-                                value={Number(editingProduct[spKey])}
-                                onChange={(e) =>
+                                value={Number(editingProduct[spKey]) || ''}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const cost = editingProduct.unitCostLL || 0;
+                                  const profit = val > 0 ? Number((((val - cost) / val) * 100).toFixed(2)) : 0;
+                                  const rate = editingProduct.secondCurrencyRate || 90000;
+                                  const usd = Number((val / rate).toFixed(2));
                                   setEditingProduct({
                                     ...editingProduct,
-                                    [spKey]: Number(e.target.value),
-                                    ...(num === 1 ? { sellingPrice: Number(e.target.value) } : {})
-                                  })
-                                }
+                                    [spKey]: val,
+                                    [btKey]: val,
+                                    [pfKey]: profit,
+                                    [usdKey]: usd,
+                                    ...(num === 1 ? { sellingPrice: val } : {})
+                                  });
+                                }}
                                 className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
                               />
                             </div>
@@ -2660,7 +3628,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <label className="block text-slate-700 font-medium mb-1">Before Tax LL</label>
                               <input
                                 type="number"
-                                value={Number(editingProduct[btKey])}
+                                value={Number(editingProduct[btKey]) || ''}
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
                                 }
@@ -2670,8 +3638,11 @@ export default function AuthenticOmegaProductsServicesView() {
 
                             {num > 1 ? (
                               <div className="md:col-span-2">
-                                <label className="block text-slate-700 font-medium mb-1">
-                                  Qty for Selling Price {num} 🛈
+                                <label className="flex items-center gap-1 text-slate-700 font-medium mb-1">
+                                  <span>Qty for Selling Price {num}</span>
+                                  <span title={`Minimum quantity required for Selling Price ${num}`}>
+                                    <HelpCircle className="w-3 h-3 text-slate-500 cursor-help" />
+                                  </span>
                                 </label>
                                 <input
                                   type="number"
@@ -2687,11 +3658,11 @@ export default function AuthenticOmegaProductsServicesView() {
                             )}
 
                             <div className="md:col-span-2">
-                              <label className="block text-slate-700 font-medium mb-1">Profit %</label>
+                              <label className="block text-slate-700 font-medium mb-1">Profit {num} %</label>
                               <input
                                 type="number"
                                 step="0.01"
-                                value={Number(editingProduct[pfKey])}
+                                value={Number(editingProduct[pfKey]) || ''}
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [pfKey]: Number(e.target.value) })
                                 }
@@ -2704,7 +3675,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <input
                                 type="number"
                                 step="0.01"
-                                value={Number(editingProduct[usdKey])}
+                                value={Number(editingProduct[usdKey]) || ''}
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [usdKey]: Number(e.target.value) })
                                 }
@@ -2721,7 +3692,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">Second Currency Rate</label>
                           <input
                             type="number"
-                            value={editingProduct.secondCurrencyRate}
+                            value={editingProduct.secondCurrencyRate || 90000}
                             onChange={(e) =>
                               setEditingProduct({
                                 ...editingProduct,
@@ -2747,7 +3718,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <div className="flex">
                             <input
                               type="text"
-                              value={editingProduct.barcode}
+                              value={editingProduct.barcode || ''}
                               onChange={(e) =>
                                 setEditingProduct({ ...editingProduct, barcode: e.target.value })
                               }
@@ -2755,8 +3726,8 @@ export default function AuthenticOmegaProductsServicesView() {
                             />
                             <button
                               type="button"
-                              title="Barcode"
-                              className="px-2.5 py-1.5 bg-[#4c5c7a] text-white rounded-r-sm"
+                              title="Barcode Scanner / Generate"
+                              className="px-2.5 py-1.5 bg-[#4c5c7a] text-white rounded-r-sm cursor-pointer"
                             >
                               <Barcode className="w-3.5 h-3.5" />
                             </button>
@@ -2767,7 +3738,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">Alternative Barcode 2</label>
                           <input
                             type="text"
-                            value={editingProduct.alternativeBarcode2}
+                            value={editingProduct.alternativeBarcode2 || ''}
                             onChange={(e) =>
                               setEditingProduct({ ...editingProduct, alternativeBarcode2: e.target.value })
                             }
@@ -2779,7 +3750,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">RFIDT 1</label>
                           <input
                             type="text"
-                            value={editingProduct.rfidt1}
+                            value={editingProduct.rfidt1 || ''}
                             onChange={(e) =>
                               setEditingProduct({ ...editingProduct, rfidt1: e.target.value })
                             }
@@ -2793,7 +3764,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">Alternative Barcode 3</label>
                           <input
                             type="text"
-                            value={editingProduct.alternativeBarcode3}
+                            value={editingProduct.alternativeBarcode3 || ''}
                             onChange={(e) =>
                               setEditingProduct({ ...editingProduct, alternativeBarcode3: e.target.value })
                             }
@@ -2802,14 +3773,14 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
 
                         <div className="md:col-span-4 pt-4">
-                          <label className="inline-flex items-center gap-2 cursor-pointer">
+                          <label className="inline-flex items-center gap-2 cursor-pointer select-none">
                             <input
                               type="checkbox"
-                              checked={editingProduct.applySp2Qty2}
+                              checked={Boolean(editingProduct.applySp2Qty2)}
                               onChange={(e) =>
                                 setEditingProduct({ ...editingProduct, applySp2Qty2: e.target.checked })
                               }
-                              className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
+                              className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 cursor-pointer"
                             />
                             <span className="font-medium text-slate-700">Apply sp2 qty2</span>
                           </label>
@@ -2819,7 +3790,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">RFIDT 2</label>
                           <input
                             type="text"
-                            value={editingProduct.rfidt2}
+                            value={editingProduct.rfidt2 || ''}
                             onChange={(e) =>
                               setEditingProduct({ ...editingProduct, rfidt2: e.target.value })
                             }
@@ -2831,6 +3802,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="pt-2">
                         <button
                           type="button"
+                          onClick={() => setIsMoreBarcodesModalOpen(true)}
                           className="px-3.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -2853,11 +3825,11 @@ export default function AuthenticOmegaProductsServicesView() {
                             <select
                               value={editingProduct.mainSupplierName}
                               onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value })
+                                setEditingProduct({ ...editingProduct, mainSupplierName: e.target.value, lastSupplierName: e.target.value })
                               }
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white"
                             >
-                              {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
+                              {suppliersList.map((s: SupplierItem) => (
                                 <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
                                   {s.SUPPLIERNAME}
                                 </option>
@@ -2865,17 +3837,27 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              title="Copy"
-                              className="px-2 py-1.5 bg-[#23783a] text-white cursor-pointer"
+                              onClick={handleSaveSupplierForGroup}
+                              title="Save supplier for all items in same group"
+                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
                             >
-                              <Copy className="w-3.5 h-3.5" />
+                              <Save className="w-3.5 h-3.5" />
                             </button>
                             <button
                               type="button"
-                              title="Print"
-                              className="px-2 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                              onClick={() => setIsPurchaseHistoryModalOpen(true)}
+                              title="Purchase History"
+                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
                             >
-                              <Printer className="w-3.5 h-3.5" />
+                              <History className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsAddSupplierModalOpen(true)}
+                              title="Add Supplier"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -2891,7 +3873,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               className="flex-1 px-3 py-1.5 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white"
                             >
                               <option value="">Select other supplier</option>
-                              {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
+                              {suppliersList.map((s: SupplierItem) => (
                                 <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
                                   {s.SUPPLIERNAME}
                                 </option>
@@ -2899,7 +3881,9 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              className="px-2.5 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                              onClick={() => setIsAddSupplierModalOpen(true)}
+                              title="Add Supplier"
+                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3884,6 +4868,709 @@ export default function AuthenticOmegaProductsServicesView() {
           </div>
         </div>
       )}
+
+      {/* =======================================================================
+          MODAL 4: APPLY RECOMMENDED PRICE MODAL (Image 3)
+          ======================================================================= */}
+      {isApplyRecommendedPriceModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-700 leading-snug">
+                Apply recommended price to the selected selling prices
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsApplyRecommendedPriceModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer ml-2"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-5 space-y-3 text-xs">
+              <div className="space-y-2.5">
+                {[
+                  { key: 'sp1', label: 'Selling Price 1' },
+                  { key: 'sp2', label: 'Selling Price 2' },
+                  { key: 'sp3', label: 'Selling Price 3' },
+                  { key: 'sp4', label: 'Selling Price 4' },
+                ].map((item) => (
+                  <label key={item.key} className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={recommendedPriceTargets[item.key as keyof typeof recommendedPriceTargets]}
+                      onChange={(e) =>
+                        setRecommendedPriceTargets({
+                          ...recommendedPriceTargets,
+                          [item.key]: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <span className="text-slate-700 font-medium">{item.label}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="pt-4 flex justify-end gap-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsApplyRecommendedPriceModalOpen(false)}
+                  className="px-4 py-1.5 rounded-sm bg-[#606f7b] hover:bg-[#4d5a64] text-white font-medium cursor-pointer transition text-xs shadow-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApplyRecommendedPrice}
+                  className="px-5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-bold cursor-pointer transition text-xs shadow-xs"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 5: LAST PRICES MODAL
+          ======================================================================= */}
+      {isLastPricesModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Last Recorded Prices - {editingProduct?.description}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsLastPricesModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                  <tr>
+                    <th className="p-2">Price Type</th>
+                    <th className="p-2">Amount LL</th>
+                    <th className="p-2">Amount $</th>
+                    <th className="p-2">Effective Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 1</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice1LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice1USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-09-01</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 2</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice2LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice2USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-08-15</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 3</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice3LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice3USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-07-20</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 4</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice4LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice4USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-07-01</td>
+                  </tr>
+                  <tr className="bg-slate-50/70 font-semibold">
+                    <td className="p-2">Unit Cost</td>
+                    <td className="p-2">{(editingProduct?.unitCostLL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.unitCostUSD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">Latest Purchase</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsLastPricesModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 6: PRICE VARIATIONS MODAL
+          ======================================================================= */}
+      {isPriceVariationsModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Price Variations & Tiers - {editingProduct?.description}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsPriceVariationsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <p className="text-slate-600">
+                Configure tiered volume discounts and customer segment price variation overrides.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 1 (Retail Standard):</span>
+                    <span className="ml-2 text-slate-600">Qty 1+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice1LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 2 (Wholesale / Bulk):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice2 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice2LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 3 (Distributor / Special):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice3 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice3LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 4 (Export / VIP):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice4 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice4LL || 0).toLocaleString()} LL</span>
+                </div>
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsPriceVariationsModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 7: MORE BARCODES MODAL
+          ======================================================================= */}
+      {isMoreBarcodesModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Manage Additional Barcodes
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsMoreBarcodesModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-4 text-xs">
+              <form onSubmit={handleAddExtraBarcode} className="p-3 bg-slate-50 rounded-sm border border-slate-200 space-y-2">
+                <span className="font-semibold text-slate-700">Add New Barcode</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Barcode string"
+                    value={newExtraBarcode}
+                    onChange={(e) => setNewExtraBarcode(e.target.value)}
+                    className="px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  />
+                  <select
+                    value={newExtraBarcodeType}
+                    onChange={(e) => setNewExtraBarcodeType(e.target.value)}
+                    className="px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  >
+                    <option value="EAN-13">EAN-13</option>
+                    <option value="UPC-A">UPC-A</option>
+                    <option value="Code 128">Code 128</option>
+                    <option value="QR Code">QR Code</option>
+                    <option value="Custom">Custom</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold rounded-sm cursor-pointer shadow-xs"
+                  >
+                    + Add Barcode
+                  </button>
+                </div>
+              </form>
+
+              <div className="border border-slate-200 rounded-sm overflow-hidden max-h-48 overflow-y-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="p-2">Barcode</th>
+                      <th className="p-2">Type / Note</th>
+                      <th className="p-2 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {editingProduct?.moreBarcodes && editingProduct.moreBarcodes.length > 0 ? (
+                      editingProduct.moreBarcodes.map((b) => (
+                        <tr key={b.id}>
+                          <td className="p-2 font-mono font-bold text-slate-800">{b.barcode}</td>
+                          <td className="p-2 text-slate-600">{b.note || 'Secondary'}</td>
+                          <td className="p-2 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteExtraBarcode(b.id)}
+                              className="text-rose-600 hover:text-rose-800 cursor-pointer font-medium"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="p-4 text-center text-slate-400">
+                          No additional barcodes added yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsMoreBarcodesModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 8: PURCHASE HISTORY MODAL
+          ======================================================================= */}
+      {isPurchaseHistoryModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Purchase History - {editingProduct?.mainSupplierName}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsPurchaseHistoryModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                  <tr>
+                    <th className="p-2">PO #</th>
+                    <th className="p-2">Date</th>
+                    <th className="p-2">Supplier</th>
+                    <th className="p-2">Qty</th>
+                    <th className="p-2">Unit Cost</th>
+                    <th className="p-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0812</td>
+                    <td className="p-2 text-slate-500">2026-08-12</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">250 BOT</td>
+                    <td className="p-2">{(editingProduct?.unitCostLL || 0).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0628</td>
+                    <td className="p-2 text-slate-500">2026-06-28</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">500 BOT</td>
+                    <td className="p-2">{Math.round((editingProduct?.unitCostLL || 0) * 0.95).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0414</td>
+                    <td className="p-2 text-slate-500">2026-04-14</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">300 BOT</td>
+                    <td className="p-2">{Math.round((editingProduct?.unitCostLL || 0) * 0.92).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsPurchaseHistoryModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 9: VANGUARD MARKETPLACE SEARCH MODAL
+          ======================================================================= */}
+      {isVanguardMarketplaceModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Search in Vanguard Marketplace Catalog
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsVanguardMarketplaceModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter product title, UPC, EAN, or Brand..."
+                  className="flex-1 px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  defaultValue={editingProduct?.description || ''}
+                />
+                <button
+                  type="button"
+                  className="px-4 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm font-semibold cursor-pointer shadow-xs flex items-center gap-1.5"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Search</span>
+                </button>
+              </div>
+              <div className="border border-slate-200 rounded-sm p-3 bg-slate-50 space-y-2">
+                <span className="font-semibold text-slate-700">Recommended Match from Vanguard Global Master:</span>
+                <div className="bg-white p-2.5 rounded border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-slate-800">{editingProduct?.description || 'Authentic Item Master'}</div>
+                    <div className="text-[11px] text-slate-500">Standard Barcode: 5280001928371 | Category: Food & Beverage</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsVanguardMarketplaceModalOpen(false);
+                      showToast('Imported product specs from Vanguard Marketplace');
+                    }}
+                    className="px-3 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-xs font-semibold cursor-pointer shadow-xs"
+                  >
+                    Import Specs
+                  </button>
+                </div>
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsVanguardMarketplaceModalOpen(false)}
+                  className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Group */}
+      {isAddGroupModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Inventory Group</h4>
+            <form onSubmit={handleAddGroupSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Group Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="e.g. Organic Beverages"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddGroupModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Group
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Location */}
+      {isAddLocationModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Location</h4>
+            <form onSubmit={handleAddLocationSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Location Name / Description</label>
+                <input
+                  type="text"
+                  required
+                  value={newLocationName}
+                  onChange={(e) => setNewLocationName(e.target.value)}
+                  placeholder="e.g. Warehouse B - Section 4"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddLocationModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Location
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Supplier */}
+      {isAddSupplierModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Supplier</h4>
+            <form onSubmit={handleAddSupplierSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Supplier Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newSupplierName}
+                  onChange={(e) => setNewSupplierName(e.target.value)}
+                  placeholder="e.g. Cedar Trading SAL"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSupplierModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Supplier
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Brand */}
+      {isAddBrandModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Brand</h4>
+            <form onSubmit={handleAddBrandSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Brand Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newBrandName}
+                  onChange={(e) => setNewBrandName(e.target.value)}
+                  placeholder="e.g. Master Chef"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddBrandModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Brand
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Zone */}
+      {isAddZoneModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Zone</h4>
+            <form onSubmit={handleAddZoneSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Zone Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newZoneName}
+                  onChange={(e) => setNewZoneName(e.target.value)}
+                  placeholder="e.g. Cold Storage 2"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddZoneModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Zone
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Aisle */}
+      {isAddAisleModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Aisle</h4>
+            <form onSubmit={handleAddAisleSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Aisle Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newAisleName}
+                  onChange={(e) => setNewAisleName(e.target.value)}
+                  placeholder="e.g. Aisle 5 - Top Shelf"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddAisleModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Aisle
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

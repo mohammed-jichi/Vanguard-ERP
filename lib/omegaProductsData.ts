@@ -230,6 +230,12 @@ export interface AuthenticProductRecord {
   isMasterItem?: boolean;
   hasExpiry?: boolean;
   expiryDate?: string;
+
+  // Floor, Zone, and Aisle Location Specs (Image 2)
+  floor?: string;
+  zone?: string;
+  aisle?: string;
+  moreBarcodes?: Array<{ id: number; barcode: string; note?: string }>;
 }
 
 // Hierarchy Master Options
