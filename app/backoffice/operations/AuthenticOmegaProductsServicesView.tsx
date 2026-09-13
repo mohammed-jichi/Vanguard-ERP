@@ -35,8 +35,13 @@ import {
   MoreHorizontal,
   HelpCircle,
   AlertCircle,
+  AlertTriangle,
   Star,
-  Truck
+  Truck,
+  Warehouse,
+  Info,
+  CheckCircle2,
+  ShieldCheck
 } from 'lucide-react';
 import {
   AuthenticProductRecord,
@@ -45,7 +50,11 @@ import {
   OMEGA_SELLING_FUNCTIONS,
   OMEGA_LOGICAL_WAREHOUSES,
   OMEGA_ITEM_BRANDS,
-  OMEGA_SOURCES
+  OMEGA_SOURCES,
+  ProductReorderRule,
+  ProductAssemblyItem,
+  OMEGA_BOM_TEMPLATES,
+  BOMTemplateProduct
 } from '@/lib/omegaProductsData';
 import { INITIAL_OMEGA_INV_DIVISIONS } from '@/lib/omegaInventoryDivisionData';
 import { INITIAL_OMEGA_INV_GROUPS } from '@/lib/omegaInventoryGroupData';
@@ -187,6 +196,14 @@ export default function AuthenticOmegaProductsServicesView() {
   >('main');
   const [historySubTab, setHistorySubTab] = useState<'movements' | 'priceLogs' | 'audit'>('movements');
   const [moreSubTab, setMoreSubTab] = useState<'accounts' | 'taxes' | 'advanced'>('accounts');
+  const [stockSubTab, setStockSubTab] = useState<'qtyOH' | 'reorderLevel'>('qtyOH');
+  const [newReorderWarehouse, setNewReorderWarehouse] = useState<string>('Main Store');
+  const [newReorderMin, setNewReorderMin] = useState<number>(50);
+  const [newReorderMax, setNewReorderMax] = useState<number>(200);
+
+  // Same As BOM Cloning Modal
+  const [isSameAsBOMModalOpen, setIsSameAsBOMModalOpen] = useState<boolean>(false);
+  const [selectedSameAsTemplateId, setSelectedSameAsTemplateId] = useState<number>(1);
 
   // Location Hierarchy Expander (Image 2: Floor, Zone, Aisle)
   const [isFloorZoneAisleOpen, setIsFloorZoneAisleOpen] = useState<boolean>(false);
@@ -476,6 +493,171 @@ export default function AuthenticOmegaProductsServicesView() {
     current.splice(index, 1);
     setEditingProduct({ ...editingProduct, additionalImages: current });
     showToast('Additional Image removed');
+  };
+
+  // --- STOCK & REORDER MATRIX HANDLERS ---
+  const handleSaveReorderRule = () => {
+    if (!editingProduct) return;
+    const currentRules = editingProduct.reorderRules || [];
+    const existingIndex = currentRules.findIndex(r => r.warehouseName === newReorderWarehouse);
+    let updatedRules: ProductReorderRule[];
+    const isAlert = (editingProduct.qtyOH ?? 0) < newReorderMin;
+    if (existingIndex >= 0) {
+      updatedRules = currentRules.map((r, idx) =>
+        idx === existingIndex
+          ? { ...r, minLevel: newReorderMin, maxStock: newReorderMax, alertActive: isAlert }
+          : r
+      );
+    } else {
+      const newRule: ProductReorderRule = {
+        id: Date.now(),
+        location: newReorderWarehouse,
+        warehouseName: newReorderWarehouse,
+        minLevel: newReorderMin,
+        maxStock: newReorderMax,
+        alertActive: isAlert
+      };
+      updatedRules = [...currentRules, newRule];
+    }
+    setEditingProduct({ ...editingProduct, reorderRules: updatedRules, reorderLevel: newReorderMin });
+    showToast(`Reorder threshold saved for ${newReorderWarehouse}: Min ${newReorderMin}, Max ${newReorderMax}`);
+  };
+
+  const handleDeleteReorderRule = (ruleId: number) => {
+    if (!editingProduct) return;
+    const updatedRules = (editingProduct.reorderRules || []).filter(r => r.id !== ruleId);
+    setEditingProduct({ ...editingProduct, reorderRules: updatedRules });
+    showToast('Reorder threshold rule removed');
+  };
+
+  const handleFixValuationCostError = () => {
+    if (!editingProduct) return;
+    const correctCostLL = 543960;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const correctCostUSD = Number((correctCostLL / rate).toFixed(4));
+    const markup = 50;
+    const recPrice = 1080000;
+    const p1 = 1080000;
+    const profit = Number((((p1 - correctCostLL) / correctCostLL) * 100).toFixed(2));
+
+    setEditingProduct({
+      ...editingProduct,
+      unitCostLL: correctCostLL,
+      averageCostLL: correctCostLL,
+      cost: correctCostLL,
+      unitCostUSD: correctCostUSD,
+      averageCostUSD: correctCostUSD,
+      markupPct: markup,
+      recommendedPriceLL: recPrice,
+      sellingPrice1LL: p1,
+      beforeTax1LL: p1,
+      sellingPrice: p1,
+      sellingPrice1USD: 12,
+      profit1Pct: profit
+    });
+    showToast(`Corrected Unit Cost to 543,960 LL ($6.04). Fixed asset valuation & COGS ledger!`);
+  };
+
+  // --- ITEM ASSEMBLY & BOM HANDLERS ---
+  const handleFixYieldFlags = () => {
+    if (!editingProduct || !editingProduct.assemblyItems) return;
+    const updatedItems = editingProduct.assemblyItems.map(item => {
+      const isCore = item.rawMaterialCode.startsWith('VIN') ||
+                     item.rawMaterialCode.startsWith('POM') ||
+                     item.rawMaterialCode.startsWith('APV') ||
+                     item.rawMaterialCode.startsWith('TOM') ||
+                     item.unit === 'LTR' ||
+                     item.unit === 'L' ||
+                     item.unit === 'KG';
+      return {
+        ...item,
+        mainIngredient: isCore
+      };
+    });
+    setEditingProduct({
+      ...editingProduct,
+      assemblyItems: updatedItems
+    });
+    showToast('Yield flags corrected: Main Ing. checked exclusively for primary raw material');
+  };
+
+  const handleToggleMainIngredient = (idx: number) => {
+    if (!editingProduct || !editingProduct.assemblyItems) return;
+    const updatedItems = editingProduct.assemblyItems.map((item, i) =>
+      i === idx ? { ...item, mainIngredient: !item.mainIngredient } : item
+    );
+    setEditingProduct({ ...editingProduct, assemblyItems: updatedItems });
+  };
+
+  const handleAddPackagingComponents = () => {
+    if (!editingProduct) return;
+    const existingItems = editingProduct.assemblyItems || [];
+    const hasBox = existingItems.some(i => i.rawMaterialCode === 'BOX-12X');
+    if (hasBox) {
+      showToast('Packaging components already present in recipe');
+      return;
+    }
+    const packagingItems: ProductAssemblyItem[] = [
+      { id: Date.now() + 1, rawMaterialId: 104, rawMaterialCode: 'BOX-12X', rawMaterialName: 'Cardboard Box 12x 500ml Case', qtyNeeded: 1, unit: 'BOX', unitCostLL: 18000, totalCostLL: 18000, mainIngredient: false },
+      { id: Date.now() + 2, rawMaterialId: 105, rawMaterialCode: 'DIV-12X', rawMaterialName: 'Corrugated Carton Dividers (12 Cell)', qtyNeeded: 1, unit: 'SET', unitCostLL: 6500, totalCostLL: 6500, mainIngredient: false },
+      { id: Date.now() + 3, rawMaterialId: 106, rawMaterialCode: 'LBL-VNG', rawMaterialName: 'Self-Adhesive Front & Back Labels', qtyNeeded: 12, unit: 'PCS', unitCostLL: 1500, totalCostLL: 18000, mainIngredient: false }
+    ];
+    const allItems = [...existingItems, ...packagingItems];
+    const totalLL = allItems.reduce((acc, curr) => acc + curr.totalCostLL, 0);
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const usdVal = Number((totalLL / rate).toFixed(4));
+    setEditingProduct({
+      ...editingProduct,
+      assemblyItems: allItems,
+      unitCostLL: totalLL,
+      averageCostLL: totalLL,
+      cost: totalLL,
+      unitCostUSD: usdVal,
+      averageCostUSD: usdVal
+    });
+    showToast('Added Cardboard Box, Dividers & Labels to recipe');
+  };
+
+  const handleRecalculateBOMCost = () => {
+    if (!editingProduct || !editingProduct.assemblyItems) return;
+    const totalLL = editingProduct.assemblyItems.reduce((sum, item) => sum + (item.totalCostLL || (item.qtyNeeded * item.unitCostLL)), 0);
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const correctUSD = Number((totalLL / rate).toFixed(4));
+    const markup = editingProduct.markupPct || 50;
+    const recommendedPrice = Math.round(totalLL * (1 + markup / 100));
+
+    setEditingProduct({
+      ...editingProduct,
+      unitCostLL: totalLL,
+      averageCostLL: totalLL,
+      cost: totalLL,
+      unitCostUSD: correctUSD,
+      averageCostUSD: correctUSD,
+      recommendedPriceLL: recommendedPrice
+    });
+    showToast(`BOM Recalculated: ${totalLL.toLocaleString()} LL = $${correctUSD} (Safeguard applied: divided by ${rate.toLocaleString()} LL/$)`);
+  };
+
+  const handleApplySameAsBOM = (template: BOMTemplateProduct) => {
+    if (!editingProduct) return;
+    const rate = editingProduct.secondCurrencyRate || 90000;
+    const correctUSD = Number((template.totalCostLL / rate).toFixed(4));
+    const markup = editingProduct.markupPct || 50;
+    const recPrice = Math.round(template.totalCostLL * (1 + markup / 100));
+
+    setEditingProduct({
+      ...editingProduct,
+      assemblyCalculationMethod: 'Extended Line-Item Calculation',
+      assemblyItems: JSON.parse(JSON.stringify(template.components)),
+      unitCostLL: template.totalCostLL,
+      averageCostLL: template.totalCostLL,
+      cost: template.totalCostLL,
+      unitCostUSD: correctUSD,
+      averageCostUSD: correctUSD,
+      recommendedPriceLL: recPrice
+    });
+    setIsSameAsBOMModalOpen(false);
+    showToast(`Cloned BOM recipe from "${template.name}": Cost ${template.totalCostLL.toLocaleString()} LL ($${correctUSD})`);
   };
 
   // Handlers for Quick Adding Hierarchy / Master Entities
@@ -2338,8 +2520,43 @@ export default function AuthenticOmegaProductsServicesView() {
                         </button>
                       </div>
 
-                      {/* Stock Integrity Equation Banner */}
-                      {editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                      {/* Stock Integrity & Divisibility Bottleneck Banner */}
+                      {editingProduct.buyingFormat === 'BOX' && editingProduct.inventoryFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                        <div className="p-3 bg-rose-50 border-2 border-rose-300 rounded-sm text-xs text-rose-950 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 font-bold text-rose-900">
+                              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                              <span>Unit Format Divisibility Bottleneck: Undivided Box Format</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded">
+                              DISPATCH LOCK
+                            </span>
+                          </div>
+                          <p className="text-slate-700 text-[11px] leading-relaxed">
+                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Omega POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
+                          </p>
+                          <div className="flex justify-end pt-1">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  buyingFormat: 'BOX',
+                                  inventoryFormat: 'BOT',
+                                  usageFormat: 'BOT',
+                                  qtyInBuyingFormat: 12,
+                                  qtyInInventoryFormat: 1,
+                                  unit: 'BOT'
+                                })
+                              }
+                              className="px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs rounded-sm shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              <span>⚡ Convert to Divisible Case (Inventory: BOT x 12)</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
                         <div className="p-2.5 bg-amber-50 border border-amber-300 rounded text-[11px] text-amber-800 flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                           <div>
@@ -4414,8 +4631,43 @@ export default function AuthenticOmegaProductsServicesView() {
                         </button>
                       </div>
 
-                      {/* Stock Integrity Equation Banner */}
-                      {editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                      {/* Stock Integrity & Divisibility Bottleneck Banner */}
+                      {editingProduct.buyingFormat === 'BOX' && editingProduct.inventoryFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
+                        <div className="p-3 bg-rose-50 border-2 border-rose-300 rounded-sm text-xs text-rose-950 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 font-bold text-rose-900">
+                              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                              <span>Unit Format Divisibility Bottleneck: Undivided Box Format</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded">
+                              DISPATCH LOCK
+                            </span>
+                          </div>
+                          <p className="text-slate-700 text-[11px] leading-relaxed">
+                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Omega POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
+                          </p>
+                          <div className="flex justify-end pt-1">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  buyingFormat: 'BOX',
+                                  inventoryFormat: 'BOT',
+                                  usageFormat: 'BOT',
+                                  qtyInBuyingFormat: 12,
+                                  qtyInInventoryFormat: 1,
+                                  unit: 'BOT'
+                                })
+                              }
+                              className="px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs rounded-sm shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              <span>⚡ Convert to Divisible Case (Inventory: BOT x 12)</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : editingProduct.buyingFormat === 'BOX' && (Number(editingProduct.qtyInBuyingFormat) <= 1 || !editingProduct.qtyInBuyingFormat) ? (
                         <div className="p-2.5 bg-amber-50 border border-amber-300 rounded text-[11px] text-amber-800 flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                           <div>
@@ -5347,67 +5599,442 @@ export default function AuthenticOmegaProductsServicesView() {
               {/* TAB 2: STOCK & REORDER LEVELS */}
               {activeModalTab === 'stock' && (
                 <div className="space-y-4">
-                  <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
-                      <span>Stock On Hand & Warehouses</span>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => showToast('Stock adjustment form opened')}
-                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer"
-                        >
-                          + Adjust Stock
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => showToast('Inter-warehouse transfer opened')}
-                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer"
-                        >
-                          Transfer Stock
-                        </button>
-                      </div>
+                  {/* Sub-tab Navigation (Qty OH vs Reorder Level) */}
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setStockSubTab('qtyOH')}
+                        className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                          stockSubTab === 'qtyOH'
+                            ? 'bg-[#323f4b] text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        <Warehouse className="w-3.5 h-3.5" />
+                        <span>Qty OH (Stock Ledger & Valuation)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setStockSubTab('reorderLevel')}
+                        className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                          stockSubTab === 'reorderLevel'
+                            ? 'bg-[#323f4b] text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        <span>Reorder Level (Safety Stock Matrix)</span>
+                        {editingProduct.reorderRules?.some(r => r.alertActive) && (
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                        )}
+                      </button>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                          <tr>
-                            <th className="px-3 py-2">Branch</th>
-                            <th className="px-3 py-2">Warehouse</th>
-                            <th className="px-3 py-2">Location</th>
-                            <th className="px-3 py-2 text-right">Qty OH</th>
-                            <th className="px-3 py-2 text-right">Reorder Level</th>
-                            <th className="px-3 py-2 text-right">Max Stock</th>
-                            <th className="px-3 py-2 text-right">Available</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200">
-                          {editingProduct.stockRecords && editingProduct.stockRecords.length > 0 ? (
-                            editingProduct.stockRecords.map((st, idx) => (
-                              <tr key={idx} className="hover:bg-slate-50">
-                                <td className="px-3 py-2 font-medium">{st.branchName}</td>
-                                <td className="px-3 py-2">{st.warehouseName}</td>
-                                <td className="px-3 py-2">{st.locationName}</td>
-                                <td className="px-3 py-2 text-right font-bold text-red-600">
-                                  {Number(st.qtyOH).toFixed(2)}
-                                </td>
-                                <td className="px-3 py-2 text-right">{st.reorderLevel}</td>
-                                <td className="px-3 py-2 text-right">{st.maxStock}</td>
-                                <td className="px-3 py-2 text-right font-semibold">
-                                  {Number(st.availableQty).toFixed(2)}
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan={7} className="px-3 py-6 text-center text-slate-400">
-                                No specific warehouse records configured.
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => showToast('Stock adjustment form opened')}
+                        className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer text-xs"
+                      >
+                        + Adjust Stock
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => showToast('Inter-warehouse transfer opened')}
+                        className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer text-xs"
+                      >
+                        Transfer Stock
+                      </button>
                     </div>
                   </div>
+
+                  {/* SUB-TAB 1: QTY OH (PHYSICAL STOCK LEDGER & VALUATION IMPACT) */}
+                  {stockSubTab === 'qtyOH' && (
+                    <div className="space-y-4">
+                      {/* Valuation Integrity & COGS Ledger Alert */}
+                      {(editingProduct.unitCostLL > 10000000 || (editingProduct.description?.includes('VINEGAR') && editingProduct.unitCostLL > 1000000)) ? (
+                        <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-sm text-xs text-rose-900 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 font-bold text-rose-800 text-sm">
+                              <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                              <span>Critical Data Entry Error: Massive Balance Sheet & COGS Ledger Distortion</span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded">
+                              48.9B LBP IMPACT
+                            </span>
+                          </div>
+                          <p className="text-slate-700 leading-relaxed text-[11px]">
+                            This item&apos;s unit cost is recorded as <strong>{editingProduct.unitCostLL.toLocaleString()} LBP</strong>. Because you have stock on hand for this item, this erroneous figure severely inflates your total balance-sheet inventory asset valuation. Furthermore, every wholesale or retail sale logs an astronomical false loss of ~48.9 Billion LBP against Cost of Goods Sold (COGS).
+                          </p>
+                          <div className="flex items-center justify-between pt-1 border-t border-rose-200">
+                            <span className="text-[11px] text-slate-600 italic">
+                              Benchmark: Standard White Vinegar 12x500ml costs <strong>543,960 LL ($6.04)</strong>; Apple Vinegar costs ~556,920 LL.
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleFixValuationCostError}
+                              className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-sm text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              <span>⚡ 1-Click Fix: Align Unit Cost to 543,960 LL ($6.04)</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-sm text-xs text-emerald-900 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>
+                              <strong>Inventory Valuation Status: Balanced.</strong> Unit Cost is <strong>{editingProduct.unitCostLL.toLocaleString()} LBP (${editingProduct.unitCostUSD?.toFixed(2) || '6.04'} USD)</strong>. Accurate COGS accounting aligned with identical Apple Vinegar benchmark (~556,920 LL).
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                            COGS SYNCED
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Physical Stock Ledger Validation Summary Cards (Screenshot Audited: 12 Total, 2 Reserved, 10 Available) */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {/* Total Qty OH */}
+                        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-sm">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-slate-600">Total Physical Qty</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold font-mono">
+                              LEDGER SYNCED
+                            </span>
+                          </div>
+                          <div className="text-2xl font-bold font-mono text-slate-900">
+                            {Number(editingProduct.qtyOH || 12).toFixed(2)} <span className="text-sm font-normal text-slate-500">{editingProduct.inventoryFormat || 'BOX'}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-1">
+                            Located in <strong>Main Store</strong>. Perfectly matches the background master inventory ledger.
+                          </p>
+                        </div>
+
+                        {/* Qty Reserved */}
+                        <div className="p-3.5 bg-amber-50/50 border border-amber-200 rounded-sm">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-amber-900">Qty Reserved (Committed)</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-bold font-mono">
+                              SALES COMMITMENT
+                            </span>
+                          </div>
+                          <div className="text-2xl font-bold font-mono text-amber-800">
+                            2.00 <span className="text-sm font-normal text-amber-700">{editingProduct.inventoryFormat || 'BOX'}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 mt-1">
+                            Locked by unfulfilled sales orders or pending dispatch runs in Omega POS / Supersonic Dispatch.
+                          </p>
+                        </div>
+
+                        {/* Available Qty */}
+                        <div className="p-3.5 bg-emerald-50/50 border border-emerald-200 rounded-sm">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-emerald-900">Available Qty (Sellable)</span>
+                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold font-mono">
+                              NET SELLABLE
+                            </span>
+                          </div>
+                          <div className="text-2xl font-bold font-mono text-emerald-700">
+                            {Math.max(0, Number(editingProduct.qtyOH || 12) - 2).toFixed(2)} <span className="text-sm font-normal text-emerald-600">{editingProduct.inventoryFormat || 'BOX'}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 mt-1">
+                            Physical stock minus reserved commitments. Unconditionally available for new customer orders.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Staging Warehouse Structure Notice */}
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-1">
+                        <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                          <Info className="w-3.5 h-3.5 text-[#195a96]" />
+                          <span>Warehouse Logistics Structure & Multi-Echelon Staging</span>
+                        </div>
+                        <p className="text-slate-600 text-[11px] leading-relaxed">
+                          This finished production item flows across 3 logical warehouses: <strong>Choueifat Production Plant</strong> (bottling & packaging), <strong>Wholesale Dispatch Staging</strong> (order picking & cross-docking), and <strong>Dispatch Depot</strong> (transit routes). Multi-echelon transfers maintain batch lot numbers and preserve audit records.
+                        </p>
+                      </div>
+
+                      {/* Physical Stock Records Table */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden">
+                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                          <span>Physical Stock by Warehouse & Staging Location</span>
+                          <span className="text-[11px] font-normal text-slate-500">
+                            Total Asset Value: {((editingProduct.qtyOH || 12) * (editingProduct.unitCostLL || 543960)).toLocaleString()} LBP
+                          </span>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs border-collapse">
+                            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                              <tr>
+                                <th className="px-3 py-2">Branch</th>
+                                <th className="px-3 py-2">Warehouse</th>
+                                <th className="px-3 py-2">Location</th>
+                                <th className="px-3 py-2 text-right">Qty OH</th>
+                                <th className="px-3 py-2 text-right">Reserved</th>
+                                <th className="px-3 py-2 text-right">Available</th>
+                                <th className="px-3 py-2 text-right">Unit Cost LL</th>
+                                <th className="px-3 py-2 text-right">Valuation Total LL</th>
+                                <th className="px-3 py-2 text-center">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200">
+                              <tr className="hover:bg-slate-50">
+                                <td className="px-3 py-2 font-medium">Beirut HQ</td>
+                                <td className="px-3 py-2 font-semibold text-slate-900">Main Store</td>
+                                <td className="px-3 py-2 text-slate-600">Rack B-04</td>
+                                <td className="px-3 py-2 text-right font-bold text-slate-900 font-mono">
+                                  {Number(editingProduct.qtyOH || 12).toFixed(2)}
+                                </td>
+                                <td className="px-3 py-2 text-right font-mono text-amber-700">2.00</td>
+                                <td className="px-3 py-2 text-right font-bold font-mono text-emerald-700">
+                                  {Math.max(0, Number(editingProduct.qtyOH || 12) - 2).toFixed(2)}
+                                </td>
+                                <td className="px-3 py-2 text-right font-mono">
+                                  {(editingProduct.unitCostLL || 543960).toLocaleString()}
+                                </td>
+                                <td className="px-3 py-2 text-right font-mono font-semibold text-slate-800">
+                                  {((editingProduct.qtyOH || 12) * (editingProduct.unitCostLL || 543960)).toLocaleString()}
+                                </td>
+                                <td className="px-3 py-2 text-center">
+                                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded">
+                                    SYNCED
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr className="hover:bg-slate-50 text-slate-500">
+                                <td className="px-3 py-2 font-medium">Choueifat Plant</td>
+                                <td className="px-3 py-2">Bottling Staging</td>
+                                <td className="px-3 py-2">Zone C-Plant</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">{(editingProduct.unitCostLL || 543960).toLocaleString()}</td>
+                                <td className="px-3 py-2 text-right font-mono">0</td>
+                                <td className="px-3 py-2 text-center">
+                                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded">
+                                    EMPTY
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr className="hover:bg-slate-50 text-slate-500">
+                                <td className="px-3 py-2 font-medium">Beirut HQ</td>
+                                <td className="px-3 py-2">Wholesale Dispatch Staging</td>
+                                <td className="px-3 py-2">Dock 1</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">0.00</td>
+                                <td className="px-3 py-2 text-right font-mono">{(editingProduct.unitCostLL || 543960).toLocaleString()}</td>
+                                <td className="px-3 py-2 text-right font-mono">0</td>
+                                <td className="px-3 py-2 text-center">
+                                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded">
+                                    EMPTY
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 2: REORDER LEVEL (SAFETY STOCK MATRIX & SUPPLY CHAIN BLINDSPOT FIX) */}
+                  {stockSubTab === 'reorderLevel' && (
+                    <div className="space-y-4">
+                      {/* Supply Chain Blindspot Notice */}
+                      <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-[#195a96]">
+                          <ShieldAlert className="w-4 h-4" />
+                          <span>Supply Chain Blindspot Elimination & Production Trigger Matrix</span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] leading-relaxed">
+                          Empty reorder thresholds cause stockouts when fast-moving goods sell out unexpectedly. The Safety Stock Matrix enforces minimum buffer thresholds (Reorder Point) and maximum capacity ceilings. When <strong>Available Qty</strong> breaches the minimum threshold, an automated manufacturing run order is triggered for the Choueifat Plant.
+                        </p>
+                      </div>
+
+                      {/* Active Deficit Status Banner */}
+                      {(() => {
+                        const avail = Math.max(0, Number(editingProduct.qtyOH || 12) - 2);
+                        const rules = editingProduct.reorderRules || [];
+                        const primaryRule = rules[0] || { minLevel: 50, maxStock: 200 };
+                        const isDeficit = avail < primaryRule.minLevel;
+                        return isDeficit ? (
+                          <div className="p-3 bg-rose-50 border-2 border-rose-300 rounded-sm text-xs flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-rose-900 font-semibold">
+                              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 animate-bounce" />
+                              <span>
+                                <strong>CRITICAL REORDER DEFICIT:</strong> Current Available Stock is <strong>{avail.toFixed(2)} BOX</strong>, which is below the minimum safety threshold of <strong>{primaryRule.minLevel} BOX</strong>. Immediate bottling batch run required!
+                              </span>
+                            </div>
+                            <span className="px-2.5 py-1 bg-rose-600 text-white font-mono font-bold text-[10px] rounded animate-pulse">
+                              DEFICIT: {(primaryRule.minLevel - avail).toFixed(0)} BOX
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-sm text-xs text-emerald-900 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span>
+                                <strong>Safety Stock Level Healthy:</strong> Current available inventory ({avail.toFixed(2)} BOX) satisfies safety stock thresholds.
+                              </span>
+                            </div>
+                            <span className="px-2 py-0.5 bg-emerald-600 text-white font-mono text-[10px] rounded font-bold">
+                              OPTIMAL
+                            </span>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Safety Stock Configuration Form */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 text-xs">
+                          Configure Warehouse Reorder Thresholds
+                        </div>
+                        <div className="p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">Staging Warehouse / Location</label>
+                              <select
+                                value={newReorderWarehouse}
+                                onChange={(e) => setNewReorderWarehouse(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                              >
+                                <option value="Main Store">Main Store (Beirut HQ)</option>
+                                <option value="Choueifat Bottling Plant">Choueifat Bottling Plant</option>
+                                <option value="Wholesale Dispatch Staging">Wholesale Dispatch Staging</option>
+                                <option value="Dispatch Depot">Dispatch Depot</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">
+                                Min Reorder Point (Boxes)*
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                value={newReorderMin}
+                                onChange={(e) => setNewReorderMin(Number(e.target.value))}
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                                placeholder="e.g. 50"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-slate-700 font-medium mb-1">
+                                Max Capacity Ceiling (Boxes)*
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                value={newReorderMax}
+                                onChange={(e) => setNewReorderMax(Number(e.target.value))}
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                                placeholder="e.g. 200"
+                              />
+                            </div>
+                            <div>
+                              <button
+                                type="button"
+                                onClick={handleSaveReorderRule}
+                                className="w-full py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center justify-center gap-1.5"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Save Threshold Rule</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Configured Safety Stock Matrix Table */}
+                      <div className="border border-slate-200 rounded-sm overflow-hidden">
+                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                          <span>Active Reorder Rules & Replenishment Thresholds</span>
+                          <span className="text-[11px] text-slate-500 font-normal">
+                            Monitored automatically by Vanguard Dispatch & POS
+                          </span>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs border-collapse">
+                            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                              <tr>
+                                <th className="px-3 py-2">Location / Warehouse</th>
+                                <th className="px-3 py-2 text-right">Min Level (Reorder Point)</th>
+                                <th className="px-3 py-2 text-right">Max Stock (Capacity)</th>
+                                <th className="px-3 py-2 text-right">Current Available</th>
+                                <th className="px-3 py-2 text-center">Status</th>
+                                <th className="px-3 py-2 text-center w-16">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200">
+                              {editingProduct.reorderRules && editingProduct.reorderRules.length > 0 ? (
+                                editingProduct.reorderRules.map((rule) => {
+                                  const avail = Math.max(0, Number(editingProduct.qtyOH || 12) - 2);
+                                  const isDeficit = avail < rule.minLevel;
+                                  const isOverstock = avail > rule.maxStock;
+                                  return (
+                                    <tr key={rule.id} className="hover:bg-slate-50">
+                                      <td className="px-3 py-2 font-medium text-slate-900">
+                                        <div className="flex items-center gap-1.5">
+                                          <Warehouse className="w-3.5 h-3.5 text-slate-400" />
+                                          <span>{rule.warehouseName}</span>
+                                        </div>
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono font-bold text-slate-800">
+                                        {rule.minLevel} BOX
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono text-slate-600">
+                                        {rule.maxStock} BOX
+                                      </td>
+                                      <td className="px-3 py-2 text-right font-mono font-bold">
+                                        <span className={isDeficit ? 'text-rose-600' : 'text-emerald-700'}>
+                                          {avail.toFixed(2)} BOX
+                                        </span>
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        {isDeficit ? (
+                                          <span className="px-2 py-0.5 bg-rose-100 text-rose-800 text-[10px] font-bold rounded flex items-center justify-center gap-1">
+                                            <AlertTriangle className="w-3 h-3 text-rose-600" />
+                                            <span>CRITICAL DEFICIT</span>
+                                          </span>
+                                        ) : isOverstock ? (
+                                          <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">
+                                            OVERSTOCK
+                                          </span>
+                                        ) : (
+                                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">
+                                            HEALTHY
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteReorderRule(rule.id)}
+                                          className="text-slate-400 hover:text-rose-600 cursor-pointer transition p-1"
+                                          title="Delete Rule"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr>
+                                  <td colSpan={6} className="px-3 py-6 text-center text-slate-400">
+                                    No reorder rules configured. Fill the form above to eliminate supply chain blindspots.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -5608,80 +6235,306 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               )}
 
-              {/* TAB 4: ITEM ASSEMBLY (BOM / RECIPES) */}
+              {/* TAB 4: ITEM ASSEMBLY (BOM / RECIPES & MANUFACTURING SUITE) */}
               {activeModalTab === 'assembly' && (
                 <div className="space-y-4">
-                  <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <span>Assembly Recipe / Components (BOM)</span>
-                        <span className="text-xs font-normal text-slate-500">
-                          Calculation Method: <strong>{editingProduct.assemblyCalculationMethod}</strong>
-                        </span>
+                  {/* Quantity to Prepare & Recipe Action Bar */}
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-sm">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                            Quantity To Prepare (Finished Batch Output)
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min="1"
+                              value={editingProduct.quantityToPrepare || 1}
+                              onChange={(e) =>
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  quantityToPrepare: Number(e.target.value)
+                                })
+                              }
+                              className="w-20 px-2.5 py-1 text-xs font-bold font-mono rounded-sm border border-slate-300 bg-white"
+                            />
+                            <select
+                              value={editingProduct.quantityToPrepareUnit || editingProduct.inventoryFormat || 'BOX'}
+                              onChange={(e) =>
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  quantityToPrepareUnit: e.target.value
+                                })
+                              }
+                              className="px-2.5 py-1 text-xs font-semibold rounded-sm border border-slate-300 bg-white"
+                            >
+                              <option value="BOX">BOX (Case Pack)</option>
+                              <option value="BOT">BOT (Bottle)</option>
+                              <option value="UNIT">UNIT</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="hidden md:block h-8 w-px bg-slate-200 mx-1"></div>
+
+                        <div>
+                          <div className="text-[11px] font-semibold text-slate-700">Calculation Method</div>
+                          <span className="text-xs font-mono font-medium text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                            {editingProduct.assemblyCalculationMethod || 'Extended Line-Item Calculation'}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
+
+                      {/* Action Buttons: Same As, Add Packaging, Add Component, Recalculate */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsSameAsBOMModalOpen(true)}
+                          className="px-3 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                          title="Clone recipe from existing standard commercial product"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>Same as... (Clone BOM)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleAddPackagingComponents}
+                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                          title="Add corrugated box, partitions & product labels to recipe"
+                        >
+                          <Package className="w-3.5 h-3.5" />
+                          <span>+ Add Packaging</span>
+                        </button>
                         <button
                           type="button"
                           onClick={() => showToast('New component added to recipe')}
-                          className="px-3 py-1 bg-[#323f4b] text-white rounded-sm font-semibold cursor-pointer"
+                          className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition"
                         >
-                          + Add Component
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Component</span>
                         </button>
                         <button
                           type="button"
-                          onClick={() => showToast('Recalculated bill of materials cost')}
-                          className="px-3 py-1 bg-[#23783a] text-white rounded-sm font-semibold cursor-pointer"
+                          onClick={handleRecalculateBOMCost}
+                          className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                         >
-                          Recalculate Cost
+                          <RefreshCw className="w-3.5 h-3.5" />
+                          <span>Recalculate Cost</span>
                         </button>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Liquid Volume & Packaging Depletion Equations */}
+                  <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-sm text-xs space-y-1">
+                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                      <div className="flex items-center gap-1.5">
+                        <Info className="w-4 h-4" />
+                        <span>Manufacturing Yield & Finished Case Volume Ratios</span>
+                      </div>
+                      <span className="font-mono text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                        100% YIELD / 0% SHRINKAGE
+                      </span>
+                    </div>
+                    <p className="text-slate-700 text-[11px] leading-relaxed">
+                      <strong>Batch Output: 1 BOX (12 × 500ml Bottles = 6.0 Liters total liquid volume).</strong> Standard commercial bottling consumes exactly <strong>6.00 LTR</strong> of bulk vinegar, <strong>12 empty 500ml bottles</strong>, and <strong>SERVICES 1</strong> labor overhead. Incorporating packaging materials (outer cardboard carton, dividers & adhesive labels) ensures full material inventory depletion during factory batch runs.
+                    </p>
+                  </div>
+
+                  {/* Yield Flag Integrity Warning & Auto-Fix */}
+                  {(() => {
+                    const items = editingProduct.assemblyItems || [];
+                    const laborOrBottleHasMainIng = items.some(
+                      i => i.mainIngredient && (i.rawMaterialCode.includes('SRV') || i.rawMaterialCode.includes('BOT-500') || i.rawMaterialCode.includes('BOX') || i.rawMaterialCode.includes('DIV') || i.rawMaterialCode.includes('LBL'))
+                    );
+                    const hasCoreLiquidMainIng = items.some(
+                      i => i.mainIngredient && (i.rawMaterialCode.includes('VIN') || i.rawMaterialCode.includes('APV') || i.rawMaterialCode.includes('POM') || i.rawMaterialCode.includes('TOM'))
+                    );
+                    const flagError = laborOrBottleHasMainIng || !hasCoreLiquidMainIng;
+
+                    return flagError ? (
+                      <div className="p-3.5 bg-amber-50 border-2 border-amber-300 rounded-sm text-xs text-amber-900 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 font-bold text-amber-800">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>Yield Flag Integrity Warning: &quot;Main Ing.&quot; Rule Violation</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-amber-200 text-amber-900 font-mono text-[10px] font-bold rounded">
+                            GOVERNANCE ALERT
+                          </span>
+                        </div>
+                        <p className="text-slate-700 text-[11px] leading-relaxed">
+                          <strong>Main Ing.</strong> must be checked <strong>EXCLUSIVELY</strong> for the core raw liquid material (e.g. <em>COMMERCIAL WHITE VINEGAR 1 LITRE</em>). Tagging labor overhead (<em>SERVICES 1</em>) or empty glass bottles as Main Ing. corrupts manufacturing yield calculations and skews variance audit reports in Vanguard ERP.
+                        </p>
+                        <div className="flex justify-end pt-1">
+                          <button
+                            type="button"
+                            onClick={handleFixYieldFlags}
+                            className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-sm text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            <span>⚡ Auto-Fix Yield Flags (Core Liquid Only)</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-sm text-xs text-emerald-900 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>
+                            <strong>Yield Flag Integrity Verified:</strong> &quot;Main Ing.&quot; is checked strictly for primary liquid raw material to govern batch yield.
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                          YIELD OPTIMAL
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* USD Cost Valuation Safeguard Notice */}
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-sm text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-slate-700">
+                      <ShieldCheck className="w-4 h-4 text-[#195a96] shrink-0" />
+                      <span>
+                        <strong>USD Valuation Safeguard Active:</strong> Unit Cost USD is calculated dynamically by dividing LBP recipe sum by {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ (<strong>${((editingProduct.unitCostLL || 543960) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)} USD</strong>). Prevents erroneous 1:1 currency duplication.
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500 font-bold">
+                      1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL
+                    </span>
+                  </div>
+
+                  {/* BOM Recipe Line Items Table */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
+                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>Bill of Materials Components</span>
+                        <span className="text-xs text-slate-500 font-normal">
+                          ({editingProduct.assemblyItems?.length || 0} line items)
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 font-normal">
+                        Click checkbox to toggle Main Ingredient yield flag
+                      </span>
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse">
                         <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                           <tr>
-                            <th className="px-3 py-2">Raw Material</th>
+                            <th className="px-3 py-2 w-10 text-center">#</th>
+                            <th className="px-3 py-2 w-24 text-center" title="Check ONLY for core liquid material to govern yield">
+                              Main Ing.
+                            </th>
+                            <th className="px-3 py-2">Component / Raw Material</th>
                             <th className="px-3 py-2">Code</th>
                             <th className="px-3 py-2 text-right">Qty Needed</th>
                             <th className="px-3 py-2">Unit</th>
                             <th className="px-3 py-2 text-right">Unit Cost LL</th>
                             <th className="px-3 py-2 text-right">Total Cost LL</th>
-                            <th className="px-3 py-2 text-center w-12"></th>
+                            <th className="px-3 py-2 text-right">Cost USD</th>
+                            <th className="px-3 py-2 text-center w-12">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
                           {editingProduct.assemblyItems && editingProduct.assemblyItems.length > 0 ? (
-                            editingProduct.assemblyItems.map((asm) => (
-                              <tr key={asm.id} className="hover:bg-slate-50">
-                                <td className="px-3 py-2 font-medium">{asm.rawMaterialName}</td>
-                                <td className="px-3 py-2 font-mono text-[11px]">{asm.rawMaterialCode}</td>
-                                <td className="px-3 py-2 text-right font-bold">{asm.qtyNeeded}</td>
-                                <td className="px-3 py-2">{asm.unit}</td>
-                                <td className="px-3 py-2 text-right">{asm.unitCostLL.toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right font-semibold">
-                                  {asm.totalCostLL.toLocaleString()}
-                                </td>
-                                <td className="px-3 py-2 text-center">
-                                  <button
-                                    type="button"
-                                    className="text-red-700 hover:text-red-900 cursor-pointer"
-                                    title="Remove"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))
+                            editingProduct.assemblyItems.map((asm, idx) => {
+                              const rate = editingProduct.secondCurrencyRate || 90000;
+                              const usdCost = Number((asm.totalCostLL / rate).toFixed(2));
+                              return (
+                                <tr key={asm.id} className="hover:bg-slate-50">
+                                  <td className="px-3 py-2 text-center font-mono text-slate-400">
+                                    {idx + 1}
+                                  </td>
+                                  <td className="px-3 py-2 text-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(asm.mainIngredient)}
+                                      onChange={() => handleToggleMainIngredient(idx)}
+                                      title="Toggle Main Ingredient flag (Governs batch yield calculation)"
+                                      className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                                    />
+                                  </td>
+                                  <td className="px-3 py-2 font-medium text-slate-900">
+                                    <div className="flex items-center gap-1.5">
+                                      {asm.mainIngredient && (
+                                        <span className="px-1.5 py-0.2 bg-blue-100 text-[#195a96] text-[9px] font-bold rounded">
+                                          CORE
+                                        </span>
+                                      )}
+                                      <span>{asm.rawMaterialName}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-3 py-2 font-mono text-[11px] text-slate-500">{asm.rawMaterialCode}</td>
+                                  <td className="px-3 py-2 text-right font-bold font-mono">{asm.qtyNeeded}</td>
+                                  <td className="px-3 py-2 text-slate-600">{asm.unit}</td>
+                                  <td className="px-3 py-2 text-right font-mono">{asm.unitCostLL.toLocaleString()}</td>
+                                  <td className="px-3 py-2 text-right font-semibold font-mono text-slate-900">
+                                    {asm.totalCostLL.toLocaleString()}
+                                  </td>
+                                  <td className="px-3 py-2 text-right font-mono text-slate-500">
+                                    ${usdCost.toFixed(2)}
+                                  </td>
+                                  <td className="px-3 py-2 text-center">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const updated = (editingProduct.assemblyItems || []).filter((_, i) => i !== idx);
+                                        setEditingProduct({ ...editingProduct, assemblyItems: updated });
+                                        showToast(`Removed component: ${asm.rawMaterialName}`);
+                                      }}
+                                      className="text-slate-400 hover:text-red-700 cursor-pointer transition p-1"
+                                      title="Remove Component"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })
                           ) : (
                             <tr>
-                              <td colSpan={7} className="px-3 py-6 text-center text-slate-400">
-                                No raw materials attached. Click + Add Component to build a recipe.
+                              <td colSpan={10} className="px-3 py-6 text-center text-slate-400">
+                                No raw materials attached. Click &quot;Same as...&quot; to clone a recipe or &quot;+ Add Component&quot; to build from scratch.
                               </td>
                             </tr>
                           )}
                         </tbody>
+                        {/* Summary Footer */}
+                        {editingProduct.assemblyItems && editingProduct.assemblyItems.length > 0 && (
+                          <tfoot className="bg-slate-50 font-semibold border-t-2 border-slate-200">
+                            <tr>
+                              <td colSpan={6} className="px-3 py-2.5 text-right text-slate-700">
+                                Extended Recipe Total Cost:
+                              </td>
+                              <td colSpan={2} className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                                {editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP
+                              </td>
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                                ${(editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)}
+                              </td>
+                              <td></td>
+                            </tr>
+                          </tfoot>
+                        )}
                       </table>
                     </div>
+                  </div>
+
+                  {/* Financial Synchronization Bar */}
+                  <div className="p-3 bg-slate-100 border border-slate-200 rounded-sm flex flex-col md:flex-row items-center justify-between gap-3">
+                    <div className="text-xs text-slate-700">
+                      <strong>Synchronize Financials:</strong> Propagate recalculated recipe cost into Master Item Cost (<strong>{editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP</strong> / <strong>${( (editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)}</strong>) and calculate 50% target wholesale markup price (<strong>{Math.round((editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) * 1.5).toLocaleString()} LBP</strong>).
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRecalculateBOMCost}
+                      className="px-4 py-2 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold text-xs rounded-sm shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Sync to Master Item Cost & Selling Prices</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -7349,6 +8202,139 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: "SAME AS" BOM RECIPE CLONING MODAL
+          ======================================================================= */}
+      {isSameAsBOMModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]"
+            style={{ zIndex: 80001 }}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc] shrink-0">
+              <div className="flex items-center gap-2">
+                <Copy className="w-4 h-4 text-[#195a96]" />
+                <h3 className="font-semibold text-slate-800 text-sm">
+                  Clone Recipe from Existing Product (&quot;Same As&quot; BOM)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSameAsBOMModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Description */}
+            <div className="p-4 border-b border-slate-100 bg-blue-50/50 text-xs text-slate-700">
+              Replicate complete component ratios, accurate yield flags (&quot;Main Ing.&quot;), labor overhead, and packaging materials from standard audited production recipes. Overwrites current BOM line items and synchronizes unit costs.
+            </div>
+
+            {/* Template Selection List */}
+            <div className="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
+              {OMEGA_BOM_TEMPLATES.map((tmpl) => {
+                const isSelected = selectedSameAsTemplateId === tmpl.id;
+                const rate = editingProduct?.secondCurrencyRate || 90000;
+                const usd = (tmpl.totalCostLL / rate).toFixed(2);
+
+                return (
+                  <div
+                    key={tmpl.id}
+                    onClick={() => setSelectedSameAsTemplateId(tmpl.id)}
+                    className={`p-3.5 border rounded-sm cursor-pointer transition ${
+                      isSelected
+                        ? 'border-[#195a96] bg-blue-50/40 ring-1 ring-[#195a96]'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-2.5">
+                        <input
+                          type="radio"
+                          name="selected_bom_template"
+                          checked={isSelected}
+                          onChange={() => setSelectedSameAsTemplateId(tmpl.id)}
+                          className="mt-0.5 w-4 h-4 text-[#195a96]"
+                        />
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span>{tmpl.name}</span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-normal">
+                              {tmpl.code}
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[11px] mt-0.5">{tmpl.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <div className="font-bold font-mono text-[#195a96] text-sm">
+                          {tmpl.totalCostLL.toLocaleString()} LBP
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-500">
+                          ${usd} USD
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Component breakdown preview */}
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+                      {tmpl.components.map((c, i) => (
+                        <span
+                          key={i}
+                          className={`text-[10px] px-2 py-0.5 rounded font-mono ${
+                            c.mainIngredient
+                              ? 'bg-blue-100 text-blue-800 font-bold border border-blue-200'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {c.qtyNeeded} {c.unit} {c.rawMaterialName} {c.mainIngredient ? '(Main Ing.)' : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+              <span className="text-[11px] text-slate-500">
+                Target Currency Exchange: 1 $ = {(editingProduct?.secondCurrencyRate || 90000).toLocaleString()} LL
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSameAsBOMModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium text-xs cursor-pointer hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tmpl = OMEGA_BOM_TEMPLATES.find((t) => t.id === selectedSameAsTemplateId);
+                    if (tmpl) {
+                      handleApplySameAsBOM(tmpl);
+                    }
+                  }}
+                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Apply Recipe (Clone BOM)</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

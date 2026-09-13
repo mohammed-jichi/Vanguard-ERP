@@ -25,6 +25,15 @@ export interface ProductStockRecord {
   availableQty: number;
 }
 
+export interface ProductReorderRule {
+  id: number;
+  location: string;
+  warehouseName: string;
+  minLevel: number;
+  maxStock: number;
+  alertActive?: boolean;
+}
+
 export interface ProductAssemblyItem {
   id: number;
   rawMaterialId: number;
@@ -34,6 +43,7 @@ export interface ProductAssemblyItem {
   unit: string;
   unitCostLL: number;
   totalCostLL: number;
+  mainIngredient?: boolean; // Main Ing. flag: check ONLY for primary core raw material to govern yield
 }
 
 export interface ProductIncludedItem {
@@ -190,9 +200,12 @@ export interface AuthenticProductRecord {
   videoUrl: string;
 
   // Assembly & Bundles
-  assemblyCalculationMethod: 'Automatic' | 'Fixed';
+  assemblyCalculationMethod: 'Automatic' | 'Fixed' | 'Extended Line-Item Calculation';
+  quantityToPrepare?: number;
+  quantityToPrepareUnit?: string;
   assemblyItems: ProductAssemblyItem[];
   includedItems: ProductIncludedItem[];
+  reorderRules?: ProductReorderRule[];
 
   // History & Audit
   movements: ProductMovementRecord[];
@@ -346,17 +359,88 @@ export const OMEGA_SOURCES = [
 
 export const ALL_SOURCES_LIST = OMEGA_SOURCES.map((s) => s.name);
 
+export interface BOMTemplateProduct {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  outputUnit: string;
+  totalCostLL: number;
+  totalCostUSD: number;
+  components: ProductAssemblyItem[];
+}
+
+export const OMEGA_BOM_TEMPLATES: BOMTemplateProduct[] = [
+  {
+    id: 1,
+    code: 'CWV500MLB103',
+    name: 'COMMERCIAL WHITE VINEGAR 12X500ML (12-Pack Case)',
+    description: '12x 500ml bottles (6.0L total liquid volume). 100% yield ratio.',
+    outputUnit: 'BOX',
+    totalCostLL: 543960,
+    totalCostUSD: 6.04,
+    components: [
+      { id: 1, rawMaterialId: 101, rawMaterialCode: 'BOT-500ML', rawMaterialName: 'Bottle 500ml', qtyNeeded: 12, unit: 'BOT', unitCostLL: 30000, totalCostLL: 360000, mainIngredient: false },
+      { id: 2, rawMaterialId: 102, rawMaterialCode: 'VIN-1LTR', rawMaterialName: 'COMMERCIAL WHITE VINEGAR 1 LITRE', qtyNeeded: 6, unit: 'LTR', unitCostLL: 15660, totalCostLL: 93960, mainIngredient: true },
+      { id: 3, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1', qtyNeeded: 1, unit: 'SERV', unitCostLL: 90000, totalCostLL: 90000, mainIngredient: false }
+    ]
+  },
+  {
+    id: 2,
+    code: 'CAV500MLB103',
+    name: 'COMMERCIAL APPLE VINEGAR 12X500ML (12-Pack Case)',
+    description: '12x 500ml bottles with concentrated Apple Cider Vinegar. 556,920 LL benchmark.',
+    outputUnit: 'BOX',
+    totalCostLL: 556920,
+    totalCostUSD: 6.19,
+    components: [
+      { id: 1, rawMaterialId: 101, rawMaterialCode: 'BOT-500ML', rawMaterialName: 'Bottle 500ml', qtyNeeded: 12, unit: 'BOT', unitCostLL: 30000, totalCostLL: 360000, mainIngredient: false },
+      { id: 2, rawMaterialId: 104, rawMaterialCode: 'APV-1LTR', rawMaterialName: 'COMMERCIAL APPLE CIDER VINEGAR 1 LITRE', qtyNeeded: 6, unit: 'LTR', unitCostLL: 17820, totalCostLL: 106920, mainIngredient: true },
+      { id: 3, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1', qtyNeeded: 1, unit: 'SERV', unitCostLL: 90000, totalCostLL: 90000, mainIngredient: false }
+    ]
+  },
+  {
+    id: 3,
+    code: 'POM500ML12',
+    name: 'POMEGRANATE MOLASSES 12X500ML (Glass Jar Case)',
+    description: '12x 500ml glass jars with pure pomegranate concentrate and twist-off lug caps.',
+    outputUnit: 'BOX',
+    totalCostLL: 1420000,
+    totalCostUSD: 15.78,
+    components: [
+      { id: 1, rawMaterialId: 105, rawMaterialCode: 'JAR-500ML', rawMaterialName: 'Glass Jar 500ml', qtyNeeded: 12, unit: 'JAR', unitCostLL: 35000, totalCostLL: 420000, mainIngredient: false },
+      { id: 2, rawMaterialId: 106, rawMaterialCode: 'POM-CONC-1L', rawMaterialName: '100% Concentrated Pomegranate Juice', qtyNeeded: 6, unit: 'LTR', unitCostLL: 150000, totalCostLL: 900000, mainIngredient: true },
+      { id: 3, rawMaterialId: 107, rawMaterialCode: 'CAP-LUG-63', rawMaterialName: 'Lug Cap Gold 63mm', qtyNeeded: 12, unit: 'PCS', unitCostLL: 5000, totalCostLL: 60000, mainIngredient: false },
+      { id: 4, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1 (Overhead & Labor)', qtyNeeded: 1, unit: 'SERV', unitCostLL: 40000, totalCostLL: 40000, mainIngredient: false }
+    ]
+  },
+  {
+    id: 4,
+    code: 'TOM800ML12',
+    name: 'TOMATO PASTE 12X800G (Jar Case)',
+    description: '12x 800g glass jars with 28-30 Brix concentrated tomato puree.',
+    outputUnit: 'BOX',
+    totalCostLL: 980000,
+    totalCostUSD: 10.89,
+    components: [
+      { id: 1, rawMaterialId: 108, rawMaterialCode: 'JAR-800G', rawMaterialName: 'Glass Jar 800g (Deep Lug)', qtyNeeded: 12, unit: 'JAR', unitCostLL: 38000, totalCostLL: 456000, mainIngredient: false },
+      { id: 2, rawMaterialId: 109, rawMaterialCode: 'TOM-CONC-28B', rawMaterialName: 'Tomato Puree Concentrate 28-30 Brix', qtyNeeded: 9.6, unit: 'KG', unitCostLL: 48000, totalCostLL: 460800, mainIngredient: true },
+      { id: 3, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1', qtyNeeded: 1, unit: 'SERV', unitCostLL: 63200, totalCostLL: 63200, mainIngredient: false }
+    ]
+  }
+];
+
 // Initial Authentic Products matching Screenshot 1 exactly
 export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
   {
     id: 15,
-    description: 'خل ابيض 250مل',
+    description: 'خل ابيض تجاري 12×500مل (صندوق)',
     code: 'CWV250MLB103',
-    otherDescription: 'COMMERCIAL WHITE VENIGAR',
+    otherDescription: 'COMMERCIAL WHITE VINEGAR 12X500ML',
     itemComment: '',
-    secondLangDescription: '',
+    secondLangDescription: 'Commercial White Vinegar 12x500ml Case',
     secondLangItemComment: '',
-    internalNote: '',
+    internalNote: 'Bottled and packed at Choueifat Plant',
     categoryId: 2,
     categoryName: 'مفرق',
     divisionId: 5,
@@ -374,39 +458,39 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     itemBrand: 'زيت و زيتون الجنوب',
     itemLeadTime: '2 Days',
     source: 'Local',
-    buyingFormat: 'BOT',
-    inventoryFormat: 'BOT',
+    buyingFormat: 'BOX',
+    inventoryFormat: 'BOX',
     usageFormat: 'BOT',
     qtyInBuyingFormat: 1,
     qtyInInventoryFormat: 1,
-    packingProduction: 'Standard Bottle',
-    qtyInPackingFormat: 1,
-    unitCostLL: 26676.72,
-    averageCostLL: 26676.72,
-    unitCostUSD: 0.296408,
-    averageCostUSD: 0.296408,
+    packingProduction: 'Case 12x Bottles',
+    qtyInPackingFormat: 12,
+    unitCostLL: 543960,
+    averageCostLL: 543960,
+    unitCostUSD: 6.044,
+    averageCostUSD: 6.044,
     additionalCostLL: 0,
-    markupPct: 30,
-    recommendedPriceLL: 34679.74,
-    sellingPrice1LL: 45000,
-    beforeTax1LL: 45000,
-    profit1Pct: 68.69,
-    sellingPrice1USD: 0.5,
-    sellingPrice2LL: 45000,
-    beforeTax2LL: 45000,
-    qtyPrice2: 1,
-    profit2Pct: 68.69,
-    sellingPrice2USD: 0.5,
-    sellingPrice3LL: 45000,
-    beforeTax3LL: 45000,
-    qtyPrice3: 1,
-    profit3Pct: 68.69,
-    sellingPrice3USD: 0.5,
-    sellingPrice4LL: 45000,
-    beforeTax4LL: 45000,
-    qtyPrice4: 1,
-    profit4Pct: 68.69,
-    sellingPrice4USD: 0.5,
+    markupPct: 50,
+    recommendedPriceLL: 1080000,
+    sellingPrice1LL: 1080000,
+    beforeTax1LL: 1080000,
+    profit1Pct: 98.54,
+    sellingPrice1USD: 12,
+    sellingPrice2LL: 1000000,
+    beforeTax2LL: 1000000,
+    qtyPrice2: 5,
+    profit2Pct: 83.84,
+    sellingPrice2USD: 11.11,
+    sellingPrice3LL: 950000,
+    beforeTax3LL: 950000,
+    qtyPrice3: 20,
+    profit3Pct: 74.65,
+    sellingPrice3USD: 10.56,
+    sellingPrice4LL: 900000,
+    beforeTax4LL: 900000,
+    qtyPrice4: 50,
+    profit4Pct: 65.45,
+    sellingPrice4USD: 10.0,
     secondCurrencyRate: 90000,
     barcode: '5281234123481',
     alternativeBarcode2: '',
@@ -414,24 +498,28 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     applySp2Qty2: false,
     rfidt1: '',
     rfidt2: '',
-    qtyOH: 0.0,
-    unit: 'BOT',
-    sellingPrice: 45000,
-    cost: 26676.72,
+    qtyOH: 12.0,
+    unit: 'BOX',
+    sellingPrice: 1080000,
+    cost: 543960,
     function: 'Revenue',
     updatedAt: '21 Jul, 2026',
     isDiscontinued: false,
     stockRecords: [
-      { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Showroom', qtyOH: 0, reorderLevel: 24, maxStock: 120, reservedQty: 0, availableQty: 0 },
-      { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 2, warehouseName: 'Secondary Depot', locationId: 13, locationName: 'Zone A', qtyOH: 0, reorderLevel: 12, maxStock: 60, reservedQty: 0, availableQty: 0 }
+      { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Main Store', qtyOH: 12, reorderLevel: 50, maxStock: 200, reservedQty: 2, availableQty: 10 }
+    ],
+    reorderRules: [
+      { id: 1, location: 'Main Store', warehouseName: 'Main Store', minLevel: 50, maxStock: 200, alertActive: true }
     ],
     imageUrl: '',
     videoUrl: '',
-    assemblyCalculationMethod: 'Automatic',
+    assemblyCalculationMethod: 'Extended Line-Item Calculation',
+    quantityToPrepare: 1,
+    quantityToPrepareUnit: 'BOX',
     assemblyItems: [
-      { id: 1, rawMaterialId: 45, rawMaterialCode: 'BOT-250ML', rawMaterialName: 'Glass Bottle 250ml', qtyNeeded: 1, unit: 'BOT', unitCostLL: 12000, totalCostLL: 12000 },
-      { id: 2, rawMaterialId: 46, rawMaterialCode: 'CAP-STD', rawMaterialName: 'Bottle Cap Std', qtyNeeded: 1, unit: 'PCS', unitCostLL: 3500, totalCostLL: 3500 },
-      { id: 3, rawMaterialId: 47, rawMaterialCode: 'VIN-BULK', rawMaterialName: 'White Vinegar Bulk', qtyNeeded: 0.25, unit: 'L', unitCostLL: 44706.88, totalCostLL: 11176.72 }
+      { id: 1, rawMaterialId: 101, rawMaterialCode: 'BOT-500ML', rawMaterialName: 'Bottle 500ml', qtyNeeded: 12, unit: 'BOT', unitCostLL: 30000, totalCostLL: 360000, mainIngredient: false },
+      { id: 2, rawMaterialId: 102, rawMaterialCode: 'VIN-1LTR', rawMaterialName: 'COMMERCIAL WHITE VINEGAR 1 LITRE', qtyNeeded: 6, unit: 'LTR', unitCostLL: 15660, totalCostLL: 93960, mainIngredient: true },
+      { id: 3, rawMaterialId: 103, rawMaterialCode: 'SERV-01', rawMaterialName: 'SERVICES 1', qtyNeeded: 1, unit: 'SERV', unitCostLL: 90000, totalCostLL: 90000, mainIngredient: false }
     ],
     includedItems: [],
     movements: [
