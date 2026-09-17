@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface DuplicateInvoicesTemplateProps {
   hideToolbar?: boolean;
@@ -90,50 +91,39 @@ export const DuplicateInvoicesTemplate: React.FC<DuplicateInvoicesTemplateProps>
       </div>
       )}
 
-      {/* Background wrapper to center the paper on screen */}
-      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
-        {/* The A4 Paper Simulator (794px width) */}
-        <div 
-          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
-        >
-          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
-          <div className="text-center font-bold text-[12px] mb-4">Duplicate Invoices Report</div>
-          <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>{executionDate}</div>
-            <div>{dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}</div>
-            <div>Page 1 of 11</div>
-          </div>
-          <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
-              <thead>
-                <tr className="font-bold text-black border-b border-black">
-                  <th className="py-1 px-1 text-left">Invoice #</th>
-                  {isGroupDate && <th className="py-1 px-1 text-left">Date</th>}
-                  <th className="py-1 px-1 text-left">Cust. #</th>
-                  <th className="py-1 px-1 text-left">Customer Name</th>
-                  <th className="py-1 px-1 text-left">Order #</th>
-                  <th className="py-1 px-1 text-left">Print #</th>
-                  <th className="py-1 px-1 text-right">Sub Total</th>
-                  <th className="py-1 px-1 text-right">Discount</th>
-                  <th className="py-1 px-1 text-right">Tax</th>
-                  <th className="py-1 px-1 text-right">Total</th>
-                  {isRateActive && <th className="py-1 px-1 text-center">Cur</th>}
-                  {isRateActive && <th className="py-1 px-1 text-right">Rate</th>}
-                  {isRateActive && <th className="py-1 px-1 text-right">Total ($)</th>}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="font-bold"><td colSpan={10 + (isRateActive ? 3 : 0) + (isGroupDate ? 0 : -1)} className="py-1 px-1">Branch: Main Branch</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-            <div className="text-left w-1/3">REP_S_00247</div>
-            <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-            <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-          </div>
-        </div>
-      </div>
+      {/* Unified Standard Document Sheet */}
+      <UnifiedPrintableReportSheet
+        reportTitle="Duplicate Invoices Report"
+        reportCode="REP_S_00248"
+        executionDate={executionDate}
+        periodText={dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}
+        pageInfo="Page 1 of 1"
+        branchInfo="Branch: Main Branch (Zeit w zaytoun ljanoub)"
+        hideToolbar={hideToolbar}
+      >
+        <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
+          <thead>
+            <tr className="font-bold text-black border-b border-black">
+              <th className="py-1 px-1 text-left font-sans">Invoice #</th>
+              {isGroupDate && <th className="py-1 px-1 text-left font-sans">Date</th>}
+              <th className="py-1 px-1 text-left font-sans">Cust. #</th>
+              <th className="py-1 px-1 text-left font-sans">Customer Name</th>
+              <th className="py-1 px-1 text-left font-sans">Order #</th>
+              <th className="py-1 px-1 text-left font-sans">Print #</th>
+              <th className="py-1 px-1 text-right font-sans">Sub Total</th>
+              <th className="py-1 px-1 text-right font-sans">Discount</th>
+              <th className="py-1 px-1 text-right font-sans">Tax</th>
+              <th className="py-1 px-1 text-right font-sans">Total</th>
+              {isRateActive && <th className="py-1 px-1 text-center font-sans">Cur</th>}
+              {isRateActive && <th className="py-1 px-1 text-right font-sans">Rate</th>}
+              {isRateActive && <th className="py-1 px-1 text-right font-sans">Total ($)</th>}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="font-bold"><td colSpan={10 + (isRateActive ? 3 : 0) + (isGroupDate ? 0 : -1)} className="py-1 px-1 font-sans">Branch: Main Branch</td></tr>
+          </tbody>
+        </table>
+      </UnifiedPrintableReportSheet>
     </div>
   );
 };

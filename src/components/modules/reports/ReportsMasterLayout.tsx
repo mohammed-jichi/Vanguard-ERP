@@ -134,11 +134,12 @@ export default function ReportsMasterLayout() {
       title: "5. Today's and History",
       icon: '📅',
       reports: [
-        { id: 'td_01', code: 'REP_TH_101', title: "Today's Statistics" },
+        { id: 'td_01', code: 'REP_S_00187', title: "Today's Statistics" },
         { id: 'td_02', code: 'REP_TH_102', title: "Today's Summary of Payment" },
         { id: 'td_03', code: 'REP_TH_103', title: "Today's Summary by Employee" },
         { id: 'td_04', code: 'REP_TH_104', title: "Today's Transactions" },
-        { id: 'td_05', code: 'REP_TH_201', title: 'Preview Order Sales' },
+        { id: 'td_05', code: 'REP_TH_201', title: 'Preview Older Sales' },
+        { id: 'td_06', code: 'REP_TH_202', title: 'Main Reading History' },
       ],
     },
     {

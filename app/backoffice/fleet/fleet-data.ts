@@ -23,6 +23,7 @@ export interface CorridorRoute {
   schedule: string;
   highwayPath: string;
   activeOrdersCount: number;
+  driver?: string;
 }
 
 export interface DispatchedOrder {
@@ -84,6 +85,8 @@ export interface SuperSonicVendor {
   currentCodBalanceUsd: number;
   unpaidDeliveryFeesUsd: number;
   status: 'ACTIVE' | 'ON_HOLD';
+  ordersCount?: number;
+  merchantName?: string;
 }
 
 export interface StaffMember {
@@ -123,13 +126,13 @@ export interface LedgerEntry {
 
 // 1. THE 7 STRATEGIC HIGHWAY CORRIDORS
 export const initialCorridors: CorridorRoute[] = [
-  { id: 1, name: 'Corridor 1: Greater Beirut & Connected Coast', schedule: 'Daily', highwayPath: 'SuperSonic Central Hub (Choueifat) ➔ Khalde ➔ Hadath / Baabda / Dahieh ➔ Beirut City ➔ Metn Coast (Sin El Fil, Dekwaneh, Jdeideh, Jal El Dib)', activeOrdersCount: 14 },
-  { id: 2, name: 'Corridor 2: Central & Southern Mount Lebanon', schedule: 'Daily / Near-Daily', highwayPath: 'SuperSonic Central Hub (Choueifat) ➔ Aramoun / Bchamoun / Qabr Chmoun ➔ Aley / Bhamdoun / Sofar ➔ Upper Chouf (Deir El Qamar, Beiteddine, Baakline, Barouk)', activeOrdersCount: 9 },
-  { id: 3, name: 'Corridor 3: Southern Coast & Deep South', schedule: 'Daily', highwayPath: 'Chouf Coast (Damour, Jiyeh) ➔ Saida ➔ Tyre (Sour) ➔ Nabatieh', activeOrdersCount: 12 },
-  { id: 4, name: 'Corridor 4: Northern Coast to Batroun', schedule: '3-4 times/week', highwayPath: 'Antelias / Dbayeh ➔ Jounieh / Keserwan ➔ Jbeil (Byblos) ➔ Batroun ➔ Koura', activeOrdersCount: 8 },
-  { id: 5, name: 'Corridor 5: Tripoli, Akkar & Dinnieh', schedule: '2-3 times/week', highwayPath: 'Tripoli ➔ Minieh ➔ Zgharta ➔ Dinnieh ➔ Akkar (Halba, Abdeh, Qobayat, Khraybet El Jindi, Menjez)', activeOrdersCount: 6 },
-  { id: 6, name: 'Corridor 6: Central, West Bekaa & South-East', schedule: '2-3 times/week', highwayPath: 'Damascus Road (Sofar - Dahr El Baidar) ➔ Chtaura / Zahle ➔ West Bekaa (Joub Jannine) ➔ Rashaya ➔ Hasbaya ➔ Jezzine (via Machghara)', activeOrdersCount: 5 },
-  { id: 7, name: 'Corridor 7: North Bekaa - Baalbek Hermel', schedule: '1-2 times/week', highwayPath: 'Rayak ➔ Baalbek ➔ Deir El Ahmar ➔ Labweh ➔ Hermel', activeOrdersCount: 3 },
+  { id: 1, name: 'Corridor 1: Greater Beirut & Connected Coast', schedule: 'Daily', highwayPath: 'SuperSonic Central Hub (Choueifat) ➔ Khalde ➔ Hadath / Baabda / Dahieh ➔ Beirut City ➔ Metn Coast (Sin El Fil, Dekwaneh, Jdeideh, Jal El Dib)', activeOrdersCount: 14, driver: 'Tony Khoury' },
+  { id: 2, name: 'Corridor 2: Central & Southern Mount Lebanon', schedule: 'Daily / Near-Daily', highwayPath: 'SuperSonic Central Hub (Choueifat) ➔ Aramoun / Bchamoun / Qabr Chmoun ➔ Aley / Bhamdoun / Sofar ➔ Upper Chouf (Deir El Qamar, Beiteddine, Baakline, Barouk)', activeOrdersCount: 9, driver: 'Fadi Abou Assi' },
+  { id: 3, name: 'Corridor 3: Southern Coast & Deep South', schedule: 'Daily', highwayPath: 'Chouf Coast (Damour, Jiyeh) ➔ Saida ➔ Tyre (Sour) ➔ Nabatieh', activeOrdersCount: 12, driver: 'Hassan Sleiman' },
+  { id: 4, name: 'Corridor 4: Northern Coast to Batroun', schedule: '3-4 times/week', highwayPath: 'Antelias / Dbayeh ➔ Jounieh / Keserwan ➔ Jbeil (Byblos) ➔ Batroun ➔ Koura', activeOrdersCount: 8, driver: 'Charbel Rahme' },
+  { id: 5, name: 'Corridor 5: Tripoli, Akkar & Dinnieh', schedule: '2-3 times/week', highwayPath: 'Tripoli ➔ Minieh ➔ Zgharta ➔ Dinnieh ➔ Akkar (Halba, Abdeh, Qobayat, Khraybet El Jindi, Menjez)', activeOrdersCount: 6, driver: 'Khaled Merhi' },
+  { id: 6, name: 'Corridor 6: Central, West Bekaa & South-East', schedule: '2-3 times/week', highwayPath: 'Damascus Road (Sofar - Dahr El Baidar) ➔ Chtaura / Zahle ➔ West Bekaa (Joub Jannine) ➔ Rashaya ➔ Hasbaya ➔ Jezzine (via Machghara)', activeOrdersCount: 5, driver: 'Elie Matar' },
+  { id: 7, name: 'Corridor 7: North Bekaa - Baalbek Hermel', schedule: '1-2 times/week', highwayPath: 'Rayak ➔ Baalbek ➔ Deir El Ahmar ➔ Labweh ➔ Hermel', activeOrdersCount: 3, driver: 'Ali Chamas' },
 ];
 
 // 2. FLEET VEHICLES (COMPANY-OWNED VS DRIVER-OWNED)
@@ -152,9 +155,9 @@ export const initialOrders: DispatchedOrder[] = [
 
 // 4. VENDORS MASTER
 export const initialVendors: SuperSonicVendor[] = [
-  { id: 'VND-01', vendorName: 'La Rose Fashion Boutique', contactPerson: 'Mireille K.', phone: '01-482910', businessType: 'Apparel & Fashion', settlementTerms: 'WEEKLY_SETTLEMENT', currentCodBalanceUsd: 850.0, unpaidDeliveryFeesUsd: 75.0, status: 'ACTIVE' },
-  { id: 'VND-02', vendorName: 'Apex Electronics Hub', contactPerson: 'Karim Daher', phone: '01-205930', businessType: 'Electronics & Hardware', settlementTerms: 'DAILY_CASH', currentCodBalanceUsd: 1420.0, unpaidDeliveryFeesUsd: 110.0, status: 'ACTIVE' },
-  { id: 'VND-03', vendorName: 'Beirut Gourmet Roastery', contactPerson: 'Walid Haddad', phone: '01-741258', businessType: 'Coffee & Nuts', settlementTerms: 'AFTER_DELIVERY_PAYOUT', currentCodBalanceUsd: 320.0, unpaidDeliveryFeesUsd: 28.0, status: 'ACTIVE' },
+  { id: 'VND-01', vendorName: 'La Rose Fashion Boutique', merchantName: 'La Rose Fashion Boutique', contactPerson: 'Mireille K.', phone: '01-482910', businessType: 'Apparel & Fashion', settlementTerms: 'WEEKLY_SETTLEMENT', currentCodBalanceUsd: 850.0, unpaidDeliveryFeesUsd: 75.0, status: 'ACTIVE', ordersCount: 8 },
+  { id: 'VND-02', vendorName: 'Apex Electronics Hub', merchantName: 'Apex Electronics Hub', contactPerson: 'Karim Daher', phone: '01-205930', businessType: 'Electronics & Hardware', settlementTerms: 'DAILY_CASH', currentCodBalanceUsd: 1420.0, unpaidDeliveryFeesUsd: 110.0, status: 'ACTIVE', ordersCount: 12 },
+  { id: 'VND-03', vendorName: 'Beirut Gourmet Roastery', merchantName: 'Beirut Gourmet Roastery', contactPerson: 'Walid Haddad', phone: '01-741258', businessType: 'Coffee & Nuts', settlementTerms: 'AFTER_DELIVERY_PAYOUT', currentCodBalanceUsd: 320.0, unpaidDeliveryFeesUsd: 28.0, status: 'ACTIVE', ordersCount: 5 },
 ];
 
 // 5. STAFF ROSTER

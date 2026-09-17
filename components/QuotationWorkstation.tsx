@@ -295,7 +295,9 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
   <meta charset="UTF-8">
   <title>${filename}</title>
   <style>
-    @page { size: A4; margin: 15mm; }
+    @page { size: auto; margin: 12mm 10mm 12mm 10mm; }
+    .print-landscape { page-orientation: landscape; }
+    .print-portrait { page-orientation: portrait; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; padding: 20px; line-height: 1.5; }
     .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
     .doc-title { font-size: 26px; font-weight: 800; letter-spacing: 1px; color: #0f172a; }

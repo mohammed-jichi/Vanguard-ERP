@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { UnifiedPrintableReportSheet } from '../UnifiedPrintableReportSheet';
 
 interface SalesDetailsForOneSalesItemTemplateProps {
   hideToolbar?: boolean;
@@ -254,138 +255,85 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
         </div>
       </div>
 
-      {/* Only check if filtered, ignore selectedItem requirement */}
       {!isFiltered ? (
         <div className="w-full max-w-[1400px] py-20 flex flex-col items-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
            <div className="text-[40px] mb-3 opacity-40">📊</div>
-           <p className="text-slate-600 font-bold text-[15px]">Select filters and click "Filter Report" to view.</p>
+           <p className="text-slate-600 font-bold text-[15px]">Select filters and click &quot;Filter Report&quot; to view.</p>
         </div>
       ) : (
-        <div className="w-full font-sans text-black bg-slate-100 print:bg-white py-6 print:py-0 flex flex-col items-center gap-8 print:gap-0">
-          
-          {pagesData.map((pageData, pageIndex) => (
-            <div 
-              key={pageIndex} 
-              className="report-wrapper relative flex flex-col bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px] page-break-after-always" 
-              style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-            >
-              
-              <div className="w-full text-center mb-4 relative">
-                <div className="text-blue-700 font-bold text-[12px] text-left absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
-                <h3 className="font-bold text-[14px]">Sales details for one sales item</h3>
-              </div>
-
-              {/* Page Header */}
-              <div className="flex justify-between items-end text-[11px] font-bold w-full mb-1 mt-4">
-                <div className="w-[100px] text-left">29-Aug-26</div>
-                <div className="flex-1 text-center flex justify-center gap-8">
-                  <span>From Date: 01-Aug-2026</span>
-                  <span>To Date: 29-Aug-2026</span>
-                  <span>Sales Item Id: {selectedItem ? "3" : "ALL"}</span>
-                </div>
-                <div className="w-[100px] text-right">Page {pageData.page} of 2</div>
-              </div>
-
-              {/* Table */}
-              <table className="w-full text-[11px] text-left border-collapse">
-                <thead>
-                  <tr className="border-y-2 border-black">
-                    <th className="py-1 px-1 normal-case font-bold w-[75px]">Invoice Number</th>
-                    <th className="py-1 px-1 normal-case font-bold w-[75px]">Date & Time</th>
-                    <th className="py-1 px-1 normal-case font-bold w-[50px]">Order #</th>
-                    <th className="py-1 px-1 normal-case font-bold w-[100px]">Server Name</th>
-                    <th className="py-1 px-1 normal-case font-bold w-[100px]">Menu</th>
-                    <th className="py-1 px-1 normal-case font-bold text-right w-[60px]">Quantity</th>
-                    <th className="py-1 px-1 normal-case font-bold text-right w-[50px]">Balance</th>
-                    <th className="py-1 px-1 normal-case font-bold text-right w-[90px]">Total Price</th>
-                    <th className="py-1 px-1 normal-case font-bold text-center w-[70px]">Work Station</th>
-                    <th className="py-1 px-1 normal-case font-bold text-left">Customer Name</th>
-                  </tr>
-                </thead>
-                <tbody className="text-[11px]">
-                  
-                  {/* Branch header on page 1 */}
-                  {pageIndex === 0 && (
-                    <>
-                      <tr>
-                        <td colSpan={10} className="font-bold py-1 px-1">Branch: Main Branch</td>
-                      </tr>
-                      {/* CONDITIONAL ITEM NAME HEADER: Only show if an item is explicitly selected */}
-                      {selectedItem && (
-                        <tr>
-                          <td colSpan={10} className="font-bold py-2 px-1 text-center">{selectedItem.desc}</td>
-                        </tr>
-                      )}
-                    </>
-                  )}
-
-                  {pageData.dates.map((grp, dIdx) => (
-                    <React.Fragment key={dIdx}>
-                      <tr>
-                        <td className="font-bold py-1 px-1">EOD DATE</td>
-                        <td className="font-bold py-1 px-1">{grp.date}</td>
-                        <td colSpan={8}></td>
-                      </tr>
-                      {grp.rows.map((row, rIdx) => (
-                        <tr key={rIdx} className="leading-none align-top">
-                          <td className="py-[2px] px-1">{row.inv}</td>
-                          <td className="py-[2px] px-1">{row.dt}</td>
-                          <td className="py-[2px] px-1">{row.ord}</td>
-                          <td className="py-[2px] px-1">{row.srv}</td>
-                          <td className="py-[2px] px-1 whitespace-pre-wrap leading-tight">{row.menu}</td>
-                          <td className="py-[2px] px-1 text-right">{row.qty}</td>
-                          <td className="py-[2px] px-1 text-right">{row.bal}</td>
-                          <td className="py-[2px] px-1 text-right">{row.tot}</td>
-                          <td className="py-[2px] px-1 text-center">{row.ws}</td>
-                          <td className="py-[2px] px-1 text-left">{row.cust}</td>
-                        </tr>
-                      ))}
-                      <tr className="font-bold">
-                        <td colSpan={4}></td>
-                        <td className="py-1 px-1 whitespace-nowrap">Total by date</td>
-                        <td className="py-1 px-1 text-right">{grp.tQty}</td>
-                        <td></td>
-                        <td className="py-1 px-1 text-right">{grp.tTot}</td>
-                        <td colSpan={2}></td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
-
-                  {/* Show Item Total only if a specific item is selected */}
-                  {pageData.itemTotalQty && selectedItem && (
-                    <tr className="font-bold">
-                      <td colSpan={4}></td>
-                      <td className="py-1 px-1 whitespace-nowrap">Total by sales item</td>
-                      <td className="py-1 px-1 text-right">{pageData.itemTotalQty}</td>
-                      <td></td>
-                      <td className="py-1 px-1 text-right">{pageData.itemTotalAmt}</td>
-                      <td colSpan={2}></td>
-                    </tr>
-                  )}
-                  {pageData.branchTotalQty && (
-                    <tr className="font-bold">
-                      <td colSpan={4}></td>
-                      <td className="py-1 px-1 whitespace-nowrap">Total by Branch</td>
-                      <td className="py-1 px-1 text-right">{pageData.branchTotalQty}</td>
-                      <td></td>
-                      <td className="py-1 px-1 text-right">{pageData.branchTotalAmt}</td>
-                      <td colSpan={2}></td>
-                    </tr>
-                  )}
-
-                </tbody>
-              </table>
-
-              {/* Footer */}
-              <div className="mt-auto w-full border-t-2 border-double border-black pt-2 pb-4 flex justify-between items-center text-[10px] font-bold text-black">
-                <div className="text-left w-1/3">REP_S_00444</div>
-                <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                <div className="text-right w-1/3 text-blue-700">www.vanguarderp.com</div>
-              </div>
+        <UnifiedPrintableReportSheet
+          reportTitle="Sales details for one sales item"
+          reportCode="REP_S_00444"
+          executionDate={executionDate || '29-Aug-2026'}
+          periodText={dynamicPeriodText || 'From Date: 01-Aug-2026 To Date: 29-Aug-2026'}
+          pageInfo="Page 1 of 1"
+          branchInfo={`Branch: ${branch} (Zeit w zaytoun ljanoub)`}
+          hideToolbar={hideToolbar}
+          zoomLevel={zoomLevel}
+          setZoomLevel={setZoomLevel}
+        >
+          {selectedItem && (
+            <div className="font-bold text-[12px] py-1 text-center bg-blue-50 text-blue-800 rounded mb-2 border border-blue-200">
+              Selected Item: {selectedItem.code} - {selectedItem.desc}
             </div>
-          ))}
-          
-        </div>
+          )}
+
+          <table className="w-full text-[11px] text-left border-collapse table-fixed">
+            <thead>
+              <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+                <th className="py-2 px-1 normal-case font-sans w-[10%]">Invoice #</th>
+                <th className="py-2 px-1 normal-case font-sans w-[12%]">Date & Time</th>
+                <th className="py-2 px-1 normal-case font-sans w-[8%]">Order #</th>
+                <th className="py-2 px-1 normal-case font-sans w-[14%]">Server Name</th>
+                <th className="py-2 px-1 normal-case font-sans w-[14%]">Department</th>
+                <th className="py-2 px-1 normal-case font-sans text-right w-[8%]">Quantity</th>
+                <th className="py-2 px-1 normal-case font-sans text-right w-[8%]">Balance</th>
+                <th className="py-2 px-1 normal-case font-sans text-right w-[12%]">Total Price</th>
+                <th className="py-2 px-1 normal-case font-sans text-left w-[14%]">Customer Name</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+              {pagesData.flatMap(p => p.dates).map((grp, dIdx) => (
+                <React.Fragment key={dIdx}>
+                  <tr className="bg-slate-50/70 font-bold">
+                    <td className="py-1 px-1 font-mono text-slate-900">EOD DATE</td>
+                    <td className="py-1 px-1 font-mono text-blue-700">{grp.date}</td>
+                    <td colSpan={7}></td>
+                  </tr>
+                  {grp.rows.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-slate-50">
+                      <td className="py-1 px-1 font-mono text-slate-700">{row.inv}</td>
+                      <td className="py-1 px-1 font-mono text-slate-600">{row.dt}</td>
+                      <td className="py-1 px-1 font-mono text-slate-500">{row.ord || '-'}</td>
+                      <td className="py-1 px-1 font-sans text-slate-800">{row.srv}</td>
+                      <td className="py-1 px-1 font-sans text-slate-600">Main Dept</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold">{row.qty}</td>
+                      <td className="py-1 px-1 text-right font-mono">{row.bal}</td>
+                      <td className="py-1 px-1 text-right font-mono font-bold text-slate-900">{row.tot}</td>
+                      <td className="py-1 px-1 text-left font-sans text-slate-600">Direct Retail Customer</td>
+                    </tr>
+                  ))}
+                  <tr className="font-bold bg-slate-100/50">
+                    <td colSpan={5} className="py-1 px-1 text-right font-sans">Total by date ({grp.date}):</td>
+                    <td className="py-1 px-1 text-right font-mono font-bold">{grp.tQty}</td>
+                    <td></td>
+                    <td className="py-1 px-1 text-right font-mono font-bold text-emerald-800">{grp.tTot}</td>
+                    <td></td>
+                  </tr>
+                </React.Fragment>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-slate-900 font-bold text-slate-900 bg-slate-50 text-[11px]">
+                <td colSpan={5} className="py-2 px-1 text-right font-sans">Total by Branch:</td>
+                <td className="py-2 px-1 text-right font-mono font-bold">9.00</td>
+                <td></td>
+                <td className="py-2 px-1 text-right font-mono font-bold text-emerald-800">113,400,000.00 LBP</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </UnifiedPrintableReportSheet>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface TransactionsBySalesmanTemplateProps {
   hideToolbar?: boolean;
@@ -101,109 +102,91 @@ export const TransactionsBySalesmanTemplate: React.FC<TransactionsBySalesmanTemp
       </div>
       )}
 
-      {/* Background wrapper to center the paper on screen */}
-      <div className="w-full font-sans text-black overflow-x-auto print:overflow-visible bg-slate-100 print:bg-white py-6 print:py-0 flex justify-center">
-        {/* The A4 Paper Simulator (794px width) */}
-        <div 
-          className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
-        >
-          <div className="text-blue-700 font-bold text-[12px] mb-2">Southern Olive Oil Products S.A.R.L</div>
-          <div className="text-center font-bold text-[12px] mb-4">Transactions by Salesman</div>
-          <div className="flex justify-between items-center text-[11px] font-bold w-full">
-            <div>{executionDate}</div>
-            <div>{dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}</div>
-            <div>Page {currentPage} of {totalPages}</div>
-          </div>
-
-          <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
-            <table className="w-full border-collapse border-t border-b border-black text-[11px] whitespace-nowrap">
-              <thead>
-                <tr className="font-bold text-black border-b border-black">
-                  <th className="py-1 px-1 text-left">Invoice #</th>
-                  {groupByDate && <th className="py-1 px-1 text-left">Date</th>}
-                  <th className="py-1 px-1 text-right">Amount</th>
-                  <th className="py-1 px-1 text-right">Discount</th>
-                  <th className="py-1 px-1 text-right">Tax</th>
-                  <th className="py-1 px-1 text-right">Total</th>
-                  {showRate && <th className="py-1 px-1 text-center">Cur</th>}
-                  {showRate && <th className="py-1 px-1 text-right">Rate</th>}
-                  {showRate && <th className="py-1 px-1 text-right">Total ($)</th>}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="font-bold">
-                  <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">Branch: Main Branch</td>
-                </tr>
-                <tr className="font-bold">
-                  <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 pl-4">Salesman: Nour Yazbeck</td>
-                </tr>
-                {reportData.map((row, idx) => (
-                  <tr key={idx} className="font-normal hover:bg-slate-50">
-                    <td className="py-1 px-1">{row.invoice}</td>
-                    {groupByDate && <td className="py-1 px-1">{row.date}</td>}
-                    <td className="py-1 px-1 text-right">{row.amount}</td>
-                    <td className="py-1 px-1 text-right">{row.discount}</td>
-                    <td className="py-1 px-1 text-right">{row.tax}</td>
-                    <td className="py-1 px-1 text-right">{row.total}</td>
-                    {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700">LBP</td>}
-                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">89,500.00</td>}
-                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">${(parseFloat(row.total.replace(/,/g, '')) / 89500).toFixed(2)}</td>}
-                  </tr>
-                ))}
-                <tr className="font-bold border-t border-black">
-                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Salesman Total:</td>
-                  <td className="py-1 px-1 text-right">12,285,000.00</td>
-                  <td className="py-1 px-1 text-right">900,000.00</td>
-                  <td className="py-1 px-1 text-right">0.00</td>
-                  <td className="py-1 px-1 text-right">11,385,000.00</td>
-                  {showRate && (
-                    <>
-                      <td className="py-1 px-1 text-center font-bold">LBP</td>
-                      <td className="py-1 px-1 text-right font-mono">89,500</td>
-                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
-                    </>
-                  )}
-                </tr>
-                <tr className="font-bold border-t border-black">
-                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Branch Total:</td>
-                  <td className="py-1 px-1 text-right">12,285,000.00</td>
-                  <td className="py-1 px-1 text-right">900,000.00</td>
-                  <td className="py-1 px-1 text-right">0.00</td>
-                  <td className="py-1 px-1 text-right">11,385,000.00</td>
-                  {showRate && (
-                    <>
-                      <td className="py-1 px-1 text-center font-bold">LBP</td>
-                      <td className="py-1 px-1 text-right font-mono">89,500</td>
-                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
-                    </>
-                  )}
-                </tr>
-                <tr className="font-bold border-t border-double border-black">
-                  <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right">Grand Total:</td>
-                  <td className="py-1 px-1 text-right">12,285,000.00</td>
-                  <td className="py-1 px-1 text-right">900,000.00</td>
-                  <td className="py-1 px-1 text-right">0.00</td>
-                  <td className="py-1 px-1 text-right">11,385,000.00</td>
-                  {showRate && (
-                    <>
-                      <td className="py-1 px-1 text-center font-bold">LBP</td>
-                      <td className="py-1 px-1 text-right font-mono">89,500</td>
-                      <td className="py-1 px-1 text-right font-mono font-bold">$127.21</td>
-                    </>
-                  )}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-            <div className="text-left w-1/3">REP_S_00247</div>
-            <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-            <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-          </div>
-
-        </div>
-      </div>
+      {/* Unified Standard Document Sheet */}
+      <UnifiedPrintableReportSheet
+        reportTitle="Transactions by Salesman"
+        reportCode="REP_S_00247"
+        executionDate={executionDate}
+        periodText={dynamicPeriodText || "From Date: 01-Aug-2026 To Date: 31-Aug-2026"}
+        pageInfo={`Page ${currentPage} of ${totalPages}`}
+        branchInfo="Branch: Main Branch (Zeit w zaytoun ljanoub)"
+        hideToolbar={hideToolbar}
+      >
+        <table className="w-full border-collapse text-[11px] whitespace-nowrap table-fixed">
+          <thead>
+            <tr className="font-bold text-black border-b-2 border-slate-900 bg-slate-50">
+              <th className="py-2 px-1 text-left font-sans w-[15%]">Invoice #</th>
+              {groupByDate && <th className="py-2 px-1 text-left font-sans w-[20%]">Date</th>}
+              <th className="py-2 px-1 text-right font-sans w-[15%]">Amount</th>
+              <th className="py-2 px-1 text-right font-sans w-[15%]">Discount</th>
+              <th className="py-2 px-1 text-right font-sans w-[15%]">Tax</th>
+              <th className="py-2 px-1 text-right font-sans w-[20%]">Total</th>
+              {showRate && <th className="py-2 px-1 text-center font-sans">Cur</th>}
+              {showRate && <th className="py-2 px-1 text-right font-sans">Rate</th>}
+              {showRate && <th className="py-2 px-1 text-right font-sans">Total ($)</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            <tr className="font-bold bg-slate-100/60">
+              <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 font-sans">
+                Branch: Main Branch (الفرع الرئيسي)
+              </td>
+            </tr>
+            <tr className="font-bold bg-slate-50">
+              <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 pl-4 font-sans text-blue-800">
+                Salesman: Nour Yazbeck
+              </td>
+            </tr>
+            {reportData.map((row, idx) => (
+              <tr key={idx} className="font-normal hover:bg-slate-50">
+                <td className="py-1 px-1 font-mono text-slate-800">{row.invoice}</td>
+                {groupByDate && <td className="py-1 px-1 font-mono text-slate-600">{row.date}</td>}
+                <td className="py-1 px-1 text-right font-mono">{row.amount}</td>
+                <td className="py-1 px-1 text-right font-mono text-slate-500">{row.discount}</td>
+                <td className="py-1 px-1 text-right font-mono text-slate-500">{row.tax}</td>
+                <td className="py-1 px-1 text-right font-mono font-bold text-slate-900">{row.total}</td>
+                {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700 font-mono">LBP</td>}
+                {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">89,500.00</td>}
+                {showRate && (
+                  <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">
+                    ${(parseFloat(row.total.replace(/,/g, '')) / 89500).toFixed(2)}
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="font-bold border-t-2 border-slate-900 bg-slate-50 text-[11px]">
+              <td colSpan={groupByDate ? 2 : 1} className="py-1 px-1 text-right font-sans">Salesman Total:</td>
+              <td className="py-1 px-1 text-right font-mono">12,285,000.00</td>
+              <td className="py-1 px-1 text-right font-mono">900,000.00</td>
+              <td className="py-1 px-1 text-right font-mono">0.00</td>
+              <td className="py-1 px-1 text-right font-mono text-emerald-800">11,385,000.00</td>
+              {showRate && (
+                <>
+                  <td className="py-1 px-1 text-center font-bold">LBP</td>
+                  <td className="py-1 px-1 text-right font-mono">89,500</td>
+                  <td className="py-1 px-1 text-right font-mono font-bold text-emerald-800">$127.21</td>
+                </>
+              )}
+            </tr>
+            <tr className="font-bold border-t border-slate-300 bg-slate-100 text-[11px]">
+              <td colSpan={groupByDate ? 2 : 1} className="py-1.5 px-1 text-right font-sans">Branch Total:</td>
+              <td className="py-1.5 px-1 text-right font-mono">12,285,000.00</td>
+              <td className="py-1.5 px-1 text-right font-mono">900,000.00</td>
+              <td className="py-1.5 px-1 text-right font-mono">0.00</td>
+              <td className="py-1.5 px-1 text-right font-mono text-emerald-800">11,385,000.00</td>
+              {showRate && (
+                <>
+                  <td className="py-1.5 px-1 text-center font-bold">LBP</td>
+                  <td className="py-1.5 px-1 text-right font-mono">89,500</td>
+                  <td className="py-1.5 px-1 text-right font-mono font-bold text-emerald-800">$127.21</td>
+                </>
+              )}
+            </tr>
+          </tfoot>
+        </table>
+      </UnifiedPrintableReportSheet>
     </div>
   );
 };

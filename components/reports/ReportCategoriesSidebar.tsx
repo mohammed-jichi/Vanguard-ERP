@@ -47,7 +47,6 @@ const DEFAULT_VANGUARD_CATEGORIES: ReportCategory[] = [
       { id: 'ic-hold', title: 'Transactions on Hold' },
       { id: 'ic-user-log', title: 'User Log Report' },
       { id: 'ic-disc-sum', title: 'Discount Summary' },
-      { id: 'ic-elec-journal', title: 'Electronic Journal' },
     ],
   },
   {
@@ -69,7 +68,7 @@ const DEFAULT_VANGUARD_CATEGORIES: ReportCategory[] = [
       { id: 'fin-disc-desc-emp', title: 'Discount By Description by Employee' },
       { id: 'fin-disc-items', title: 'Summary of Discount By Items Amount' },
       { id: 'fin-disc-sum', title: 'Discount Summary' },
-      { id: 'fin-pmt-sum', title: 'Summary of Payment' },
+      { id: 'fin-pmt-sum', title: 'Summary of Payment.' },
       { id: 'fin-pmt-dept', title: 'Summary of Payment by Department' },
       { id: 'fin-pmt-ws', title: 'Summary of payment by workstation' },
       { id: 'fin-pmt-emp', title: 'Summary of Payment by Employee' },

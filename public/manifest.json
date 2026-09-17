@@ -1,0 +1,24 @@
+{
+  "name": "Vanguard POS Terminal",
+  "short_name": "Vanguard POS",
+  "description": "Vanguard Enterprise Retail & Touch POS Terminal",
+  "start_url": "/pos",
+  "scope": "/pos",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "icons": [
+    {
+      "src": "/vanguard-emblem.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/vanguard-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

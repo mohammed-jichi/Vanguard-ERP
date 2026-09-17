@@ -2679,8 +2679,16 @@ textarea:focus {
 /* PERFECT PRINT MEDIA STYLES FOR SALES REPORTS */
 @media print {
   @page {
-    size: A4 landscape;
-    margin: 8mm 10mm;
+    size: auto;
+    margin: 12mm 10mm 12mm 10mm;
+  }
+
+  .print-landscape {
+    page-orientation: landscape;
+  }
+
+  .print-portrait {
+    page-orientation: portrait;
   }
 
   html,

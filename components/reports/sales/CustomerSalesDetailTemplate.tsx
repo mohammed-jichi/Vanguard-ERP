@@ -1,6 +1,5 @@
-'use client';
-
 import React from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface CustomerSalesDetailTemplateProps {
   hideToolbar?: boolean;
@@ -25,6 +24,16 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
   const isDeliverySummary = reportTitle.toLowerCase().includes('delivery');
   const isDriverHistory = reportTitle.toLowerCase().includes('driver');
   const isTopCustomers = reportTitle.toLowerCase().includes('top');
+
+  const reportCode = isZoneReport
+    ? 'REP_SALES_007'
+    : isDeliverySummary
+    ? 'REP_FLT_005'
+    : isDriverHistory
+    ? 'REP_FLT_006'
+    : isTopCustomers
+    ? 'REP_CRM_002'
+    : 'REP_S_00185';
 
   // 1. Sales by Zone
   const zoneRows = [
@@ -52,110 +61,92 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Commercial Distribution & Logistics
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        {reportTitle}
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
-        <span>Printed: {executionDate}</span>
-        <span>From Date: {fromDate} To Date: {toDate}</span>
-        <span>Page 1 of 1</span>
-      </div>
-
+    <UnifiedPrintableReportSheet
+      reportTitle={reportTitle}
+      reportCode={reportCode}
+      executionDate={executionDate}
+      periodText={dynamicPeriodText || `From Date: ${fromDate} To Date: ${toDate}`}
+      pageInfo="Page 1 of 1"
+      branchInfo="Branch: All Active Territories"
+      hideToolbar={hideToolbar}
+    >
       {isZoneReport ? (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-2 normal-case w-[25%]">governorate / zone</th>
-                <th className="py-2 px-2 normal-case w-[20%]">primary city</th>
-                <th className="py-2 px-2 normal-case w-[25%]">top selling sku</th>
-                <th className="py-2 px-2 normal-case w-[12%] text-center">units sold</th>
-                <th className="py-2 px-2 normal-case w-[18%] text-right pr-2">gross sales ($)</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-2 normal-case w-[25%] font-sans">governorate / zone</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans">primary city</th>
+              <th className="py-2 px-2 normal-case w-[25%] font-sans">top selling sku</th>
+              <th className="py-2 px-2 normal-case w-[12%] font-sans text-center">units sold</th>
+              <th className="py-2 px-2 normal-case w-[18%] font-sans text-right pr-2">gross sales ($)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {zoneRows.map((z, idx) => (
+              <tr key={idx} className="hover:bg-slate-50">
+                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{z.zone}</td>
+                <td className="py-2 px-2 text-slate-700 font-sans">{z.city}</td>
+                <td className="py-2 px-2 font-medium text-slate-800 font-sans">{z.topSku}</td>
+                <td className="py-2 px-2 text-center font-mono">{z.units}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{z.revenue}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {zoneRows.map((z, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-2 px-2 font-bold text-slate-900">{z.zone}</td>
-                  <td className="py-2 px-2 text-slate-700">{z.city}</td>
-                  <td className="py-2 px-2 font-medium text-slate-800">{z.topSku}</td>
-                  <td className="py-2 px-2 text-center font-mono">{z.units}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{z.revenue}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       ) : isDeliverySummary || isDriverHistory ? (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-2 normal-case w-[15%]">order id</th>
-                <th className="py-2 px-2 normal-case w-[30%]">customer</th>
-                <th className="py-2 px-2 normal-case w-[22%]">destination</th>
-                <th className="py-2 px-2 normal-case w-[18%]">driver</th>
-                <th className="py-2 px-2 normal-case w-[15%] text-right pr-2">order amount ($)</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-2 normal-case w-[15%] font-sans">order id</th>
+              <th className="py-2 px-2 normal-case w-[30%] font-sans">customer</th>
+              <th className="py-2 px-2 normal-case w-[22%] font-sans">destination</th>
+              <th className="py-2 px-2 normal-case w-[18%] font-sans">driver</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans text-right pr-2">order amount ($)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {deliveryRows.map((d, idx) => (
+              <tr key={idx} className="hover:bg-slate-50">
+                <td className="py-2 px-2 font-mono font-bold text-blue-700">{d.orderId}</td>
+                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{d.customer}</td>
+                <td className="py-2 px-2 text-slate-700 font-sans">{d.destination}</td>
+                <td className="py-2 px-2 font-medium text-slate-800 font-sans">{d.driver}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{d.amount}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {deliveryRows.map((d, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-2 px-2 font-mono font-bold text-blue-700">{d.orderId}</td>
-                  <td className="py-2 px-2 font-bold text-slate-900">{d.customer}</td>
-                  <td className="py-2 px-2 text-slate-700">{d.destination}</td>
-                  <td className="py-2 px-2 font-medium text-slate-800">{d.driver}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{d.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       ) : (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-2 normal-case w-[32%]">customer name</th>
-                <th className="py-2 px-2 normal-case w-[15%]">invoice #</th>
-                <th className="py-2 px-2 normal-case w-[15%]">date</th>
-                <th className="py-2 px-2 normal-case w-[12%] text-center">items</th>
-                <th className="py-2 px-2 normal-case w-[13%] text-right">subtotal ($)</th>
-                <th className="py-2 px-2 normal-case w-[13%] text-right pr-2">net total ($)</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-2 normal-case w-[32%] font-sans">customer name</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans">invoice #</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans">date</th>
+              <th className="py-2 px-2 normal-case w-[12%] font-sans text-center">items</th>
+              <th className="py-2 px-2 normal-case w-[13%] font-sans text-right">subtotal ($)</th>
+              <th className="py-2 px-2 normal-case w-[13%] font-sans text-right pr-2">net total ($)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {(isTopCustomers && topN ? customerDetailRows.slice(0, topN) : customerDetailRows).map((c, idx) => (
+              <tr key={idx} className="hover:bg-slate-50">
+                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{c.customer}</td>
+                <td className="py-2 px-2 font-mono text-slate-600">{c.invoice}</td>
+                <td className="py-2 px-2 font-mono text-slate-600">{c.date}</td>
+                <td className="py-2 px-2 text-center font-mono">{c.itemsCount}</td>
+                <td className="py-2 px-2 text-right font-mono">{c.subtotal}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{c.netTotal}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {(isTopCustomers && topN ? customerDetailRows.slice(0, topN) : customerDetailRows).map((c, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-2 px-2 font-bold text-slate-900">{c.customer}</td>
-                  <td className="py-2 px-2 font-mono text-slate-600">{c.invoice}</td>
-                  <td className="py-2 px-2 font-mono text-slate-600">{c.date}</td>
-                  <td className="py-2 px-2 text-center font-mono">{c.itemsCount}</td>
-                  <td className="py-2 px-2 text-right font-mono">{c.subtotal}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{c.netTotal}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      <div className="border-t-2 border-black mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+      <div className="border-t-2 border-slate-900 mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-800">
         <span>Logistics Provider: SuperSonic Fleet Services</span>
         <span>Total Verified Ledger: 100% Reconciled</span>
       </div>
-    </div>
+    </UnifiedPrintableReportSheet>
   );
 };

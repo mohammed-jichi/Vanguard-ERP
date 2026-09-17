@@ -1,155 +1,361 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import MasterReportDocument from '@/components/reports/MasterReportDocument';
+import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
+import { applyGlobalReportFilters } from '@/lib/reportFilterEngine';
 
-interface SummaryOfRefundsTemplateProps {
+export interface RefundRecord {
+  branch: string;
+  eodDate: string;
+  date: string;
+  invoiceNumber: string;
+  customer: string;
+  qty: string;
+  description: string;
+  tender: string;
+  payment_method: string;
+  channel: string;
+  reason: string;
+  subTotal: string;
+  discount: string;
+  tax: string;
+  grandTotal: string;
+}
+
+export interface SummaryOfRefundsTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
+  branch?: string;
   fromDate?: string;
   toDate?: string;
   reportTitle?: string;
+  filterValues?: Record<string, any>;
 }
 
+const DEFAULT_REFUNDS: RefundRecord[] = [
+  {
+    branch: 'Main Branch (Choueifat Main Facility)',
+    eodDate: '11-08-2026',
+    date: '2026-08-11',
+    invoiceNumber: '103098',
+    customer: 'Direct Retail Customer',
+    qty: '-0.90',
+    description: 'Fine Coriander Bulk Kg',
+    tender: 'CASH',
+    payment_method: 'CASH',
+    channel: 'POS',
+    reason: 'Wrong Item Scanned',
+    subTotal: '-630,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-630,000.00',
+  },
+  {
+    branch: 'Main Branch (Choueifat Main Facility)',
+    eodDate: '14-08-2026',
+    date: '2026-08-14',
+    invoiceNumber: '103142',
+    customer: 'Al-Hajj Grocery S.A.R.L',
+    qty: '-1.00',
+    description: 'Extra Virgin Olive Oil 1L (Bottle Seal Defect)',
+    tender: 'STORE CREDIT',
+    payment_method: 'STORE CREDIT',
+    channel: 'Local',
+    reason: 'Packaging Defect',
+    subTotal: '-360,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-360,000.00',
+  },
+  {
+    branch: 'Beirut Depot',
+    eodDate: '18-08-2026',
+    date: '2026-08-18',
+    invoiceNumber: '103189',
+    customer: 'Cedars Gourmet Market',
+    qty: '-2.00',
+    description: 'Pomegranate Molasses 500ml',
+    tender: 'WHISH PAY',
+    payment_method: 'WHISH',
+    channel: 'Online',
+    reason: 'Quality Dissatisfaction',
+    subTotal: '-520,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-520,000.00',
+  },
+  {
+    branch: 'Main Branch (Choueifat Main Facility)',
+    eodDate: '20-08-2026',
+    date: '2026-08-20',
+    invoiceNumber: '103215',
+    customer: 'Mina Delicacies S.A.L',
+    qty: '-1.50',
+    description: 'Pressed Green Olives 1.5Kg Vacuum Pack',
+    tender: 'CARD',
+    payment_method: 'CARD',
+    channel: 'POS',
+    reason: 'Customer Return',
+    subTotal: '-480,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-480,000.00',
+  },
+  {
+    branch: 'Sidon Hub',
+    eodDate: '22-08-2026',
+    date: '2026-08-22',
+    invoiceNumber: '103248',
+    customer: 'South Wholesale Traders Co.',
+    qty: '-5.00',
+    description: 'Crushed Chilli Seasoning 250g Jar',
+    tender: 'CASH',
+    payment_method: 'CASH',
+    channel: 'Local',
+    reason: 'Damaged Goods',
+    subTotal: '-750,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-750,000.00',
+  },
+  {
+    branch: 'Beirut Depot',
+    eodDate: '25-08-2026',
+    date: '2026-08-25',
+    invoiceNumber: '103280',
+    customer: 'Verdun Bistro & Kitchen',
+    qty: '-3.00',
+    description: 'Traditional Apple Vinegar 1L Glass Bottle',
+    tender: 'STORE CREDIT',
+    payment_method: 'STORE CREDIT',
+    channel: 'Wholesale',
+    reason: 'Expired Stock',
+    subTotal: '-810,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-810,000.00',
+  },
+  {
+    branch: 'Main Branch (Choueifat Main Facility)',
+    eodDate: '26-08-2026',
+    date: '2026-08-26',
+    invoiceNumber: '103295',
+    customer: 'Online Store Customer #8412',
+    qty: '-1.00',
+    description: 'Organic Wild Honey 500g Jar',
+    tender: 'WHISH PAY',
+    payment_method: 'WHISH',
+    channel: 'Online',
+    reason: 'Wrong Item Scanned',
+    subTotal: '-950,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-950,000.00',
+  },
+  {
+    branch: 'Sidon Hub',
+    eodDate: '27-08-2026',
+    date: '2026-08-27',
+    invoiceNumber: '103310',
+    customer: 'Al-Bahr Beach Resort',
+    qty: '-2.00',
+    description: 'Extra Virgin Olive Oil 5L Tin Can',
+    tender: 'CARD',
+    payment_method: 'CARD',
+    channel: 'POS',
+    reason: 'Quality Dissatisfaction',
+    subTotal: '-2,400,000.00',
+    discount: '0.00',
+    tax: '0.00',
+    grandTotal: '-2,400,000.00',
+  },
+];
+
+
+/**
+ * ============================================================================
+ * SUMMARY / DETAILS OF REFUNDS TEMPLATE (REP_S_00185 / REP_S_00274)
+ * Enforces Vanguard ERP MasterReportDocument Accounting Standard
+ * ============================================================================
+ */
 export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> = ({
-  hideToolbar = true,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
+  branch = 'Main Branch (Choueifat Main Facility)',
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
   reportTitle = 'Summary of refunds',
+  filterValues = {},
 }) => {
-  const refunds = [
+  const isDetails = reportTitle.toLowerCase().includes('detail');
+
+  const cleanPeriod = useMemo(() => {
+    if (dynamicPeriodText) {
+      return dynamicPeriodText
+        .replace(/^Reimbursement Window:\s*/i, '')
+        .replace(/^Period:\s*/i, '')
+        .replace(/^Date:\s*/i, '');
+    }
+    return `${fromDate} to ${toDate}`;
+  }, [dynamicPeriodText, fromDate, toDate]);
+
+  // Dynamic filter summary
+  const filterSummary = useMemo(() => {
+    const parts: string[] = [];
+    if (filterValues.paymentType && filterValues.paymentType !== 'ALL') parts.push(`Tender: ${filterValues.paymentType}`);
+    if (filterValues.refundReason && filterValues.refundReason !== 'ALL') parts.push(`Reason: ${filterValues.refundReason}`);
+    if (filterValues.supervisor && filterValues.supervisor !== 'ALL') parts.push(`Supervisor: ${filterValues.supervisor}`);
+    if (filterValues.channel && filterValues.channel !== 'ALL') parts.push(`Channel: ${filterValues.channel}`);
+    if (filterValues.customerSearch) parts.push(`Customer: ${filterValues.customerSearch}`);
+    return parts.length > 0 ? parts.join(' | ') : undefined;
+  }, [filterValues]);
+
+  // Wire unified filter engine
+  const filteredRefunds = useMemo(() => {
+    return applyGlobalReportFilters(DEFAULT_REFUNDS, filterValues);
+  }, [filterValues]);
+
+  // Dynamically calculate total refund amount
+  const totalLbpNum = useMemo(() => {
+    return filteredRefunds.reduce((sum, r) => {
+      const val = parseFloat(r.grandTotal.replace(/[^0-9.-]+/g, ''));
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+  }, [filteredRefunds]);
+
+  const meta: ReportMetadata = useMemo(() => ({
+    companyName: 'Zeit w zaytoun ljanoub',
+    subtitle: isDetails
+      ? 'Southern Olive Oil Products S.A.R.L - Granular Customer Refund & Credit Notes Audit'
+      : 'Southern Olive Oil Products S.A.R.L - Reimbursed Returns & Credit Notes Register',
+    reportTitle: isDetails ? 'Details of Refunds' : 'Summary of Refunds',
+    code: isDetails ? 'REP_S_00274' : 'REP_S_00185',
+    dateRange: cleanPeriod,
+    generatedDate: executionDate,
+    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    filterSummary,
+    systemSource: 'Vanguard ERP Fiscal Reimbursement & AR Subsystem',
+    pageNumber: 1,
+    totalPages: 1,
+  }), [isDetails, cleanPeriod, executionDate, branch, filterSummary]);
+
+  const columns: ReportColumn<RefundRecord>[] = useMemo(() => [
     {
-      branch: 'Main Branch',
-      eodDate: '11-08-2026',
-      invoiceNumber: '103098',
-      customer: 'Direct Retail Customer',
-      qty: '-0.90',
-      description: 'Fine Coriander Bulk Kg',
-      totalPrice: '-630,000.00',
-      subTotal: '-630,000.00',
-      discount: '0.00',
-      tax: '0.00',
-      grandTotal: '-630,000.00',
+      key: 'invoiceNumber',
+      label: 'Invoice #',
+      align: 'center',
+      width: '11%',
+      isMonospace: true,
+      render: (row) => (
+        <span className="font-mono text-xs font-bold text-slate-900">
+          #{row.invoiceNumber}
+        </span>
+      ),
     },
     {
-      branch: 'Main Branch',
-      eodDate: '14-08-2026',
-      invoiceNumber: '103142',
-      customer: 'Al-Hajj Grocery',
-      qty: '-1.00',
-      description: 'Extra Virgin Olive Oil 1L',
-      totalPrice: '-360,000.00',
-      subTotal: '-360,000.00',
-      discount: '0.00',
-      tax: '0.00',
-      grandTotal: '-360,000.00',
+      key: 'eodDate',
+      label: 'EOD Date',
+      align: 'left',
+      width: '11%',
+      isMonospace: true,
+      render: (row) => (
+        <span className="font-mono text-xs text-slate-600">
+          {row.eodDate}
+        </span>
+      ),
     },
-  ];
+    {
+      key: 'customer',
+      label: 'Customer Account',
+      align: 'left',
+      width: '18%',
+      render: (row) => (
+        <span className="font-sans text-xs text-slate-900 font-medium">
+          {row.customer}
+        </span>
+      ),
+    },
+    {
+      key: 'description',
+      label: 'Returned Product Description',
+      align: 'left',
+      width: '24%',
+      render: (row) => (
+        <span className="font-sans text-xs text-slate-800">
+          {row.description}
+        </span>
+      ),
+    },
+    {
+      key: 'qty',
+      label: 'Qty',
+      align: 'center',
+      width: '7%',
+      isMonospace: true,
+      render: (row) => (
+        <span className="font-mono text-xs font-bold text-red-700">
+          {row.qty}
+        </span>
+      ),
+    },
+    {
+      key: 'tender',
+      label: 'Tender',
+      align: 'center',
+      width: '11%',
+      render: (row) => (
+        <span className="inline-block px-1.5 py-0.5 rounded text-[10.5px] font-semibold bg-slate-100 text-slate-800 border border-slate-300">
+          {row.tender}
+        </span>
+      ),
+    },
+    {
+      key: 'reason',
+      label: 'Reason',
+      align: 'left',
+      width: '14%',
+      render: (row) => (
+        <span className="inline-block px-2 py-0.5 rounded text-[10.5px] font-medium bg-red-50 text-red-800 border border-red-200">
+          {row.reason}
+        </span>
+      ),
+    },
+    {
+      key: 'grandTotal',
+      label: 'Refund Total (LBP)',
+      align: 'right',
+      width: '14%',
+      isMonospace: true,
+      render: (row) => (
+        <span className="font-mono text-xs font-bold text-red-700">
+          {row.grandTotal}
+        </span>
+      ),
+    },
+  ], []);
+
+  const grandTotal: GrandTotal = useMemo(() => {
+    const usdEquiv = (Math.abs(totalLbpNum) / 89500).toFixed(2);
+    return {
+      label: `Net Refund Total (${filteredRefunds.length} Customer Credit Notes Issued):`,
+      value: `${totalLbpNum.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP (-$${usdEquiv})`,
+      isNegative: true,
+    };
+  }, [filteredRefunds.length, totalLbpNum]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Header Section */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Vanguard ERP - Sales Control
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        {reportTitle}
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] mb-3 font-mono border-b border-black pb-1.5 text-slate-700">
-        <div>Printed: {executionDate}</div>
-        <div>
-          <span>from date: {fromDate}</span> <span className="ml-4">to date: {toDate}</span>
-        </div>
-        <div>Page 1 of 1</div>
-      </div>
-
-      {/* Refunds Content */}
-      <div className="space-y-6">
-        {refunds.map((ref, idx) => (
-          <div key={idx} className="border-b border-slate-300 pb-4">
-            <div className="flex justify-between items-start text-[11px] font-mono mb-2">
-              <div className="space-y-0.5">
-                <div>
-                  <strong className="underline text-slate-900">Branch name:</strong>{' '}
-                  <span className="font-semibold">{ref.branch}</span>
-                </div>
-                <div>
-                  <strong className="text-slate-800">EOD date:</strong> {ref.eodDate}
-                </div>
-                <div>
-                  <strong className="text-slate-800">Invoice number:</strong> {ref.invoiceNumber}
-                </div>
-              </div>
-              <div>
-                <strong className="text-slate-800">Customer:</strong> {ref.customer}
-              </div>
-            </div>
-
-            <table className="w-full text-left border-collapse text-[11px] mb-2">
-              <thead>
-                <tr className="border-b border-black font-bold text-black leading-tight bg-slate-50">
-                  <th className="py-1 px-2 normal-case w-[20%] text-center">qty</th>
-                  <th className="py-1 px-2 normal-case w-[55%]">description</th>
-                  <th className="py-1 px-2 normal-case w-[25%] text-right pr-4">total price (LBP)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
-                <tr className="text-red-700 font-bold">
-                  <td className="py-1 px-2 text-center">{ref.qty}</td>
-                  <td className="py-1 px-2 font-sans">{ref.description}</td>
-                  <td className="py-1 px-2 text-right pr-4">{ref.totalPrice}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div className="flex justify-end pt-1">
-              <div className="w-64 text-[11px] font-mono space-y-0.5 bg-slate-50 p-2 rounded border border-slate-200">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Sub total:</span>{' '}
-                  <strong className="text-red-700">{ref.subTotal}</strong>
-                </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Discount:</span> <span>{ref.discount}</span>
-                </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Tax:</span> <span>{ref.tax}</span>
-                </div>
-                <div className="flex justify-between border-t border-black pt-0.5 font-bold">
-                  <span>Grand total:</span>{' '}
-                  <strong className="text-red-700">{ref.grandTotal}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Summary Box */}
-      <div className="pt-4 border-t-2 border-black flex justify-between items-end mt-4">
-        <div className="text-[10.5px] font-mono text-slate-600">
-          <div>Printed from Sales Control Reports</div>
-          <div>Period: {fromDate} to {toDate}</div>
-        </div>
-        <div className="w-64 text-xs font-mono space-y-1 bg-red-50/50 p-3 rounded border border-red-200">
-          <div className="flex justify-between">
-            <span className="text-slate-700">Total refunds:</span>{' '}
-            <strong className="text-red-700">-990,000.00 LBP</strong>
-          </div>
-          <div className="flex justify-between border-t border-red-300 pt-1 font-bold text-sm">
-            <span>Net refund total:</span>{' '}
-            <strong className="text-red-700">-990,000.00 LBP</strong>
-          </div>
-        </div>
-      </div>
+    <div className="w-full space-y-4 font-sans">
+      <MasterReportDocument
+        meta={meta}
+        columns={columns}
+        flatRows={filteredRefunds}
+        grandTotal={grandTotal}
+      />
     </div>
   );
 };
+
+export default SummaryOfRefundsTemplate;
+

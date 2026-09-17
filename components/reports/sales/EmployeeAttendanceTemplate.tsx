@@ -1,6 +1,5 @@
-'use client';
-
 import React from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface EmployeeAttendanceTemplateProps {
   hideToolbar?: boolean;
@@ -73,86 +72,72 @@ export const EmployeeAttendanceTemplate: React.FC<EmployeeAttendanceTemplateProp
   const isLaborCost = reportTitle.toLowerCase().includes('labor');
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Workforce & Time Tracking
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        {reportTitle}
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
-        <span>Period: {fromDate} to {toDate}</span>
-        <span>Standard Shift: 8.5 Hours</span>
-        <span>Page 1 of 1</span>
-      </div>
-
-      <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-        <table className="w-full table-fixed text-left border-collapse text-[11px]">
-          <thead>
-            <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-              <th className="py-2 px-2 normal-case w-[24%]">employee id & name</th>
-              <th className="py-2 px-2 normal-case w-[20%]">department</th>
-              <th className="py-2 px-2 normal-case w-[14%] text-center">scheduled shift</th>
-              <th className="py-2 px-2 normal-case w-[14%] text-center">actual punch in/out</th>
-              <th className="py-2 px-2 normal-case w-[12%] text-center">worked hours</th>
+    <UnifiedPrintableReportSheet
+      reportTitle={reportTitle}
+      reportCode={isLaborCost ? 'REP_HR_002' : 'REP_HR_001'}
+      executionDate={executionDate}
+      periodText={dynamicPeriodText || `Period: ${fromDate} to ${toDate}`}
+      pageInfo="Page 1 of 1"
+      branchInfo="Department: Production, Logistics & Administration"
+      hideToolbar={hideToolbar}
+    >
+      <table className="w-full table-fixed text-left border-collapse text-[11px]">
+        <thead>
+          <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+            <th className="py-2 px-2 normal-case w-[24%] font-sans">employee id & name</th>
+            <th className="py-2 px-2 normal-case w-[20%] font-sans">department</th>
+            <th className="py-2 px-2 normal-case w-[14%] font-sans text-center">scheduled shift</th>
+            <th className="py-2 px-2 normal-case w-[14%] font-sans text-center">actual punch in/out</th>
+            <th className="py-2 px-2 normal-case w-[12%] font-sans text-center">worked hours</th>
+            {isLaborCost ? (
+              <>
+                <th className="py-2 px-2 normal-case w-[8%] font-sans text-right">rate ($)</th>
+                <th className="py-2 px-2 normal-case w-[8%] font-sans text-right pr-2">cost ($)</th>
+              </>
+            ) : (
+              <>
+                <th className="py-2 px-2 normal-case w-[8%] font-sans text-center">overtime</th>
+                <th className="py-2 px-2 normal-case w-[8%] font-sans text-center pr-2">status</th>
+              </>
+            )}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+          {attendanceLogs.map((log, idx) => (
+            <tr key={idx} className="hover:bg-slate-50 transition-colors">
+              <td className="py-1.5 px-2 font-bold text-slate-900 font-sans">
+                <span className="font-mono text-slate-500 mr-1">{log.empId}</span> {log.name}
+              </td>
+              <td className="py-1.5 px-2 text-slate-700 font-sans">{log.dept}</td>
+              <td className="py-1.5 px-2 text-center font-mono text-slate-600">{log.shift}</td>
+              <td className="py-1.5 px-2 text-center font-mono text-slate-800">{log.punch}</td>
+              <td className="py-1.5 px-2 text-center font-mono font-bold">{log.workedHours}</td>
               {isLaborCost ? (
                 <>
-                  <th className="py-2 px-2 normal-case w-[8%] text-right">rate ($)</th>
-                  <th className="py-2 px-2 normal-case w-[8%] text-right pr-2">cost ($)</th>
+                  <td className="py-1.5 px-2 text-right font-mono text-slate-600">{log.hourlyRate}</td>
+                  <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800 pr-2">
+                    {log.laborCost}
+                  </td>
                 </>
               ) : (
                 <>
-                  <th className="py-2 px-2 normal-case w-[8%] text-center">overtime</th>
-                  <th className="py-2 px-2 normal-case w-[8%] text-center pr-2">status</th>
+                  <td className="py-1.5 px-2 text-center font-mono text-amber-700">{log.overtime}</td>
+                  <td className="py-1.5 px-2 text-center pr-2">
+                    <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 font-sans">
+                      {log.status}
+                    </span>
+                  </td>
                 </>
               )}
             </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-            {attendanceLogs.map((log, idx) => (
-              <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                <td className="py-1.5 px-2 font-bold text-slate-900">
-                  <span className="font-mono text-slate-500 mr-1">{log.empId}</span> {log.name}
-                </td>
-                <td className="py-1.5 px-2 text-slate-700">{log.dept}</td>
-                <td className="py-1.5 px-2 text-center font-mono text-slate-600">{log.shift}</td>
-                <td className="py-1.5 px-2 text-center font-mono text-slate-800">{log.punch}</td>
-                <td className="py-1.5 px-2 text-center font-mono font-bold">{log.workedHours}</td>
-                {isLaborCost ? (
-                  <>
-                    <td className="py-1.5 px-2 text-right font-mono text-slate-600">{log.hourlyRate}</td>
-                    <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800 pr-2">
-                      {log.laborCost}
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    <td className="py-1.5 px-2 text-center font-mono text-amber-700">{log.overtime}</td>
-                    <td className="py-1.5 px-2 text-center pr-2">
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                        {log.status}
-                      </span>
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
 
-      <div className="border-t-2 border-black mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+      <div className="border-t-2 border-slate-900 mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-800">
         <span>Total Employees Logged: {attendanceLogs.length}</span>
         <span>Total Shift Hours: 37.3 Hours | Overtime: 3.3 Hours</span>
       </div>
-    </div>
+    </UnifiedPrintableReportSheet>
   );
 };

@@ -40,8 +40,10 @@ import {
   ChevronRight,
   Sparkles,
   Barcode,
-  Calendar
+  Calendar,
+  ClipboardList
 } from 'lucide-react';
+import Link from 'next/link';
 import {
   INITIAL_PRODUCT_REQUESTS,
   INITIAL_MANAGE_REQUESTS,
@@ -60,6 +62,7 @@ interface OperationsProductRequestViewsProps {
   section:
     | 'product_request'
     | 'manage_product_requests'
+    | 'product_req_prep'
     | 'receiving_goods'
     | 'product_req_reports'
     | 'request_reject_reasons';
@@ -786,6 +789,15 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             </button>
+                          )}
+                          {pr.status === 'APPROVED' && (
+                            <Link
+                              href="/backoffice/operations?section=product_req_prep"
+                              title="Product Req. Preparation Workstation"
+                              className="p-1.5 rounded-lg bg-teal-900/30 hover:bg-teal-800/50 text-teal-400 border border-teal-500/30 transition"
+                            >
+                              <ClipboardList className="w-3.5 h-3.5" />
+                            </Link>
                           )}
                         </div>
                       </td>

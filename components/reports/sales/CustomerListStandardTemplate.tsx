@@ -1,162 +1,244 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import MasterReportDocument from '@/components/reports/MasterReportDocument';
+import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
+import { applyGlobalReportFilters } from '@/lib/reportFilterEngine';
+
+interface CustomerRecord {
+  code: string;
+  name: string;
+  phone: string;
+  address: string;
+  group: string;
+  status: string;
+  balanceUsd: string;
+  balanceLbp: string;
+  branch: string;
+  channel: string;
+  date: string;
+}
 
 interface CustomerListStandardTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
   reportTitle?: string;
-  filterStatus?: string;
+  branch?: string;
+  filterValues?: Record<string, any>;
 }
+
+const ALL_CUSTOMERS_MASTER: CustomerRecord[] = [
+  {
+    code: 'CUST-10015',
+    name: 'Al-Baraka Supermarket S.A.R.L',
+    phone: '+961 01 820 441',
+    address: 'Choueifat Commercial Blvd',
+    group: 'Key Accounts & Supermarket Chains',
+    status: 'Active',
+    balanceUsd: '$8,240.00',
+    balanceLbp: '737,480,000.00',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    channel: 'Wholesale',
+    date: '2026-08-15',
+  },
+  {
+    code: 'CUST-10021',
+    name: 'Ahmad Al-Hajj Wholesale',
+    phone: '+961 03 458 912',
+    address: 'Sidon Main St.',
+    group: 'Wholesale Depot Accounts',
+    status: 'Active',
+    balanceUsd: '$1,450.00',
+    balanceLbp: '129,775,000.00',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    channel: 'Wholesale',
+    date: '2026-08-14',
+  },
+  {
+    code: 'CUST-10024',
+    name: 'Karem Assaf Grocery',
+    phone: '+961 07 721 004',
+    address: 'Tyre Souk',
+    group: 'Wholesale Depot Accounts',
+    status: 'Active',
+    balanceUsd: '$3,820.00',
+    balanceLbp: '341,890,000.00',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    channel: 'Local',
+    date: '2026-08-18',
+  },
+  {
+    code: 'CUST-10030',
+    name: 'Noura Haddad Market',
+    phone: '+961 70 882 119',
+    address: 'Beirut Hamra',
+    group: 'Retail Consumers',
+    status: 'New',
+    balanceUsd: '$0.00',
+    balanceLbp: '0.00',
+    branch: 'Beirut Depot',
+    channel: 'Local',
+    date: '2026-08-20',
+  },
+  {
+    code: 'CUST-10044',
+    name: 'Marwan Chehab Store',
+    phone: '+961 05 430 112',
+    address: 'Aley High Street',
+    group: 'Retail Consumers',
+    status: 'Not Active',
+    balanceUsd: '$920.00',
+    balanceLbp: '82,340,000.00',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    channel: 'Local',
+    date: '2026-08-10',
+  },
+  {
+    code: 'CUST-10052',
+    name: 'Byblos Table Delicacies',
+    phone: '+961 09 540 882',
+    address: 'Old Port District, Byblos',
+    group: 'Hospitality & Horeca',
+    status: 'New',
+    balanceUsd: '$0.00',
+    balanceLbp: '0.00',
+    branch: 'Beirut Depot',
+    channel: 'Online',
+    date: '2026-08-22',
+  },
+  {
+    code: 'CUST-10009',
+    name: 'Ziad Al-Rifai Trading Co.',
+    phone: '+961 03 991 228',
+    address: 'Tripoli Al-Mina',
+    group: 'Wholesale Depot Accounts',
+    status: 'Blacklist',
+    balanceUsd: '$12,450.00',
+    balanceLbp: '1,114,275,000.00',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    channel: 'Wholesale',
+    date: '2026-08-05',
+  },
+];
 
 export const CustomerListStandardTemplate: React.FC<CustomerListStandardTemplateProps> = ({
   hideToolbar = true,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
   reportTitle = 'Customer List Standard',
-  filterStatus = 'All',
+  branch = 'Main Branch (Choueifat Main Facility)',
+  filterValues = {},
 }) => {
-  const allCustomers = [
+  // Resolve canonical report code
+  const reportCode = useMemo(() => {
+    const t = reportTitle.toLowerCase();
+    if (t.includes('not active')) return 'REP_S_00311';
+    if (t.includes('new')) return 'REP_S_00312';
+    if (t.includes('black')) return 'REP_S_00313';
+    return 'REP_S_00310';
+  }, [reportTitle]);
+
+  // Filter according to both report route and filterValues
+  const filteredCustomers = useMemo(() => {
+    const titleLower = reportTitle.toLowerCase();
+    let records = ALL_CUSTOMERS_MASTER;
+
+    // 1. Report Route Filter
+    if (titleLower.includes('not active')) {
+      records = records.filter((c) => c.status === 'Not Active');
+    } else if (titleLower.includes('new')) {
+      records = records.filter((c) => c.status === 'New');
+    } else if (titleLower.includes('black')) {
+      records = records.filter((c) => c.status === 'Blacklist');
+    }
+
+    // 2. Pass through unified global report filter engine
+    records = applyGlobalReportFilters(records, filterValues);
+
+    // 3. Category grouping helper
+    if (filterValues.customerCategory && filterValues.customerCategory !== 'ALL') {
+      const cat = String(filterValues.customerCategory).toUpperCase();
+      records = records.filter((c) => {
+        if (cat === 'WHOLESALE') return c.group.includes('Wholesale');
+        if (cat === 'RETAIL') return c.group.includes('Retail');
+        if (cat === 'KEY_ACCOUNTS') return c.group.includes('Key Accounts');
+        if (cat === 'HORECA') return c.group.includes('Horeca');
+        return true;
+      });
+    }
+
+    // 4. Balance specific filters
+    if (filterValues.balanceFilter) {
+      if (filterValues.balanceFilter === 'WITH_BALANCE') {
+        records = records.filter((c) => parseFloat(c.balanceUsd.replace(/[^0-9.-]+/g, '')) > 0);
+      } else if (filterValues.balanceFilter === 'ZERO_BALANCE') {
+        records = records.filter((c) => parseFloat(c.balanceUsd.replace(/[^0-9.-]+/g, '')) === 0);
+      }
+    }
+
+    if (filterValues.minOverdueBalance && Number(filterValues.minOverdueBalance) > 0) {
+      const min = Number(filterValues.minOverdueBalance);
+      records = records.filter((c) => parseFloat(c.balanceUsd.replace(/[^0-9.-]+/g, '')) >= min);
+    }
+
+    return records;
+  }, [reportTitle, filterValues]);
+
+  // Aggregate balance
+  const totalBalanceNum = useMemo(() => {
+    return filteredCustomers.reduce((acc, c) => acc + parseFloat(c.balanceUsd.replace(/[^0-9.-]+/g, '')), 0);
+  }, [filteredCustomers]);
+
+  const totalBalanceUsd = `$${totalBalanceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const meta: ReportMetadata = {
+    reportTitle,
+    companyName: 'Zeit w zaytoun ljanoub',
+    subtitle: 'Southern Olive Oil Products S.A.R.L - Lists & Customer Master Register',
+    code: reportCode,
+    dateRange: dynamicPeriodText || 'Master Directory Audit Window',
+    generatedDate: executionDate,
+    branch: `Facility: ${branch}`,
+    systemSource: 'Vanguard ERP Customer Master Kernel',
+    pageNumber: 1,
+    totalPages: 1,
+  };
+
+  const columns: ReportColumn<CustomerRecord>[] = [
+    { key: 'code', label: 'Customer #', width: '12%', align: 'left', isMonospace: true },
+    { key: 'name', label: 'Customer Name / Commercial Title', width: '26%', align: 'left' },
+    { key: 'phone', label: 'Contact Phone', width: '14%', align: 'left', isMonospace: true },
+    { key: 'address', label: 'Registered Delivery Address', width: '18%', align: 'left' },
+    { key: 'group', label: 'Customer Classification', width: '16%', align: 'left' },
     {
-      name: 'Ahmad Al-Hajj',
-      code: 'CUST-10021',
-      phone: '+961 03 458 912',
-      address: 'Sidon Main St.',
-      group: 'Wholesales / Clients',
-      balance: '$1,450.00',
-      status: 'Active',
-    },
-    {
-      name: 'Karem Assaf Grocery',
-      code: 'CUST-10024',
-      phone: '+961 07 721 004',
-      address: 'Tyre Souk',
-      group: 'Wholesales / Clients',
-      balance: '$3,820.00',
-      status: 'Active',
-    },
-    {
-      name: 'Noura Haddad',
-      code: 'CUST-10030',
-      phone: '+961 70 882 119',
-      address: 'Beirut Hamra',
-      group: 'Wholesales / Clients',
-      balance: '$0.00',
-      status: 'New',
-    },
-    {
-      name: 'Al-Baraka Supermarket S.A.R.L',
-      code: 'CUST-10015',
-      phone: '+961 01 820 441',
-      address: 'Choueifat Commercial Blvd',
-      group: 'Key Accounts',
-      balance: '$8,240.00',
-      status: 'Active',
-    },
-    {
-      name: 'Marwan Chehab Store',
-      code: 'CUST-10044',
-      phone: '+961 05 430 112',
-      address: 'Aley High Street',
-      group: 'Retail Outlets',
-      balance: '$920.00',
-      status: 'Not Active',
-    },
-    {
-      name: 'Ziad Al-Rifai Trading',
-      code: 'CUST-10009',
-      phone: '+961 03 991 228',
-      address: 'Tripoli Al-Mina',
-      group: 'Wholesales / Clients',
-      balance: '$12,450.00',
-      status: 'Blacklist',
+      key: 'balanceUsd',
+      label: 'AR Balance ($)',
+      width: '14%',
+      align: 'right',
+      isMonospace: true,
+      render: (row) => (
+        <span className={parseFloat(row.balanceUsd.replace(/[^0-9.-]+/g, '')) > 0 ? 'text-amber-950 font-bold' : 'text-slate-600'}>
+          {row.balanceUsd}
+        </span>
+      ),
     },
   ];
 
-  // Filter based on report title
-  const displayedCustomers = allCustomers.filter((c) => {
-    if (reportTitle.toLowerCase().includes('not active')) return c.status === 'Not Active';
-    if (reportTitle.toLowerCase().includes('new')) return c.status === 'New';
-    if (reportTitle.toLowerCase().includes('black')) return c.status === 'Blacklist';
-    return true;
-  });
+  const grandTotal: GrandTotal = {
+    label: `Total Customers Listed (${filteredCustomers.length} Records):`,
+    value: totalBalanceUsd,
+  };
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Client Relationship & Accounts
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        {reportTitle}
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
-        <span>Printed: {executionDate}</span>
-        <span>Grouping: Wholesales / Clients / Key Accounts</span>
-        <span>Page 1 of 1</span>
-      </div>
-
-      {/* Customer Table */}
-      <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-        <table className="w-full table-fixed text-left border-collapse text-[11px]">
-          <thead>
-            <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-              <th className="py-2 px-2 normal-case w-[25%]">customer name</th>
-              <th className="py-2 px-2 normal-case w-[13%]">code #</th>
-              <th className="py-2 px-2 normal-case w-[17%]">phone</th>
-              <th className="py-2 px-2 normal-case w-[20%]">address</th>
-              <th className="py-2 px-2 normal-case w-[13%] text-center">status</th>
-              <th className="py-2 px-2 normal-case w-[12%] text-right pr-2">balance ($)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-            {displayedCustomers.map((cust, idx) => (
-              <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                <td className="py-1.5 px-2 font-bold text-slate-900">{cust.name}</td>
-                <td className="py-1.5 px-2 font-mono text-slate-600">{cust.code}</td>
-                <td className="py-1.5 px-2 font-mono text-slate-600">{cust.phone}</td>
-                <td className="py-1.5 px-2 text-slate-700">{cust.address}</td>
-                <td className="py-1.5 px-2 text-center">
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                      cust.status === 'Active'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : cust.status === 'New'
-                        ? 'bg-blue-100 text-blue-800'
-                        : cust.status === 'Not Active'
-                        ? 'bg-slate-200 text-slate-700'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {cust.status}
-                  </span>
-                </td>
-                <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800 pr-2">
-                  {cust.balance}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="border-t-2 border-black mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-700">
-        <span>Total Customers Displayed: {displayedCustomers.length}</span>
-        <span>
-          Total Receivables Balance:{' '}
-          {displayedCustomers
-            .reduce((acc, c) => acc + parseFloat(c.balance.replace(/[^0-9.-]+/g, '')), 0)
-            .toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-        </span>
-      </div>
-    </div>
+    <MasterReportDocument<CustomerRecord>
+      meta={meta}
+      columns={columns}
+      flatRows={filteredCustomers}
+      grandTotal={grandTotal}
+    />
   );
 };
+
+export default CustomerListStandardTemplate;
+

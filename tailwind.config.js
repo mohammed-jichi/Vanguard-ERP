@@ -4,6 +4,7 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,html}",
     "./components/**/*.{js,ts,jsx,tsx,html}",
     "./lib/**/*.{js,ts,jsx,tsx,html}",
+    "./src/**/*.{js,ts,jsx,tsx,html}",
     "./js/**/*.{js,ts,jsx,tsx,html}",
     "./css/**/*.css",
     "./*.html"
@@ -28,6 +29,27 @@ module.exports = {
         darkSlate: '#0a1209',
         cardBg: '#1c2b1a',
         cardHighlight: '#243522',
+        report: {
+          company: 'var(--report-color-company-title, #1d4ed8)',
+          title: 'var(--report-color-report-title, #0f172a)',
+          sectionRevenue: 'var(--report-color-section-revenue, #1a629b)',
+          sectionCogs: 'var(--report-color-section-cogs, #7a1c1c)',
+          negative: 'var(--report-color-negative, #be123c)',
+          negativeTotal: 'var(--report-color-negative-total, #9f1239)',
+          positive: 'var(--report-color-positive, #065f46)',
+          borderMaster: 'var(--report-border-master-color, #0f172a)',
+        },
+      },
+      fontSize: {
+        'report-company': ['1.125rem', { lineHeight: '1.5rem', fontWeight: '700' }],
+        'report-title': ['1.25rem', { lineHeight: '1.75rem', fontWeight: '800' }],
+        'report-meta': ['0.75rem', { lineHeight: '1rem', fontWeight: '500' }],
+        'report-header': ['0.75rem', { lineHeight: '1rem', fontWeight: '700' }],
+        'report-cell': ['0.75rem', { lineHeight: '1rem', fontWeight: '400' }],
+        'report-total': ['0.8125rem', { lineHeight: '1.125rem', fontWeight: '700' }],
+      },
+      borderWidth: {
+        'report-master': 'var(--report-border-master-width, 2px)',
       },
       fontFamily: {
         cairo: ['Cairo', 'sans-serif'],

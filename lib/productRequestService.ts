@@ -1111,39 +1111,71 @@ export class ProductRequestService {
       <html>
       <head>
         <meta charset="utf-8" />
-        <title>${data.reportName || 'Report'}</title>
+        <title>${data.reportName || 'Product Request Report'}</title>
         <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #e5e5e5; margin: 0; padding: 20px; }
-          .jrPage { background: #ffffff; width: 920px; margin: 0 auto; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.15); box-sizing: border-box; }
-          .report-header { border-bottom: 2px solid #2e353d; padding-bottom: 15px; margin-bottom: 15px; }
-          .report-title { font-size: 20px; font-weight: bold; color: #2e353d; margin: 0 0 5px 0; }
-          .report-subtitle { font-size: 12px; color: #777; margin: 0; }
-          .meta-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 10px; font-size: 11px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f8fafc; margin: 0; padding: 20px; }
+          .jrPage { background: #ffffff; width: 920px; margin: 0 auto; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; border: 1px solid #e2e8f0; }
           @media print {
             body { background: none; padding: 0; }
-            .jrPage { box-shadow: none; width: 100%; padding: 10px; }
+            .jrPage { box-shadow: none; width: 100%; padding: 10px; border: none; }
           }
         </style>
       </head>
       <body>
         <div class="jrPage">
-          <div class="report-header">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          {/* Corporate Topper */}
+          <div style="text-align: center; margin-bottom: 6px;">
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.05em;">
+              Zeit w zaytoun ljanoub
+            </div>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; color: #475569; margin-top: 2px;">
+              Southern Olive Oil Products S.A.R.L
+            </div>
+          </div>
+
+          {/* Centered Bold Report Title */}
+          <div style="text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 700; color: #0f172a; margin: 8px 0 10px 0;">
+            ${data.reportName || 'Product Request Report'}
+          </div>
+
+          {/* Execution Subheader */}
+          <div style="display: flex; justify-content: space-between; align-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; color: #1e293b; margin-bottom: 4px;">
+            <span>${dateStr}</span>
+            <span style="font-weight: 700; text-align: center; flex: 1;">Period: ${data.params?.from || '01-Jan-2026'} to ${data.params?.to || '31-Dec-2026'}</span>
+            <span>Page 1 of 1</span>
+          </div>
+
+          {/* Solid Dividing Rule */}
+          <div style="border-bottom: 2px solid #0f172a; margin-bottom: 6px;"></div>
+
+          {/* Branch Subtitle */}
+          <div style="display: flex; justify-content: space-between; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10.5px; font-weight: 600; color: #334155; margin-bottom: 12px;">
+            <span>Branch: Zeit w zaytoun ljanoub - Central Plant</span>
+            <span style="font-family: ui-monospace, monospace; color: #64748b;">System Source: Vanguard ERP Live Ledger</span>
+          </div>
+
+          {/* Filter Status Strip */}
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin-bottom: 14px; display: flex; justify-content: space-between; color: #475569;">
+            <div><strong>Status Filter:</strong> ${data.params?.prstatus === '0' ? 'Pending Approval' : data.params?.prstatus === '2' ? 'Rejected' : 'Approved / Confirmed'}</div>
+            <div><strong>Division / Group:</strong> ${data.params?.sd_groupId ? 'Assigned Group' : 'All Production Lines'}</div>
+          </div>
+
+          {/* Report Table Content */}
+          ${tableContent}
+
+          {/* Corporate Footer */}
+          <div style="margin-top: 48px; padding-top: 8px;">
+            <div style="border-bottom: 2px solid #0f172a; margin-bottom: 6px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; color: #334155;">
+              <span style="font-family: ui-monospace, monospace; font-weight: 700; color: #0f172a; letter-spacing: 0.05em;">REP_OP_003</span>
+              <span style="color: #475569; font-weight: 500; text-align: center; flex: 1;">Copyright © 2026 Vanguard ERP. All Rights Reserved.</span>
               <div>
-                <h1 class="report-title">Vanguard ERP</h1>
-                <div class="report-subtitle">Operations Center &bull; ${data.reportName}</div>
-              </div>
-              <div style="text-align: right; font-size: 11px; color: #666;">
-                <div>Generated: ${dateStr}</div>
-                <div>User: Operations Lead</div>
+                <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" style="color: #1d4ed8; font-family: ui-monospace, monospace; text-decoration: none;">
+                  &quot;www.vanguarderp.com&quot;
+                </a>
               </div>
             </div>
           </div>
-          <div class="meta-box">
-            <div><strong>Filters:</strong> From: ${data.params?.from || 'All'} &bull; To: ${data.params?.to || 'All'}</div>
-            <div><strong>Status:</strong> ${data.params?.prstatus === '0' ? 'Pending' : data.params?.prstatus === '2' ? 'Rejected' : 'Approved / Confirmed'}</div>
-          </div>
-          ${tableContent}
         </div>
       </body>
       </html>

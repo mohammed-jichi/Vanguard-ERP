@@ -3,6 +3,9 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
+import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/UnifiedModuleReportsHub';
+import SupersonicFleetReportsPage from './reports/page';
 import {
   FleetVehicle,
   SuperSonicVendor,
@@ -78,6 +81,9 @@ function SuperSonicFleetPageContent() {
   const [assignDriver, setAssignDriver] = useState<string>('Hassan Sleiman');
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [selectedReportKey, setSelectedReportKey] = useState<string>('COD_WHISH_SETTLEMENTS');
+  const [selectedFleetReport, setSelectedFleetReport] = useState<string>('Corridor & Regional Dispatch Run Reconciliation');
+  const [fleetPeriod, setFleetPeriod] = useState<string>('This Month');
+  const [fleetBranch, setFleetBranch] = useState<string>('Main Branch');
   const [selectedDriverForReport, setSelectedDriverForReport] = useState<string>('Tony Khoury');
 
   // En-Route Adjacent Corridor Filter & Modal State
@@ -281,7 +287,9 @@ function SuperSonicFleetPageContent() {
       {/* A4 PRINT CSS */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          @page { size: A4 portrait; margin: 0mm !important; }
+          @page { size: auto; margin: 12mm 10mm 12mm 10mm; }
+          .print-landscape { page-orientation: landscape; }
+          .print-portrait { page-orientation: portrait; }
           body { background: #fff !important; margin: 0 !important; visibility: hidden !important; }
           body * { visibility: hidden !important; }
           header, aside, nav, button, input, select, .print-hidden { display: none !important; }
@@ -300,6 +308,7 @@ function SuperSonicFleetPageContent() {
           <div className="flex items-center gap-2">
             <span className="text-xl">🚚</span>
             <h1 className="text-xl font-extrabold text-[#0f172a] tracking-tight">
+              8. Supersonic Fleet: {' '}
               {activeTab === 'southern-olive' && 'Southern Olive Oil In-House Orders'}
               {activeTab === '3pl-orders' && 'SuperSonic 3PL Commercial Orders'}
               {activeTab === 'dispatch' && 'Corridors & Regional Dispatch (Assign Drivers & En-Route)'}
@@ -802,126 +811,11 @@ function SuperSonicFleetPageContent() {
       )}
 
       {/* =================================================================== */}
-      {/* 4. REPORTS HUB (CLEAN SUB-MENU & FULFILLMENT AUDIT)                 */}
+      {/* 4. STANDARDIZED REPORTS & SETTLEMENTS HUB                          */}
       {/* =================================================================== */}
       {(activeTab === 'reports' || activeTab === 'settlements') && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-            
-            {/* LEFT REPORT PICKER MENU */}
-            <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-2 space-y-1 shadow-2xs print:hidden">
-              <div className="p-2.5 border-b border-slate-100">
-                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">SuperSonic Reports Catalog</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedReportKey('COD_WHISH_SETTLEMENTS')}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'COD_WHISH_SETTLEMENTS' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
-              >
-                <span>💵 COD, Whish & Settlements</span>
-                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-900 font-mono font-bold">Audit</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedReportKey('FULFILLMENT_AUDIT')}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'FULFILLMENT_AUDIT' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
-              >
-                <span>🔄 Fulfillment Audit (By Who)</span>
-                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-mono font-bold">Logs</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedReportKey('DRIVER_RECONCILIATION')}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${selectedReportKey === 'DRIVER_RECONCILIATION' ? 'bg-[#1e3a2b] text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100'}`}
-              >
-                <span>📄 Driver Daily Trips Master</span>
-                <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-mono font-bold">A4</span>
-              </button>
-            </div>
-
-            {/* RIGHT MAIN REPORT VIEWPORT */}
-            <div className="lg:col-span-9 space-y-3">
-              <div className="bg-white rounded-2xl border border-slate-200 p-3 px-4 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs print:hidden">
-                <span className="font-bold text-slate-700">Active Report: <strong className="text-[#1e3a2b]">{selectedReportKey}</strong></span>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e3a2b] text-white font-bold rounded-xl shadow-xs">
-                    🖨️ Print A4 Report
-                  </button>
-                  <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-blue-600 text-white font-bold rounded-xl shadow-xs">
-                    📄 Download as PDF
-                  </button>
-                </div>
-              </div>
-
-              {/* FULFILLMENT AUDIT REPORT (BY WHO) */}
-              {selectedReportKey === 'FULFILLMENT_AUDIT' && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
-                  <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
-                    <div>
-                      <h3 className="font-bold text-base text-slate-900">Fulfillment Transition & Audit Trail Report</h3>
-                      <p className="text-[11px] text-slate-500 font-mono">Detailed audit of who converted orders between Fleet Delivery and Showroom POS.</p>
-                    </div>
-                  </div>
-
-                  <div className="overflow-x-auto border border-slate-200 rounded-xl">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="bg-slate-50 border-b font-bold text-[11px]">
-                          <th className="py-2.5 px-3 normal-case">order no.</th>
-                          <th className="py-2.5 px-3 normal-case">customer</th>
-                          <th className="py-2.5 px-3 normal-case text-right">goods value</th>
-                          <th className="py-2.5 px-3 normal-case text-center">transition action</th>
-                          <th className="py-2.5 px-3 normal-case text-center">switched by (role)</th>
-                          <th className="py-2.5 px-3 normal-case text-center">user code</th>
-                          <th className="py-2.5 px-3 normal-case">operator name</th>
-                          <th className="py-2.5 px-3 normal-case font-mono">timestamp</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-[11px]">
-                        {orders.filter(o => o.status === 'MOVED_TO_POS_PICKUP' || o.fulfillmentSwitchedBy).map((o) => (
-                          <tr key={o.id} className="hover:bg-slate-50">
-                            <td className="py-2.5 px-3 font-mono font-bold text-[#1e3a2b]">{o.orderNo}</td>
-                            <td className="py-2.5 px-3">{o.customerName}</td>
-                            <td className="py-2.5 px-3 text-right font-mono font-bold">${o.productAmountUsd.toFixed(2)}</td>
-                            <td className="py-2.5 px-3 text-center">
-                              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold text-[10px]">
-                                {o.status === 'MOVED_TO_POS_PICKUP' ? 'Moved to POS' : 'Returned to Delivery'}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-center">
-                              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold text-[10px]">
-                                {o.fulfillmentSwitchedBy?.actorType || 'MANAGEMENT'}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono font-bold text-purple-800">
-                              {o.fulfillmentSwitchedBy?.actorCode || 'MGR-01'}
-                            </td>
-                            <td className="py-2.5 px-3">{o.fulfillmentSwitchedBy?.actorName || 'SuperSonic Dispatch Ops'}</td>
-                            <td className="py-2.5 px-3 font-mono text-slate-500">{o.fulfillmentSwitchedBy?.timestamp || 'Today 09:15 AM'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* COD WHISH REPORT */}
-              {selectedReportKey === 'COD_WHISH_SETTLEMENTS' && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs space-y-4">
-                  <h3 className="font-bold text-base text-slate-900">COD, Whish & Settlements Audit Report</h3>
-                  <div className="border border-slate-200 rounded-xl p-3 bg-slate-50 text-xs font-mono">
-                    <div>• WSH-0091: Tony Khoury — $200.00 USD (Whish Transfer Ref: WHISH-TX-9988124) — Pending Approval</div>
-                    <div>• CSH-0042: Tony Khoury — $250.00 USD (Physical Cash to Vault) — Audited & Cleared ✓</div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-          </div>
+        <div className="w-full">
+          <SupersonicFleetReportsPage />
         </div>
       )}
 

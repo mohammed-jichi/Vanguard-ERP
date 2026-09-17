@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import SocialCrmReportsHub from '@/app/backoffice/social-crm/reports/page';
 
 // ============================================================================
 // DATA MODELS
@@ -104,7 +106,7 @@ interface ReadOnlyDistributorStore {
 }
 
 interface SocialMediaManagementHubProps {
-  initialTab?: 'inbox' | 'orders' | 'calendar' | 'cpl' | 'agents' | 'distributors';
+  initialTab?: 'inbox' | 'orders' | 'calendar' | 'cpl' | 'agents' | 'distributors' | 'reports';
   onBack?: () => void;
 }
 
@@ -112,16 +114,33 @@ export default function SocialMediaManagementHub({
   initialTab = 'distributors',
   onBack,
 }: SocialMediaManagementHubProps = {}) {
-  // STRICT NUMERICAL TAB ORDER (1 to 6)
+  const searchParams = useSearchParams();
+  const urlTab = searchParams?.get('tab') as any;
+
+  // STRICT NUMERICAL TAB ORDER (1 to 7)
   const [activeTab, setActiveTab] = useState<
-    'inbox' | 'orders' | 'calendar' | 'cpl' | 'agents' | 'distributors'
-  >(initialTab || 'distributors');
+    'inbox' | 'orders' | 'calendar' | 'cpl' | 'agents' | 'distributors' | 'reports'
+  >(urlTab || initialTab || 'distributors');
+
+  const [selectedReportKey, setSelectedReportKey] = useState<
+    'SOCIAL_ORDERS' | 'CAMPAIGN_CPL' | 'AGENT_PERFORMANCE'
+  >('SOCIAL_ORDERS');
+
+  const [selectedSocialReport, setSelectedSocialReport] = useState<string>(
+    'Omnichannel Social Orders & Conversion Reconciliation'
+  );
+  const [socialPeriod, setSocialPeriod] = useState<string>('This Month');
+  const [socialBranch, setSocialBranch] = useState<string>('Main Branch');
+  const [socialPlatformFilter, setSocialPlatformFilter] = useState<string>('ALL');
+  const [socialRepFilter, setSocialRepFilter] = useState<string>('ALL');
 
   useEffect(() => {
-    if (initialTab) {
+    if (urlTab) {
+      setActiveTab(urlTab);
+    } else if (initialTab) {
       setActiveTab(initialTab);
     }
-  }, [initialTab]);
+  }, [urlTab, initialTab]);
 
   // Modals State
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -349,6 +368,71 @@ export default function SocialMediaManagementHub({
       repName: 'Ahmad Ali Kassem',
       repCode: 'ADM-REP-01',
       slaMinutesLeft: 35,
+      status: 'APPROVED',
+    },
+    {
+      id: 'ORD-SO-9922',
+      customerName: 'Samer Joumblatt',
+      phone: '03771122',
+      platform: 'Instagram Direct',
+      offerDetails: '2 Tins Extra Virgin Olive Oil (17.5L)',
+      amountUsd: 220.0,
+      paymentMethod: 'WHISH',
+      repName: 'Hiba Aloulou',
+      repCode: 'ADM-REP-02',
+      slaMinutesLeft: 12,
+      status: 'APPROVED',
+    },
+    {
+      id: 'ORD-SO-9923',
+      customerName: 'Mona Bitar',
+      phone: '70114455',
+      platform: 'WhatsApp Direct (Choueifat)',
+      offerDetails: '17.5L Olive Oil Tin',
+      amountUsd: 110.0,
+      paymentMethod: 'COD',
+      repName: 'Ahmad Ali Kassem',
+      repCode: 'ADM-REP-01',
+      slaMinutesLeft: 0,
+      status: 'DELIVERED',
+    },
+    {
+      id: 'ORD-SO-9924',
+      customerName: 'Dr. Bilal Sleiman',
+      phone: '76558899',
+      platform: 'Facebook Marketplace',
+      offerDetails: '17.5L Olive Oil Tin + Traditional Preserves Pack',
+      amountUsd: 155.0,
+      paymentMethod: 'COD',
+      repName: 'Hussein Mahdi',
+      repCode: 'ADM-REP-03',
+      slaMinutesLeft: 0,
+      status: 'DELIVERED',
+    },
+    {
+      id: 'ORD-SO-9925',
+      customerName: 'Ziad El-Hage',
+      phone: '03442211',
+      platform: 'WhatsApp Broadcast',
+      offerDetails: '3 Tins Extra Virgin Olive Oil (17.5L)',
+      amountUsd: 330.0,
+      paymentMethod: 'WHISH',
+      repName: 'Hiba Aloulou',
+      repCode: 'ADM-REP-02',
+      slaMinutesLeft: 0,
+      status: 'DELIVERED',
+    },
+    {
+      id: 'ORD-SO-9926',
+      customerName: 'Maya Chehab',
+      phone: '71990011',
+      platform: 'TikTok Shop LB',
+      offerDetails: 'Traditional Food Preserves Pack (6 Jars)',
+      amountUsd: 45.0,
+      paymentMethod: 'COD',
+      repName: 'Hussein Mahdi',
+      repCode: 'ADM-REP-03',
+      slaMinutesLeft: 45,
       status: 'PENDING_REP_APPROVAL',
     },
   ];
@@ -366,6 +450,34 @@ export default function SocialMediaManagementHub({
       pages: [
         { platform: 'Instagram', pageName: '@ahmad_southern_olive', followers: '12.4K', ordersCount: 38 },
         { platform: 'TikTok', pageName: '@ahmad_oliveoillb', followers: '28.1K', ordersCount: 24 },
+      ],
+    },
+    {
+      id: 'REP-02',
+      name: 'Hiba Aloulou',
+      code: 'ADM-REP-02',
+      activeChats: 19,
+      totalOrders: 78,
+      conversionRatePct: 27.1,
+      avgResponseMins: 2.8,
+      earnedCommissionUsd: 390.0,
+      pages: [
+        { platform: 'WhatsApp', pageName: 'Line 02 (Beirut Central)', followers: '45.2K', ordersCount: 46 },
+        { platform: 'Facebook', pageName: 'Southern Olive Oil LB Official', followers: '34.8K', ordersCount: 32 },
+      ],
+    },
+    {
+      id: 'REP-03',
+      name: 'Hussein Mahdi',
+      code: 'ADM-REP-03',
+      activeChats: 11,
+      totalOrders: 45,
+      conversionRatePct: 21.8,
+      avgResponseMins: 4.1,
+      earnedCommissionUsd: 225.0,
+      pages: [
+        { platform: 'Instagram', pageName: '@hussein_oliveoillb', followers: '15.6K', ordersCount: 28 },
+        { platform: 'Facebook', pageName: 'South Lebanon Regional Page', followers: '18.3K', ordersCount: 17 },
       ],
     },
   ];
@@ -440,7 +552,7 @@ export default function SocialMediaManagementHub({
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-[#1a629b]"></span>
               <h1 className="text-[20px] font-bold text-[#1e293b] tracking-tight">
-                Social Media Management Hub
+                9. Social CRM &amp; Support Management Hub
               </h1>
             </div>
             <p className="text-xs text-[#527a9e] mt-0.5 font-medium">
@@ -449,7 +561,7 @@ export default function SocialMediaManagementHub({
           </div>
         </div>
 
-        {/* STRICT 1 TO 6 SEQUENTIAL TABS */}
+        {/* STRICT 1 TO 7 SEQUENTIAL TABS */}
         <div className="flex flex-wrap items-center bg-slate-200/80 p-1 rounded-xl gap-1">
           {[
             { id: 'inbox', label: '1. Unified Inbox' },
@@ -458,6 +570,7 @@ export default function SocialMediaManagementHub({
             { id: 'cpl', label: '4. Campaigns & CPL Analytics' },
             { id: 'agents', label: '5. Support Agents' },
             { id: 'distributors', label: '6. Distributors' },
+            { id: 'reports', label: '7. Reports Hub' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -826,8 +939,15 @@ export default function SocialMediaManagementHub({
           </div>
         </div>
       )}
+      {/* =================================================================== */}
+      {/* 7. SOCIAL CRM MASTER REPORTS HUB (STANDARDIZED REPORT SYSTEM)       */}
+      {/* =================================================================== */}
+      {activeTab === 'reports' && (
+        <div className="w-full">
+          <SocialCrmReportsHub />
+        </div>
+      )}
 
-      {/* 1-CLICK ORDER MODAL */}
       {showOrderModal && selectedChat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 select-none">
           <div className="bg-white w-full max-w-md rounded-2xl border border-slate-200 shadow-xl overflow-hidden text-left">

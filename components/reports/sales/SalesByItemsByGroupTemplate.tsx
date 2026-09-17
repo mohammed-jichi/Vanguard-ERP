@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface SalesByItemsByGroupTemplateProps {
   hideToolbar?: boolean;
@@ -507,13 +508,21 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
       {!isFiltered ? (
         <div className="w-full max-w-[1400px] py-20 flex flex-col items-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 print:hidden mt-4">
            <div className="text-[40px] mb-3 opacity-40">📊</div>
-           <p className="text-slate-600 font-bold text-[15px]">Select filters and click "Filter Report" to view.</p>
+           <p className="text-slate-600 font-bold text-[15px]">Select filters and click &quot;Filter Report&quot; to view.</p>
         </div>
       ) : (
-        <div className="w-full font-sans text-black bg-slate-100 print:bg-white py-6 print:py-0 flex flex-col items-center gap-8 print:gap-0">
-          
+        <UnifiedPrintableReportSheet
+          reportTitle="Sales by Items By Group"
+          reportCode="REP_S_00191"
+          executionDate={executionDate || '29-Aug-2026'}
+          periodText={dynamicPeriodText || 'Year: 2026 - Month: 8'}
+          pageInfo="Page 1 of 1"
+          branchInfo={`Branch: ${branch} (Zeit w zaytoun ljanoub)`}
+          hideToolbar={hideToolbar}
+          zoomLevel={zoomLevel}
+          setZoomLevel={setZoomLevel}
+        >
           {pagesData.map((pageData) => {
-            // Apply Remove Grouping logic per page
             const visibleRows = pageData.rows.filter(row => {
               if (removeGrouping) {
                 return !['division', 'group', 'div_total', 'group_total'].includes(row.type);
@@ -524,103 +533,72 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
             const colSpanCount = showRemark ? 5 : 4;
 
             return (
-              <div 
-                key={pageData.page} 
-                className="report-wrapper relative flex flex-col bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px] page-break-after-always" 
-                style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-              >
-                
-                {/* Report Title (Page 1) */}
-                {pageData.page === 1 && (
-                  <div className="w-full text-center mb-4 relative">
-                    <div className="text-blue-700 font-bold text-[12px] text-left absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
-                    <h3 className="font-bold text-[14px]">Sales by Items By Group</h3>
-                  </div>
-                )}
-
-                {/* Page Header */}
-                <div className="flex justify-between items-end text-[11px] font-bold w-full border-b-2 border-black pb-1 mb-2 mt-4">
-                  <div className="w-[150px] text-left">29-Aug-26</div>
-                  <div className="flex-1 text-center">Year: 2026 - Month: 8</div>
-                  <div className="w-[150px] text-right">Page {pageData.page} of 5</div>
-                </div>
-
-                {/* Table */}
-                <table className="w-full text-[11px] text-left border-collapse">
+              <div key={pageData.page} className="mb-4">
+                <table className="w-full text-[11px] text-left border-collapse table-fixed">
                   <thead>
-                    <tr className="border-b-2 border-black">
-                      <th className="py-1 px-1 font-bold normal-case w-1/2">Description</th>
-                      <th className="py-1 px-1 font-bold normal-case">Barcode</th>
-                      {showRemark && <th className="py-1 px-1 font-bold normal-case">Remark</th>}
-                      <th className="py-1 px-1 font-bold normal-case text-right">Qty</th>
-                      <th className="py-1 px-1 font-bold normal-case text-right">Total Amount</th>
+                    <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+                      <th className="py-2 px-1 font-bold normal-case font-sans w-1/2">Description</th>
+                      <th className="py-2 px-1 font-bold normal-case font-sans">Barcode</th>
+                      {showRemark && <th className="py-2 px-1 font-bold normal-case font-sans">Remark</th>}
+                      <th className="py-2 px-1 font-bold normal-case font-sans text-right">Qty</th>
+                      <th className="py-2 px-1 font-bold normal-case font-sans text-right">Total Amount (L.L.)</th>
                     </tr>
                   </thead>
-                  <tbody className="text-[11px]">
+                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
                     {visibleRows.map((row, idx) => {
                       if (row.type === 'branch') return (
-                        <tr key={idx}>
-                          <td colSpan={colSpanCount} className="font-bold py-1 px-1">{row.text}</td>
+                        <tr key={idx} className="bg-slate-100 font-bold">
+                          <td colSpan={colSpanCount} className="py-1 px-1 font-sans text-slate-900">{row.text}</td>
                         </tr>
                       );
                       if (row.type === 'division') return (
-                        <tr key={idx} className="border-t border-dashed border-black">
-                          <td colSpan={colSpanCount} className="font-bold py-1 px-1 pt-2">{row.text}</td>
+                        <tr key={idx} className="bg-slate-50 font-bold border-t border-slate-300">
+                          <td colSpan={colSpanCount} className="py-1 px-1 pt-2 font-sans text-blue-800">{row.text}</td>
                         </tr>
                       );
                       if (row.type === 'group') return (
-                        <tr key={idx}>
-                          <td colSpan={colSpanCount} className="font-bold py-1 px-1">{row.text}</td>
+                        <tr key={idx} className="font-bold">
+                          <td colSpan={colSpanCount} className="py-1 px-1 font-sans text-slate-700 pl-2">{row.text}</td>
                         </tr>
                       );
                       if (row.type === 'item') return (
-                        <tr key={idx} className="leading-none">
-                          <td className={`py-[2px] px-1 font-normal ${removeGrouping ? '' : 'pl-4'}`}>{row.desc}</td>
-                          <td className="py-[2px] px-1 font-normal">{row.bar}</td>
-                          {showRemark && <td className="py-[2px] px-1 font-normal text-slate-500">{row.remark || '-'}</td>}
-                          <td className="py-[2px] px-1 font-normal text-right">{row.qty}</td>
-                          <td className="py-[2px] px-1 font-normal text-right">{row.total}</td>
+                        <tr key={idx} className="hover:bg-slate-50">
+                          <td className={`py-1 px-1 font-sans text-slate-900 ${removeGrouping ? '' : 'pl-4'}`}>{row.desc}</td>
+                          <td className="py-1 px-1 font-mono text-slate-500">{row.bar}</td>
+                          {showRemark && <td className="py-1 px-1 font-sans text-slate-400">{row.remark || '-'}</td>}
+                          <td className="py-1 px-1 text-right font-mono font-bold">{row.qty}</td>
+                          <td className="py-1 px-1 text-right font-mono font-bold text-slate-900">{row.total}</td>
                         </tr>
                       );
                       if (row.type === 'group_total') return (
-                        <tr key={idx} className="font-bold">
-                          <td colSpan={showRemark ? 3 : 2} className="py-1 px-1">{row.text}</td>
-                          <td className="py-1 px-1 text-right">{row.qty}</td>
-                          <td className="py-1 px-1 text-right">{row.total}</td>
+                        <tr key={idx} className="font-bold bg-slate-50/50">
+                          <td colSpan={showRemark ? 3 : 2} className="py-1 px-1 font-sans text-slate-700">{row.text}</td>
+                          <td className="py-1 px-1 text-right font-mono font-bold">{row.qty}</td>
+                          <td className="py-1 px-1 text-right font-mono font-bold text-slate-800">{row.total}</td>
                         </tr>
                       );
                       if (row.type === 'div_total') return (
-                        <tr key={idx} className="font-bold border-b border-dashed border-black pb-2">
-                          <td colSpan={showRemark ? 3 : 2} className="py-1 px-1">{row.text}</td>
-                          <td className="py-1 px-1 text-right">{row.qty}</td>
-                          <td className="py-1 px-1 text-right">{row.total}</td>
+                        <tr key={idx} className="font-bold border-b-2 border-slate-300 bg-slate-100/50">
+                          <td colSpan={showRemark ? 3 : 2} className="py-1 px-1 font-sans text-blue-900">{row.text}</td>
+                          <td className="py-1 px-1 text-right font-mono font-bold">{row.qty}</td>
+                          <td className="py-1 px-1 text-right font-mono font-bold text-blue-900">{row.total}</td>
                         </tr>
                       );
                       if (row.type === 'branch_total') return (
-                        <tr key={idx} className="font-bold">
-                          <td colSpan={showRemark ? 3 : 2} className="py-4 px-1">{row.text}</td>
-                          <td className="py-4 px-1 text-right">{row.qty}</td>
-                          <td className="py-4 px-1 text-right">{row.total}</td>
+                        <tr key={idx} className="font-bold border-t-2 border-slate-900 bg-slate-100 text-slate-900">
+                          <td colSpan={showRemark ? 3 : 2} className="py-2 px-1 font-sans">{row.text}</td>
+                          <td className="py-2 px-1 text-right font-mono font-bold">{row.qty}</td>
+                          <td className="py-2 px-1 text-right font-mono font-bold text-emerald-800">{row.total}</td>
                         </tr>
                       );
                       return null;
                     })}
                   </tbody>
                 </table>
-
-                {/* Footer (Only Page 5) */}
-                {pageData.page === 5 && (
-                  <div className="mt-auto w-full border-t border-black pt-2 pb-4 flex justify-between items-center text-[10px] font-bold text-black">
-                    <div className="text-left w-1/3">REP_S_00191</div>
-                    <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                    <div className="text-right w-1/3 text-blue-700">www.vanguarderp.com</div>
-                  </div>
-                )}
               </div>
             );
           })}
-          
-        </div>
+        </UnifiedPrintableReportSheet>
       )}
     </div>
   );

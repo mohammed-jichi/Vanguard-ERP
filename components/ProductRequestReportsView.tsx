@@ -622,6 +622,29 @@ export default function ProductRequestReportsView() {
                       ) : (
                         /* Rich Interactive Grid */
                         <div className="space-y-6" style={{ zoom: `${zoomLevel}%` }}>
+                          {/* Corporate Topper */}
+                          <div className="text-center pt-2">
+                            <h2 className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                              Zeit w zaytoun ljanoub
+                            </h2>
+                            <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                              Southern Olive Oil Products S.A.R.L
+                            </div>
+                            <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1 font-sans">
+                              {selectedReport?.REPORTNAME || 'Product Request Report'}
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] text-slate-800 font-mono mt-2 mb-1">
+                              <span>{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                              <span className="font-bold">Period: {form.from} to {form.to}</span>
+                              <span>Page 1 of 1</span>
+                            </div>
+                            <div className="border-b-2 border-slate-900 mb-2"></div>
+                            <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-3 font-sans">
+                              <span>Branch: Zeit w zaytoun ljanoub - Central Plant</span>
+                              <span className="font-mono text-slate-500">System Source: Vanguard ERP Live Ledger</span>
+                            </div>
+                          </div>
+
                           {/* KPI Summary Strip */}
                           {reportData.summary && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
@@ -922,6 +945,26 @@ export default function ProductRequestReportsView() {
                               </table>
                             </div>
                           )}
+
+                          {/* Corporate Standard Footer */}
+                          <div className="border-t-2 border-slate-900 pt-2.5 mt-6 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                            <div className="font-mono font-bold text-slate-800 tracking-wider">
+                              REP_OP_003
+                            </div>
+                            <div className="font-medium text-slate-500">
+                              Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                            </div>
+                            <div>
+                              <a
+                                href="https://www.vanguarderp.com"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-mono text-blue-700 hover:underline"
+                              >
+                                &quot;www.vanguarderp.com&quot;
+                              </a>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>

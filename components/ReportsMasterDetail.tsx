@@ -33,7 +33,7 @@ import { TransactionsByWorkstationTemplate } from './reports/transactions/Transa
 import { TransactionsByEmployeesTemplate } from './reports/transactions/TransactionsByEmployeesTemplate';
 import { TransactionsBySourceTemplate } from './reports/transactions/TransactionsBySourceTemplate';
 import { TransactionsByDateByPaymentsTemplate } from './reports/transactions/TransactionsByDateByPaymentsTemplate';
-import { TransactionsByDateTemplate } from './reports/transactions/TransactionsByDateTemplate';
+import { TransactionsByDateMasterDocument } from './reports/transactions/TransactionsByDateMasterDocument';
 import { TransactionsByInvoiceNumberTemplate } from './reports/transactions/TransactionsByInvoiceNumberTemplate';
 import { CreditSalesTemplate } from './reports/transactions/CreditSalesTemplate';
 import { OmnichannelPaymentsReportTemplate } from './reports/transactions/OmnichannelPaymentsReportTemplate';
@@ -82,7 +82,7 @@ const reportMenuData: ReportMenuItem[] = [
   {
     category: "Internal Control",
     type: "flat",
-    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary", "Electronic Journal"]
+    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary"]
   },
   {
     category: "Financial",
@@ -91,7 +91,7 @@ const reportMenuData: ReportMenuItem[] = [
       { name: "Statistics", items: ["Sales Summary", "Statistics by Workstation", "Statistics by Department", "Summary of Sales by Employee", "Sales by Employee by Category", "Sales by Supplier", "Delivery Orders by Date and Branch"] },
       { name: "Tax Reports", items: ["Tax Summary", "Tax Summary Comparative"] },
       { name: "Discount Reports", items: ["Summary of Discount by Divisions", "Discount By Category by Department", "Summary of Discount", "Discount By Description by Employee", "Summary of Discount By Items Amount", "Discount Summary"] },
-      { name: "Payments", items: ["Summary of Payment", "Summary of Payment by Department", "Summary of payment by workstation", "Summary of Payment by Employee", "Advanced Payment History", "Paid In/Out", "Customer Payments", "List of Layaway Sales", "Layaway History", "List of Pending Invoices with Advance Payment"] },
+      { name: "Payments", items: ["Summary of Payment.", "Summary of Payment by Department", "Summary of payment by workstation", "Summary of Payment by Employee", "Advanced Payment History", "Paid In/Out", "Customer Payments", "List of Layaway Sales", "Layaway History", "List of Pending Invoices with Advance Payment"] },
       { name: "Internal Control", items: ["Meter Report", "No Sale", "Transactions on Hold", "User Log Report"] },
       { name: "Profit Summary", items: ["Profit by Invoices Summary", "Profit by item summary", "Profit by category summary", "Profit by category by department", "Profit By Invoices"] },
       { name: "Comparative", items: ["Sales summary by day", "Daily Sales", "Comparative Yearly Sales", "Comparative Monthly Sales", "Comparative Monthly Sales by Employee"] },
@@ -519,7 +519,15 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           /* 1. Maximize paper usage */
           @page {
             size: auto; 
-            margin: 5mm; 
+            margin: 12mm 10mm 12mm 10mm; 
+          }
+
+          .print-landscape {
+            page-orientation: landscape;
+          }
+
+          .print-portrait {
+            page-orientation: portrait;
           }
 
           /* 2. DESTROY all hardcoded screen widths and scrollbars during print */
@@ -758,11 +766,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {isCatExpanded && (
                         <div className="category-content">
-                          {filteredItems.map((item) => {
+                          {filteredItems.map((item, idx) => {
                             const isSelected = selectedReport === item;
                             return (
                               <div
-                                key={item}
+                                key={`${section.category}__${item}__${idx}`}
                                 onClick={() => handleSelectReportItem(item)}
                                 className={`block w-full text-left px-4 py-2 text-[13px] font-medium transition-colors cursor-pointer ${
                                   isSelected
@@ -811,10 +819,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                     {isCatExpanded && (
                       <div className="category-content">
-                        {filteredGroups.map((group) => {
+                        {filteredGroups.map((group, gIdx) => {
                           const isExpanded = !!expandedGroups[group.name] || !!searchQuery;
                           return (
-                            <div key={group.name}>
+                            <div key={`${section.category}__${group.name}__${gIdx}`}>
                               <div
                                 onClick={() => toggleGroup(group.name)}
                                 className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:!text-[#195a96] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
@@ -830,11 +838,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                               {isExpanded && (
                                 <div className="bg-slate-50/40">
-                                  {group.items.map((item) => {
+                                  {group.items.map((item, iIdx) => {
                                     const isSelected = selectedReport === item;
                                     return (
                                       <div
-                                        key={item}
+                                        key={`${section.category}__${group.name}__${item}__${iIdx}`}
                                         onClick={() => handleSelectReportItem(item)}
                                         className={`block w-full text-left pl-8 pr-4 py-2 text-[12px] font-medium transition-colors cursor-pointer ${
                                           isSelected
@@ -1429,8 +1437,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   style={{ transform: `scale(${zoomLevel})` }}
                 >
                   {selectedReport === 'Transactions by Date' ? (
-                    <TransactionsByDateTemplate
-                      hideToolbar={true}
+                    <TransactionsByDateMasterDocument
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
                       showRate={activeShowRate}
@@ -1616,7 +1623,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
                     />
-                  ) : selectedReport === "Today's Statistics" || selectedReport === "Today's Summary of payment" || selectedReport === "Today's summary by Employee" || selectedReport === "Today's Transactions" || selectedReport === 'Preview Older Sales' || selectedReport === 'Main Reading History' ? (
+                  ) : selectedReport === "Reading / X-Report" || selectedReport === "Today's Statistics" || selectedReport === "Today's Summary of payment" || selectedReport === "Today's summary by Employee" || selectedReport === "Today's Transactions" || selectedReport === 'Preview Older Sales' || selectedReport === 'Main Reading History' ? (
                     <TodaysSalesTemplate
                       hideToolbar={true}
                       reportTitle={selectedReport}
@@ -1659,16 +1666,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     /* COMPARATIVE MONTHLY SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-[1400px] mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
+                      </div>
+
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Comparative Monthly Net Sales By Employee
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full min-w-[1000px]">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full min-w-[1000px]">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Strict Native Table Implementation - NO WRAP */}
                       <div className="w-full mt-1 overflow-x-auto print:overflow-visible pb-4">
@@ -1789,12 +1807,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER WITH CLICKABLE LINK */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full min-w-[1000px]"></div>
-                      <div className="report-footer flex justify-between items-center text-[10px] font-bold w-full min-w-[1000px]">
-                        <div className="text-black">REP_S_00134</div>
-                        <div className="text-black text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-20 flex justify-between items-center text-[10px] text-slate-800 font-sans w-full min-w-[1000px]">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00134</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-[#195a96] text-blue-700 hover:underline cursor-pointer">www.vanguarderp.com</a>
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -1802,16 +1819,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     /* COMPARATIVE MONTHLY SALES REPORT TEMPLATE (CLEANED DEDUPLICATED) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Title & Pagination Info (Toolbar removed to prevent double rendering) */}
-                      <div className="text-center font-bold text-[13px] mb-4">
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
+                      </div>
+
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Comparative Monthly Sales
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full min-w-[1000px]">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full min-w-[1000px]">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Strict Native Table Implementation */}
                       <div className="w-full mt-1 overflow-x-auto pb-4">
@@ -1862,31 +1890,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-20 w-full min-w-[1000px]"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold min-w-[1000px]">
-                        <div className="text-black text-left">REP_S_00134</div>
-                        <div className="text-black text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-black text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-20 flex justify-between items-center text-[10px] text-slate-800 font-sans w-full min-w-[1000px]">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00134</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Comparative Yearly Sales' ? (
                     /* COMPARATIVE YEARLY SALES REPORT TEMPLATE (EXACT VANGUARD REPLICA) */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Comparative Yearly Sales
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
@@ -1930,31 +1966,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00334</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00334</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Daily Sales' ? (
                     /* DAILY SALES REPORT TEMPLATE (WITH BLUE TOTAL COLUMN AND GRIDLINES) */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Daily Sales
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-2 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-2 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 2</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Grid with Borders & Light Blue Total Column */}
                       <div className="w-full border border-black text-[11px]">
@@ -2531,31 +2575,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-8 w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00042</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00042</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Sales summary by day' ? (
                     /* SALES SUMMARY BY DAY REPORT TEMPLATE (FAILSAFE 9-COLUMN FLEXBOX) */
                     <div className="w-full max-w-7xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Daily sales summary
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 2</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header (Strict Flexbox, 9 Columns) */}
                       <div className="flex w-full border-t border-b border-black py-0.5 mb-1 text-[11px] font-bold text-black">
@@ -2933,31 +2985,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00193</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00193</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Profit By Invoices' ? (
                     /* PROFIT BY INVOICES REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Profit By Invoices
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 131</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
@@ -3107,20 +3167,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     /* PROFIT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Profit by Category by Department
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header (Thin lines) */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
@@ -3281,31 +3348,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-12 w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-12 flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Profit by category summary' ? (
                     /* PROFIT BY CATEGORY SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Theoretical Profit By Category
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header (Thin lines, tightly packed) */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
@@ -3387,31 +3462,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Profit by item summary' ? (
                     /* PROFIT BY ITEM SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Theoretical Profit By Item
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 8</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header (Thin lines) */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
@@ -3508,31 +3591,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Profit by Invoices Summary' ? (
                     /* PROFIT BY INVOICES SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-6">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-6">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         Profit By Invoice
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1 w-full">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header (Thin lines) */}
                       <div className="border-t border-b border-black py-0.5 mb-1">
@@ -3640,20 +3731,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         History of Transactions on Hold
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
-                        <div>From Date :01-Jan-2026 &nbsp;&nbsp;&nbsp;&nbsp; To Date: 31-Mar-2026</div>
-                        <div>Page 1 of1</div>
+                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
+                        <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Workstation Header */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
@@ -3706,31 +3804,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00098</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'No Sale' ? (
                     /* NO SALE REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
-                      <div className="text-center font-bold text-[12px] mb-4">
+                      <div className="text-center font-bold text-slate-900 text-[13.5px] mt-2 mb-1.5 font-sans">
                         No Sale Report
                       </div>
                       
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+                      <div className="flex justify-between items-center text-[11px] text-slate-800 font-mono mb-1 w-full">
                         <div>{currentDateFormatted}</div>
                         <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
                         <div>Page 1 of 1</div>
                       </div>
+
+                      <div className="border-b-2 border-slate-900 mb-2"></div>
 
                       {/* Main Table Header - Fixed Overflow */}
                       <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
@@ -3770,11 +3876,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-auto flex justify-between items-center text-[10px] text-slate-800 font-sans w-full">
+                        <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
+                        <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
+                        <div className="text-right">
+                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                        </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Meter Report' ? (
@@ -3782,8 +3889,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -3956,8 +4069,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[13px] underline mb-4">
@@ -4021,8 +4140,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[13px] underline mb-4">
@@ -4097,8 +4222,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
                       
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[13px] underline mb-4">
@@ -4182,9 +4313,14 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   ) : selectedReport === 'Customer Payments' ? (
                     /* CUSTOMER PAYMENTS (GROUPED BY SERVER) REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4268,21 +4404,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
 
-                      {/* VANGUARD PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Paid In/Out' ? (
                     /* PAID IN/OUT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4352,21 +4504,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono">{activeCurrency === 'USD' ? '$3.89' : '350,000.00'}</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : (selectedReport === 'Advanced payment History' || selectedReport === 'Advanced Payment History') ? (
                     /* ADVANCED PAYMENT HISTORY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4415,21 +4583,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">51,780.00</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Employee' ? (
                     /* SUMMARY OF PAYMENT BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4531,21 +4715,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>1,511,051,600.00</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of payment by workstation' ? (
                     /* SUMMARY OF PAYMENT BY WORKSTATION REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4643,21 +4843,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">1,511,051,600.00</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Department' ? (
                     /* SUMMARY OF PAYMENT BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4755,21 +4971,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">1,511,051,600.00</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : (selectedReport === 'Summary of Payment.' || selectedReport === 'Summary of Payment') ? (
                     /* SUMMARY OF PAYMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4815,21 +5047,37 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>1,511,051,600.00</div>
                       </div>
 
-                      {/* PRINT FOOTER */}
-                      <div className="mt-8 border-t border-slate-300 pt-2 text-[10px] text-slate-600">
-                        <div className="flex justify-between items-center font-mono">
-                          <div>REP_S_00247</div>
-                          <div>Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                          <div><a href="https://www.vanguarderp.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">www.vanguarderp.com</a></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Payment by Department' ? (
                     /* SUMMARY OF PAYMENT BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4926,13 +5174,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">0.00</div>
                         <div className="text-right">1,511,051,600.00</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Discount Summary' ? (
                     /* DISCOUNT SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -4965,13 +5238,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </tr>
                         </tbody>
                       </table>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Summary of Discount By Items Amount' ? (
                     /* SUMMARY OF DISCOUNT GROUPED BY ITEMS TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5015,13 +5313,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div></div>
                         <div>Mahdi</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Discount By Description by Employee' ? (
                     /* DISCOUNT BY DESCRIPTION BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5083,13 +5406,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="text-[11px] font-bold pl-2">
                         Description: AMOUNT DISCOUNT
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Summary of Discount' ? (
                     /* SUMMARY OF DISCOUNT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5130,13 +5478,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div>Total By Branch</div>
                         <div>56,080,449.97</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Discount By Category by Department' ? (
                     /* DISCOUNT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5193,13 +5566,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </tbody>
                         </table>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Summary of Discount by Divisions' ? (
                     /* SUMMARY OF DISCOUNT BY DIVISIONS REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5270,13 +5668,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">56,080,449.97</div>
                         </div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Tax Summary Comparative' ? (
                     /* TAX SUMMARY COMPARATIVE REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5313,13 +5736,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </tr>
                         </tbody>
                       </table>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Tax Summary' ? (
                     /* TAX SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5389,13 +5837,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">{activeShowZeroTax ? '1,557,251,600.00' : '466,200,000.00'}</div>
                         <div className="text-right">{activeShowZeroTax ? '1,511,051,600.00' : '420,000,000.00'}</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Delivery Orders by Date and Branch' ? (
                     /* DELIVERY ORDERS BY DATE AND BRANCH REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5456,13 +5929,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">0.00</div>
                         </div>
                       ))}
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Sales by Supplier' ? (
                     /* SALES BY SUPPLIER REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5576,13 +6074,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Supplier 5 */}
                       <div className="text-[11px] font-bold mb-1">Supplier :Mrs Randa</div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Sales by Employee by Category' ? (
                     /* SALES BY EMPLOYEE BY CATEGORY REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5691,13 +6214,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="text-right">100.00%</div>
                         </div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Summary of Sales by Employee' ? (
                     /* SUMMARY OF SALES BY EMPLOYEE REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5755,13 +6303,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right">53,380,450.00</div>
                         <div className="text-right">0.00</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Statistics by Department' ? (
                     /* STATISTICS BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5868,13 +6441,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </tr>
                         </tbody>
                       </table>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Statistics by Workstation' ? (
                     /* STATISTICS BY WORKSTATION REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -5987,13 +6585,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
                         <div>Number of Customers</div><div className="text-right">292</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">292</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Sales Summary' ? (
                     /* SALES SUMMARY REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-2">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -6100,13 +6723,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] gap-2 text-[11px] mb-4 font-medium">
                         <div>Number of Customers</div><div className="text-right">292</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">0</div><div className="text-right">292</div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'User Log Report' ? (
                     /* USER LOG REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black">
                       {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
+                      {/* Corporate Topper */}
+                      <div className="text-center mb-1">
+                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
+                          Zeit w zaytoun ljanoub
+                        </div>
+                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
+                          Southern Olive Oil Products S.A.R.L
+                        </div>
                       </div>
                       
                       <div className="text-center font-bold text-[12px] mb-4">
@@ -6192,26 +6841,61 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[140px_100px_120px_1fr_120px_80px] gap-2 text-[11px] mb-1 font-bold">
                         <div>Mohammed</div><div>01-Aug-2026</div><div>Inventory Ing</div><div>UPDATE Stuffed Green Olives Box 350g*12</div><div></div><div></div>
                       </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00247
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'Transactions on Hold' ? (
                     /* TRANSACTIONS ON HOLD REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[12px] mb-4">
-                        Southern Olive Oil Products S.A.R.L
-                      </div>
-                      
-                      <div className="text-center font-bold text-[12px] mb-4">
-                        History of Transactions on Hold
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>{currentDateFormatted}</div>
-                        <div className="flex gap-4">
-                          <span>From Date :01-Jan-2026</span>
-                          <span>To Date: 31-Mar-2026</span>
+                      {/* Standard Corporate Topper & Header */}
+                      <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
+                        <div className="text-center mb-2">
+                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                            Zeit w zaytoun ljanoub
+                          </h1>
+                          <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
+                            Southern Olive Oil Products S.A.R.L
+                          </div>
                         </div>
-                        <div>Page 1 of 1</div>
+
+                        <div className="text-center mb-2">
+                          <h2 className="text-[15px] font-black text-black uppercase tracking-tight font-sans">
+                            History of Transactions on Hold
+                          </h2>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] text-slate-900 font-sans border-t border-slate-200 pt-1.5 px-0.5">
+                          <div className="font-semibold">
+                            Branch: <span className="font-bold">Main Branch (الفرع الرئيسي)</span>
+                          </div>
+                          <div className="font-semibold">
+                            Period: <span className="font-bold">01-Jan-2026 To 31-Mar-2026</span>
+                          </div>
+                          <div className="font-semibold">
+                            Execution Date: <span className="font-mono font-bold">{currentDateFormatted}</span>
+                          </div>
+                          <div className="font-semibold">
+                            <span className="font-bold">Page 1 of 1</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Workstation Header with thick borders */}
@@ -6264,8 +6948,25 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="text-right pr-2">-200000.0</div>
                       </div>
 
-                      {/* Bottom Line */}
-                      <div className="border-b border-black mt-2"></div>
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00098
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   ) : selectedReport === 'No Sale' ? (
                     <FallbackNoSale fromDate={fromDate} toDate={toDate} />
@@ -6275,24 +6976,39 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <InlineDuplicateInvoices fromDate={fromDate} toDate={toDate} />
                   ) : selectedReport && selectedReport.toLowerCase().includes('refund') ? (
                     /* REFUND DETAILS REPORT TEMPLATE */
-                    <div className="w-full max-w-5xl mx-auto">
-                      {/* Header Section */}
-                      <div className="text-blue-700 font-bold text-[14px]">
-                        Southern Olive Oil Products S.A.R.L
+                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
+                      {/* Standard Corporate Topper & Header */}
+                      <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
+                        <div className="text-center mb-2">
+                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                            Zeit w zaytoun ljanoub
+                          </h1>
+                          <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
+                            Southern Olive Oil Products S.A.R.L
+                          </div>
+                        </div>
+
+                        <div className="text-center mb-2">
+                          <h2 className="text-[15px] font-black text-black uppercase tracking-tight font-sans">
+                            Details of refunds
+                          </h2>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] text-slate-900 font-sans border-t border-slate-200 pt-1.5 px-0.5">
+                          <div className="font-semibold">
+                            Branch: <span className="font-bold">Southern Olive Oil Products S.A.R.L</span>
+                          </div>
+                          <div className="font-semibold">
+                            Period: <span className="font-bold">{dynamicPeriodText || "Period: August 2026"}</span>
+                          </div>
+                          <div className="font-semibold">
+                            Execution Date: <span className="font-mono font-bold">{currentDateFormatted}</span>
+                          </div>
+                          <div className="font-semibold">
+                            <span className="font-bold">Page 1 of 1</span>
+                          </div>
+                        </div>
                       </div>
-                      
-                      <div className="text-center font-bold text-[14px] mt-2 mb-4">
-                        Details of refunds
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[12px] mb-2 font-bold">
-                        <div>{currentDateFormatted}</div>
-                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
-                        <div>Page 1 of 3</div>
-                      </div>
-                      
-                      {/* Solid Separator Line */}
-                      <div className="border-b border-black mb-4"></div>
 
                       {/* Meta Data Section */}
                       <div className="text-[12px] font-bold space-y-2 mb-6">
@@ -6312,55 +7028,83 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                       {/* Invoice Items Header */}
                       <div className="grid grid-cols-[130px_1fr_150px] text-[12px] font-bold mb-2">
-                        <div className="text-center">QTY</div>
-                        <div>Description</div>
-                        <div className="text-right pr-4">Total Price</div>
+                        <div className="text-center font-sans">QTY</div>
+                        <div className="font-sans">Description</div>
+                        <div className="text-right pr-4 font-sans">Total Price</div>
                       </div>
 
                       {/* Invoice Item Row */}
                       <div className="grid grid-cols-[130px_1fr_150px] text-[12px] mb-8 font-bold">
-                        <div className="text-center">-0.90</div>
-                        <div>Fine Coriander 1 Kg</div>
-                        <div className="text-right pr-4">-630,000.00</div>
+                        <div className="text-center font-mono">-0.90</div>
+                        <div className="font-sans">Fine Coriander 1 Kg</div>
+                        <div className="text-right pr-4 font-mono">-630,000.00</div>
                       </div>
 
                       {/* Totals Section */}
                       <div className="flex justify-end text-[12px] font-bold pr-4">
                         <div className="grid grid-cols-[100px_100px] gap-y-1 text-right">
-                          <div className="text-left">Sub Total:</div><div>-630,000.00</div>
-                          <div className="text-left">Discount:</div><div>0.00</div>
-                          <div className="text-left">Tax:</div><div>0.00</div>
-                          <div className="text-left">Service:</div><div>0.00</div>
-                          <div className="text-left mt-2">Grand Total:</div><div className="mt-2">-630,000.00</div>
+                          <div className="text-left font-sans">Sub Total:</div><div className="font-mono">-630,000.00</div>
+                          <div className="text-left font-sans">Discount:</div><div className="font-mono">0.00</div>
+                          <div className="text-left font-sans">Tax:</div><div className="font-mono">0.00</div>
+                          <div className="text-left font-sans">Service:</div><div className="font-mono">0.00</div>
+                          <div className="text-left mt-2 font-sans">Grand Total:</div><div className="mt-2 font-mono">-630,000.00</div>
+                        </div>
+                      </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00184
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </div>
                   ) : (
                     /* STANDARD TABLE TEMPLATE */
                     <>
-                      {/* Top Header Area */}
-                      <div className="relative mb-6">
-                        {/* Company Name (Top Left, Blue) */}
-                        <div className="text-blue-700 font-bold text-[15px] absolute top-0 left-0">
-                          Southern Olive Oil Products S.A.R.L
+                      {/* Standard Corporate Topper & Header */}
+                      <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
+                        <div className="text-center mb-2">
+                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                            Zeit w zaytoun ljanoub
+                          </h1>
+                          <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
+                            Southern Olive Oil Products S.A.R.L
+                          </div>
                         </div>
-                        
-                        {/* Report Title (Center) */}
-                        <div className="text-center font-bold text-[15px] w-full pt-4">
-                          {selectedReport || "Summary of voids"}
-                        </div>
-                        
-                        {/* Prepared By (Right side, slightly lower) */}
-                        <div className="text-right text-[13px] absolute top-8 right-0">
-                          Prepared By: Mohammed
-                        </div>
-                      </div>
 
-                      {/* Meta Information Line */}
-                      <div className="flex justify-between items-center text-[13px] mb-4 font-medium border-b border-slate-200 pb-2">
-                        <div>{currentDateFormatted}</div>
-                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
-                        <div>Page 1 of 1</div>
+                        <div className="text-center mb-2">
+                          <h2 className="text-[15px] font-black text-black uppercase tracking-tight font-sans">
+                            {selectedReport || "Summary of voids"}
+                          </h2>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] text-slate-900 font-sans border-t border-slate-200 pt-1.5 px-0.5">
+                          <div className="font-semibold">
+                            Branch: <span className="font-bold">Main Branch (الفرع الرئيسي)</span>
+                          </div>
+                          <div className="font-semibold">
+                            Period: <span className="font-bold">{dynamicPeriodText || "Period: August 2026"}</span>
+                          </div>
+                          <div className="font-semibold">
+                            Execution Date: <span className="font-mono font-bold">{currentDateFormatted}</span>
+                          </div>
+                          <div className="font-semibold">
+                            <span className="font-bold">Page 1 of 1</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* VANGUARD COLUMN HEADERS */}
@@ -6434,6 +7178,26 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div>Total:</div>
                           <div></div>
                           <div>14,062,500.00</div>
+                        </div>
+                      </div>
+
+                      {/* Standard Corporate Footer */}
+                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
+                        <div className="font-mono font-bold text-slate-800 tracking-wider">
+                          REP_S_00183
+                        </div>
+                        <div className="font-medium text-slate-500">
+                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                        </div>
+                        <div>
+                          <a
+                            href="https://www.vanguarderp.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
+                          >
+                            www.vanguarderp.com
+                          </a>
                         </div>
                       </div>
                     </>

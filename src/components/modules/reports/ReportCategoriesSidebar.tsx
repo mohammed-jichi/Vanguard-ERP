@@ -258,7 +258,7 @@ export default function ReportCategoriesSidebar({
         todays_sales: {
           title: "Today's Sales",
           items: [
-            { id: 'td_01', code: 'REP_TH_101', title: "Today's Statistics", category: "Today's and History", subCategory: "Today's Sales" },
+            { id: 'td_01', code: 'REP_S_00187', title: "Today's Statistics", category: "Today's and History", subCategory: "Today's Sales" },
             { id: 'td_02', code: 'REP_TH_102', title: "Today's Summary of Payment", category: "Today's and History", subCategory: "Today's Sales" },
             { id: 'td_03', code: 'REP_TH_103', title: "Today's Summary by Employee", category: "Today's and History", subCategory: "Today's Sales" },
             { id: 'td_04', code: 'REP_TH_104', title: "Today's Transactions", category: "Today's and History", subCategory: "Today's Sales" },
@@ -267,7 +267,7 @@ export default function ReportCategoriesSidebar({
         history_reports: {
           title: 'History',
           items: [
-            { id: 'td_05', code: 'REP_TH_201', title: 'Preview Order Sales', category: "Today's and History", subCategory: 'History' },
+            { id: 'td_05', code: 'REP_TH_201', title: 'Preview Older Sales', category: "Today's and History", subCategory: 'History' },
             { id: 'td_06', code: 'REP_TH_202', title: 'Main Reading History', category: "Today's and History", subCategory: 'History' },
           ],
         },

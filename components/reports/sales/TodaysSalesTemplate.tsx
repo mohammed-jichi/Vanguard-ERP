@@ -1,6 +1,5 @@
-'use client';
-
 import React from 'react';
+import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 
 interface TodaysSalesTemplateProps {
   hideToolbar?: boolean;
@@ -13,11 +12,16 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
   hideToolbar = true,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  reportTitle = "Today's Statistics",
+  reportTitle = 'Reading / X-Report',
 }) => {
   const isPaymentSummary = reportTitle.toLowerCase().includes('payment');
   const isEmployeeSummary = reportTitle.toLowerCase().includes('employee');
-  const isTransactions = reportTitle.toLowerCase().includes('transaction');
+
+  const reportCode = isEmployeeSummary
+    ? 'REP_SALES_003'
+    : isPaymentSummary
+    ? 'REP_SALES_004'
+    : 'REP_S_00187';
 
   const statsBreakdown = [
     { metric: 'Gross Sales Revenue', valueUSD: '$4,850.00', valueLBP: '434,075,000 LBP', notes: '42 Total Sales Invoices' },
@@ -44,111 +48,93 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Daily Sales Control
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        {reportTitle}
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
-        <span>Operating Date: Today (Current Shift)</span>
-        <span>Branch: Main Branch</span>
-        <span>Page 1 of 1</span>
-      </div>
-
+    <UnifiedPrintableReportSheet
+      reportTitle={reportTitle}
+      reportCode={reportCode}
+      executionDate={executionDate}
+      periodText={dynamicPeriodText || 'Operating Date: Today (Current Shift)'}
+      pageInfo="Page 1 of 1"
+      branchInfo="Branch: Main Branch (Zeit w zaytoun ljanoub)"
+      hideToolbar={hideToolbar}
+    >
       {/* Render based on specific sub-report or standard statistics */}
       {isEmployeeSummary ? (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-2 normal-case w-[15%]">emp id</th>
-                <th className="py-2 px-2 normal-case w-[35%]">employee name</th>
-                <th className="py-2 px-2 normal-case w-[15%] text-center">invoices</th>
-                <th className="py-2 px-2 normal-case w-[15%] text-right">gross sales ($)</th>
-                <th className="py-2 px-2 normal-case w-[20%] text-right pr-2">net sales ($)</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-2 normal-case w-[15%] font-sans">emp id</th>
+              <th className="py-2 px-2 normal-case w-[35%] font-sans">employee name</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans text-center">invoices</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans text-right">gross sales ($)</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans text-right pr-2">net sales ($)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {employeeData.map((emp, idx) => (
+              <tr key={idx} className="hover:bg-slate-50">
+                <td className="py-2 px-2 font-mono">{emp.empId}</td>
+                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{emp.name}</td>
+                <td className="py-2 px-2 text-center font-mono">{emp.invoices}</td>
+                <td className="py-2 px-2 text-right font-mono">{emp.totalUSD}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">
+                  {emp.netUSD}
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {employeeData.map((emp, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-2 px-2 font-mono">{emp.empId}</td>
-                  <td className="py-2 px-2 font-bold text-slate-900">{emp.name}</td>
-                  <td className="py-2 px-2 text-center font-mono">{emp.invoices}</td>
-                  <td className="py-2 px-2 text-right font-mono">{emp.totalUSD}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">
-                    {emp.netUSD}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       ) : isPaymentSummary ? (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-2 normal-case w-[35%]">payment method</th>
-                <th className="py-2 px-2 normal-case w-[15%] text-center">tx count</th>
-                <th className="py-2 px-2 normal-case w-[20%] text-right">amount ($)</th>
-                <th className="py-2 px-2 normal-case w-[20%] text-right">amount (LBP)</th>
-                <th className="py-2 px-2 normal-case w-[10%] text-right pr-2">share %</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-2 normal-case w-[35%] font-sans">payment method</th>
+              <th className="py-2 px-2 normal-case w-[15%] font-sans text-center">tx count</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans text-right">amount ($)</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans text-right">amount (LBP)</th>
+              <th className="py-2 px-2 normal-case w-[10%] font-sans text-right pr-2">share %</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {paymentData.map((pm, idx) => (
+              <tr key={idx} className="hover:bg-slate-50">
+                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{pm.method}</td>
+                <td className="py-2 px-2 text-center font-mono">{pm.txCount}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold">{pm.amountUSD}</td>
+                <td className="py-2 px-2 text-right font-mono text-slate-600">{pm.amountLBP}</td>
+                <td className="py-2 px-2 text-right font-mono font-bold text-blue-700 pr-2">{pm.pct}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {paymentData.map((pm, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-2 px-2 font-bold text-slate-900">{pm.method}</td>
-                  <td className="py-2 px-2 text-center font-mono">{pm.txCount}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold">{pm.amountUSD}</td>
-                  <td className="py-2 px-2 text-right font-mono text-slate-600">{pm.amountLBP}</td>
-                  <td className="py-2 px-2 text-right font-mono font-bold text-blue-700 pr-2">{pm.pct}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       ) : (
-        <div className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <table className="w-full table-fixed text-left border-collapse text-[11px]">
-            <thead>
-              <tr className="border-b border-black font-bold text-black leading-tight bg-slate-100">
-                <th className="py-2 px-3 normal-case w-[40%]">performance metric</th>
-                <th className="py-2 px-2 normal-case w-[20%] text-right">amount ($)</th>
-                <th className="py-2 px-2 normal-case w-[20%] text-right">amount (LBP)</th>
-                <th className="py-2 px-3 normal-case w-[20%]">audit notes</th>
+        <table className="w-full table-fixed text-left border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
+              <th className="py-2 px-3 normal-case w-[40%] font-sans">performance metric</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans text-right">amount ($)</th>
+              <th className="py-2 px-2 normal-case w-[20%] font-sans text-right">amount (LBP)</th>
+              <th className="py-2 px-3 normal-case w-[20%] font-sans">audit notes</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
+            {statsBreakdown.map((row, idx) => (
+              <tr key={idx} className={`hover:bg-slate-50 ${row.metric.includes('Net Sales') ? 'bg-blue-50/50 font-bold' : ''}`}>
+                <td className="py-2 px-3 text-slate-900 font-sans">{row.metric}</td>
+                <td className={`py-2 px-2 text-right font-mono font-bold ${row.valueUSD.startsWith('-') ? 'text-red-700' : 'text-slate-900'}`}>
+                  {row.valueUSD}
+                </td>
+                <td className="py-2 px-2 text-right font-mono text-slate-600">{row.valueLBP}</td>
+                <td className="py-2 px-3 text-slate-500 font-sans">{row.notes}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-              {statsBreakdown.map((row, idx) => (
-                <tr key={idx} className={`hover:bg-slate-50 ${row.metric.includes('Net Sales') ? 'bg-blue-50/50 font-bold' : ''}`}>
-                  <td className="py-2 px-3 text-slate-900">{row.metric}</td>
-                  <td className={`py-2 px-2 text-right font-mono font-bold ${row.valueUSD.startsWith('-') ? 'text-red-700' : 'text-slate-900'}`}>
-                    {row.valueUSD}
-                  </td>
-                  <td className="py-2 px-2 text-right font-mono text-slate-600">{row.valueLBP}</td>
-                  <td className="py-2 px-3 text-slate-500 font-sans">{row.notes}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      <div className="border-t-2 border-black mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-700">
+      <div className="border-t-2 border-slate-900 mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-800">
         <span>Status: Live Registered Registers</span>
         <span>Shift Supervisor: M. Harb</span>
       </div>
-    </div>
+    </UnifiedPrintableReportSheet>
   );
 };
