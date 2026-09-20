@@ -2,6 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  resolveDateRangeFromPreset,
+  getDefaultInitialDateRange,
+  isQuarterAvailable,
+  formatDisplayDate,
+  parseISODate,
+} from '@/lib/dateRangeEngine';
+import {
   RotateCcw,
   Search,
   FileText,
@@ -65,6 +72,7 @@ type ReportMenuItemFlat = {
 type ReportMenuItemNested = {
   category: string;
   type: 'nested';
+  items?: string[];
   groups: {
     name: string;
     items: string[];
@@ -81,8 +89,36 @@ const reportMenuData: ReportMenuItem[] = [
   },
   {
     category: "Internal Control",
-    type: "flat",
-    items: ["Summary of voids", "Summary of refunds", "Duplicate Invoices", "Meter Report", "No Sale", "Transactions on Hold", "User Log Report", "Discount Summary"]
+    type: "nested",
+    items: [
+      "Summary of voids",
+      "Summary of refunds",
+      "Duplicate Invoices",
+      "Meter Report",
+      "No Sale",
+      "User Log Report",
+      "Discount Summary"
+    ],
+    groups: [
+      {
+        name: "Transactions",
+        items: [
+          "Transactions by Date",
+          "Transactions by Invoice Number",
+          "Transactions by Salesman",
+          "Transactions by Date by Payments",
+          "Transactions by Customers",
+          "Transactions by Customers by Groups",
+          "Transactions by Customers details",
+          "Transactions by Customers by Employee",
+          "Transactions by Employees by Payment",
+          "Transactions by Workstation",
+          "Transactions by Employees",
+          "Transactions By Source",
+          "Transactions on Hold",
+        ]
+      }
+    ]
   },
   {
     category: "Financial",
@@ -233,9 +269,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   }, []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isReportListOpen, setIsReportListOpen] = useState<boolean>(true);
-  const [period, setPeriod] = useState<string>('This Month');
-  const [fromDate, setFromDate] = useState<string>('');
-  const [toDate, setToDate] = useState<string>('');
+  const initialMasterRange = getDefaultInitialDateRange('This Month');
+  const [period, setPeriod] = useState<string>(initialMasterRange.preset);
+  const [fromDate, setFromDate] = useState<string>(initialMasterRange.fromDate);
+  const [toDate, setToDate] = useState<string>(initialMasterRange.toDate);
   const [selectedBranch, setSelectedBranch] = useState<string>('All Branches');
   const [invoiceFilter, setInvoiceFilter] = useState<string>('All Invoices');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -282,9 +319,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [customCatSearch, setCustomCatSearch] = useState<string>('');
 
   // Active / Applied States (updated upon Filter Report button click)
-  const [activePeriod, setActivePeriod] = useState<string>('This Month');
-  const [activeFromDate, setActiveFromDate] = useState<string>('2026-08-01');
-  const [activeToDate, setActiveToDate] = useState<string>('2026-08-31');
+  const [activePeriod, setActivePeriod] = useState<string>(initialMasterRange.preset);
+  const [activeFromDate, setActiveFromDate] = useState<string>(initialMasterRange.fromDate);
+  const [activeToDate, setActiveToDate] = useState<string>(initialMasterRange.toDate);
   const [activeBranch, setActiveBranch] = useState<string>('All Branches');
   const [activeCurrency, setActiveCurrency] = useState<string>('LBP');
   const [activeTopN, setActiveTopN] = useState<number>(10);
@@ -433,8 +470,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
   const handleFilterReport = () => {
     setActivePeriod(period);
-    setActiveFromDate(fromDate || '2026-08-01');
-    setActiveToDate(toDate || '2026-08-31');
+    setActiveFromDate(fromDate);
+    setActiveToDate(toDate);
     setActiveBranch(selectedBranch);
     setActiveTopN(topNCount);
     setActiveCustomer(selectedCustomer);
@@ -454,9 +491,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   };
 
   const handleResetFilters = () => {
-    setPeriod('This Month');
-    setFromDate('2026-08-01');
-    setToDate('2026-08-31');
+    const defRange = getDefaultInitialDateRange('This Month');
+    setPeriod(defRange.preset);
+    setFromDate(defRange.fromDate);
+    setToDate(defRange.toDate);
     setSelectedBranch('All Branches');
     setInvoiceFilter('All Invoices');
     setTopNCount(10);
@@ -475,9 +513,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setUiShowZeroTax(false);
     setUiShowComment(false);
 
-    setActivePeriod('This Month');
-    setActiveFromDate('2026-08-01');
-    setActiveToDate('2026-08-31');
+    setActivePeriod(defRange.preset);
+    setActiveFromDate(defRange.fromDate);
+    setActiveToDate(defRange.toDate);
     setActiveBranch('All Branches');
     setActiveTopN(10);
     setActiveCustomer('All Customers');
@@ -506,6 +544,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
       if (menu.type === 'flat') {
         menu.items.forEach(i => set.add(i));
       } else {
+        if (menu.items) menu.items.forEach(i => set.add(i));
         menu.groups.forEach(g => g.items.forEach(i => set.add(i)));
       }
     });
@@ -636,8 +675,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
         .report-category-header span,
         [class*="sticky"] span,
         [class*="sticky"] svg {
-          color: #195a96 !important;
-          stroke: #195a96 !important;
+          color: var(--primary) !important;
+          stroke: var(--primary) !important;
         }
       `}</style>
       {/* 1. PRIMARY PAGE HEADER (CONSOLIDATED & PROMOTED) */}
@@ -657,7 +696,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           <div className="flex items-center gap-2">
             <span className="text-slate-500 font-medium text-[14px] hidden md:inline">Active Report:</span>
             {selectedReport ? (
-              <span className="text-[14px] font-bold text-[#195a96] bg-blue-50 px-3 py-1 rounded-md border border-blue-100 shadow-2xs">
+              <span className="text-[14px] font-bold text-primary bg-blue-50 px-3 py-1 rounded-md border border-blue-100 shadow-2xs">
                 {selectedReport}
               </span>
             ) : (
@@ -694,7 +733,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           <button
             type="button"
             onClick={() => setIsReportBuilderOpen(true)}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white transition-all cursor-pointer shadow-xs border border-[#195a96] shrink-0"
+            className="px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white transition-all cursor-pointer shadow-xs border border-primary shrink-0"
             title="Open Reports Builder"
           >
             <BarChart3 size={14} />
@@ -751,14 +790,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <div key={section.category} className="py-1">
                       <div
                         onClick={() => toggleCategory(section.category)}
-                        style={{ color: '#195a96' }}
-                        className="report-category-header text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                        className="report-category-header text-primary font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
                       >
-                        <span style={{ color: '#195a96' }}>{section.category}</span>
+                        <span className="text-primary">{section.category}</span>
                         <ChevronDown
                           size={16}
-                          style={{ color: '#195a96', stroke: '#195a96' }}
-                          className={`text-[#195a96] transition-transform duration-200 ${
+                          className={`text-primary stroke-primary transition-transform duration-200 ${
                             isCatExpanded ? 'rotate-180' : ''
                           }`}
                         />
@@ -774,8 +811,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                 onClick={() => handleSelectReportItem(item)}
                                 className={`block w-full text-left px-4 py-2 text-[13px] font-medium transition-colors cursor-pointer ${
                                   isSelected
-                                    ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
-                                    : 'text-slate-600 hover:!text-[#195a96] hover:bg-slate-50'
+                                    ? 'bg-slate-50 text-primary !text-primary font-bold border-l-4 border-primary'
+                                    : 'text-slate-600 hover:!text-primary hover:bg-slate-50'
                                 }`}
                               >
                                 {item}
@@ -798,20 +835,22 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   }))
                   .filter(group => !searchQuery || group.items.length > 0 || group.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-                if (searchQuery && filteredGroups.length === 0) return null;
+                const directItems = section.items
+                  ? (searchQuery ? section.items.filter(matchesSearch) : section.items)
+                  : [];
+
+                if (searchQuery && filteredGroups.length === 0 && directItems.length === 0) return null;
 
                 return (
                   <div key={section.category} className="py-1">
                     <div
                       onClick={() => toggleCategory(section.category)}
-                      style={{ color: '#195a96' }}
-                      className="report-category-header text-[#195a96] !text-[#195a96] font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
+                      className="report-category-header text-primary font-bold text-sm px-4 py-3 border-b border-slate-100 bg-white flex justify-between items-center cursor-pointer select-none sticky top-0 z-10"
                     >
-                      <span style={{ color: '#195a96' }}>{section.category}</span>
+                      <span className="text-primary">{section.category}</span>
                       <ChevronDown
                         size={16}
-                        style={{ color: '#195a96', stroke: '#195a96' }}
-                        className={`text-[#195a96] transition-transform duration-200 ${
+                        className={`text-primary stroke-primary transition-transform duration-200 ${
                           isCatExpanded ? 'rotate-180' : ''
                         }`}
                       />
@@ -819,19 +858,36 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                     {isCatExpanded && (
                       <div className="category-content">
+                        {directItems.map((item, idx) => {
+                          const isSelected = selectedReport === item;
+                          return (
+                            <div
+                              key={`${section.category}__${item}__${idx}`}
+                              onClick={() => handleSelectReportItem(item)}
+                              className={`block w-full text-left px-4 py-2 text-[13px] font-medium transition-colors cursor-pointer ${
+                                isSelected
+                                  ? 'bg-slate-50 text-primary !text-primary font-bold border-l-4 border-primary'
+                                  : 'text-slate-600 hover:!text-primary hover:bg-slate-50'
+                              }`}
+                            >
+                              {item}
+                            </div>
+                          );
+                        })}
+
                         {filteredGroups.map((group, gIdx) => {
                           const isExpanded = !!expandedGroups[group.name] || !!searchQuery;
                           return (
                             <div key={`${section.category}__${group.name}__${gIdx}`}>
                               <div
                                 onClick={() => toggleGroup(group.name)}
-                                className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:!text-[#195a96] hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
+                                className="flex justify-between items-center px-4 py-2 text-[13px] font-bold text-slate-700 hover:!text-primary hover:bg-slate-50 cursor-pointer select-none border-b border-slate-50 transition-colors"
                               >
                                 <span>{group.name}</span>
                                 <ChevronDown
                                   size={14}
                                   className={`text-slate-400 transition-transform ${
-                                    isExpanded ? 'rotate-180 text-[#195a96]' : ''
+                                    isExpanded ? 'rotate-180 text-primary' : ''
                                   }`}
                                 />
                               </div>
@@ -846,8 +902,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                         onClick={() => handleSelectReportItem(item)}
                                         className={`block w-full text-left pl-8 pr-4 py-2 text-[12px] font-medium transition-colors cursor-pointer ${
                                           isSelected
-                                            ? 'bg-slate-50 text-[#195a96] !text-[#195a96] font-bold border-l-4 border-[#195a96]'
-                                            : 'text-slate-500 hover:!text-[#195a96] hover:bg-slate-50'
+                                            ? 'bg-slate-50 text-primary !text-primary font-bold border-l-4 border-primary'
+                                            : 'text-slate-500 hover:!text-primary hover:bg-slate-50'
                                         }`}
                                       >
                                         {item}
@@ -915,17 +971,28 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <div className="flex flex-wrap items-center gap-2 flex-1">
                   <select
                     value={period}
-                    onChange={(e) => setPeriod(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPeriod(val);
+                      if (val !== 'Date Range' && val !== 'Custom' && val !== 'EOD Date') {
+                        const resolved = resolveDateRangeFromPreset(val, fromDate, toDate);
+                        setFromDate(resolved.fromDate);
+                        setToDate(resolved.toDate);
+                      }
+                    }}
                     className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
                   >
                     <option value="Today" className="!text-black !font-bold bg-white">Today</option>
                     <option value="Yesterday" className="!text-black !font-bold bg-white">Yesterday</option>
+                    <option value="This Week" className="!text-black !font-bold bg-white">This Week</option>
                     <option value="This Month" className="!text-black !font-bold bg-white">This Month</option>
                     <option value="Last Month" className="!text-black !font-bold bg-white">Last Month</option>
-                    <option value="First Quarter" className="!text-black !font-bold bg-white">First Quarter</option>
-                    <option value="Second Quarter" className="!text-black !font-bold bg-white">Second Quarter</option>
-                    <option value="Third Quarter" className="!text-black !font-bold bg-white">Third Quarter</option>
-                    <option value="Fourth Quarter" className="!text-black !font-bold bg-white">Fourth Quarter</option>
+                    <option value="First Quarter" className="!text-black !font-bold bg-white">First Quarter (Q1)</option>
+                    <option value="Second Quarter" className="!text-black !font-bold bg-white">Second Quarter (Q2)</option>
+                    <option value="Third Quarter" className="!text-black !font-bold bg-white">Third Quarter (Q3)</option>
+                    <option value="Fourth Quarter" disabled={!isQuarterAvailable(4)} className="!text-black !font-bold bg-white">
+                      {isQuarterAvailable(4) ? 'Fourth Quarter (Q4)' : 'Fourth Quarter (Q4 - Unentered)'}
+                    </option>
                     <option value="This Year" className="!text-black !font-bold bg-white">This Year</option>
                     <option value="Last Year" className="!text-black !font-bold bg-white">Last Year</option>
                     <option value="Date Range" className="!text-black !font-bold bg-white">Date Range</option>
@@ -950,8 +1017,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       />
                     </div>
                   ) : (
-                    <div className="border border-slate-400 rounded p-1.5 text-[13px] min-w-[200px] bg-slate-100 !text-black font-bold flex items-center cursor-not-allowed select-none shadow-sm">
-                      Aug 1 - Aug 31, 2026
+                    <div className="border border-slate-400 rounded p-1.5 text-[13px] min-w-[220px] bg-slate-100 !text-black font-bold flex items-center shadow-sm px-2.5">
+                      {fromDate && toDate
+                        ? `${formatDisplayDate(parseISODate(fromDate))} ➔ ${formatDisplayDate(parseISODate(toDate))}`
+                        : 'Real-Time Calendar Range'}
                     </div>
                   )}
 
@@ -981,7 +1050,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiShowRate} 
                           onChange={(e) => setUiShowRate(e.target.checked)} 
                         />
@@ -990,7 +1059,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiGroupByDate} 
                           onChange={(e) => setUiGroupByDate(e.target.checked)} 
                         />
@@ -1004,7 +1073,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiShowRate} 
                           onChange={(e) => setUiShowRate(e.target.checked)} 
                         />
@@ -1013,7 +1082,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiUseUnitCost} 
                           onChange={(e) => setUiUseUnitCost(e.target.checked)} 
                         />
@@ -1052,7 +1121,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        className="rounded border-slate-300 w-4 h-4 accent-primary" 
                         checked={uiShowRate}
                         onChange={(e) => setUiShowRate(e.target.checked)}
                       />
@@ -1064,7 +1133,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        className="rounded border-slate-300 w-4 h-4 accent-primary" 
                         checked={uiRealDate}
                         onChange={(e) => setUiRealDate(e.target.checked)}
                       />
@@ -1077,7 +1146,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiRealDate}
                           onChange={(e) => setUiRealDate(e.target.checked)}
                         />
@@ -1086,7 +1155,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiShowGraph}
                           onChange={(e) => setUiShowGraph(e.target.checked)}
                         />
@@ -1100,7 +1169,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiRealDate}
                           onChange={(e) => setUiRealDate(e.target.checked)}
                         />
@@ -1109,7 +1178,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiShowZeroTax}
                           onChange={(e) => setUiShowZeroTax(e.target.checked)}
                         />
@@ -1133,7 +1202,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        className="rounded border-slate-300 w-4 h-4 accent-primary" 
                         checked={uiRealDate}
                         onChange={(e) => setUiRealDate(e.target.checked)}
                       />
@@ -1149,7 +1218,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiRealDate}
                           onChange={(e) => setUiRealDate(e.target.checked)}
                         />
@@ -1158,7 +1227,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiSummary}
                           onChange={(e) => setUiSummary(e.target.checked)}
                         />
@@ -1173,7 +1242,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <option>All Servers</option>
                       </select>
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                        <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-primary" />
                         All Dates
                       </label>
                     </div>
@@ -1181,7 +1250,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                   {selectedReport === 'Customer Payments' && (
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
-                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" defaultChecked />
+                      <input type="checkbox" className="rounded border-slate-300 w-4 h-4 accent-primary" defaultChecked />
                       Grouped By Server
                     </label>
                   )}
@@ -1189,7 +1258,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   {selectedReport === 'Profit by Invoices Summary' && (
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-slate-700">Invoice #:</span>
-                      <input type="text" className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-[#195a96]" defaultValue="103070" />
+                      <input type="text" className="border border-slate-300 rounded p-1.5 text-sm w-36 !bg-white !text-slate-900 font-bold outline-none focus:ring-2 focus:ring-primary" defaultValue="103070" />
                     </div>
                   )}
 
@@ -1216,7 +1285,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiUseUnitCost}
                           onChange={(e) => setUiUseUnitCost(e.target.checked)}
                         />
@@ -1241,7 +1310,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                          className="rounded border-slate-300 w-4 h-4 accent-primary" 
                           checked={uiUseUnitCost}
                           onChange={(e) => setUiUseUnitCost(e.target.checked)}
                         />
@@ -1254,7 +1323,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        className="rounded border-slate-300 w-4 h-4 accent-primary" 
                         checked={uiUseUnitCost}
                         onChange={(e) => setUiUseUnitCost(e.target.checked)}
                       />
@@ -1266,7 +1335,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" 
+                        className="rounded border-slate-300 w-4 h-4 accent-primary" 
                         checked={uiSummary}
                         onChange={(e) => setUiSummary(e.target.checked)}
                       />
@@ -1320,7 +1389,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         id="runReportClick"
                         type="button"
                         onClick={handleFilterReport}
-                        className="px-3.5 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+                        className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
                       >
                         <Filter size={13} />
                         <span>Filter Report</span>
@@ -1328,7 +1397,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <button
                         type="button"
                         onClick={handleResetFilters}
-                        className="px-3.5 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1"
+                        className="px-3.5 py-1.5 bg-destructive hover:bg-destructive text-white rounded text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1"
                       >
                         <RotateCcw size={12} />
                         <span>Reset Filters</span>
@@ -1341,7 +1410,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <button 
                       type="button"
                       onClick={handleZoomIn} 
-                      className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
+                      className="bg-emerald-700 hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
                       title="Zoom In"
                     >
                       <ZoomIn size={15} />
@@ -1349,7 +1418,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <button 
                       type="button"
                       onClick={handleZoomOut} 
-                      className="bg-[#2e7d32] hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
+                      className="bg-emerald-700 hover:bg-[#236327] text-white p-1.5 rounded transition-colors cursor-pointer shadow-xs" 
                       title="Zoom Out"
                     >
                       <ZoomOut size={15} />
@@ -1357,7 +1426,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     <button 
                       type="button"
                       onClick={handlePrint} 
-                      className="bg-[#195a96] hover:bg-[#154b7d] text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                      className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                     >
                       <Printer size={14} />
                       <span>Print Report</span>
@@ -1368,7 +1437,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <button 
                         type="button"
                         onClick={() => setIsExportMenuOpen(prev => !prev)} 
-                        className="bg-[#195a96] hover:bg-[#154b7d] text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                        className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                       >
                         <Download size={14} />
                         <span>Export Report</span>
@@ -1704,8 +1773,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <th className="border border-black py-1.5 px-2">June</th>
                               <th className="border border-black py-1.5 px-2">July</th>
                               <th className="border border-black py-1.5 px-2">August</th>
-                              <th className="border border-black py-1.5 px-2 bg-[#cce5ff]">Total By Year</th>
-                              <th className="border border-black py-1.5 px-2 bg-[#cce5ff]">Monthly Average</th>
+                              <th className="border border-black py-1.5 px-2 bg-muted">Total By Year</th>
+                              <th className="border border-black py-1.5 px-2 bg-muted">Monthly Average</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1721,8 +1790,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">802,119,050.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">66,843,254.17</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">802,119,050.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">66,843,254.17</td>
                             </tr>
                             <tr className="font-normal bg-white text-center">
                               <td className="border border-black p-1.5 px-2">Cashier NK</td>
@@ -1734,8 +1803,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">1,081,110,500.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">90,092,541.67</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">1,081,110,500.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">90,092,541.67</td>
                             </tr>
                             <tr className="font-normal bg-white text-center">
                               <td className="border border-black p-1.5 px-2">Cashier R</td>
@@ -1747,8 +1816,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">1,034,284,442.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">86,190,370.17</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">1,034,284,442.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">86,190,370.17</td>
                             </tr>
                             <tr className="font-normal bg-white text-center">
                               <td className="border border-black p-1.5 px-2">Hiba Aloulou</td>
@@ -1760,8 +1829,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">381,671,600.00</td>
                               <td className="border border-black p-1.5 px-2">1,493,219,324.78</td>
                               <td className="border border-black p-1.5 px-2">1,243,561,600.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">3,118,452,524.78</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">259,871,043.73</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">3,118,452,524.78</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">259,871,043.73</td>
                             </tr>
                             <tr className="font-normal bg-white text-center">
                               <td className="border border-black p-1.5 px-2">Mahdi</td>
@@ -1773,8 +1842,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">257,090,350.00</td>
                               <td className="border border-black p-1.5 px-2">291,091,990.00</td>
                               <td className="border border-black p-1.5 px-2">267,490,000.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">4,272,538,120.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">356,044,843.33</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">4,272,538,120.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">356,044,843.33</td>
                             </tr>
                             <tr className="font-normal bg-white text-center">
                               <td className="border border-black p-1.5 px-2">Nour Yazbeck</td>
@@ -1786,10 +1855,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               <td className="border border-black p-1.5 px-2">24,083,800.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
                               <td className="border border-black p-1.5 px-2">0.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">28,915,800.00</td>
-                              <td className="border border-black p-1.5 px-2 bg-[#cce5ff]">2,409,650.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">28,915,800.00</td>
+                              <td className="border border-black p-1.5 px-2 bg-muted">2,409,650.00</td>
                             </tr>
-                            <tr className="font-bold bg-[#cce5ff] text-center">
+                            <tr className="font-bold bg-muted text-center">
                               <td className="border border-black p-1.5 px-2">Total By Employee</td>
                               <td className="border border-black p-1.5 px-2">3,104,932,430.00</td>
                               <td className="border border-black p-1.5 px-2">2,101,095,942.00</td>
@@ -2008,7 +2077,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <div className="w-[20%] p-1.5 border-r border-black text-center">Beirut Central Branch</div>
                           <div className="w-[20%] p-1.5 border-r border-black text-center">Choueifat Press Branch</div>
                           <div className="w-[20%] p-1.5 border-r border-black text-center">Jbaa Hub</div>
-                          <div className="w-[20%] p-1.5 text-center bg-[#dbeafe]">Total</div>
+                          <div className="w-[20%] p-1.5 text-center bg-muted">Total</div>
                         </div>
 
                         {/* Data Rows with Double-Stacked Values */}
@@ -2026,7 +2095,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>157,490,000.00</div>
                             <div className="text-slate-700 text-[10px]">2,280,000.00</div>
                           </div>
@@ -2046,7 +2115,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>11,520,000.00</div>
                             <div className="text-slate-700 text-[10px]">1,450,000.00</div>
                           </div>
@@ -2066,7 +2135,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>102,455,000.00</div>
                             <div className="text-slate-700 text-[10px]">3,120,000.00</div>
                           </div>
@@ -2086,7 +2155,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>44,089,500.00</div>
                             <div className="text-slate-700 text-[10px]">1,890,000.00</div>
                           </div>
@@ -2106,7 +2175,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>119,597,000.00</div>
                             <div className="text-slate-700 text-[10px]">4,250,000.00</div>
                           </div>
@@ -2126,7 +2195,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>29,942,600.00</div>
                             <div className="text-slate-700 text-[10px]">2,780,000.00</div>
                           </div>
@@ -2146,7 +2215,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>23,835,000.00</div>
                             <div className="text-slate-700 text-[10px]">5,600,000.00</div>
                           </div>
@@ -2166,7 +2235,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>73,787,500.00</div>
                             <div className="text-slate-700 text-[10px]">3,410,000.00</div>
                           </div>
@@ -2186,7 +2255,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>84,784,000.00</div>
                             <div className="text-slate-700 text-[10px]">9,000,000.00</div>
                           </div>
@@ -2206,7 +2275,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>31,143,000.00</div>
                             <div className="text-slate-700 text-[10px]">4,120,000.00</div>
                           </div>
@@ -2226,7 +2295,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>27,168,000.00</div>
                             <div className="text-slate-700 text-[10px]">2,670,000.00</div>
                           </div>
@@ -2246,7 +2315,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>44,536,200.00</div>
                             <div className="text-slate-700 text-[10px]">6,890,000.00</div>
                           </div>
@@ -2266,7 +2335,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>41,485,000.00</div>
                             <div className="text-slate-700 text-[10px]">3,540,000.00</div>
                           </div>
@@ -2286,7 +2355,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>19,116,000.00</div>
                             <div className="text-slate-700 text-[10px]">8,120,000.00</div>
                           </div>
@@ -2306,7 +2375,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>36,294,000.00</div>
                             <div className="text-slate-700 text-[10px]">2,340,000.00</div>
                           </div>
@@ -2326,7 +2395,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>50,099,550.00</div>
                             <div className="text-slate-700 text-[10px]">5,180,000.00</div>
                           </div>
@@ -2346,7 +2415,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>53,415,000.00</div>
                             <div className="text-slate-700 text-[10px]">3,890,000.00</div>
                           </div>
@@ -2366,7 +2435,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>92,846,250.00</div>
                             <div className="text-slate-700 text-[10px]">4,760,000.00</div>
                           </div>
@@ -2386,7 +2455,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>36,345,000.00</div>
                             <div className="text-slate-700 text-[10px]">7,230,000.00</div>
                           </div>
@@ -2406,7 +2475,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>48,766,500.00</div>
                             <div className="text-slate-700 text-[10px]">2,980,000.00</div>
                           </div>
@@ -2426,7 +2495,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>277,330,000.00</div>
                             <div className="text-slate-700 text-[10px]">6,120,000.00</div>
                           </div>
@@ -2446,7 +2515,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>21,100,000.00</div>
                             <div className="text-slate-700 text-[10px]">3,450,000.00</div>
                           </div>
@@ -2466,7 +2535,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>20,605,000.00</div>
                             <div className="text-slate-700 text-[10px]">5,890,000.00</div>
                           </div>
@@ -2486,7 +2555,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>63,301,500.00</div>
                             <div className="text-slate-700 text-[10px]">4,320,000.00</div>
                           </div>
@@ -2506,7 +2575,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>61,970,000.00</div>
                             <div className="text-slate-700 text-[10px]">8,950,000.00</div>
                           </div>
@@ -2526,7 +2595,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>64,695,000.00</div>
                             <div className="text-slate-700 text-[10px]">6,430,000.00</div>
                           </div>
@@ -2546,7 +2615,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <div>0.00</div>
                             <div className="text-slate-600 text-[10px]">0.00</div>
                           </div>
-                          <div className="w-[20%] p-1.5 text-right bg-[#dbeafe] font-medium">
+                          <div className="w-[20%] p-1.5 text-right bg-muted font-medium">
                             <div>0.00</div>
                             <div className="text-slate-700 text-[10px]">0.00</div>
                           </div>
@@ -3885,185 +3954,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   ) : selectedReport === 'Meter Report' ? (
-                    /* METER REPORT TEMPLATE */
-                    <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
-                      
-                      {/* Header Section */}
-                      {/* Corporate Topper */}
-                      <div className="text-center mb-1">
-                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-                          Zeit w zaytoun ljanoub
-                        </div>
-                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-                          Southern Olive Oil Products S.A.R.L
-                        </div>
-                      </div>
-                      
-                      <div className="text-center font-bold text-[12px] mb-4">
-                        Meter Report
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>{currentDateFormatted}</div>
-                        <div className="text-center font-bold flex-1">{dynamicPeriodText}</div>
-                        <div>Page 1 of 4</div>
-                      </div>
-
-                      {/* Main Table Header - Expanded to full width */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1 mb-2">
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 text-[11px] font-bold text-black w-full">
-                          <div>Branch Name</div>
-                          <div>Date</div>
-                          <div>By Employee</div>
-                          <div>To Employee</div>
-                        </div>
-                      </div>
-
-                      {/* Data Section */}
-                      <div className="text-[11px] font-medium leading-tight w-full">
-                        <div className="mb-2 font-bold">Branch: Main Branch</div>
-                        
-                        {/* 01-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">01-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>01-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>01-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-
-                        {/* 02-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">02-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>02-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>02-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>02-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>02-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-
-                        {/* 03-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">03-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>03-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>03-08-2026 00.00.00</div>
-                          <div>Mahdi</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>03-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-
-                        {/* 04-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">04-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>04-08-2026 00.00.00</div>
-                          <div>Mahdi</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-
-                        {/* 05-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">05-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>05-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>05-08-2026 00.00.00</div>
-                          <div>Mahdi</div>
-                          <div>Main Reading</div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-4">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>05-08-2026 00.00.00</div>
-                          <div>Mahdi</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-
-                        {/* 06-Aug-2026 */}
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-1">
-                          <div className="font-bold">EOD Date</div>
-                          <div className="font-bold">06-Aug-2026</div>
-                          <div></div>
-                          <div></div>
-                        </div>
-                        <div className="grid grid-cols-[30%_25%_25%_20%] gap-4 mb-8">
-                          <div>Southern Olive Oil Products S.A.R.L</div>
-                          <div>06-08-2026 00.00.00</div>
-                          <div>Hiba Aloulou</div>
-                          <div>Server Hiba Aloulou</div>
-                        </div>
-                      </div>
-
-                      {/* VANGUARD PRINT FOOTER */}
-                      <div className="border-t-[2px] border-b-[1px] border-black py-0.5 mb-1 mt-auto w-full"></div>
-                      <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
-                        <div className="text-black text-left">REP_S_00247</div>
-                        <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
-                      </div>
-                    </div>
+                    <FallbackMeterReport fromDate={fromDate} toDate={toDate} />
                   ) : selectedReport === 'List of Pending Invoices with Advance Payment' ? (
                     /* LIST OF PENDING INVOICES WITH ADVANCE PAYMENT REPORT TEMPLATE */
                     <div className="w-full max-w-6xl mx-auto p-4 bg-white font-sans text-black mt-2">
@@ -4374,7 +4265,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="border-t border-dashed border-black pt-1 mb-1"></div>
 
                       {/* Subtotal for Hiba Aloulou */}
-                      <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-1">
+                      <div className="flex justify-between text-[11px] font-bold text-primary mb-1">
                         <div>Total for Hiba Aloulou:</div>
                         <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
@@ -4386,7 +4277,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
 
                       {/* Server Subtotal */}
-                      <div className="flex justify-between text-[11px] font-bold text-[#195a96] mb-4">
+                      <div className="flex justify-between text-[11px] font-bold text-primary mb-4">
                         <div>Total for Mahdi:</div>
                         <div className="font-mono">{activeCurrency === 'USD' ? '-$2,760.00' : '-248,400,000.00'}</div>
                       </div>
@@ -5232,7 +5123,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <td className="border border-black p-1.5 pl-2">Southern Olive Oil Products S.A.R.L</td>
                             <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5 pl-2">Total</td>
                             <td className="border border-black p-1.5 text-right pr-2">56,080,449.97</td>
                           </tr>
@@ -5532,7 +5423,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <tr>
                               <th className="border border-black p-1.5 w-[150px]" colSpan={2}></th>
                               <th className="border border-black p-1.5 w-[150px]">MAIN<br/>DEPARTMENT</th>
-                              <th className="border border-black p-1.5 w-[150px] bg-[#cce5ff]">Total</th>
+                              <th className="border border-black p-1.5 w-[150px] bg-muted">Total</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -5543,22 +5434,22 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                               </td>
                               <td className="border border-black p-1.5">Retail</td>
                               <td className="border border-black p-1.5">54,542,762.47</td>
-                              <td className="border border-black p-1.5 bg-[#cce5ff]">54,542,762.47</td>
+                              <td className="border border-black p-1.5 bg-muted">54,542,762.47</td>
                             </tr>
                             {/* Row 2 */}
                             <tr>
                               <td className="border border-black p-1.5">Promotions</td>
                               <td className="border border-black p-1.5">1,537,687.50</td>
-                              <td className="border border-black p-1.5 bg-[#cce5ff]">1,537,687.50</td>
+                              <td className="border border-black p-1.5 bg-muted">1,537,687.50</td>
                             </tr>
                             {/* Row 3 */}
                             <tr>
                               <td className="border border-black p-1.5">Raw Materials</td>
                               <td className="border border-black p-1.5">0.00</td>
-                              <td className="border border-black p-1.5 bg-[#cce5ff]">0.00</td>
+                              <td className="border border-black p-1.5 bg-muted">0.00</td>
                             </tr>
                             {/* Total Row */}
-                            <tr className="bg-[#cce5ff]">
+                            <tr className="bg-muted">
                               <td className="border border-black p-1.5 text-center" colSpan={2}>Total</td>
                               <td className="border border-black p-1.5">56,080,449.97</td>
                               <td className="border border-black p-1.5">56,080,449.97</td>
@@ -5723,7 +5614,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                             <td className="border border-black p-1.5 text-center leading-tight w-[175px]">
                               Southern Olive Oil Products S.A.R.L
                             </td>
-                            <td className="border border-black p-1.5 text-center bg-[#cce5ff] w-[175px]">
+                            <td className="border border-black p-1.5 text-center bg-muted w-[175px]">
                               Total
                             </td>
                           </tr>
@@ -5732,7 +5623,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <tr>
                             <td className="border border-black p-1.5 pl-2">Tax1</td>
                             <td className="border border-black p-1.5 text-right pr-2">0.00</td>
-                            <td className="border border-black p-1.5 text-right pr-2 bg-[#cce5ff]">0.00</td>
+                            <td className="border border-black p-1.5 text-right pr-2 bg-muted">0.00</td>
                           </tr>
                         </tbody>
                       </table>
@@ -6353,7 +6244,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Data Table */}
                       <table className="w-[650px] border-collapse border border-black text-[11px] font-bold text-black">
                         <thead>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <th className="border border-black p-1.5 w-[110px]"></th>
                             <th className="border border-black p-1.5 w-[100px]"></th>
                             <th className="border border-black p-1.5 text-left w-[140px]">MAIN<br/>DEPARTME</th>
@@ -6402,38 +6293,38 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           </tr>
 
                           {/* Totals Section (Blue Background) */}
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5" rowSpan={6}></td>
                             <td className="border border-black p-1.5">Amount</td>
                             <td className="border border-black p-1.5">1,316,032,05</td>
                             <td className="border border-black p-1.5">248,400,000.</td>
                             <td className="border border-black p-1.5">1,564,432,050</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5">Tax</td>
                             <td className="border border-black p-1.5">0.00</td>
                             <td className="border border-black p-1.5">0.00</td>
                             <td className="border border-black p-1.5">0.00</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5">Service</td>
                             <td className="border border-black p-1.5">0.00</td>
                             <td className="border border-black p-1.5">0.00</td>
                             <td className="border border-black p-1.5">0.00</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5">Subtotal</td>
                             <td className="border border-black p-1.5">1,316,032,05</td>
                             <td className="border border-black p-1.5">248,400,000.</td>
                             <td className="border border-black p-1.5">1,564,432,050</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5">Discount</td>
                             <td className="border border-black p-1.5">53,380,450.0</td>
                             <td className="border border-black p-1.5">0.00</td>
                             <td className="border border-black p-1.5">53,380,450.00</td>
                           </tr>
-                          <tr className="bg-[#cce5ff]">
+                          <tr className="bg-muted">
                             <td className="border border-black p-1.5">Net Total</td>
                             <td className="border border-black p-1.5">1,262,651,60</td>
                             <td className="border border-black p-1.5">248,400,000.</td>
@@ -6868,7 +6759,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Standard Corporate Topper & Header */}
                       <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
                         <div className="text-center mb-2">
-                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                          <h1 className="text-[17px] font-black text-primary tracking-wider uppercase font-sans">
                             Zeit w zaytoun ljanoub
                           </h1>
                           <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
@@ -6884,7 +6775,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                         <div className="flex items-center justify-between text-[11px] text-slate-900 font-sans border-t border-slate-200 pt-1.5 px-0.5">
                           <div className="font-semibold">
-                            Branch: <span className="font-bold">Main Branch (الفرع الرئيسي)</span>
+                            Branch: <span className="font-bold">Main Branch</span>
                           </div>
                           <div className="font-semibold">
                             Period: <span className="font-bold">01-Jan-2026 To 31-Mar-2026</span>
@@ -6980,7 +6871,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Standard Corporate Topper & Header */}
                       <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
                         <div className="text-center mb-2">
-                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                          <h1 className="text-[17px] font-black text-primary tracking-wider uppercase font-sans">
                             Zeit w zaytoun ljanoub
                           </h1>
                           <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
@@ -7077,7 +6968,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       {/* Standard Corporate Topper & Header */}
                       <div className="border-b-2 border-slate-900 pb-3 mb-4 select-text">
                         <div className="text-center mb-2">
-                          <h1 className="text-[17px] font-black text-[#1a629b] tracking-wider uppercase font-sans">
+                          <h1 className="text-[17px] font-black text-primary tracking-wider uppercase font-sans">
                             Zeit w zaytoun ljanoub
                           </h1>
                           <div className="text-[12px] font-bold text-slate-700 tracking-wide font-sans">
@@ -7093,7 +6984,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
 
                         <div className="flex items-center justify-between text-[11px] text-slate-900 font-sans border-t border-slate-200 pt-1.5 px-0.5">
                           <div className="font-semibold">
-                            Branch: <span className="font-bold">Main Branch (الفرع الرئيسي)</span>
+                            Branch: <span className="font-bold">Main Branch</span>
                           </div>
                           <div className="font-semibold">
                             Period: <span className="font-bold">{dynamicPeriodText || "Period: August 2026"}</span>
@@ -7341,7 +7232,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       placeholder="e.g. Fast Audit, Priority Sales..." 
                       value={newCustomCatName}
                       onChange={(e) => setNewCustomCatName(e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 font-medium focus:outline-none focus:border-[#195a96] focus:ring-1 focus:ring-[#195a96] bg-white"
+                      className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 font-medium focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white"
                     />
                     <button 
                       type="button"
@@ -7364,7 +7255,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         setSelectedCatReports([]);
                         setIsCustomCategoryOpen(false);
                       }}
-                      className="px-4 py-2 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0"
+                      className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0"
                     >
                       Save Category
                     </button>
@@ -7395,7 +7286,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       placeholder="Search reports to include..." 
                       value={customCatSearch}
                       onChange={(e) => setCustomCatSearch(e.target.value)}
-                      className="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#195a96] bg-white"
+                      className="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-primary bg-white"
                     />
                   </div>
 
@@ -7408,7 +7299,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                           <label 
                             key={reportName} 
                             className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
-                              isChecked ? 'bg-blue-50 text-[#195a96] font-bold border border-blue-200' : 'hover:bg-slate-100 text-slate-700'
+                              isChecked ? 'bg-blue-50 text-primary font-bold border border-blue-200' : 'hover:bg-slate-100 text-slate-700'
                             }`}
                           >
                             <span className="truncate">{reportName}</span>
@@ -7422,7 +7313,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                                   setSelectedCatReports(prev => prev.filter(r => r !== reportName));
                                 }
                               }}
-                              className="rounded border-slate-300 w-4 h-4 accent-[#195a96] shrink-0" 
+                              className="rounded border-slate-300 w-4 h-4 accent-primary shrink-0" 
                             />
                           </label>
                         );
@@ -7471,7 +7362,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
               {/* Header */}
               <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/60">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#195a96] flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-primary flex items-center justify-center font-bold">
                     <BarChart3 size={18} />
                   </div>
                   <div>
@@ -7521,27 +7412,27 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <label className="text-[12px] font-bold text-slate-700 uppercase tracking-wider block">3. Calculated Metrics & Dynamic Columns</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       Gross Amount
                     </label>
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       VAT Tax (11%)
                     </label>
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       Net Amount
                     </label>
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       Dual Currency (USD/LBP)
                     </label>
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       Unit Cost & Profit
                     </label>
                     <label className="flex items-center gap-2 text-slate-800 font-bold cursor-pointer">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-[#195a96]" />
+                      <input type="checkbox" defaultChecked className="rounded border-slate-300 w-4 h-4 accent-primary" />
                       Quantity Sold
                     </label>
                   </div>
@@ -7586,7 +7477,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     setActiveGroupByDate(true);
                     setIsReportBuilderOpen(false);
                   }}
-                  className="px-5 py-2 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
                 >
                   <BarChart3 size={14} />
                   <span>Generate Matrix Report</span>

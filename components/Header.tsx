@@ -10,7 +10,7 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header dir="rtl" className="w-full bg-[#0f172a] border-b-4 border-amber-500 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-4 shadow-xl">
+    <header dir="rtl" className="w-full bg-primary border-b-4 border-amber-500 px-6 py-4 text-white flex flex-wrap items-center justify-between gap-4 shadow-xl">
       {/* LEFT SIDE (Branding) */}
       <div className="flex items-center gap-3">
         <img 

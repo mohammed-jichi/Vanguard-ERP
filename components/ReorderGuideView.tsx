@@ -58,8 +58,8 @@ const SEED_SUPPLIERS = [
   { id: 0, name: 'All Suppliers' },
   { id: 5, name: 'SOOL' },
   { id: 1, name: 'Zahwe' },
-  { id: 12, name: 'الضيعة' },
-  { id: 11, name: 'مؤسسة عبده للتجارة' },
+  { id: 12, name: 'Al-Dayaa' },
+  { id: 11, name: 'Abdo Trading Est.' },
   { id: 9, name: 'Abbas & Hussein Dirani' },
   { id: 8, name: 'Abbas Dirani' },
   { id: 6, name: 'B GROUP' },
@@ -80,9 +80,9 @@ const SEED_BRANCHES = [
 
 const SEED_CATEGORIES = [
   { id: 0, name: 'All Categories' },
-  { id: 2, name: 'مفرق' },
-  { id: 3, name: 'جملة' },
-  { id: 4, name: 'عروض' },
+  { id: 2, name: 'Retail' },
+  { id: 3, name: 'Wholesale' },
+  { id: 4, name: 'Promotions' },
   { id: 5, name: 'Raw Materials' }
 ];
 
@@ -130,9 +130,9 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     code: 'لبنة بلدية',
     description: 'لبنة بلدية طازجة في زيت الزيتون',
     supplierId: 12,
-    supplierName: 'الضيعة',
+    supplierName: 'Al-Dayaa',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 35,
     groupName: 'براد',
     unit: 'JAR',
@@ -150,7 +150,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'TIN',
@@ -168,7 +168,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'TIN',
@@ -186,7 +186,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -204,7 +204,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -222,7 +222,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 1,
     supplierName: 'Zahwe',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -240,7 +240,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -258,7 +258,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -276,7 +276,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 2,
     groupName: 'زيوت مفرق',
     unit: 'BTL',
@@ -294,7 +294,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 3,
-    categoryName: 'جملة',
+    categoryName: 'Wholesale',
     groupId: 3,
     groupName: 'تنك 16 ليتر جملة',
     unit: 'TIN',
@@ -312,7 +312,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 5,
     groupName: 'معطرات ومدبسات مفرق',
     unit: 'BTL',
@@ -330,7 +330,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 61,
     groupName: 'معطرات ومدبسات مفرق',
     unit: 'BTL',
@@ -348,7 +348,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 5,
     groupName: 'معطرات ومدبسات مفرق',
     unit: 'BTL',
@@ -366,7 +366,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 61,
     groupName: 'معطرات ومدبسات مفرق',
     unit: 'BTL',
@@ -384,7 +384,7 @@ const INITIAL_PRODUCTS: ReorderProduct[] = [
     supplierId: 5,
     supplierName: 'SOOL',
     categoryId: 2,
-    categoryName: 'مفرق',
+    categoryName: 'Retail',
     groupId: 5,
     groupName: 'معطرات ومدبسات مفرق',
     unit: 'BTL',
@@ -950,10 +950,10 @@ export default function ReorderGuideView() {
   }, [filteredProducts, selectedProductIds]);
 
   return (
-    <div className="w-full bg-[#f8f9fa] min-h-screen text-[#333] font-sans pb-16 pt-2">
+    <div className="w-full bg-background min-h-screen text-foreground font-sans pb-16 pt-2">
       {/* GLOBAL NOTIFICATION TOAST */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#195a96] text-white px-5 py-3 rounded-lg shadow-2xl animate-fade-in border border-blue-400">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-primary text-white px-5 py-3 rounded-lg shadow-2xl animate-fade-in border border-blue-400">
           <CheckCircle2 className="w-5 h-5 text-emerald-300" />
           <span className="text-sm font-semibold">{toastMessage}</span>
           <button onClick={() => setToastMessage(null)} className="hover:opacity-75">
@@ -967,9 +967,9 @@ export default function ReorderGuideView() {
             1. PAGE TITLE & HELP TOOLTIP
             ========================================================================= */}
         <div className="flex items-center gap-2 mb-2 relative group">
-          <h1 className="text-[20px] font-bold text-[#333] flex items-center gap-2">
+          <h1 className="text-[20px] font-bold text-foreground flex items-center gap-2">
             <span>Reorder Guide</span>
-            <div className="relative cursor-pointer inline-flex items-center text-slate-500 hover:text-[#195a96]">
+            <div className="relative cursor-pointer inline-flex items-center text-slate-500 hover:text-primary">
               <Info className="w-4 h-4" />
               <div className="absolute left-6 top-0 hidden group-hover:block z-50 w-80 p-3 bg-white text-slate-700 text-xs rounded-lg shadow-xl border border-slate-200 leading-relaxed pointer-events-none">
                 The Reorder Guide helps you restock your inventory by recommending optimal reorder quantities based on minimum stock levels, sales history, or a combination of both.
@@ -993,7 +993,7 @@ export default function ReorderGuideView() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
-                className="w-full h-[34px] px-3 pr-8 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-[#337ab7] text-[#555] shadow-inner"
+                className="w-full h-[34px] px-3 pr-8 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-primary text-muted-foreground shadow-inner"
               />
               {searchQuery && (
                 <button
@@ -1011,7 +1011,7 @@ export default function ReorderGuideView() {
             <select
               value={selectedSupplierId}
               onChange={(e) => setSelectedSupplierId(Number(e.target.value))}
-              className="w-full h-[34px] px-2 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-[#337ab7] text-[#555]"
+              className="w-full h-[34px] px-2 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-primary text-muted-foreground"
             >
               {SEED_SUPPLIERS.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -1026,7 +1026,7 @@ export default function ReorderGuideView() {
             <select
               value={selectedBranchId}
               onChange={(e) => setSelectedBranchId(Number(e.target.value))}
-              className="w-full h-[34px] px-2 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-[#337ab7] text-[#555]"
+              className="w-full h-[34px] px-2 text-xs bg-white border border-[#ccc] rounded focus:outline-none focus:border-primary text-muted-foreground"
             >
               {SEED_BRANCHES.map((b) => (
                 <option key={b.id} value={b.id}>
@@ -1040,7 +1040,7 @@ export default function ReorderGuideView() {
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={handleApplyFilter}
-              className="h-[34px] px-4 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-semibold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+              className="h-[34px] px-4 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
             >
               <Filter className="w-3.5 h-3.5" />
               <span>Filter</span>
@@ -1048,7 +1048,7 @@ export default function ReorderGuideView() {
             <button
               onClick={handleClearFilter}
               title="Clear Filters"
-              className="h-[34px] w-[34px] bg-[#a94442] hover:bg-[#843534] text-white text-xs rounded flex items-center justify-center transition shadow-sm cursor-pointer"
+              className="h-[34px] w-[34px] bg-destructive hover:bg-destructive text-white text-xs rounded flex items-center justify-center transition shadow-sm cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -1071,7 +1071,7 @@ export default function ReorderGuideView() {
           {/* Preview Button */}
           <button
             onClick={() => setIsPreviewOpen(true)}
-            className="h-[34px] px-3.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+            className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Preview</span>
@@ -1080,7 +1080,7 @@ export default function ReorderGuideView() {
           {/* Save Button */}
           <button
             onClick={handleSaveCart}
-            className="h-[34px] px-3.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+            className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save</span>
@@ -1090,7 +1090,7 @@ export default function ReorderGuideView() {
           <div className="relative group/actions">
             <button
               type="button"
-              className="h-[34px] px-3.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+              className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
             >
               <span>Actions</span>
               <ChevronDown className="w-3 h-3" />
@@ -1100,7 +1100,7 @@ export default function ReorderGuideView() {
                 onClick={() => setIsSettingsOpen(true)}
                 className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
               >
-                <Sliders className="w-3.5 h-3.5 text-[#337ab7]" />
+                <Sliders className="w-3.5 h-3.5 text-primary" />
                 <span>Settings</span>
               </button>
               <button
@@ -1116,7 +1116,7 @@ export default function ReorderGuideView() {
         {/* =========================================================================
             4. RECOMMENDED QTY TO ORDER OPTIONS ROW (Screenshot Row 3)
             ========================================================================= */}
-        <div className="flex flex-wrap items-center gap-4 py-2 text-xs text-[#333] font-medium">
+        <div className="flex flex-wrap items-center gap-4 py-2 text-xs text-foreground font-medium">
           <span className="font-bold text-slate-700">Recommended Qty to order based on:</span>
 
           <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -1124,7 +1124,7 @@ export default function ReorderGuideView() {
               type="checkbox"
               checked={minStockEnabled}
               onChange={(e) => setMinStockEnabled(e.target.checked)}
-              className="w-3.5 h-3.5 rounded text-[#337ab7] focus:ring-0"
+              className="w-3.5 h-3.5 rounded text-primary focus:ring-0"
             />
             <span className="font-semibold">Minimum Stock</span>
           </label>
@@ -1134,7 +1134,7 @@ export default function ReorderGuideView() {
               type="checkbox"
               checked={salesHistoryEnabled}
               onChange={(e) => setSalesHistoryEnabled(e.target.checked)}
-              className="w-3.5 h-3.5 rounded text-[#337ab7] focus:ring-0"
+              className="w-3.5 h-3.5 rounded text-primary focus:ring-0"
             />
             <span className="font-semibold">Based on Sales History</span>
           </label>
@@ -1150,7 +1150,7 @@ export default function ReorderGuideView() {
                     value={dur}
                     checked={salesHistoryDuration === dur}
                     onChange={(e) => setSalesHistoryDuration(e.target.value)}
-                    className="text-[#337ab7]"
+                    className="text-primary"
                   />
                   <span className="capitalize">{dur}</span>
                 </label>
@@ -1162,7 +1162,7 @@ export default function ReorderGuideView() {
           <button
             onClick={handleGeneratePlan}
             disabled={isGeneratingPlan}
-            className="h-[32px] px-3.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer ml-auto sm:ml-0"
+            className="h-[32px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer ml-auto sm:ml-0"
           >
             <RotateCw className={`w-3.5 h-3.5 ${isGeneratingPlan ? 'animate-spin' : ''}`} />
             <span>Generate Reorder Plan</span>
@@ -1173,7 +1173,7 @@ export default function ReorderGuideView() {
             5. TWO-LEVEL CAROUSEL TABS (Screenshot Rows 4 & 5)
             ========================================================================= */}
         {!hideCarousel && (
-          <div className="space-y-1.5 bg-white p-2 rounded-lg border border-[#e0e0e0] shadow-2xs">
+          <div className="space-y-1.5 bg-white p-2 rounded-lg border border-border shadow-2xs">
             {/* Level 1: Categories Carousel */}
             <div className="relative flex items-center">
               <button
@@ -1234,7 +1234,7 @@ export default function ReorderGuideView() {
                       onClick={() => setSelectedGroupName(grp)}
                       className={`px-3 py-1 text-[11px] font-semibold whitespace-nowrap rounded transition cursor-pointer border ${
                         isActive
-                          ? 'bg-[#195a96] text-white border-[#195a96] shadow-2xs'
+                          ? 'bg-primary text-white border-primary shadow-2xs'
                           : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
                       }`}
                     >
@@ -1258,23 +1258,23 @@ export default function ReorderGuideView() {
             ========================================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pt-1">
           {/* LEFT PANEL: RECOMMENDATION FOR BRANCH (6 cols) */}
-          <div className="lg:col-span-6 bg-white border border-[#d2d6de] rounded-sm shadow-2xs overflow-hidden flex flex-col">
+          <div className="lg:col-span-6 bg-white border border-border rounded-sm shadow-2xs overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="bg-[#d3dcef] px-3 py-2 flex items-center justify-between border-b border-[#cbd5e1]">
+            <div className="bg-muted px-3 py-2 flex items-center justify-between border-b border-border">
               <span className="text-xs font-bold text-slate-800">
                 Recommandation for branch: {SEED_BRANCHES.find(b => b.id === appliedBranchId)?.name || 'Zeit w zaytoun ljanoub'}
               </span>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsMaxStockModalOpen(true)}
-                  className="text-[11px] text-[#337ab7] hover:underline font-semibold cursor-pointer"
+                  className="text-[11px] text-primary hover:underline font-semibold cursor-pointer"
                 >
                   Update Max Stock
                 </button>
                 <button
                   onClick={handleAddAllSelectedToCart}
                   title="Add selected items to cart"
-                  className="w-6 h-6 bg-[#337ab7] hover:bg-[#286090] text-white rounded-full flex items-center justify-center transition shadow-2xs cursor-pointer"
+                  className="w-6 h-6 bg-primary hover:bg-primary/90 text-white rounded-full flex items-center justify-center transition shadow-2xs cursor-pointer"
                 >
                   <ArrowRightCircle className="w-4 h-4" />
                 </button>
@@ -1284,14 +1284,14 @@ export default function ReorderGuideView() {
             {/* Table Container */}
             <div className="overflow-x-auto max-h-[580px] overflow-y-auto">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-[#f4f5f7] border-b border-slate-200 text-slate-700 font-bold sticky top-0 z-10">
+                <thead className="bg-muted border-b border-slate-200 text-slate-700 font-bold sticky top-0 z-10">
                   <tr>
                     <th className="py-2 px-2.5 w-8">
                       <input
                         type="checkbox"
                         checked={allSelected}
                         onChange={(e) => handleToggleSelectAll(e.target.checked)}
-                        className="rounded text-[#337ab7]"
+                        className="rounded text-primary"
                         title="Select All"
                       />
                     </th>
@@ -1329,7 +1329,7 @@ export default function ReorderGuideView() {
                         {showCategoryGroupHeader && !hideGroupHeader && (
                           <tr className="bg-slate-100 font-bold text-slate-800 text-[11px]">
                             <td colSpan={7} className="py-1 px-2.5">
-                              <span className="text-[#195a96] mr-1">📁</span> {groupName} ({groupItems.length} items)
+                              <span className="text-primary mr-1">📁</span> {groupName} ({groupItems.length} items)
                             </td>
                           </tr>
                         )}
@@ -1346,7 +1346,7 @@ export default function ReorderGuideView() {
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleToggleSelectItem(prod.id)}
-                                  className="rounded text-[#337ab7]"
+                                  className="rounded text-primary"
                                 />
                               </td>
                               <td className="py-1.5 px-2 font-medium text-slate-900">
@@ -1400,14 +1400,14 @@ export default function ReorderGuideView() {
                                   <button
                                     onClick={() => handleOpenHistory(prod)}
                                     title="View Purchase History & Performance"
-                                    className="p-1 text-slate-400 hover:text-[#337ab7] transition"
+                                    className="p-1 text-slate-400 hover:text-primary transition"
                                   >
                                     <History className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleAddToCart(prod)}
                                     title="Add to Shopping Cart"
-                                    className="p-1 text-[#337ab7] hover:text-[#286090] transition"
+                                    className="p-1 text-primary hover:text-[#286090] transition"
                                   >
                                     <ArrowRightCircle className="w-4 h-4" />
                                   </button>
@@ -1425,9 +1425,9 @@ export default function ReorderGuideView() {
           </div>
 
           {/* RIGHT PANEL: SHOPPING CART (6 cols) */}
-          <div className="lg:col-span-6 bg-white border border-[#d2d6de] rounded-sm shadow-2xs overflow-hidden flex flex-col">
+          <div className="lg:col-span-6 bg-white border border-border rounded-sm shadow-2xs overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="bg-[#d3dcef] px-3 py-2 flex items-center justify-between border-b border-[#cbd5e1]">
+            <div className="bg-muted px-3 py-2 flex items-center justify-between border-b border-border">
               <span className="text-xs font-bold text-slate-800">Shopping Cart</span>
               {cartTotalBeforeTax > 0 && (
                 <span className="text-xs font-bold text-slate-900">
@@ -1456,10 +1456,10 @@ export default function ReorderGuideView() {
                     return (
                       <div
                         key={sId}
-                        className="border border-[#cbd5e1] rounded bg-white shadow-2xs overflow-hidden"
+                        className="border border-border rounded bg-white shadow-2xs overflow-hidden"
                       >
                         {/* Supplier Section Header */}
-                        <div className="bg-[#eef2f8] px-3 py-2 flex flex-wrap items-center justify-between gap-2 border-b border-[#cbd5e1]">
+                        <div className="bg-muted px-3 py-2 flex flex-wrap items-center justify-between gap-2 border-b border-border">
                           <span className="font-bold text-xs text-slate-900">
                             {supplierData.supplierName}
                           </span>
@@ -1469,7 +1469,7 @@ export default function ReorderGuideView() {
                             </span>
                             <button
                               onClick={() => handleOpenPO(sId)}
-                              className="px-2.5 py-1 bg-[#337ab7] hover:bg-[#286090] text-white text-[11px] font-bold rounded shadow-2xs transition"
+                              className="px-2.5 py-1 bg-primary hover:bg-primary/90 text-white text-[11px] font-bold rounded shadow-2xs transition"
                             >
                               Create PO
                             </button>
@@ -1491,7 +1491,7 @@ export default function ReorderGuideView() {
 
                         {/* Items in Supplier Section */}
                         <table className="w-full text-left text-xs border-collapse">
-                          <thead className="bg-[#f8fafc] text-slate-600 font-semibold border-b border-slate-100">
+                          <thead className="bg-background text-slate-600 font-semibold border-b border-slate-100">
                             <tr>
                               <th className="py-1.5 px-2">Product Description</th>
                               {showProductCode && <th className="py-1.5 px-2">Code</th>}
@@ -1565,7 +1565,7 @@ export default function ReorderGuideView() {
                 <div className="pt-3 border-t border-slate-200 flex justify-end">
                   <button
                     onClick={handleSaveCart}
-                    className="px-4 py-2 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm"
+                    className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm"
                   >
                     <Save className="w-4 h-4" />
                     <span>Save Cart</span>
@@ -1598,7 +1598,7 @@ export default function ReorderGuideView() {
                   type="checkbox"
                   checked={showProductCode}
                   onChange={(e) => setShowProductCode(e.target.checked)}
-                  className="rounded text-[#337ab7]"
+                  className="rounded text-primary"
                 />
                 <span className="font-semibold">Show Product Code</span>
               </label>
@@ -1608,7 +1608,7 @@ export default function ReorderGuideView() {
                   type="checkbox"
                   checked={hideGroupHeader}
                   onChange={(e) => setHideGroupHeader(e.target.checked)}
-                  className="rounded text-[#337ab7]"
+                  className="rounded text-primary"
                 />
                 <span className="font-semibold">Hide Group Header</span>
               </label>
@@ -1618,7 +1618,7 @@ export default function ReorderGuideView() {
                   type="checkbox"
                   checked={updateRecommendedQtyForFuture}
                   onChange={(e) => setUpdateRecommendedQtyForFuture(e.target.checked)}
-                  className="rounded text-[#337ab7]"
+                  className="rounded text-primary"
                 />
                 <span className="font-semibold">Update the product's recommended quantity for future orders</span>
               </label>
@@ -1632,7 +1632,7 @@ export default function ReorderGuideView() {
                   min="1"
                   value={defaultQuantity}
                   onChange={(e) => setDefaultQuantity(parseInt(e.target.value) || 1)}
-                  className="w-full h-8 px-2 text-xs border border-slate-300 rounded focus:border-[#337ab7]"
+                  className="w-full h-8 px-2 text-xs border border-slate-300 rounded focus:border-primary"
                 />
                 <p className="text-[11px] text-slate-400 italic mt-1">
                   (In Case No Min-Max Set and No Previous Sales, Purchase)
@@ -1648,7 +1648,7 @@ export default function ReorderGuideView() {
                 </button>
                 <button
                   onClick={handleSaveSettings}
-                  className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white rounded font-bold text-xs shadow-sm"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm"
                 >
                   Save
                 </button>
@@ -1683,7 +1683,7 @@ export default function ReorderGuideView() {
                     <select
                       value={previewBranchId}
                       onChange={(e) => setPreviewBranchId(Number(e.target.value))}
-                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-primary"
                     >
                       <option value={0}>All Branches</option>
                       {SEED_BRANCHES.map((b) => (
@@ -1704,7 +1704,7 @@ export default function ReorderGuideView() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleApplyPreviewFilter();
                       }}
-                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -1718,7 +1718,7 @@ export default function ReorderGuideView() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleApplyPreviewFilter();
                       }}
-                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                      className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -1727,7 +1727,7 @@ export default function ReorderGuideView() {
                     <button
                       type="button"
                       onClick={handleApplyPreviewFilter}
-                      className="h-8 px-3 bg-[#195a96] hover:bg-[#134472] text-white text-xs font-bold rounded flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer flex-1"
+                      className="h-8 px-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer flex-1"
                       title="Apply Filters"
                     >
                       <Filter className="w-3.5 h-3.5" />
@@ -1775,7 +1775,7 @@ export default function ReorderGuideView() {
 
               <div className="overflow-x-auto max-h-72 border border-slate-200 rounded">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#f4f5f7] text-slate-700 font-bold border-b border-slate-200">
+                  <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                     <tr>
                       <th className="py-2 px-2.5 w-16">ID</th>
                       <th className="py-2 px-2 w-28">Date</th>
@@ -1835,7 +1835,7 @@ export default function ReorderGuideView() {
                                       setIsPreviewOpen(false);
                                       showToast(`Cart #${row.reorderId} loaded into workstation`);
                                     }}
-                                    className="px-2 py-0.5 bg-[#337ab7] hover:bg-[#286090] text-white rounded text-[10px] font-semibold"
+                                    className="px-2 py-0.5 bg-primary hover:bg-primary/90 text-white rounded text-[10px] font-semibold"
                                     title="Load Cart"
                                   >
                                     Open
@@ -1921,7 +1921,7 @@ export default function ReorderGuideView() {
                     onClick={() => setHistoryActiveTab('dashboard')}
                     className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition ${
                       historyActiveTab === 'dashboard'
-                        ? 'bg-[#337ab7] text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
@@ -1932,7 +1932,7 @@ export default function ReorderGuideView() {
                     onClick={() => setHistoryActiveTab('grid')}
                     className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition ${
                       historyActiveTab === 'grid'
-                        ? 'bg-[#337ab7] text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
@@ -1957,8 +1957,8 @@ export default function ReorderGuideView() {
                   <span className="text-base font-black text-slate-800">{historyProduct.minStock}</span>
                 </div>
                 <div className="p-2.5 bg-blue-50 rounded border border-blue-200 text-center">
-                  <span className="block text-[10px] text-[#195a96] font-bold uppercase">Recommended</span>
-                  <span className="text-base font-black text-[#195a96]">{historyProduct.recommendedQty}</span>
+                  <span className="block text-[10px] text-primary font-bold uppercase">Recommended</span>
+                  <span className="text-base font-black text-primary">{historyProduct.recommendedQty}</span>
                 </div>
               </div>
 
@@ -1993,7 +1993,7 @@ export default function ReorderGuideView() {
                 /* Tab 2: Data Grid Table */
                 <div className="overflow-x-auto max-h-56 border border-slate-200 rounded">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#f4f5f7] text-slate-700 font-bold border-b border-slate-200">
+                    <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                       <tr>
                         <th className="py-2 px-2">Month</th>
                         <th className="py-2 px-2 text-center">Qty Purchased</th>
@@ -2085,7 +2085,7 @@ export default function ReorderGuideView() {
                 </button>
                 <button
                   onClick={handleConfirmCreatePO}
-                  className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>Create PO Now</span>
@@ -2117,7 +2117,7 @@ export default function ReorderGuideView() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="font-bold text-slate-700">To Email*</label>
-                  <div className="flex gap-2 text-[11px] text-[#337ab7]">
+                  <div className="flex gap-2 text-[11px] text-primary">
                     <button type="button" onClick={() => setShowCc(!showCc)} className="hover:underline">
                       Cc
                     </button>
@@ -2130,7 +2130,7 @@ export default function ReorderGuideView() {
                   type="email"
                   value={emailTo}
                   onChange={(e) => setEmailTo(e.target.value)}
-                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-[#337ab7]"
+                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                 />
               </div>
 
@@ -2142,7 +2142,7 @@ export default function ReorderGuideView() {
                     value={emailCc}
                     onChange={(e) => setEmailCc(e.target.value)}
                     placeholder="finance@vanguard.com"
-                    className="w-full h-8 px-2 border border-slate-300 rounded focus:border-[#337ab7]"
+                    className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                   />
                 </div>
               )}
@@ -2155,7 +2155,7 @@ export default function ReorderGuideView() {
                     value={emailBcc}
                     onChange={(e) => setEmailBcc(e.target.value)}
                     placeholder="audit@vanguard.com"
-                    className="w-full h-8 px-2 border border-slate-300 rounded focus:border-[#337ab7]"
+                    className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                   />
                 </div>
               )}
@@ -2166,7 +2166,7 @@ export default function ReorderGuideView() {
                   type="text"
                   value={emailFrom}
                   onChange={(e) => setEmailFrom(e.target.value)}
-                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-[#337ab7]"
+                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                 />
               </div>
 
@@ -2176,7 +2176,7 @@ export default function ReorderGuideView() {
                   type="text"
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
-                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-[#337ab7]"
+                  className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                 />
               </div>
 
@@ -2186,7 +2186,7 @@ export default function ReorderGuideView() {
                   rows={5}
                   value={emailMessage}
                   onChange={(e) => setEmailMessage(e.target.value)}
-                  className="w-full p-2 border border-slate-300 rounded focus:border-[#337ab7] text-xs font-sans"
+                  className="w-full p-2 border border-slate-300 rounded focus:border-primary text-xs font-sans"
                 />
               </div>
 
@@ -2199,7 +2199,7 @@ export default function ReorderGuideView() {
                 </button>
                 <button
                   onClick={handleSendQuotationEmail}
-                  className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send Quotation Email</span>
@@ -2231,7 +2231,7 @@ export default function ReorderGuideView() {
               </p>
               <div className="overflow-x-auto max-h-64 border border-slate-200 rounded">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#f4f5f7] text-slate-700 font-bold border-b border-slate-200">
+                  <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                     <tr>
                       <th className="py-2 px-2">Description</th>
                       <th className="py-2 px-2 text-right w-20">Min</th>
@@ -2268,7 +2268,7 @@ export default function ReorderGuideView() {
                     setIsMaxStockModalOpen(false);
                     showToast('Max Stock limits updated successfully');
                   }}
-                  className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white rounded font-bold text-xs shadow-sm"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm"
                 >
                   Save Changes
                 </button>

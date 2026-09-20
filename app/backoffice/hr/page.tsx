@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/UnifiedModuleReportsHub';
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
 import { EmployeeAttendanceTemplate } from '@/components/reports/sales/EmployeeAttendanceTemplate';
+import { getDefaultInitialDateRange, formatDisplayDate } from '@/lib/dateRangeEngine';
 import { 
   Users, 
   Clock, 
@@ -60,10 +61,11 @@ function HRPageContent() {
       : 'Monthly Payroll & Biometric Attendance Reconciliation'
   );
   
-  const [period, setPeriod] = useState<string>('This Month');
+  const initialDateRange = getDefaultInitialDateRange('This Month');
+  const [period, setPeriod] = useState<string>(initialDateRange.preset);
   const [branch, setBranch] = useState<string>('Main Branch');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-27');
+  const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState(initialDateRange.toDate);
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
   const [terminalFilter, setTerminalFilter] = useState<string>('ALL');
   const [showBankExportSuccess, setShowBankExportSuccess] = useState(false);
@@ -96,7 +98,7 @@ function HRPageContent() {
   };
 
   return (
-    <div className="p-4 md:p-6 space-y-4 font-sans bg-[#f8fafc] min-h-screen text-slate-800">
+    <div className="p-4 md:p-6 space-y-4 font-sans bg-background min-h-screen text-slate-800">
       {/* Page Header with Tab Nav */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3 print:hidden">
         <div>
@@ -118,7 +120,7 @@ function HRPageContent() {
             onClick={() => setActiveTab('workspace')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'workspace' 
-                ? 'bg-[#1a629b] text-white shadow-xs' 
+                ? 'bg-primary text-primary-foreground shadow-xs' 
                 : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -134,7 +136,7 @@ function HRPageContent() {
             }}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'reports' 
-                ? 'bg-[#1a629b] text-white shadow-xs' 
+                ? 'bg-primary text-primary-foreground shadow-xs' 
                 : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
           >
@@ -225,7 +227,7 @@ function HRPageContent() {
                     setActiveTab('reports');
                     setSelectedReport('Monthly Payroll & Biometric Attendance Reconciliation');
                   }}
-                  className="text-xs text-[#1a629b] hover:underline font-bold"
+                  className="text-xs text-primary hover:underline font-bold"
                 >
                   Full Print Sheet (REP_HR_001) &rarr;
                 </button>
@@ -283,6 +285,10 @@ function HRPageContent() {
             setPeriod={setPeriod}
             branch={branch}
             setBranch={setBranch}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
             branchOptions={['Main Branch', 'Choueifat Main Facility', 'Nabatieh Pressing Unit', 'Beirut Administration']}
             filterControls={
               <>
@@ -317,7 +323,7 @@ function HRPageContent() {
               <EmployeeAttendanceTemplate
                 hideToolbar={true}
                 reportTitle={selectedReport || "Monthly Payroll & Biometric Attendance Reconciliation"}
-                executionDate="06-Sep-2026"
+                executionDate={formatDisplayDate(new Date())}
                 fromDate={fromDate}
                 toDate={toDate}
                 dynamicPeriodText={`Period: ${fromDate} to ${toDate}`}
@@ -329,7 +335,7 @@ function HRPageContent() {
               <EmployeeAttendanceTemplate
                 hideToolbar={true}
                 reportTitle="Department Direct Labor Cost Breakdown"
-                executionDate="06-Sep-2026"
+                executionDate={formatDisplayDate(new Date())}
                 fromDate={fromDate}
                 toDate={toDate}
                 dynamicPeriodText={`Period: ${fromDate} to ${toDate}`}
@@ -341,8 +347,8 @@ function HRPageContent() {
               <UnifiedPrintableReportSheet
                 reportTitle={selectedReport}
                 reportCode="REP_HR_003"
-                executionDate="06-Sep-2026"
-                periodText="Payroll Transfer Cycle: August 2026 (Direct BLOM Clearing)"
+                executionDate={formatDisplayDate(new Date())}
+                periodText={`Payroll Transfer Cycle: ${fromDate} to ${toDate} (Direct BLOM Clearing)`}
                 pageInfo="Page 1 of 1"
                 branchInfo="Branch: Central Payroll & Executive Treasury"
                 hideToolbar={true}

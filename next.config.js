@@ -4,6 +4,23 @@ const nextConfig = {
   async rewrites() {
     return [
       // ==========================================
+      // 0. WORKSPACE & ERP MULTI-TENANT CORE ALIASES
+      // ==========================================
+      { source: '/index.html', destination: '/backoffice/dashboard' },
+      { source: '/erp', destination: '/backoffice/dashboard' },
+      { source: '/dashboard', destination: '/backoffice/dashboard' },
+      { source: '/workspace', destination: '/backoffice/dashboard' },
+      { source: '/workspace/:workspaceId', destination: '/backoffice/dashboard?tenantId=:workspaceId' },
+      { source: '/workspace/:workspaceId/dashboard', destination: '/backoffice/dashboard?tenantId=:workspaceId' },
+      { source: '/workspace/:workspaceId/customers', destination: '/backoffice/customers?tenantId=:workspaceId' },
+      { source: '/workspace/:workspaceId/feedback', destination: '/backoffice/feedback?tenantId=:workspaceId' },
+      { source: '/workspace/:workspaceId/loyalty', destination: '/backoffice/loyalty?tenantId=:workspaceId' },
+      { source: '/:tenantId/dashboard', destination: '/backoffice/dashboard?tenantId=:tenantId' },
+      { source: '/:tenantId/customers', destination: '/backoffice/customers?tenantId=:tenantId' },
+      { source: '/:tenantId/feedback', destination: '/backoffice/feedback?tenantId=:tenantId' },
+      { source: '/:tenantId/loyalty', destination: '/backoffice/loyalty?tenantId=:tenantId' },
+
+      // ==========================================
       // 1. SALES CONTROL
       // ==========================================
       { source: '/sales-control/dashboard', destination: '/backoffice/dashboard' },

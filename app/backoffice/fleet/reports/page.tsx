@@ -31,6 +31,10 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { getReportStatusTextClass, getPaymentMethodTextClass } from '@/components/reports/reportContrastTokens';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 // ============================================================================
 // EXTENDED MOCK DATA FOR COMPREHENSIVE FLEET REPORTS
@@ -257,10 +261,11 @@ export default function SupersonicFleetReportsPage() {
   const [selectedReportKey, setSelectedReportKey] = useState<string>('ALL_DELIVERIES');
 
   // 2. Filters State
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [period, setPeriod] = useState<string>('This Month');
-  const [fromDate, setFromDate] = useState<string>('2026-09-01');
-  const [toDate, setToDate] = useState<string>('2026-09-30');
+  const [period, setPeriod] = useState<string>(initialDateRange.preset);
+  const [fromDate, setFromDate] = useState<string>(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState<string>(initialDateRange.toDate);
   const [selectedDriver, setSelectedDriver] = useState<string>('ALL');
   const [selectedCorridor, setSelectedCorridor] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
@@ -498,7 +503,7 @@ export default function SupersonicFleetReportsPage() {
           badgeText="SuperSonic 3PL & In-House Fleet"
           badgeVariant="success"
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '2. Supersonic Fleet', href: '/backoffice/fleet' },
             { label: 'Reports', href: '/backoffice/fleet/reports' },
             { label: activeReportObj.label.split(':')[1]?.trim() || activeReportObj.label },
@@ -542,13 +547,14 @@ export default function SupersonicFleetReportsPage() {
           }}
           onApplyFilters={(vals) => alert(`Filters applied for: ${activeReportObj.label}`)}
           onResetFilters={() => {
+            const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');
             setSelectedDriver('ALL');
             setSelectedCorridor('ALL');
             setSelectedStatus('ALL');
-            setPeriod('This Month');
-            setFromDate('2026-09-01');
-            setToDate('2026-09-30');
+            setPeriod(defRange.preset);
+            setFromDate(defRange.fromDate);
+            setToDate(defRange.toDate);
             setFleetFilterValues({});
           }}
         />

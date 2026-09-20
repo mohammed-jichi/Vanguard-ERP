@@ -3,7 +3,8 @@
 import React, { useMemo } from 'react';
 import MasterReportDocument from '@/components/reports/MasterReportDocument';
 import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
-import { applyGlobalReportFilters } from '@/lib/reportFilterEngine';
+import { applyGlobalReportFilters, resolveActiveCurrencyFromFilters, getDynamicCurrencyColumnHeader } from '@/lib/reportFilterEngine';
+import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
 
 export interface VoidRecord {
   id: string;
@@ -179,14 +180,21 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
     return `${fromDate} to ${toDate}`;
   }, [dynamicPeriodText, fromDate, toDate]);
 
+  const activeCurrency = useMemo(() => {
+    return resolveActiveCurrencyFromFilters(filterValues, 'LBP');
+  }, [filterValues]);
+
   // Dynamic filter summary
   const filterSummary = useMemo(() => {
     const parts: string[] = [];
+    if (filterValues.branch && filterValues.branch !== 'ALL') parts.push(`Branch: ${filterValues.branch}`);
+    if (filterValues.workstation && filterValues.workstation !== 'ALL') parts.push(`WS: ${filterValues.workstation}`);
     if (filterValues.serverCashier && filterValues.serverCashier !== 'ALL') parts.push(`Cashier: ${filterValues.serverCashier}`);
     if (filterValues.voidReason && filterValues.voidReason !== 'ALL') parts.push(`Reason: ${filterValues.voidReason}`);
     if (filterValues.supervisor && filterValues.supervisor !== 'ALL') parts.push(`Supervisor: ${filterValues.supervisor}`);
     if (filterValues.paymentType && filterValues.paymentType !== 'ALL') parts.push(`Tender: ${filterValues.paymentType}`);
     if (filterValues.channel && filterValues.channel !== 'ALL') parts.push(`Channel: ${filterValues.channel}`);
+    if (filterValues.currency && filterValues.currency !== 'ALL') parts.push(`Cur: ${filterValues.currency}`);
     return parts.length > 0 ? parts.join(' | ') : undefined;
   }, [filterValues]);
 
@@ -303,26 +311,38 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
     },
     {
       key: 'valueLbp',
-      label: 'Value (LBP)',
+      label: getDynamicCurrencyColumnHeader('Value (LBP)', activeCurrency),
       align: 'right',
       width: '12%',
       isMonospace: true,
-      render: (row) => (
-        <span className="font-mono text-xs font-bold text-red-700">
-          {row.valueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </span>
-      ),
+      render: (row) => {
+        const converted = convertCurrency(row.valueLbp, 'LBP', activeCurrency);
+        return (
+          <span className="font-mono text-xs font-bold text-red-700">
+            {formatCurrencyAmount(converted, activeCurrency, false)}
+          </span>
+        );
+      },
     },
-  ], []);
+  ], [activeCurrency]);
 
   const grandTotal: GrandTotal = useMemo(() => {
+    const convertedTotal = convertCurrency(totalVal, 'LBP', activeCurrency);
     const usdEquiv = (totalVal / 89500).toFixed(2);
+    const primaryStr = formatCurrencyAmount(convertedTotal, activeCurrency, true);
+    const secondaryLbpStr = `${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP`;
+
     return {
       label: `Total Voids (${filteredRows.length} Transactions - ${totalQty.toFixed(2)} Units Voided):`,
-      value: `${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP ($${usdEquiv})`,
+      value: primaryStr,
       isNegative: true,
+      targetCurrency: activeCurrency,
+      breakdownText: activeCurrency === 'USD'
+        ? `USD: ${primaryStr}  |  LBP: ${secondaryLbpStr}`
+        : `LBP: ${primaryStr}  |  USD: $${usdEquiv}`,
+      convertedSubtext: `Normalized to ${activeCurrency} @ 89,500 LBP/USD`,
     };
-  }, [filteredRows.length, totalQty, totalVal]);
+  }, [filteredRows.length, totalQty, totalVal, activeCurrency]);
 
   return (
     <div className="w-full space-y-4 font-sans">

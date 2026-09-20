@@ -101,7 +101,7 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
   // Classification & Routing
   const [itemGroup, setItemGroup] = useState<string>('منتوجات الزيت والكبس');
   const [itemCategory, setItemCategory] = useState<string>('زيتون وزيت ممتاز');
-  const [brandId, setBrandId] = useState<string>('زيت و زيتون الجنوب');
+  const [brandId, setBrandId] = useState<string>('Southern Olive Oil');
   const [source, setSource] = useState<string>('Local');
   const [supplierId, setSupplierId] = useState<string>('SUP-102');
   const [warehouseLocation, setWarehouseLocation] = useState<string>('Main Warehouse - Tank Room A');

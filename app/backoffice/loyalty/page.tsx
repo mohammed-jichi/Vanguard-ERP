@@ -31,6 +31,7 @@ import ReportPageLayout, {
   DynamicReportFilterRenderer,
 } from '@/components/reports/ReportPageLayout';
 import { getLoyaltyTierTextClass, getReportStatusTextClass } from '@/components/reports/reportContrastTokens';
+import UnifiedLoyaltyManagementConsole from '@/components/modules/loyalty/UnifiedLoyaltyManagementConsole';
 
 // ============================================================================
 // 1. OMEGA LOYALTY REPORT NAVIGATION TREE
@@ -224,7 +225,7 @@ function LoyaltyManagementContent() {
           title={activeMeta.name}
           subtitle="Customer loyalty points, membership rewards, cashback ledgers, and transaction auditing"
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '3. Loyalty Management', href: '/loyalty/reports' },
             { label: activeMeta.category },
             { label: activeMeta.name }
@@ -420,10 +421,19 @@ function LoyaltyManagementContent() {
   );
 }
 
+function LoyaltyManagementPageRouter() {
+  const searchParams = useSearchParams();
+  const section = searchParams.get('section');
+  if (section === 'reports') {
+    return <LoyaltyManagementContent />;
+  }
+  return <UnifiedLoyaltyManagementConsole />;
+}
+
 export default function LoyaltyManagementPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading Loyalty Reports Hub...</div>}>
-      <LoyaltyManagementContent />
+    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading Loyalty Management...</div>}>
+      <LoyaltyManagementPageRouter />
     </Suspense>
   );
 }

@@ -601,14 +601,14 @@ export default function AuthenticOmegaInventoryDivisionsView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-[600px] p-2 sm:p-4">
+    <div className="w-full bg-background text-slate-800 font-sans min-h-[600px] p-2 sm:p-4">
       {/* Toast alert */}
       {toastMessage && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-xl text-white border text-sm font-semibold transition-all ${
             toastMessage.type === 'success'
-              ? 'bg-[#1e7e34] border-[#1c7430]'
-              : 'bg-[#bd2130] border-[#b21f2d]'
+              ? 'bg-emerald-700 border-emerald-800'
+              : 'bg-destructive border-destructive'
           }`}
         >
           <CheckCircle2 className="w-5 h-5" />
@@ -624,11 +624,11 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-200 gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
             Inventory Divisions
           </h1>
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-            <a href="#home" className="text-[#0d6efd] hover:underline">
+            <a href="#home" className="text-primary hover:underline">
               Home
             </a>
             <span>/</span>
@@ -639,7 +639,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
         <div>
           <button
             onClick={() => setIsTutorialOpen(true)}
-            className="text-xs text-[#0d6efd] hover:underline font-semibold flex items-center gap-1.5"
+            className="text-xs text-primary hover:underline font-semibold flex items-center gap-1.5"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Watch Tutorial
@@ -662,7 +662,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:border-[#2b3940] focus:ring-1 focus:ring-[#2b3940] transition"
+                className="w-full pl-9 pr-3 py-1.5 text-xs text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
               />
             </div>
 
@@ -671,7 +671,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs text-slate-700 bg-white border border-slate-300 rounded focus:outline-none focus:border-[#2b3940] cursor-pointer"
+                className="w-full px-3 py-1.5 text-xs text-slate-700 bg-white border border-slate-300 rounded focus:outline-none focus:border-primary cursor-pointer"
               >
                 <option value="All Categories">All Categories</option>
                 {categories.map((cat) => (
@@ -688,7 +688,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
             {/* + New Button */}
             <button
               onClick={handleOpenNew}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>New</span>
@@ -698,7 +698,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
             <div className="relative" ref={actionsRef}>
               <button
                 onClick={() => setActionsOpen(!actionsOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
               >
                 <span>Actions</span>
                 <ChevronDown className="w-3.5 h-3.5" />
@@ -727,7 +727,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 text-slate-700 font-bold bg-[#fafbfc]">
+              <tr className="border-b border-slate-200 text-slate-700 font-bold bg-card">
                 <th
                   onClick={() => toggleSort('DIVISIONNAME')}
                   className="px-4 py-3 cursor-pointer select-none hover:bg-slate-100 transition"
@@ -821,7 +821,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                         <button
                           onClick={() => handleOpenEdit(item)}
                           title="Edit"
-                          className="w-7 h-7 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white shadow-2xs transition"
+                          className="w-7 h-7 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white shadow-2xs transition"
                         >
                           <Edit className="w-3.5 h-3.5" />
                         </button>
@@ -829,7 +829,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                         <button
                           onClick={() => handleDeleteDivision(item)}
                           title="Delete"
-                          className="w-7 h-7 flex items-center justify-center rounded bg-[#782b2b] hover:bg-[#5e2020] text-white shadow-2xs transition"
+                          className="w-7 h-7 flex items-center justify-center rounded bg-destructive hover:bg-destructive/90 text-white shadow-2xs transition"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -843,7 +843,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="px-4 py-3 bg-[#fafbfc] border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-4 py-3 bg-card border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
           <div>
             Showing <span className="font-semibold text-slate-700">{filteredDivisions.length}</span> of{' '}
             <span className="font-semibold text-slate-700">{divisions.length}</span> divisions
@@ -855,7 +855,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
             >
               «
             </button>
-            <span className="px-3 py-1 bg-[#2b3940] text-white rounded font-bold">1</span>
+            <span className="px-3 py-1 bg-primary text-white rounded font-bold">1</span>
             <button
               disabled
               className="px-2 py-1 border border-slate-200 rounded text-slate-400 bg-white cursor-not-allowed"
@@ -874,7 +874,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           <div className="bg-white border border-slate-300 w-full max-w-2xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">New Inventory Division</h2>
+              <h2 className="text-base font-semibold text-foreground">New Inventory Division</h2>
               <button
                 onClick={() => setIsNewModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -896,7 +896,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     autoFocus
                     value={newDivisionForm.name}
                     onChange={(e) => setNewDivisionForm({ ...newDivisionForm, name: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -917,7 +917,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                           categoryId: found ? found.CATEGORYID : 6
                         });
                       }}
-                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                     >
                       {categories.map((cat) => (
                         <option key={cat.CATEGORYID} value={cat.CATEGORYNAME}>
@@ -930,7 +930,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                       type="button"
                       onClick={handleOpenQuickAddCategory}
                       title="Add New Category"
-                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -938,7 +938,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                       type="button"
                       onClick={() => handleOpenEditCategory(newDivisionForm.categoryId)}
                       title="Edit Category"
-                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
@@ -953,7 +953,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="number"
                     value={newDivisionForm.sorting}
                     onChange={(e) => setNewDivisionForm({ ...newDivisionForm, sorting: Number(e.target.value) || 1 })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -965,18 +965,18 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="text"
                     value={newDivisionForm.secondLang}
                     onChange={(e) => setNewDivisionForm({ ...newDivisionForm, secondLang: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {newDivisionForm.image ? (
                       <img
                         src={newDivisionForm.image}
@@ -992,19 +992,19 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('new')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setNewDivisionForm({ ...newDivisionForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1014,7 +1014,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1033,7 +1033,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           <div className="bg-white border border-slate-300 w-full max-w-2xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Edit Inventory Division</h2>
+              <h2 className="text-base font-semibold text-foreground">Edit Inventory Division</h2>
               <button
                 onClick={() => setIsEditModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1067,7 +1067,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     autoFocus
                     value={editDivisionForm.name}
                     onChange={(e) => setEditDivisionForm({ ...editDivisionForm, name: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1088,7 +1088,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                           categoryId: found ? found.CATEGORYID : 6
                         });
                       }}
-                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                     >
                       {categories.map((cat) => (
                         <option key={cat.CATEGORYID} value={cat.CATEGORYNAME}>
@@ -1101,7 +1101,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                       type="button"
                       onClick={handleOpenQuickAddCategory}
                       title="Add New Category"
-                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -1109,7 +1109,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                       type="button"
                       onClick={() => handleOpenEditCategory(editDivisionForm.categoryId)}
                       title="Edit Category"
-                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
@@ -1125,7 +1125,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="number"
                     value={editDivisionForm.sorting}
                     onChange={(e) => setEditDivisionForm({ ...editDivisionForm, sorting: Number(e.target.value) || 1 })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1138,18 +1138,18 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="text"
                     value={editDivisionForm.secondLang}
                     onChange={(e) => setEditDivisionForm({ ...editDivisionForm, secondLang: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {editDivisionForm.image ? (
                       <img
                         src={editDivisionForm.image}
@@ -1165,19 +1165,19 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('edit')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditDivisionForm({ ...editDivisionForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1187,7 +1187,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1206,7 +1206,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">New Inventory Category</h2>
+              <h2 className="text-base font-semibold text-foreground">New Inventory Category</h2>
               <button
                 onClick={() => setIsNewCategoryModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1228,7 +1228,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     autoFocus
                     value={quickCategoryForm.name}
                     onChange={(e) => setQuickCategoryForm({ ...quickCategoryForm, name: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1240,7 +1240,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="text"
                     value={quickCategoryForm.secondLang}
                     onChange={(e) => setQuickCategoryForm({ ...quickCategoryForm, secondLang: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1252,18 +1252,18 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="number"
                     value={quickCategoryForm.sorting}
                     onChange={(e) => setQuickCategoryForm({ ...quickCategoryForm, sorting: Number(e.target.value) || 1 })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {quickCategoryForm.image ? (
                       <img
                         src={quickCategoryForm.image}
@@ -1279,19 +1279,19 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('category')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setQuickCategoryForm({ ...quickCategoryForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1301,7 +1301,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1320,7 +1320,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Edit Inventory Category</h2>
+              <h2 className="text-base font-semibold text-foreground">Edit Inventory Category</h2>
               <button
                 onClick={() => setIsEditCategoryModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1352,7 +1352,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     autoFocus
                     value={editCategoryForm.name}
                     onChange={(e) => setEditCategoryForm({ ...editCategoryForm, name: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1364,7 +1364,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="text"
                     value={editCategoryForm.secondLang}
                     onChange={(e) => setEditCategoryForm({ ...editCategoryForm, secondLang: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1376,18 +1376,18 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     type="number"
                     value={editCategoryForm.sorting}
                     onChange={(e) => setEditCategoryForm({ ...editCategoryForm, sorting: Number(e.target.value) || 1 })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {editCategoryForm.image ? (
                       <img
                         src={editCategoryForm.image}
@@ -1403,19 +1403,19 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('category_edit')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditCategoryForm({ ...editCategoryForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1425,7 +1425,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1444,7 +1444,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
           <div className="bg-white border border-slate-300 w-full max-w-md rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Sorting</h2>
+              <h2 className="text-base font-semibold text-foreground">Sorting</h2>
               <button
                 onClick={() => setIsSortingModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1485,7 +1485,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                           <button
                             type="button"
                             onClick={() => adjustSortingItem(item.id, -1)}
-                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-[#2b3940]"
+                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -1493,7 +1493,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                           <button
                             type="button"
                             onClick={() => adjustSortingItem(item.id, 1)}
-                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-[#2b3940]"
+                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -1509,7 +1509,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                 <button
                   type="button"
                   onClick={handleSaveSorting}
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1526,7 +1526,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
       {isTutorialOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-2xs animate-in fade-in duration-150">
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-3.5 bg-[#2b3940] text-white">
+            <div className="flex items-center justify-between px-5 py-3.5 bg-primary text-white">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 <h2 className="text-sm font-semibold">Inventory Divisions Tutorial</h2>
@@ -1552,7 +1552,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
                 <h3 className="font-bold text-slate-900 text-sm">Key Capabilities:</h3>
                 <ul className="list-disc pl-5 space-y-1.5 text-slate-600 leading-relaxed">
                   <li>
-                    <strong>Search &amp; Category Filtering:</strong> Use the top search bar to filter by division name, and the category dropdown to filter across categories (مفرق, جملة, عروض, مواد اولية, Raw Materials).
+                    <strong>Search &amp; Category Filtering:</strong> Use the top search bar to filter by division name, and the category dropdown to filter across categories (Retail, Wholesale, Promotions, Raw Materials).
                   </li>
                   <li>
                     <strong>+ New Division:</strong> Creates an inventory division linked to a category with sorting order, secondary language, and an image icon.
@@ -1572,7 +1572,7 @@ export default function AuthenticOmegaInventoryDivisionsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   onClick={() => setIsTutorialOpen(false)}
-                  className="px-4 py-1.5 bg-[#2b3940] text-white rounded text-xs font-semibold hover:bg-[#1f2937]"
+                  className="px-4 py-1.5 bg-primary text-white rounded text-xs font-semibold hover:bg-primary/90"
                 >
                   Got It
                 </button>

@@ -8,6 +8,10 @@ import {
   masterCatalog,
   getAllFlattenedReports,
 } from './report-data';
+import {
+  isQuarterAvailable,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 interface ReportRibbonProps {
   activeReport: { code: string; title: string; category: string };
@@ -242,7 +246,7 @@ export default function ReportRibbon({
             <select
               value={transactionSubType}
               onChange={(e) => setTransactionSubType(e.target.value)}
-              className="px-3 py-1.5 bg-[#f8faf8] border border-[#1e3a2b]/40 rounded-lg font-bold text-xs text-[#1e3a2b] focus:outline-none min-w-[280px] shadow-2xs"
+              className="px-3 py-1.5 bg-card border border-border/40 rounded-lg font-bold text-xs text-primary focus:outline-none min-w-[280px] shadow-2xs"
             >
               {transactionReportSubTypes.map((sub) => (
                 <option key={sub} value={sub}>{sub}</option>
@@ -261,11 +265,20 @@ export default function ReportRibbon({
             <>
               <select
                 value={periodPreset}
-                onChange={(e) => setPeriodPreset(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPeriodPreset(val);
+                  if (val !== 'DATE_RANGE' && val !== 'EOD_DATE') {
+                    const resolved = resolveDateRangeFromPreset(val, fromDate, toDate);
+                    setFromDate(resolved.fromDate);
+                    setToDate(resolved.toDate);
+                  }
+                }}
                 className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-800 focus:outline-none"
               >
                 <option value="LAST_MONTH">Last Month</option>
                 <option value="THIS_MONTH">This Month</option>
+                <option value="THIS_WEEK">This Week</option>
                 <option value="TODAY">Today</option>
                 <option value="YESTERDAY">Yesterday</option>
                 {is12PeriodReport && (
@@ -273,7 +286,9 @@ export default function ReportRibbon({
                     <option value="Q1">First Quarter (Q1)</option>
                     <option value="Q2">Second Quarter (Q2)</option>
                     <option value="Q3">Third Quarter (Q3)</option>
-                    <option value="Q4">Fourth Quarter (Q4)</option>
+                    <option value="Q4" disabled={!isQuarterAvailable(4)}>
+                      {isQuarterAvailable(4) ? 'Fourth Quarter (Q4)' : 'Fourth Quarter (Q4 - Unentered)'}
+                    </option>
                     <option value="THIS_YEAR">This Year</option>
                     <option value="LAST_YEAR">Last Year</option>
                   </>
@@ -324,13 +339,13 @@ export default function ReportRibbon({
             {branchDropdownOpen && (
               <div className="absolute left-0 mt-1 w-64 bg-white border border-slate-300 rounded-xl shadow-xl py-1.5 text-xs text-slate-800 z-50">
                 <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 cursor-pointer font-bold border-b border-slate-100">
-                  <input type="checkbox" checked={selectedBranches.includes('ALL')} onChange={() => toggleBranchSelection('ALL')} className="accent-[#1e3a2b]" />
+                  <input type="checkbox" checked={selectedBranches.includes('ALL')} onChange={() => toggleBranchSelection('ALL')} className="accent-primary" />
                   <span>All Operating Branches ({branchesList.length})</span>
                 </label>
                 <div className="max-h-48 overflow-y-auto custom-scrollbar py-1">
                   {branchesList.map((b) => (
                     <label key={b.id} className="flex items-center gap-2 px-3 py-1 hover:bg-slate-50 cursor-pointer text-slate-700">
-                      <input type="checkbox" checked={selectedBranches.includes(b.code)} onChange={() => toggleBranchSelection(b.code)} className="accent-[#1e3a2b]" />
+                      <input type="checkbox" checked={selectedBranches.includes(b.code)} onChange={() => toggleBranchSelection(b.code)} className="accent-primary" />
                       <span>{b.name}</span>
                     </label>
                   ))}
@@ -382,10 +397,10 @@ export default function ReportRibbon({
                         key={opt.code}
                         type="button"
                         onClick={() => { setInvoiceTypeFilter(opt.code); setInvoiceTypeDropdownOpen(false); }}
-                        className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between ${invoiceTypeFilter === opt.code ? 'bg-[#edf2ee] text-[#1e3a2b] font-bold' : ''}`}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between ${invoiceTypeFilter === opt.code ? 'bg-muted text-primary font-bold' : ''}`}
                       >
                         <span>{opt.label}</span>
-                        {invoiceTypeFilter === opt.code && <span className="text-[#1e3a2b]">✓</span>}
+                        {invoiceTypeFilter === opt.code && <span className="text-primary">✓</span>}
                       </button>
                     ))}
                 </div>
@@ -408,12 +423,12 @@ export default function ReportRibbon({
               {deptDropdownOpen && (
                 <div className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 rounded-xl shadow-xl py-1 text-xs text-slate-800 z-50">
                   <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-100 cursor-pointer font-bold border-b border-slate-100">
-                    <input type="checkbox" checked={selectedDepartments.includes('ALL')} onChange={() => toggleDepartmentSelection('ALL')} className="accent-[#1e3a2b]" />
+                    <input type="checkbox" checked={selectedDepartments.includes('ALL')} onChange={() => toggleDepartmentSelection('ALL')} className="accent-primary" />
                     <span>Show All</span>
                   </label>
                   {departmentsList.map((d) => (
                     <label key={d.code} className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer text-slate-700">
-                      <input type="checkbox" checked={selectedDepartments.includes(d.code)} onChange={() => toggleDepartmentSelection(d.code)} className="accent-[#1e3a2b]" />
+                      <input type="checkbox" checked={selectedDepartments.includes(d.code)} onChange={() => toggleDepartmentSelection(d.code)} className="accent-primary" />
                       <span>{d.label}</span>
                     </label>
                   ))}
@@ -457,10 +472,10 @@ export default function ReportRibbon({
                       key={crit}
                       type="button"
                       onClick={() => { setSelectedInvoiceCriteria([crit]); setInvoicesCriteriaDropdownOpen(false); }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between ${selectedInvoiceCriteria.includes(crit) ? 'bg-[#edf2ee] text-[#1e3a2b] font-bold' : ''}`}
+                      className={`w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between ${selectedInvoiceCriteria.includes(crit) ? 'bg-muted text-primary font-bold' : ''}`}
                     >
                       <span>{crit}</span>
-                      {selectedInvoiceCriteria.includes(crit) && <span className="text-[#1e3a2b]">✓</span>}
+                      {selectedInvoiceCriteria.includes(crit) && <span className="text-primary">✓</span>}
                     </button>
                   ))}
                 </div>
@@ -506,7 +521,7 @@ export default function ReportRibbon({
                 ))}
               </select>
               <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-                <input type="checkbox" checked={groupedByServer} onChange={(e) => setGroupedByServer(e.target.checked)} className="accent-[#1e3a2b]" />
+                <input type="checkbox" checked={groupedByServer} onChange={(e) => setGroupedByServer(e.target.checked)} className="accent-primary" />
                 <span>Grouped By Server</span>
               </label>
             </div>
@@ -515,56 +530,56 @@ export default function ReportRibbon({
           {/* Checkboxes */}
           {activeReport.code === 'REP_IC_003' && ['Transactions by employees by payment', 'Transactions by Workstation', 'Transactions by employees'].includes(transactionSubType) && (
             <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={realDateFilter} onChange={(e) => setRealDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+              <input type="checkbox" checked={realDateFilter} onChange={(e) => setRealDateFilter(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
               <span>Real Date</span>
             </label>
           )}
 
           {activeReport.code === 'REP_IC_003' && ['Duplicate Invoices', 'Transactions by date'].includes(transactionSubType) && (
             <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showRateFilter} onChange={(e) => setShowRateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+              <input type="checkbox" checked={showRateFilter} onChange={(e) => setShowRateFilter(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
               <span>Show Rate</span>
             </label>
           )}
 
           {activeReport.code === 'REP_IC_003' && ['Transactions by date', 'Transactions By Source'].includes(transactionSubType) && (
             <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={groupByDateFilter} onChange={(e) => setGroupByDateFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+              <input type="checkbox" checked={groupByDateFilter} onChange={(e) => setGroupByDateFilter(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
               <span>Group By Date</span>
             </label>
           )}
 
           {activeReport.code === 'REP_IC_003' && ['Transactions by date by payments', 'Transactions by customers details'].includes(transactionSubType) && (
             <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showSummaryFilter} onChange={(e) => setShowSummaryFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+              <input type="checkbox" checked={showSummaryFilter} onChange={(e) => setShowSummaryFilter(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
               <span>Summary</span>
             </label>
           )}
 
           {activeReport.code === 'REP_IC_003' && transactionSubType === 'Transactions by invoice number' && (
-            <label className="flex items-center gap-1 cursor-pointer font-bold text-slate-800">
-              <input type="checkbox" checked={showZeroTaxFilter} onChange={(e) => setShowZeroTaxFilter(e.target.checked)} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+            <label className="flex items-center gap-1 cursor-pointer font-bold text-foreground">
+              <input type="checkbox" checked={showZeroTaxFilter} onChange={(e) => setShowZeroTaxFilter(e.target.checked)} className="accent-primary w-3.5 h-3.5" />
               <span>Show Zero Tax</span>
             </label>
           )}
 
           {/* Action Buttons */}
-          <button type="button" onClick={() => alert(`Filter Applied: ${activeReport.title}`)} className="px-3.5 py-1.5 bg-[#334155] hover:bg-[#1e293b] text-white font-bold rounded-lg text-xs">
+          <button type="button" onClick={() => alert(`Filter Applied: ${activeReport.title}`)} className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-lg text-xs">
             Filter Report
           </button>
-          <button type="button" onClick={() => { setShowRateFilter(false); setGroupByDateFilter(false); }} className="px-3.5 py-1.5 bg-[#78350f] hover:bg-[#58250b] text-white font-bold rounded-lg text-xs">
+          <button type="button" onClick={() => { setShowRateFilter(false); setGroupByDateFilter(false); }} className="px-3.5 py-1.5 bg-muted hover:bg-muted/80 text-foreground border border-border font-bold rounded-lg text-xs">
             Reset Filters
           </button>
         </div>
 
         {/* Right Tools: Zoom + Print + Export + Settings */}
         <div className="flex items-center gap-1.5 relative">
-          <button type="button" onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))} className="p-1.5 rounded-lg bg-emerald-700 text-white text-xs font-bold">🔍−</button>
-          <button type="button" onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))} className="p-1.5 rounded-lg bg-emerald-700 text-white text-xs font-bold">🔍+</button>
-          <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-[#1e293b] text-white font-bold rounded-lg text-xs shadow-2xs">Print Report</button>
+          <button type="button" onClick={() => setZoomLevel(Math.max(75, zoomLevel - 10))} className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border text-xs font-bold">🔍−</button>
+          <button type="button" onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))} className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border text-xs font-bold">🔍+</button>
+          <button type="button" onClick={() => window.print()} className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-lg text-xs shadow-xs">Print Report</button>
           
           <div className="relative">
-            <button type="button" onClick={() => setExportDropdownOpen(!exportDropdownOpen)} className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-xs border border-slate-300 flex items-center gap-1.5">
+            <button type="button" onClick={() => setExportDropdownOpen(!exportDropdownOpen)} className="px-3.5 py-1.5 bg-muted hover:bg-muted/80 text-foreground font-bold rounded-lg text-xs border border-border flex items-center gap-1.5">
               <span>📥 Export</span>
               <span className="text-[9px]">▼</span>
             </button>
@@ -585,7 +600,7 @@ export default function ReportRibbon({
       {settingsModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8faf8]">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-card">
               <h2 className="text-base font-bold text-slate-900">Settings</h2>
               <button type="button" onClick={() => setSettingsModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded">✕</button>
             </div>
@@ -593,7 +608,7 @@ export default function ReportRibbon({
               <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-slate-800 text-xs">Default Date Range Selection</label>
-                  <button type="button" onClick={() => alert(`Default Date Range Saved as ${defaultDateSelection}`)} className="px-3.5 py-1 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
+                  <button type="button" onClick={() => alert(`Default Date Range Saved as ${defaultDateSelection}`)} className="px-3.5 py-1 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
                 <select value={defaultDateSelection} onChange={(e) => setDefaultDateSelection(e.target.value)} className="w-full p-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-800 focus:outline-none">
                   <option value="THIS_MONTH">This Month</option>
@@ -608,7 +623,7 @@ export default function ReportRibbon({
                     <h3 className="font-bold text-slate-900 text-xs">Toolbar Categories</h3>
                     <p className="text-[10.5px] text-slate-500">You can include up to 8 categories in the toolbar</p>
                   </div>
-                  <button type="button" onClick={() => setCustomCategoryModalOpen(true)} className="px-3 py-1.5 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Custom Category</button>
+                  <button type="button" onClick={() => setCustomCategoryModalOpen(true)} className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Custom Category</button>
                 </div>
 
                 <div className="bg-white p-1.5 rounded-lg border border-slate-300 flex items-center gap-1.5">
@@ -619,7 +634,7 @@ export default function ReportRibbon({
                 <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar pr-1">
                   <div className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between">
                     <label className="flex items-center gap-2 cursor-pointer font-semibold">
-                      <input type="checkbox" checked={selectedToolbarCats.includes('recently_viewed')} onChange={() => setSelectedToolbarCats(selectedToolbarCats.includes('recently_viewed') ? selectedToolbarCats.filter(k => k !== 'recently_viewed') : [...selectedToolbarCats, 'recently_viewed'])} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                      <input type="checkbox" checked={selectedToolbarCats.includes('recently_viewed')} onChange={() => setSelectedToolbarCats(selectedToolbarCats.includes('recently_viewed') ? selectedToolbarCats.filter(k => k !== 'recently_viewed') : [...selectedToolbarCats, 'recently_viewed'])} className="accent-primary w-3.5 h-3.5" />
                       <span>Recently Viewed</span>
                     </label>
                   </div>
@@ -628,7 +643,7 @@ export default function ReportRibbon({
                     <div key={c.id} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
                       <div className="p-2 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors">
                         <label className="flex items-center gap-2 cursor-pointer font-semibold">
-                          <input type="checkbox" checked={selectedToolbarCats.includes(c.id)} onChange={() => setSelectedToolbarCats(selectedToolbarCats.includes(c.id) ? selectedToolbarCats.filter(k => k !== c.id) : [...selectedToolbarCats, c.id])} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                          <input type="checkbox" checked={selectedToolbarCats.includes(c.id)} onChange={() => setSelectedToolbarCats(selectedToolbarCats.includes(c.id) ? selectedToolbarCats.filter(k => k !== c.id) : [...selectedToolbarCats, c.id])} className="accent-primary w-3.5 h-3.5" />
                           <span>{c.title.replace(/^\d+\.\s*/, '')}</span>
                         </label>
                         <button type="button" onClick={() => setExpandedSettingsCats(expandedSettingsCats.includes(c.id) ? expandedSettingsCats.filter(k => k !== c.id) : [...expandedSettingsCats, c.id])} className="px-2 py-0.5 rounded border border-slate-200 text-[10px] text-slate-600 hover:bg-slate-100 font-bold">{expandedSettingsCats.includes(c.id) ? '»' : '«'}</button>
@@ -638,7 +653,7 @@ export default function ReportRibbon({
                 </div>
               </div>
             </div>
-            <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-end">
+            <div className="px-5 py-3 border-t border-slate-200 bg-card flex justify-end">
               <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs">Close</button>
             </div>
           </div>
@@ -649,7 +664,7 @@ export default function ReportRibbon({
       {customCategoryModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 print:hidden animate-fadeIn">
           <div className="bg-white rounded-2xl border border-slate-300 shadow-2xl max-w-md w-full overflow-hidden flex flex-col">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8faf8]">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-card">
               <h2 className="text-base font-bold text-slate-900">Custom Category</h2>
               <button type="button" onClick={() => setCustomCategoryModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 rounded">✕</button>
             </div>
@@ -657,8 +672,8 @@ export default function ReportRibbon({
               <div>
                 <label className="block font-bold text-slate-800 mb-1">Category Name</label>
                 <div className="flex items-center gap-2">
-                  <input type="text" value={customCategoryName} onChange={(e) => setCustomCategoryName(e.target.value)} placeholder="e.g. Daily Operations Summary" className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-[#1e3a2b]" />
-                  <button type="button" onClick={() => { if (!customCategoryName.trim()) { alert('Please enter a Category Name'); return; } alert(`Custom Category "${customCategoryName}" saved!`); setCustomCategoryModalOpen(false); }} className="px-4 py-2 bg-[#1e3a2b] hover:bg-[#14281e] text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
+                  <input type="text" value={customCategoryName} onChange={(e) => setCustomCategoryName(e.target.value)} placeholder="e.g. Daily Operations Summary" className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-border" />
+                  <button type="button" onClick={() => { if (!customCategoryName.trim()) { alert('Please enter a Category Name'); return; } alert(`Custom Category "${customCategoryName}" saved!`); setCustomCategoryModalOpen(false); }} className="px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
               </div>
 
@@ -670,7 +685,7 @@ export default function ReportRibbon({
                 <div className="mt-2 max-h-52 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
                   {allFlattenedReports.filter((r) => r.title.toLowerCase().includes(customCategorySearch.toLowerCase())).slice(0, 30).map((r) => (
                     <label key={r.code} className="flex items-center gap-2 p-1.5 hover:bg-white rounded cursor-pointer text-slate-700 bg-white/60 border border-slate-100">
-                      <input type="checkbox" checked={customCategorySelectedReports.includes(r.code)} onChange={() => setCustomCategorySelectedReports(customCategorySelectedReports.includes(r.code) ? customCategorySelectedReports.filter(k => k !== r.code) : [...customCategorySelectedReports, r.code])} className="accent-[#1e3a2b] w-3.5 h-3.5" />
+                      <input type="checkbox" checked={customCategorySelectedReports.includes(r.code)} onChange={() => setCustomCategorySelectedReports(customCategorySelectedReports.includes(r.code) ? customCategorySelectedReports.filter(k => k !== r.code) : [...customCategorySelectedReports, r.code])} className="accent-primary w-3.5 h-3.5" />
                       <span className="font-semibold text-slate-900">{r.title}</span>
                       <span className="text-[9px] text-slate-400 ml-auto truncate max-w-[100px]">{r.category}</span>
                     </label>
@@ -678,7 +693,7 @@ export default function ReportRibbon({
                 </div>
               </div>
             </div>
-            <div className="px-5 py-3 border-t border-slate-200 bg-[#f8faf8] flex justify-end">
+            <div className="px-5 py-3 border-t border-slate-200 bg-card flex justify-end">
               <button type="button" onClick={() => setCustomCategoryModalOpen(false)} className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs">Cancel</button>
             </div>
           </div>

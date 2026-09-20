@@ -17,6 +17,10 @@ import {
   getAccountingReportMeta,
 } from '@/components/reports/accountingReportsTree';
 import { SharedReportViewer, isSharedReport } from '@/components/reports/registry';
+import AccountingDashboardPage from '@/app/accounting/page';
+import AccountingActionsPage from '@/app/accounting/actions/page';
+import AccountingReportsPage from '@/app/accounting/reports/page';
+import AccountingSetupPage from '@/app/accounting/setup/page';
 
 // ============================================================================
 // 1. MOCK DATASETS FOR ACCOUNTING & FINANCE
@@ -74,14 +78,57 @@ const PAYMENTS_RECEIPTS_DATA = [
   { voucher: 'PMT-2026-0814', date: '2026-09-10', entity: 'EDL / Choueifat Power Utility', type: 'PAYMENT', method: 'Direct Debit', ref: 'DD-00214', amount: '$3,850.00', status: 'SETTLED' },
 ];
 
-// Mock Journal Transaction Details Data
+// Mock Journal Transaction Details Data (with Department Tagging)
 const JOURNAL_ENTRIES_DATA = [
-  { jrnId: 'JRN-2026-4410', date: '2026-09-14', accountCode: '1110-02', accountName: 'BLOM Bank Checking', desc: 'Customer invoice settlement #INV-9921', debit: '$12,400.00', credit: '-', balance: '$142,200.00' },
-  { jrnId: 'JRN-2026-4410', date: '2026-09-14', accountCode: '1120-00', accountName: 'Trade Accounts Receivable', desc: 'Customer invoice settlement #INV-9921', debit: '-', credit: '$12,400.00', balance: '$24,510.00' },
-  { jrnId: 'JRN-2026-4411', date: '2026-09-13', accountCode: '5110-00', accountName: 'Raw Olive Crop Procurement', desc: 'Intake batch harvest receipt #GR-8812', debit: '$18,500.00', credit: '-', balance: '$168,000.00' },
-  { jrnId: 'JRN-2026-4411', date: '2026-09-13', accountCode: '2110-00', accountName: 'Trade Accounts Payable', desc: 'Intake batch harvest receipt #GR-8812', debit: '-', credit: '$18,500.00', balance: '$64,200.00' },
-  { jrnId: 'JRN-2026-4412', date: '2026-09-12', accountCode: '6120-00', accountName: 'SuperSonic Fleet Fuel Expenses', desc: 'Fleet refueling voucher #FL-3109', debit: '$1,450.00', credit: '-', balance: '$14,500.00' },
-  { jrnId: 'JRN-2026-4412', date: '2026-09-12', accountCode: '1110-01', accountName: 'Cash Vault Physical Drawer', desc: 'Fleet refueling voucher #FL-3109', debit: '-', credit: '$1,450.00', balance: '$42,000.00' },
+  { jrnId: 'JRN-2026-4410', date: '2026-09-14', accountCode: '1110-02', accountName: 'BLOM Bank Checking', department: 'ADMIN', desc: 'Customer invoice settlement #INV-9921', debit: '$12,400.00', credit: '-', balance: '$142,200.00' },
+  { jrnId: 'JRN-2026-4410', date: '2026-09-14', accountCode: '1120-00', accountName: 'Trade Accounts Receivable', department: 'SALES', desc: 'Customer invoice settlement #INV-9921', debit: '-', credit: '$12,400.00', balance: '$24,510.00' },
+  { jrnId: 'JRN-2026-4411', date: '2026-09-13', accountCode: '5110-00', accountName: 'Raw Olive Crop Procurement', department: 'PROD', desc: 'Intake batch harvest receipt #GR-8812', debit: '$18,500.00', credit: '-', balance: '$168,000.00' },
+  { jrnId: 'JRN-2026-4411', date: '2026-09-13', accountCode: '2110-00', accountName: 'Trade Accounts Payable', department: 'PROD', desc: 'Intake batch harvest receipt #GR-8812', debit: '-', credit: '$18,500.00', balance: '$64,200.00' },
+  { jrnId: 'JRN-2026-4412', date: '2026-09-12', accountCode: '6120-00', accountName: 'SuperSonic Fleet Fuel Expenses', department: 'FLEET', desc: 'Fleet refueling voucher #FL-3109', debit: '$1,450.00', credit: '-', balance: '$14,500.00' },
+  { jrnId: 'JRN-2026-4412', date: '2026-09-12', accountCode: '1110-01', accountName: 'Cash Vault Physical Drawer', department: 'FLEET', desc: 'Fleet refueling voucher #FL-3109', debit: '-', credit: '$1,450.00', balance: '$42,000.00' },
+];
+
+// Mock Prepaid Expense Allocation Records (gl_prepaid_allocations)
+const PREPAID_ALLOCATIONS_DATA = [
+  {
+    id: 'GPA-2026-001',
+    originVoucher: 'JV-2026-101',
+    prepaidAsset: '1150-00 Prepaid Facility Rent',
+    expenseTarget: '6110-00 Administrative Rent Expense',
+    department: 'ADMIN',
+    totalAmount: '$12,000.00',
+    monthlyInstallment: '$1,000.00',
+    totalMonths: 12,
+    remainingMonths: 8,
+    startDate: '2026-01-01',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'GPA-2026-002',
+    originVoucher: 'JV-2026-140',
+    prepaidAsset: '1150-01 Prepaid Fleet Comprehensive Insurance',
+    expenseTarget: '6120-00 Fleet Logistics Insurance Expense',
+    department: 'FLEET',
+    totalAmount: '$6,000.00',
+    monthlyInstallment: '$500.00',
+    totalMonths: 12,
+    remainingMonths: 5,
+    startDate: '2026-03-01',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'GPA-2025-089',
+    originVoucher: 'JV-2025-882',
+    prepaidAsset: '1150-02 Prepaid Machinery Extended Warranty',
+    expenseTarget: '5120-00 Plant Equipment Maintenance Cost',
+    department: 'PROD',
+    totalAmount: '$4,800.00',
+    monthlyInstallment: '$400.00',
+    totalMonths: 12,
+    remainingMonths: 0,
+    startDate: '2025-09-01',
+    status: 'COMPLETED',
+  },
 ];
 
 function AccountingReportsContent() {
@@ -89,6 +136,7 @@ function AccountingReportsContent() {
   const [period, setPeriod] = useState<string>('This Quarter');
   const [branch, setBranch] = useState<string>('Consolidated Operations');
   const [accountClassFilter, setAccountClassFilter] = useState<string>('ALL');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [accFilterValues, setAccFilterValues] = useState<Record<string, any>>({});
 
@@ -138,6 +186,8 @@ function AccountingReportsContent() {
 
   const isTaxReportView = selectedReport === 'Tax Report';
 
+  const isPrepaidAllocationsView = selectedReport === 'Prepaid Expense Allocations';
+
   const filteredCOA = useMemo(() => {
     return CHART_OF_ACCOUNTS_DATA.filter((a) => {
       const matchesSearch =
@@ -176,12 +226,33 @@ function AccountingReportsContent() {
   }, [searchQuery, selectedReport]);
 
   const filteredJournals = useMemo(() => {
-    return JOURNAL_ENTRIES_DATA.filter((j) =>
-      j.accountName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      j.jrnId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      j.desc.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    return JOURNAL_ENTRIES_DATA.filter((j) => {
+      const matchesSearch =
+        j.accountName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        j.jrnId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        j.desc.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDept =
+        departmentFilter === 'ALL' ||
+        j.department === departmentFilter ||
+        (accFilterValues.department && j.department === accFilterValues.department);
+      return matchesSearch && matchesDept;
+    });
+  }, [searchQuery, departmentFilter, accFilterValues]);
+
+  const filteredPrepaidAllocations = useMemo(() => {
+    return PREPAID_ALLOCATIONS_DATA.filter((a) => {
+      const matchesSearch =
+        a.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.originVoucher.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.prepaidAsset.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.expenseTarget.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesDept =
+        departmentFilter === 'ALL' ||
+        a.department === departmentFilter ||
+        (accFilterValues.department && a.department === accFilterValues.department);
+      return matchesSearch && matchesDept;
+    });
+  }, [searchQuery, departmentFilter, accFilterValues]);
 
   return (
     <ReportPageLayout
@@ -196,7 +267,7 @@ function AccountingReportsContent() {
           title={activeMeta.name}
           subtitle="General Ledger, Chart of Accounts, Journal Entries, and Audited Financial Statements"
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '4. Accounting', href: '/accounting/reports' },
             { label: activeMeta.category },
             { label: activeMeta.name },
@@ -365,7 +436,7 @@ function AccountingReportsContent() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
                   <tr className="bg-slate-100/70 font-bold">
-                    <td colSpan={4} className="py-1.5 px-2 text-[#1a629b] uppercase text-[11px]">1. Current Assets</td>
+                    <td colSpan={4} className="py-1.5 px-2 text-primary font-bold uppercase text-[11px]">1. Current Assets</td>
                   </tr>
                   <tr>
                     <td className="py-1.5 px-2 pl-4 text-slate-800">Cash in Vault &amp; BLOM Bank Commercial Checking</td>
@@ -386,7 +457,7 @@ function AccountingReportsContent() {
                     <td className="py-1.5 px-2 text-right font-mono font-bold text-slate-900">$548,710.00</td>
                   </tr>
                   <tr className="bg-slate-100/70 font-bold">
-                    <td colSpan={4} className="py-1.5 px-2 text-[#1a629b] uppercase text-[11px]">2. Property, Plant &amp; Equipment (PPE)</td>
+                    <td colSpan={4} className="py-1.5 px-2 text-primary font-bold uppercase text-[11px]">2. Property, Plant &amp; Equipment (PPE)</td>
                   </tr>
                   <tr>
                     <td className="py-1.5 px-2 pl-4 text-slate-800">Choueifat Pressing Facility &amp; Machinery (Net of Depr)</td>
@@ -405,7 +476,7 @@ function AccountingReportsContent() {
                     <td className="py-2 px-2 text-right font-mono font-black text-blue-900 text-[12px]">$1,423,710.00</td>
                   </tr>
                   <tr className="bg-slate-100/70 font-bold">
-                    <td colSpan={4} className="py-1.5 px-2 text-[#7a1c1c] uppercase text-[11px]">3. Current Liabilities &amp; Payables</td>
+                    <td colSpan={4} className="py-1.5 px-2 text-destructive uppercase text-[11px]">3. Current Liabilities &amp; Payables</td>
                   </tr>
                   <tr>
                     <td className="py-1.5 px-2 pl-4 text-slate-800">Trade Accounts Payable (Supplier Ledger)</td>
@@ -539,6 +610,7 @@ function AccountingReportsContent() {
                     <tr>
                       <th className="py-3 px-4">Journal Voucher #</th>
                       <th className="py-3 px-4">Posting Date</th>
+                      <th className="py-3 px-4 text-center">Department</th>
                       <th className="py-3 px-4">Account Code</th>
                       <th className="py-3 px-4">Account Name</th>
                       <th className="py-3 px-4">Transaction Reference / Description</th>
@@ -552,6 +624,11 @@ function AccountingReportsContent() {
                       <tr key={idx} className="hover:bg-blue-50/30 transition">
                         <td className="py-3 px-4 font-bold text-blue-900">{row.jrnId}</td>
                         <td className="py-3 px-4 font-sans text-slate-600">{row.date}</td>
+                        <td className="py-3 px-4 text-center font-sans">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            {row.department}
+                          </span>
+                        </td>
                         <td className="py-3 px-4 text-slate-700">{row.accountCode}</td>
                         <td className="py-3 px-4 font-sans font-semibold text-slate-900">{row.accountName}</td>
                         <td className="py-3 px-4 font-sans text-slate-700">{row.desc}</td>
@@ -728,7 +805,7 @@ function AccountingReportsContent() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
                   <tr className="bg-slate-100/70 font-bold">
-                    <td colSpan={4} className="py-1.5 px-2 text-[#1a629b] uppercase text-[11px]">1. Output VAT (Commercial Sales)</td>
+                    <td colSpan={4} className="py-1.5 px-2 text-primary font-bold uppercase text-[11px]">1. Output VAT (Commercial Sales)</td>
                   </tr>
                   <tr>
                     <td className="py-1.5 px-2 pl-4 text-slate-800">Standard Rate Commercial Goods (11% VAT)</td>
@@ -747,7 +824,7 @@ function AccountingReportsContent() {
                     <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-900">$41,800.00</td>
                   </tr>
                   <tr className="bg-slate-100/70 font-bold">
-                    <td colSpan={4} className="py-1.5 px-2 text-[#7a1c1c] uppercase text-[11px]">2. Input VAT Deductions (Purchases &amp; Expenses)</td>
+                    <td colSpan={4} className="py-1.5 px-2 text-destructive uppercase text-[11px]">2. Input VAT Deductions (Purchases &amp; Expenses)</td>
                   </tr>
                   <tr>
                     <td className="py-1.5 px-2 pl-4 text-slate-800">Packaging Materials, Glass &amp; Tin Purchases</td>
@@ -777,10 +854,92 @@ function AccountingReportsContent() {
                   </tr>
                 </tfoot>
               </table>
+
+              {/* Tax Split Configuration & Rounding Status Footer Banner */}
+              <div className="mt-4 p-3 bg-blue-50/70 border border-blue-200 rounded-lg flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-bold text-blue-950">Active Tax Split Accounts:</span>
+                  <span className="bg-white px-2 py-0.5 rounded text-blue-800 border border-blue-200 font-mono text-[11px]">
+                    Tax 1: 2150-01 (MOF Standard 11%)
+                  </span>
+                  <span className="bg-white px-2 py-0.5 rounded text-blue-800 border border-blue-200 font-mono text-[11px]">
+                    Tax 2: 2150-02 (Municipal Surcharge)
+                  </span>
+                  <span className="bg-white px-2 py-0.5 rounded text-blue-800 border border-blue-200 font-mono text-[11px]">
+                    Tax 3: 2150-03 (Fiscal Stamp Duty)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 font-sans">Rounding Mode:</span>
+                  <span className="font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded text-[11px]">
+                    CEIL (Rounding Up Active)
+                  </span>
+                </div>
+              </div>
             </UnifiedPrintableReportSheet>
           )}
 
-          {/* J. DEFAULT VIEW: STATEMENT OF PROFIT & LOSS (INCOME STATEMENT) */}
+          {/* J. PREPAID EXPENSE ALLOCATIONS (gl_prepaid_allocations) */}
+          {!isSharedReport(selectedReport) && isPrepaidAllocationsView && (
+            <ReportTableWrapper
+              title="Prepaid Expense Allocations & Amortization Schedule"
+              subtitle={`Automated monthly depreciation schedule for prepaid rent, insurance, and equipment warranties • ${branch}`}
+              totalRecordsCount={filteredPrepaidAllocations.length}
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-slate-50 text-slate-700 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4">Allocation ID</th>
+                      <th className="py-3 px-4">Origin Voucher #</th>
+                      <th className="py-3 px-4 text-center">Department</th>
+                      <th className="py-3 px-4">Prepaid Asset Account</th>
+                      <th className="py-3 px-4">Expense Target Account</th>
+                      <th className="py-3 px-4 text-right">Total Amount</th>
+                      <th className="py-3 px-4 text-right">Monthly Installment</th>
+                      <th className="py-3 px-4 text-center">Total Months</th>
+                      <th className="py-3 px-4 text-center">Remaining</th>
+                      <th className="py-3 px-4 text-center">Start Date</th>
+                      <th className="py-3 px-4 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-mono">
+                    {filteredPrepaidAllocations.map((row) => (
+                      <tr key={row.id} className="hover:bg-blue-50/30 transition">
+                        <td className="py-3 px-4 font-bold text-blue-900">{row.id}</td>
+                        <td className="py-3 px-4 font-sans text-slate-600">{row.originVoucher}</td>
+                        <td className="py-3 px-4 text-center font-sans">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            {row.department}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 font-sans text-slate-700">{row.prepaidAsset}</td>
+                        <td className="py-3 px-4 font-sans font-medium text-slate-800">{row.expenseTarget}</td>
+                        <td className="py-3 px-4 text-right font-bold text-slate-900">{row.totalAmount}</td>
+                        <td className="py-3 px-4 text-right font-bold text-emerald-700">{row.monthlyInstallment}</td>
+                        <td className="py-3 px-4 text-center font-sans text-slate-700">{row.totalMonths}</td>
+                        <td className="py-3 px-4 text-center font-sans font-bold text-blue-900">{row.remainingMonths}</td>
+                        <td className="py-3 px-4 text-center font-sans text-slate-600">{row.startDate}</td>
+                        <td className="py-3 px-4 text-center font-sans">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              row.status === 'ACTIVE'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-slate-100 text-slate-600 border border-slate-200'
+                            }`}
+                          >
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ReportTableWrapper>
+          )}
+
+          {/* K. DEFAULT VIEW: STATEMENT OF PROFIT & LOSS (INCOME STATEMENT) */}
           {!isSharedReport(selectedReport) &&
             !isArApView &&
             !isBalanceSheetView &&
@@ -789,7 +948,8 @@ function AccountingReportsContent() {
             !isPaymentReceiptsView &&
             !isChartOfAccountsView &&
             !isBudgetOverviewView &&
-            !isTaxReportView && (
+            !isTaxReportView &&
+            !isPrepaidAllocationsView && (
               <UnifiedPrintableReportSheet
                 reportTitle={selectedReport}
                 reportCode={activeMeta.code}
@@ -812,7 +972,7 @@ function AccountingReportsContent() {
                     {(accountClassFilter === 'ALL' || accountClassFilter === 'REVENUE') && (
                       <>
                         <tr className="bg-slate-100/70 font-bold">
-                          <td colSpan={4} className="py-1.5 px-2 text-[#1a629b] uppercase text-[11px]">1. Operating Revenues</td>
+                          <td colSpan={4} className="py-1.5 px-2 text-primary font-bold uppercase text-[11px]">1. Operating Revenues</td>
                         </tr>
                         <tr>
                           <td className="py-1.5 px-2 pl-4 text-slate-800 font-bold">Commercial Olive Oil Bottle Sales (500ml / 1L / 4L)</td>
@@ -835,7 +995,7 @@ function AccountingReportsContent() {
                     {(accountClassFilter === 'ALL' || accountClassFilter === 'COGS') && (
                       <>
                         <tr className="bg-slate-100/70 font-bold">
-                          <td colSpan={4} className="py-1.5 px-2 text-[#7a1c1c] uppercase text-[11px]">2. Cost of Goods Sold (COGS)</td>
+                          <td colSpan={4} className="py-1.5 px-2 text-destructive uppercase text-[11px]">2. Cost of Goods Sold (COGS)</td>
                         </tr>
                         <tr>
                           <td className="py-1.5 px-2 pl-4 text-slate-800 font-bold">Raw Olive Crop Intake &amp; Grower Procurement</td>
@@ -934,10 +1094,124 @@ function AccountingReportsContent() {
   );
 }
 
+function AccountingPageRouter() {
+  const searchParams = useSearchParams();
+  const rawSection = (
+    searchParams.get('section') ||
+    searchParams.get('tab') ||
+    searchParams.get('module') ||
+    'dashboard'
+  ).toLowerCase();
+  const viewMode = searchParams.get('view');
+
+  // Map raw section parameter to standardized key
+  const activeSection = useMemo(() => {
+    if (!rawSection || rawSection === 'dashboard') return 'dashboard';
+    if (rawSection === 'reports' || rawSection === 'report') return 'reports';
+
+    // Actions
+    if (['jv', 'journal-voucher', 'journal_voucher', 'module1', 'jvs'].includes(rawSection)) return 'jv';
+    if (['purchase', 'expenses', 'expense', 'module2', 'purchases'].includes(rawSection)) return 'purchase';
+    if (['payments', 'payment', 'module3', 'pv'].includes(rawSection)) return 'payments';
+    if (['receipts', 'receipt', 'module4', 'rv'].includes(rawSection)) return 'receipts';
+    if (['ar', 'accounts-receivables', 'receivables', 'module5'].includes(rawSection)) return 'ar';
+    if (['ap', 'accounts-payables', 'payables', 'module6'].includes(rawSection)) return 'ap';
+    if (['bank_recon', 'bank-reconciliation', 'recon', 'module7'].includes(rawSection)) return 'bank_recon';
+    if (['vat_closing', 'vat-period-closing', 'vat', 'module8'].includes(rawSection)) return 'vat_closing';
+
+    // Setup & Auxiliaries
+    if (['accounts', 'coa'].includes(rawSection)) return 'accounts';
+    if (['aux_classes', 'classes'].includes(rawSection)) return 'aux_classes';
+    if (['aux_header1', 'header-1'].includes(rawSection)) return 'aux_header1';
+    if (['aux_header2', 'header-2'].includes(rawSection)) return 'aux_header2';
+    if (['aux_header3', 'header-3'].includes(rawSection)) return 'aux_header3';
+    if (['aux_group', 'group'].includes(rawSection)) return 'aux_group';
+    if (['aux_jv_desc', 'jv-description', 'jv_desc', 'jv-desc'].includes(rawSection)) return 'aux_jv_desc';
+    if (['aux_jv_types', 'jv-types', 'jv_types', 'jv-type'].includes(rawSection)) return 'aux_jv_types';
+    if (['aux_currency', 'currency', 'currencies'].includes(rawSection)) return 'aux_currency';
+    if (['aux_currency_rates', 'rates', 'currency_rates', 'currency-rates'].includes(rawSection)) return 'aux_currency_rates';
+    if (['dept_groups', 'department-groups'].includes(rawSection)) return 'dept_groups';
+    if (['department', 'departments'].includes(rawSection)) return 'department';
+    if (['cash_flow_setup', 'cash-flow'].includes(rawSection)) return 'cash_flow_setup';
+    if (['sub_dept', 'sub-department'].includes(rawSection)) return 'sub_dept';
+
+    return rawSection;
+  }, [rawSection]);
+
+  const KNOWN_SECTIONS = [
+    'dashboard', 'reports', 'jv', 'purchase', 'payments', 'receipts', 'ar', 'ap',
+    'bank_recon', 'vat_closing', 'accounts', 'aux_classes', 'aux_header1',
+    'aux_header2', 'aux_header3', 'aux_group', 'aux_jv_desc', 'aux_jv_types',
+    'aux_currency', 'aux_currency_rates', 'dept_groups', 'department',
+    'cash_flow_setup', 'sub_dept'
+  ];
+
+  const isKnownSection = KNOWN_SECTIONS.includes(activeSection);
+
+  return (
+    <div key={activeSection} className="w-full min-h-screen">
+      {/* 1. DASHBOARD */}
+      {activeSection === 'dashboard' && <AccountingDashboardPage />}
+
+      {/* 2. REPORTS */}
+      {activeSection === 'reports' && (
+        viewMode === 'legacy' ? (
+          <AccountingReportsContent />
+        ) : (
+          <AccountingReportsPage />
+        )
+      )}
+
+      {/* 3. ACTIONS / JVs */}
+      {activeSection === 'jv' && <AccountingActionsPage initialTab="JV" />}
+      {activeSection === 'purchase' && <AccountingActionsPage initialTab="PURCHASE" />}
+      {activeSection === 'payments' && <AccountingActionsPage initialTab="PAYMENT" />}
+      {activeSection === 'receipts' && <AccountingActionsPage initialTab="RECEIPT" />}
+      {activeSection === 'ar' && <AccountingActionsPage initialTab="AR" />}
+      {activeSection === 'ap' && <AccountingActionsPage initialTab="AP" />}
+      {activeSection === 'bank_recon' && <AccountingActionsPage initialTab="RECON" />}
+      {activeSection === 'vat_closing' && <AccountingActionsPage initialTab="VAT" />}
+
+      {/* 4. SETUP & AUXILIARIES */}
+      {activeSection === 'accounts' && <AccountingSetupPage initialTab="COA" />}
+      {activeSection === 'aux_classes' && <AccountingSetupPage initialTab="AUX" initialAuxSubTab="CLASSES" />}
+      {activeSection === 'aux_header1' && <AccountingSetupPage initialTab="AUX" initialAuxSubTab="H1" />}
+      {activeSection === 'aux_header2' && <AccountingSetupPage initialTab="AUX" initialAuxSubTab="H2" />}
+      {activeSection === 'aux_header3' && <AccountingSetupPage initialTab="AUX" initialAuxSubTab="H3" />}
+      {activeSection === 'aux_group' && <AccountingSetupPage initialTab="AUX" initialAuxSubTab="H4" />}
+      {['aux_jv_desc', 'aux_jv_types'].includes(activeSection) && <AccountingSetupPage initialTab="JV_SETUP" />}
+      {['aux_currency', 'aux_currency_rates'].includes(activeSection) && <AccountingSetupPage initialTab="CURRENCIES" />}
+      {['dept_groups', 'department', 'cash_flow_setup', 'sub_dept'].includes(activeSection) && <AccountingSetupPage initialTab="DEPTS" />}
+
+      {/* 5. GRACEFUL FALLBACK FOR UNIMPLEMENTED SUB-VIEWS */}
+      {!isKnownSection && (
+        <div className="p-4">
+          <div className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">ℹ️</span>
+              <div>
+                <p className="font-bold text-xs">Section &quot;{rawSection}&quot; is currently being finalized</p>
+                <p className="text-[11px] text-amber-700">Gracefully displaying the primary Journal Vouchers & Accounting Actions workstation.</p>
+              </div>
+            </div>
+            <a
+              href="/backoffice/accounting?section=jv"
+              className="px-3 py-1.5 bg-white border border-amber-400 text-amber-900 font-bold text-xs rounded-lg shadow-2xs hover:bg-amber-50"
+            >
+              Reset to Primary View
+            </a>
+          </div>
+          <AccountingActionsPage initialTab="JV" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AccountingPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading Accounting Reports Hub...</div>}>
-      <AccountingReportsContent />
+    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading Accounting Module...</div>}>
+      <AccountingPageRouter />
     </Suspense>
   );
 }

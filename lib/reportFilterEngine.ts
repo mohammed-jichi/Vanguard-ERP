@@ -12,7 +12,24 @@
  * - Cashiers, Supervisors, and search keywords
  */
 
-import { extractCurrencyFromFilter } from './currencyEngine';
+import {
+  extractCurrencyFromFilter,
+  convertCurrency,
+  formatCurrencyAmount,
+} from './currencyEngine';
+import {
+  resolveDateRangeFromPreset,
+  isCustomDatePreset,
+  shouldShowEditableDateInputs,
+  formatDisplayDate,
+} from './dateRangeEngine';
+
+export {
+  resolveDateRangeFromPreset,
+  isCustomDatePreset,
+  shouldShowEditableDateInputs,
+  formatDisplayDate,
+};
 
 export interface StandardFilterableRecord {
   id?: string | number;
@@ -198,6 +215,64 @@ export const CHANNEL_MAPPINGS: Record<string, string> = {
   'training': 'Training',
 };
 
+export const SALESMAN_MAPPINGS: Record<string, string> = {
+  // Ahmad Al-Hajj (Senior Rep)
+  'rep_ahmad': 'Ahmad Al-Hajj',
+  'emp_ahmad': 'Ahmad Al-Hajj',
+  'ahmad': 'Ahmad Al-Hajj',
+  'ahmad al-hajj': 'Ahmad Al-Hajj',
+  'ahmad_al_hajj': 'Ahmad Al-Hajj',
+  'ahmad.hajj': 'Ahmad Al-Hajj',
+  'ahmad al hajj': 'Ahmad Al-Hajj',
+  'ahmad al-hajj (senior rep)': 'Ahmad Al-Hajj',
+  'rep_001': 'Ahmad Al-Hajj',
+  'emp_001': 'Ahmad Al-Hajj',
+
+  // Maya Khoury (Corporate Accounts)
+  'rep_maya': 'Maya Khoury',
+  'emp_maya': 'Maya Khoury',
+  'maya': 'Maya Khoury',
+  'maya khoury': 'Maya Khoury',
+  'maya_khoury': 'Maya Khoury',
+  'maya.khoury': 'Maya Khoury',
+  'maya khoury (corporate accounts)': 'Maya Khoury',
+  'rep_002': 'Maya Khoury',
+  'emp_002': 'Maya Khoury',
+
+  // Jad Tannous (Regional Wholesale)
+  'rep_jad': 'Jad Tannous',
+  'emp_jad': 'Jad Tannous',
+  'jad': 'Jad Tannous',
+  'jad tannous': 'Jad Tannous',
+  'jad_tannous': 'Jad Tannous',
+  'jad.tannous': 'Jad Tannous',
+  'jad tannous (regional wholesale)': 'Jad Tannous',
+  'rep_003': 'Jad Tannous',
+  'emp_003': 'Jad Tannous',
+
+  // Rania Eid (Commercial Supervisor)
+  'rep_rania': 'Rania Eid',
+  'emp_rania': 'Rania Eid',
+  'rania': 'Rania Eid',
+  'rania eid': 'Rania Eid',
+  'rania_eid': 'Rania Eid',
+  'rania.eid': 'Rania Eid',
+  'rania eid (commercial supervisor)': 'Rania Eid',
+  'rep_004': 'Rania Eid',
+  'emp_004': 'Rania Eid',
+
+  // Ziad Chehab (Key Account Manager)
+  'rep_ziad': 'Ziad Chehab',
+  'emp_ziad': 'Ziad Chehab',
+  'ziad': 'Ziad Chehab',
+  'ziad chehab': 'Ziad Chehab',
+  'ziad_chehab': 'Ziad Chehab',
+  'ziad.chehab': 'Ziad Chehab',
+  'ziad chehab (key account manager)': 'Ziad Chehab',
+  'rep_005': 'Ziad Chehab',
+  'emp_005': 'Ziad Chehab',
+};
+
 /**
  * Normalizes a filter value using slug dictionaries and standard string casing.
  */
@@ -208,16 +283,83 @@ export function normalizeFilterToken(value?: any): string {
 }
 
 /**
+ * Normalizes and tests whether a record salesman matches an active salesman filter value.
+ * Handles slug mappings (REP_AHMAD -> Ahmad Al-Hajj), case normalization, and token matching.
+ */
+export function matchesSalesmanFilter(recordSalesman?: any, filterSalesman?: any): boolean {
+  if (!filterSalesman || filterSalesman === 'ALL' || filterSalesman === 'all') {
+    return true;
+  }
+  if (!recordSalesman && recordSalesman !== 0) {
+    return false;
+  }
+
+  const cleanFilter = String(filterSalesman).trim().toLowerCase();
+  const cleanRow = String(recordSalesman).trim().toLowerCase();
+  const filterSlug = normalizeFilterToken(filterSalesman);
+  const rowSlug = normalizeFilterToken(recordSalesman);
+
+  // 1. Direct or slug match
+  if (cleanFilter === cleanRow || filterSlug === rowSlug) {
+    return true;
+  }
+
+  // 2. Canonical dictionary mapping resolution
+  const canonicalFilter = SALESMAN_MAPPINGS[filterSlug] || SALESMAN_MAPPINGS[cleanFilter];
+  const canonicalRow = SALESMAN_MAPPINGS[rowSlug] || SALESMAN_MAPPINGS[cleanRow];
+
+  if (canonicalFilter && canonicalRow && canonicalFilter.toLowerCase() === canonicalRow.toLowerCase()) {
+    return true;
+  }
+
+  if (canonicalFilter && cleanRow === canonicalFilter.toLowerCase()) {
+    return true;
+  }
+
+  if (canonicalRow && cleanFilter === canonicalRow.toLowerCase()) {
+    return true;
+  }
+
+  if (canonicalFilter && cleanRow.includes(canonicalFilter.toLowerCase())) {
+    return true;
+  }
+
+  if (canonicalRow && cleanFilter.includes(canonicalRow.toLowerCase())) {
+    return true;
+  }
+
+  // 3. Name token matching (e.g. 'ahmad', 'maya', 'tannous', 'rania', 'chehab')
+  const distinctiveTokens = ['ahmad', 'hajj', 'maya', 'khoury', 'jad', 'tannous', 'rania', 'eid', 'ziad', 'chehab'];
+  for (const token of distinctiveTokens) {
+    const filterHasToken = filterSlug.includes(token) || cleanFilter.includes(token);
+    const rowHasToken = rowSlug.includes(token) || cleanRow.includes(token);
+    if (filterHasToken && rowHasToken) {
+      return true;
+    }
+  }
+
+  // 4. Substring fallback
+  return cleanRow.includes(cleanFilter) || cleanFilter.includes(cleanRow);
+}
+
+/**
  * Checks whether a filter dimension matches a row attribute.
  * Evaluates slug synonyms, substring inclusions, and canonical values.
  */
 export function matchDimensionValue(
-  dimension: 'tender' | 'reason' | 'branch' | 'channel',
+  dimension: 'tender' | 'reason' | 'branch' | 'channel' | 'salesman',
   filterVal?: any,
   rowVal?: any
 ): boolean {
   if (!filterVal || filterVal === 'ALL' || filterVal === 'all') {
     return true;
+  }
+  if (!rowVal && rowVal !== 0) {
+    return false;
+  }
+
+  if (dimension === 'salesman') {
+    return matchesSalesmanFilter(rowVal, filterVal);
   }
   if (!rowVal && rowVal !== 0) {
     return false;
@@ -414,9 +556,17 @@ export function applyGlobalReportFilters<T extends Record<string, any>>(
     filters.itemSearch ??
     filters.productSearch;
 
-  // Date Range extraction
-  const fromDateObj = filters.fromDate ? normalizeDateValue(filters.fromDate) : null;
-  const toDateObj = filters.toDate ? normalizeDateValue(filters.toDate) : null;
+  // Date Range extraction with dynamic preset resolution
+  let effectiveFrom = filters.fromDate;
+  let effectiveTo = filters.toDate;
+  if (filters.period && !isCustomDatePreset(filters.period)) {
+    const resolved = resolveDateRangeFromPreset(filters.period, filters.fromDate, filters.toDate);
+    effectiveFrom = resolved.fromDate;
+    effectiveTo = resolved.toDate;
+  }
+
+  const fromDateObj = effectiveFrom ? normalizeDateValue(effectiveFrom) : null;
+  const toDateObj = effectiveTo ? normalizeDateValue(effectiveTo) : null;
   const fromComparable = fromDateObj ? toDateComparableString(fromDateObj) : null;
   const toComparable = toDateObj ? toDateComparableString(toDateObj) : null;
 
@@ -519,6 +669,25 @@ export function applyGlobalReportFilters<T extends Record<string, any>>(
       }
     }
 
+    // 8b. Workstation Filter
+    const rawWorkstation = filters.workstation ?? filters.pos_workstation ?? filters.workstation_id;
+    if (rawWorkstation && rawWorkstation !== 'ALL' && rawWorkstation !== 'all') {
+      const targetWs = String(rawWorkstation).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      const rowWs = String(row.workstation ?? row.workstation_id ?? row.table_number ?? row.terminal ?? '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      if (rowWs && !rowWs.includes(targetWs) && !targetWs.includes(rowWs)) {
+        return false;
+      }
+    }
+
+    // 8c. Salesman Filter
+    const rawSalesman = filters.salesman ?? filters.salesRep ?? filters.salesman_id;
+    if (rawSalesman && rawSalesman !== 'ALL' && rawSalesman !== 'all') {
+      const rowSalesman = row.salesman ?? row.employee ?? row.employee_name ?? row.server;
+      if (!matchesSalesmanFilter(rowSalesman, rawSalesman)) {
+        return false;
+      }
+    }
+
     // 9. Date Range Filter
     if (fromComparable || toComparable) {
       const rawRowDate = row.date ?? row.timestamp ?? row.orderDate ?? row.eodDate ?? row.created_at;
@@ -545,6 +714,44 @@ export function applyGlobalReportFilters<T extends Record<string, any>>(
 
     return true;
   });
+}
+
+/**
+ * Resolves active currency from filter options with smart fallback
+ */
+export function resolveActiveCurrencyFromFilters(filters?: Record<string, any>, fallback: string = 'USD'): string {
+  if (!filters) return fallback;
+  const direct = filters.currency ?? filters.targetCurrency;
+  if (direct && direct !== 'ALL' && direct !== 'all') {
+    return String(direct).toUpperCase().trim();
+  }
+  const pay = filters.paymentType ?? filters.paymentMode ?? filters.payment_method;
+  const fromPay = extractCurrencyFromFilter(pay);
+  if (fromPay) return fromPay;
+  return fallback;
+}
+
+/**
+ * Converts and formats an amount into the active report target currency
+ */
+export function formatDynamicReportAmount(
+  amount: number,
+  fromCurrency: string = 'LBP',
+  targetCurrency: string = 'USD',
+  withSymbol: boolean = true
+): string {
+  const converted = convertCurrency(amount, fromCurrency, targetCurrency);
+  return formatCurrencyAmount(converted, targetCurrency, withSymbol);
+}
+
+/**
+ * Dynamically re-labels table column headers to match the active target currency
+ */
+export function getDynamicCurrencyColumnHeader(baseHeader: string, targetCurrency: string): string {
+  if (/\((LBP|USD|EUR|GBP|L\.L\.|\$)\)/i.test(baseHeader)) {
+    return baseHeader.replace(/\((LBP|USD|EUR|GBP|L\.L\.|\$)\)/i, `(${targetCurrency})`);
+  }
+  return `${baseHeader} (${targetCurrency})`;
 }
 
 export default applyGlobalReportFilters;

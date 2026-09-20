@@ -29,6 +29,26 @@ module.exports = {
         darkSlate: '#0a1209',
         cardBg: '#1c2b1a',
         cardHighlight: '#243522',
+        background: 'var(--background, #f8fafc)',
+        foreground: 'var(--foreground, #0f172a)',
+        card: {
+          DEFAULT: 'var(--card, #ffffff)',
+          foreground: 'var(--card-foreground, #0f172a)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted, #f1f5f9)',
+          foreground: 'var(--muted-foreground, #64748b)',
+        },
+        border: 'var(--border, #cbd5e1)',
+        input: 'var(--input, #cbd5e1)',
+        primary: {
+          DEFAULT: 'var(--primary, #0f172a)',
+          foreground: 'var(--primary-foreground, #ffffff)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary, #f1f5f9)',
+          foreground: 'var(--secondary-foreground, #0f172a)',
+        },
         report: {
           company: 'var(--report-color-company-title, #1d4ed8)',
           title: 'var(--report-color-report-title, #0f172a)',

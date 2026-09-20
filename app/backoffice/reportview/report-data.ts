@@ -51,65 +51,29 @@ export function getEodDateOptions() {
   return dates;
 }
 
+import {
+  resolveDateRangeFromPreset,
+  formatDisplayDate,
+  parseISODate,
+} from '@/lib/dateRangeEngine';
+
 export function getDynamicPeriodInfo(periodPreset: string, fromDate: string, toDate: string, eodDate: string) {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonthIdx = now.getMonth();
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const formatDate = (d: Date) => `${pad(d.getDate())}-${monthNames[d.getMonth()]}-${d.getFullYear()}`;
-
-  const todayStr = formatDate(now);
-  const yesterday = new Date(now);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = formatDate(yesterday);
-
-  const thisMonthChip = `${monthNames[currentMonthIdx]}, ${currentYear}`;
-  const lastMonthDate = new Date(currentYear, currentMonthIdx - 1, 1);
-  const lastMonthChip = `${monthNames[lastMonthDate.getMonth()]}, ${lastMonthDate.getFullYear()}`;
-
-  const daysInThisMonth = new Date(currentYear, currentMonthIdx + 1, 0).getDate();
-  const daysInLastMonth = new Date(lastMonthDate.getFullYear(), lastMonthDate.getMonth() + 1, 0).getDate();
-
-  switch (periodPreset) {
-    case 'TODAY':
-      return { chip: todayStr, fromDate: todayStr, toDate: todayStr, header: `From Date: ${todayStr} To Date: ${todayStr}` };
-    case 'YESTERDAY':
-      return { chip: yesterdayStr, fromDate: yesterdayStr, toDate: yesterdayStr, header: `From Date: ${yesterdayStr} To Date: ${yesterdayStr}` };
-    case 'THIS_MONTH':
-      return {
-        chip: thisMonthChip,
-        fromDate: `01-${monthNames[currentMonthIdx]}-${currentYear}`,
-        toDate: `${pad(daysInThisMonth)}-${monthNames[currentMonthIdx]}-${currentYear}`,
-        header: `From Date: 01-${monthNames[currentMonthIdx]}-${currentYear} To Date: ${pad(daysInThisMonth)}-${monthNames[currentMonthIdx]}-${currentYear}`,
-      };
-    case 'LAST_MONTH':
-      return {
-        chip: lastMonthChip,
-        fromDate: `01-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()}`,
-        toDate: `${pad(daysInLastMonth)}-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()}`,
-        header: `From Date: 01-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()} To Date: ${pad(daysInLastMonth)}-${monthNames[lastMonthDate.getMonth()]}-${lastMonthDate.getFullYear()}`,
-      };
-    case 'Q1':
-      return { chip: `Q1, ${currentYear}`, fromDate: `01-Jan-${currentYear}`, toDate: `31-Mar-${currentYear}`, header: `From Date: 01-Jan-${currentYear} To Date: 31-Mar-${currentYear}` };
-    case 'Q2':
-      return { chip: `Q2, ${currentYear}`, fromDate: `01-Apr-${currentYear}`, toDate: `30-Jun-${currentYear}`, header: `From Date: 01-Apr-${currentYear} To Date: 30-Jun-${currentYear}` };
-    case 'Q3':
-      return { chip: `Q3, ${currentYear}`, fromDate: `01-Jul-${currentYear}`, toDate: `30-Sep-${currentYear}`, header: `From Date: 01-Jul-${currentYear} To Date: 30-Sep-${currentYear}` };
-    case 'Q4':
-      return { chip: `Q4, ${currentYear}`, fromDate: `01-Oct-${currentYear}`, toDate: `31-Dec-${currentYear}`, header: `From Date: 01-Oct-${currentYear} To Date: 31-Dec-${currentYear}` };
-    case 'THIS_YEAR':
-      return { chip: `Year ${currentYear}`, fromDate: `01-Jan-${currentYear}`, toDate: todayStr, header: `From Date: 01-Jan-${currentYear} To Date: ${todayStr}` };
-    case 'LAST_YEAR':
-      return { chip: `Year ${currentYear - 1}`, fromDate: `01-Jan-${currentYear - 1}`, toDate: `31-Dec-${currentYear - 1}`, header: `From Date: 01-Jan-${currentYear - 1} To Date: 31-Dec-${currentYear - 1}` };
-    case 'DATE_RANGE':
-      return { chip: `${fromDate} ➔ ${toDate}`, fromDate: fromDate, toDate: toDate, header: `From Date: ${fromDate} To Date: ${toDate}` };
-    case 'EOD_DATE':
-      return { chip: eodDate, fromDate: eodDate, toDate: eodDate, header: `EOD Date: ${eodDate}` };
-    default:
-      return { chip: thisMonthChip, fromDate: '01-Aug-2026', toDate: '31-Aug-2026', header: `From Date: 01-Aug-2026 To Date: 31-Aug-2026` };
+  if (periodPreset === 'EOD_DATE') {
+    return { chip: eodDate, fromDate: eodDate, toDate: eodDate, header: `EOD Date: ${eodDate}` };
   }
+
+  const resolved = resolveDateRangeFromPreset(periodPreset, fromDate, toDate);
+  const startDisp = formatDisplayDate(parseISODate(resolved.fromDate));
+  const endDisp = formatDisplayDate(parseISODate(resolved.toDate));
+
+  return {
+    chip: resolved.chipLabel,
+    fromDate: startDisp,
+    toDate: endDisp,
+    fromIso: resolved.fromDate,
+    toIso: resolved.toDate,
+    header: `From Date: ${startDisp} To Date: ${endDisp}`,
+  };
 }
 
 export const masterCatalog: MasterCategory[] = [
@@ -126,6 +90,7 @@ export const masterCatalog: MasterCategory[] = [
       { code: 'REP_IC_006', title: 'Transactions on hold' },
       { code: 'REP_IC_007', title: 'User log report' },
       { code: 'REP_IC_008', title: 'Discount summary' },
+      { code: 'REP_IC_009', title: 'Under cost sales report' },
     ],
   },
   {

@@ -25,6 +25,12 @@ import {
 } from 'lucide-react';
 import ReportSidebarNav from './ReportSidebarNav';
 import DynamicReportFilterRenderer from './DynamicReportFilterRenderer';
+import {
+  getStandardPeriodOptions,
+  resolveDateRangeFromPreset,
+  formatISODate,
+  isCustomDatePreset,
+} from '@/lib/dateRangeEngine';
 
 // ============================================================================
 // 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC OMEGA ARCHITECTURE)
@@ -287,25 +293,25 @@ export function ReportHeader({
           <div className="flex items-center gap-1.5">
             <button
               type="button"
-              className="bg-[#475569] hover:bg-[#334155] text-white text-xs rounded-md px-3 py-1.5 font-medium transition-colors cursor-pointer"
+              className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
               Sales
             </button>
             <button
               type="button"
-              className="bg-[#475569] hover:bg-[#334155] text-white text-xs rounded-md px-3 py-1.5 font-medium transition-colors cursor-pointer"
+              className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
               Input Forms
             </button>
             <button
               type="button"
-              className="bg-[#475569] hover:bg-[#334155] text-white text-xs rounded-md px-3 py-1.5 font-medium transition-colors cursor-pointer"
+              className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
               Lists
             </button>
             <button
               type="button"
-              className="bg-[#475569] hover:bg-[#334155] text-white text-xs rounded-md px-3 py-1.5 font-medium transition-colors cursor-pointer"
+              className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
               Reports Builder
             </button>
@@ -368,39 +374,39 @@ export function ExportButtons({
 
   return (
     <div className="flex items-center gap-2 print:hidden select-none">
-      {/* Deep Emerald Green Zoom / Auxiliary Buttons */}
+      {/* Zoom / Auxiliary Buttons */}
       <button
         type="button"
         title="Zoom In"
-        className="bg-[#1b5e20] hover:bg-[#144717] text-white p-2 rounded-md transition-colors cursor-pointer shadow-2xs"
+        className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
       >
         <ZoomIn className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         title="Zoom Out"
-        className="bg-[#1b5e20] hover:bg-[#144717] text-white p-2 rounded-md transition-colors cursor-pointer shadow-2xs"
+        className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
       >
         <ZoomOut className="w-3.5 h-3.5" />
       </button>
 
-      {/* Print Button - Dark slate blue */}
+      {/* Print Button */}
       <button
         type="button"
         onClick={handlePrint}
-        className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d3748] hover:bg-[#1a202c] text-white text-xs rounded-md font-medium shadow-2xs transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer"
         title="Print Report"
       >
         <Printer className="w-3.5 h-3.5" />
         <span>Print Report</span>
       </button>
 
-      {/* Export Report Button - Dark slate blue */}
+      {/* Export Report Button */}
       <button
         type="button"
         onClick={handleExport}
         disabled={isLoadingPdf || isLoadingExcel}
-        className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d3748] hover:bg-[#1a202c] text-white text-xs rounded-md font-medium shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
         title="Export Report"
       >
         <FileDown className="w-3.5 h-3.5" />
@@ -441,7 +447,12 @@ export function ReportSelectFilter({
         >
           {placeholder && <option value="ALL">{placeholder}</option>}
           {options.map((opt, idx) => (
-            <option key={`${opt.value}-${idx}`} value={opt.value}>
+            <option
+              key={`${opt.value}-${idx}`}
+              value={opt.value}
+              disabled={(opt as any).disabled}
+              title={(opt as any).tooltip}
+            >
               {opt.label}
             </option>
           ))}
@@ -462,16 +473,7 @@ export function ReportFilters({
   searchPlaceholder = 'Search filter...',
   period = 'Today',
   onPeriodChange,
-  periodOptions = [
-    { label: 'Today', value: 'Today' },
-    { label: 'Yesterday', value: 'Yesterday' },
-    { label: 'This Week', value: 'This Week' },
-    { label: 'This Month', value: 'This Month' },
-    { label: 'Last Month', value: 'Last Month' },
-    { label: 'This Quarter', value: 'This Quarter' },
-    { label: 'This Year', value: 'This Year' },
-    { label: 'Custom Range', value: 'Custom' },
-  ],
+  periodOptions = getStandardPeriodOptions(),
   fromDate = '',
   toDate = '',
   onDateRangeChange,
@@ -484,6 +486,21 @@ export function ReportFilters({
   const [showUnposted, setShowUnposted] = useState(false);
   const [removeGrouping, setRemoveGrouping] = useState(false);
   const [showTaxes, setShowTaxes] = useState(true);
+
+  const todayISO = formatISODate(new Date());
+
+  const isCustom = isCustomDatePreset(period);
+  const resolvedPeriod = resolveDateRangeFromPreset(period, fromDate, toDate);
+
+  const handlePeriodChange = (newPeriod: string) => {
+    if (onPeriodChange) {
+      onPeriodChange(newPeriod);
+    }
+    if (!isCustomDatePreset(newPeriod) && onDateRangeChange) {
+      const resolved = resolveDateRangeFromPreset(newPeriod, fromDate, toDate);
+      onDateRangeChange(resolved.fromDate, resolved.toDate);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4 print:hidden select-none">
@@ -506,38 +523,60 @@ export function ReportFilters({
               label="Period"
               value={period}
               options={periodOptions}
-              onChange={onPeriodChange}
+              onChange={handlePeriodChange}
               placeholder=""
             />
           )}
 
-          {/* Date Picker (As-of Date or Range) */}
-          <div className="flex flex-col gap-1 text-left min-w-0">
-            <label className="text-[11px] font-medium text-slate-600 truncate">
-              {period === 'Custom' ? 'From Date' : 'As-of Date'}
-            </label>
-            <div className="relative min-w-0">
-              <input
-                type="date"
-                value={fromDate || '2026-09-15'}
-                onChange={(e) => onDateRangeChange && onDateRangeChange(e.target.value, toDate)}
-                className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
-              />
-            </div>
-          </div>
-
-          {period === 'Custom' && onDateRangeChange && (
-            <div className="flex flex-col gap-1 text-left min-w-0">
-              <label className="text-[11px] font-medium text-slate-600 truncate">To Date</label>
-              <div className="relative min-w-0">
-                <input
-                  type="date"
-                  value={toDate || '2026-09-15'}
-                  onChange={(e) => onDateRangeChange(fromDate, e.target.value)}
-                  className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
-                />
+          {/* Static Preset Read-Only Contextual Badge vs Editable Custom Date Inputs */}
+          {!isCustom ? (
+            <div className="flex flex-col gap-1 text-left min-w-0 sm:col-span-2">
+              <label className="text-[11px] font-medium text-slate-500 truncate">
+                Active Period
+              </label>
+              <div className="flex items-center gap-2 h-[34px] px-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-700 shadow-2xs">
+                <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span className="font-semibold text-slate-800 shrink-0">{period}:</span>
+                <span className="font-mono text-slate-600 truncate">{resolvedPeriod.displayPeriod}</span>
+                {resolvedPeriod.warning && (
+                  <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-auto shrink-0">
+                    {resolvedPeriod.warning}
+                  </span>
+                )}
               </div>
             </div>
+          ) : (
+            <>
+              {/* Editable From Date - ONLY WHEN CUSTOM */}
+              <div className="flex flex-col gap-1 text-left min-w-0">
+                <label className="text-[11px] font-medium text-slate-600 truncate">
+                  From Date
+                </label>
+                <div className="relative min-w-0">
+                  <input
+                    type="date"
+                    value={fromDate || todayISO}
+                    onChange={(e) => onDateRangeChange && onDateRangeChange(e.target.value, toDate)}
+                    className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Editable To Date - ONLY WHEN CUSTOM */}
+              {onDateRangeChange && (
+                <div className="flex flex-col gap-1 text-left min-w-0">
+                  <label className="text-[11px] font-medium text-slate-600 truncate">To Date</label>
+                  <div className="relative min-w-0">
+                    <input
+                      type="date"
+                      value={toDate || todayISO}
+                      onChange={(e) => onDateRangeChange(fromDate, e.target.value)}
+                      className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs font-mono"
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Search Autocomplete */}
@@ -563,21 +602,21 @@ export function ReportFilters({
 
         {/* Action Buttons Stacked on the Right */}
         <div className="flex flex-row lg:flex-col gap-2 shrink-0 w-full lg:w-36 pt-0 lg:pt-5 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-4">
-          {/* Primary Filter Button: Slate Navy */}
+          {/* Primary Filter Button */}
           <button
             type="button"
             onClick={onApplyFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-[#334155] hover:bg-[#1e293b] text-white text-xs px-3 py-2 rounded-md font-medium shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
             <span>Filter Report</span>
           </button>
 
-          {/* Reset Filters Button: Deep Burgundy/Brown */}
+          {/* Reset Filters Button */}
           <button
             type="button"
             onClick={onResetFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-[#5c2427] hover:bg-[#4a1d20] text-white text-xs px-3 py-2 rounded-md font-medium shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-muted hover:bg-slate-200 text-foreground border border-border text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />
             <span>Reset Filters</span>
@@ -741,7 +780,7 @@ export function ReportTableWrapper({
     });
 
   return (
-    <div className="w-full bg-[#f4f6f9] py-2 print:p-0 print:bg-white select-none">
+    <div className="w-full bg-background py-2 print:p-0 print:bg-white select-none">
       {/* Print Page Orientation & Margin Rule */}
       <style>{`
         @media print {
@@ -961,7 +1000,7 @@ export default function ReportPageLayout({
   return (
     <ReportPaperSizeContext.Provider value={{ paperSize, setPaperSize, orientation, setOrientation }}>
       <div
-        className={`min-h-screen p-4 md:p-6 bg-[#f4f6f9] font-sans text-slate-800 select-none ${className}`}
+        className={`min-h-screen p-4 md:p-6 bg-background font-sans text-foreground select-none ${className}`}
       >
         {/* 2-Column Master Layout */}
         <div className="flex flex-col lg:flex-row gap-5 items-start">
@@ -992,7 +1031,7 @@ export default function ReportPageLayout({
               <ReportHeader
                 title={activeReport}
                 breadcrumbs={[
-                  { label: 'Home', href: '/backoffice/dashboard' },
+                  { label: 'Home', href: '/backoffice' },
                   { label: moduleTitle },
                   { label: activeReport },
                 ]}

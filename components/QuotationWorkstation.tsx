@@ -86,7 +86,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     id: 'QT-001',
     quotationNo: 'QT-2026-0042',
     customerType: 'Customer',
-    customerName: 'Abou Hamza / مكسرات أبو حمزة',
+    customerName: 'Abou Hamzeh Nuts',
     customerId: '31',
     phone: '+961 70 123 456',
     branch: 'Zeit w zaytoun ljanoub',
@@ -160,7 +160,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
 
 export const SAMPLE_CUSTOMERS = [
   { id: '9', name: 'Mohammed Chami', phone: '78851503', address: 'Lebanon' },
-  { id: '31', name: 'Abou Hamza / مكسرات أبو حمزة', phone: '+961 70 123 456', address: 'Saida, Lebanon' },
+  { id: '31', name: 'Abou Hamzeh Nuts', phone: '+961 70 123 456', address: 'Saida, Lebanon' },
   { id: '14', name: 'Supermarket Al-Nour', phone: '+961 03 987 654', address: 'Nabatieh, Lebanon' },
   { id: '88', name: 'Beirut Gourmet Co.', phone: '+961 01 234 567', address: 'Achrafieh, Beirut' },
   { id: '05', name: 'Jabal Amel Co-op', phone: '+961 07 765 432', address: 'Tyre, South Lebanon' }
@@ -414,8 +414,8 @@ export const DESKTOP_ITEMS_PRESET = [
   { name: 'sunflower', type: 'File folder', date: '03-Jan-26 10:26 AM', size: '' },
   { name: 'TMA', type: 'File folder', date: '03-Jan-26 10:24 AM', size: '' },
   { name: 'Weekly Salaries', type: 'File folder', date: '03-Jul-26 9:11 AM', size: '' },
-  { name: 'فيلم زيت و زيتون الجنوب', type: 'File folder', date: '03-Jan-26 10:33 AM', size: '' },
-  { name: 'عروض', type: 'File folder', date: '06-Jul-26 2:57 PM', size: '' },
+  { name: 'فيلم Southern Olive Oil', type: 'File folder', date: '03-Jan-26 10:33 AM', size: '' },
+  { name: 'Promotions', type: 'File folder', date: '06-Jul-26 2:57 PM', size: '' },
   { name: 'مشروع أهراء', type: 'File folder', date: '24-Jun-26 5:48 PM', size: '' },
   { name: 'معلومات يومية', type: 'File folder', date: '12-Apr-26 7:36 PM', size: '' },
   { name: 'Chair_Tai_Chi_Program', type: 'Microsoft Edge PDF Document', date: '03-Aug-26 12:47 PM', size: '51 KB' },
@@ -424,10 +424,10 @@ export const DESKTOP_ITEMS_PRESET = [
 
 // Complete Hierarchical Catalog Tree for Categories, Divisions, and Groups
 export const CATALOG_STRUCTURE: Record<
-  'مفرق' | 'جملة' | 'عروض' | 'Raw Materials',
+  'Retail' | 'Wholesale' | 'Promotions' | 'Raw Materials',
   Record<string, string[]>
 > = {
-  'مفرق': {
+  'Retail': {
     'مقطرات ومطيبات مفرق': [
       'مقطرات مفرق 250مل',
       'مقطرات ومطيبات غالون',
@@ -464,7 +464,7 @@ export const CATALOG_STRUCTURE: Record<
       'عجين بلدي'
     ]
   },
-  'جملة': {
+  'Wholesale': {
     'مقطرات ودبس جملة': [
       'مقطرات 250مل جملة',
       'مقطرات غالون جملة',
@@ -494,7 +494,7 @@ export const CATALOG_STRUCTURE: Record<
       'مربيات سطل جملة'
     ]
   },
-  'عروض': {
+  'Promotions': {
     'عروض وتوفير': [
       'عرض التوفير العائلي',
       'باقة المونة الكاملة',
@@ -544,7 +544,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-PGM-12',
     code: 'WHOLE-PGM-12',
     name: 'دبس رمان بلدي كرتونة 12 قنينة (250مل)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مقطرات ودبس جملة',
     group: 'دبس رمان جملة',
     unit: 'CRT',
@@ -556,7 +556,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-DIST-250',
     code: 'WHOLE-DIST-250',
     name: 'ماء زهر مقطر كرتونة 12 قنينة (250مل)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مقطرات ودبس جملة',
     group: 'مقطرات 250مل جملة',
     unit: 'CRT',
@@ -568,7 +568,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-ROSE-250',
     code: 'WHOLE-ROSE-250',
     name: 'ماء ورد مقطر كرتونة 12 قنينة (250مل)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مقطرات ودبس جملة',
     group: 'مقطرات 250مل جملة',
     unit: 'CRT',
@@ -580,7 +580,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-GAL-ORANGE',
     code: 'WHOLE-GAL-ORANGE',
     name: 'ماء زهر بلدي غالون جملة (4 ليتر)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مقطرات ودبس جملة',
     group: 'مقطرات غالون جملة',
     unit: 'GAL',
@@ -592,7 +592,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-GAL-ROSE',
     code: 'WHOLE-GAL-ROSE',
     name: 'ماء ورد بلدي غالون جملة (4 ليتر)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مقطرات ودبس جملة',
     group: 'مقطرات غالون جملة',
     unit: 'GAL',
@@ -604,7 +604,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-EVOO-12L',
     code: 'WHOLE-EVOO-12L',
     name: 'زيت زيتون بكر كرتونة 12 قنينة (1 ليتر)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'زيوت جملة',
     group: 'زيت زيتون فرجين جملة',
     unit: 'CRT',
@@ -616,7 +616,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'SUN-OIL-4X5L',
     code: 'SUN-OIL-4X5L',
     name: 'زيت دوار الشمس اوكراني كرتونة 4 غالونات (5L)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'زيوت جملة',
     group: 'زيت اوكراني دوار الشمس جملة',
     unit: 'CRT',
@@ -628,7 +628,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'WHOLE-KISHK-10K',
     code: 'WHOLE-KISHK-10K',
     name: 'كشك بلدي بقري صافي شوال 10 كغ',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مونة بلدية جملة',
     group: 'كشك جملة',
     unit: 'BAG',
@@ -640,7 +640,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'MAKDOUS-5KG',
     code: 'MAKDOUS-5KG',
     name: 'مكدوس بلدي بالجوز والزيت سطل 5 كغ',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مونة بلدية جملة',
     group: 'مكدوس جملة',
     unit: 'BUCKET',
@@ -652,7 +652,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'HONEY-SIDR-5KG',
     code: 'HONEY-SIDR-5KG',
     name: 'عسل سدر جبلي صافي سطل جملة 5 كغ',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'عسل جملة',
     group: 'عسل تنك جملة',
     unit: 'BUCKET',
@@ -664,7 +664,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'HONEY-FLW-12',
     code: 'HONEY-FLW-12',
     name: 'عسل زهور برية كرتونة 12 مرطبان (1 كغ)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'عسل جملة',
     group: 'عسل كراتين جملة',
     unit: 'CRT',
@@ -676,7 +676,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'JAM-FIG-12',
     code: 'JAM-FIG-12',
     name: 'مربى تين بلدي كرتونة 12 مرطبان (450غ)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مربيات جملة',
     group: 'مربيات كراتين جملة',
     unit: 'CRT',
@@ -688,7 +688,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'JAM-APR-12',
     code: 'JAM-APR-12',
     name: 'مربى مشمش كرتونة 12 مرطبان (450غ)',
-    category: 'جملة',
+    category: 'Wholesale',
     division: 'مربيات جملة',
     group: 'مربيات كراتين جملة',
     unit: 'CRT',
@@ -701,7 +701,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'OFFER-COMBO-02',
     code: 'OFFER-COMBO-02',
     name: 'باقة المونة الشاملة: كشك + زيتون + زيت + مربى',
-    category: 'عروض',
+    category: 'Promotions',
     division: 'باقات التوفير',
     group: 'باقة المونة الكاملة',
     unit: 'PACK',
@@ -713,7 +713,7 @@ export const ALL_CATALOG_ITEMS: SalesItem[] = [
     id: 'OFFER-DIST-03',
     code: 'OFFER-DIST-03',
     name: 'باقة المقطرات الاقتصادية (3 غالونات مشكلة)',
-    category: 'عروض',
+    category: 'Promotions',
     division: 'باقات التوفير',
     group: 'باقة المقطرات الاقتصادية',
     unit: 'PACK',
@@ -794,9 +794,9 @@ export interface RecurringTemplate {
 export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
   {
     id: 'REC-001',
-    title: 'طلب مقطرات ودبس أسبوعي - مكسرات أبو حمزة',
+    title: 'طلب مقطرات ودبس أسبوعي - Abou Hamzeh Nuts',
     code: 'REC-ABOUHAMZA',
-    customerName: 'Abou Hamza / مكسرات أبو حمزة',
+    customerName: 'Abou Hamzeh Nuts',
     branch: 'Zeit w zaytoun ljanoub',
     currency: 'USD',
     source: 'WhatsApp / Social CRM',
@@ -862,7 +862,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   // Quotation header state
   const [quotationNo, setQuotationNo] = useState('QT-2026-0043');
   const [customerType, setCustomerType] = useState<'Contact' | 'Customer'>('Customer');
-  const [customerSearch, setCustomerSearch] = useState('Abou Hamza / مكسرات أبو حمزة');
+  const [customerSearch, setCustomerSearch] = useState('Abou Hamzeh Nuts');
   const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; name: string; phone: string; address: string } | null>(SAMPLE_CUSTOMERS[0]);
   const [isCustomerDropdownOpen, setIsCustomerDropdownOpen] = useState(false);
   const customerDropdownRef = useRef<HTMLDivElement>(null);
@@ -970,7 +970,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   const [quotationItems, setQuotationItems] = useState<QuotationItem[]>([]);
 
   // Catalog navigation state (matching screenshot exactly)
-  const [activeCategory, setActiveCategory] = useState<'مفرق' | 'جملة' | 'عروض' | 'Raw Materials'>('مفرق');
+  const [activeCategory, setActiveCategory] = useState<'Retail' | 'Wholesale' | 'Promotions' | 'Raw Materials'>('Retail');
   const [activeDivision, setActiveDivision] = useState('مقطرات ومطيبات مفرق');
   const [activeGroup, setActiveGroup] = useState('مقطرات مفرق 250مل');
   const [catalogSearch, setCatalogSearch] = useState('');
@@ -986,7 +986,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   }, [activeCategory, activeDivision]);
 
   // Switch category: dynamically selects first division and first group of that category
-  const handleCategoryChange = (cat: 'مفرق' | 'جملة' | 'عروض' | 'Raw Materials') => {
+  const handleCategoryChange = (cat: 'Retail' | 'Wholesale' | 'Promotions' | 'Raw Materials') => {
     setActiveCategory(cat);
     const divs = Object.keys(CATALOG_STRUCTURE[cat] || {});
     const nextDiv = divs[0] || '';
@@ -1728,7 +1728,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   }, [quotationsList, previewSearch, previewTab]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f1f5f9] font-sans text-slate-800">
+    <div className="flex flex-col min-h-screen bg-muted font-sans text-slate-800">
       {/* ========================================================================= */}
       {/* TOP HEADER & ACTION CONTROLS (Matching Screenshot)                        */}
       {/* ========================================================================= */}
@@ -1750,7 +1750,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={handleTriggerNewQuotation}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
             title="Start New Quotation"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -1761,7 +1761,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={() => setIsPreviewModalOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
             title="Search / Preview Quotations"
           >
             <Search className="w-3.5 h-3.5" />
@@ -1771,7 +1771,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={handleSaveQuotation}
-            className="bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
             title="Save Quotation"
           >
             <Save className="w-3.5 h-3.5" />
@@ -1782,7 +1782,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={() => setIsStoreRecurringModalOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
             title="Store as Recurring Quotation"
           >
             <Upload className="w-3.5 h-3.5" />
@@ -1792,7 +1792,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={() => setIsInfoModalOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
             title="Quotation Information"
           >
             <Info className="w-3.5 h-3.5" />
@@ -1802,7 +1802,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <button
             type="button"
             onClick={() => setIsDeleteConfirmOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
             title="Delete Quotation"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -1816,7 +1816,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               notify(isTaxEnabled ? 'Tax Disabled (No Tax)' : '11% VAT Tax Enabled');
             }}
             className={`text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer ${
-              isTaxEnabled ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-[#2f3b52] hover:bg-[#1e2736]'
+              isTaxEnabled ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-primary hover:bg-primary'
             }`}
             title="Toggle Tax Calculation"
           >
@@ -1829,7 +1829,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <button
               type="button"
               onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
             >
               <span>Actions</span>
               <ChevronDown className="w-3 h-3" />
@@ -2127,7 +2127,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                                     setIsContactDropdownOpen(false);
                                     window.open('/contacts', '_blank');
                                   }}
-                                  className="w-full bg-[#2f3b52] hover:bg-[#1e2736] text-white text-[11px] font-semibold py-1.5 px-3 rounded flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                                  className="w-full bg-primary hover:bg-primary text-white text-[11px] font-semibold py-1.5 px-3 rounded flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
                                 >
                                   <Plus className="w-3 h-3 text-emerald-400" />
                                   <span>Open Contacts (+ New Contact) in New Tab</span>
@@ -2193,15 +2193,15 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             </div>
 
             {/* Category Tier 1 Tabs (مفرق, جملة, عروض, Raw Materials) */}
-            <div className="flex items-center border-b border-slate-200 bg-[#f8fafc] text-xs font-semibold overflow-x-auto">
-              {(['مفرق', 'جملة', 'عروض', 'Raw Materials'] as const).map((cat) => (
+            <div className="flex items-center border-b border-slate-200 bg-background text-xs font-semibold overflow-x-auto">
+              {(['Retail', 'Wholesale', 'Promotions', 'Raw Materials'] as const).map((cat) => (
                 <button
                   key={cat}
                   type="button"
                   onClick={() => handleCategoryChange(cat)}
                   className={`px-4 py-2 border-r border-slate-200 transition-colors cursor-pointer ${
                     activeCategory === cat
-                      ? 'bg-[#2f3b52] text-white'
+                      ? 'bg-primary text-white'
                       : 'text-slate-700 hover:bg-slate-200/60'
                   }`}
                 >
@@ -2219,7 +2219,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   onClick={() => handleDivisionChange(div)}
                   className={`px-2.5 py-1.5 border-r border-slate-200 whitespace-nowrap transition-colors cursor-pointer ${
                     activeDivision === div
-                      ? 'bg-[#dbeafe] text-[#1e40af] font-bold border-b-2 border-b-blue-600'
+                      ? 'bg-muted text-primary font-bold border-b-2 border-b-blue-600'
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -2229,7 +2229,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             </div>
 
             {/* Group Tier 2 Tabs - Row 2 (Subgroups) */}
-            <div className="flex items-center border-b border-slate-200 bg-[#f1f5f9] text-[11px] overflow-x-auto font-medium min-h-[30px]">
+            <div className="flex items-center border-b border-slate-200 bg-muted text-[11px] overflow-x-auto font-medium min-h-[30px]">
               {availableGroups.length > 0 ? (
                 availableGroups.map((grp) => (
                   <button
@@ -2447,7 +2447,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             {isOrderSummaryOpen && (
               <div>
                 {/* Table Header */}
-                <div className="grid grid-cols-12 px-4 py-2 border-b border-slate-200 text-xs font-semibold text-slate-600 bg-[#f8fafc]">
+                <div className="grid grid-cols-12 px-4 py-2 border-b border-slate-200 text-xs font-semibold text-slate-600 bg-background">
                   <div className="col-span-5">Product</div>
                   <div className="col-span-2 text-center">Qty</div>
                   <div className="col-span-3 text-right">Unit Price ($)</div>
@@ -2532,7 +2532,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 </div>
 
                 {/* Totals Section (Matching exact labels in screenshot) */}
-                <div className="border-t border-slate-200 p-4 space-y-2 bg-[#f8fafc]/50 text-xs">
+                <div className="border-t border-slate-200 p-4 space-y-2 bg-background/50 text-xs">
                   {/* Subtotal */}
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-slate-700">Subtotal:</span>
@@ -2546,7 +2546,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <button
                       type="button"
                       onClick={handleOpenDiscountModal}
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded shadow-2xs cursor-pointer"
+                      className="bg-primary hover:bg-primary text-white text-[11px] font-semibold px-2.5 py-0.5 rounded shadow-2xs cursor-pointer"
                     >
                       Discount
                     </button>
@@ -2584,7 +2584,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <button
                       type="button"
                       onClick={handleSaveQuotation}
-                      className="bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                      className="bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Save</span>
@@ -2614,7 +2614,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
-            <div className="bg-[#2f3b52] text-white px-5 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Search className="w-4 h-4 text-orange-400" />
                 <h3 className="text-sm font-bold">Preview Quotations</h3>
@@ -2638,7 +2638,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     onClick={() => setPreviewTab(tab)}
                     className={`px-3 py-1 rounded transition-colors cursor-pointer ${
                       previewTab === tab
-                        ? 'bg-[#2f3b52] text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
                     }`}
                   >
@@ -2756,7 +2756,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => setIsPreviewModalOpen(false)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1 rounded font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary text-white px-4 py-1 rounded font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -2795,7 +2795,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     readOnly={!isEditingRate}
                     onChange={(e) => setInfoRate(e.target.value)}
                     className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 ${
-                      isEditingRate ? 'bg-white focus:outline-none focus:border-blue-500' : 'bg-[#e9ecef] cursor-default'
+                      isEditingRate ? 'bg-white focus:outline-none focus:border-blue-500' : 'bg-muted cursor-default'
                     }`}
                   />
                   <button
@@ -2819,7 +2819,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     readOnly={!isEditingWorkstation}
                     onChange={(e) => setInfoWorkstation(e.target.value)}
                     className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 ${
-                      isEditingWorkstation ? 'bg-white focus:outline-none focus:border-blue-500' : 'bg-[#e9ecef] cursor-default'
+                      isEditingWorkstation ? 'bg-white focus:outline-none focus:border-blue-500' : 'bg-muted cursor-default'
                     }`}
                   />
                   <button
@@ -2939,7 +2939,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-[#2b4c7e]">Invoice Discount</h2>
+              <h2 className="text-base font-normal text-primary">Invoice Discount</h2>
               <button
                 type="button"
                 onClick={() => setIsDiscountModalOpen(false)}
@@ -2967,7 +2967,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className={`w-full py-2 px-3 rounded text-xs font-semibold text-left transition-all cursor-pointer ${
                         discountActiveMode === 'DISCOUNT'
-                          ? 'bg-[#344256] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
@@ -2981,7 +2981,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className={`w-full py-2 px-3 rounded text-xs font-semibold text-left transition-all cursor-pointer ${
                         discountActiveMode === 'DISCOUNT_100'
-                          ? 'bg-[#344256] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
@@ -3004,7 +3004,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className={`w-full py-2 px-3 rounded text-xs font-semibold text-left transition-all cursor-pointer ${
                         discountActiveMode === 'AMOUNT_DISCOUNT'
-                          ? 'bg-[#344256] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
@@ -3018,7 +3018,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className={`w-full py-2 px-3 rounded text-xs font-semibold text-left transition-all cursor-pointer ${
                         discountActiveMode === 'DISC_DOLLAR'
-                          ? 'bg-[#344256] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
@@ -3115,7 +3115,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-[#2b4c7e]">Store Recurring Quotation</h2>
+              <h2 className="text-base font-normal text-primary">Store Recurring Quotation</h2>
               <button
                 type="button"
                 onClick={() => setIsStoreRecurringModalOpen(false)}
@@ -3171,7 +3171,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     notify(`Stored recurring quotation "${recurringDescription}" successfully.`);
                     setRecurringDescription('');
                   }}
-                  className="bg-[#344256] hover:bg-[#232d3b] text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -3188,7 +3188,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       {isClearConfirmOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-sm overflow-hidden flex flex-col font-sans text-xs">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="text-sm font-bold">New Quotation</h3>
               <button
                 type="button"
@@ -3215,7 +3215,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   setIsClearConfirmOpen(false);
                   handleNewQuotation();
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded font-semibold cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded font-semibold cursor-pointer transition-colors"
               >
                 OK
               </button>
@@ -3230,7 +3230,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-sm overflow-hidden flex flex-col font-sans text-xs">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="text-sm font-bold">Delete Quotation</h3>
               <button
                 type="button"
@@ -3270,7 +3270,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-3xl overflow-hidden flex flex-col font-sans text-xs max-h-[85vh]">
             {/* Header */}
-            <div className="bg-[#2f3b52] text-white px-6 py-3.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-6 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-amber-400" />
                 <h2 className="text-base font-bold">Recall Recurring / Recall Sales</h2>
@@ -3318,7 +3318,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <button
                       type="button"
                       onClick={() => handlePickUpSale(item)}
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-3.5 py-1.5 rounded font-semibold text-xs shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 transition-colors"
+                      className="bg-primary hover:bg-primary text-white px-3.5 py-1.5 rounded font-semibold text-xs shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 transition-colors"
                     >
                       <Check className="w-3.5 h-3.5 text-emerald-400" />
                       <span>Pick Up</span>
@@ -3666,7 +3666,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <span className="text-amber-500">★</span> Quick access
                 </div>
                 <div className="pl-4 space-y-0.5 text-slate-700">
-                  <div className="px-2 py-1 rounded bg-[#cce8ff] border border-[#99d1ff] font-medium flex items-center gap-2 cursor-pointer">
+                  <div className="px-2 py-1 rounded bg-muted border border-[#99d1ff] font-medium flex items-center gap-2 cursor-pointer">
                     <span>🖥️</span> Desktop
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
@@ -3790,14 +3790,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       setIsSaveAsModalOpen(false);
                       notify(`Saved "${saveAsFileName}.pdf" to computer Downloads folder!`);
                     }}
-                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-[#adadad] text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-border text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                   >
                     Save
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsSaveAsModalOpen(false)}
-                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-[#adadad] text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-border text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                   >
                     Cancel
                   </button>
@@ -4328,7 +4328,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onClick={() => setSelectedSystemPrinter(prn.name)}
                       className={`px-2 py-1 flex items-center justify-between cursor-pointer rounded text-xs ${
                         selectedSystemPrinter === prn.name
-                          ? 'bg-[#cce8ff] border border-[#99d1ff] text-slate-900 font-medium'
+                          ? 'bg-muted border border-[#99d1ff] text-slate-900 font-medium'
                           : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
@@ -4357,14 +4357,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <button
                       type="button"
                       onClick={() => setIsPreferencesModalOpen(true)}
-                      className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
+                      className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
                     >
                       Preferences
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsFindPrinterModalOpen(true)}
-                      className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
+                      className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
                     >
                       Find Printer...
                     </button>
@@ -4464,14 +4464,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => setIsSystemPrintModalOpen(false)}
-                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
+                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 disabled
-                className="bg-[#e1e1e1] border border-[#adadad] text-slate-400 px-5 py-1 rounded-xs text-xs font-normal cursor-not-allowed opacity-60"
+                className="bg-[#e1e1e1] border border-border text-slate-400 px-5 py-1 rounded-xs text-xs font-normal cursor-not-allowed opacity-60"
               >
                 Apply
               </button>
@@ -4654,7 +4654,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => setIsPreferencesModalOpen(false)}
-                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
+                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
                 Cancel
               </button>
@@ -4699,14 +4699,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <button
                     type="button"
                     onClick={() => notify('Scanning local network and USB ports...')}
-                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] rounded px-3 py-1 text-xs cursor-pointer shadow-2xs font-medium"
+                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-3 py-1 text-xs cursor-pointer shadow-2xs font-medium"
                   >
                     Find Now
                   </button>
                   <button
                     type="button"
                     onClick={() => setFindPrinterName('')}
-                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] rounded px-3 py-1 text-xs cursor-pointer shadow-2xs"
+                    className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-3 py-1 text-xs cursor-pointer shadow-2xs"
                   >
                     Clear
                   </button>
@@ -4740,7 +4740,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         }}
                         className={`px-2 py-1.5 grid grid-cols-12 gap-1 items-center cursor-pointer text-xs ${
                           selectedSystemPrinter === printer.name
-                            ? 'bg-[#cce8ff] text-slate-900 font-medium'
+                            ? 'bg-muted text-slate-900 font-medium'
                             : 'hover:bg-slate-50 text-slate-700'
                         }`}
                       >
@@ -4761,7 +4761,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => setIsFindPrinterModalOpen(false)}
-                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#adadad] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
+                className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
                 Close
               </button>
@@ -4776,7 +4776,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       {isPrintPreviewOpen && (
         <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-xs z-[60] flex flex-col font-sans select-none overflow-hidden animate-fade-in">
           {/* Top Action Bar (Above PDF toolbar) */}
-          <div className="bg-[#f8fafc] border-b border-slate-300 px-4 py-2 flex items-center justify-between shadow-2xs">
+          <div className="bg-background border-b border-slate-300 px-4 py-2 flex items-center justify-between shadow-2xs">
             <div className="flex items-center gap-2">
               {/* Export Button (Downloads quotation PDF directly to Downloads folder) */}
               <button
@@ -4790,7 +4790,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     notify('No quotation selected to export.');
                   }
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export</span>
@@ -4808,7 +4808,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   setFromEmailSearch('');
                   setIsSendEmailModalOpen(true);
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Send Email</span>
@@ -4818,7 +4818,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => setIsPrintPreviewOpen(false)}
-                className="bg-[#642d33] hover:bg-[#522429] text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-destructive hover:bg-destructive text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Close</span>
@@ -5229,7 +5229,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           </div>
 
           {/* Bottom Footer (Matching Omega footer in screenshot 4) */}
-          <div className="bg-[#f8fafc] border-t border-slate-300 py-1 px-4 text-center text-[10px] text-slate-500 font-sans">
+          <div className="bg-background border-t border-slate-300 py-1 px-4 text-center text-[10px] text-slate-500 font-sans">
             © 2026 Omega Software All rights reserved. &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms and Conditions &nbsp;|&nbsp; Support &nbsp;|&nbsp; Feedback
           </div>
         </div>
@@ -5383,7 +5383,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             }}
                             className={`px-3 py-1.5 rounded text-xs cursor-pointer ${
                               defaultPrinterType === p
-                                ? 'bg-[#0d6efd] text-white font-semibold'
+                                ? 'bg-primary text-white font-semibold'
                                 : 'text-slate-800 hover:bg-slate-100'
                             }`}
                           >
@@ -5438,7 +5438,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             }}
                             className={`px-3 py-1.5 rounded text-xs cursor-pointer ${
                               defaultPrintReportOnSave === opt
-                                ? 'bg-[#0d6efd] text-white font-semibold'
+                                ? 'bg-primary text-white font-semibold'
                                 : 'text-slate-800 hover:bg-slate-100'
                             }`}
                           >
@@ -5475,7 +5475,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     setCurrency(defaultCurrency as any);
                     notify('Default values saved successfully.');
                   }}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-2 rounded text-xs font-bold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                  className="bg-primary hover:bg-primary text-white px-4 py-2 rounded text-xs font-bold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save Default Values</span>
@@ -5612,7 +5612,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                               }}
                               className={`px-3 py-1.5 rounded text-xs cursor-pointer select-none transition-colors ${
                                 sellingPriceTier === p
-                                  ? 'bg-[#0d6efd] text-white font-semibold'
+                                  ? 'bg-primary text-white font-semibold'
                                   : 'text-slate-800 hover:bg-slate-100'
                               }`}
                             >

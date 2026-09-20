@@ -98,8 +98,8 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
       {
         id: '132-1',
         productId: 1009,
-        code: 'دونات شوكولا',
-        description: 'دونات شوكولا',
+        code: 'Chocolate Donut',
+        description: 'Chocolate Donut',
         qty: 1,
         unitCost: 52200,
         totalCost: 52200,
@@ -124,8 +124,8 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
       {
         id: '120-1',
         productId: 1010,
-        code: 'مرطبان شطة حارة 650غ',
-        description: 'مرطبان شطة حارة 650غ',
+        code: 'Hot Chili Pepper Paste Jar 650g',
+        description: 'Hot Chili Pepper Paste Jar 650g',
         qty: 1,
         unitCost: 102665,
         totalCost: 102665,
@@ -150,8 +150,8 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
       {
         id: '118-1',
         productId: 1011,
-        code: 'مرطبان زيتون اخضر بو شوكة 350غ',
-        description: 'مرطبان زيتون اخضر بو شوكة 350غ',
+        code: 'Green Olives Jar 350g',
+        description: 'Green Olives Jar 350g',
         qty: 2,
         unitCost: 127800,
         totalCost: 255600,
@@ -176,8 +176,8 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
       {
         id: '116-1',
         productId: 1009,
-        code: 'دونات شوكولا',
-        description: 'دونات شوكولا',
+        code: 'Chocolate Donut',
+        description: 'Chocolate Donut',
         qty: 1,
         unitCost: 52200,
         totalCost: 52200,
@@ -643,7 +643,7 @@ export default function LostGoodsView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] min-h-screen text-slate-800 font-sans p-4 md:p-6 select-text">
+    <div className="w-full bg-background min-h-screen text-slate-800 font-sans p-4 md:p-6 select-text">
       {/* GLOBAL TOAST NOTIFICATION */}
       {toastMessage && (
         <div
@@ -670,11 +670,11 @@ export default function LostGoodsView() {
       {/* TOP HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 mb-2">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-[#2c3e50] tracking-tight">
+          <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
             Lost Goods
           </h1>
           <nav className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-medium">
-            <span className="text-[#337ab7] hover:underline cursor-pointer">Home</span>
+            <span className="text-primary hover:underline cursor-pointer">Home</span>
             <span>/</span>
             <span className="text-slate-500">Lost Goods</span>
             {activeVoucher && (
@@ -695,7 +695,7 @@ export default function LostGoodsView() {
               e.preventDefault();
               showToast('Tutorial: Add lost/damaged goods to adjust inventory ledger.', 'info');
             }}
-            className="text-xs text-[#337ab7] hover:underline font-medium flex items-center gap-1"
+            className="text-xs text-primary hover:underline font-medium flex items-center gap-1"
           >
             Watch Tutorial
           </a>
@@ -727,7 +727,7 @@ export default function LostGoodsView() {
           {/* + New Button */}
           <button
             onClick={handleNew}
-            className="h-[32px] px-3.5 bg-[#2c3e50] hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New</span>
@@ -736,7 +736,7 @@ export default function LostGoodsView() {
           {/* Preview Button */}
           <button
             onClick={() => setIsPreviewModalOpen(true)}
-            className="h-[32px] px-3.5 bg-[#2c3e50] hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Preview</span>
@@ -746,7 +746,7 @@ export default function LostGoodsView() {
           <button
             onClick={() => setIsPrintModalOpen(true)}
             disabled={items.length === 0}
-            className="h-[32px] px-3.5 bg-[#2c3e50] hover:bg-[#1a252f] active:bg-[#111920] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print</span>
@@ -760,7 +760,7 @@ export default function LostGoodsView() {
             CARD 1: INVENTORY ITEMS LOST GOODS
             ==================================================================== */}
         <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
-          <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+          <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-slate-700 tracking-wide">
               Inventory Items Lost Goods
             </h2>
@@ -808,7 +808,7 @@ export default function LostGoodsView() {
                     type="button"
                     onClick={() => setIsAddLocationModalOpen(true)}
                     title="Add Location"
-                    className="w-[34px] h-[34px] bg-[#2c3e50] hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                    className="w-[34px] h-[34px] bg-primary hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -824,7 +824,7 @@ export default function LostGoodsView() {
                   type="text"
                   disabled
                   value={employeeName}
-                  className="w-full h-[34px] px-3 text-xs text-slate-700 bg-[#eef2f7] border border-slate-300 rounded shadow-xs cursor-not-allowed font-medium"
+                  className="w-full h-[34px] px-3 text-xs text-slate-700 bg-muted border border-slate-300 rounded shadow-xs cursor-not-allowed font-medium"
                 />
               </div>
 
@@ -866,7 +866,7 @@ export default function LostGoodsView() {
                     type="button"
                     onClick={() => setIsAddReasonModalOpen(true)}
                     title="Add Reason"
-                    className="w-[34px] h-[34px] bg-[#2c3e50] hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                    className="w-[34px] h-[34px] bg-primary hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -880,7 +880,7 @@ export default function LostGoodsView() {
             CARD 2: DETAILS (SEARCH ITEMS, IMPORT CSV, TABLE, SAVE/POST)
             ==================================================================== */}
         <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
-          <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+          <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-slate-700 tracking-wide">
               Details
             </h2>
@@ -903,7 +903,7 @@ export default function LostGoodsView() {
                     }}
                     onClick={() => setIsSearchModalOpen(true)}
                     placeholder="Search items..."
-                    className="w-full h-[34px] px-3.5 text-xs text-slate-700 bg-white border border-[#66afe9] rounded-md shadow-[0_0_8px_rgba(102,175,233,0.4)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
+                    className="w-full h-[34px] px-3.5 text-xs text-slate-700 bg-white border border-primary rounded-md shadow-[0_0_8px_rgba(102,175,233,0.4)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
                   />
                   <Search
                     onClick={() => setIsSearchModalOpen(true)}
@@ -917,7 +917,7 @@ export default function LostGoodsView() {
                 <button
                   type="button"
                   onClick={() => setIsImportCsvModalOpen(true)}
-                  className="h-[34px] px-4 bg-[#2c3e50] hover:bg-[#1a252f] text-white text-xs font-medium rounded shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
+                  className="h-[34px] px-4 bg-primary hover:bg-[#1a252f] text-white text-xs font-medium rounded shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   <span>Import CSV</span>
@@ -929,7 +929,7 @@ export default function LostGoodsView() {
             <div className="overflow-x-auto border border-slate-200 rounded mb-4">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#f8fafc] text-slate-700 border-b border-slate-200 font-semibold">
+                  <tr className="bg-background text-slate-700 border-b border-slate-200 font-semibold">
                     <th className="py-2.5 px-3 w-[30%]">Description</th>
                     <th className="py-2.5 px-3 w-[10%] text-right">Qty</th>
                     <th className="py-2.5 px-3 w-[12%] text-right">Unit Cost</th>
@@ -1021,7 +1021,7 @@ export default function LostGoodsView() {
                                 type="button"
                                 onClick={() => handleSetRowReason(item.id)}
                                 title="Set current reason"
-                                className="w-5 h-5 bg-[#337ab7] hover:bg-[#286090] text-white rounded text-[10px] flex items-center justify-center transition-colors cursor-pointer"
+                                className="w-5 h-5 bg-primary hover:bg-primary/90 text-white rounded text-[10px] flex items-center justify-center transition-colors cursor-pointer"
                               >
                                 <Edit2 className="w-2.5 h-2.5" />
                               </button>
@@ -1058,7 +1058,7 @@ export default function LostGoodsView() {
                       <td className="py-2.5 px-3">Total ({items.length} Items)</td>
                       <td className="py-2.5 px-3 text-right font-mono">{totalQtySum}</td>
                       <td className="py-2.5 px-3 text-right"></td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-[#2c3e50]">
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">
                         {formatCost(totalCostSum)} LBP
                       </td>
                       <td colSpan={3}></td>
@@ -1076,7 +1076,7 @@ export default function LostGoodsView() {
                   <button
                     type="button"
                     onClick={() => handleSave(false)}
-                    className="h-[34px] px-4 bg-[#fb8205] hover:bg-[#e07502] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-[34px] px-4 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save</span>
@@ -1086,7 +1086,7 @@ export default function LostGoodsView() {
                     <button
                       type="button"
                       onClick={handlePost}
-                      className="h-[34px] px-4 bg-[#27ae60] hover:bg-[#219653] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="h-[34px] px-4 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Tag className="w-3.5 h-3.5" />
                       <span>Post</span>
@@ -1117,7 +1117,7 @@ export default function LostGoodsView() {
                   <button
                     type="button"
                     onClick={() => handleSave(false)}
-                    className="h-[34px] px-4 bg-[#fb8205] hover:bg-[#e07502] active:bg-[#c96902] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-[34px] px-4 bg-amber-600 hover:bg-amber-700 active:bg-[#c96902] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save</span>
@@ -1126,7 +1126,7 @@ export default function LostGoodsView() {
                   <button
                     type="button"
                     onClick={() => handleSave(true)}
-                    className="h-[34px] px-4 bg-[#27ae60] hover:bg-[#219653] active:bg-[#1e824c] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-[34px] px-4 bg-emerald-700 hover:bg-emerald-700 active:bg-[#1e824c] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save And Post</span>
@@ -1305,7 +1305,7 @@ function PreviewLostGoodsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-xs animate-in fade-in">
       <div className="bg-white w-full max-w-4xl rounded-lg shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-slate-200 bg-[#f8fafc] flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-slate-200 bg-background flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-800">
               Preview Lost Goods Inventory Items
@@ -1390,7 +1390,7 @@ function PreviewLostGoodsModal({
               <button
                 type="button"
                 onClick={handlePostSelected}
-                className="h-7 px-3 bg-[#27ae60] hover:bg-[#219653] text-white rounded text-xs font-medium flex items-center gap-1"
+                className="h-7 px-3 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-medium flex items-center gap-1"
               >
                 <Tag className="w-3.5 h-3.5" />
                 <span>Post Selected Transactions</span>
@@ -1460,7 +1460,7 @@ function PreviewLostGoodsModal({
                       <button
                         onClick={() => onOpenVoucher(v)}
                         title="Open Voucher"
-                        className="w-6 h-6 bg-[#337ab7] hover:bg-[#286090] text-white rounded flex items-center justify-center transition-colors cursor-pointer"
+                        className="w-6 h-6 bg-primary hover:bg-primary/90 text-white rounded flex items-center justify-center transition-colors cursor-pointer"
                       >
                         <Edit2 className="w-3 h-3" />
                       </button>
@@ -1470,7 +1470,7 @@ function PreviewLostGoodsModal({
                         <button
                           onClick={() => onPostVoucher(v.ser)}
                           title="Post Voucher"
-                          className="w-6 h-6 bg-[#27ae60] hover:bg-[#219653] text-white rounded flex items-center justify-center transition-colors cursor-pointer"
+                          className="w-6 h-6 bg-emerald-700 hover:bg-emerald-700 text-white rounded flex items-center justify-center transition-colors cursor-pointer"
                         >
                           <Tag className="w-3 h-3" />
                         </button>
@@ -1525,7 +1525,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-4 py-3 bg-[#f8fafc] border-b border-slate-200 flex items-center justify-between">
+        <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
           <h4 className="text-xs font-bold text-slate-800">Add Inventory Location</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-4 h-4" />
@@ -1558,7 +1558,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
             type="button"
             disabled={!locationName.trim()}
             onClick={() => onAdd(locationName.trim())}
-            className="h-8 px-4 text-xs bg-[#2c3e50] hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
+            className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
           >
             Save Location
           </button>
@@ -1586,7 +1586,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-4 py-3 bg-[#f8fafc] border-b border-slate-200 flex items-center justify-between">
+        <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
           <h4 className="text-xs font-bold text-slate-800">Add Lost Goods Reason</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-4 h-4" />
@@ -1619,7 +1619,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
             type="button"
             disabled={!reasonName.trim()}
             onClick={() => onAdd(reasonName.trim())}
-            className="h-8 px-4 text-xs bg-[#2c3e50] hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
+            className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
           >
             Save Reason
           </button>
@@ -1649,7 +1649,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
   const handleDownloadTemplate = () => {
     const header = 'PRODUCTCODE,QUANTITY,UNITCOST,REMARK\n';
     const sample =
-      'دونات شوكولا,1,52200,Product Expiry\nمرطبان شطة حارة 650غ,2,102665,Broken\nصندوق زعتر أحمر حلبي 300غ*12,5,1422000,Damaged\n';
+      'Chocolate Donut,1,52200,Product Expiry\nHot Chili Pepper Paste Jar 650g,2,102665,Broken\nصندوق زعتر أحمر حلبي 300غ*12,5,1422000,Damaged\n';
     const blob = new Blob([header + sample], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -1717,7 +1717,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-md rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-5 py-3.5 bg-[#f8fafc] border-b border-slate-200 flex items-center justify-between">
+        <div className="px-5 py-3.5 bg-background border-b border-slate-200 flex items-center justify-between">
           <h4 className="text-sm font-bold text-slate-800">Import Wastage</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-5 h-5" />
@@ -1729,7 +1729,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
             <button
               type="button"
               onClick={handleDownloadTemplate}
-              className="text-xs text-[#337ab7] hover:underline flex items-center gap-1 ml-auto font-medium"
+              className="text-xs text-primary hover:underline flex items-center gap-1 ml-auto font-medium"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download Template</span>
@@ -1741,7 +1741,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
             <div className="text-xs text-slate-600 font-medium mb-2">
               {fileName || 'Click to select or drop CSV file here'}
             </div>
-            <label className="inline-block px-4 py-2 bg-[#2c3e50] hover:bg-[#1a252f] text-white text-xs font-semibold rounded cursor-pointer transition-colors">
+            <label className="inline-block px-4 py-2 bg-primary hover:bg-[#1a252f] text-white text-xs font-semibold rounded cursor-pointer transition-colors">
               <span>Browse CSV</span>
               <input
                 type="file"
@@ -1769,7 +1769,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
             type="button"
             disabled={!csvContent || isProcessing}
             onClick={handleParseAndUpload}
-            className="h-8 px-4 text-xs bg-[#27ae60] hover:bg-[#219653] disabled:opacity-50 text-white rounded font-medium flex items-center gap-1.5"
+            className="h-8 px-4 text-xs bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white rounded font-medium flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5" />
             <span>{isProcessing ? 'Importing...' : 'Upload & Import'}</span>
@@ -1822,7 +1822,7 @@ function PrintVoucherModal({
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="h-7 px-3 bg-[#2c3e50] hover:bg-[#1a252f] text-white text-xs font-medium rounded flex items-center gap-1"
+              className="h-7 px-3 bg-primary hover:bg-[#1a252f] text-white text-xs font-medium rounded flex items-center gap-1"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print Now</span>

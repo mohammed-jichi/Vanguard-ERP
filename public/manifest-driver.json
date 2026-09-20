@@ -1,0 +1,25 @@
+{
+  "name": "V-Driver — SuperSonic Fleet PWA",
+  "short_name": "V-Driver",
+  "description": "Vanguard ERP & SuperSonic Fleet Mobile Driver App with Offline Sync",
+  "start_url": "/v-driver",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/vanguard-emblem.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/vanguard-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

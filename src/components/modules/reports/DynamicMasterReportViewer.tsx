@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import MasterReportContainer from './MasterReportContainer';
 import { MASTER_REPORTS_SCHEMAS, MasterReportSchema } from '@/config/reports.config';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 interface DynamicMasterReportViewerProps {
   reportCode: string;
@@ -41,9 +45,10 @@ export default function DynamicMasterReportViewer({
   };
 
   // Filter States
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [periodPreset, setPeriodPreset] = useState('THIS_MONTH');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-31');
+  const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState(initialDateRange.toDate);
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedRep, setSelectedRep] = useState('ALL');
   const [selectedMode, setSelectedMode] = useState(schema.filters.modesList?.[0] || 'Detailed');
@@ -105,10 +110,20 @@ export default function DynamicMasterReportViewer({
             <label className="block font-bold text-slate-700 mb-0.5">Period:</label>
             <select
               value={periodPreset}
-              onChange={(e) => setPeriodPreset(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setPeriodPreset(val);
+                if (val !== 'CUSTOM') {
+                  const resolved = resolveDateRangeFromPreset(val, fromDate, toDate);
+                  setFromDate(resolved.fromDate);
+                  setToDate(resolved.toDate);
+                }
+              }}
               className="p-1 bg-white border border-slate-300 rounded font-semibold focus:outline-none cursor-pointer"
             >
               <option value="THIS_MONTH">This Month</option>
+              <option value="LAST_MONTH">Last Month</option>
+              <option value="THIS_WEEK">This Week</option>
               <option value="TODAY">Today</option>
               <option value="YESTERDAY">Yesterday</option>
               <option value="CUSTOM">Custom Date Range</option>

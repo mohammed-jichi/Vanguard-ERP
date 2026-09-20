@@ -1,2 +1,2 @@
-export * from '@/src/components/reports/canvas/MasterReportDocument';
-export { default } from '@/src/components/reports/canvas/MasterReportDocument';
+export * from '@/components/reports/MasterReportDocument';
+export { default } from '@/components/reports/MasterReportDocument';

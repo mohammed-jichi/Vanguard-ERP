@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import MasterReportContainer from './MasterReportContainer';
 import { MASTER_REPORTS_SCHEMAS, MasterReportSchema } from '@/config/reports.config';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 interface DynamicMasterReportViewerProps {
   reportCode: string;
@@ -41,9 +45,10 @@ export default function DynamicMasterReportViewer({
   };
 
   // Filter States
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [periodPreset, setPeriodPreset] = useState('THIS_MONTH');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-31');
+  const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState(initialDateRange.toDate);
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedRep, setSelectedRep] = useState('ALL');
   const [selectedMode, setSelectedMode] = useState(schema.filters.modesList?.[0] || 'Detailed');
@@ -60,21 +65,21 @@ export default function DynamicMasterReportViewer({
       companyName="Southern Olive Oil Products S.A.R.L"
     >
       {/* 1. DYNAMIC CONTEXT-AWARE FILTER TOOLBAR (PRINT HIDDEN) */}
-      <div className="bg-[#f1f5f9] p-3 rounded-lg border border-slate-300 mb-4 text-xs font-sans print:hidden select-none space-y-2.5">
+      <div className="bg-card text-foreground p-3 rounded-xl border border-border mb-4 text-xs font-sans print:hidden select-none space-y-2.5">
         
         {/* Row 1: Modes (if supported) & Print/Export Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-2">
           {schema.filters.supportsModes && schema.filters.modesList ? (
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-slate-700">View Mode:</span>
-              <div className="flex items-center bg-white p-0.5 rounded border border-slate-300">
+              <span className="font-bold text-foreground">View Mode:</span>
+              <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
                 {schema.filters.modesList.map((m) => (
                   <button
                     key={m}
                     type="button"
                     onClick={() => setSelectedMode(m)}
                     className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
-                      selectedMode === m ? 'bg-[#1a629b] text-white' : 'text-slate-600 hover:text-slate-900'
+                      selectedMode === m ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     {m}
@@ -83,8 +88,8 @@ export default function DynamicMasterReportViewer({
               </div>
             </div>
           ) : (
-            <div className="font-bold text-slate-700 text-xs">
-              Report Category: <span className="text-[#1a629b]">{schema.category}</span>
+            <div className="font-bold text-foreground text-xs">
+              Report Category: <span className="text-primary">{schema.category}</span>
             </div>
           )}
 
@@ -92,7 +97,7 @@ export default function DynamicMasterReportViewer({
             <button
               type="button"
               onClick={() => window.print()}
-              className="px-3.5 py-1.5 bg-[#1a629b] hover:bg-[#124b77] text-white font-bold rounded text-xs shadow-2xs flex items-center gap-1 cursor-pointer"
+              className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs shadow-xs flex items-center gap-1 cursor-pointer"
             >
               <span>🖨️ Print A4</span>
             </button>
@@ -102,26 +107,62 @@ export default function DynamicMasterReportViewer({
         {/* Row 2: Dynamic Dropdowns (Only renders what this report needs) */}
         <div className="flex flex-wrap items-center gap-3 text-[11px]">
           <div>
-            <label className="block font-bold text-slate-700 mb-0.5">Period:</label>
+            <label className="block font-bold text-foreground mb-0.5">Period:</label>
             <select
               value={periodPreset}
-              onChange={(e) => setPeriodPreset(e.target.value)}
-              className="p-1 bg-white border border-slate-300 rounded font-semibold focus:outline-none cursor-pointer"
+              onChange={(e) => {
+                const val = e.target.value;
+                setPeriodPreset(val);
+                if (val !== 'CUSTOM') {
+                  const resolved = resolveDateRangeFromPreset(val, fromDate, toDate);
+                  setFromDate(resolved.fromDate);
+                  setToDate(resolved.toDate);
+                }
+              }}
+              className="p-1 bg-background border border-border rounded font-semibold text-foreground focus:outline-none cursor-pointer"
             >
               <option value="THIS_MONTH">This Month</option>
               <option value="TODAY">Today</option>
               <option value="YESTERDAY">Yesterday</option>
-              <option value="CUSTOM">Custom Date Range</option>
+              <option value="LAST_MONTH">Last Month</option>
+              <option value="THIS_YEAR">This Year</option>
+              <option value="CUSTOM">Custom Range</option>
             </select>
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-0.5">From Date:</label>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => {
+                setFromDate(e.target.value);
+                setPeriodPreset('CUSTOM');
+              }}
+              className="p-1 bg-background border border-border rounded font-mono text-foreground focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-0.5">To Date:</label>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => {
+                setToDate(e.target.value);
+                setPeriodPreset('CUSTOM');
+              }}
+              className="p-1 bg-background border border-border rounded font-mono text-foreground focus:outline-none"
+            />
           </div>
 
           {schema.filters.enableBranch && (
             <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Branch:</label>
+              <label className="block font-bold text-foreground mb-0.5">Branch / Outlet:</label>
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="p-1 bg-white border border-slate-300 rounded font-semibold focus:outline-none cursor-pointer"
+                className="p-1 bg-background border border-border rounded font-semibold text-foreground focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Branches</option>
                 <option value="Choueifat">Choueifat Main Branch</option>
@@ -132,11 +173,11 @@ export default function DynamicMasterReportViewer({
 
           {schema.filters.enableRep && (
             <div>
-              <label className="block font-bold text-slate-700 mb-0.5">Representative / Cashier:</label>
+              <label className="block font-bold text-foreground mb-0.5">Representative / Cashier:</label>
               <select
                 value={selectedRep}
                 onChange={(e) => setSelectedRep(e.target.value)}
-                className="p-1 bg-white border border-slate-300 rounded font-bold text-[#1a629b] focus:outline-none cursor-pointer"
+                className="p-1 bg-background border border-border rounded font-bold text-foreground focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Employees</option>
                 <option value="Ahmad">Ahmad Ali Kassem</option>
@@ -150,12 +191,12 @@ export default function DynamicMasterReportViewer({
           {schema.filters.checkboxes && schema.filters.checkboxes.length > 0 && (
             <div className="flex items-center gap-3 pt-3 ml-2">
               {schema.filters.checkboxes.map((cb) => (
-                <label key={cb.id} className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-800">
+                <label key={cb.id} className="flex items-center gap-1.5 cursor-pointer font-bold text-foreground">
                   <input
                     type="checkbox"
                     checked={checkboxStates[cb.id] ?? cb.defaultChecked}
                     onChange={(e) => setCheckboxStates({ ...checkboxStates, [cb.id]: e.target.checked })}
-                    className="accent-[#1a629b] w-3.5 h-3.5 rounded cursor-pointer"
+                    className="accent-primary w-3.5 h-3.5 rounded cursor-pointer"
                   />
                   <span>{cb.label}</span>
                 </label>
@@ -229,7 +270,7 @@ export default function DynamicMasterReportViewer({
           <div className="flex justify-between items-center font-bold">
             <span>Total Records: {rows.length}</span>
             <span>Organization: Southern Olive Oil Products S.A.R.L</span>
-            <span className="text-[#1a629b] text-xs">Status: Verified Matrix</span>
+            <span className="text-primary text-xs">Status: Verified Matrix</span>
           </div>
         </div>
 

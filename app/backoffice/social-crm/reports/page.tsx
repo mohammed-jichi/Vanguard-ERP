@@ -22,6 +22,10 @@ import {
   Share2,
 } from 'lucide-react';
 import { getPaymentMethodTextClass, getReportStatusTextClass } from '@/components/reports/reportContrastTokens';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 // ============================================================================
 // DATA STRUCTURES & MOCK DATA
@@ -336,10 +340,11 @@ export default function SocialCrmReportsHub() {
   const [selectedReportKey, setSelectedReportKey] = useState<string>('SOCIAL_ORDERS');
 
   // 2. Filters State
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [period, setPeriod] = useState<string>('This Month');
-  const [fromDate, setFromDate] = useState<string>('2026-08-01');
-  const [toDate, setToDate] = useState<string>('2026-08-31');
+  const [period, setPeriod] = useState<string>(initialDateRange.preset);
+  const [fromDate, setFromDate] = useState<string>(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState<string>(initialDateRange.toDate);
   const [platformFilter, setPlatformFilter] = useState<string>('ALL');
   const [campaignStatusFilter, setCampaignStatusFilter] = useState<string>('ALL');
   const [leadStageFilter, setLeadStageFilter] = useState<string>('ALL');
@@ -517,7 +522,7 @@ export default function SocialCrmReportsHub() {
           badgeText="Omnichannel Social & Support CRM"
           badgeVariant="primary"
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '3. Social CRM', href: '/backoffice/social-crm' },
             { label: 'Reports Hub', href: '/backoffice/social-crm/reports' },
             { label: activeReportObj.label.split(':')[1]?.trim() || activeReportObj.label },
@@ -562,13 +567,14 @@ export default function SocialCrmReportsHub() {
           }}
           onApplyFilters={(vals) => alert(`Filters applied for: ${activeReportObj.label}`)}
           onResetFilters={() => {
+            const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');
             setPlatformFilter('ALL');
             setCampaignStatusFilter('ALL');
             setLeadStageFilter('ALL');
-            setPeriod('This Month');
-            setFromDate('2026-08-01');
-            setToDate('2026-08-31');
+            setPeriod(defRange.preset);
+            setFromDate(defRange.fromDate);
+            setToDate(defRange.toDate);
             setSocialFilterValues({});
           }}
         />

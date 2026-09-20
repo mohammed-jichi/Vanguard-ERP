@@ -111,9 +111,20 @@ export default function SuperSonicFleetManager({
   const [shiftStatus, setShiftStatus] = useState<ShiftStatus>('Off Duty');
   const [shiftStartTime, setShiftStartTime] = useState<string | null>(null);
   const [shiftEndTime, setShiftEndTime] = useState<string | null>(null);
-  const [activeDriverTab, setActiveDriverTab] = useState<'dispatch' | 'driver-pwa' | 'profile-manage' | 'reconciliation'>(
+  const [activeDriverTab, setActiveDriverTab] = useState<'dispatch' | 'companion-live' | 'driver-pwa' | 'profile-manage' | 'reconciliation'>(
     currentUserRole === 'Driver' ? 'driver-pwa' : 'dispatch'
   );
+
+  // ----------------------------------------------------
+  // COMPANION VIEW STATE & ADMINISTRATIVE OVERRIDES
+  // ----------------------------------------------------
+  const [selectedCompanionOrderId, setSelectedCompanionOrderId] = useState<string>('DEL-8801');
+  const [companionCorridorOverride, setCompanionCorridorOverride] = useState<number>(1);
+  const [companionDriverOverride, setCompanionDriverOverride] = useState<string>('Tony Khoury');
+  const [companionPlateOverride, setCompanionPlateOverride] = useState<string>('B-492102');
+  const [showForceCloseModal, setShowForceCloseModal] = useState<boolean>(false);
+  const [forceCloseRecipient, setForceCloseRecipient] = useState<string>('');
+  const [forceClosePaymentMethod, setForceClosePaymentMethod] = useState<'COD' | 'WHISH'>('COD');
 
   // Telemetry metrics
   const [totalDistanceKm, setTotalDistanceKm] = useState<number>(42.5);
@@ -232,6 +243,102 @@ export default function SuperSonicFleetManager({
 
     setSystemAlerts(prev => [msg, ...prev]);
     console.warn(msg);
+  };
+
+  // ----------------------------------------------------
+  // COMPANION VIEW ADMINISTRATIVE OVERRIDE DISPATCHERS
+  // ----------------------------------------------------
+  const handleCompanionReroute = (orderId: string, corridorId: number) => {
+    const corridorPresetsList = [
+      { id: 1, name: 'Corridor 1: Greater Beirut & Coast', driver: 'Tony Khoury', plate: 'B-492102' },
+      { id: 2, name: 'Corridor 2: Mount Lebanon & Chouf', driver: 'Fadi Abou Assi', plate: 'G-183921' },
+      { id: 3, name: 'Corridor 3: Southern Coast & Deep South', driver: 'Hassan Sleiman', plate: 'S-772910' },
+      { id: 4, name: 'Corridor 4: Northern Coast to Batroun', driver: 'Charbel Rahme', plate: 'B-554433' },
+      { id: 5, name: 'Corridor 5: Tripoli & Akkar', driver: 'Khaled Merhi', plate: 'T-882211' },
+      { id: 6, name: 'Corridor 6: Bekaa & South-East', driver: 'Elie Matar', plate: 'B-310928' },
+      { id: 7, name: 'Corridor 7: North Bekaa (Baalbek)', driver: 'Ali Chamas', plate: 'K-991100' },
+    ];
+    const preset = corridorPresetsList.find((c) => c.id === corridorId) || corridorPresetsList[0];
+
+    setOrders((prev) =>
+      prev.map((ord) =>
+        ord.id === orderId
+          ? { ...ord, driverName: preset.driver, notes: `[إعادة توجيه] تم تحويل المسار إلى ${preset.name}` }
+          : ord
+      )
+    );
+
+    const alertMsg = `🔄 [تدخل إداري - إعادة توجيه] تم تحويل الطلبية #${orderId} إلى ${preset.name} (السائق: ${preset.driver})`;
+    setSystemAlerts((prev) => [alertMsg, ...prev]);
+
+    // Async notify API
+    fetch('/api/orders', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        action: 'REROUTE_CORRIDOR',
+        corridorId,
+        driverName: preset.driver,
+        vehiclePlate: preset.plate,
+      }),
+    }).catch(() => {});
+  };
+
+  const handleCompanionReassignDriver = (orderId: string, driver: string, plate: string) => {
+    setOrders((prev) =>
+      prev.map((ord) =>
+        ord.id === orderId
+          ? { ...ord, driverName: driver, notes: `[إعادة تعيين السائق] السائق الجديد: ${driver} (${plate})` }
+          : ord
+      )
+    );
+
+    const alertMsg = `🚐 [تدخل إداري - تعيين سائق] تم تعيين السائق ${driver} (${plate}) للطلبية #${orderId}`;
+    setSystemAlerts((prev) => [alertMsg, ...prev]);
+
+    fetch('/api/orders', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        action: 'REASSIGN_DRIVER',
+        driverName: driver,
+        vehiclePlate: plate,
+      }),
+    }).catch(() => {});
+  };
+
+  const handleCompanionForceClosePOD = (orderId: string) => {
+    const targetOrder = orders.find((o) => o.id === orderId);
+    setOrders((prev) =>
+      prev.map((ord) =>
+        ord.id === orderId
+          ? {
+              ...ord,
+              outcome: 'Delivered',
+              podSignature: 'data:image/svg+xml;utf8,<svg><text>ADMIN_FORCE_POD</text></svg>',
+              notes: `[إقفال إداري يدوي] تم تسليم الطلبية يدوياً عبر لوحة الإدارة للمستلم: ${forceCloseRecipient || ord.customerName}`,
+            }
+          : ord
+      )
+    );
+
+    const alertMsg = `✅ [إقفال إداري فوري] تم إقفال الطلبية #${orderId} يدوياً واعتماد التوقيع واقتطاع المخزون مباشرة.`;
+    setSystemAlerts((prev) => [alertMsg, ...prev]);
+    setShowForceCloseModal(false);
+
+    // Async notify API
+    fetch('/api/orders', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId,
+        action: 'FORCE_CLOSE_POD',
+        recipientName: forceCloseRecipient || targetOrder?.customerName,
+        paymentMethod: forceClosePaymentMethod,
+      }),
+    }).catch(() => {});
   };
 
   // SHIFT MANAGEMENT HANDLERS
@@ -515,6 +622,16 @@ ${trackingLink}`;
               }`}
           >
             <Truck className="w-4 h-4" /> لوحة إدارة التوزيع (Fleet Dispatch)
+          </button>
+
+          <button
+            onClick={() => setActiveDriverTab('companion-live')}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeDriverTab === 'companion-live'
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-black shadow-lg font-black'
+              : 'bg-[#142013] text-slate-300 hover:text-white border border-emerald-900'
+              }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-400" /> لوحة المرافقة والتدخل المباشر (Live Companion View)
           </button>
 
           <button
@@ -974,6 +1091,233 @@ ${trackingLink}`;
             </button>
           </div>
 
+        </div>
+      )}
+
+      {/* TAB: LIVE COMPANION & ADMINISTRATIVE OVERRIDE VIEW */}
+      {activeDriverTab === 'companion-live' && (
+        <div className="space-y-6">
+          {/* Header Banner */}
+          <div className="bg-[#142013] border-2 border-emerald-500/40 rounded-2xl p-5 space-y-2 shadow-xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-white">
+                    لوحة المرافقة والتدخل المباشر لأسطول سوبر سونيك (Live Fleet Companion Console)
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    مراقبة حية ومتزامنة لرحلات السائقين الميدانية (V-Driver PWA) مع كامل صلاحيات التدخل الإداري: إعادة التوجيه الفوري، تبديل السائقين، والإقفال اليدوي.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  V-Driver Sync: Live
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Corridor Fleet Status Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { id: 1, name: 'مسار 1: بيروت والساحل', driver: 'Tony Khoury', van: 'Van 01 (B-492102)', stopsCount: 3, status: 'في الطريق (En Route)' },
+              { id: 2, name: 'مسار 2: جبل لبنان والشوف', driver: 'Fadi Abou Assi', van: 'Van 02 (G-183921)', stopsCount: 2, status: 'تحميل بالمعمل' },
+              { id: 3, name: 'مسار 3: ساحل الجنوب وصيدا', driver: 'Hassan Sleiman', van: 'Van 03 (S-772910)', stopsCount: 2, status: 'في الطريق (En Route)' },
+              { id: 4, name: 'مسار 4: الشمال والبترون', driver: 'Charbel Rahme', van: 'Van 04 (B-554433)', stopsCount: 1, status: 'مجدول' },
+            ].map((c) => (
+              <div key={c.id} className="bg-[#142013] border border-emerald-900/60 rounded-xl p-3.5 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black text-amber-400">{c.name}</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                    {c.stopsCount} محطات
+                  </span>
+                </div>
+                <div className="text-xs text-slate-300 font-mono">
+                  <div>سائق: <strong className="text-white">{c.driver}</strong></div>
+                  <div className="text-slate-400 text-[11px]">{c.van}</div>
+                </div>
+                <div className="text-[10.5px] text-emerald-400 font-bold border-t border-emerald-950 pt-1">
+                  الحالة: {c.status}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Live Synchronized Stops Table with Administrative Overrides */}
+          <div className="bg-[#142013] border-2 border-emerald-500/30 rounded-2xl p-5 space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-emerald-900/60 pb-3">
+              <h3 className="text-sm font-black text-white flex items-center gap-2">
+                <Truck className="w-4 h-4 text-emerald-400" />
+                <span>محطات التوصيل المباشرة وإجراءات التدخل الإداري:</span>
+              </h3>
+              <span className="text-xs text-slate-400 font-mono">
+                إجمالي الطلبات النشطة: {orders.length}
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-emerald-900 bg-emerald-950/60 text-amber-400 font-bold">
+                    <th className="py-3 px-3">رقم الطلب</th>
+                    <th className="py-3 px-3">الزبون والعنوان</th>
+                    <th className="py-3 px-3">السائق المعين</th>
+                    <th className="py-3 px-3">المبلغ ($)</th>
+                    <th className="py-3 px-3 text-center">حالة السائق</th>
+                    <th className="py-3 px-3 text-center">صلاحيات التدخل الإداري (Management Override)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-emerald-900/40 text-slate-200 font-medium">
+                  {orders.map((ord) => (
+                    <tr key={ord.id} className="hover:bg-emerald-950/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-amber-300">
+                        #{ord.orderNumber}
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="font-bold text-white text-sm">{ord.customerName}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">{ord.cityDistrict} • {ord.addressDetails}</div>
+                      </td>
+                      <td className="py-3 px-3 font-mono">
+                        <span className="text-emerald-300 font-bold">{ord.driverName}</span>
+                        <div className="text-[10.5px] text-slate-400">{ord.repCode}</div>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-emerald-400 font-bold">
+                        ${ord.amountUsd.toFixed(2)}
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                          ord.outcome === 'Delivered'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                            : ord.outcome === 'In Transit'
+                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40 animate-pulse'
+                            : ord.outcome === 'Rejected'
+                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                        }`}>
+                          {ord.outcome}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                          {/* 1. Reroute Corridor Action */}
+                          <div className="flex items-center gap-1">
+                            <select
+                              onChange={(e) => handleCompanionReroute(ord.id, Number(e.target.value))}
+                              defaultValue=""
+                              className="bg-[#0a1209] border border-emerald-700 text-emerald-300 text-[10.5px] font-bold rounded-lg px-2 py-1 focus:outline-none"
+                            >
+                              <option value="" disabled>🔄 تحويل مسار</option>
+                              <option value="1">مسار 1: بيروت</option>
+                              <option value="2">مسار 2: جبل لبنان</option>
+                              <option value="3">مسار 3: الجنوب</option>
+                              <option value="4">مسار 4: الشمال</option>
+                              <option value="5">مسار 5: طرابلس</option>
+                              <option value="6">مسار 6: البقاع</option>
+                            </select>
+                          </div>
+
+                          {/* 2. Reassign Driver Action */}
+                          <button
+                            onClick={() => {
+                              const newDriver = prompt('أدخل اسم السائق الجديد:', 'أبو علي منصور');
+                              if (newDriver) {
+                                handleCompanionReassignDriver(ord.id, newDriver, 'M-4890');
+                              }
+                            }}
+                            className="px-2.5 py-1 bg-blue-900/60 hover:bg-blue-800 text-blue-300 border border-blue-700 rounded-lg text-[10.5px] font-bold transition-all"
+                          >
+                            تبديل السائق
+                          </button>
+
+                          {/* 3. Manual Force-Close POD Action */}
+                          {ord.outcome !== 'Delivered' && (
+                            <button
+                              onClick={() => {
+                                setSelectedCompanionOrderId(ord.id);
+                                setForceCloseRecipient(ord.customerName);
+                                setShowForceCloseModal(true);
+                              }}
+                              className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white rounded-lg text-[10.5px] font-black shadow transition-all"
+                            >
+                              ⚡ إقفال إداري (POD)
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ADMINISTRATIVE FORCE CLOSE POD MODAL */}
+          {showForceCloseModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 select-none">
+              <div className="bg-[#142013] w-full max-w-md rounded-2xl border-2 border-emerald-500/50 p-5 space-y-4 shadow-2xl text-right dir-rtl">
+                <div className="flex justify-between items-center border-b border-emerald-900 pb-2">
+                  <h3 className="text-sm font-black text-white flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    <span>إقفال إداري يدوي وتسجيل التوقيع الرقمي (POD)</span>
+                  </h3>
+                  <button onClick={() => setShowForceCloseModal(false)} className="text-slate-400 hover:text-white font-bold">✕</button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <p className="text-slate-300 text-[11px]">
+                    يتم استخدام هذا الخيار الإداري في حال تعذر استخدام هاتف السائق، أو استلام سند خطي، أو تدخل الإدارة المباشر لإتمام التسليم:
+                  </p>
+
+                  <div>
+                    <label className="block font-bold text-amber-300 mb-1">اسم المستلم الفعلي:</label>
+                    <input
+                      type="text"
+                      value={forceCloseRecipient}
+                      onChange={(e) => setForceCloseRecipient(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#0a1209] border border-emerald-700 rounded-xl text-white font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-amber-300 mb-1">طريقة التحصيل:</label>
+                    <select
+                      value={forceClosePaymentMethod}
+                      onChange={(e) => setForceClosePaymentMethod(e.target.value as any)}
+                      className="w-full px-3 py-2 bg-[#0a1209] border border-emerald-700 rounded-xl text-emerald-300 font-bold"
+                    >
+                      <option value="COD">نقداً عند الاستلام (COD)</option>
+                      <option value="WHISH">تحويل عبر Whish Money</option>
+                    </select>
+                  </div>
+
+                  <div className="p-3 bg-emerald-950/60 border border-emerald-500/30 rounded-xl text-[11px] text-emerald-300 font-mono">
+                    ✓ سيتم اقتطاع المخزون في الحال وتثبيت عمولة المندوب وتوليد سند تسليم برقم معتمد.
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-emerald-900">
+                  <button
+                    onClick={() => setShowForceCloseModal(false)}
+                    className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-bold text-xs"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    onClick={() => handleCompanionForceClosePOD(selectedCompanionOrderId)}
+                    className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-xl text-xs shadow-lg"
+                  >
+                    تأكيد الإقفال الإداري الفوري
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

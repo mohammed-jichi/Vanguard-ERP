@@ -390,7 +390,7 @@ export default function POSTouchTerminalPage() {
       }
       if (e.ctrlKey && e.key === 'F8') {
         e.preventDefault();
-        router.push('/backoffice/dashboard');
+        router.push('/backoffice');
         return;
       }
 
@@ -561,7 +561,7 @@ export default function POSTouchTerminalPage() {
             </button>
 
             <Link
-              href="/backoffice/dashboard"
+              href="/backoffice"
               className="px-3 py-1.5 rounded-lg bg-[#1a1f2c] hover:bg-slate-800 text-slate-300 font-bold border border-slate-700"
             >
               Exit to Backoffice

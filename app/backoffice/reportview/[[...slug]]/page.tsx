@@ -22,11 +22,15 @@ import { CreditCardReportTemplate } from '@/components/reports/transactions/Cred
 import { SummaryOfSalesByItemsTemplate } from '@/components/reports/sales/SummaryOfSalesByItemsTemplate';
 import { SummaryOfVoidsTemplate } from '@/components/reports/sales/SummaryOfVoidsTemplate';
 import { SummaryOfRefundsTemplate } from '@/components/reports/sales/SummaryOfRefundsTemplate';
+import { MeterReportTemplate } from '@/components/reports/sales/MeterReportTemplate';
 import { TodaysSalesTemplate } from '@/components/reports/sales/TodaysSalesTemplate';
 import { CustomerListStandardTemplate } from '@/components/reports/sales/CustomerListStandardTemplate';
 import { ElectronicJournalTemplate } from '@/components/reports/transactions/ElectronicJournalTemplate';
 import { CustomerSalesReportMasterDocument } from '@/components/reports/sales/CustomerSalesReportMasterDocument';
 import { TimeAndAttendanceMasterDocument } from '@/components/reports/hr/TimeAndAttendanceMasterDocument';
+import { UniversalReportTableResolver } from '@/components/reports/UniversalReportTableResolver';
+import { resolveSchemaForReport, getDomainKpiMetrics } from '@/lib/reportSchemaResolverEngine';
+import { SharedReportViewer, isSharedReport } from '@/components/reports/registry';
 import { DollarSign, ShoppingCart, TrendingUp, AlertTriangle } from 'lucide-react';
 import { getPaymentMethodTextClass } from '@/components/reports/reportContrastTokens';
 import {
@@ -40,8 +44,15 @@ import {
   matchesPaymentFilter,
   matchesChannelFilter,
   matchesInvoiceTypeFilter,
+  matchesSalesmanFilter,
+  matchesEmployeeFilter,
+  matchesCustomerFilter,
   parseDateToIso,
 } from '@/lib/duplicateInvoicesQueryEngine';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 // Initial Sales Invoices populated with comprehensive mock dataset
 const INITIAL_SALES_INVOICES: MasterMockTransaction[] = DEFAULT_MOCK_TRANSACTIONS;
@@ -76,9 +87,10 @@ export default function MasterReportViewPage() {
   };
 
   // 2. Filter States
-  const [period, setPeriod] = useState<string>('This Month');
-  const [fromDate, setFromDate] = useState<string>('2026-08-01');
-  const [toDate, setToDate] = useState<string>('2026-08-31');
+  const initialDateRange = getDefaultInitialDateRange('This Month');
+  const [period, setPeriod] = useState<string>(initialDateRange.preset);
+  const [fromDate, setFromDate] = useState<string>(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState<string>(initialDateRange.toDate);
   const [branch, setBranch] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -132,6 +144,50 @@ export default function MasterReportViewPage() {
         else if (flag === 'SHOW_ZERO_TAX') matchesAudit = (inv.tax ?? inv.taxLbp) === 0;
       }
 
+      // 8. Workstation Filter
+      const activeWs = salesFilterValues.workstation;
+      const matchesWs =
+        !activeWs ||
+        activeWs === 'ALL' ||
+        String(inv.workstation || '').toLowerCase().includes(String(activeWs).toLowerCase()) ||
+        String(activeWs).toLowerCase().includes(String(inv.workstation || '').toLowerCase());
+
+      // 9. Cashier / Server Filter
+      const activeCashier = salesFilterValues.serverCashier || salesFilterValues.cashier;
+      const matchesCashier =
+        !activeCashier ||
+        activeCashier === 'ALL' ||
+        String(inv.server || inv.employee || '').toLowerCase().includes(String(activeCashier).toLowerCase()) ||
+        String(activeCashier).toLowerCase().includes(String(inv.server || inv.employee || '').toLowerCase());
+
+      // 9b. Employee Filter
+      const activeEmployee = salesFilterValues.employee;
+      const matchesEmployee =
+        !activeEmployee ||
+        activeEmployee === 'ALL' ||
+        matchesEmployeeFilter(inv.employee || inv.employee_name || inv.salesman || inv.server, activeEmployee);
+
+      // 9c. Customer Filter
+      const activeCustomer = salesFilterValues.customer || salesFilterValues.customerSearch;
+      const matchesCustomer =
+        !activeCustomer ||
+        activeCustomer === 'ALL' ||
+        matchesCustomerFilter(inv.customerName, activeCustomer, inv.custId);
+
+      // 10. Salesman Filter
+      const activeSalesman = salesFilterValues.salesman;
+      const matchesSalesman = matchesSalesmanFilter(
+        inv.salesman || inv.employee || inv.server,
+        activeSalesman
+      );
+
+      // 11. Currency Filter
+      const activeCurr = salesFilterValues.currency;
+      const matchesCurrency =
+        !activeCurr ||
+        activeCurr === 'ALL' ||
+        String(inv.currency || '').toUpperCase() === String(activeCurr).toUpperCase();
+
       return (
         matchesSearch &&
         matchesBranch &&
@@ -140,7 +196,13 @@ export default function MasterReportViewPage() {
         matchesInvoiceType &&
         matchesFromDate &&
         matchesToDate &&
-        matchesAudit
+        matchesAudit &&
+        matchesWs &&
+        matchesCashier &&
+        matchesEmployee &&
+        matchesCustomer &&
+        matchesSalesman &&
+        matchesCurrency
       );
     });
   }, [searchQuery, branch, paymentFilter, salesFilterValues, fromDate, toDate]);
@@ -159,56 +221,90 @@ export default function MasterReportViewPage() {
 
   // Multi-Currency KPI Metrics Calculation
   const totalSalesTarget = filteredInvoices.reduce((acc, i) => {
-    const rawAmt = i.currency === 'USD' ? (i.totalUsd ?? i.total) : (i.totalLbp ?? i.total ?? 0);
+    const rawAmt = i.total ?? 0;
     const fromCurr = i.currency || 'LBP';
     return acc + convertCurrency(rawAmt, fromCurr, activeCurrency);
   }, 0);
 
   const totalSalesSecondary = filteredInvoices.reduce((acc, i) => {
-    const rawAmt = i.currency === 'USD' ? (i.totalUsd ?? i.total) : (i.totalLbp ?? i.total ?? 0);
+    const rawAmt = i.total ?? 0;
     const fromCurr = i.currency || 'LBP';
     const secondaryCurr = activeCurrency === 'LBP' ? 'USD' : 'LBP';
     return acc + convertCurrency(rawAmt, fromCurr, secondaryCurr);
   }, 0);
 
   const totalDiscountsTarget = filteredInvoices.reduce((acc, i) => {
-    const rawAmt = i.currency === 'USD' ? (i.discount) : (i.discountLbp ?? i.discount ?? 0);
+    const rawAmt = i.discount ?? 0;
     const fromCurr = i.currency || 'LBP';
     return acc + convertCurrency(rawAmt, fromCurr, activeCurrency);
   }, 0);
 
   const avgCheckTarget = filteredInvoices.length > 0 ? totalSalesTarget / filteredInvoices.length : 0;
 
-  const salesKpiMetrics: MetricCardItem[] = [
-    {
-      title: 'Gross Invoiced Sales',
-      value: formatCurrencyAmount(totalSalesTarget, activeCurrency, true),
-      subtext: formatCurrencyAmount(totalSalesSecondary, activeCurrency === 'LBP' ? 'USD' : 'LBP', true),
-      icon: <DollarSign className="w-5 h-5" />,
-      change: { value: '+8.4%', trend: 'up' },
-    },
-    {
-      title: 'Total Invoices Count',
-      value: filteredInvoices.length,
-      subtext: 'Reconciled branch sales',
-      icon: <ShoppingCart className="w-5 h-5" />,
-      change: { value: 'Active ledger', trend: 'neutral' },
-    },
-    {
-      title: 'Average Ticket Value',
-      value: formatCurrencyAmount(avgCheckTarget, activeCurrency, true),
-      subtext: 'Per customer transaction',
-      icon: <TrendingUp className="w-5 h-5" />,
-      change: { value: '+3.1%', trend: 'up' },
-    },
-    {
-      title: 'Discounts & Voids',
-      value: formatCurrencyAmount(totalDiscountsTarget, activeCurrency, true),
-      subtext: 'Total concessions granted',
-      icon: <AlertTriangle className="w-5 h-5" />,
-      change: { value: '1.4% Rate', trend: 'down' },
-    },
-  ];
+  const resolvedState = useMemo(() => {
+    return resolveSchemaForReport(
+      selectedReport,
+      activeMeta.code,
+      'sales',
+      undefined,
+      {
+        branch,
+        fromDate,
+        toDate,
+        searchQuery,
+        paymentMode: paymentFilter,
+        ...salesFilterValues,
+      }
+    );
+  }, [selectedReport, activeMeta.code, branch, fromDate, toDate, searchQuery, paymentFilter, salesFilterValues]);
+
+  const salesKpiMetrics: MetricCardItem[] = useMemo(() => {
+    // If the active report is an explicit schema (audit, no sale, hold, tax, payment, discount, meter, etc.)
+    // or belongs to a non-sales domain, dynamically generate domain-specific KPI cards!
+    if (resolvedState.isExplicitSchema || resolvedState.domain !== 'sales') {
+      return getDomainKpiMetrics(resolvedState.schema, resolvedState.rows, activeCurrency);
+    }
+
+    // Default live sales transactions list metrics:
+    return [
+      {
+        title: 'Gross Invoiced Sales',
+        value: formatCurrencyAmount(totalSalesTarget, activeCurrency, true),
+        subtext: formatCurrencyAmount(totalSalesSecondary, activeCurrency === 'LBP' ? 'USD' : 'LBP', true),
+        icon: <DollarSign className="w-5 h-5" />,
+        change: { value: '+8.4%', trend: 'up' },
+      },
+      {
+        title: 'Total Invoices Count',
+        value: filteredInvoices.length,
+        subtext: 'Reconciled branch sales',
+        icon: <ShoppingCart className="w-5 h-5" />,
+        change: { value: 'Active ledger', trend: 'neutral' },
+      },
+      {
+        title: 'Average Ticket Value',
+        value: formatCurrencyAmount(avgCheckTarget, activeCurrency, true),
+        subtext: 'Per customer transaction',
+        icon: <TrendingUp className="w-5 h-5" />,
+        change: { value: '+3.1%', trend: 'up' },
+      },
+      {
+        title: 'Discounts & Voids',
+        value: formatCurrencyAmount(totalDiscountsTarget, activeCurrency, true),
+        subtext: 'Total concessions granted',
+        icon: <AlertTriangle className="w-5 h-5" />,
+        change: { value: '1.4% Rate', trend: 'down' },
+      },
+    ];
+  }, [
+    resolvedState,
+    activeCurrency,
+    totalSalesTarget,
+    totalSalesSecondary,
+    filteredInvoices.length,
+    avgCheckTarget,
+    totalDiscountsTarget,
+  ]);
 
   return (
     <ReportPageLayout
@@ -227,7 +323,7 @@ export default function MasterReportViewPage() {
           badgeText="Verified Master Ledger"
           badgeVariant="primary"
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '1. Sales Control', href: '/sales-control/reports' },
             { label: activeMeta.category },
             ...(activeMeta.subGroup ? [{ label: activeMeta.subGroup }] : []),
@@ -271,12 +367,13 @@ export default function MasterReportViewPage() {
           }}
           onApplyFilters={(vals) => alert(`Filters applied for: ${activeMeta.name}`)}
           onResetFilters={() => {
+            const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');
             setBranch('ALL');
             setPaymentFilter('ALL');
-            setPeriod('This Month');
-            setFromDate('2026-08-01');
-            setToDate('2026-08-31');
+            setPeriod(defRange.preset);
+            setFromDate(defRange.fromDate);
+            setToDate(defRange.toDate);
             setSalesFilterValues({});
           }}
         />
@@ -284,8 +381,18 @@ export default function MasterReportViewPage() {
       // 4. Standardized Data Table Area / Specific Report Template Canvas
       table={
         <>
+          {/* Shared Reports across Sales & Accounting / Operations */}
+          {isSharedReport(selectedReport) && (
+            <SharedReportViewer
+              reportName={selectedReport}
+              moduleContext="sales"
+              dateRangeText={`Period: ${fromDate} to ${toDate}`}
+              searchQuery={searchQuery}
+            />
+          )}
+
           {/* Dynamic Switcher across Sales Control Specific Templates */}
-          {(selectedReport.startsWith('Transactions by') ||
+          {!isSharedReport(selectedReport) && (selectedReport.startsWith('Transactions by') ||
             selectedReport.includes('Duplicate Invoices') ||
             selectedReport.includes('Cashier Shift') ||
             selectedReport.includes('Void and Refund')) && (
@@ -296,9 +403,9 @@ export default function MasterReportViewPage() {
               groupByDate={salesFilterValues.groupByDate !== undefined ? Boolean(salesFilterValues.groupByDate) : true}
               branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
               invoices={filteredInvoices}
-              reportTitle={selectedReport.includes('Duplicate Invoices') ? (salesFilterValues.primaryMode || 'Duplicate Invoices') : activeMeta.name}
+              reportTitle={activeMeta.name || selectedReport}
               code={activeMeta.code}
-              primaryMode={salesFilterValues.primaryMode || (selectedReport.includes('Duplicate Invoices') ? 'Duplicate Invoices' : undefined)}
+              primaryMode={selectedReport.includes('Duplicate Invoices') ? 'Duplicate Invoices' : (selectedReport.startsWith('Transactions by') ? selectedReport : (salesFilterValues.primaryMode || undefined))}
               filterValues={{
                 ...salesFilterValues,
                 branch,
@@ -317,6 +424,14 @@ export default function MasterReportViewPage() {
               executionDate="06-Sep-2026"
               showRate={salesFilterValues.showRate !== undefined ? Boolean(salesFilterValues.showRate) : false}
               groupByDate={salesFilterValues.groupByDate !== undefined ? Boolean(salesFilterValues.groupByDate) : true}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                paymentMode: salesFilterValues.paymentMode || paymentFilter,
+                paymentType: salesFilterValues.paymentType || paymentFilter,
+              }}
             />
           )}
 
@@ -336,6 +451,13 @@ export default function MasterReportViewPage() {
               dynamicPeriodText={`Fiscal Cycle: ${fromDate} to ${toDate}`}
               executionDate="29-Aug-2026"
               branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                currency: activeCurrency,
+              }}
             />
           )}
 
@@ -347,7 +469,13 @@ export default function MasterReportViewPage() {
               fromDate={fromDate}
               toDate={toDate}
               branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
-              filterValues={salesFilterValues}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                currency: activeCurrency,
+              }}
             />
           )}
 
@@ -362,21 +490,62 @@ export default function MasterReportViewPage() {
               toDate={toDate}
               reportTitle={activeMeta.name}
               branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
-              filterValues={salesFilterValues}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                currency: activeCurrency,
+              }}
             />
           )}
 
-          {(selectedReport.startsWith("Today's") ||
-            selectedReport.toLowerCase().includes('reading') ||
-            selectedReport.toLowerCase().includes('older') ||
-            selectedReport.toLowerCase().includes('shift') ||
-            selectedReport.toLowerCase().includes('settlement log') ||
-            selectedReport === 'Transactions History') && (
+          {/* Meter & Shift Reading Register (REP_S_00189) */}
+          {(selectedReport === 'Meter Report' ||
+            selectedReport === 'Meter / Shift Reading Report' ||
+            selectedReport.toLowerCase().includes('meter') ||
+            activeMeta.code === 'REP_S_00189') && (
+            <MeterReportTemplate
+              hideToolbar={false}
+              dynamicPeriodText={`Audit Window: ${fromDate} to ${toDate}`}
+              executionDate="06-Sep-2026"
+              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              fromDate={fromDate}
+              toDate={toDate}
+              reportTitle={activeMeta.name}
+              code={activeMeta.code}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                workstation: salesFilterValues.workstation || 'ALL',
+                shiftBatch: salesFilterValues.shiftBatch || 'ALL',
+                currency: activeCurrency,
+              }}
+            />
+          )}
+
+          {!selectedReport.toLowerCase().includes('meter') &&
+            activeMeta.code !== 'REP_S_00189' &&
+            (selectedReport.startsWith("Today's") ||
+              selectedReport.toLowerCase().includes('reading') ||
+              selectedReport.toLowerCase().includes('older') ||
+              selectedReport.toLowerCase().includes('shift') ||
+              selectedReport.toLowerCase().includes('settlement log') ||
+              selectedReport === 'Transactions History') && (
             <TodaysSalesTemplate
               hideToolbar={true}
               dynamicPeriodText={selectedReport.includes('Today') || selectedReport.includes('/ X') ? `Shift Date: Today (Current Shift)` : `Audit Window: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
               reportTitle={activeMeta.name}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+                currency: activeCurrency,
+              }}
             />
           )}
 
@@ -438,7 +607,8 @@ export default function MasterReportViewPage() {
           )}
 
           {/* Fallback Standard Master Transactions Data Table with built-in pagination */}
-          {!selectedReport.startsWith('Transactions by') &&
+          {!isSharedReport(selectedReport) &&
+            !selectedReport.startsWith('Transactions by') &&
             !selectedReport.includes('Duplicate Invoices') &&
             !selectedReport.includes('Cashier Shift') &&
             !selectedReport.includes('Void and Refund') &&
@@ -472,111 +642,27 @@ export default function MasterReportViewPage() {
             selectedReport !== 'Sales by customer In Detail' &&
             !selectedReport.toLowerCase().includes('zone') &&
             !selectedReport.toLowerCase().includes('delivery') &&
-            !selectedReport.toLowerCase().includes('driver') && (
-              <ReportTableWrapper
-                title={`${activeMeta.name} Register`}
-                subtitle={`Showing live transactional records • Branch: ${branch} • Period: ${fromDate} to ${toDate}${paymentFilter !== 'ALL' ? ` • Payment: ${paymentFilter}` : ''}`}
-                totalRecordsCount={filteredInvoices.length}
-                pagination={{
-                  currentPage,
-                  totalPages,
-                  pageSize,
-                  totalRecords: filteredInvoices.length,
-                  onPageChange: setCurrentPage,
-                  onPageSizeChange: setPageSize,
+            !selectedReport.toLowerCase().includes('driver') &&
+            !selectedReport.toLowerCase().includes('meter') &&
+            activeMeta.code !== 'REP_S_00189' && (
+              <UniversalReportTableResolver
+                reportName={selectedReport}
+                reportCode={activeMeta.code}
+                moduleContext="sales"
+                filterValues={{
+                  ...salesFilterValues,
+                  branch,
+                  fromDate,
+                  toDate,
+                  paymentMode: paymentFilter,
+                  searchQuery,
                 }}
-              >
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-y-2 border-slate-900 font-bold text-slate-900 text-xs bg-slate-50">
-                      <th className="py-2 px-3 w-[12%]">Invoice #</th>
-                      <th className="py-2 px-3 w-[10%] text-center">Time</th>
-                      <th className="py-2 px-3 w-[12%]">Date</th>
-                      <th className="py-2 px-3 w-[20%]">Customer Name</th>
-                      {branch === 'ALL' ? (
-                        <th className="py-2 px-3 w-[16%]">Branch Facility</th>
-                      ) : (
-                        <th className="py-2 px-3 w-[16%]">Audit Status</th>
-                      )}
-                      <th className="py-2 px-3 w-[8%] text-center">Items</th>
-                      <th className="py-2 px-3 w-[10%] text-center">Payment</th>
-                      <th className="py-2 px-3 w-[12%] text-right">Total ($ / LBP)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-sans">
-                    {paginatedInvoices.map((inv) => (
-                      <tr key={inv.invoiceNo} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-2 px-3 font-mono font-bold text-slate-900">
-                          #{inv.invoiceNo}
-                        </td>
-                        <td className="py-2 px-3 text-center font-mono text-slate-600 text-xs">{inv.time}</td>
-                        <td className="py-2 px-3 font-mono text-slate-600 text-xs">{inv.date}</td>
-                        <td className="py-2 px-3 font-medium text-slate-800">{inv.customerName}</td>
-                        {branch === 'ALL' ? (
-                          <td className="py-2 px-3 font-medium text-slate-800 text-xs">{inv.branch}</td>
-                        ) : (
-                          <td className="py-2 px-3 font-medium text-xs">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-                              Reconciled POS
-                            </span>
-                          </td>
-                        )}
-                        <td className="py-2 px-3 text-center font-mono font-bold text-slate-900">
-                          {inv.itemsCount}
-                        </td>
-                        <td className="py-2 px-3 text-center">
-                          <span className={getPaymentMethodTextClass(inv.paymentType)}>
-                            {inv.paymentType}
-                          </span>
-                        </td>
-                        <td className="py-2 px-3 text-right">
-                          <div className="font-mono font-bold text-slate-900">
-                            {formatCurrencyAmount(
-                              convertCurrency(
-                                inv.currency === 'USD' ? (inv.totalUsd ?? inv.total) : (inv.totalLbp ?? inv.total ?? 0),
-                                inv.currency || 'LBP',
-                                activeCurrency
-                              ),
-                              activeCurrency,
-                              true
-                            )}
-                          </div>
-                          <div className="font-mono text-xs text-slate-600 font-medium">
-                            {formatCurrencyAmount(
-                              convertCurrency(
-                                inv.currency === 'USD' ? (inv.totalUsd ?? inv.total) : (inv.totalLbp ?? inv.total ?? 0),
-                                inv.currency || 'LBP',
-                                activeCurrency === 'LBP' ? 'USD' : 'LBP'
-                              ),
-                              activeCurrency === 'LBP' ? 'USD' : 'LBP',
-                              true
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="border-t-2 border-slate-900 font-bold bg-slate-50 text-xs text-slate-900">
-                      <td colSpan={5} className="py-2.5 px-3 uppercase text-xs font-bold text-slate-900">
-                        Consolidated Register Total ({filteredInvoices.length} Invoices):
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-900">
-                        {filteredInvoices.reduce((acc, i) => acc + i.itemsCount, 0)}
-                      </td>
-                      <td className="py-2.5 px-3 text-center font-bold text-xs text-slate-700">ALL</td>
-                      <td className="py-2.5 px-3 text-right">
-                        <div className="font-mono font-bold text-emerald-800 text-sm">
-                          {formatCurrencyAmount(totalSalesTarget, activeCurrency, true)}
-                        </div>
-                        <div className="font-mono text-xs text-slate-600 font-medium">
-                          {formatCurrencyAmount(totalSalesSecondary, activeCurrency === 'LBP' ? 'USD' : 'LBP', true)}
-                        </div>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </ReportTableWrapper>
+                dynamicPeriodText={`Audit Window: ${fromDate} to ${toDate}`}
+                executionDate="06-Sep-2026"
+                branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+                activeCurrency={activeCurrency}
+                hideToolbar={false}
+              />
             )}
         </>
       }

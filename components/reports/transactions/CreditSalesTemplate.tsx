@@ -1,13 +1,88 @@
-import React, { useState } from 'react';
-import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
+'use client';
 
-interface CreditSalesTemplateProps {
+import React, { useState, useMemo } from 'react';
+import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
+import { applyGlobalReportFilters, resolveActiveCurrencyFromFilters } from '@/lib/reportFilterEngine';
+import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
+
+export interface CreditSalesRecord {
+  clientName: string;
+  code: string;
+  check: string;
+  date: string;
+  orderDate?: string;
+  amount: number;
+  paymentTerms: string;
+  branch: string;
+  payment_method: string;
+  salesman?: string;
+  workstation?: string;
+}
+
+export interface CreditSalesTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
   showRate?: boolean;
   groupByDate?: boolean;
+  branch?: string;
+  filterValues?: Record<string, any>;
 }
+
+const DEFAULT_CREDIT_SALES: CreditSalesRecord[] = [
+  {
+    clientName: 'Jichi Mohammed',
+    code: 'CLI-001',
+    check: '100105',
+    date: '01-Jan-26',
+    orderDate: '2026-01-01',
+    amount: 1580000.0,
+    paymentTerms: '30 Days',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    payment_method: 'STORE CREDIT',
+    salesman: 'Ahmad Ali Kassem',
+    workstation: 'WS-01',
+  },
+  {
+    clientName: 'Al-Hajj Grocery S.A.R.L',
+    code: 'CLI-042',
+    check: '100118',
+    date: '12-Aug-26',
+    orderDate: '2026-08-12',
+    amount: 3450000.0,
+    paymentTerms: '15 Days',
+    branch: 'Main Branch (Choueifat Main Facility)',
+    payment_method: 'STORE CREDIT',
+    salesman: 'Hiba Aloulou',
+    workstation: 'WS-01',
+  },
+  {
+    clientName: 'Cedars Gourmet Market',
+    code: 'CLI-088',
+    check: '100142',
+    date: '18-Aug-26',
+    orderDate: '2026-08-18',
+    amount: 4890000.0,
+    paymentTerms: '45 Days',
+    branch: 'Beirut Depot',
+    payment_method: 'STORE CREDIT',
+    salesman: 'Hussein Mahdi',
+    workstation: 'WS-02',
+  },
+  {
+    clientName: 'South Wholesale Traders Co.',
+    code: 'CLI-105',
+    check: '100165',
+    date: '22-Aug-26',
+    orderDate: '2026-08-22',
+    amount: 8200000.0,
+    paymentTerms: '60 Days',
+    branch: 'Sidon Hub',
+    payment_method: 'STORE CREDIT',
+    salesman: 'Ahmad Ali Kassem',
+    workstation: 'WS-03',
+  },
+];
 
 export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
   hideToolbar = true,
@@ -15,6 +90,8 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
   executionDate = '06-Sep-2026',
   showRate = false,
   groupByDate = true,
+  branch = 'Main Branch (Choueifat Main Facility)',
+  filterValues = {},
 }) => {
   // Controls table visibility (Auto-rendered by default)
   const [isFiltered, setIsFiltered] = useState(true);
@@ -22,6 +99,26 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
 
   const handleFilter = () => setIsFiltered(true);
   const handleReset = () => setIsFiltered(false);
+
+  const activeCurrency = useMemo(() => {
+    return resolveActiveCurrencyFromFilters(filterValues, 'USD');
+  }, [filterValues]);
+
+  const filteredRows = useMemo(() => {
+    return applyGlobalReportFilters(DEFAULT_CREDIT_SALES, filterValues);
+  }, [filterValues]);
+
+  const totalLbp = useMemo(() => {
+    return filteredRows.reduce((sum, r) => sum + r.amount, 0);
+  }, [filteredRows]);
+
+  const totalConverted = useMemo(() => {
+    return convertCurrency(totalLbp, 'LBP', activeCurrency);
+  }, [totalLbp, activeCurrency]);
+
+  const branchDisplay = branch ? (branch.startsWith('Branch:') ? branch : `Branch: ${branch}`) : 'Branch: Main Branch';
+  const periodDisplay = dynamicPeriodText ? dynamicPeriodText.replace(/^(Date|Period|Fiscal Cycle|Audit Window):\s*/i, '') : 'From Date: 01-Aug-2026 To Date: 31-Aug-2026';
+  const colCount = 6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1);
 
   return (
     <div className="w-full flex flex-col items-center bg-white min-h-screen">
@@ -64,27 +161,27 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
             defaultValue="Aug 2026" 
             className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] w-[90px] text-center" 
           />
-          <select className="force-black border border-slate-400 rounded p-1.5 focus:outline-none focus:border-blue-600 shadow-sm text-[13px] flex-grow sm:flex-grow-0">
-            <option>Main Branch (الفرع الرئيسي)</option>
+          <select className="border border-border rounded-lg p-1.5 focus:outline-none focus:border-primary shadow-xs text-xs flex-grow sm:flex-grow-0 bg-card text-foreground">
+            <option>Main Branch</option>
           </select>
 
           {/* Grouped Buttons */}
           <div className="flex items-center gap-2 whitespace-nowrap">
             <button 
               onClick={handleFilter} 
-              className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 transition-colors shadow-sm text-[13px] whitespace-nowrap"
+              className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-xs text-xs whitespace-nowrap cursor-pointer"
             >
               Filter
             </button>
             <button 
               onClick={handleReset} 
-              className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 transition-colors shadow-sm text-[13px] whitespace-nowrap"
+              className="px-4 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 transition-colors shadow-xs text-xs whitespace-nowrap cursor-pointer"
             >
               Reset
             </button>
           </div>
         </div>
-{/* Right side: Action Toolbar */}
+        {/* Right side: Action Toolbar */}
         <div className="flex items-center gap-2 shrink-0">
           <button 
             onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.5))} 
@@ -134,7 +231,7 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
             
             <div className="flex justify-between items-end text-[11px] font-bold w-full border-b border-black pb-1 mb-1">
               <div>{executionDate}</div>
-              <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
+              <div className="text-center flex-1">{periodDisplay}</div>
               <div>Page 1 of 1</div>
             </div>
 
@@ -146,75 +243,100 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
                     <th className="py-1 px-1 text-left">Code</th>
                     <th className="py-1 px-1 text-left">Check</th>
                     {groupByDate && <th className="py-1 px-1 text-center">Date</th>}
-                    <th className="py-1 px-1 text-right">Amount</th>
+                    <th className="py-1 px-1 text-right">Amount (LBP)</th>
                     <th className="py-1 px-1 text-left pl-4">Payment Terms</th>
                     {showRate && <th className="py-1 px-1 text-center">Cur</th>}
                     {showRate && <th className="py-1 px-1 text-right">Rate</th>}
-                    {showRate && <th className="py-1 px-1 text-right">Total ($)</th>}
+                    {showRate && <th className="py-1 px-1 text-right">{`Total (${activeCurrency})`}</th>}
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="font-bold">
-                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1 underline">Branch: Main Branch</td>
+                    <td colSpan={colCount} className="py-1 px-1 underline">{branchDisplay}</td>
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">GENERAL</td>
+                    <td colSpan={colCount} className="py-1 px-1">GENERAL</td>
                   </tr>
                   <tr className="font-bold">
-                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">GENERAL</td>
+                    <td colSpan={colCount} className="py-1 px-1">Payment Type: CREDIT</td>
                   </tr>
-                  <tr className="font-bold">
-                    <td colSpan={6 + (showRate ? 3 : 0) + (groupByDate ? 0 : -1)} className="py-1 px-1">Payment Type: CREDIT</td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 px-1">Jichi Mohammed</td>
-                    <td className="py-1 px-1"></td>
-                    <td className="py-1 px-1">100105</td>
-                    {groupByDate && <td className="py-1 px-1 text-center">01-Jan-26</td>}
-                    <td className="py-1 px-1 text-right">1,580,000.00</td>
-                    <td className="py-1 px-1 pl-4">30 Days</td>
-                    {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700">LBP</td>}
-                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">89,500.00</td>}
-                    {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">$17.65</td>}
-                  </tr>
+
+                  {filteredRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={colCount} className="py-8 text-center text-slate-500 font-medium italic">
+                        No credit sales records matching active filters
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredRows.map((row, idx) => {
+                      const convertedRow = convertCurrency(row.amount, 'LBP', activeCurrency);
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50">
+                          <td className="py-1 px-1 font-bold">{row.clientName}</td>
+                          <td className="py-1 px-1 font-mono text-slate-500">{row.code}</td>
+                          <td className="py-1 px-1 font-mono">{row.check}</td>
+                          {groupByDate && <td className="py-1 px-1 text-center font-mono">{row.date}</td>}
+                          <td className="py-1 px-1 text-right font-mono">{row.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                          <td className="py-1 px-1 pl-4">{row.paymentTerms}</td>
+                          {showRate && <td className="py-1 px-1 text-center font-bold text-slate-700">{activeCurrency}</td>}
+                          {showRate && <td className="py-1 px-1 text-right font-mono text-slate-700">{activeCurrency === 'LBP' ? '1.00' : '89,500.00'}</td>}
+                          {showRate && (
+                            <td className="py-1 px-1 text-right font-mono text-slate-700 font-bold">
+                              {formatCurrencyAmount(convertedRow, activeCurrency, true)}
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
+                  )}
                   
                   {/* Totals */}
-                  <tr className="font-bold">
-                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Payment Type:</td>
-                    <td className="py-1 px-1 text-right">1,580,000.00</td>
-                    <td></td>
-                    {showRate && (
-                      <>
-                        <td className="py-1 px-1 text-center">LBP</td>
-                        <td className="py-1 px-1 text-right font-mono">89,500</td>
-                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
-                      </>
-                    )}
-                  </tr>
-                  <tr className="font-bold">
-                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Branch:</td>
-                    <td className="py-1 px-1 text-right">1,580,000.00</td>
-                    <td></td>
-                    {showRate && (
-                      <>
-                        <td className="py-1 px-1 text-center">LBP</td>
-                        <td className="py-1 px-1 text-right font-mono">89,500</td>
-                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
-                      </>
-                    )}
-                  </tr>
-                  <tr className="font-bold">
-                    <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right underline">Grand Total:</td>
-                    <td className="py-1 px-1 text-right">1,580,000.00</td>
-                    <td></td>
-                    {showRate && (
-                      <>
-                        <td className="py-1 px-1 text-center">LBP</td>
-                        <td className="py-1 px-1 text-right font-mono">89,500</td>
-                        <td className="py-1 px-1 text-right font-mono font-bold">$17.65</td>
-                      </>
-                    )}
-                  </tr>
+                  {filteredRows.length > 0 && (
+                    <>
+                      <tr className="font-bold border-t border-slate-300">
+                        <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Payment Type:</td>
+                        <td className="py-1 px-1 text-right font-mono">{totalLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td></td>
+                        {showRate && (
+                          <>
+                            <td className="py-1 px-1 text-center">{activeCurrency}</td>
+                            <td className="py-1 px-1 text-right font-mono">{activeCurrency === 'LBP' ? '1.00' : '89,500'}</td>
+                            <td className="py-1 px-1 text-right font-mono font-bold">
+                              {formatCurrencyAmount(totalConverted, activeCurrency, true)}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                      <tr className="font-bold">
+                        <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right">Total By Branch:</td>
+                        <td className="py-1 px-1 text-right font-mono">{totalLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td></td>
+                        {showRate && (
+                          <>
+                            <td className="py-1 px-1 text-center">{activeCurrency}</td>
+                            <td className="py-1 px-1 text-right font-mono">{activeCurrency === 'LBP' ? '1.00' : '89,500'}</td>
+                            <td className="py-1 px-1 text-right font-mono font-bold">
+                              {formatCurrencyAmount(totalConverted, activeCurrency, true)}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                      <tr className="font-bold border-t border-black">
+                        <td colSpan={groupByDate ? 4 : 3} className="py-1 px-1 text-right underline">Grand Total:</td>
+                        <td className="py-1 px-1 text-right font-mono">{totalLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td></td>
+                        {showRate && (
+                          <>
+                            <td className="py-1 px-1 text-center">{activeCurrency}</td>
+                            <td className="py-1 px-1 text-right font-mono">{activeCurrency === 'LBP' ? '1.00' : '89,500'}</td>
+                            <td className="py-1 px-1 text-right font-mono font-bold">
+                              {formatCurrencyAmount(totalConverted, activeCurrency, true)}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -232,3 +354,4 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
     </div>
   );
 };
+

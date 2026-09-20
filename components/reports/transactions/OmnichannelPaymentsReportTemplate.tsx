@@ -97,17 +97,17 @@ export const OmnichannelPaymentsReportTemplate: React.FC<OmnichannelPaymentsRepo
 
           {/* Grouped Buttons */}
           <div className="flex items-center gap-2">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 transition-colors shadow-sm text-[13px]">Filter</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 transition-colors shadow-sm text-[13px]">Reset</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-xs text-xs cursor-pointer">Filter</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 transition-colors shadow-xs text-xs cursor-pointer">Reset</button>
           </div>
         </div>
 
         {/* RIGHT SIDE: ACTION BUTTONS */}
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 shadow-sm" title="Zoom In">
+          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom In">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
           </button>
-          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800 shadow-sm" title="Zoom Out">
+          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom Out">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" /></svg>
           </button>
           <button onClick={() => window.print()} className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-slate-800">

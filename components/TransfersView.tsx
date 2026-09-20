@@ -265,7 +265,7 @@ export default function TransfersView() {
   
   const [fromBranch, setFromBranch] = useState('Main Branch');
   const [fromLocation, setFromLocation] = useState('Choueifat Main Facility');
-  const [toBrand, setToBrand] = useState('زيت و زيتون الجنوب');
+  const [toBrand, setToBrand] = useState('Southern Olive Oil');
   const [toBranch, setToBranch] = useState('Main Branch');
   const [toLocation, setToLocation] = useState('Choueifat Main Facility');
   const [isInterBrand, setIsInterBrand] = useState(false);
@@ -617,7 +617,7 @@ export default function TransfersView() {
     <div className="space-y-4">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-[#195a96] text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in border border-blue-400">
+        <div className="fixed top-4 right-4 z-50 bg-primary text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in border border-blue-400">
           <CheckCircle2 className="w-4 h-4 text-emerald-300" />
           <span>{toastMessage}</span>
         </div>
@@ -635,7 +635,7 @@ export default function TransfersView() {
               <select
                 value={reportExportType}
                 onChange={(e) => setReportExportType(e.target.value)}
-                className="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#195a96]"
+                className="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary"
               >
                 <option value="html">Preview (HTML)</option>
                 <option value="pdf">PDF Document</option>
@@ -647,7 +647,7 @@ export default function TransfersView() {
                   type="checkbox"
                   checked={reportShowCost}
                   onChange={(e) => setReportShowCost(e.target.checked)}
-                  className="rounded text-[#195a96] focus:ring-0"
+                  className="rounded text-primary focus:ring-0"
                 />
                 <span>Show Cost</span>
               </label>
@@ -656,7 +656,7 @@ export default function TransfersView() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => showToast('Transfer Report generated fresh.')}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white text-xs font-bold rounded-lg shadow-sm transition"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-sm transition"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Generate</span>
@@ -681,14 +681,14 @@ export default function TransfersView() {
           {/* Printable Report Document */}
           <div className="bg-slate-50 border border-slate-300 rounded-lg p-8 shadow-inner font-sans max-w-5xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-start border-b-2 border-[#195a96] pb-4">
+            <div className="flex justify-between items-start border-b-2 border-primary pb-4">
               <div>
                 <h1 className="text-xl font-black text-slate-900 tracking-tight">VANGUARD ARTISAN FOODS SAL</h1>
                 <p className="text-xs text-slate-600 font-medium">Operations Center • Inter-Branch Logistics & Inventory Transfer</p>
                 <p className="text-xs text-slate-500 font-mono mt-0.5">Commercial Registry: 1049281 • VAT: 601-829103</p>
               </div>
               <div className="text-right">
-                <span className="inline-block px-3 py-1 rounded bg-[#195a96] text-white text-xs font-black tracking-wider uppercase">
+                <span className="inline-block px-3 py-1 rounded bg-primary text-white text-xs font-black tracking-wider uppercase">
                   TRANSFER NOTE
                 </span>
                 <p className="text-sm font-mono font-bold text-slate-800 mt-1">{transferNumber}</p>
@@ -717,7 +717,7 @@ export default function TransfersView() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse bg-white border border-slate-200">
                 <thead>
-                  <tr className="bg-[#24344d] text-white text-[11px] font-bold">
+                  <tr className="bg-primary text-white text-[11px] font-bold">
                     <th className="py-2 px-3">Code</th>
                     <th className="py-2 px-3">Description</th>
                     <th className="py-2 px-3">Barcode</th>
@@ -737,7 +737,7 @@ export default function TransfersView() {
                 <tbody className="divide-y divide-slate-200 font-medium text-slate-800">
                   {items.map((it) => (
                     <tr key={it.id} className="hover:bg-slate-50">
-                      <td className="py-2 px-3 font-mono font-bold text-[#195a96]">{it.code}</td>
+                      <td className="py-2 px-3 font-mono font-bold text-primary">{it.code}</td>
                       <td className="py-2 px-3 font-medium">{it.description}</td>
                       <td className="py-2 px-3 font-mono text-slate-500">{it.barcode}</td>
                       <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{it.qtyTransfered.toLocaleString()}</td>
@@ -818,7 +818,7 @@ export default function TransfersView() {
               {/* + New Button */}
               <button
                 onClick={handleNewTransfer}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>New</span>
@@ -843,7 +843,7 @@ export default function TransfersView() {
                       }}
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
-                      <Search className="w-3.5 h-3.5 text-[#195a96]" />
+                      <Search className="w-3.5 h-3.5 text-primary" />
                       <span>Preview Transfers</span>
                     </button>
                     <button
@@ -911,7 +911,7 @@ export default function TransfersView() {
                 <button
                   onClick={() => setActiveCurrency('USD')}
                   className={`px-2.5 py-1.5 transition ${
-                    activeCurrency === 'USD' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    activeCurrency === 'USD' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   USD ($)
@@ -919,7 +919,7 @@ export default function TransfersView() {
                 <button
                   onClick={() => setActiveCurrency('LBP')}
                   className={`px-2.5 py-1.5 transition ${
-                    activeCurrency === 'LBP' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    activeCurrency === 'LBP' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   LBP
@@ -930,7 +930,7 @@ export default function TransfersView() {
 
           {/* CARD 1: TRANSFER HEADER (Date, Number, From Branch/Location, To Branch/Location) */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div className="bg-[#24344d] text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
               <span>Transfer / Requisition Details</span>
               <span className="text-[11px] text-blue-200 font-mono">{transferNumber}</span>
             </div>
@@ -944,7 +944,7 @@ export default function TransfersView() {
                     type="date"
                     value={transferDate}
                     onChange={(e) => setTransferDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-mono focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-mono focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -975,7 +975,7 @@ export default function TransfersView() {
                         setTransferNumber(newNum);
                         showToast(`Regenerated Transfer #: ${newNum}`);
                       }}
-                      className="absolute right-2 top-2 text-slate-400 hover:text-[#195a96] transition cursor-pointer"
+                      className="absolute right-2 top-2 text-slate-400 hover:text-primary transition cursor-pointer"
                       title="Regenerate Transfer Number"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -991,7 +991,7 @@ export default function TransfersView() {
                     placeholder="PR Reference..."
                     value={prNumber}
                     onChange={(e) => setPrNumber(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-mono focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-mono focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -1004,9 +1004,9 @@ export default function TransfersView() {
                   <select
                     value={fromBranch}
                     onChange={(e) => setFromBranch(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                    <option value="Main Branch">Main Branch</option>
                   </select>
                 </div>
 
@@ -1017,14 +1017,14 @@ export default function TransfersView() {
                     <select
                       value={fromLocation}
                       onChange={(e) => setFromLocation(e.target.value)}
-                      className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-[#195a96]"
+                      className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                     >
                       <option value="All Locations">All Locations</option>
                       <option value="Choueifat Main Facility">Choueifat Main Facility</option>
                     </select>
                     <button
                       onClick={() => setAddLocationModalOpen(true)}
-                      className="p-2 bg-[#195a96] hover:bg-[#154676] text-white rounded-lg shadow-2xs transition"
+                      className="p-2 bg-primary hover:bg-primary/90 text-white rounded-lg shadow-2xs transition"
                       title="Add Location"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -1056,9 +1056,9 @@ export default function TransfersView() {
                   <select
                     value={toBranch}
                     onChange={(e) => setToBranch(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                    <option value="Main Branch">Main Branch</option>
                   </select>
                 </div>
 
@@ -1068,7 +1068,7 @@ export default function TransfersView() {
                   <select
                     value={toLocation}
                     onChange={(e) => setToLocation(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
                     <option value="All Locations">All Locations</option>
                     <option value="Choueifat Main Facility">Choueifat Main Facility</option>
@@ -1080,7 +1080,7 @@ export default function TransfersView() {
 
           {/* CARD 2: TRANSFER DETAILS (Items Search, Import, Dynamic Table with Cost Filters, Save/Post) */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div className="bg-[#2f3b52] text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
               <span>Transfer Items & Cargo Manifest</span>
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-1 font-medium cursor-pointer">
@@ -1088,7 +1088,7 @@ export default function TransfersView() {
                     type="checkbox"
                     checked={showBarcode}
                     onChange={(e) => setShowBarcode(e.target.checked)}
-                    className="rounded text-[#195a96]"
+                    className="rounded text-primary"
                   />
                   <span>Barcode</span>
                 </label>
@@ -1097,7 +1097,7 @@ export default function TransfersView() {
                     type="checkbox"
                     checked={hideCost}
                     onChange={(e) => setHideCost(e.target.checked)}
-                    className="rounded text-[#195a96]"
+                    className="rounded text-primary"
                   />
                   <span>Hide Cost</span>
                 </label>
@@ -1121,13 +1121,13 @@ export default function TransfersView() {
                           handleOpenSearchModal(searchItemVal);
                         }
                       }}
-                      className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#195a96]"
+                      className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => handleOpenSearchModal(searchItemVal)}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
                     title="Search Inventory Items"
                   >
                     <Search className="w-3.5 h-3.5" />
@@ -1141,14 +1141,14 @@ export default function TransfersView() {
                     onClick={() => handleOpenSearchModal('')}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 shadow-2xs transition cursor-pointer"
                   >
-                    <Boxes className="w-3.5 h-3.5 text-[#195a96]" />
+                    <Boxes className="w-3.5 h-3.5 text-primary" />
                     <span>Browse Inventory Items</span>
                   </button>
                   <button
                     onClick={() => setImportModalOpen(true)}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition"
                   >
-                    <Upload className="w-3.5 h-3.5 text-[#195a96]" />
+                    <Upload className="w-3.5 h-3.5 text-primary" />
                     <span>Import Items (CSV)</span>
                   </button>
                 </div>
@@ -1185,7 +1185,7 @@ export default function TransfersView() {
                     {items.map((row) => (
                       <React.Fragment key={row.id}>
                         <tr className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-2 px-3 font-mono font-bold text-[#195a96]">{row.code}</td>
+                          <td className="py-2 px-3 font-mono font-bold text-primary">{row.code}</td>
                           <td className="py-2 px-3 font-bold text-slate-900">{row.description}</td>
                           {showBarcode && (
                             <td className="py-2 px-3 font-mono text-slate-500">{row.barcode}</td>
@@ -1197,7 +1197,7 @@ export default function TransfersView() {
                               value={row.qtyTransfered}
                               onChange={(e) => updateItem(row.id, 'qtyTransfered', parseFloat(e.target.value) || 0)}
                               onFocus={(e) => e.target.select()}
-                              className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-slate-900 focus:outline-none focus:border-[#195a96]"
+                              className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-slate-900 focus:outline-none focus:border-primary"
                             />
                           </td>
                           {previewReq && (
@@ -1240,7 +1240,7 @@ export default function TransfersView() {
                               <button
                                 onClick={() => updateItem(row.id, 'showRemark', !row.showRemark)}
                                 className={`p-1.5 rounded transition ${
-                                  row.showRemark || row.remark ? 'bg-blue-100 text-[#195a96]' : 'hover:bg-slate-200 text-slate-500'
+                                  row.showRemark || row.remark ? 'bg-blue-100 text-primary' : 'hover:bg-slate-200 text-slate-500'
                                 }`}
                                 title="Remark & Expiration"
                               >
@@ -1284,7 +1284,7 @@ export default function TransfersView() {
                                     placeholder="Enter item dispatch note or handling instructions..."
                                     value={row.remark}
                                     onChange={(e) => updateItem(row.id, 'remark', e.target.value)}
-                                    className="flex-1 bg-white border border-slate-300 rounded px-2.5 py-1 text-slate-800 focus:outline-none focus:border-[#195a96]"
+                                    className="flex-1 bg-white border border-slate-300 rounded px-2.5 py-1 text-slate-800 focus:outline-none focus:border-primary"
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -1293,7 +1293,7 @@ export default function TransfersView() {
                                     type="date"
                                     value={row.expDate}
                                     onChange={(e) => updateItem(row.id, 'expDate', e.target.value)}
-                                    className="bg-white border border-slate-300 rounded px-2 py-1 text-slate-800 font-mono focus:outline-none focus:border-[#195a96]"
+                                    className="bg-white border border-slate-300 rounded px-2 py-1 text-slate-800 font-mono focus:outline-none focus:border-primary"
                                   />
                                 </div>
                               </div>
@@ -1316,7 +1316,7 @@ export default function TransfersView() {
                   </div>
                   <div>
                     <span className="text-slate-500">Total Qty Transferred: </span>
-                    <span className="font-bold text-[#195a96] font-mono">{totalQtyTransfered.toLocaleString()}</span>
+                    <span className="font-bold text-primary font-mono">{totalQtyTransfered.toLocaleString()}</span>
                   </div>
                   {!hideCost && (
                     <div>
@@ -1332,13 +1332,13 @@ export default function TransfersView() {
                     <>
                       <button
                         onClick={() => handleSaveTransfer(false)}
-                        className="px-4 py-2 bg-[#fb8205] hover:bg-[#e07300] text-white text-xs font-bold rounded-lg shadow-sm transition"
+                        className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
                         Save
                       </button>
                       <button
                         onClick={() => handleSaveTransfer(true)}
-                        className="px-4 py-2 bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold rounded-lg shadow-sm transition"
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
                         Save &amp; Post
                       </button>
@@ -1347,13 +1347,13 @@ export default function TransfersView() {
                     <>
                       <button
                         onClick={() => handleSaveTransfer(false)}
-                        className="px-4 py-2 bg-[#fb8205] hover:bg-[#e07300] text-white text-xs font-bold rounded-lg shadow-sm transition"
+                        className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
                         Save
                       </button>
                       <button
                         onClick={handlePostCurrentTransfer}
-                        className="px-4 py-2 bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold rounded-lg shadow-sm transition"
+                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
                         Post
                       </button>
@@ -1377,9 +1377,9 @@ export default function TransfersView() {
           ========================================================================= */}
       {previewModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border-4 border-[#4c5c7a] w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl border-4 border-border w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="bg-[#24344d] text-white p-4 flex items-center justify-between border-b border-slate-700">
+            <div className="bg-primary text-white p-4 flex items-center justify-between border-b border-slate-700">
               <div>
                 <h2 className="text-base font-bold">Preview Transfers &amp; Requisitions</h2>
                 <p className="text-xs text-slate-300 font-mono">Registry Search, Multi-Posting &amp; Cargo Verification</p>
@@ -1403,7 +1403,7 @@ export default function TransfersView() {
                     placeholder="Search by Req #, Branch, Destination..."
                     value={previewSearchText}
                     onChange={(e) => setPreviewSearchText(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1411,10 +1411,10 @@ export default function TransfersView() {
                   <select
                     value={previewBranchFilter}
                     onChange={(e) => setPreviewBranchFilter(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="ALL">All Branches</option>
-                    <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                    <option value="Main Branch">Main Branch</option>
                   </select>
                 </div>
 
@@ -1422,7 +1422,7 @@ export default function TransfersView() {
                   <select
                     value={previewStatusFilter}
                     onChange={(e) => setPreviewStatusFilter(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="ALL">All Statuses</option>
                     <option value="POSTED">Posted</option>
@@ -1435,7 +1435,7 @@ export default function TransfersView() {
                   <select
                     value={previewItemTypeFilter}
                     onChange={(e) => setPreviewItemTypeFilter(e.target.value)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="ALL">All Item Types</option>
                     <option value="INVENTORY">Inventory Items</option>
@@ -1463,7 +1463,7 @@ export default function TransfersView() {
                       type="checkbox"
                       checked={allDates}
                       onChange={(e) => setAllDates(e.target.checked)}
-                      className="rounded text-[#195a96] focus:ring-0"
+                      className="rounded text-primary focus:ring-0"
                     />
                     <span>All Dates</span>
                   </label>
@@ -1499,7 +1499,7 @@ export default function TransfersView() {
                   )}
                   <button
                     onClick={() => showToast('Applied transfer filters.')}
-                    className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white font-bold rounded-lg shadow-sm transition"
+                    className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm transition"
                   >
                     Filter
                   </button>
@@ -1541,7 +1541,7 @@ export default function TransfersView() {
             <div className="flex-1 overflow-y-auto p-4">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#24344d] text-white font-bold">
+                  <tr className="bg-primary text-white font-bold">
                     {multiplePosting && <th className="py-2.5 px-3 w-8"></th>}
                     <th className="py-2.5 px-3">Date</th>
                     <th className="py-2.5 px-3">Req. #</th>
@@ -1579,7 +1579,7 @@ export default function TransfersView() {
                         </td>
                       )}
                       <td className="py-2 px-3 font-mono text-slate-600">{row.reqDate}</td>
-                      <td className="py-2 px-3 font-mono font-bold text-[#195a96]">
+                      <td className="py-2 px-3 font-mono font-bold text-primary">
                         {row.reqNo}
                         {row.fromReqNo && (
                           <span className="block text-[10px] text-red-700">From: {row.fromReqNo}</span>
@@ -1615,7 +1615,7 @@ export default function TransfersView() {
                           {/* [+] Load into editor */}
                           <button
                             onClick={() => handleLoadTransfer(row)}
-                            className="p-1.5 bg-[#195a96] hover:bg-[#154676] text-white rounded transition shadow-2xs"
+                            className="p-1.5 bg-primary hover:bg-primary/90 text-white rounded transition shadow-2xs"
                             title="Load into Editor"
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -1674,8 +1674,8 @@ export default function TransfersView() {
           ========================================================================= */}
       {storeModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border-2 border-[#4c5c7a] w-full max-w-md overflow-hidden">
-            <div className="bg-[#24344d] text-white p-3.5 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden">
+            <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <h3 className="font-bold text-sm">Store Requisition / Transfer Template</h3>
               <button onClick={() => setStoreModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
@@ -1691,7 +1691,7 @@ export default function TransfersView() {
                   placeholder="e.g. Weekly EVOO 750ml Depot Replenishment"
                   value={storeDescription}
                   onChange={(e) => setStoreDescription(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-primary"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
@@ -1703,7 +1703,7 @@ export default function TransfersView() {
                 </button>
                 <button
                   onClick={handleSaveStoredRequisition}
-                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white font-bold rounded-lg shadow-sm"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm"
                 >
                   Save Template
                 </button>
@@ -1718,8 +1718,8 @@ export default function TransfersView() {
           ========================================================================= */}
       {recallModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border-2 border-[#4c5c7a] w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="bg-[#24344d] text-white p-3.5 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <h3 className="font-bold text-sm">Recall Stored / Recurring Transfers</h3>
               <button onClick={() => setRecallModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
@@ -1733,7 +1733,7 @@ export default function TransfersView() {
                   placeholder="Search stored templates..."
                   value={recallSearchText}
                   onChange={(e) => setRecallSearchText(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1765,7 +1765,7 @@ export default function TransfersView() {
                                 setRecallModalOpen(false);
                                 showToast(`Recalled template: ${rec.description}`);
                               }}
-                              className="p-1 bg-[#195a96] hover:bg-[#154676] text-white rounded"
+                              className="p-1 bg-primary hover:bg-primary/90 text-white rounded"
                               title="Load Stored Requisition"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -1804,8 +1804,8 @@ export default function TransfersView() {
           ========================================================================= */}
       {importModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border-2 border-[#4c5c7a] w-full max-w-md overflow-hidden text-xs">
-            <div className="bg-[#24344d] text-white p-3.5 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden text-xs">
+            <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <h3 className="font-bold text-sm">Import Transfer Items</h3>
               <button onClick={() => setImportModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
@@ -1819,13 +1819,13 @@ export default function TransfersView() {
                     e.preventDefault();
                     showToast('Requisition.csv template downloaded.');
                   }}
-                  className="text-[#195a96] hover:underline font-bold text-[11px]"
+                  className="text-primary hover:underline font-bold text-[11px]"
                 >
                   Download Template (Requisition.csv)
                 </a>
               </div>
 
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center space-y-2 hover:border-[#195a96] transition">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center space-y-2 hover:border-primary transition">
                 <Upload className="w-8 h-8 text-slate-400 mx-auto" />
                 <p className="font-bold text-slate-700">
                   {importFile ? importFile : 'Choose or drag & drop Requisition CSV file'}
@@ -1838,7 +1838,7 @@ export default function TransfersView() {
                       setImportFile(e.target.files[0].name);
                     }
                   }}
-                  className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#195a96] file:text-white hover:file:bg-[#154676]"
+                  className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-white hover:file:bg-[#154676]"
                 />
               </div>
 
@@ -1846,7 +1846,7 @@ export default function TransfersView() {
                 <div className="space-y-1">
                   <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-[#195a96] h-full transition-all duration-300"
+                      className="bg-primary h-full transition-all duration-300"
                       style={{ width: `${importProgress}%` }}
                     ></div>
                   </div>
@@ -1864,7 +1864,7 @@ export default function TransfersView() {
                 <button
                   onClick={handleStartImport}
                   disabled={!importFile}
-                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154676] disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
                 >
                   Import Items
                 </button>
@@ -1879,8 +1879,8 @@ export default function TransfersView() {
           ========================================================================= */}
       {serialModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border-2 border-[#4c5c7a] w-full max-w-xl overflow-hidden flex flex-col text-xs">
-            <div className="bg-[#24344d] text-white p-3.5 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-xl overflow-hidden flex flex-col text-xs">
+            <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm">Items Serial Numbers</h3>
                 <p className="text-[11px] text-slate-300">{activeSerialItem?.description}</p>
@@ -1902,7 +1902,7 @@ export default function TransfersView() {
                       className="p-1.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded cursor-pointer flex justify-between items-center transition"
                     >
                       <span>{sn}</span>
-                      <Plus className="w-3.5 h-3.5 text-[#195a96]" />
+                      <Plus className="w-3.5 h-3.5 text-primary" />
                     </div>
                   ))}
                   {availableSerials.length === 0 && (
@@ -1941,7 +1941,7 @@ export default function TransfersView() {
               </button>
               <button
                 onClick={handleSaveSerials}
-                className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154676] text-white font-bold rounded-lg shadow-sm"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm"
               >
                 OK
               </button>
@@ -1955,8 +1955,8 @@ export default function TransfersView() {
           ========================================================================= */}
       {addLocationModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border-2 border-[#4c5c7a] w-full max-w-md overflow-hidden text-xs">
-            <div className="bg-[#24344d] text-white p-3.5 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden text-xs">
+            <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <h3 className="font-bold text-sm">Add Warehouse / Branch Location</h3>
               <button onClick={() => setAddLocationModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
@@ -1985,7 +1985,7 @@ export default function TransfersView() {
                   placeholder="e.g. LOC-SL-03"
                   value={newLocationCode}
                   onChange={(e) => setNewLocationCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-900 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-900 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1996,7 +1996,7 @@ export default function TransfersView() {
                   placeholder="e.g. Silo Tank #4 Bottling Line"
                   value={newLocationName}
                   onChange={(e) => setNewLocationName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -2010,7 +2010,7 @@ export default function TransfersView() {
                 <button
                   onClick={handleSaveLocation}
                   disabled={!newLocationName.trim()}
-                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154676] disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
                 >
                   Save Location
                 </button>

@@ -119,10 +119,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CWV250MLB103',
     code: 'CWV250MLB103',
-    name: 'خل ابيض 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'White Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.50,
@@ -131,10 +131,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CACV250MLB103',
     code: 'CACV250MLB103',
-    name: 'خل تفاح 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Apple Cider Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.50,
@@ -143,10 +143,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'OACV250MLB103',
     code: 'OACV250MLB103',
-    name: 'خل تفاح بلدي 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Local Apple Cider Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 1.11,
@@ -155,10 +155,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CSGV250MLB103',
     code: 'CSGV250MLB103',
-    name: 'خل حصرم 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Verjuice Sour Grape Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.50,
@@ -167,10 +167,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CGV250MLB103',
     code: 'CGV250MLB103',
-    name: 'خل عنب 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Grape Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.50,
@@ -179,10 +179,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'OGV250MLB103',
     code: 'OGV250MLB103',
-    name: 'خل عنب بلدي 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Local Grape Vinegar 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 1.11,
@@ -191,10 +191,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'PGM250MLB103',
     code: 'PGM250MLB103',
-    name: 'دبس رمان 250 مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Pomegranate Molasses 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.67,
@@ -203,10 +203,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CDBW250MLB103',
     code: 'CDBW250MLB103',
-    name: 'ماء زهر 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Orange Blossom Water 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.56,
@@ -215,10 +215,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CARW250GB103',
     code: 'CARW250GB103',
-    name: 'ماء ورد 250مل',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات مفرق 250مل',
+    name: 'Rose Water 250ml',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Retail Distillates 250ml',
     unit: 'BOT',
     stockQty: 0,
     price: 0.56,
@@ -229,10 +229,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'GAL-ROSE-4L',
     code: 'GAL-ROSE-4L',
-    name: 'ماء ورد مقطر بلدي غالون 4 ليتر',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات ومطيبات غالون',
+    name: 'Distilled Rose Water Gallon 4L',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Distillates & Seasonings Gallon',
     unit: 'GAL',
     stockQty: 18,
     price: 6.50,
@@ -241,10 +241,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'GAL-ORANGE-4L',
     code: 'GAL-ORANGE-4L',
-    name: 'ماء زهر مقطر بلدي غالون 4 ليتر',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات ومطيبات غالون',
+    name: 'Distilled Orange Blossom Water Gallon 4L',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Distillates & Seasonings Gallon',
     unit: 'GAL',
     stockQty: 24,
     price: 6.50,
@@ -255,24 +255,24 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'LIT-ROSE-1L',
     code: 'LIT-ROSE-1L',
-    name: 'ماء ورد مقطر ممتاز 1 ليتر',
-    category: 'مفرق',
-    division: 'مقطرات ومطيبات مفرق',
-    group: 'مقطرات 1 ليتر',
+    name: 'Distilled Rose Water Premium 1L',
+    category: 'Retail',
+    division: 'Retail Distillates & Seasonings',
+    group: 'Distillates 1 Liter',
     unit: 'BOT',
     stockQty: 45,
     price: 1.85,
     cost: 1.15
   },
 
-  // Traditional Pantry (مونة بلدية مفرق)
+  // Traditional Pantry (Retail Traditional Provisions)
   {
     id: 'MOUNA-KISHK-1KG',
     code: 'MOUNA-KISHK-1KG',
-    name: 'كشك بلدي بقري صافي 1 كغ',
-    category: 'مفرق',
-    division: 'مونة بلدية مفرق',
-    group: 'مونة بلدية جملة',
+    name: 'Pure Local Cow Kishk 1kg',
+    category: 'Retail',
+    division: 'Retail Traditional Provisions',
+    group: 'Wholesale Traditional Provisions',
     unit: 'KG',
     stockQty: 35,
     price: 9.50,
@@ -281,24 +281,24 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'MOUNA-ZAATAR-1KG',
     code: 'MOUNA-ZAATAR-1KG',
-    name: 'زعتر بلدي اكسترا مع سمسم 1 كغ',
-    category: 'مفرق',
-    division: 'مونة بلدية مفرق',
-    group: 'مونة بلدية جملة',
+    name: 'Premium Local Thyme with Sesame 1kg',
+    category: 'Retail',
+    division: 'Retail Traditional Provisions',
+    group: 'Wholesale Traditional Provisions',
     unit: 'KG',
     stockQty: 60,
     price: 7.20,
     cost: 4.50
   },
 
-  // Wholesale Oils & Olives (جملة)
+  // Wholesale Oils & Olives (Wholesale)
   {
     id: 'EVOO-TIN-16L',
     code: 'EVOO-TIN-16L',
-    name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر (عصرة أولى)',
-    category: 'جملة',
-    division: 'زيوت جملة',
-    group: 'زيت زيتون فرجين جملة',
+    name: 'Extra Virgin Olive Oil 16L Tin (First Press)',
+    category: 'Wholesale',
+    division: 'Wholesale Oils',
+    group: 'Wholesale Virgin Olive Oil',
     unit: 'TIN',
     stockQty: 120,
     price: 115.00,
@@ -307,10 +307,10 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'EVOO-BTL-1L',
     code: 'EVOO-BTL-1L',
-    name: 'زيت زيتون بكر ممتاز قنينة زجاج 1 ليتر',
-    category: 'جملة',
-    division: 'زيوت جملة',
-    group: 'زيت زيتون فرجين جملة',
+    name: 'Extra Virgin Olive Oil Glass Bottle 1L',
+    category: 'Wholesale',
+    division: 'Wholesale Oils',
+    group: 'Wholesale Virgin Olive Oil',
     unit: 'BOT',
     stockQty: 340,
     price: 8.50,
@@ -319,35 +319,35 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   {
     id: 'OLIVE-GRN-10KG',
     code: 'OLIVE-GRN-10KG',
-    name: 'زيتون اخضر بلدي مكبوس سطل 10 كغ',
-    category: 'جملة',
-    division: 'زيتون جملة',
-    group: 'زيتون اخضر جملة',
+    name: 'Pickled Local Green Olives Bucket 10kg',
+    category: 'Wholesale',
+    division: 'Wholesale Olives',
+    group: 'Wholesale Green Olives',
     unit: 'BUCKET',
     stockQty: 45,
     price: 28.00,
     cost: 19.50
   },
 
-  // Offers (عروض)
+  // Offers (Promotions)
   {
     id: 'OFFER-COMBO-01',
     code: 'OFFER-COMBO-01',
-    name: 'عرض التوفير العائلي: 2 ليتر زيت + 1 كغ زعتر + دبس رمان',
-    category: 'عروض',
-    division: 'عروض',
-    group: 'عروض',
+    name: 'Family Saver Bundle: 2L Olive Oil + 1kg Thyme + Pomegranate Molasses',
+    category: 'Promotions',
+    division: 'Promotions',
+    group: 'Promotions',
     unit: 'PACK',
     stockQty: 50,
     price: 22.00,
     cost: 16.00
   },
 
-  // Raw Materials (مواد اولية)
+  // Raw Materials
   {
     id: 'RAW-GLASS-250ML',
     code: 'RAW-GLASS-250ML',
-    name: 'قناني زجاج فارغة 250 مل مع سدادة',
+    name: 'Empty Glass Bottles 250ml with Cap',
     category: 'Raw Materials',
     division: 'Bottles',
     group: 'Bottles',
@@ -358,47 +358,47 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
   }
 ];
 
-export const CATEGORIES_LIST = ['مفرق', 'جملة', 'عروض', 'Raw Materials'];
+export const CATEGORIES_LIST = ['Retail', 'Wholesale', 'Promotions', 'Raw Materials'];
 
 export const DIVISIONS_MAP: Record<string, string[]> = {
-  'مفرق': [
-    'مقطرات ومطيبات مفرق',
-    'مونة بلدية مفرق',
-    'مربيات مفرق',
-    'عسل مفرق',
-    'فواكه مجففه مفرق',
-    'بهارات مفرق',
-    'براد',
-    'خدمات'
+  'Retail': [
+    'Retail Distillates & Seasonings',
+    'Retail Traditional Provisions',
+    'Retail Jams',
+    'Retail Honey',
+    'Retail Dried Fruits',
+    'Retail Spices',
+    'Refrigerated',
+    'Services'
   ],
-  'جملة': ['زيوت جملة', 'زيتون جملة', 'عسل جملة', 'مربيات جملة', 'مونة بلدية جملة'],
-  'عروض': ['عروض'],
+  'Wholesale': ['Wholesale Oils', 'Wholesale Olives', 'Wholesale Honey', 'Wholesale Jams', 'Wholesale Traditional Provisions'],
+  'Promotions': ['Promotions'],
   'Raw Materials': ['Bottles', 'Plastic', 'Jars', 'Main Materials']
 };
 
 export const GROUPS_MAP: Record<string, string[]> = {
-  'مقطرات ومطيبات مفرق': [
-    'مقطرات مفرق 250مل',
-    'مقطرات ومطيبات غالون',
-    'مقطرات مفرق 500مل',
-    'مقطرات 1 ليتر'
+  'Retail Distillates & Seasonings': [
+    'Retail Distillates 250ml',
+    'Distillates & Seasonings Gallon',
+    'Retail Distillates 500ml',
+    'Distillates 1 Liter'
   ],
-  'مونة بلدية مفرق': ['مونة بلدية جملة', 'حبوب مكيسة', 'أجبان و ألبان'],
-  'مربيات مفرق': ['مربيات مفرق', 'مرطبان 510'],
-  'عسل مفرق': ['عسل مفرق', 'عسل جملة'],
-  'فواكه مجففه مفرق': ['فواكه مجففه مفرق'],
-  'بهارات مفرق': ['بهارات غ', 'علبة بهارات'],
-  'براد': ['أجبان و ألبان'],
-  'خدمات': ['خدمات عامة'],
-  'زيوت جملة': ['زيت زيتون فرجين جملة', 'زيت اوكراني دوار الشمس جملة'],
-  'زيتون جملة': ['زيتون اخضر جملة', 'زيتون اسود جملة'],
-  'عسل جملة': ['عسل جملة'],
-  'مربيات جملة': ['مربيات جملة'],
-  'مونة بلدية جملة': ['مونة بلدية جملة'],
-  'عروض': ['عروض'],
+  'Retail Traditional Provisions': ['Wholesale Traditional Provisions', 'Bagged Legumes & Grains', 'Dairy & Cheese'],
+  'Retail Jams': ['Retail Jams', 'Jar 510'],
+  'Retail Honey': ['Retail Honey', 'Wholesale Honey'],
+  'Retail Dried Fruits': ['Retail Dried Fruits'],
+  'Retail Spices': ['Spices (g)', 'Spice Box'],
+  'Refrigerated': ['Dairy & Cheese'],
+  'Services': ['General Services'],
+  'Wholesale Oils': ['Wholesale Virgin Olive Oil', 'Wholesale Sunflower Oil'],
+  'Wholesale Olives': ['Wholesale Green Olives', 'Wholesale Black Olives'],
+  'Wholesale Honey': ['Wholesale Honey'],
+  'Wholesale Jams': ['Wholesale Jams'],
+  'Wholesale Traditional Provisions': ['Wholesale Traditional Provisions'],
+  'Promotions': ['Promotions'],
   'Bottles': ['Bottles', 'Plastic Bottles'],
   'Plastic': ['Plastic Gallon'],
-  'Jars': ['JAR', '509 مرطبان'],
+  'Jars': ['JAR', 'Jar 509'],
   'Main Materials': ['Main materials']
 };
 
@@ -437,9 +437,9 @@ export default function AuthenticOmegaSalesWorkstation({
   // --- Header & Settings State ---
   const [selectedBranch, setSelectedBranch] = useState('southern');
   const [invoiceSearchQuery, setInvoiceSearchQuery] = useState('');
-  const [activeTabCategory, setActiveTabCategory] = useState('مفرق');
-  const [activeTabDivision, setActiveTabDivision] = useState('مقطرات ومطيبات مفرق');
-  const [activeTabGroup, setActiveTabGroup] = useState('مقطرات مفرق 250مل');
+  const [activeTabCategory, setActiveTabCategory] = useState('Retail');
+  const [activeTabDivision, setActiveTabDivision] = useState('Retail Distillates & Seasonings');
+  const [activeTabGroup, setActiveTabGroup] = useState('Retail Distillates 250ml');
   const [catalogSearch, setCatalogSearch] = useState('');
 
   // --- Invoice Header State ---
@@ -523,7 +523,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-1',
           itemId: 'EVOO-TIN-16L',
           code: 'EVOO-TIN-16L',
-          name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر (عصرة أولى)',
+          name: 'Extra Virgin Olive Oil 16L Tin (First Press)',
           qty: 3,
           unit: 'TIN',
           unitPrice: 115.00,
@@ -534,7 +534,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-2',
           itemId: 'OACV250MLB103',
           code: 'OACV250MLB103',
-          name: 'خل تفاح بلدي 250مل',
+          name: 'Local Apple Cider Vinegar 250ml',
           qty: 60,
           unit: 'BOT',
           unitPrice: 1.25,
@@ -557,7 +557,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-3',
           itemId: 'EVOO-GL-1L',
           code: 'EVOO-GL-1L',
-          name: 'زيت زيتون بكر ممتاز قارورة زجاج 1 ليتر',
+          name: 'Extra Virgin Olive Oil Glass Bottle 1L',
           qty: 50,
           unit: 'BOT',
           unitPrice: 9.50,
@@ -568,7 +568,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-4',
           itemId: 'PGM250MLB103',
           code: 'PGM250MLB103',
-          name: 'دبس رمان 250 مل',
+          name: 'Pomegranate Molasses 250ml',
           qty: 150,
           unit: 'BOT',
           unitPrice: 1.37,
@@ -591,7 +591,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-5',
           itemId: 'EVOO-TIN-16L',
           code: 'EVOO-TIN-16L',
-          name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر (عصرة أولى)',
+          name: 'Extra Virgin Olive Oil 16L Tin (First Press)',
           qty: 10,
           unit: 'TIN',
           unitPrice: 115.00,
@@ -602,7 +602,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-6',
           itemId: 'CWV250MLB103',
           code: 'CWV250MLB103',
-          name: 'خل ابيض 250مل',
+          name: 'White Vinegar 250ml',
           qty: 180,
           unit: 'BOT',
           unitPrice: 0.50,
@@ -625,7 +625,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-7',
           itemId: 'EVOO-TIN-16L',
           code: 'EVOO-TIN-16L',
-          name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر (عصرة أولى)',
+          name: 'Extra Virgin Olive Oil 16L Tin (First Press)',
           qty: 8,
           unit: 'TIN',
           unitPrice: 115.00,
@@ -636,7 +636,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'q-item-8',
           itemId: 'CARW250GB103',
           code: 'CARW250GB103',
-          name: 'ماء ورد 250مل',
+          name: 'Rose Water 250ml',
           qty: 50,
           unit: 'BOT',
           unitPrice: 0.60,
@@ -678,7 +678,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'CWV250MLB103',
           itemId: 'CWV250MLB103',
           code: 'CWV250MLB103',
-          name: 'خل ابيض 250مل',
+          name: 'White Vinegar 250ml',
           qty: 24,
           unit: 'BOT',
           unitPrice: 0.50,
@@ -689,7 +689,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'OACV250MLB103',
           itemId: 'OACV250MLB103',
           code: 'OACV250MLB103',
-          name: 'خل تفاح بلدي 250مل',
+          name: 'Local Apple Cider Vinegar 250ml',
           qty: 20,
           unit: 'BOT',
           unitPrice: 1.11,
@@ -700,7 +700,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'PGM250MLB103',
           itemId: 'PGM250MLB103',
           code: 'PGM250MLB103',
-          name: 'دبس رمان 250 مل',
+          name: 'Pomegranate Molasses 250ml',
           qty: 30,
           unit: 'BOT',
           unitPrice: 0.67,
@@ -720,7 +720,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'CDBW250MLB103',
           itemId: 'CDBW250MLB103',
           code: 'CDBW250MLB103',
-          name: 'ماء زهر 250مل',
+          name: 'Orange Blossom Water 250ml',
           qty: 50,
           unit: 'BOT',
           unitPrice: 0.56,
@@ -731,7 +731,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'CARW250GB103',
           itemId: 'CARW250GB103',
           code: 'CARW250GB103',
-          name: 'ماء ورد 250مل',
+          name: 'Rose Water 250ml',
           qty: 50,
           unit: 'BOT',
           unitPrice: 0.56,
@@ -853,7 +853,7 @@ export default function AuthenticOmegaSalesWorkstation({
       branch: 'Zeit w zaytoun ljanoub',
       customerName: 'Abou Hamza',
       customerId: '31',
-      company: 'مكسرات أبو حمزة',
+      company: 'Abou Hamzeh Nuts',
       salesman: 'Mahdi',
       createdBy: 'Mohammed Jichi',
       source: 'Local',
@@ -869,7 +869,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'item-1',
           itemId: 'EVOO-TIN-16L',
           code: 'EVOO-TIN-16L',
-          name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر',
+          name: 'Extra Virgin Olive Oil 16L Tin',
           qty: 2,
           unit: 'TIN',
           unitPrice: 115.00,
@@ -880,7 +880,7 @@ export default function AuthenticOmegaSalesWorkstation({
           id: 'item-2',
           itemId: 'CWV250MLB103',
           code: 'CWV250MLB103',
-          name: 'خل ابيض 250مل',
+          name: 'White Vinegar 250ml',
           qty: 72,
           unit: 'BOT',
           unitPrice: 0.50,
@@ -1538,7 +1538,7 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f8fafc] text-slate-800 font-sans select-none overflow-hidden">
+    <div className="flex h-screen w-full bg-background text-slate-800 font-sans select-none overflow-hidden">
       
       {/* ========================================================================= */}
       {/* 0. AUTHENTIC OMEGA NAVIGATION SIDEBAR (Matching media_1788788432926.png)   */}
@@ -1547,10 +1547,10 @@ export default function AuthenticOmegaSalesWorkstation({
         <div
           className={`${
             omegaSidebarCollapsed ? 'w-14' : 'w-56'
-          } bg-white border-r border-[#e2e8f0] flex flex-col shrink-0 h-full transition-all duration-150 z-30 select-none overflow-hidden`}
+          } bg-white border-r border-border flex flex-col shrink-0 h-full transition-all duration-150 z-30 select-none overflow-hidden`}
         >
           {/* Top Bar: Hamburger on left, Home on right */}
-          <div className="h-9 border-b border-[#e2e8f0] flex items-center justify-between px-3 bg-white shrink-0">
+          <div className="h-9 border-b border-border flex items-center justify-between px-3 bg-white shrink-0">
             <button
               type="button"
               onClick={() => setOmegaSidebarCollapsed(!omegaSidebarCollapsed)}
@@ -1561,9 +1561,9 @@ export default function AuthenticOmegaSalesWorkstation({
             </button>
             {!omegaSidebarCollapsed && (
               <a
-                href="/backoffice/dashboard"
+                href="/backoffice"
                 className="p-1 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
-                title="Home Dashboard"
+                title="Enterprise Main Hub"
               >
                 <Home className="w-4 h-4 text-slate-500" />
               </a>
@@ -1572,7 +1572,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
           {/* Search Box */}
           {!omegaSidebarCollapsed && (
-            <div className="p-2 border-b border-[#edf2f7] bg-white shrink-0">
+            <div className="p-2 border-b border-border bg-white shrink-0">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
@@ -1580,7 +1580,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   placeholder="search"
                   value={sidebarSearchQuery}
                   onChange={(e) => setSidebarSearchQuery(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] rounded pl-7 pr-2 py-1 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 shadow-2xs"
+                  className="w-full bg-background border border-border rounded pl-7 pr-2 py-1 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-blue-400 shadow-2xs"
                 />
               </div>
             </div>
@@ -1591,20 +1591,20 @@ export default function AuthenticOmegaSalesWorkstation({
             {/* Sales Control */}
             <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-700 hover:bg-slate-50 cursor-pointer font-medium text-[11.5px]">
               <div className="flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-[#c5a059]" />
+                <Briefcase className="w-3.5 h-3.5 text-primary" />
                 {!omegaSidebarCollapsed && <span>Sales Control</span>}
               </div>
-              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-[#c5a059]" />}
+              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
             </div>
 
             {/* Operations Center */}
             <div className="mt-1">
               <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-800 hover:bg-slate-50 cursor-pointer font-bold text-[11.5px]">
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-3.5 h-3.5 text-[#c5a059]" />
+                  <Building2 className="w-3.5 h-3.5 text-primary" />
                   {!omegaSidebarCollapsed && <span>Operations Center</span>}
                 </div>
-                {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-[#c5a059]" />}
+                {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
               </div>
 
               {!omegaSidebarCollapsed && (
@@ -1634,14 +1634,14 @@ export default function AuthenticOmegaSalesWorkstation({
                         <Zap className="w-3.5 h-3.5 text-amber-600" />
                         <span>Actions</span>
                       </div>
-                      <ChevronDown className="w-2.5 h-2.5 text-[#c5a059]" />
+                      <ChevronDown className="w-2.5 h-2.5 text-primary" />
                     </div>
 
                     <div className="pl-3.5 space-y-0.5 mt-0.5 border-l border-slate-200">
                       {/* Sales (Active) */}
                       <a
                         href="/sales"
-                        className="flex items-center gap-2 px-2 py-1.5 rounded font-bold text-[#1c477a] bg-[#e6effa]"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded font-bold text-primary bg-muted"
                       >
                         <ShoppingBag className="w-3.5 h-3.5 text-amber-600" />
                         <span>Sales</span>
@@ -1724,7 +1724,7 @@ export default function AuthenticOmegaSalesWorkstation({
                           <Package className="w-3.5 h-3.5 text-slate-400" />
                           <span>Product Request</span>
                         </div>
-                        <ChevronDown className="w-2.5 h-2.5 text-[#c5a059]" />
+                        <ChevronDown className="w-2.5 h-2.5 text-primary" />
                       </div>
 
                       <div className="flex items-center justify-between px-2 py-1 text-slate-600 hover:bg-slate-50 cursor-pointer">
@@ -1732,7 +1732,7 @@ export default function AuthenticOmegaSalesWorkstation({
                           <CalendarIcon className="w-3.5 h-3.5 text-slate-400" />
                           <span>Events</span>
                         </div>
-                        <ChevronDown className="w-2.5 h-2.5 text-[#c5a059]" />
+                        <ChevronDown className="w-2.5 h-2.5 text-primary" />
                       </div>
                     </div>
                   </div>
@@ -1743,7 +1743,7 @@ export default function AuthenticOmegaSalesWorkstation({
                       <Settings className="w-3.5 h-3.5 text-slate-500" />
                       <span>Setup</span>
                     </div>
-                    <ChevronDown className="w-2.5 h-2.5 text-[#c5a059]" />
+                    <ChevronDown className="w-2.5 h-2.5 text-primary" />
                   </div>
                 </div>
               )}
@@ -1752,10 +1752,10 @@ export default function AuthenticOmegaSalesWorkstation({
             {/* Customer Management */}
             <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-700 hover:bg-slate-50 cursor-pointer font-medium text-[11.5px] mt-2">
               <div className="flex items-center gap-2">
-                <Users className="w-3.5 h-3.5 text-[#c5a059]" />
+                <Users className="w-3.5 h-3.5 text-primary" />
                 {!omegaSidebarCollapsed && <span>Customer Management</span>}
               </div>
-              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-[#c5a059]" />}
+              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
             </div>
           </div>
         </div>
@@ -1764,12 +1764,12 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {/* RIGHT MAIN WORKSTATION                                                    */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
         
         {/* ========================================================================= */}
         {/* 1. TOP HEADER BAR: WATCH TUTORIAL (TOP RIGHT) + CONTROLS ROW              */}
         {/* ========================================================================= */}
-        <div className="bg-white border-b border-[#e2e8f0] px-3 py-1.5 flex flex-col gap-1 shrink-0 z-20">
+        <div className="bg-white border-b border-border px-3 py-1.5 flex flex-col gap-1 shrink-0 z-20">
         
         {/* Very top line: Watch Tutorial on top right */}
         <div className="flex justify-end w-full">
@@ -1794,7 +1794,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
-                className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1 text-xs font-normal text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs pr-8 cursor-pointer"
+                className="w-full bg-white border border-border rounded px-3 py-1 text-xs font-normal text-slate-700 focus:outline-none focus:border-blue-500 shadow-2xs pr-8 cursor-pointer"
               >
                 {BRANCH_OPTIONS.map((b) => (
                   <option key={b.id} value={b.id}>
@@ -1832,7 +1832,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     else alert(`No invoice found matching "${invoiceSearchQuery}"`);
                   }
                 }}
-                className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
+                className="w-full bg-white border border-border rounded px-3 py-1 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
 
@@ -1840,7 +1840,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <button
               type="button"
               onClick={handleNewInvoice}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
               title="Start New Invoice"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -1850,7 +1850,7 @@ export default function AuthenticOmegaSalesWorkstation({
             {/* Calendar Icon Button (Opens Schedule in new tab) */}
             <button
               type="button"
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
               title="Schedule / Appointments Calendar (Opens in new tab)"
               onClick={() => window.open('/schedule', '_blank')}
             >
@@ -1861,7 +1861,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <button
               type="button"
               onClick={() => setIsInvoiceInfoModalOpen(true)}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
               title="Invoice Info"
             >
               <Info className="w-3.5 h-3.5" />
@@ -1871,7 +1871,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <button
               type="button"
               onClick={() => setIsPreviewSalesModalOpen(true)}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
               title="Search & Preview Invoices"
             >
               <Search className="w-3.5 h-3.5" />
@@ -1881,7 +1881,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <button
               type="button"
               onClick={() => setIsQuotationsModalOpen(true)}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
               title="Pending Quotations to Convert"
             >
               <Bell className="w-3.5 h-3.5" />
@@ -1892,7 +1892,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
                 title="Operations Actions"
               >
                 <span>Actions</span>
@@ -1907,7 +1907,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     onClick={() => setIsActionsDropdownOpen(false)}
                   />
 
-                  <div className="absolute right-0 mt-1 w-48 bg-white border border-[#cbd5e1] rounded shadow-xl py-1 z-50 text-[13px] text-slate-800 font-sans divide-y divide-slate-100">
+                  <div className="absolute right-0 mt-1 w-48 bg-white border border-border rounded shadow-xl py-1 z-50 text-[13px] text-slate-800 font-sans divide-y divide-slate-100">
                     <div className="py-0.5">
                       <button
                         type="button"
@@ -2043,10 +2043,10 @@ export default function AuthenticOmegaSalesWorkstation({
         {/* ----------------------------------------------------------------------- */}
         {/* LEFT PANE: CATALOG & PRODUCT SELECTION                                  */}
         {/* ----------------------------------------------------------------------- */}
-        <div className="w-full md:w-[50%] lg:w-[52%] border-r border-[#d8e2ee] bg-white flex flex-col overflow-hidden">
+        <div className="w-full md:w-[50%] lg:w-[52%] border-r border-border bg-white flex flex-col overflow-hidden">
           
           {/* Search Items Header Input */}
-          <div className="p-2.5 border-b border-[#edf2f7] bg-white">
+          <div className="p-2.5 border-b border-border bg-white">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
@@ -2054,17 +2054,17 @@ export default function AuthenticOmegaSalesWorkstation({
                 placeholder="Search Items By Description, Code or Barcode..."
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
-                className="w-full bg-white border border-[#cbd5e1] rounded pl-9 pr-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
+                className="w-full bg-white border border-border rounded pl-9 pr-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
               />
             </div>
           </div>
 
           {/* Hierarchical 3-Tier Tab Bar */}
           {!catalogSearch && (
-            <div className="border-b border-[#edf2f7] bg-white flex flex-col">
+            <div className="border-b border-border bg-white flex flex-col">
               
-              {/* Row 1: Categories (مفرق / جملة / عروض / Raw Materials) */}
-              <div className="flex items-center border-b border-[#cbd5e1] overflow-x-auto custom-scrollbar px-1 py-1 gap-1">
+              {/* Row 1: Categories (Retail / Wholesale / Promotions / Raw Materials) */}
+              <div className="flex items-center border-b border-border overflow-x-auto custom-scrollbar px-1 py-1 gap-1">
                 {CATEGORIES_LIST.map((cat) => {
                   const isActive = activeTabCategory === cat;
                   return (
@@ -2074,8 +2074,8 @@ export default function AuthenticOmegaSalesWorkstation({
                       onClick={() => setActiveTabCategory(cat)}
                       className={`px-4 py-1.5 text-xs font-semibold rounded-xs transition-colors whitespace-nowrap cursor-pointer ${
                         isActive
-                          ? 'bg-[#c6d7ed] text-[#1c477a] font-bold border border-[#a2bfdf]'
-                          : 'bg-white text-slate-700 hover:bg-slate-50 border border-[#e2e8f0]'
+                          ? 'bg-muted text-primary font-bold border border-border'
+                          : 'bg-white text-slate-700 hover:bg-slate-50 border border-border'
                       }`}
                     >
                       {cat}
@@ -2085,7 +2085,7 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               {/* Row 2: Divisions */}
-              <div className="flex items-center border-b border-[#e2e8f0] overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-[#fafbfc]">
+              <div className="flex items-center border-b border-border overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-card">
                 {(DIVISIONS_MAP[activeTabCategory] || []).map((div) => {
                   const isActive = activeTabDivision === div;
                   return (
@@ -2095,8 +2095,8 @@ export default function AuthenticOmegaSalesWorkstation({
                       onClick={() => setActiveTabDivision(div)}
                       className={`px-2.5 py-1 text-[11px] font-normal rounded-xs transition-colors whitespace-nowrap cursor-pointer ${
                         isActive
-                          ? 'bg-[#d8e6f7] text-[#1e40af] font-semibold border border-[#bfdbfe]'
-                          : 'bg-white text-slate-600 border border-[#e2e8f0] hover:bg-slate-50'
+                          ? 'bg-muted text-primary font-semibold border border-border'
+                          : 'bg-white text-slate-600 border border-border hover:bg-slate-50'
                       }`}
                     >
                       {div}
@@ -2106,7 +2106,7 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               {/* Row 3: Groups */}
-              <div className="flex items-center overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-[#f4f7fb]">
+              <div className="flex items-center overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-muted">
                 {(GROUPS_MAP[activeTabDivision] || []).map((grp) => {
                   const isActive = activeTabGroup === grp;
                   return (
@@ -2116,8 +2116,8 @@ export default function AuthenticOmegaSalesWorkstation({
                       onClick={() => setActiveTabGroup(grp)}
                       className={`px-2 py-0.5 text-[11px] font-normal rounded-xs transition-colors whitespace-nowrap cursor-pointer ${
                         isActive
-                          ? 'bg-[#c6d7ed] text-[#1e3a8a] font-semibold border border-[#93c5fd]'
-                          : 'bg-white text-slate-500 border border-[#e2e8f0] hover:bg-slate-50'
+                          ? 'bg-muted text-primary font-semibold border border-border'
+                          : 'bg-white text-slate-500 border border-border hover:bg-slate-50'
                       }`}
                     >
                       {grp}
@@ -2131,12 +2131,12 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Catalog Items Listing Table */}
           <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
             <table className="w-full text-left border-collapse text-xs">
-              <tbody className="divide-y divide-[#eee]">
+              <tbody className="divide-y divide-border">
                 {filteredCatalogItems.length > 0 ? (
                   filteredCatalogItems.map((item) => (
                     <tr
                       key={item.id}
-                      className="hover:bg-[#669bfb20] transition-colors group cursor-pointer"
+                      className="hover:bg-muted/60 transition-colors group cursor-pointer"
                       onClick={() => handleAddItemToCart(item)}
                     >
                       <td className="py-2 px-3">
@@ -2177,7 +2177,7 @@ export default function AuthenticOmegaSalesWorkstation({
         <div className="w-full md:w-[50%] lg:w-[48%] bg-white flex flex-col overflow-hidden border-t md:border-t-0">
           
           {/* Customer & Metadata Block */}
-          <div className="p-3 bg-white border-b border-[#e2e8f0] space-y-2 shrink-0">
+          <div className="p-3 bg-white border-b border-border space-y-2 shrink-0">
             
             {/* Upper Section: Customer info on Left, Metadata on Right */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start text-xs">
@@ -2198,7 +2198,7 @@ export default function AuthenticOmegaSalesWorkstation({
                         setCustomerSearch(e.target.value);
                         setIsCustomerDropdownOpen(true);
                       }}
-                      className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
+                      className="w-full bg-white border border-border rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
                     />
                     {isCustomerDropdownOpen && (
                       <div className="absolute left-0 top-full mt-1 w-full bg-white border border-slate-200 rounded shadow-xl z-50 max-h-48 overflow-y-auto text-xs py-1">
@@ -2235,7 +2235,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <button
                       type="button"
                       onClick={() => setIsCustomerModalOpen(true)}
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded cursor-pointer shrink-0"
+                      className="bg-primary hover:bg-primary/90 text-white p-1 rounded cursor-pointer shrink-0"
                       title="Edit Customer"
                     >
                       <Edit2 className="w-3 h-3" />
@@ -2280,7 +2280,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <select
                       value={deliveredBy}
                       onChange={(e) => setDeliveredBy(e.target.value)}
-                      className="w-full bg-white border border-[#cbd5e1] rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
+                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
                     >
                       <option value="Providers">Providers</option>
                       <option value="In-House Fleet">In-House Fleet</option>
@@ -2288,7 +2288,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     </select>
                     <button
                       type="button"
-                      className="bg-[#16a34a] hover:bg-[#15803d] text-white p-1 rounded shrink-0"
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white p-1 rounded shrink-0"
                       title="Add Delivery Provider"
                     >
                       <Plus className="w-3 h-3" />
@@ -2303,7 +2303,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <select
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="w-full bg-white border border-[#cbd5e1] rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
+                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
                     >
                       <option value="USD">USD</option>
                       <option value="LBP">LBP</option>
@@ -2311,7 +2311,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     </select>
                     <button
                       type="button"
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded shrink-0"
+                      className="bg-primary hover:bg-primary/90 text-white p-1 rounded shrink-0"
                     >
                       <Edit2 className="w-3 h-3" />
                     </button>
@@ -2325,7 +2325,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <select
                       value={transactionType}
                       onChange={(e) => setTransactionType(e.target.value)}
-                      className="w-full bg-white border border-[#cbd5e1] rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
+                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
                     >
                       <option value="Local">Local</option>
                       <option value="Export">Export</option>
@@ -2341,7 +2341,7 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Cart Items Table */}
           <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
             <table className="w-full text-left border-collapse text-xs">
-              <thead className="text-slate-700 font-semibold border-b border-[#e2e8f0] bg-white sticky top-0 z-10">
+              <thead className="text-slate-700 font-semibold border-b border-border bg-white sticky top-0 z-10">
                 <tr>
                   <th className="py-2 px-3 font-medium">Product</th>
                   <th className="py-2 px-2 text-right font-medium w-16">Qty</th>
@@ -2352,7 +2352,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   <th className="py-2 px-2 text-center w-8"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#eee]">
+              <tbody className="divide-y divide-border">
                 {cartItems.length > 0 ? (
                   cartItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
@@ -2434,7 +2434,7 @@ export default function AuthenticOmegaSalesWorkstation({
           </div>
 
           {/* Bottom Action Area: Payment on Left | Save and Save & Post on Right */}
-          <div className="bg-white border-t border-[#e2e8f0] p-3 shrink-0 flex items-center justify-between gap-4">
+          <div className="bg-white border-t border-border p-3 shrink-0 flex items-center justify-between gap-4">
             
             {/* Payment Button (Exact Slate Blue-Gray #71829e) */}
             <div className="w-48 md:w-56">
@@ -2444,8 +2444,8 @@ export default function AuthenticOmegaSalesWorkstation({
                 disabled={cartItems.length === 0}
                 className={`w-full py-2 px-4 rounded font-normal text-xs text-white shadow-2xs transition-colors text-center cursor-pointer ${
                   cartItems.length === 0
-                    ? 'bg-[#8c9bb0] cursor-not-allowed'
-                    : 'bg-[#71829e] hover:bg-[#5f6f8a]'
+                    ? 'bg-slate-600 cursor-not-allowed'
+                    : 'bg-slate-600 hover:bg-slate-700'
                 }`}
               >
                 Payment {payments.length > 0 ? `(${payments.length})` : ''}
@@ -2462,8 +2462,8 @@ export default function AuthenticOmegaSalesWorkstation({
                 disabled={cartItems.length === 0}
                 className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 cursor-pointer ${
                   cartItems.length === 0
-                    ? 'bg-[#fb8205]/60 cursor-not-allowed'
-                    : 'bg-[#fb8205] hover:bg-[#ea7300]'
+                    ? 'bg-amber-600/60 cursor-not-allowed'
+                    : 'bg-amber-600 hover:bg-amber-700'
                 }`}
               >
                 <Save className="w-3.5 h-3.5" />
@@ -2477,8 +2477,8 @@ export default function AuthenticOmegaSalesWorkstation({
                 disabled={cartItems.length === 0}
                 className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 cursor-pointer ${
                   cartItems.length === 0
-                    ? 'bg-[#1e3a2b]/60 cursor-not-allowed'
-                    : 'bg-[#1e3a2b] hover:bg-[#15291e]'
+                    ? 'bg-primary/60 cursor-not-allowed'
+                    : 'bg-primary hover:bg-primary/90'
                 }`}
               >
                 <Check className="w-3.5 h-3.5" />
@@ -2497,7 +2497,7 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isPaymentModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded shadow-2xl border-4 border-[#4c5c7a] w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded shadow-2xl border-4 border-border w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
             
             <div className="bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-800">Payments</h3>
@@ -2526,7 +2526,7 @@ export default function AuthenticOmegaSalesWorkstation({
                         onClick={() => setSelectedPaymentType(pt.name)}
                         className={`px-3 py-2 rounded-xs border transition-colors cursor-pointer ${
                           isSelected
-                            ? 'bg-[#4d5b76] text-white border-[#4d5b76]'
+                            ? 'bg-primary text-white border-primary'
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                         }`}
                       >
@@ -2538,7 +2538,7 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               {/* Right: Payment Breakdown */}
-              <div className="md:col-span-7 border border-slate-200 rounded p-3 space-y-3 bg-[#fbfcfd]">
+              <div className="md:col-span-7 border border-slate-200 rounded p-3 space-y-3 bg-background">
                 <div className="flex items-center justify-between pb-1.5 border-b border-slate-200 font-semibold">
                   <span className="text-slate-700">Invoice Amount:</span>
                   <span className="text-slate-900 font-bold">{grandTotal.toFixed(2)} USD</span>
@@ -2582,12 +2582,12 @@ export default function AuthenticOmegaSalesWorkstation({
                       step="0.01"
                       value={paymentAmountInput}
                       onChange={(e) => setPaymentAmountInput(e.target.value)}
-                      className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-2xs"
+                      className="w-full bg-white border border-border rounded px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-2xs"
                     />
                     <button
                       type="button"
                       onClick={handleAddPayment}
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                      className="bg-primary hover:bg-primary/90 text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                     >
                       Add
                     </button>
@@ -2638,7 +2638,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-5 py-1 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-5 py-1 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
               >
                 Done
               </button>
@@ -2652,9 +2652,9 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* AUTHENTIC REPORT SCREEN (showReportInvoice)                               */}
       {/* ========================================================================= */}
       {showReportInvoice && (
-        <div className="fixed inset-0 z-50 bg-[#edf1f5] flex flex-col overflow-y-auto animate-in fade-in-50 duration-150">
+        <div className="fixed inset-0 z-50 bg-muted flex flex-col overflow-y-auto animate-in fade-in-50 duration-150">
           {/* Top Actions Bar (Print, Export, Send By Email, Close) */}
-          <div className="bg-[#24344d] text-white px-6 py-2.5 flex items-center justify-between shadow-md print:hidden sticky top-0 z-20">
+          <div className="bg-primary text-white px-6 py-2.5 flex items-center justify-between shadow-md print:hidden sticky top-0 z-20">
             <div className="flex items-center gap-3">
               <span className="font-bold text-sm tracking-wide">
                 Sales Report / Invoice #{reportTargetInvoice?.invoiceNumber || invoiceNumber}
@@ -2696,7 +2696,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={handleCloseReportScreen}
-                className="bg-[#195a96] hover:bg-[#134472] text-white font-bold text-xs px-3.5 py-1.5 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white font-bold text-xs px-3.5 py-1.5 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Close</span>
@@ -2743,7 +2743,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
               {/* Items Table */}
               <table className="w-full text-left text-xs border-collapse border border-slate-300">
-                <thead className="bg-[#24344d] text-white font-semibold">
+                <thead className="bg-primary text-white font-semibold">
                   <tr>
                     <th className="py-2 px-2.5 border border-slate-400">#</th>
                     <th className="py-2 px-2.5 border border-slate-400">Item Code</th>
@@ -2815,8 +2815,8 @@ export default function AuthenticOmegaSalesWorkstation({
       {isSendSalesReportModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs flex items-center justify-center z-50 p-4 animate-in fade-in-50 duration-150">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden text-xs text-slate-800">
-            <div className="bg-[#24344d] text-white px-5 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold">Send Sales Report / إرسال التقرير</h3>
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold">Send Sales Report</h3>
               <button
                 type="button"
                 onClick={() => setIsSendSalesReportModalOpen(false)}
@@ -2885,8 +2885,8 @@ export default function AuthenticOmegaSalesWorkstation({
       {itemQtyohModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs flex items-center justify-center z-50 p-4 animate-in fade-in-50 duration-150">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden text-xs text-slate-800">
-            <div className="bg-[#24344d] text-white px-5 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold">Quantity On Hand by Branches / الكميات المتوفرة</h3>
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold">Quantity On Hand by Branches</h3>
               <button
                 type="button"
                 onClick={() => setItemQtyohModalOpen(false)}
@@ -2934,7 +2934,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setItemQtyohModalOpen(false)}
-                className="px-5 py-1.5 bg-[#24344d] hover:bg-[#1a2537] text-white rounded font-bold shadow-xs cursor-pointer"
+                className="px-5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold shadow-xs cursor-pointer"
               >
                 Close
               </button>
@@ -2947,7 +2947,7 @@ export default function AuthenticOmegaSalesWorkstation({
       {salesSerialModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs flex items-center justify-center z-50 p-4 animate-in fade-in-50 duration-150">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-xl overflow-hidden text-xs text-slate-800">
-            <div className="bg-[#24344d] text-white px-5 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
               <h3 className="text-sm font-bold">Serial Numbers - {salesSerialTargetItem?.name || 'Sales Item'}</h3>
               <button
                 type="button"
@@ -3013,7 +3013,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   setStatusNotice('Serial numbers updated.');
                   setTimeout(() => setStatusNotice(null), 2000);
                 }}
-                className="px-5 py-1.5 bg-[#24344d] hover:bg-[#1a2537] text-white rounded font-bold shadow-xs cursor-pointer"
+                className="px-5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold shadow-xs cursor-pointer"
               >
                 Save
               </button>
@@ -3099,7 +3099,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     window.open('/sales', '_blank');
                     setIsPreviewSalesModalOpen(false);
                   }}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1 shadow-2xs shrink-0 cursor-pointer transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1 shadow-2xs shrink-0 cursor-pointer transition-colors"
                   title="Open New Sales in a new tab"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -3151,7 +3151,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewTransactionType === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3212,7 +3212,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewInvoiceType === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3266,7 +3266,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewStatusFilter === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3328,7 +3328,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewSalesmanFilter === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3390,7 +3390,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewUserFilter === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3444,7 +3444,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               }}
                               className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                                 previewSalesFilter === opt
-                                  ? 'bg-[#0d6efd] text-white font-medium'
+                                  ? 'bg-primary text-white font-medium'
                                   : 'text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -3483,7 +3483,7 @@ export default function AuthenticOmegaSalesWorkstation({
                       setStatusNotice('Preview filters applied.');
                       setTimeout(() => setStatusNotice(null), 2000);
                     }}
-                    className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                    className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
                   >
                     <Filter className="w-3.5 h-3.5" />
                     <span>Filter</span>
@@ -3493,7 +3493,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     onClick={() => {
                       window.open('/sales/delivery-of-goods', '_blank');
                     }}
-                    className="bg-[#5a232b] hover:bg-[#431920] text-white text-xs font-semibold px-3.5 py-1.5 rounded shadow-2xs cursor-pointer transition-colors"
+                    className="bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold px-3.5 py-1.5 rounded shadow-2xs cursor-pointer transition-colors"
                     title="Open Delivery of Goods in new tab"
                   >
                     Delivery Of Goods
@@ -3527,7 +3527,7 @@ export default function AuthenticOmegaSalesWorkstation({
                         <button
                           type="button"
                           onClick={handlePostAllInvoices}
-                          className="bg-[#2e7d32] hover:bg-[#1b5e20] text-white px-2.5 py-1 rounded text-[11px] font-semibold cursor-pointer shadow-2xs transition-colors"
+                          className="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded text-[11px] font-semibold cursor-pointer shadow-2xs transition-colors"
                           title="Post all unposted invoices to GL"
                         >
                           Post All
@@ -3566,9 +3566,9 @@ export default function AuthenticOmegaSalesWorkstation({
                     <tr className="bg-white">
                       <td colSpan={16} className="py-4 text-center">
                         <div className="inline-flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#00bcd4] animate-bounce [animation-delay:-0.3s]"></span>
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#00bcd4] animate-bounce [animation-delay:-0.15s]"></span>
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#00bcd4] animate-bounce"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-teal-700 animate-bounce [animation-delay:-0.3s]"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-teal-700 animate-bounce [animation-delay:-0.15s]"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-teal-700 animate-bounce"></span>
                         </div>
                       </td>
                     </tr>
@@ -3615,7 +3615,7 @@ export default function AuthenticOmegaSalesWorkstation({
                       <td className="py-2.5 px-2 text-right text-slate-700">
                         {inv.tax.toFixed(2)}
                       </td>
-                      <td className="py-2.5 px-2 text-right font-bold text-[#1d4ed8]">
+                      <td className="py-2.5 px-2 text-right font-bold text-primary">
                         {inv.grandTotal.toFixed(2)}
                       </td>
                       <td className="py-2.5 px-2 text-slate-700">
@@ -3633,7 +3633,7 @@ export default function AuthenticOmegaSalesWorkstation({
                           <button
                             type="button"
                             onClick={() => handleLoadInvoice(inv)}
-                            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
+                            className="bg-primary hover:bg-primary/90 text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
                             title="Edit / Load Invoice"
                           >
                             <Edit2 className="w-3 h-3" />
@@ -3644,7 +3644,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               handleLoadInvoice(inv);
                               setIsPrintInvoiceModalOpen(true);
                             }}
-                            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
+                            className="bg-primary hover:bg-primary/90 text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
                             title="Print Invoice"
                           >
                             <Printer className="w-3 h-3" />
@@ -3655,7 +3655,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               setStatusNotice(`Invoice #${inv.invoiceNumber} tags: [${inv.transactionType || 'Local'}, ${inv.invoiceType || 'Standard'}]`);
                               setTimeout(() => setStatusNotice(null), 3000);
                             }}
-                            className="bg-[#78909c] hover:bg-[#607d8b] text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
+                            className="bg-slate-600 hover:bg-slate-700 text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
                             title="Invoice Tags / Category"
                           >
                             <Tag className="w-3 h-3" />
@@ -3726,7 +3726,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <button
                       type="button"
                       onClick={handleExecutePostAll}
-                      className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
+                      className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
                     >
                       OK
                     </button>
@@ -3775,7 +3775,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   <button
                     type="button"
                     onClick={() => setIsEditingRate(!isEditingRate)}
-                    className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded ml-2 shrink-0 cursor-pointer shadow-2xs transition-colors"
+                    className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded ml-2 shrink-0 cursor-pointer shadow-2xs transition-colors"
                     title={isEditingRate ? 'Save Rate' : 'Edit Rate'}
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -3799,7 +3799,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   <button
                     type="button"
                     onClick={() => setIsEditingWorkstation(!isEditingWorkstation)}
-                    className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded ml-2 shrink-0 cursor-pointer shadow-2xs transition-colors"
+                    className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded ml-2 shrink-0 cursor-pointer shadow-2xs transition-colors"
                     title={isEditingWorkstation ? 'Save Workstation' : 'Edit Workstation'}
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -3918,7 +3918,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   setStatusNotice('Invoice Info updated.');
                   setTimeout(() => setStatusNotice(null), 2500);
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary/90 text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
               >
                 OK
               </button>
@@ -3957,7 +3957,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   <select
                     value={quotationBranchFilter}
                     onChange={(e) => setQuotationBranchFilter(e.target.value)}
-                    className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-slate-400"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-slate-400"
                   >
                     <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
                     <option value="Southern Olive Oil S.A.R.L">Southern Olive Oil S.A.R.L</option>
@@ -3973,7 +3973,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     placeholder="Search customer"
                     value={quotationCustomerSearch}
                     onChange={(e) => setQuotationCustomerSearch(e.target.value)}
-                    className="w-full bg-white border border-[#cbd5e1] rounded pl-8 pr-3 py-1.5 text-slate-800 text-xs shadow-2xs placeholder:text-slate-400 focus:outline-none focus:border-slate-400"
+                    className="w-full bg-white border border-border rounded pl-8 pr-3 py-1.5 text-slate-800 text-xs shadow-2xs placeholder:text-slate-400 focus:outline-none focus:border-slate-400"
                   />
                   {quotationCustomerSearch && (
                     <button
@@ -3993,7 +3993,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   <select
                     value={quotationCustomerGroup}
                     onChange={(e) => setQuotationCustomerGroup(e.target.value)}
-                    className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-slate-400"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-slate-400"
                   >
                     <option value="All Customer Groups">All Customer Groups</option>
                     <option value="Supermarkets & Hypermarkets">Supermarkets & Hypermarkets</option>
@@ -4010,7 +4010,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     placeholder="Search Quotation..."
                     value={quotationSearchQuery}
                     onChange={(e) => setQuotationSearchQuery(e.target.value)}
-                    className="w-full bg-white border border-[#cbd5e1] rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs placeholder:text-slate-400 focus:outline-none focus:border-slate-400"
+                    className="w-full bg-white border border-border rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs placeholder:text-slate-400 focus:outline-none focus:border-slate-400"
                   />
                   {quotationSearchQuery && (
                     <button
@@ -4055,7 +4055,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     setStatusNotice(`Filtered: showing ${filteredPendingQuotations.length} pending quotations.`);
                     setTimeout(() => setStatusNotice(null), 2500);
                   }}
-                  className="bg-[#3b4861] hover:bg-[#2a3447] text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <Filter className="w-3 h-3" />
                   <span>Filter</span>
@@ -4093,7 +4093,7 @@ export default function AuthenticOmegaSalesWorkstation({
                               onDoubleClick={() => handleConvertQuotationToInvoice(q)}
                               className={`transition-colors cursor-pointer ${
                                 isSelected
-                                  ? 'bg-[#e8f0fe] font-medium text-slate-900 border-l-4 border-[#2f3b52]'
+                                  ? 'bg-muted font-medium text-slate-900 border-l-4 border-border'
                                   : 'hover:bg-slate-50 text-slate-700'
                               }`}
                             >
@@ -4123,7 +4123,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={handleConfirmQuotationSelection}
-                className="bg-[#4c5c7a] hover:bg-[#39465e] text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
               >
                 OK
               </button>
@@ -4137,7 +4137,7 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isSettingsModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded shadow-2xl border-4 border-[#4c5c7a] w-full max-w-md overflow-hidden flex flex-col">
+          <div className="bg-white rounded shadow-2xl border-4 border-border w-full max-w-md overflow-hidden flex flex-col">
             <div className="bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
                 <Settings className="w-3.5 h-3.5 text-slate-600" />
@@ -4154,7 +4154,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <div className="p-4 space-y-2.5 text-xs">
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Default Payment Method</label>
-                <select className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1 text-slate-800 shadow-2xs">
+                <select className="w-full bg-white border border-border rounded px-2.5 py-1 text-slate-800 shadow-2xs">
                   <option value="cash_usd">Cash USD</option>
                   <option value="visa">Visa / MasterCard</option>
                   <option value="on_account">On Account</option>
@@ -4162,7 +4162,7 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Printer Type</label>
-                <select className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1 text-slate-800 shadow-2xs">
+                <select className="w-full bg-white border border-border rounded px-2.5 py-1 text-slate-800 shadow-2xs">
                   <option value="thermal">Thermal 80mm POS Receipt</option>
                   <option value="a4">Standard A4 Invoice</option>
                 </select>
@@ -4172,7 +4172,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsSettingsModalOpen(false)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1 rounded text-xs font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1 rounded text-xs font-semibold cursor-pointer"
               >
                 Save
               </button>
@@ -4186,12 +4186,12 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isPrintInvoiceModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Print Sales Invoice / معاينة طباعة الفاتورة</h3>
+                <h3 className="text-sm font-bold">Print Sales Invoice</h3>
               </div>
               <button
                 type="button"
@@ -4209,7 +4209,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 <div className="flex justify-between items-start border-b border-slate-300 pb-3">
                   <div>
                     <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Southern Olive Oil Products S.A.R.L</h2>
-                    <p className="text-[11px] text-slate-500 font-arabic">منتجات زيوت الجنوب ش.م.م - معاصر ومصانع زيوت الزيتون</p>
+                    <p className="text-[11px] text-slate-500 font-arabic">Southern Olive Oil Products S.A.R.L - Olive Mills & Manufacturing</p>
                     <p className="text-[11px] text-slate-500">Commercial Reg: 102488 | MOF: 3819200-01</p>
                     <p className="text-[11px] text-slate-500">Nabatieh - Tyre Highway, South Lebanon</p>
                   </div>
@@ -4225,7 +4225,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 {/* Customer Details Box */}
                 <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To / الزبون:</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To:</span>
                     <p className="font-bold text-slate-800 text-sm">{selectedCustomer.name}</p>
                     <p className="text-slate-600 text-[11px]">{selectedCustomer.address}</p>
                   </div>
@@ -4249,8 +4249,8 @@ export default function AuthenticOmegaSalesWorkstation({
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {(cartItems.length > 0 ? cartItems : [
-                      { id: '1', code: 'EVOO-16L', name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر', unit: 'TIN', qty: 2, unitPrice: 115.00, total: 230.00 },
-                      { id: '2', code: 'CWV250MLB103', name: 'خل ابيض 250مل', unit: 'BOT', qty: 12, unitPrice: 0.50, total: 6.00 }
+                      { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, unitPrice: 115.00, total: 230.00 },
+                      { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, unitPrice: 0.50, total: 6.00 }
                     ]).map((item, idx) => (
                       <tr key={idx} className="hover:bg-slate-50">
                         <td className="py-2 px-2.5">
@@ -4301,7 +4301,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   </div>
                   <div>
                     <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Client Signature & Stamp / توقيع الزبون</span>
+                    <span className="mt-1 block">Client Signature & Stamp</span>
                   </div>
                 </div>
               </div>
@@ -4326,7 +4326,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     setStatusNotice(`Invoice ${invoiceNumber} sent to printer!`);
                     setTimeout(() => setStatusNotice(null), 3000);
                   }}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Document</span>
@@ -4342,11 +4342,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isDeliveryNoteModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-amber-400" />
-                <h3 className="text-sm font-bold">Delivery Note / Bon de Livraison / إذن تسليم بضاعة</h3>
+                <h3 className="text-sm font-bold">Delivery Note (Bon de Livraison)</h3>
               </div>
               <button
                 type="button"
@@ -4399,8 +4399,8 @@ export default function AuthenticOmegaSalesWorkstation({
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {(cartItems.length > 0 ? cartItems : [
-                      { id: '1', code: 'EVOO-16L', name: 'زيت زيتون بكر ممتاز تنكة 16 ليتر', unit: 'TIN', qty: 2, total: 230.00 },
-                      { id: '2', code: 'CWV250MLB103', name: 'خل ابيض 250مل', unit: 'BOT', qty: 12, total: 6.00 }
+                      { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, total: 230.00 },
+                      { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, total: 6.00 }
                     ]).map((item, idx) => (
                       <tr key={idx} className="hover:bg-slate-50">
                         <td className="py-2 px-2.5">
@@ -4451,7 +4451,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     setStatusNotice(`Delivery Note DN-${invoiceNumber.replace('INV-', '')} printed.`);
                     setTimeout(() => setStatusNotice(null), 3000);
                   }}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Delivery Slip</span>
@@ -4467,11 +4467,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isCreditNoteModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-red-400" />
-                <h3 className="text-sm font-bold">Issue Credit Note / إشعار دائن (إرجاع بضاعة)</h3>
+                <h3 className="text-sm font-bold">Issue Credit Note (Sales Return)</h3>
               </div>
               <button
                 type="button"
@@ -4494,11 +4494,11 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Reason for Return / سبب الإرجاع</label>
+                <label className="block font-semibold text-slate-700 mb-1">Reason for Return</label>
                 <select
                   value={creditNoteReason}
                   onChange={(e) => setCreditNoteReason(e.target.value)}
-                  className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1.5 text-slate-800 shadow-2xs font-sans"
+                  className="w-full bg-white border border-border rounded px-2.5 py-1.5 text-slate-800 shadow-2xs font-sans"
                 >
                   <option value="Customer Return / Defective">Customer Return / Defective Goods</option>
                   <option value="Damaged Goods in Transit">Damaged Goods in Transit</option>
@@ -4593,11 +4593,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isStoreRecurringModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-md overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-md overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Repeat className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Store Recurring Order / حفظ طلبية دورية</h3>
+                <h3 className="text-sm font-bold">Store Recurring Order</h3>
               </div>
               <button
                 type="button"
@@ -4625,16 +4625,16 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Recurring Interval / التكرار</label>
+                <label className="block font-semibold text-slate-700 mb-1">Recurring Interval</label>
                 <select
                   value={recurringFrequency}
                   onChange={(e) => setRecurringFrequency(e.target.value)}
-                  className="w-full bg-white border border-[#cbd5e1] rounded px-2.5 py-1.5 text-slate-800"
+                  className="w-full bg-white border border-border rounded px-2.5 py-1.5 text-slate-800"
                 >
-                  <option value="Daily">Daily / يومي</option>
-                  <option value="Weekly">Weekly / أسبوعي</option>
-                  <option value="Bi-Weekly">Bi-Weekly / كل أسبوعين</option>
-                  <option value="Monthly">Monthly / شهري</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Bi-Weekly">Bi-Weekly</option>
+                  <option value="Monthly">Monthly</option>
                 </select>
               </div>
 
@@ -4670,11 +4670,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isRecallRecurringModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Repeat className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Recall Recurring Invoices / استرجاع الفواتير الدورية</h3>
+                <h3 className="text-sm font-bold">Recall Recurring Invoices</h3>
               </div>
               <button
                 type="button"
@@ -4736,7 +4736,7 @@ export default function AuthenticOmegaSalesWorkstation({
                       <button
                         type="button"
                         onClick={() => handleLoadRecurringTemplate(tpl)}
-                        className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-3 py-1 rounded text-xs font-bold cursor-pointer flex items-center gap-1"
+                        className="bg-primary hover:bg-primary/90 text-white px-3 py-1 rounded text-xs font-bold cursor-pointer flex items-center gap-1"
                       >
                         <span>Load Into Bill</span>
                       </button>
@@ -4750,7 +4750,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsRecallRecurringModalOpen(false)}
-                className="bg-[#195a96] hover:bg-[#134472] text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -4764,11 +4764,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isCustomerPricingModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Customer Special Pricing / أسعار خاصة للزبون</h3>
+                <h3 className="text-sm font-bold">Customer Special Pricing</h3>
               </div>
               <button
                 type="button"
@@ -4867,11 +4867,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isCustomerAgedModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4 text-blue-400" />
-                <h3 className="text-sm font-bold">Customer Aged Receivables / كشف أعمار الذمم المدينة</h3>
+                <h3 className="text-sm font-bold">Customer Aged Receivables</h3>
               </div>
               <button
                 type="button"
@@ -4980,7 +4980,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsCustomerAgedModalOpen(false)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -4994,11 +4994,11 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isCustomerReceiptsModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Customers Receipts & Vouchers / سندات القبض والدفعات</h3>
+                <h3 className="text-sm font-bold">Customer Receipts & Vouchers</h3>
               </div>
               <button
                 type="button"
@@ -5091,7 +5091,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsCustomerReceiptsModalOpen(false)}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -5105,8 +5105,8 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isPaidInOutModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
                 <h3 className="text-sm font-bold">Paid In / Out - Cash Drawer Movements</h3>
@@ -5148,7 +5148,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     }`}
                   >
                     <ArrowUpRight className="w-3.5 h-3.5" />
-                    <span>Paid Out (Cash Payout / مصاريف)</span>
+                    <span>Paid Out (Cash Payout)</span>
                   </button>
                   <button
                     type="button"
@@ -5160,7 +5160,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     }`}
                   >
                     <ArrowDownLeft className="w-3.5 h-3.5" />
-                    <span>Paid In (Cash Deposit / إيداع)</span>
+                    <span>Paid In (Cash Deposit)</span>
                   </button>
                 </div>
 
@@ -5176,18 +5176,18 @@ export default function AuthenticOmegaSalesWorkstation({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Category / التصنيف</label>
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Category</label>
                     <select
                       value={paidInOutCategory}
                       onChange={(e) => setPaidInOutCategory(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-slate-800"
                     >
-                      <option value="Delivery Driver Fuel">Delivery Driver Fuel (بنزين/مازوت)</option>
-                      <option value="Packaging Supplies">Packaging Supplies (كرتون وشريط)</option>
-                      <option value="Petty Cash Expense">Petty Cash Expense (نثريات)</option>
-                      <option value="Office Refreshments">Office Refreshments (ضيافة)</option>
-                      <option value="Opening Float">Opening Float (فلوت صباحي)</option>
-                      <option value="Owner Drawing">Owner Cash Drawing (سحب نقدي)</option>
+                      <option value="Delivery Driver Fuel">Delivery Driver Fuel</option>
+                      <option value="Packaging Supplies">Packaging Supplies</option>
+                      <option value="Petty Cash Expense">Petty Cash Expense</option>
+                      <option value="Office Refreshments">Office Refreshments</option>
+                      <option value="Opening Float">Opening Float</option>
+                      <option value="Owner Drawing">Owner Cash Drawing</option>
                     </select>
                   </div>
                 </div>
@@ -5206,7 +5206,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 <button
                   type="button"
                   onClick={handleRecordPaidInOut}
-                  className="w-full bg-[#2f3b52] hover:bg-[#1e2736] text-white font-bold py-2 rounded text-xs cursor-pointer shadow-2xs flex items-center justify-center gap-1.5"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded text-xs cursor-pointer shadow-2xs flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Record Cash Movement</span>
@@ -5258,7 +5258,7 @@ export default function AuthenticOmegaSalesWorkstation({
               <button
                 type="button"
                 onClick={() => setIsPaidInOutModalOpen(false)}
-                className="bg-[#195a96] hover:bg-[#134472] text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -5272,8 +5272,8 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {isMainReadingModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#2f3b52] w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-amber-400" />
                 <h3 className="text-sm font-bold">POS Main Reading (X-Reading / Z-Reading)</h3>
@@ -5294,10 +5294,10 @@ export default function AuthenticOmegaSalesWorkstation({
                   type="button"
                   onClick={() => setReadingType('X')}
                   className={`flex-1 py-1.5 text-xs font-bold rounded cursor-pointer transition-colors ${
-                    readingType === 'X' ? 'bg-[#2f3b52] text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
+                    readingType === 'X' ? 'bg-primary text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
                   }`}
                 >
-                  X-Reading (Mid-Shift Audit / قراءة فورية)
+                  X-Reading (Mid-Shift Audit)
                 </button>
                 <button
                   type="button"
@@ -5306,7 +5306,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     readingType === 'Z' ? 'bg-red-700 text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
                   }`}
                 >
-                  Z-Reading (End of Shift Final / إغلاق الوردية)
+                  Z-Reading (End of Shift Final)
                 </button>
               </div>
 
@@ -5413,7 +5413,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     setTimeout(() => setStatusNotice(null), 3500);
                   }}
                   className={`${
-                    readingType === 'Z' ? 'bg-red-700 hover:bg-red-800' : 'bg-[#2f3b52] hover:bg-[#1e2736]'
+                    readingType === 'Z' ? 'bg-red-700 hover:bg-red-800' : 'bg-primary hover:bg-primary/90'
                   } text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs`}
                 >
                   <Printer className="w-3.5 h-3.5" />

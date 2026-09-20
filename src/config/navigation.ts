@@ -293,14 +293,14 @@ export const navigationConfig: NavItem[] = [
         href: '/accounting/actions',
         icon: Zap,
         items: [
-          { title: 'Journal Voucher', href: '/accounting/actions/journal-voucher', icon: FileSpreadsheet },
-          { title: 'Purchase', href: '/accounting/actions/purchase', icon: ShoppingCart },
-          { title: 'Payments', href: '/accounting/actions/payments', icon: CreditCard },
-          { title: 'Receipts', href: '/accounting/actions/receipts', icon: Receipt },
-          { title: 'Accounts Receivables', href: '/accounting/actions/accounts-receivables', icon: Wallet },
-          { title: 'Accounts Payables', href: '/accounting/actions/accounts-payables', icon: DollarSign },
-          { title: 'Bank Reconciliation', href: '/accounting/actions/bank-reconciliation', icon: Landmark },
-          { title: 'VAT Period Closing', href: '/accounting/actions/vat-period-closing', icon: Clock }
+          { title: 'Journal Voucher', href: '/accounting/journal-voucher', icon: FileSpreadsheet },
+          { title: 'Purchase', href: '/accounting/purchase', icon: ShoppingCart },
+          { title: 'Payments', href: '/accounting/payment', icon: CreditCard },
+          { title: 'Receipts', href: '/accounting/receipt', icon: Receipt },
+          { title: 'Accounts Receivables', href: '/accounting/receivables', icon: Wallet },
+          { title: 'Accounts Payables', href: '/accounting/payables', icon: DollarSign },
+          { title: 'Bank Reconciliation', href: '/accounting/bank-reconciliation', icon: Landmark },
+          { title: 'VAT Period Closing', href: '/accounting/vat-closing', icon: Clock }
         ]
       },
       {
@@ -314,26 +314,26 @@ export const navigationConfig: NavItem[] = [
             href: '/accounting/setup/auxiliaries',
             icon: FolderTree,
             items: [
-              { title: 'Acoounts Classes', href: '/accounting/setup/auxiliaries/classes', icon: Layers },
+              { title: 'Accounts Classes', href: '/accounting/setup/auxiliaries/classes', icon: Layers },
               { title: 'Account Header 1', href: '/accounting/setup/auxiliaries/header-1', icon: ListFilter },
               { title: 'Account Header 2', href: '/accounting/setup/auxiliaries/header-2', icon: ListFilter },
               { title: 'Account Header 3', href: '/accounting/setup/auxiliaries/header-3', icon: ListFilter },
-              { title: 'Account Group', href: '/accounting/setup/auxiliaries/group', icon: FolderTree },
-              { title: 'Jv Description', href: '/accounting/setup/auxiliaries/jv-description', icon: FileText },
-              { title: 'Jv Types', href: '/accounting/setup/auxiliaries/jv-types', icon: Bookmark },
-              { title: 'Currency', href: '/accounting/setup/auxiliaries/currency', icon: Coins },
-              { title: 'Currency Rates', href: '/accounting/setup/auxiliaries/rates', icon: Banknote },
-              {
-                title: 'Departments',
-                href: '/accounting/setup/auxiliaries/departments',
-                icon: Building2,
-                items: [
-                  { title: 'Department Groups', href: '/accounting/setup/auxiliaries/departments/groups', icon: FolderTree },
-                  { title: 'Department', href: '/accounting/setup/auxiliaries/departments/list', icon: Building2 },
-                  { title: 'Cash Flow Report Setup', href: '/accounting/setup/auxiliaries/departments/cash-flow', icon: SlidersHorizontal },
-                  { title: 'Sub Department', href: '/accounting/setup/auxiliaries/departments/sub', icon: Split }
-                ]
-              }
+              { title: 'Account Group', href: '/accounting/setup/auxiliaries/group', icon: FolderTree }
+            ]
+          },
+          { title: 'Jv Description', href: '/accounting/setup/jv-description', icon: FileText },
+          { title: 'Jv Types', href: '/accounting/setup/jv-types', icon: Bookmark },
+          { title: 'Currency', href: '/accounting/setup/currency', icon: Coins },
+          { title: 'Currency Rates', href: '/accounting/setup/rates', icon: Banknote },
+          {
+            title: 'Departments',
+            href: '/accounting/setup/departments',
+            icon: Building2,
+            items: [
+              { title: 'Department Groups', href: '/accounting/setup/departments/groups', icon: FolderTree },
+              { title: 'Department', href: '/accounting/setup/departments/list', icon: Building2 },
+              { title: 'Cash Flow Report Setup', href: '/accounting/setup/departments/cash-flow', icon: SlidersHorizontal },
+              { title: 'Sub Department', href: '/accounting/setup/departments/sub', icon: Split }
             ]
           }
         ]
@@ -395,6 +395,7 @@ export const navigationConfig: NavItem[] = [
     icon: Navigation,
     items: [
       { title: 'Fleet Dashboard', href: '/supersonic/dashboard', icon: LayoutDashboard },
+      { title: 'V-Driver Mobile PWA', href: '/v-driver', icon: Truck },
       { title: 'Fleet Reports', href: '/supersonic/reports', icon: FileBarChart },
       { title: 'Active Dispatches', href: '/supersonic/dispatches', icon: Truck },
       { title: 'Driver Management', href: '/supersonic/drivers', icon: UserCheck },
@@ -412,6 +413,7 @@ export const navigationConfig: NavItem[] = [
     icon: Share2,
     items: [
       { title: 'Social CRM Dashboard', href: '/social-crm/dashboard', icon: LayoutDashboard },
+      { title: 'Sales Rep Mobile PWA', href: '/sales-rep', icon: Users },
       { title: 'Reports Hub', href: '/social-crm/reports', icon: FileBarChart },
       { title: 'Omnichannel Inbox', href: '/social-crm/inbox', icon: MessageSquare },
       { title: 'Campaign Analytics', href: '/social-crm/campaigns', icon: FileBarChart },

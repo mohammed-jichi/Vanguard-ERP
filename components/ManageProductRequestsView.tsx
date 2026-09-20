@@ -367,7 +367,7 @@ export default function ManageProductRequestsView() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* GLOBAL TOAST */}
       {toastMessage && (
         <div
@@ -390,7 +390,7 @@ export default function ManageProductRequestsView() {
       )}
 
       {/* HEADER BREADCRUMB & TITLE */}
-      <div className="bg-white border-b border-[#e7eaec] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
             <span>Operations Center</span>
@@ -410,7 +410,7 @@ export default function ManageProductRequestsView() {
           {/* Substitute Button */}
           <button
             onClick={() => setShowSubstituteModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1c84c6] hover:bg-[#1a7bb9] text-white rounded-md text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <ArrowRightLeft className="w-3.5 h-3.5" />
             <span>Substitute</span>
@@ -419,7 +419,7 @@ export default function ManageProductRequestsView() {
           {/* Productions Button */}
           <button
             onClick={handleOpenProductions}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#23c6c8] hover:bg-[#21b9bb] text-white rounded-md text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <Boxes className="w-3.5 h-3.5" />
             <span>Productions</span>
@@ -449,7 +449,7 @@ export default function ManageProductRequestsView() {
             onClick={() => setIsMultipleActionsActive(!isMultipleActionsActive)}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-md text-xs font-bold transition-all shadow-sm ${
               isMultipleActionsActive
-                ? 'bg-[#1ab394] text-white'
+                ? 'bg-emerald-700 text-white'
                 : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300'
             }`}
           >
@@ -487,7 +487,7 @@ export default function ManageProductRequestsView() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleApproveMultiple(false)}
-              className="px-3 py-1.5 bg-[#1ab394] hover:bg-[#18a689] text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
+              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
             >
               <Check className="w-3 h-3" />
               <span>Approve Checked</span>
@@ -512,7 +512,7 @@ export default function ManageProductRequestsView() {
 
             <button
               onClick={() => handleApproveMultiple(true)}
-              className="px-3 py-1.5 bg-[#1c84c6] hover:bg-[#1a7bb9] text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
+              className="px-3 py-1.5 bg-primary hover:bg-primary text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
             >
               <Truck className="w-3 h-3" />
               <span>Convert to Transaction</span>
@@ -531,7 +531,7 @@ export default function ManageProductRequestsView() {
 
       {/* FILTER BAR CARD */}
       <div className="p-6 pb-2 max-w-7xl mx-auto w-full">
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm p-4">
+        <div className="bg-white rounded-lg border border-border shadow-sm p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
             {/* Requested By Branch */}
             <div>
@@ -541,7 +541,7 @@ export default function ManageProductRequestsView() {
               <select
                 value={filterBranchId}
                 onChange={e => setFilterBranchId(Number(e.target.value))}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 <option value={0}>All Branches</option>
                 {OMEGA_PR_BRANCHES.map(b => (
@@ -560,7 +560,7 @@ export default function ManageProductRequestsView() {
               <select
                 value={filterFromBranchId}
                 onChange={e => setFilterFromBranchId(Number(e.target.value))}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 <option value={0}>All Branches</option>
                 {OMEGA_PR_BRANCHES.map(b => (
@@ -579,7 +579,7 @@ export default function ManageProductRequestsView() {
               <select
                 value={filterStatus}
                 onChange={e => setFilterStatus(e.target.value)}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 <option value="All">All Statuses</option>
                 <option value="Pending">Pending (0)</option>
@@ -598,7 +598,7 @@ export default function ManageProductRequestsView() {
                 type="date"
                 value={filterFromDate}
                 onChange={e => setFilterFromDate(e.target.value)}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               />
             </div>
 
@@ -611,7 +611,7 @@ export default function ManageProductRequestsView() {
                 type="date"
                 value={filterToDate}
                 onChange={e => setFilterToDate(e.target.value)}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               />
             </div>
 
@@ -626,7 +626,7 @@ export default function ManageProductRequestsView() {
                   placeholder="PR #, Item, User..."
                   value={filterSearch}
                   onChange={e => setFilterSearch(e.target.value)}
-                  className="w-full h-8 pl-7 pr-2.5 bg-white border border-[#e5e6e7] rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500"
+                  className="w-full h-8 pl-7 pr-2.5 bg-white border border-border rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500"
                 />
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2 pointer-events-none" />
               </div>
@@ -637,10 +637,10 @@ export default function ManageProductRequestsView() {
 
       {/* MASTER PR LISTING TABLE */}
       <div className="p-6 pt-3 max-w-7xl mx-auto w-full flex-1">
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg border border-border shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#f9fafb] text-slate-500 uppercase font-bold tracking-wider border-b border-[#e7eaec]">
+              <thead className="bg-card text-slate-500 uppercase font-bold tracking-wider border-b border-border">
                 <tr>
                   {isMultipleActionsActive && <th className="py-3 px-3 w-10 text-center"></th>}
                   <th className="py-3 px-3 w-10 text-center"></th>

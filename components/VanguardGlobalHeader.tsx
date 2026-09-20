@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
+import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -81,28 +82,95 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   const [showMoreUpdates, setShowMoreUpdates] = useState<boolean>(false);
   const [showMoreActivities, setShowMoreActivities] = useState<boolean>(false);
 
-  // Alerts state for safe conditional rendering
-  const [alertsList, setAlertsList] = useState<Array<{ id: string; titleEn: string; titleAr: string; descEn: string; descAr: string }>>([
-    {
-      id: 'alt-1',
-      titleEn: '⚠️ End of Month Closure Alert',
-      titleAr: '⚠️ Month-end Closing Alert',
-      descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
-      descAr: 'Please reconcile JV entries and bank accounts prior to closing.'
-    },
-    {
-      id: 'alt-2',
-      titleEn: '🫒 Pressing Tank #4 Capacity Warning',
-      titleAr: '🫒 Pressing Tank #4 Capacity Alert',
-      descEn: 'Tank #4 has reached 85% maximum storage capacity threshold.',
-      descAr: 'Pressing tank #4 has reached 85% capacity.'
-    }
-  ]);
+  // Alerts & Activities state dynamically populated from database audit logs
+  const [dynamicAlerts, setDynamicAlerts] = useState<Array<{
+    id: string;
+    type: string;
+    severity: 'CRITICAL' | 'WARNING' | 'INFO';
+    title: string;
+    message: string;
+    timestamp: string;
+    actionLink?: string;
+    actionLabel?: string;
+  }>>([]);
+  const [dynamicActivities, setDynamicActivities] = useState<Array<{
+    id: string;
+    action_type: string;
+    description: string;
+    performed_by: string;
+    created_at: string;
+  }>>([]);
+  const [inboxMessages, setInboxMessages] = useState<Array<{
+    id: string;
+    category: string;
+    subject: string;
+    sender: string;
+    branch: string;
+    time: string;
+    date: string;
+    status: string;
+    isRead: boolean;
+    priority: string;
+    content: string;
+    details?: any;
+  }>>([]);
   
   // Dialog Modals
   const [isInboxOpen, setIsInboxOpen] = useState<boolean>(false);
   const [isChecklistOpen, setIsChecklistOpen] = useState<boolean>(false);
   const [isTutorialsOpen, setIsTutorialsOpen] = useState<boolean>(false);
+  const [includeResolvedAlerts, setIncludeResolvedAlerts] = useState<boolean>(false);
+
+  // Dynamic Header Feeds & Database Audit Sync
+  const loadHeaderFeeds = React.useCallback(async (includeResolved: boolean = false) => {
+    try {
+      const url = `/api/notifications${includeResolved ? '?includeResolved=true' : ''}`;
+      const notifRes = await fetch(url);
+      const notifData = await notifRes.json();
+      if (notifData.success) {
+        setDynamicAlerts(notifData.alerts || []);
+        setDynamicActivities(notifData.activities || []);
+        const activeCount = (notifData.alerts || []).filter((a: any) => a.status === 'PENDING' && !a.is_read).length;
+        setAlertCount(activeCount);
+        setHasUnread(Boolean(notifData.unreadInboxCount && notifData.unreadInboxCount > 0));
+      }
+
+      const inboxRes = await fetch('/api/inbox');
+      const inboxData = await inboxRes.json();
+      if (inboxData.success && Array.isArray(inboxData.data)) {
+        setInboxMessages(inboxData.data);
+      }
+    } catch (e) {
+      console.warn('Notice: Header notification fetch:', e);
+    }
+  }, []);
+
+  const handleDismissAlert = async (alertId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      setDynamicAlerts((prev) => prev.filter((a) => a.id !== alertId));
+      setAlertCount((prev) => Math.max(0, prev - 1));
+      await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'DISMISS_ALERT', alertId })
+      });
+    } catch (err) {
+      console.warn('Notice: Dismiss alert failed:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadHeaderFeeds(includeResolvedAlerts);
+    const timer = setInterval(() => loadHeaderFeeds(includeResolvedAlerts), 15000);
+    const unsubscribe = subscribeToAccountingSync(() => {
+      loadHeaderFeeds(includeResolvedAlerts);
+    });
+    return () => {
+      clearInterval(timer);
+      unsubscribe();
+    };
+  }, [loadHeaderFeeds, includeResolvedAlerts]);
 
   // Track recently visited routes dynamically
   useEffect(() => {
@@ -558,7 +626,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   onClick={() => setQuickMenuTab('alerts')}
                   className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'alerts' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
                 >
-                  Alerts {alertsList && alertsList.length > 0 && `(${alertsList.length})`}
+                  Alerts {dynamicAlerts && dynamicAlerts.length > 0 && `(${dynamicAlerts.length})`}
                 </button>
                 <button
                   onClick={() => setQuickMenuTab('activities')}
@@ -634,90 +702,123 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 </div>
               )}
 
-              {/* ALERTS TAB (SAFE CONDITIONAL RENDERING) */}
+              {/* ALERTS TAB (DYNAMIC DATABASE ALERTS & WORKFLOWS) */}
               {quickMenuTab === 'alerts' && (
                 <div className="space-y-3">
-                  {(!alertsList || alertsList.length === 0) ? (
+                  <div className="flex items-center justify-between pb-2 border-b border-gray-100 px-0.5">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                      {includeResolvedAlerts ? 'All Historical Alerts' : 'Active Live Feed'}
+                    </span>
+                    <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={includeResolvedAlerts}
+                        onChange={(e) => {
+                          const next = e.target.checked;
+                          setIncludeResolvedAlerts(next);
+                          loadHeaderFeeds(next);
+                        }}
+                        className="rounded border-gray-300 text-amber-600 focus:ring-amber-500 w-3.5 h-3.5"
+                      />
+                      <span className="text-[10px] font-semibold text-gray-500">Include Archived</span>
+                    </label>
+                  </div>
+
+                  {dynamicAlerts.length === 0 ? (
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl text-center space-y-2">
                       <Bell className="w-6 h-6 text-gray-400 mx-auto" />
                       <p className="font-semibold text-gray-600 text-xs">No active alerts right now.</p>
-                      <button
-                        onClick={() => setAlertsList([
-                          {
-                            id: 'alt-1',
-                            titleEn: '⚠️ End of Month Closure Alert',
-                            titleAr: '⚠️ Month-end Closing Alert',
-                            descEn: 'Please reconcile JV entries and bank accounts prior to closure.',
-                            descAr: 'Please reconcile JV entries and bank accounts prior to closing.'
-                          }
-                        ])}
-                        className="text-[11px] text-amber-600 hover:underline font-bold pt-1"
-                      >
-                        + Restore Sample Alert
-                      </button>
+                      <p className="text-[10px] text-gray-400">All vouchers, reconciliations, and workflows are in balance.</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {alertsList.map(alt => (
-                        <div key={alt.id} className="p-3.5 bg-rose-50/80 border border-rose-200 text-rose-950 rounded-2xl space-y-1">
-                          <p className="font-black text-xs">{language === 'ar' ? alt.titleAr : alt.titleEn}</p>
-                          <p className="text-[11px] font-medium text-rose-800">{language === 'ar' ? alt.descAr : alt.descEn}</p>
+                    <div className="space-y-2.5">
+                      {dynamicAlerts.map((alt: any) => (
+                        <div
+                          key={alt.id}
+                          className={`p-3 rounded-2xl space-y-1.5 border transition-all ${
+                            alt.status === 'RESOLVED' || alt.status === 'ARCHIVED'
+                              ? 'bg-slate-50/80 border-slate-200 text-slate-600 opacity-75'
+                              : alt.severity === 'CRITICAL'
+                              ? 'bg-rose-50/90 border-rose-200 text-rose-950 shadow-xs'
+                              : alt.severity === 'WARNING'
+                              ? 'bg-amber-50/90 border-amber-200 text-amber-950 shadow-xs'
+                              : 'bg-blue-50/90 border-blue-200 text-blue-950 shadow-xs'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-1.5">
+                              {alt.status === 'RESOLVED' || alt.status === 'ARCHIVED' ? (
+                                <span className="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  {alt.status}
+                                </span>
+                              ) : (
+                                <span className="w-2 h-2 rounded-full bg-amber-500 inline-block animate-pulse shrink-0" />
+                              )}
+                              <p className="font-black text-xs leading-snug">{alt.title}</p>
+                            </div>
+                            <span className="text-[10px] font-mono opacity-70 shrink-0">{alt.timestamp}</span>
+                          </div>
+                          <p className="text-[11px] font-medium opacity-90 leading-relaxed">{alt.message}</p>
+                          <div className="pt-1.5 flex items-center justify-between border-t border-black/5 mt-1">
+                            {alt.actionLink ? (
+                              <a
+                                href={alt.actionLink}
+                                onClick={() => setIsQuickMenuOpen(false)}
+                                className="text-[11px] font-extrabold text-amber-800 hover:text-amber-950 hover:underline inline-flex items-center gap-1"
+                              >
+                                <span>{alt.actionLabel || 'Inspect'}</span> →
+                              </a>
+                            ) : <span />}
+                            {alt.status !== 'RESOLVED' && alt.status !== 'ARCHIVED' && (
+                              <button
+                                type="button"
+                                onClick={(e) => handleDismissAlert(alt.id, e)}
+                                className="text-[10px] font-semibold text-gray-400 hover:text-gray-700 hover:underline px-1.5 py-0.5 cursor-pointer"
+                              >
+                                Dismiss
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
-                      <div className="flex items-center justify-between pt-1">
-                        <button
-                          onClick={() => setAlertsList([])}
-                          className="text-[11px] text-gray-500 hover:text-rose-600 underline font-medium"
-                        >
-                          Clear all alerts
-                        </button>
-                      </div>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* LAST ACTIVITIES TAB (RECENTLY VISITED VANGUARD ACTIONS WITH SHOW MORE) */}
+              {/* LAST ACTIVITIES TAB (DYNAMIC DATABASE AUDIT TRAIL) */}
               {quickMenuTab === 'activities' && (
                 <div className="space-y-3 text-[11px]">
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
-                    <span className="text-[10px] text-gray-400 font-mono">Today, 10:45 AM</span>
-                    <p className="font-bold text-gray-800">
-                      'Updated tenant branding & license settings'
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
-                    <span className="text-[10px] text-gray-400 font-mono">Today, 09:30 AM</span>
-                    <p className="font-bold text-gray-800">
-                      'Processed Extra Virgin Olive Oil Receipt Voucher #RC-9042'
-                    </p>
-                  </div>
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
-                    <span className="text-[10px] text-gray-400 font-mono">Yesterday, 04:15 PM</span>
-                    <p className="font-bold text-gray-800">
-                      'Updated POS Touch Terminal cashier price modes'
-                    </p>
-                  </div>
-
-                  {showMoreActivities && (
-                    <div className="space-y-3 animate-in fade-in duration-200">
-                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
-                        <span className="text-[10px] text-gray-400 font-mono">Yesterday, 02:00 PM</span>
-                        <p className="font-bold text-gray-800">Approved End of Day Cashier Z-Report for Station #2</p>
-                      </div>
-                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
-                        <span className="text-[10px] text-gray-400 font-mono">Aug 24, 11:20 AM</span>
-                        <p className="font-bold text-gray-800">Dispatched SuperSonic Delivery Fleet Order #FLEET-849</p>
-                      </div>
+                  {dynamicActivities.length === 0 ? (
+                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl text-center space-y-1 text-gray-500">
+                      <p className="font-semibold text-xs">No recent operational activities recorded.</p>
+                      <p className="text-[10px] text-gray-400">Database audit trail will appear here as vouchers are saved and posted.</p>
                     </div>
+                  ) : (
+                    (showMoreActivities ? dynamicActivities : dynamicActivities.slice(0, 4)).map((act) => (
+                      <div key={act.id} className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1 hover:border-amber-400 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-gray-500 font-mono">
+                            {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100/70 border border-amber-200 px-1.5 py-0.5 rounded">
+                            {act.action_type.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <p className="font-bold text-gray-800 leading-snug">{act.description}</p>
+                        <p className="text-[10px] text-gray-500 font-medium">By: {act.performed_by}</p>
+                      </div>
+                    ))
                   )}
 
-                  <button
-                    onClick={() => setShowMoreActivities(!showMoreActivities)}
-                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors text-center border border-gray-200"
-                  >
-                    {showMoreActivities ? 'Show Less Activities' : 'Show More Activities (2)'}
-                  </button>
+                  {dynamicActivities.length > 4 && (
+                    <button
+                      onClick={() => setShowMoreActivities(!showMoreActivities)}
+                      className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors text-center border border-gray-200"
+                    >
+                      {showMoreActivities ? 'Show Less Activities' : `Show More Activities (${dynamicActivities.length - 4})`}
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -901,24 +1002,77 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     </th>
                     <th className="py-3 px-6 cursor-pointer select-none">
                       <div className="flex items-center gap-1">
-                        <span>Created At</span>
+                        <span>Time</span>
                         <span className="text-slate-400 text-[10px]">▲▼</span>
                       </div>
                     </th>
+                    <th className="py-3 px-6 text-right select-none">
+                      <span>Action</span>
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {/* EMPTY STATE */}
-                  <tr>
-                    <td colSpan={4} className="py-24 text-center text-slate-400 font-semibold text-sm">
-                      No Messages
-                    </td>
-                  </tr>
+                <tbody className="divide-y divide-slate-100">
+                  {inboxMessages.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-20 text-center text-slate-400 font-semibold text-sm">
+                        <Mail className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                        No Messages in Inbox
+                      </td>
+                    </tr>
+                  ) : (
+                    inboxMessages.map((msg) => (
+                      <tr key={msg.id} className="hover:bg-amber-50/40 transition-colors">
+                        <td className="py-3 px-6 font-bold text-slate-900">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${msg.isRead ? 'bg-slate-300' : 'bg-amber-500'}`} />
+                            <span className="truncate max-w-xs">{msg.subject}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-mono mt-0.5 ml-4">
+                            {msg.sender} {msg.branch ? `• ${msg.branch}` : ''}
+                          </div>
+                        </td>
+                        <td className="py-3 px-6 text-slate-600 max-w-sm truncate font-medium">
+                          {msg.content}
+                        </td>
+                        <td className="py-3 px-6">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                            msg.status === 'APPROVED'
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              : msg.status === 'REJECTED'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                              : 'bg-amber-100 text-amber-900 border border-amber-300'
+                          }`}>
+                            {msg.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-6 text-slate-500 font-mono text-[11px] whitespace-nowrap">
+                          {msg.time || msg.date}
+                        </td>
+                        <td className="py-3 px-6 text-right">
+                          <a
+                            href="/backoffice/inbox"
+                            onClick={() => setIsInboxOpen(false)}
+                            className="text-xs font-black text-amber-700 hover:text-amber-900 hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>Review</span> →
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
 
               {/* FOOTER BAR */}
-              <div className="border-t border-slate-100 p-4 bg-slate-50/50 flex justify-end">
+              <div className="border-t border-slate-100 p-4 bg-slate-50/50 flex items-center justify-between">
+                <a
+                  href="/backoffice/inbox"
+                  onClick={() => setIsInboxOpen(false)}
+                  className="text-xs font-black text-amber-800 hover:text-amber-950 hover:underline flex items-center gap-1.5"
+                >
+                  <Mail className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Open Full Operations & Approval Inbox Console →</span>
+                </a>
                 <button
                   onClick={() => setIsInboxOpen(false)}
                   className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition-colors"

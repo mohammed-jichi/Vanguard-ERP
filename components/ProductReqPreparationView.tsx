@@ -159,7 +159,7 @@ export default function ProductReqPreparationView() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* TOAST ALERT */}
       {toastMessage && (
         <div
@@ -182,7 +182,7 @@ export default function ProductReqPreparationView() {
       )}
 
       {/* HEADER BREADCRUMB & TITLE */}
-      <div className="bg-white border-b border-[#e7eaec] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
             <span>Operations Center</span>
@@ -210,7 +210,7 @@ export default function ProductReqPreparationView() {
 
       {/* TOP FILTERS BAR */}
       <div className="p-6 pb-2 max-w-7xl mx-auto w-full">
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm p-4">
+        <div className="bg-white rounded-lg border border-border shadow-sm p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             {/* Product Request Date */}
             <div>
@@ -222,7 +222,7 @@ export default function ProductReqPreparationView() {
                   type="date"
                   value={prepDate}
                   onChange={e => setPrepDate(e.target.value)}
-                  className="w-full h-9 px-3 pl-8 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                  className="w-full h-9 px-3 pl-8 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
                 />
                 <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
               </div>
@@ -236,7 +236,7 @@ export default function ProductReqPreparationView() {
               <select
                 value={fromBranchId}
                 onChange={e => setFromBranchId(Number(e.target.value))}
-                className="w-full h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-9 px-3 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 {OMEGA_PR_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
@@ -254,7 +254,7 @@ export default function ProductReqPreparationView() {
               <select
                 value={selectedItemTypeId}
                 onChange={e => setSelectedItemTypeId(Number(e.target.value))}
-                className="w-full h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-9 px-3 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 {itemTypes.map(t => (
                   <option key={t.ID} value={t.ID}>
@@ -269,7 +269,7 @@ export default function ProductReqPreparationView() {
               <button
                 onClick={fetchPreparationRequests}
                 disabled={isLoading}
-                className="w-full h-9 bg-[#1ab394] hover:bg-[#18a689] text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="w-full h-9 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <Boxes className="w-3.5 h-3.5" />
                 <span>Get Requests</span>
@@ -282,7 +282,7 @@ export default function ProductReqPreparationView() {
       {/* DEMAND CARDS WORKSTATION */}
       <div className="p-6 pt-3 max-w-7xl mx-auto w-full flex-1 space-y-5">
         {requestsList.length === 0 ? (
-          <div className="bg-white rounded-lg border border-[#e7eaec] p-12 text-center text-slate-400">
+          <div className="bg-white rounded-lg border border-border p-12 text-center text-slate-400">
             <ChefHat className="w-12 h-12 text-slate-300 mx-auto mb-3 opacity-60" />
             <h3 className="text-base font-bold text-slate-700">No Preparation Demands Found</h3>
             <p className="text-xs text-slate-500 mt-1">
@@ -297,10 +297,10 @@ export default function ProductReqPreparationView() {
             return (
               <div
                 key={pr.ID}
-                className="bg-white rounded-lg border border-[#e7eaec] shadow-sm overflow-hidden"
+                className="bg-white rounded-lg border border-border shadow-sm overflow-hidden"
               >
                 {/* CARD HEADER */}
-                <div className="px-5 py-3.5 bg-slate-50 border-b border-[#e7eaec] flex flex-wrap items-center justify-between gap-3">
+                <div className="px-5 py-3.5 bg-slate-50 border-b border-border flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="font-mono font-bold text-teal-700 text-sm bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                       {pr.REQUESTNB}
@@ -332,7 +332,7 @@ export default function ProductReqPreparationView() {
                 {/* ITEMS PREPARATION TABLE */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#f9fafb] text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-[#e7eaec]">
+                    <thead className="bg-card text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-border">
                       <tr>
                         <th className="py-2.5 px-3 w-16 text-center">Status</th>
                         <th className="py-2.5 px-3">Item Description</th>
@@ -424,7 +424,7 @@ export default function ProductReqPreparationView() {
                 </div>
 
                 {/* CARD FOOTER ACTIONS */}
-                <div className="px-5 py-3 bg-[#f9fafb] border-t border-[#e7eaec] flex flex-wrap items-center justify-between gap-3">
+                <div className="px-5 py-3 bg-card border-t border-border flex flex-wrap items-center justify-between gap-3">
                   <span className="text-xs text-slate-500 italic">
                     {pr.REMARK ? `Note: "${pr.REMARK}"` : 'No special note'}
                   </span>
@@ -447,7 +447,7 @@ export default function ProductReqPreparationView() {
 
                     <button
                       onClick={() => handleSavePreparation(pr)}
-                      className="px-4 py-1.5 bg-[#1ab394] hover:bg-[#18a689] text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
+                      className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Save</span>

@@ -2,13 +2,19 @@
 // VANGUARD ERP: DYNAMIC REPORT CONFIGURATION & FILTER SCHEMA REGISTRY
 // ============================================================================
 
-import { getDuplicateInvoiceConfig, DUPLICATE_INVOICES_REGISTRY } from '@/types/duplicate-invoices';
+import { getDuplicateInvoiceConfig, DUPLICATE_INVOICES_REGISTRY, normalizeSubReportMode } from '@/types/duplicate-invoices';
+import { getStandardPeriodOptions, formatISODate } from '@/lib/dateRangeEngine';
+import { getSalesmanEmployeeOptions } from '@/lib/salesmanEmployeeEngine';
+import { getTenderPaymentOptions } from '@/lib/tenderPaymentEngine';
+import { getCustomerOptions } from '@/lib/customerDirectoryEngine';
 
 export type FilterFieldType = 'select' | 'text' | 'date-range' | 'date' | 'checkbox' | 'toggle' | 'number';
 
 export interface FilterOption {
   label: string;
   value: string;
+  disabled?: boolean;
+  tooltip?: string;
 }
 
 export interface FilterCondition {
@@ -23,12 +29,14 @@ export interface ReportFilterFieldConfig {
   id: string;
   label: string;
   type: FilterFieldType;
-  options?: FilterOption[];
-  defaultValue?: any;
   placeholder?: string;
-  className?: string;
+  defaultValue?: any;
+  options?: FilterOption[];
+  conditionalOn?: FilterCondition;
   dependsOn?: FilterCondition;
-  tooltip?: string;
+  className?: string;
+  width?: 'half' | 'full' | 'quarter';
+  required?: boolean;
 }
 
 export interface ReportConfig {
@@ -50,19 +58,7 @@ export const STANDARD_DATE_RANGE_FIELD: ReportFilterFieldConfig = {
   label: 'Period & Date Range',
   type: 'date-range',
   defaultValue: 'This Month',
-  options: [
-    { label: 'Today', value: 'Today' },
-    { label: 'Yesterday', value: 'Yesterday' },
-    { label: 'This Week', value: 'This Week' },
-    { label: 'This Month', value: 'This Month' },
-    { label: 'Last Month', value: 'Last Month' },
-    { label: 'First Quarter', value: 'First Quarter' },
-    { label: 'Second Quarter', value: 'Second Quarter' },
-    { label: 'Third Quarter', value: 'Third Quarter' },
-    { label: 'Fourth Quarter', value: 'Fourth Quarter' },
-    { label: 'This Year', value: 'This Year' },
-    { label: 'Custom Date Range', value: 'Custom' },
-  ],
+  options: getStandardPeriodOptions(),
 };
 
 export const STANDARD_BRANCH_FIELD: ReportFilterFieldConfig = {
@@ -113,7 +109,7 @@ export const INVOICE_TYPE_FILTER: ReportFilterFieldConfig = {
   type: 'select',
   defaultValue: 'ALL',
   options: [
-    { label: 'All Invoices (Consolidated)', value: 'ALL' },
+    { label: 'All Invoices', value: 'ALL' },
     { label: 'POS Invoices', value: 'POS' },
     { label: 'Inventory Invoices', value: 'INVENTORY' },
     { label: 'Training Invoices', value: 'TRAINING' },
@@ -191,17 +187,10 @@ export const PRIMARY_TRANSACTION_MODE_FIELD: ReportFilterFieldConfig = {
 
 export const SALESMAN_DROPDOWN_FILTER: ReportFilterFieldConfig = {
   id: 'salesman',
-  label: 'Salesman Dropdown',
+  label: 'Salesman / Employee Selector',
   type: 'select',
   defaultValue: 'ALL',
-  options: [
-    { label: 'All Salesmen', value: 'ALL' },
-    { label: 'Ahmad Al-Hajj (Senior Rep)', value: 'REP_AHMAD' },
-    { label: 'Maya Khoury (Corporate Accounts)', value: 'REP_MAYA' },
-    { label: 'Jad Tannous (Regional Wholesale)', value: 'REP_JAD' },
-    { label: 'Rania Eid (Commercial Supervisor)', value: 'REP_RANIA' },
-    { label: 'Ziad Chehab (Key Account Manager)', value: 'REP_ZIAD' },
-  ],
+  options: getSalesmanEmployeeOptions('All Salesmen'),
 };
 
 export const PAYMENT_TYPES_MASTER_FILTER: ReportFilterFieldConfig = {
@@ -279,20 +268,35 @@ export const REAL_DATE_CHECKBOX: ReportFilterFieldConfig = {
   defaultValue: false,
 };
 
-export const EMPLOYEE_SELECTOR_FILTER: ReportFilterFieldConfig = {
+export const EMPLOYEE_DROPDOWN_FILTER: ReportFilterFieldConfig = {
   id: 'employee',
   label: 'Employee Selector',
   type: 'select',
   defaultValue: 'ALL',
-  options: [
-    { label: 'All Employees & Cashiers', value: 'ALL' },
-    { label: 'Ahmad Al-Hajj', value: 'EMP_AHMAD' },
-    { label: 'Maya Khoury', value: 'EMP_MAYA' },
-    { label: 'Jad Tannous', value: 'EMP_JAD' },
-    { label: 'Nour Saliba', value: 'EMP_NOUR' },
-    { label: 'Rania Eid', value: 'EMP_RANIA' },
-  ],
+  options: getSalesmanEmployeeOptions('All Employees'),
 };
+
+export const EMPLOYEE_SELECTOR_FILTER: ReportFilterFieldConfig = EMPLOYEE_DROPDOWN_FILTER;
+
+export const PAYMENT_METHOD_DROPDOWN_FILTER: ReportFilterFieldConfig = {
+  id: 'paymentType',
+  label: 'Payment Method Selector',
+  type: 'select',
+  defaultValue: 'ALL',
+  options: getTenderPaymentOptions('All Methods'),
+};
+
+export const CUSTOMER_DROPDOWN_FILTER: ReportFilterFieldConfig = {
+  id: 'customer',
+  label: 'Customer Selector',
+  type: 'select',
+  defaultValue: 'ALL',
+  options: getCustomerOptions('All Customers'),
+};
+
+export const CUSTOMER_SELECTOR_FILTER: ReportFilterFieldConfig = CUSTOMER_DROPDOWN_FILTER;
+
+export const TRANSACTION_TYPE_FILTER: ReportFilterFieldConfig = INVOICE_TYPE_FILTER;
 
 export const CUSTOMER_ACCOUNT_SEARCH_FILTER: ReportFilterFieldConfig = {
   id: 'customerAccount',
@@ -384,7 +388,279 @@ export const GROUP_BY_SERVER_CHECKBOX: ReportFilterFieldConfig = {
   defaultValue: true,
 };
 
+// ============================================================================
+// DECLARATIVE DYNAMIC MODE-TO-FILTERS REGISTRY
+// ============================================================================
+
+export const MODE_SPECIFIC_FILTERS_MAP: Record<string, ReportFilterFieldConfig[]> = {
+  // Mode: Transactions by Employees by Payment
+  'transactions_by_employees_by_payment': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'transactions_by_employee_by_payment': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'Transactions by Employees by Payment': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'Transactions by Employee by Payment': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'Transactions by Employee & Payment Tender Register': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Customers by Employee
+  'transactions_by_customers_by_employee': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    EMPLOYEE_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'Transactions by Customers by Employee': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    EMPLOYEE_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+  'Transactions by Customers & Serving Employee': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    EMPLOYEE_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+    REAL_DATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Salesman
+  'transactions_by_salesman': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    SALESMAN_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Salesman': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    SALESMAN_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Date
+  'transactions_by_date': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    AUDIT_FLAGS_FILTER,
+    DEPARTMENT_CHANNEL_FILTER,
+    SHOW_RATE_CHECKBOX,
+    GROUP_BY_DATE_CHECKBOX,
+  ],
+  'Transactions by Date': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    AUDIT_FLAGS_FILTER,
+    DEPARTMENT_CHANNEL_FILTER,
+    SHOW_RATE_CHECKBOX,
+    GROUP_BY_DATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Invoice Number
+  'transactions_by_invoice_number': [
+    STANDARD_BRANCH_FIELD,
+    FROM_INVOICE_NO_FIELD,
+    TO_INVOICE_NO_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_ZERO_TAX_CHECKBOX,
+  ],
+  'Transactions by Invoice Number': [
+    STANDARD_BRANCH_FIELD,
+    FROM_INVOICE_NO_FIELD,
+    TO_INVOICE_NO_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_ZERO_TAX_CHECKBOX,
+  ],
+
+  // Mode: Duplicate Invoices
+  'duplicate_invoices': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Duplicate Invoices': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Date by Payments
+  'transactions_by_date_by_payments': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Date by Payments': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    PAYMENT_METHOD_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Customers
+  'transactions_by_customers': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Customers': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Customers by Groups
+  'transactions_by_customers_by_groups': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_GROUP_FILTER,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Customers by Groups': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_GROUP_FILTER,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Customers details
+  'transactions_by_customers_details': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Customers details': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    CUSTOMER_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Workstation
+  'transactions_by_workstation': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Workstation': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions by Employees
+  'transactions_by_employees': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions by Employees': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    EMPLOYEE_DROPDOWN_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+
+  // Mode: Transactions By Source
+  'transactions_by_source': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    DEPARTMENT_CHANNEL_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+  'Transactions By Source': [
+    STANDARD_DATE_RANGE_FIELD,
+    STANDARD_BRANCH_FIELD,
+    DEPARTMENT_CHANNEL_FILTER,
+    INVOICE_TYPE_FILTER,
+    SHOW_RATE_CHECKBOX,
+  ],
+};
+
 export function getDuplicateInvoicesModeFilters(mode: string): ReportFilterFieldConfig[] {
+  const normMode = normalizeSubReportMode(mode);
+
+  // Declarative mode filter resolution
+  if (MODE_SPECIFIC_FILTERS_MAP[normMode]) {
+    return [...MODE_SPECIFIC_FILTERS_MAP[normMode]];
+  }
+  if (MODE_SPECIFIC_FILTERS_MAP[mode]) {
+    return [...MODE_SPECIFIC_FILTERS_MAP[mode]];
+  }
+
   const config = getDuplicateInvoiceConfig(mode);
   const fields: ReportFilterFieldConfig[] = [];
 
@@ -402,13 +678,16 @@ export function getDuplicateInvoicesModeFilters(mode: string): ReportFilterField
     fields.push(DEPARTMENT_CHANNEL_FILTER);
   }
   if (config.activeFilters.paymentType) {
-    fields.push(PAYMENT_TYPES_MASTER_FILTER);
+    fields.push(PAYMENT_METHOD_DROPDOWN_FILTER);
   }
   if (config.activeFilters.salesmanSelector) {
     fields.push(SALESMAN_DROPDOWN_FILTER);
   }
   if (config.activeFilters.serverSelector) {
     fields.push(SERVER_CASHIER_SEARCH_FILTER);
+  }
+  if (config.activeFilters.employeeSelector) {
+    fields.push(EMPLOYEE_DROPDOWN_FILTER);
   }
   if (config.activeFilters.customerSearch) {
     fields.push(CUSTOMER_SEARCH_FILTER);
@@ -955,7 +1234,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
   'Duplicate Invoice Report': {
     reportKey: 'Duplicate Invoice Report',
     reportTitle: 'Duplicate Invoices & Bill Reprint Audit',
-    code: 'REP_S_00188',
+    code: 'REP_S_00188_AUDIT',
     module: 'sales',
     category: 'Internal Control',
     description: 'Audit log of reprinted customer bills, re-issuance counters, and duplicate ticket verification.',
@@ -2960,7 +3239,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
         id: 'baseDate',
         label: 'Base Date',
         type: 'date',
-        defaultValue: '2026-08-31',
+        defaultValue: formatISODate(new Date()),
       },
       {
         id: 'compareAgainst',
@@ -2994,7 +3273,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
         id: 'baseDate',
         label: 'Base Date',
         type: 'date',
-        defaultValue: '2026-08-31',
+        defaultValue: formatISODate(new Date()),
       },
       {
         id: 'compareAgainst',
@@ -3028,7 +3307,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
         id: 'baseDate',
         label: 'Base Date',
         type: 'date',
-        defaultValue: '2026-08-31',
+        defaultValue: formatISODate(new Date()),
       },
       {
         id: 'compareAgainst',
@@ -6275,30 +6554,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
     category: 'Transaction Summary',
     description: 'Detailed billing cross-tabulation mapping cashiers to tender breakdown and physical takings.',
     filters: [
-      STANDARD_DATE_RANGE_FIELD,
-      STANDARD_BRANCH_FIELD,
-      INVOICE_TYPE_FILTER,
-      {
-        id: 'employee',
-        label: 'Cashier / Employee',
-        type: 'select',
-        defaultValue: 'ALL',
-        options: [
-          { label: 'All Cashiers & Employees', value: 'ALL' },
-          { label: 'Ahmad Al-Hajj', value: 'EMP_AHMAD' },
-          { label: 'Maya Khoury', value: 'EMP_MAYA' },
-          { label: 'Jad Tannous', value: 'EMP_JAD' },
-          { label: 'Nour Saliba', value: 'EMP_NOUR' },
-          { label: 'Rania Eid', value: 'EMP_RANIA' },
-        ],
-      },
-      PAYMENT_TYPE_FILTER,
-      {
-        id: 'realDate',
-        label: 'Real Date (Actual Timestamp)',
-        type: 'checkbox',
-        defaultValue: false,
-      },
+      ...MODE_SPECIFIC_FILTERS_MAP['transactions_by_employees_by_payment'],
     ],
   },
 
@@ -6310,34 +6566,7 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
     category: 'Transaction Summary',
     description: 'Cross-tabulated transaction log connecting specific customer accounts to the serving representative.',
     filters: [
-      STANDARD_DATE_RANGE_FIELD,
-      STANDARD_BRANCH_FIELD,
-      {
-        id: 'employee',
-        label: 'Employee / Cashier Selector',
-        type: 'select',
-        defaultValue: 'ALL',
-        options: [
-          { label: 'All Employees & Cashiers', value: 'ALL' },
-          { label: 'Ahmad Al-Hajj', value: 'EMP_AHMAD' },
-          { label: 'Maya Khoury', value: 'EMP_MAYA' },
-          { label: 'Jad Tannous', value: 'EMP_JAD' },
-          { label: 'Nour Saliba', value: 'EMP_NOUR' },
-        ],
-      },
-      {
-        id: 'customerAccount',
-        label: 'Customer Account Lookup',
-        type: 'select',
-        defaultValue: 'ALL',
-        options: [
-          { label: 'All Customers & Accounts', value: 'ALL' },
-          { label: 'Al-Baraka Supermarket S.A.R.L (CUST-001)', value: 'CUST-001' },
-          { label: 'Al-Nour Food Establishment (CUST-002)', value: 'CUST-002' },
-          { label: 'Cedars Gourmet Retailers (CUST-003)', value: 'CUST-003' },
-          { label: 'Beirut Olive House Wholesale (CUST-004)', value: 'CUST-004' },
-        ],
-      },
+      ...MODE_SPECIFIC_FILTERS_MAP['transactions_by_customers_by_employee'],
     ],
   },
 
@@ -6373,25 +6602,23 @@ export const REPORT_CONFIG_REGISTRY: Record<string, ReportConfig> = {
 
   'Duplicate Invoices': {
     reportKey: 'Duplicate Invoices',
-    reportTitle: 'Duplicate Invoices & Master Transaction Engine',
+    reportTitle: 'Duplicate Invoices & Bill Reprint Audit',
     code: 'REP_S_00188',
     module: 'sales',
     category: 'Internal Control',
-    description: 'Master Transaction Engine Container dynamically hosting all 13 transaction report modes.',
+    description: 'Comprehensive audit trail of reprinted, duplicated, and customer-reissued tax invoices.',
     filters: [
-      PRIMARY_TRANSACTION_MODE_FIELD,
       ...getDuplicateInvoicesModeFilters('Duplicate Invoices'),
     ],
   },
   'Duplicate Invoices / Audit Search': {
     reportKey: 'Duplicate Invoices / Audit Search',
-    reportTitle: 'Duplicate Invoices & Master Transaction Engine',
+    reportTitle: 'Duplicate Invoices & Bill Reprint Audit',
     code: 'REP_S_00188',
     module: 'sales',
     category: 'Internal Control',
-    description: 'Master Transaction Engine Container dynamically hosting all 13 transaction report modes.',
+    description: 'Comprehensive audit trail of reprinted, duplicated, and customer-reissued tax invoices.',
     filters: [
-      PRIMARY_TRANSACTION_MODE_FIELD,
       ...getDuplicateInvoicesModeFilters('Duplicate Invoices'),
     ],
   },
@@ -7564,6 +7791,11 @@ export function getReportConfig(
     return REPORT_CONFIG_REGISTRY[cleanKey];
   }
 
+  // 1b. Master Transaction Engine Priority Matching
+  if (cleanKey.toUpperCase().replace(/[-_]/g, '_') === 'REP_S_00188' || cleanKey.toLowerCase() === 'duplicate invoices' || cleanKey.toLowerCase().includes('master transaction engine')) {
+    return REPORT_CONFIG_REGISTRY['Duplicate Invoices'];
+  }
+
   // 2. Direct code match in registry (e.g. REP_S_00270, REP_S_00269, etc.)
   const matchByCode = Object.values(REPORT_CONFIG_REGISTRY).find(
     (cfg) => cfg.code && cfg.code.toLowerCase() === cleanKey.toLowerCase()
@@ -7786,7 +8018,7 @@ export function getReportConfig(
   }
 
   // Duplicate Invoice Report (Reprinted Bills Audit)
-  if (lower.includes('duplicate invoice') || lower.includes('duplicate bills') || lower.includes('reprint') || cleanKey === 'REP_S_00188') {
+  if (lower.includes('duplicate bills') || lower.includes('reprint') || cleanKey === 'REP_S_00191') {
     return REPORT_CONFIG_REGISTRY['Duplicate Invoice Report'];
   }
 

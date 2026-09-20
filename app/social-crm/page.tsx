@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import SocialMediaManagementHub from '@/components/modules/social/SocialMediaManagementHub';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function SocialCrmPage() {
-  return <SocialMediaManagementHub initialTab="inbox" />;
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading Social CRM...</div>}>
+      <SocialMediaManagementHub initialTab="inbox" />
+    </Suspense>
+  );
 }

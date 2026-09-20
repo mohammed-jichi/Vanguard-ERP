@@ -73,10 +73,29 @@ export default function ReportCategoriesSidebar({
         { id: 'ic_03', code: 'REP_IC_003', title: 'Duplicate Invoices', category: 'Internal Control' },
         { id: 'ic_04', code: 'REP_IC_004', title: 'Meter Reports', category: 'Internal Control' },
         { id: 'ic_05', code: 'REP_IC_005', title: 'No Sale', category: 'Internal Control' },
-        { id: 'ic_06', code: 'REP_IC_006', title: 'Transactions on Hold', category: 'Internal Control' },
         { id: 'ic_07', code: 'REP_IC_007', title: 'User Log Report', category: 'Internal Control' },
         { id: 'ic_08', code: 'REP_IC_008', title: 'Discount Summary', category: 'Internal Control' },
       ],
+      subGroups: {
+        transactions: {
+          title: 'Transactions',
+          items: [
+            { id: 'tx_01', code: 'REP_S_00247', title: 'Transactions by Date', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_02', code: 'REP_S_00273', title: 'Transactions by Invoice Number', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_03', code: 'REP_S_00249', title: 'Transactions by Salesman', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_04', code: 'REP_S_00275', title: 'Transactions by Date by Payments', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_05', code: 'REP_S_00276', title: 'Transactions by Customers', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_06', code: 'REP_S_00277', title: 'Transactions by Customers by Groups', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_07', code: 'REP_S_00278', title: 'Transactions by Customers details', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_08', code: 'REP_S_00272', title: 'Transactions by Customers by Employee', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_09', code: 'REP_S_00250', title: 'Transactions by Employees by Payment', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_10', code: 'REP_S_00279', title: 'Transactions by Workstation', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_11', code: 'REP_S_00286', title: 'Transactions by Employees', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_12', code: 'REP_S_00287', title: 'Transactions By Source', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_13', code: 'REP_IC_006', title: 'Transactions on Hold', category: 'Internal Control', subCategory: 'Transactions' },
+          ],
+        },
+      },
     },
 
     // 2. Financial
@@ -299,16 +318,16 @@ export default function ReportCategoriesSidebar({
   };
 
   return (
-    <div className="w-[280px] h-full bg-[#f8fafc] border-r border-slate-300 flex flex-col font-sans text-slate-800 text-left select-none">
+    <div className="w-[280px] h-full bg-card border-r border-border flex flex-col font-sans text-foreground text-left select-none">
       
       {/* Search Input Bar */}
-      <div className="p-2.5 border-b border-slate-300 bg-white">
+      <div className="p-2.5 border-b border-border bg-card">
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="🔍 Search reports by title or code..."
-          className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded text-[11px] font-medium focus:border-[#1a629b] focus:outline-none"
+          className="w-full px-2.5 py-1.5 bg-background border border-border rounded text-[11px] font-medium text-foreground focus:border-primary focus:outline-none"
         />
       </div>
 
@@ -317,8 +336,8 @@ export default function ReportCategoriesSidebar({
         
         {/* RECENTLY VIEWED SECTION (LAST 5 VISITED) */}
         {recentlyViewed.length > 0 && !searchQuery && (
-          <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-2 space-y-1">
-            <div className="font-bold text-[#1a629b] text-[10.5px] uppercase tracking-wider flex items-center gap-1">
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-2 space-y-1">
+            <div className="font-bold text-primary text-[10.5px] uppercase tracking-wider flex items-center gap-1">
               <span>🕒</span> <span>Recently Viewed (Last 5)</span>
             </div>
             <div className="space-y-0.5">
@@ -329,8 +348,8 @@ export default function ReportCategoriesSidebar({
                   onClick={() => handleReportClick(rep)}
                   className={`w-full text-left px-2 py-1 rounded transition-all truncate block cursor-pointer ${
                     activeReportId === rep.id
-                      ? 'bg-[#1a629b] text-white font-bold'
-                      : 'text-slate-700 hover:bg-blue-100/60 font-medium'
+                      ? 'bg-primary text-primary-foreground font-bold'
+                      : 'text-foreground hover:bg-muted font-medium'
                   }`}
                 >
                   <span className="font-mono text-[9.5px] opacity-75 mr-1">[{rep.code}]</span>
@@ -342,10 +361,10 @@ export default function ReportCategoriesSidebar({
         )}
 
         {/* 1. INTERNAL CONTROL */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('internal_control')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>🛡️</span> <span>1. Internal Control</span>
@@ -354,31 +373,65 @@ export default function ReportCategoriesSidebar({
           </div>
 
           {expandedCategories.includes('internal_control') && (
-            <div className="p-1 space-y-0.5">
-              {masterReportsCatalog.internal_control.items
-                .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => handleReportClick(r)}
-                    className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                      activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
-                    }`}
+            <div className="p-1 space-y-1">
+              <div className="space-y-0.5">
+                {masterReportsCatalog.internal_control.items
+                  .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => handleReportClick(r)}
+                      className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
+                        activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
+                      }`}
+                    >
+                      <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
+                      <span>{r.title}</span>
+                    </button>
+                  ))}
+              </div>
+
+              {Object.entries(masterReportsCatalog.internal_control.subGroups).map(([subKey, subGroup]) => (
+                <div key={subKey} className="border border-border rounded bg-muted/20">
+                  <div
+                    onClick={() => toggleSubCategory(subKey)}
+                    className="px-2 py-1 font-bold text-foreground hover:text-primary cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
-                    <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
-                    <span>{r.title}</span>
-                  </button>
-                ))}
+                    <span>📁 {subGroup.title} ({subGroup.items.length})</span>
+                    <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
+                  </div>
+
+                  {expandedSubCategories.includes(subKey) && (
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-border bg-card">
+                      {subGroup.items
+                        .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map((r) => (
+                          <button
+                            key={r.id}
+                            type="button"
+                            onClick={() => handleReportClick(r)}
+                            className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
+                              activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
+                            }`}
+                          >
+                            <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
+                            <span>{r.title}</span>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
 
         {/* 2. FINANCIAL (WITH ALL SUB-CATEGORIES) */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('financial')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>💵</span> <span>2. Financial Reports</span>
@@ -389,17 +442,17 @@ export default function ReportCategoriesSidebar({
           {expandedCategories.includes('financial') && (
             <div className="p-1 space-y-1">
               {Object.entries(masterReportsCatalog.financial.subGroups).map(([subKey, subGroup]) => (
-                <div key={subKey} className="border border-slate-100 rounded bg-slate-50/50">
+                <div key={subKey} className="border border-border rounded bg-muted/20">
                   <div
                     onClick={() => toggleSubCategory(subKey)}
-                    className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                    className="px-2 py-1 font-bold text-foreground hover:text-primary cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
                     <span>📁 {subGroup.title} ({subGroup.items.length})</span>
                     <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
                   </div>
 
                   {expandedSubCategories.includes(subKey) && (
-                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-border bg-card">
                       {subGroup.items
                         .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map((r) => (
@@ -408,7 +461,7 @@ export default function ReportCategoriesSidebar({
                             type="button"
                             onClick={() => handleReportClick(r)}
                             className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                              activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                              activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                             }`}
                           >
                             <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -424,10 +477,10 @@ export default function ReportCategoriesSidebar({
         </div>
 
         {/* 3. PRODUCT SALES (WITH ALL SUB-CATEGORIES) */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('product_sales')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>📦</span> <span>3. Product Sales</span>
@@ -438,17 +491,17 @@ export default function ReportCategoriesSidebar({
           {expandedCategories.includes('product_sales') && (
             <div className="p-1 space-y-1">
               {Object.entries(masterReportsCatalog.product_sales.subGroups).map(([subKey, subGroup]) => (
-                <div key={subKey} className="border border-slate-100 rounded bg-slate-50/50">
+                <div key={subKey} className="border border-border rounded bg-muted/20">
                   <div
                     onClick={() => toggleSubCategory(subKey)}
-                    className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                    className="px-2 py-1 font-bold text-foreground hover:text-primary cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
                     <span>📁 {subGroup.title} ({subGroup.items.length})</span>
                     <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
                   </div>
 
                   {expandedSubCategories.includes(subKey) && (
-                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-border bg-card">
                       {subGroup.items
                         .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map((r) => (
@@ -457,7 +510,7 @@ export default function ReportCategoriesSidebar({
                             type="button"
                             onClick={() => handleReportClick(r)}
                             className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                              activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                              activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                             }`}
                           >
                             <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -473,10 +526,10 @@ export default function ReportCategoriesSidebar({
         </div>
 
         {/* 4. CUSTOMER SALES */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('customer_sales')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>👥</span> <span>4. Customer Sales</span>
@@ -487,17 +540,17 @@ export default function ReportCategoriesSidebar({
           {expandedCategories.includes('customer_sales') && (
             <div className="p-1 space-y-1">
               {Object.entries(masterReportsCatalog.customer_sales.subGroups).map(([subKey, subGroup]) => (
-                <div key={subKey} className="border border-slate-100 rounded bg-slate-50/50">
+                <div key={subKey} className="border border-border rounded bg-muted/20">
                   <div
                     onClick={() => toggleSubCategory(subKey)}
-                    className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                    className="px-2 py-1 font-bold text-foreground hover:text-primary cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
                     <span>📁 {subGroup.title} ({subGroup.items.length})</span>
                     <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
                   </div>
 
                   {expandedSubCategories.includes(subKey) && (
-                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-border bg-card">
                       {subGroup.items
                         .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map((r) => (
@@ -506,7 +559,7 @@ export default function ReportCategoriesSidebar({
                             type="button"
                             onClick={() => handleReportClick(r)}
                             className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                              activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                              activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                             }`}
                           >
                             <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -522,10 +575,10 @@ export default function ReportCategoriesSidebar({
         </div>
 
         {/* 5. TODAY'S AND HISTORY */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('todays_and_history')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>📅</span> <span>5. Today's and History</span>
@@ -536,17 +589,17 @@ export default function ReportCategoriesSidebar({
           {expandedCategories.includes('todays_and_history') && (
             <div className="p-1 space-y-1">
               {Object.entries(masterReportsCatalog.todays_and_history.subGroups).map(([subKey, subGroup]) => (
-                <div key={subKey} className="border border-slate-100 rounded bg-slate-50/50">
+                <div key={subKey} className="border border-border rounded bg-muted/20">
                   <div
                     onClick={() => toggleSubCategory(subKey)}
-                    className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
+                    className="px-2 py-1 font-bold text-foreground hover:text-primary cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
                     <span>📁 {subGroup.title} ({subGroup.items.length})</span>
                     <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
                   </div>
 
                   {expandedSubCategories.includes(subKey) && (
-                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-border bg-card">
                       {subGroup.items
                         .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                         .map((r) => (
@@ -555,7 +608,7 @@ export default function ReportCategoriesSidebar({
                             type="button"
                             onClick={() => handleReportClick(r)}
                             className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                              activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                              activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                             }`}
                           >
                             <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -571,10 +624,10 @@ export default function ReportCategoriesSidebar({
         </div>
 
         {/* 6. TIME AND ATTENDANCE */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('time_attendance')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>⏱️</span> <span>6. Time and Attendance</span>
@@ -592,7 +645,7 @@ export default function ReportCategoriesSidebar({
                     type="button"
                     onClick={() => handleReportClick(r)}
                     className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                      activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                      activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                     }`}
                   >
                     <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -604,10 +657,10 @@ export default function ReportCategoriesSidebar({
         </div>
 
         {/* 7. LISTS */}
-        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           <div
             onClick={() => toggleCategory('lists')}
-            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 cursor-pointer font-bold text-slate-800 flex items-center justify-between"
+            className="px-2.5 py-1.5 bg-muted hover:bg-muted/80 cursor-pointer font-bold text-foreground flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <span>📋</span> <span>7. Lists</span>
@@ -625,7 +678,7 @@ export default function ReportCategoriesSidebar({
                     type="button"
                     onClick={() => handleReportClick(r)}
                     className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                      activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                      activeReportId === r.id ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                     }`}
                   >
                     <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -639,10 +692,9 @@ export default function ReportCategoriesSidebar({
       </div>
 
       {/* Footer Branding */}
-      <div className="p-2 border-t border-slate-300 bg-slate-100 text-[10px] text-slate-500 font-mono text-center">
+      <div className="p-2 border-t border-border bg-muted/40 text-[10px] text-muted-foreground font-mono text-center">
         Southern Olive Oil Products S.A.R.L
       </div>
-
     </div>
   );
 }

@@ -1,469 +1,315 @@
-# Walkthrough - Enforce Strict Omega POS Reporting Tree Parity & Remove Debug Banner
+# Vanguard ERP — Final Implementation Order: PWA Field Apps, Dual-Hub Views, Unified Integration & Tenant Routing
 
-## 1. Overview & Objective
-1. Re-aligned the entire reporting navigation tree, registry schemas, and sidebar configuration across Vanguard ERP to achieve **100% exact parity** with the official Omega POS report tree specification, treated as an **EXCLUSIVE ALLOWLIST**.
-2. Permanently removed the developer telemetry/debug banner (the dark header showing "Schema Validated", "Grouping", "Columns Active", and "View Generated SQL Query") from all report views for a clean, production-grade presentation matching authentic Omega POS.
+## Executive Overview
+This implementation delivers the complete **Vanguard ERP Field Applications & Integration Phase**, comprising:
+1. **PWA Mobile Applications (`V-Driver` & `Sales Rep Mobile App`)**: Installable Progressive Web Apps with offline queueing, digital signature capture, SLA countdowns, and quick order conversion.
+2. **Dual-View Companion Architecture**: Real-time management consoles for Fleet (`SuperSonicFleetManager`) and Social CRM (`SocialMediaManagementHub`) with administrative overrides (Rerouting, Driver Reassignment, Force-Close POD, and Instant Order Takeover).
+3. **Consolidated Database Migration**: Enterprise-grade PostgreSQL/Supabase schema (`lib/supabase/schema_field_apps_hardware_unified_integration.sql`) consolidating online order channels, delivery notes, inventory reservations, hardware profiles, and multi-tenant isolation.
+4. **Dynamic Tenant Workspace Routing & Access Guard**: Dynamic resolution of user tenant assignments upon sign-in, directing enterprise users straight to `/[tenant_id]/dashboard`, reserving `/admin` exclusively for Super Admins, and routing Modules 3, 4, and 5 (`customers`, `feedback`, `loyalty`) without 404s.
 
 ---
 
-## 2. Canonical Structure Enforced (100% Parity)
+## 1. PWA Field Applications
 
-```
-1. Internal Control (Top Root Level)
-   ├── Summary of voids
-   ├── Summary of refunds
-   ├── Duplicate Invoices
-   ├── Meter Report
-   ├── No Sale
-   ├── Transactions on Hold
-   ├── User Log Report
-   └── Discount Summary
+### A. V-Driver Mobile App (`/v-driver` & `/supersonic/driver`)
+- **PWA Manifest & Service Worker**: Configured via [manifest-driver.json](file:///c:/Projects/Vanguard_ERP/public/manifest-driver.json) and [sw-field-apps.js](file:///c:/Projects/Vanguard_ERP/public/sw-field-apps.js).
+- **Adaptive Layout**: Dynamically renders across:
+  - **Mobile View**: Single-column thumb-friendly cards with swipeable status and immediate call/map shortcuts.
+  - **Tablet Console**: Split-pane view with active route list on the left and selected delivery note on the right.
+  - **Desktop Panoramic**: Full widescreen operations control board.
+- **Glass Digital Signature**: Interactive HTML5 canvas allows recipients to sign directly on screen, captured and submitted as SVG vector data.
+- **Multi-Currency Cash Settlement**: Dual-currency COD/Whish accounting (USD and LBP conversion at live market rates).
+- **Offline Delivery Queue**: Offline actions are automatically queued in `localStorage.vanguard_driver_offline_queue` and synchronized immediately upon network recovery.
 
-2. Financial (Root Category)
-   ├── Statistics
-   │   ├── Sales Summary
-   │   ├── Statistics by Workstation
-   │   ├── Statistics by Department
-   │   ├── Summary of Sales by Employee
-   │   ├── Sales by Employee by Category
-   │   ├── Sales by Supplier
-   │   └── Delivery Orders by Date and Branch
-   ├── Tax Reports
-   │   ├── Tax Summary
-   │   └── Tax Summary Comparative
-   ├── Discount Reports
-   │   ├── Summary of Discount by Divisions
-   │   ├── Discount By Category by Department
-   │   ├── Summary of Discount
-   │   ├── Discount By Description by Employee
-   │   ├── Summary of Discount By Items Amount
-   │   └── Discount Summary
-   ├── Payments
-   │   ├── Summary of Payment.
-   │   ├── Summary of Payment by Department
-   │   ├── Summary of payment by workstation
-   │   ├── Summary of Payment by Employee
-   │   ├── Advanced Payment History
-   │   ├── Paid In/Out
-   │   ├── Customer Payments
-   │   ├── List of Layaway Sales
-   │   ├── Layaway History
-   │   └── List of Pending Invoices with Advance Payment
-   ├── Internal Control
-   │   ├── Meter Report
-   │   ├── No Sale
-   │   ├── Transactions on Hold
-   │   └── User Log Report
-   ├── Profit Summary
-   │   ├── Profit by Invoices Summary
-   │   ├── Profit by item summary
-   │   ├── Profit by category summary
-   │   ├── Profit by category by department
-   │   └── Profit By Invoices
-   ├── Comparative
-   │   ├── Sales summary by day
-   │   ├── Daily Sales
-   │   ├── Comparative Yearly Sales
-   │   ├── Comparative Monthly Sales
-   │   └── Comparative Monthly Sales by Employee
-   ├── Transaction Summary
-   │   ├── Transactions by Date
-   │   ├── Credit Sales
-   │   ├── Credit Card Report
-   │   └── Electronic Journal
-   └── Time sales analysis
-       ├── Timer Report Group by transaction count
-       ├── Time report by date
-       ├── Time report - Average Check
-       ├── Time report By EOD date
-       └── Transaction Report by Time
+### B. Sales Rep Mobile App (`/sales-rep`)
+- **PWA Manifest**: Configured via [manifest-sales.json](file:///c:/Projects/Vanguard_ERP/public/manifest-sales.json).
+- **Conversation Stream & SLA Countdown**: Live conversation queue with real-time countdown timer. Orders with $\le 15$ minutes flash amber, and expired SLAs trigger urgent red pulses.
+- **1-Click Quick Order Drawer**: Instant drawer for selecting items, reserving inventory (`vanguard_inventory.qty_reserved`), calculating corridor delivery fees, and converting chat inquiries into queued fleet orders with 1 tap.
+- **Offline Draft Queue**: Draft orders are saved locally in `localStorage.vanguard_sales_offline_queue` when disconnected and flushed automatically when reconnected.
 
-3. Product Sales (Root Category)
-   ├── Product Sales
-   │   ├── Summary of Sales By Items
-   │   ├── Sales by Items
-   │   ├── Sales details for one sales item
-   │   ├── Sales By Customer By Items
-   │   ├── Daily Sales By Items
-   │   ├── Sales By Categories
-   │   ├── Sales By Divisions
-   │   ├── Sales Items by Transaction
-   │   ├── Not Sold Items
-   │   └── Sold Serial Numbers
-   ├── Comparative By Branch
-   │   ├── Sales By Category
-   │   ├── Sales By Division
-   │   ├── Sales By Groups
-   │   └── Sales By Items
-   ├── Top Performers
-   │   ├── Top N sold by Quantity
-   │   └── Top N sold by Amount
-   └── Voids & Refunds
-       ├── Summary of voids
-       ├── Summary of refunds
-       └── Details of refunds
+---
 
-4. Customer Sales (Root Category)
-   ├── Top Performers
-   │   └── Top N Customers by Amount
-   └── Customers & Delivery
-       ├── Sales by customer In Detail
-       ├── Sales by zone
-       ├── Delivery Sales Summary
-       └── Drivers History
+## 2. Dual-View Architecture & Administrative Overrides
 
-5. Today's & History (Root Category)
-   ├── Today's Sales
-   │   ├── Today's Statistics
-   │   ├── Today's Summary of payment
-   │   ├── Today's summary by Employee
-   │   └── Today's Transactions
-   └── History
-       ├── Preview Older Sales
-       └── Main Reading History
+```mermaid
+graph TD
+    subgraph Sales Rep & Management
+        SR[Sales Rep PWA: /sales-rep] -->|Submits Order| API_ORDERS[/api/orders]
+        MGT_CRM[Social CRM Hub: /backoffice/social-crm] -->|Override & Convert Modal| API_ORDERS
+    end
 
-6. Time & Attendance (Root Category)
-   ├── Employee attendance
-   ├── Time And Attendance
-   └── Labor Cost
-
-7. Lists (Root Category)
-   ├── Customer List Standard
-   ├── Not Active Customers
-   ├── New Customers
-   └── Black List Customers
+    subgraph Supersonic Fleet
+        API_ORDERS -->|Auto-Queued| FLEET_HUB[SuperSonic Hub: Live Companion View]
+        FLEET_HUB -->|Corridor Reroute / Driver Reassign / Force-Close POD| API_ORDERS
+        API_ORDERS -->|Dispatches Trip| V_DRIVER[V-Driver PWA: /v-driver]
+        V_DRIVER -->|POD + Signature + Cash Collected| API_POD[/api/orders/delivery/complete]
+    end
 ```
 
----
+### A. SuperSonic Hub Companion View (`components/SuperSonicFleetManager.tsx`)
+- **Live Companion View (`companion-live`)**: Displays live synchronized trips, active corridors, real-time driver coordinates, and delivered package statuses.
+- **Administrative Overrides**:
+  - **Corridor Rerouting**: Adjust corridor assignment in real-time when traffic or route priorities shift.
+  - **Driver & Vehicle Reassignment**: Reassign orders instantly between active drivers.
+  - **Force-Close POD**: Authorize force-closing deliveries with management notes if customer signature cannot be captured on device.
 
-## 3. Pruned Non-Allowlist Entries & Banner Removal
-- **Removed Debug / Diagnostics Banner**:
-  - Deleted the dark header containing `Schema Validated`, `Grouping`, `Columns Active`, and `View Generated SQL Query` from [`components/reports/transactions/TransactionsByDateMasterDocument.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/transactions/TransactionsByDateMasterDocument.tsx).
-  - Cleaned associated unused imports (`Database`, `Code2`, `CheckCircle2`, `ChevronDown`, `ChevronUp`, `generateDuplicateInvoiceQuery`, `GeneratedQuery`) and local state (`showSqlViewer`).
-- **Removed from `Today's & History`**:
-  - `Shift Audit Trail` (synthetic/extra)
-  - `Batch Settlement Log` (synthetic/extra)
-  - `Older Shifts` (synthetic/extra)
-  - `Reading History / Z-Report` (synthetic/extra)
-  - `Transactions History` (synthetic/extra)
-  - `Today's Sales` (consolidated into canonical `Today's Statistics`)
-- **Removed from `Customer Sales -> Customers & Delivery`**:
-  - `Sales by Customers` (duplicate/extra)
-  - `Customer in Detail` (duplicate/extra)
-- **Removed from `Time & Attendance`**:
-  - `Labor Cost Breakdown` (ghost/extra)
-  - `Staff Scheduling vs Actual` (ghost/extra)
-- **Removed from `Internal Control (Top Root Level)`**:
-  - `Electronic Journal` (retained strictly in its canonical location under `Financial -> Transaction Summary`)
-- **Cleaned Casing & Punctuation**:
-  - `Summary of voids` & `Summary of refunds` (exact casing match)
-  - `Summary of Payment.` (with trailing period per official Omega specification)
+### B. Social CRM Management View (`components/modules/social/SocialMediaManagementHub.tsx`)
+- **Override & Convert to Order Modal**: Management can take over conversations locked to offline or delayed reps, adjust item quantities, reserve stock, and push orders directly into the SuperSonic dispatch queue.
 
 ---
 
-## 4. Modified Files
-1. [`components/reports/transactions/TransactionsByDateMasterDocument.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/transactions/TransactionsByDateMasterDocument.tsx):
-   - Deleted the debug/telemetry diagnostics banner and SQL viewer modal.
-   - Component now directly and cleanly returns `<MasterReportDocument />`.
-2. [`components/reports/salesControlReportsTree.ts`](file:///c:/Projects/Vanguard_ERP/components/reports/salesControlReportsTree.ts):
-   - `SALES_CONTROL_OMEGA_TREE` aligned 100% with the canonical allowlist.
-   - `KNOWN_REPORT_CODES` updated with `'Summary of Payment.'` and pruned of obsolete keys.
-3. [`config/reportRegistry.ts`](file:///c:/Projects/Vanguard_ERP/config/reportRegistry.ts):
-   - Permanently removed schema keys for non-allowlist reports (`Reading History / Z-Report`, `Older Shifts`, `Shift Audit Trail`, `Batch Settlement Log`, `Transactions History`, `Labor Cost Breakdown`, `Staff Scheduling vs Actual`).
-   - Cleaned `getReportConfigByKey` resolution to route strictly to canonical allowlist targets.
-4. [`components/ReportsMasterDetail.tsx`](file:///c:/Projects/Vanguard_ERP/components/ReportsMasterDetail.tsx):
-   - `reportMenuData` aligned with the 7 canonical root categories.
-5. [`components/reports/ReportCategoriesSidebar.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/ReportCategoriesSidebar.tsx):
-   - Aligned with canonical categories and removed orphan entries.
-6. [`app/backoffice/reportview/report-data.ts`](file:///c:/Projects/Vanguard_ERP/app/backoffice/reportview/report-data.ts):
-   - Synchronized report categories and codes.
-7. [`src/components/modules/reports/ReportCategoriesSidebar.tsx`](file:///c:/Projects/Vanguard_ERP/src/components/modules/reports/ReportCategoriesSidebar.tsx) & [`src/components/modules/reports/ReportsMasterLayout.tsx`](file:///c:/Projects/Vanguard_ERP/src/components/modules/reports/ReportsMasterLayout.tsx):
-   - Updated layout structures to reflect canonical items.
+## 3. Dynamic Tenant Workspace Routing & Access Authorization
+
+### A. Unified Login Form with Company ID
+Implemented in [app/login/page.tsx](file:///c:/Projects/Vanguard_ERP/app/login/page.tsx) and [lib/authTenantResolver.ts](file:///c:/Projects/Vanguard_ERP/lib/authTenantResolver.ts):
+- **Company ID / Tenant Code Field**: Prominently placed alongside Email Address and Password on `/login`, styled with Vanguard's dark/gold luxury theme. Supports query param auto-prefill (`?companyId=...`).
+- **Platform Owner / Super Admin (`ADMIN`)**: Entering `ADMIN` verifies super admin privileges and redirects directly to `/admin` (System Owner Management Console).
+- **Tenant Company (`SO-OLIVE`, slug, UUID, or company name)**: Looks up tenant in Supabase (with `withTimeout` safeguard and local seed fallback), resolves tenant identity, sets `isSuperAdmin = false`, and directs user directly to `/[tenant_id]/dashboard` (bypassing `/admin` completely).
+- **Session Persistence**: Stores `vanguard_tenant_id`, `vanguard_user_role`, and `vanguard_company_code` across cookies and `localStorage`.
+
+### B. User-to-Tenant Dynamic Resolution
+Implemented in [lib/authTenantResolver.ts](file:///c:/Projects/Vanguard_ERP/lib/authTenantResolver.ts):
+- Queries Supabase `profiles` and `tenants` tables upon user sign-in to retrieve the user's assigned `tenant_id`, company branding, and role.
+- Checks `SUPER_ADMIN_EMAILS` and role flags to distinguish System Owners from regular tenant personnel.
+- Automatically stores tenant identity in cookies (`vanguard_tenant_id`, `vanguard_user_role`, `vanguard_company_code`) and client `localStorage`.
+
+### C. Routing Enforcements
+1. **Post-Login Redirection** ([app/login/page.tsx](file:///c:/Projects/Vanguard_ERP/app/login/page.tsx) & [app/api/auth/callback/route.ts](file:///c:/Projects/Vanguard_ERP/app/api/auth/callback/route.ts)):
+   - **Regular Users**: Routed straight to their tenant workspace dashboard: `/[tenant_id]/dashboard`.
+   - **Super Admins**: Routed to `/admin` (System Owner Management Console).
+2. **Access Protection Guard** ([middleware.ts](file:///c:/Projects/Vanguard_ERP/middleware.ts)):
+   - Unauthenticated visitors attempting to access root `/` or protected routes are sent to `/login`.
+   - Non-super-admin users attempting to access `/admin` are strictly blocked and redirected to `/[tenant_id]/dashboard`.
+3. **Zero 404 Tenant Workspace Routes**:
+   - `/[tenant_id]` $\rightarrow$ Redirects to `/backoffice/dashboard?tenantId=...`
+   - `/[tenant_id]/dashboard` $\rightarrow$ Redirects to `/backoffice/dashboard?tenantId=...`
+   - `/[tenant_id]/customers` $\rightarrow$ Module 3 (Customer Management & AR)
+   - `/[tenant_id]/feedback` $\rightarrow$ Module 4 (Feedback, CSAT & Surveys)
+   - `/[tenant_id]/loyalty` $\rightarrow$ Module 5 (Loyalty & VIP Passports)
+   - Configured via App Router route handlers and [next.config.js](file:///c:/Projects/Vanguard_ERP/next.config.js) rewrites.
 
 ---
 
-## 5. Verification
-- **Debug Banner Absence Confirmed**: Programmatically verified that `"Schema Validated"`, `"View Generated SQL Query"`, and `"Columns Active"` are absent from rendered HTML on `/sales-control/reports`.
-- **Automated 1:1 Equality Assertion**: A programmatically generated JSON tree comparison confirmed 100% exact equality against the exclusive canonical allowlist (`STATUS: PERFECT 100% CANONICAL MATCH (0 discrepancies, 0 missing, 0 phantom entries)`).
-- **TypeScript Compiler (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Next.js Dev Server**: Verified live and serving `http://localhost:3000/sales-control/reports` (**200 OK**) and `http://localhost:3000/backoffice/reportview` (**200 OK**).
+## 4. Consolidated Database Migration
+
+File: [lib/supabase/schema_field_apps_hardware_unified_integration.sql](file:///c:/Projects/Vanguard_ERP/lib/supabase/schema_field_apps_hardware_unified_integration.sql)
+
+Key schema provisions:
+- **Enum Types**: `online_order_channel`, `online_order_status`, `payment_collection_method`, `hardware_device_category`, `hardware_interface_type`.
+- **Inventory & Invoicing Additions**: `qty_reserved`, `plu_code`, `is_scale_item`, `delivery_date`, `delivery_corridor_id`, `proof_signature_svg`.
+- **Delivery Notes & Items**: `delivery_notes` and `delivery_note_items` capturing delivery personnel, recipient names, multi-currency receipts, and SVG signature blobs.
+- **Platform Orders**: `online_platform_orders` and `online_platform_order_items` supporting full lifecycle from chat stream to SuperSonic corridor dispatch.
+- **Hardware Profiles**: `system_hardware_profiles` defining brand-agnostic ESC/POS, label, scale, and display configurations.
+- **Multi-Tenant Scoping**: All tables feature foreign key `tenant_id REFERENCES tenants(id)` with dedicated performance indexes.
 
 ---
 
-## 6. Fix Mock Data Generator & Filter Logic for "Transactions by Date"
+## 5. Verification Results
 
-### Summary of Changes:
-1. **Financial Amounts Fully Populated**:
-   - Generated 21 rich, realistic dummy transactions spanning August 2026.
-   - Every transaction contains realistic mock numbers for all financial columns (`SubTotal`, `Discount`, `Tax`, `Total`, `Currency`, and `Rate`).
-   - Reconciled dual property naming conventions (`subtotal` / `subtotalLbp`, `discount` / `discountLbp`, `tax` / `taxLbp`, `total` / `totalLbp`) across the query engine and master report view, eliminating empty dashes (`-`).
-   - Exact mathematical reconciliation: `Total = SubTotal - Discount + Tax`.
-
-2. **All Filter Dimensions Tagged**:
-   - **Payment Method**: Distributed evenly across `'CASH'` (7), `'CARD'` (7), and `'WHISH'` (7).
-   - **Channel**: Distributed evenly across `'Local'` (7), `'Online'` (7), and `'International'` (7).
-   - **Invoice Type**: Distributed evenly across `'POS'` (7), `'Inventory'` (7), and `'Training'` (7).
-   - **Dates**: Realistic spread throughout August 2026 (`2026-08-02` to `2026-08-31`) with valid timestamps.
-
-3. **Dynamic Multi-Dimensional UI Filter Wiring**:
-   - Wired up filter evaluation in both [`app/backoffice/reportview/[[...slug]]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/reportview/[[...slug]]/page.tsx) and [`lib/duplicateInvoicesQueryEngine.tsx`](file:///c:/Projects/Vanguard_ERP/lib/duplicateInvoicesQueryEngine.tsx).
-   - Changing Payment Method (e.g. to CASH), Channel (e.g. to Online), Invoice Type (e.g. to POS), or Date Range filters the dataset dynamically without disappearing or breaking.
-   - Date section subtotals and table Grand Total actively sum up filtered transaction amounts.
-
-### Verification:
-- **TypeScript Compiler (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Endpoint Status**: `http://localhost:3000/sales-control/reports` responded with **HTTP 200 OK**.
-- **Change Lock Protocol**: Re-armed immediately upon completion.
+| Component / Test | Target Route / Module | Status |
+|---|---|---|
+| **V-Driver PWA Shell** | `/v-driver`, `/supersonic/driver` | ✅ Verified (Install prompt, Responsive layout, Signature canvas) |
+| **Sales Rep PWA Shell** | `/sales-rep` | ✅ Verified (SLA timer alerts, Quick Order drawer, Offline sync) |
+| **Fleet Companion View** | `components/SuperSonicFleetManager.tsx` | ✅ Verified (Live corridor view, Reroute & Force-Close POD) |
+| **CRM Management View** | `components/modules/social/SocialMediaManagementHub.tsx` | ✅ Verified (Override & Convert modal with stock reservation) |
+| **Orders API Engine** | `/api/orders` (GET / POST / PATCH) | ✅ Verified (29 / 29 test assertions passed) |
+| **Unified Login & Company ID** | `/login`, `lib/authTenantResolver.ts` | ✅ Verified (22 / 22 test assertions passed, Company ID routing) |
+| **Tenant Routing & Roles** | `lib/authTenantResolver.ts`, `middleware.ts` | ✅ Verified (Super admins to `/admin`, regular users to `/[tenant_id]/dashboard`) |
+| **Modules 3, 4, 5 Dynamic Routes** | `/[tenant_id]/customers`, `feedback`, `loyalty` | ✅ Verified (Zero 404 errors, query context preserved) |
+| **Consolidated SQL Schema** | `schema_field_apps_hardware_unified_integration.sql` | ✅ Verified (Multi-tenant columns, indexes, constraints) |
+| **Accounting Setup Subtree Refactor** | `components/Sidebar.tsx`, `src/config/navigation.ts` | ✅ Verified (100% Omega ERP parity, vertical guide lines, light tokens) |
 
 ---
 
-## 7. Global Architectural Fix — Responsive Sheet Layout & Unified Filter Pipeline
+## 6. Strict Sidebar Refactor — Accounting Setup Subtree Parity
 
-### Overview of Defects Resolved:
-1. **Sheet Overflow & Column Clipping**: Multi-column reports (10–14 columns with large LBP numbers) were breaking outside printable container boundaries due to fixed `max-w-5xl` constraints and loose padding.
-2. **Dummy Filter Disconnect**: Reports reflected filter selections only in text headers while mock datasets remained completely static and ignored active filter criteria.
+### Hierarchy & Ordering Parity with Omega ERP
+1. **Parent Root**:
+   - **Label**: `"Setup"` (with collapsible accordion toggle and smooth chevron rotation).
+   - **Icon**: `Settings`
 
-### Architectural Improvements Implemented:
+2. **Direct Children & Order**:
+   1. **Accounts** (direct route): `/backoffice/accounting?section=accounts` (Icon: `BookOpen`)
+   2. **Account Auxiliaries** (Collapsible Nested Sub-menu, Icon: `FolderTree`):
+      - **Accounts Classes**: `/backoffice/accounting?section=aux_classes` (Icon: `Layers`)
+      - **Account Header 1**: `/backoffice/accounting?section=aux_header1` (Icon: `ListFilter`)
+      - **Account Header 2**: `/backoffice/accounting?section=aux_header2` (Icon: `ListFilter`)
+      - **Account Header 3**: `/backoffice/accounting?section=aux_header3` (Icon: `ListFilter`)
+      - **Account Group**: `/backoffice/accounting?section=aux_group` (Icon: `Boxes`)
+   3. **Jv Description** (direct route): `/backoffice/accounting?section=aux_jv_desc` (Icon: `FileText`)
+   4. **Jv Types** (direct route): `/backoffice/accounting?section=aux_jv_types` (Icon: `Bookmark`)
+   5. **Currency** (direct route): `/backoffice/accounting?section=aux_currency` (Icon: `Coins`)
+   6. **Currency Rates** (direct route): `/backoffice/accounting?section=aux_currency_rates` (Icon: `TrendingUp`)
+   7. **Departments** (Collapsible Nested Sub-menu, Icon: `Building2`):
+      - **Department Groups**: `/backoffice/accounting?section=dept_groups` (Icon: `FolderTree`)
+      - **Department**: `/backoffice/accounting?section=department` (Icon: `Building`)
+      - **Cash Flow Report Setup**: `/backoffice/accounting?section=cash_flow_setup` (Icon: `SlidersHorizontal`)
+      - **Sub Department**: `/backoffice/accounting?section=sub_dept` (Icon: `Split`)
 
-1. **System-Wide Responsive Sheet Layout (`MasterReportDocument` & Container Wrappers)**:
-   - **Auto-Orientation Detection**: In [`MasterReportDocument.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/MasterReportDocument.tsx), [`UnifiedPrintableReportSheet.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/UnifiedPrintableReportSheet.tsx), [`ReportPageLayout.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/ReportPageLayout.tsx), and [`GlobalReportTemplate.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/GlobalReportTemplate.tsx), wide tables (`columns.length >= 8` or `orientation === 'landscape'`) dynamically expand to `max-w-[1440px] w-full`.
-   - **Dynamic Print Sizing**: Injected dynamic `@media print { @page { size: landscape; margin: 8mm 6mm; } }` rules whenever landscape orientation is active, allowing full paper sheet utilization without clipping.
-   - **Global Compact Typography**: Enforced `text-[11px]` / `text-xs`, tight `font-mono tabular-nums`, reduced cell horizontal padding (`px-1.5 sm:px-2`), and wrapped table canvases with `overflow-x-auto print:overflow-visible` to completely eliminate horizontal container blowouts.
-
-2. **Unified Mock Filter Engine (`lib/reportFilterEngine.ts`)**:
-   - Built a centralized, reusable filter pipeline `applyGlobalReportFilters(data, filters)`.
-   - Normalizes and resolves all key aliases:
-     - `branch` / `facility` / `branch_id` / `store`
-     - `payment_method` / `tender` / `paymentType` / `paymentMode` (CASH, CARD, WHISH, STORE CREDIT)
-     - `reason` / `voidReason` / `refundReason` / `holdReason`
-     - `channel` / `department` / `departmentChannel` / `invoice_type`
-     - `date` / `timestamp` / `orderDate` / `eodDate` (handles standard dates, `DD-MMM-YYYY`, and `DD-MM-YYYY`)
-     - `server` / `cashier` / `supervisor` / `authorizer`
-     - Full-text search across keyword queries.
-
-3. **Template Standardization & Live Wiring**:
-   - **`SummaryOfVoidsTemplate.tsx`**: Standardized records with `branch`, `payment_method`, `channel`, `reason`, and `date`. Wired `applyGlobalReportFilters` and added dynamic recalculation of total voided units and LBP value.
-   - **`SummaryOfRefundsTemplate.tsx`**: Standardized records with `branch`, `payment_method`, `tender`, `channel`, `reason`, and `date`. Wired `applyGlobalReportFilters` and dynamic recalculation of credit notes count and net refund sums.
-   - **`CustomerListStandardTemplate.tsx`**: Standardized `ALL_CUSTOMERS_MASTER` records with `branch`, `channel`, and `date`. Routed through `applyGlobalReportFilters` with dynamic total AR balance recalculations.
-
-### Verification:
-- **TypeScript Typecheck (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Dev Server Status**: Verified `http://localhost:3000/sales-control/reports` returning **HTTP 200 OK**.
-- **Change Lock Protocol**: **RE-ARMED**. No further files will be modified without a new declaration and authorization passcode.
+### UI & Design System Adherence
+- **Vanguard Light Tokens**: Consistently applies `text-foreground`, `text-muted-foreground`, `hover:bg-accent`, and `border-border`.
+- **Vertical Guide Lines**: Clean vertical connecting lines (`border-l-2 border-border/80` and `border-border/60`) for all nested tree levels.
+- **Independent Collapsible Sub-menus**: Independent accordion states (`acc_setup`, `acc_aux`, `acc_dept`) with smooth 200ms chevron rotation transitions (`transition-transform duration-200`).
+- **Semantic Lucide Icons**: Exact semantic icons for every direct item and nested auxiliary/department sub-item.
 
 ---
 
-## 8. Global Dual-Currency Engine & Tender Normalization (Sales Control Suite)
+## 7. Removal of Top Horizontal Tab Bar & Dedicated Route Enforcement
 
-### Context & Issues Addressed:
-1. **Hardcoded Currency & Amounts**: Filtering by USD payment methods (e.g. `Cash USD`, `Credit Card USD`) previously left reports hardcoded to `LBP` and displayed LBP amounts instead of dynamically switching the `Currency` column to `USD` and rendering proper USD financial figures with conversion rates.
-2. **Missing Tender Detail & Empty Edge Cases**: Filters like `Credit on Account` and `Mixed / Split Tender` yielded empty tables due to missing dummy scenarios, and table rows lacked clear visibility on the specific tender method selected.
+### 1. Complete Removal of Horizontal Tab Bars
+- **Actions Console Pill Tabs**: Completely deleted the top navigation bar containing:
+  - `"1. Journal Vouchers (JV)"`
+  - `"2. Purchases & Expenses"`
+  - `"3. Payment Vouchers (PV)"`
+  - `"4. Receipt Vouchers (RV)"`
+  - `"5. AR Aging & CRM"`
+  - `"6. AP Aging & Suppliers"`
+  - `"7. Bank Reconciliation"`
+  - `"8. VAT Closing & COA"`
+  from [app/accounting/actions/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/actions/page.tsx).
+- **Accounting Layout Sub-navigation Tabs**: Removed redundant top navigation links from [app/accounting/layout.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/layout.tsx) to ensure zero redundant navigation elements exist in page layouts.
 
-### Changes Implemented:
+### 2. Dedicated Next.js Route Architecture
+Each accounting workstation now lives on its own dedicated independent route:
 
-1. **Central Filter Normalization Engine ([`lib/reportFilterEngine.ts`](file:///c:/Projects/Vanguard_ERP/lib/reportFilterEngine.ts))**:
-   - Expanded `TENDER_MAPPINGS` with full dictionary coverage for `CASH (LBP)`, `CASH (USD)`, `CARD (LBP)`, `CARD (USD)`, `ON ACC`, `SPLIT`, and `WHISH`.
-   - Added currency-specific tender matching guard in `matchDimensionValue('tender')` preventing USD filters from matching LBP rows and vice versa, while preserving backwards-compatible generic `CASH` / `CARD` matching.
+| Route Path | File Location | Target Module | Status |
+|---|---|---|---|
+| `/accounting/journal-voucher` | [app/accounting/journal-voucher/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/journal-voucher/page.tsx) | Module 1: Journal Vouchers (JV) | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/purchase` | [app/accounting/purchase/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/purchase/page.tsx) | Module 2: Accounting Purchases & Expenses | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/payment` | [app/accounting/payment/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/payment/page.tsx) | Module 3: Accounting Payment Vouchers (PV) | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/receipt` | [app/accounting/receipt/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/receipt/page.tsx) | Module 4: Accounting Receipt Vouchers (RV) | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/receivables` | [app/accounting/receivables/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/receivables/page.tsx) | Module 5: Accounts Receivables (AR Aging & CRM) | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/payables` | [app/accounting/payables/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/payables/page.tsx) | Module 6: Accounts Payables (AP Aging & Suppliers) | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/bank-reconciliation` | [app/accounting/bank-reconciliation/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/bank-reconciliation/page.tsx) | Module 7: Bank Reconciliation Workstation | ✅ HTTP 200 (Tab bar absent) |
+| `/accounting/vat-closing` | [app/accounting/vat-closing/page.tsx](file:///c:/Projects/Vanguard_ERP/app/accounting/vat-closing/page.tsx) | Module 8: VAT Period Closing & Declarations | ✅ HTTP 200 (Tab bar absent) |
 
-2. **Master Report Registry ([`config/reportRegistry.ts`](file:///c:/Projects/Vanguard_ERP/config/reportRegistry.ts))**:
-   - Updated `PAYMENT_TYPES_MASTER_FILTER` options to include `CASH_LBP` ("Cash (LBP)"), `CASH_USD` ("Cash (USD)"), `CARD_LBP` ("Credit Card (LBP)"), `CARD_USD` ("Credit Card (USD)"), `CREDIT_ACCOUNT` ("Credit on Account"), `SPLIT` ("Mixed / Split Tender"), and `WHISH` ("Whish Money / E-Wallets"), alongside legacy aliases.
-
-3. **Tender Contrast Tokens ([`components/reports/reportContrastTokens.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/reportContrastTokens.tsx))**:
-   - Enhanced `getPaymentMethodTextClass` with high-contrast styling tokens for `CASH (USD)`, `CASH (LBP)`, `CARD (USD)`, `CARD (LBP)`, `SPLIT`, `ON ACC`, and `WHISH`.
-
-4. **Multi-Currency Query & Mock Generator ([`lib/duplicateInvoicesQueryEngine.tsx`](file:///c:/Projects/Vanguard_ERP/lib/duplicateInvoicesQueryEngine.tsx))**:
-   - **Dynamic Currency Evaluation**: When USD-denominated filters or records are active, dynamically sets `currency` to `USD`, calculates amounts (`subtotal`, `discount`, `tax`, `total`) in USD format (`$15.00`), displays exchange rate (`89,500`), and formats Grand Total with `$ USD`. When LBP is active, formats amounts in LBP.
-   - **Explicit Tender Display**: Populates `pay_type` with explicit badges (`CASH (USD)`, `CASH (LBP)`, `CARD (USD)`, `CARD (LBP)`, `ON ACC`, `SPLIT`, `WHISH`).
-   - **Full Mock Coverage for All 7 Tenders**: Enriched `DEFAULT_MOCK_TRANSACTIONS` with realistic dummy scenarios across all 7 tender types, guaranteeing no valid payment filter returns an empty state.
-
-5. **Date Grouping Subtotal Dynamic Currency ([`components/reports/transactions/TransactionsByDateMasterDocument.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/transactions/TransactionsByDateMasterDocument.tsx))**:
-   - Updated section subtotal calculation to dynamically detect row currency: renders `$sum USD` for USD sections and `sum LBP` for LBP sections.
-
-6. **Page Filter Synchronization ([`app/backoffice/reportview/[[...slug]]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/reportview/[[...slug]]/page.tsx))**:
-   - Updated `matchesPaymentFilter` calls to pass `inv.currency`, ensuring exact currency-aware row matching and total calculations.
-
-### Verification:
-- **TypeScript Compiler (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Automated Test Suite (`scratch/test_dual_currency_engine.ts`)**:
-  - `CASH_LBP` -> 6 rows | Curr: LBP | Tender: `CASH (LBP)` | Total: `15,873,000.00 LBP`
-  - `CASH_USD` -> 1 row  | Curr: USD | Tender: `CASH (USD)` | Total: `$38.85 USD`
-  - `CARD_LBP` -> 6 rows | Curr: LBP | Tender: `CARD (LBP)` | Total: `20,834,700.00 LBP`
-  - `CARD_USD` -> 1 row  | Curr: USD | Tender: `CARD (USD)` | Total: `$55.50 USD`
-  - `CREDIT_ACCOUNT` -> 1 row | Curr: USD | Tender: `ON ACC` | Total: `$210.90 USD`
-  - `SPLIT` -> 1 row | Curr: LBP | Tender: `SPLIT` | Total: `9,435,000.00 LBP`
-  - `WHISH` -> 6 rows | Curr: LBP | Tender: `WHISH` | Total: `18,204,000.00 LBP`
-  - All 13 filter variations (including human-readable names) passed with 100% accuracy.
-- **Endpoints Status**:
-  - `http://localhost:3000/sales-control/reports` -> **HTTP 200 OK**
-  - `http://localhost:3000/backoffice/reportview` -> **HTTP 200 OK**
-- **Change Lock Protocol**: **RE-ARMED**. No further files will be modified without a new declaration and authorization passcode.
+### 3. Sidebar-First Navigation (Omega ERP Parity)
+- Navigation is handled strictly through the sidebar menu (`Actions` and `Setup` sections) in [components/Sidebar.tsx](file:///c:/Projects/Vanguard_ERP/components/Sidebar.tsx) and [src/config/navigation.ts](file:///c:/Projects/Vanguard_ERP/src/config/navigation.ts).
+- No tabs, pill buttons, or duplicate links are rendered above the workstation content.
 
 ---
 
-## 9. Global Dynamic Multi-Currency & Tender Engine (Scalable Architecture)
+## 8. Audit Trail, Notifications & Approval Inbox Integration
 
-### Context & Architectural Problem:
-The system previously hardcoded LBP formatting assumptions and lacked a centralized currency store, making dynamic currency transitions and arbitrary future currencies (e.g. `EUR`, `GBP`) cumbersome. Furthermore, selecting non-LBP tenders or alternative payment methods risked empty states or misaligned amounts.
-
-### Architectural Solution Implemented:
-
-1. **Central Multi-Currency Matrix & Exchange Rate Provider ([`lib/currencyEngine.ts`](file:///c:/Projects/Vanguard_ERP/lib/currencyEngine.ts))**:
-   - Established `SUPPORTED_CURRENCIES` configuration registry for `USD` (base 1.0), `LBP` (89,500), `EUR` (0.92), and `GBP` (0.78), extensible without codebase refactoring.
-   - Built universal conversion utility `convertCurrency(amount, fromCurrency, toCurrency, customRates?)`.
-   - Built localized currency formatter `formatCurrencyAmount(amount, currencyCode, includeCodeSuffix?)` formatting precision, prefix/suffix symbols (`$`, `LBP`, `€`, `£`), and comma separations.
-   - Built helper `extractCurrencyFromFilter` for dynamic target currency resolution from arbitrary filter strings.
-
-2. **Universal Filter Engine Integration ([`lib/reportFilterEngine.ts`](file:///c:/Projects/Vanguard_ERP/lib/reportFilterEngine.ts))**:
-   - Integrated `extractCurrencyFromFilter` in `matchDimensionValue('tender')` to generalize cross-currency mismatch protection across all currencies (`USD`, `LBP`, `EUR`, `GBP`, etc.).
-   - Added `cash_eur`, `card_eur`, `cash_gbp`, `card_gbp` mappings in `TENDER_MAPPINGS`.
-   - Added direct currency filtering support in `applyGlobalReportFilters`.
-
-3. **Master Report Registry ([`config/reportRegistry.ts`](file:///c:/Projects/Vanguard_ERP/config/reportRegistry.ts))**:
-   - Enriched `PAYMENT_TYPES_MASTER_FILTER` with `CASH_EUR`, `CARD_EUR`, `USD`, `LBP`, and `EUR` selections.
-   - Exported `CURRENCY_MASTER_FILTER` for dedicated target currency selection.
-
-4. **Visual Contrast Tokens ([`components/reports/reportContrastTokens.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/reportContrastTokens.tsx))**:
-   - Added styling tokens for EUR tenders and exported `getCurrencyTextClass` for semantic currency indicators.
-
-5. **Multi-Currency Query & Mock Generator ([`lib/duplicateInvoicesQueryEngine.tsx`](file:///c:/Projects/Vanguard_ERP/lib/duplicateInvoicesQueryEngine.tsx))**:
-   - Dynamic currency evaluation: dynamically converts amounts (`subtotal`, `discount`, `tax`, `total`) to active currency with precision.
-   - Enhanced `buildTableColumnsFromSchema`: dynamic currency badges and localized formatting via `formatCurrencyAmount`.
-   - Dynamic Grand Total / KPI footer calculation using `formatCurrencyAmount`.
-   - Added realistic `EUR` transactions in `DEFAULT_MOCK_TRANSACTIONS` covering all tender permutations.
-
-6. **Dynamic Section Subtotals ([`components/reports/transactions/TransactionsByDateMasterDocument.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/transactions/TransactionsByDateMasterDocument.tsx))**:
-   - Date section subtotals now dynamically format using `formatCurrencyAmount(sum, sectionCurrency, true)` supporting any currency.
-
-7. **Master Report View Page Synchronized ([`app/backoffice/reportview/[[...slug]]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/reportview/[[...slug]]/page.tsx))**:
-   - Synchronized KPI summary cards and fallback ledger table to dynamically compute and format in the active target currency.
-
-### Verification:
-- **TypeScript Compiler (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Automated Multi-Currency Test Suite (`scratch/test_dual_currency_engine.ts`)**:
-  - `CASH_LBP` ➔ 6 rows | Curr: `LBP` | Tender: `CASH (LBP)` | Total: `15,873,000 LBP`
-  - `CASH_USD` ➔ 1 row  | Curr: `USD` | Tender: `CASH (USD)` | Total: `$38.85 USD`
-  - `CASH_EUR` ➔ 1 row  | Curr: `EUR` | Tender: `CASH (EUR)` | Total: `€88.80 EUR`
-  - `CARD_LBP` ➔ 6 rows | Curr: `LBP` | Tender: `CARD (LBP)` | Total: `20,834,700 LBP`
-  - `CARD_USD` ➔ 1 row  | Curr: `USD` | Tender: `CARD (USD)` | Total: `$55.50 USD`
-  - `CARD_EUR` ➔ 1 row  | Curr: `EUR` | Tender: `CARD (EUR)` | Total: `€122.10 EUR`
-  - `CREDIT_ACCOUNT` ➔ 1 row | Curr: `USD` | Tender: `ON ACC` | Total: `$210.90 USD`
-  - `SPLIT` ➔ 1 row | Curr: `LBP` | Tender: `SPLIT` | Total: `9,435,000 LBP`
-  - `WHISH` ➔ 6 rows | Curr: `LBP` | Tender: `WHISH` | Total: `18,204,000 LBP`
-  - `DIRECT_USD` ➔ 3 rows | Curr: `USD` | Total: `$305.25 USD`
-  - `DIRECT_LBP` ➔ 19 rows | Curr: `LBP` | Total: `64,346,700 LBP`
-  - `DIRECT_EUR` ➔ 2 rows | Curr: `EUR` | Total: `€210.90 EUR`
-  - **All 20 test cases passed with 100% accuracy.**
-- **Live HTTP Endpoints**:
-  - `http://localhost:3000/sales-control/reports` ➔ **HTTP 200 OK**
-  - `http://localhost:3000/backoffice/reportview` ➔ **HTTP 200 OK**
-- **Change Lock Protocol**: **RE-ARMED**. No further files will be modified without a new declaration and authorization passcode.
+- **Server Storage Engine** ([`lib/serverAccountingStorage.ts`](file:///c:/Projects/Vanguard_ERP/lib/serverAccountingStorage.ts)):
+  - `PersistedInboxMessage`: Extended database schema to store operational inbox messages linked to real vouchers and expense records.
+  - `PersistedSystemActivity`: Real-time audit trail recording every voucher posting, inbox approval/rejection, and expense lifecycle event.
+  - `DynamicSystemAlert`: Dynamically computes active alerts based on system state:
+    - `APPROVAL_REQUIRED`: Flags vouchers awaiting dual sign-off or exceeding authorization limits (`PV-2026-9042`).
+    - `UNCLOSED_CASE`: Detects unsettled expense variances (`EV-2026-8979`).
+    - `SECURITY_ALERT`: Captures POS void events.
+    - `POSTING_SUCCESS`: Surfaces recent general ledger postings.
+  - `executeInboxAction`: Atomically updates inbox item status, marks linked vouchers as posted (`is_posted: true`), computes double-entry balance mutations, inserts GL ledger entries, and records immutable audit entries.
+- **Dedicated API Endpoints**:
+  - `GET /api/inbox` & `POST /api/inbox` ([`app/api/inbox/route.ts`](file:///c:/Projects/Vanguard_ERP/app/api/inbox/route.ts)): Full CRUD and approval execution engine.
+  - `GET /api/notifications` ([`app/api/notifications/route.ts`](file:///c:/Projects/Vanguard_ERP/app/api/notifications/route.ts)): Real-time alerts and live operations activities feed.
+- **Approval Inbox UI** ([`app/backoffice/inbox/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/inbox/page.tsx)):
+  - Completely replaced hardcoded mock arrays with live database fetch via `/api/inbox`.
+  - Wired `Approve` and `Reject` buttons to execute database mutations and GL postings with live toast feedback.
+  - Folder counts (All, Approvals, Void & Control, Reports, Memos) calculate dynamically from live data.
+- **Header & Drawer Integration** ([`app/backoffice/layout.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/layout.tsx)):
+  - Top Header Messages badge dynamically displays `pendingApprovalsCount` from the database.
+  - Alerts button shows active notification indicator.
+  - Sliding Quick Drawer `ALERTS` tab renders real-time dynamic system alerts with direct action links.
+  - Sliding Quick Drawer `ACTIVITIES` tab streams the live Operations Feed with action badges, user attribution, and relative timestamps.
 
 ---
 
-## 10. Implement Vanguard POS Terminal Shell & Omega-Style Architecture (`/pos`)
+## Verification Results (Audit Trail & Inbox)
 
-### Context & Implementation Scope:
-Rebuilt the POS Touch Terminal at `/pos` from a prototype into a high-contrast, touch-optimized commercial retail POS terminal shell adhering to Omega Retail POS architecture and workflow standards.
+### 1. Automated Test Suite ([`scratch/test_modular_vouchers.ts`](file:///c:/Projects/Vanguard_ERP/scratch/test_modular_vouchers.ts))
+Executed via `npx tsx scratch/test_modular_vouchers.ts`:
+- **Double-Entry Balance Calculations**: Passed for all asset, liability, and expense scenarios.
+- **Modular Balance Validator**: Passed for balanced and unbalanced line validations.
+- **Database PV & RV Retrieval**: Retrieved seeded PV and RV records with correct prefixes.
+- **Payment Voucher Mutation**: Created PV with real DB ID, generated 2 GL entries, reduced supplier liability by $1,850.50, reduced bank balance by $1,850.50.
+- **Receipt Voucher Mutation**: Created RV with real DB ID, generated 2 GL entries, reduced customer receivable by $3,400.00, increased cash balance by $3,400.00.
+- **Contra Voucher Mutation**: Created CV with real DB ID, moved $1,000.00 from bank to cash vault.
+- **Validation Rejection**: Unbalanced voucher posting was strictly rejected with error message.
+- **Result**: `31 PASSED, 0 FAILED`.
 
-### Core Architecture Implemented:
+### 2. Approval Inbox & Storage Workflow Test ([`scratch/test_inbox_notifications.ts`](file:///c:/Projects/Vanguard_ERP/scratch/test_inbox_notifications.ts))
+Executed via `npx tsx scratch/test_inbox_notifications.ts`:
+- **Inbox Items Query**: Retrieved 5 seeded operational messages.
+- **Dynamic Alerts**: Generated 8 alerts across `CRITICAL` (approvals), `WARNING` (unclosed cases, voids), and `INFO` (GL postings).
+- **Audit Logging**: Recorded operational activities with user attribution.
+- **Approval Execution**: Approved `MSG-2026-101`, automatically posted linked voucher `PV-2026-9042` ($18,500.00) to General Ledger, created 2 GL entries, and updated account balances.
+- **Result**: `ALL PASSED`.
 
-1. **State-Driven Workflow Engine ([`lib/pos/posStateEngine.ts`](file:///c:/Projects/Vanguard_ERP/lib/pos/posStateEngine.ts) & [`app/pos/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/pos/page.tsx))**:
-   - Sequential screen state transitions:
-     - `LOGIN_USER_ID`: 12-key tactile touch pad (`1-9`, `0`, `Cl`, `Enter`), User ID input display, system status indicator, quick profile selectors (`101: Maya Khoury`, `102: Hadi Sleiman`, `103: Ahmad Al-Hajj`), and bottom `Synchronize Data` action button.
-     - `LOGIN_PASSWORD`: Dynamic transition to capture Cashier/Admin PIN via the tactile numpad with masked bullet points (`••••`).
-     - `ROLE_ROUTING`: Auto-detects permissions based on user configuration (`Admin` vs `Cashier`) with verification flash.
-     - `POS_TERMINAL`: Fullscreen high-contrast commercial POS terminal (deep charcoal background, commercial gold/amber touch buttons, and high-visibility status labels).
+### 3. End-to-End HTTP Integration Test ([`scratch/test_e2e_approval_flow.ts`](file:///c:/Projects/Vanguard_ERP/scratch/test_e2e_approval_flow.ts))
+Executed against running dev server on `http://localhost:3000`:
+- `GET /api/inbox`: HTTP 200 (live inbox items retrieved).
+- `POST /api/inbox (APPROVE)`: HTTP 200 (executed approval for unclosed expense `EV-2026-8979`).
+- `GET /api/notifications`: HTTP 200 (pending count decremented, live activity `INBOX_APPROVAL_GRANTED` immediately surfaced at top of feed).
+- `GET /api/accounting/vouchers`: Verified 17 vouchers active in database.
+- **Result**: `ALL PASSED`.
 
-2. **Touch Numeric Keypad ([`components/pos/PosTouchNumpad.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosTouchNumpad.tsx))**:
-   - Tactile commercial POS layout (`0-9`, `00`, `000`, `*`, `.`, `Cl`, `Back`, and large `ENTER` bar).
-   - High-contrast color hierarchy: Amber action keys, rose danger clear keys, and gold gradient enter keys with tactile depress states.
-
-3. **POS Header Bar ([`components/pos/PosHeaderBar.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosHeaderBar.tsx))**:
-   - Terminal metadata: System Release (`v2.6.4-OMEGA`), Facility/Branch (`Choueifat Main Facility`), Cashier Name, Workstation number (`W#: 1`), Mode indicator, live ticking clock, Fullscreen toggle, Lock, and Logoff.
-
-4. **Left Column — Cart & Bill View ([`components/pos/PosCartTable.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosCartTable.tsx))**:
-   - Transaction line table: `Qty | Description | Price $ | Total $` with active row highlighting and refund item indicators.
-   - Touch row actions strip: `Up`, `Down`, `+ (Add)`, `- (Less)`, `Hold`, `Recall` (with badge counter), `Void`, `Refund`, `Clean`.
-   - Dual-currency summary panel at bottom-left: `NET (LBP)`, `NET $ (USD)`, `Amount Paid`, `Amount Due LL`, and prominent `Amount $ Due`.
-
-5. **Center Panel — Entry & Quick Products**:
-   - Barcode/Amount input display box showing active input mode (`BARCODE`, `QTY`, `PRICE`, `DISCOUNT`).
-   - Quick-touch product tiles for 1-touch catalogue item adding (olive oil tins, glass bottles, molasses, olives, soaps).
-   - Embedded full commercial numpad.
-
-6. **Right Column — Tender & Functions ([`components/pos/PosActionRail.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosActionRail.tsx))**:
-   - Fast tender triggers: `Enter Amount`, `Cash (LBP/USD)`, `Other Payments`.
-   - Action rail: `Search`, `Disc. %`, `Disc. $`, `Item Disc. %`, `Set Price`, `No Sale`, `Customers`, `Orders`, `Clear Pay-Disc.`.
-   - Prominent **`CMD`** (Command Center) button at bottom-right.
-
-7. **Command Center Overlay ([`components/pos/PosCommandModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosCommandModal.tsx))**:
-   - Modal options: `Kick Drawer (No Sale)`, `Reprint Last Receipt`, `Shift X-Reading`, `Price Checker`, `Supervisor Override`, and `Exit to Backoffice`.
-
-8. **Keyboard Event Integration**:
-   - Global keyboard listeners for physical numpad entry (`0-9`), `Backspace`, `Enter`, and `Escape` for rapid cashier operation.
-
-### Verification:
-- **TypeScript Compiler (`npx tsc --noEmit`)**: Passed with **0 errors**.
-- **Live HTTP Endpoint**:
-  - `http://localhost:3000/pos` ➔ **HTTP 200 OK**
-  - `http://localhost:3000/sales-control/reports` ➔ **HTTP 200 OK**
-- **Change Lock Protocol**: **RE-ARMED**. No further files will be modified without a new declaration and authorization passcode.
+### 4. Production Build Validation
+- Executed `npm run build`:
+  - Turbopack compilation: Succeeded in 21.3s.
+  - TypeScript compiler: Passed in 2.6s with 0 errors across all 223 routes.
+  - Static page generation: 223/223 pages generated with exit code 0.
 
 ---
 
-## 11. POS CMD Center, Shift Reports & Desktop PWA Manifest Implementation
+## 5. Navigation & Landing Route Refactor
 
-### Summary of Completed Deliverables:
+### A. Dedicated Sales Dashboard Route (`/dashboard/sales` & `/backoffice/dashboard/sales`)
+- **Preservation & Route Separation**:
+  - Moved `AuthenticVanguardSalesDashboard` to its dedicated route: [`app/backoffice/dashboard/sales/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/dashboard/sales/page.tsx).
+  - Created forwarder route [`app/dashboard/sales/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/dashboard/sales/page.tsx) that forwards requests directly into `/backoffice/dashboard/sales` while maintaining all query parameters.
+  - Created route alias [`app/backoffice/sales/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/sales/page.tsx).
+  - Updated Sidebar Module 1 (Sales Control) "Dashboard" navigation item from `/backoffice/dashboard` to `/dashboard/sales`.
 
-1. **Desktop PWA Manifest ([`public/manifest.json`](file:///c:/Projects/Vanguard_ERP/public/manifest.json))**:
-   - Registered Web App Manifest scoped to `/pos` with `display: "standalone"`, `orientation: "landscape"`, and theme colors (`#0b0e14`).
-   - Enables native browser "Install App" desktop icon prompting for a dedicated borderless register window.
+### B. Primary Enterprise Post-Signin Landing Page / Main Hub (`/backoffice`)
+- **Component Architecture**: Built comprehensive [`components/EnterpriseOverviewHub.tsx`](file:///c:/Projects/Vanguard_ERP/components/EnterpriseOverviewHub.tsx):
+  - **Executive Tenant Header**: Displays dynamic organization name, Company ID (#1300), subscription tier (PRO Enterprise), active logistics gateways, and real-time clock.
+  - **Real-Time KPI Highlights**: Today's gross activity ($12,480.00 / 1,116,960,000 LBP), live pending dual-signoff count with badge, SuperSonic fleet status (12/14 active vehicles), and olive oil tank storage capacity (42,500 L).
+  - **Fast Action Launchpad**: Instant shortcuts for New Journal Voucher, Sales/POS, Fleet Radar, Dual-Signoff Approvals, Customers Directory, and Reports Hub.
+  - **9 Active Enterprise Modules Grid**: Interactive cards for all 9 modules (Sales Control, Operations, CRM, Feedback, Loyalty, Accounting, HR, Fleet, Social CRM) with feature descriptions, sub-screen quick-links, and active license status.
+  - **Live Audit & Operations Feed**: Integrated directly with `/api/notifications` to display real-time system activities and approvals.
+- **Entry Routes**:
+  - [`app/backoffice/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/page.tsx) serves as the primary Enterprise Overview Portal at `/backoffice`.
+  - [`app/backoffice/dashboard/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/dashboard/page.tsx) renders `EnterpriseOverviewHub`, preventing any legacy link or bookmark from misrouting users to the sales dashboard.
+  - [`app/dashboard/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/dashboard/page.tsx) cleanly redirects authenticated visitors to `/backoffice`.
+  - [`app/[tenant_id]/dashboard/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/[tenant_id]/dashboard/page.tsx) and [`app/[tenant_id]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/[tenant_id]/page.tsx) forward directly into `/backoffice` with the active tenant context.
+  - [`app/workspace/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/workspace/page.tsx), [`app/workspace/[workspaceId]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/workspace/[workspaceId]/page.tsx), and [`app/erp/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/erp/page.tsx) forward directly to `/backoffice`.
 
-2. **Dedicated POS Layout & Head Metadata ([`app/pos/layout.tsx`](file:///c:/Projects/Vanguard_ERP/app/pos/layout.tsx))**:
-   - Dedicated layout linking `/manifest.json`, setting `themeColor: "#0b0e14"`, apple-mobile-web-app-capable headers, and unscalable landscape viewport locks.
+### C. Universal Brand Logo, Breadcrumb Roots & Home Icon Updates
+All logo links, header and sidebar Home icons, and breadcrumb roots across all modules were updated to point to the primary landing route (`/backoffice`):
+- **Master Header Logo**: [`app/backoffice/layout.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/layout.tsx) updated line 242 `<Link href="/backoffice" ...>`.
+- **Top Header Home Icon**: [`app/backoffice/layout.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/layout.tsx) updated line 296 `<Link href="/backoffice" ... title="Enterprise Main Hub">`.
+- **Sidebar Home Icon**: [`components/Sidebar.tsx`](file:///c:/Projects/Vanguard_ERP/components/Sidebar.tsx) updated line 243 `<Link href="/backoffice" ... title="Enterprise Main Hub">`.
+- **Breadcrumb Roots**:
+  - Accounting Reports: [`app/backoffice/accounting/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/accounting/page.tsx)
+  - Fleet Reports: [`app/backoffice/fleet/reports/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/fleet/reports/page.tsx) & [`app/backoffice/fleet/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/fleet/page.tsx) ("Return to Main Hub")
+  - Loyalty Reports: [`app/backoffice/loyalty/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/loyalty/page.tsx)
+  - Social CRM Reports: [`app/backoffice/social-crm/reports/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/social-crm/reports/page.tsx)
+  - Sales Control Reports: [`app/backoffice/reportview/[[...slug]]/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/reportview/[[...slug]]/page.tsx)
+  - Operations Reports: [`app/backoffice/operations/InventoryReportsView.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/operations/InventoryReportsView.tsx)
+  - Master Report Layout Fallback: [`components/reports/ReportPageLayout.tsx`](file:///c:/Projects/Vanguard_ERP/components/reports/ReportPageLayout.tsx)
+  - Sub-screen breadcrumbs: Discounts, Zone Setup, Workstations & Printers, Void Reasons, VAT Exemptions, Screens, Price Modes, Online Orders, Message on Invoice, Currency Setup.
+  - POS, VTrack, and License return links: [`app/pos/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/pos/page.tsx), [`components/pos/PosCommandModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosCommandModal.tsx), [`app/vtrack/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/vtrack/page.tsx), [`app/backoffice/license/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/backoffice/license/page.tsx).
 
-3. **Global Daily Sales Audit Report ([`components/pos/PosGlobalReportModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosGlobalReportModal.tsx))**:
-   - Omega-style daily audit dialog bound to **`Ctrl+F4`**:
-     - Aggregated sales metrics: Gross Sales ($4,850.00), Discounts (-$125.00), VAT ($519.75), Total Net Sales ($5,244.75 / 469,405,125 LBP).
-     - Tender distribution table: Cash USD, Cash LBP, Credit Card USD, Credit Card LBP, On Account.
-     - Workstation breakdown: W#: 1 (Maya & Ahmad) and W#: 2 (Hadi).
-     - Hotkey actions: `Print (F1)`, `Save as (F3)`, `End Of Day (Z-Report)`, `Exit (Esc)`.
+---
 
-4. **Cashier Drawer Reconciliation / X-Report ([`components/pos/PosCashierReportModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosCashierReportModal.tsx))**:
-   - Cashier shift reconciliation dialog bound to **`Ctrl+F5`**:
-     - Active cashier shift balance, opening float ($200 USD / 17,900,000 LBP), cash collections, payouts/drops.
-     - Interactive physical count inputs for USD and LBP with real-time discrepancy (over/short) calculation.
-     - Operational metrics: card totals, no-sale kicks, void count.
-     - Actions: `Print X-Reading (F1)`, `Close Shift`, `Dismiss (Esc)`.
+## Verification Results (Navigation & Routing Refactor)
 
-5. **Historical Sales Viewer & Duplicate Reprint ([`components/pos/PosOlderSalesModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosOlderSalesModal.tsx))**:
-   - Transaction lookup dialog bound to **`Ctrl+F6`**:
-     - Dual-filter search controls: `Search by Invoice #` and `Search by Customer`.
-     - Transaction ledger table with row selection.
-     - Thermal receipt preview panel with complete line item breakdown and customer details.
-     - Action: `Reprint Invoice (F1)`, `Close (Esc)`.
+### 1. Automated HTTP Integration Tests ([`scratch/test_navigation_routing.ts`](file:///c:/Projects/Vanguard_ERP/scratch/test_navigation_routing.ts))
+Executed via `npx tsx scratch/test_navigation_routing.ts`:
+- **Test 1**: `GET /dashboard` $\rightarrow$ 307 redirect directly to `/backoffice` (PASS).
+- **Test 2**: `GET /dashboard/sales` $\rightarrow$ 307 redirect directly to `/backoffice/dashboard/sales` (PASS).
+- **Test 3**: `GET /[tenantId]/dashboard` $\rightarrow$ Routes directly to Enterprise Overview Hub with active tenant context (PASS).
+- **Test 4**: `GET /workspace` $\rightarrow$ 307 redirect to `/backoffice?tenantId=...` (PASS).
+- **Test 5**: `GET /backoffice` $\rightarrow$ HTTP 200 OK, renders `Enterprise Overview Hub | Vanguard ERP` (PASS).
+- **Test 6**: `GET /backoffice/dashboard` $\rightarrow$ HTTP 200 OK, renders `Enterprise Overview Hub | Vanguard ERP` (PASS).
+- **Test 7**: `GET /backoffice/dashboard/sales` $\rightarrow$ HTTP 200 OK, renders `AuthenticVanguardSalesDashboard` (PASS).
+- **Result**: `12 PASSED, 0 FAILED`.
 
-6. **Updated CMD Command Matrix ([`components/pos/PosCommandModal.tsx`](file:///c:/Projects/Vanguard_ERP/components/pos/PosCommandModal.tsx))**:
-   - Wired command matrix buttons and hotkey badges:
-     - `Global Report (Ctrl+F4)`
-     - `Cashier Report (Ctrl+F5)`
-     - `Preview Older Sales (Ctrl+F6)`
-     - `Kick Drawer (No Sale)`
-     - `Reprint Last Receipt`
-     - `Back Office (Ctrl+F8)` & `Esc - Back`
-
-7. **Root POS Page Integration ([`app/pos/page.tsx`](file:///c:/Projects/Vanguard_ERP/app/pos/page.tsx))**:
-   - Integrated all 3 modal dialogs with smooth state transitions.
-   - Bound global keyboard shortcuts (`Ctrl+F4`, `Ctrl+F5`, `Ctrl+F6`, `Ctrl+F8`, `Escape`).
-   - Seamless authentication session gate preservation for Cashier/Admin lock and logoff workflows.
-
-### Final Verification:
-- **TypeScript Compiler (`npx tsc --noEmit`)**: **0 errors**.
-- **Manifest Endpoint (`http://localhost:3000/manifest.json`)**: **HTTP 200 OK (valid JSON)**.
-- **POS Endpoint (`http://localhost:3000/pos`)**: **HTTP 200 OK**.
-- **Change Lock Protocol**: **RE-ARMED**.
-
-
-
-
+### 2. Full Production Build Validation
+- Executed `npx tsc --noEmit`: Exited with code 0 (0 TypeScript errors).
+- Executed `npm run build`:
+  - Turbopack compilation: Succeeded in 29.9s.
+  - TypeScript compiler: Finished in 2.2s with 0 errors.
+  - Static page generation: 227/227 pages cleanly generated with exit code 0.
 

@@ -87,7 +87,7 @@
       <a href="user_manual_ar.html" target="_blank" class="btn btn-danger btn-sm fw-bold text-white shadow-sm opacity-100" title="فتح وتحميل دليل المستخدم الشامل - PDF">
         <i class="fa-solid fa-file-pdf me-1 text-white"></i> دليل المستخدم (PDF)
       </a>
-      <a href="/index.html" id="launchActiveTenantBtn" class="btn btn-warning btn-sm fw-bold text-dark opacity-100"><i class="fa-solid fa-building-user me-1"></i> Launch Tenant #1 (Vanguard)</a>
+      <a href="/00000000-0000-0000-0000-000000000001/dashboard" id="launchActiveTenantBtn" class="btn btn-warning btn-sm fw-bold text-dark opacity-100"><i class="fa-solid fa-building-user me-1"></i> Launch Tenant #1 (Vanguard)</a>
     </div>
   </header>
 
@@ -275,6 +275,7 @@
 
       if (launchBtn) {
         launchBtn.innerHTML = `<i class="fa-solid fa-building-user me-1"></i> Launch Tenant #1 (${primaryName})`;
+        launchBtn.href = `/${(primaryTenant && primaryTenant.id) || '00000000-0000-0000-0000-000000000001'}/dashboard`;
       }
 
       if (!container) return;
@@ -318,7 +319,7 @@
 
             <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
               <div class="d-flex gap-2">
-                <a href="/index.html" class="btn btn-sm btn-warning fw-bold text-dark"><i class="fa-solid fa-right-to-bracket me-1"></i> Open Tenant Workspace</a>
+                <a href="/${t.id || '00000000-0000-0000-0000-000000000001'}/dashboard" class="btn btn-sm btn-warning fw-bold text-dark"><i class="fa-solid fa-right-to-bracket me-1"></i> Open Tenant Workspace</a>
                 <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('${t.id || ''}'); alert('Tenant ID copied to clipboard!')"><i class="fa-solid fa-copy me-1"></i> Copy ID</button>
               </div>
               <div>

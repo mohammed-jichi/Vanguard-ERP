@@ -225,7 +225,7 @@ export default function VoidReasonsView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-background text-slate-800 font-sans min-h-screen">
       {/* TOAST POPUP */}
       {toast.show && (
         <div className="fixed top-5 right-5 z-[9999] animate-fadeIn">
@@ -256,7 +256,7 @@ export default function VoidReasonsView() {
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
-            <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition-colors">
+            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
               Home
             </Link>
           </li>
@@ -304,7 +304,7 @@ export default function VoidReasonsView() {
                 <button
                   type="button"
                   onClick={openAddModal}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>New</span>
@@ -396,7 +396,7 @@ export default function VoidReasonsView() {
                             type="button"
                             onClick={() => openEditModal(row)}
                             title="Edit Void Reason"
-                            className="p-1 rounded bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer"
+                            className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -404,7 +404,7 @@ export default function VoidReasonsView() {
                             type="button"
                             onClick={() => setDeleteTarget(row)}
                             title="Delete Void Reason"
-                            className="p-1 rounded bg-[#ef4444] hover:bg-[#dc2626] text-white transition-colors cursor-pointer"
+                            className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -507,7 +507,7 @@ export default function VoidReasonsView() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -610,7 +610,7 @@ export default function VoidReasonsView() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -646,7 +646,7 @@ export default function VoidReasonsView() {
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="px-4 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 OK
               </button>

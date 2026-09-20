@@ -327,7 +327,7 @@ export default function ScheduleWorkstation() {
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500"
             >
-              <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+              <option value="Main Branch">Main Branch</option>
             </select>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 rotate-90 pointer-events-none" />
           </div>
@@ -336,7 +336,7 @@ export default function ScheduleWorkstation() {
           <button
             type="button"
             onClick={() => setIsOpeningHoursModalOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+            className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
           >
             <Clock className="w-3.5 h-3.5" />
             <span>Opening Hours</span>
@@ -347,7 +347,7 @@ export default function ScheduleWorkstation() {
             <button
               type="button"
               onClick={() => setIsReportsDropdownOpen(!isReportsDropdownOpen)}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+              className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
             >
               <span>Reports</span>
               <ChevronRight className={`w-3 h-3 transition-transform ${isReportsDropdownOpen ? '-rotate-90' : 'rotate-90'}`} />
@@ -384,11 +384,11 @@ export default function ScheduleWorkstation() {
           {/* Legend Pills (Matching Screenshot 1 & 3) */}
           <div className="flex items-center gap-3 text-xs ml-1 text-slate-600">
             <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-xs bg-[#38a169]"></span>
+              <span className="w-3 h-3 rounded-xs bg-emerald-700"></span>
               <span>Done</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-xs bg-[#991b1b]"></span>
+              <span className="w-3 h-3 rounded-xs bg-destructive"></span>
               <span>Busy</span>
             </div>
             <div className="flex items-center gap-1">
@@ -433,7 +433,7 @@ export default function ScheduleWorkstation() {
               <button
                 type="button"
                 onClick={() => setCurrentView('Month')}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs cursor-pointer"
                 title="Calendar Overview"
               >
                 <CalendarCheck className="w-3.5 h-3.5" />
@@ -449,7 +449,7 @@ export default function ScheduleWorkstation() {
                 type="button"
                 onClick={() => setCurrentView(v)}
                 className={`px-3 py-1 text-xs font-semibold cursor-pointer transition-colors ${
-                  currentView === v ? 'bg-[#2f3b52] text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
+                  currentView === v ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 {v}
@@ -461,7 +461,7 @@ export default function ScheduleWorkstation() {
           <button
             type="button"
             onClick={() => setIsSettingsModalOpen(true)}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded shadow-2xs cursor-pointer transition-colors"
+            className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs cursor-pointer transition-colors"
             title="Schedule Settings"
           >
             <SettingsIcon className="w-4 h-4" />
@@ -476,7 +476,7 @@ export default function ScheduleWorkstation() {
           <button
             type="button"
             onClick={() => notify('Previous period')}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1 rounded cursor-pointer"
             title="Previous Period"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -484,7 +484,7 @@ export default function ScheduleWorkstation() {
           <button
             type="button"
             onClick={() => notify('Next period')}
-            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1 rounded cursor-pointer"
+            className="bg-primary hover:bg-primary text-white p-1 rounded cursor-pointer"
             title="Next Period"
           >
             <ChevronRight className="w-4 h-4" />
@@ -689,7 +689,7 @@ export default function ScheduleWorkstation() {
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     className="w-full border border-blue-400 rounded px-3 py-1.5 text-xs text-slate-800 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none"
                   >
-                    <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                    <option value="Main Branch">Main Branch</option>
                   </select>
                   <ChevronRight className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 rotate-90 pointer-events-none" />
                 </div>
@@ -759,7 +759,7 @@ export default function ScheduleWorkstation() {
                         <button
                           type="button"
                           onClick={() => handleCopyBranchHours(day)}
-                          className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded cursor-pointer shadow-2xs"
+                          className="bg-primary hover:bg-primary text-white p-1.5 rounded cursor-pointer shadow-2xs"
                           title="Copy this schedule to all days"
                         >
                           <Copy className="w-3.5 h-3.5" />
@@ -779,7 +779,7 @@ export default function ScheduleWorkstation() {
                   setIsOpeningHoursModalOpen(false);
                   notify('Branches working hours saved successfully.');
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
@@ -813,7 +813,7 @@ export default function ScheduleWorkstation() {
               <button
                 type="button"
                 onClick={handleSetAllSchedulesAsBusinessHours}
-                className="w-full bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold py-2 px-3 rounded flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                className="w-full bg-primary hover:bg-primary text-white text-xs font-semibold py-2 px-3 rounded flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
               >
                 <Check className="w-4 h-4" />
                 <span>Set all schedules as per business hours</span>
@@ -929,7 +929,7 @@ export default function ScheduleWorkstation() {
                   setIsSettingsModalOpen(false);
                   notify('Settings saved successfully.');
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer"
               >
                 Close
               </button>
@@ -981,7 +981,7 @@ export default function ScheduleWorkstation() {
                   });
                   notify('Set working days as business hours.');
                 }}
-                className="w-full bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold py-2 px-3 rounded flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+                className="w-full bg-primary hover:bg-primary text-white text-xs font-semibold py-2 px-3 rounded flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
               >
                 <Check className="w-4 h-4" />
                 <span>Set as business hours</span>
@@ -1142,7 +1142,7 @@ export default function ScheduleWorkstation() {
                   setSelectedEmployeeForHours(null);
                   notify(`Saved working days and time for ${selectedEmployeeForHours.name}.`);
                 }}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>

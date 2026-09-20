@@ -385,19 +385,19 @@ export default function DynamicFilterRenderer({
 
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-3 select-none ${className}`}
+      className={`bg-card rounded-xl border border-border p-4 shadow-xs space-y-3 select-none ${className}`}
     >
       {/* Top Banner indicating dynamic parameter binding */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+      <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
-            <Filter className="w-3.5 h-3.5 text-slate-600" />
+          <div className="w-7 h-7 rounded-lg bg-muted text-foreground flex items-center justify-center font-bold text-xs">
+            <Filter className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900 tracking-tight">
-              Report Parameters: <span className="text-blue-700 font-semibold">{reportName}</span>
+            <h4 className="text-xs font-bold text-foreground tracking-tight">
+              Report Parameters: <span className="text-primary font-semibold">{reportName}</span>
             </h4>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-muted-foreground">
               {visibleFields.length > 0
                 ? `${visibleFields.length} contextual filters active for this report sheet.`
                 : 'Standard filter controls active for this view.'}
@@ -405,13 +405,13 @@ export default function DynamicFilterRenderer({
           </div>
         </div>
 
-        {/* Action Buttons: Slate Navy Filter & Burgundy Reset */}
+        {/* Action Buttons: Standard Vanguard Design System Buttons */}
         <div className="flex items-center gap-2">
           {onResetFilters && (
             <button
               type="button"
               onClick={onResetFilters}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-[#7f1d1d] hover:bg-[#991b1b] text-white transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted hover:bg-slate-200 text-foreground transition-colors border border-border shadow-xs cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -422,7 +422,7 @@ export default function DynamicFilterRenderer({
             <button
               type="button"
               onClick={onApplyFilters}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-semibold bg-[#334155] hover:bg-[#1e293b] text-white transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-slate-800 text-primary-foreground transition-colors shadow-xs cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Filter Report</span>

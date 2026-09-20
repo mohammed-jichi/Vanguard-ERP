@@ -84,7 +84,7 @@ export default function EndOfDayPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#edf3f9] text-[#0f172a] font-sans pb-16">
+    <div className="min-h-screen bg-background text-foreground font-sans pb-16">
       <style jsx global>{`
         /* Authentic Vanguard End of Day Styles */
         .end-of-day-card {
@@ -128,7 +128,7 @@ export default function EndOfDayPage() {
       {/* Toastr notification matching Vanguard toastr */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 animate-bounce transition-all">
-          <div className={`flex items-start gap-3 p-4 rounded-xl shadow-2xl text-white min-w-[320px] ${toastMessage.type === 'success' ? 'bg-[#337718] border border-emerald-400' : 'bg-[#dc2626] border border-red-400'}`}>
+          <div className={`flex items-start gap-3 p-4 rounded-xl shadow-2xl text-white min-w-[320px] ${toastMessage.type === 'success' ? 'bg-emerald-700 border border-emerald-400' : 'bg-destructive border border-red-400'}`}>
             <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <div className="font-bold text-sm">{toastMessage.title}</div>
@@ -152,7 +152,7 @@ export default function EndOfDayPage() {
               </li>
               <li>/</li>
               <li>
-                <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition">Sales</Link>
+                <Link href="/dashboard/sales" className="hover:text-blue-600 transition">Sales</Link>
               </li>
               <li>/</li>
               <li className="text-slate-800 font-semibold">End of Day</li>
@@ -171,7 +171,7 @@ export default function EndOfDayPage() {
             </button>
 
             <Link
-              href="/backoffice/dashboard"
+              href="/dashboard/sales"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition"
             >
               <TrendingUp className="w-4 h-4 text-emerald-700" />
@@ -250,7 +250,7 @@ export default function EndOfDayPage() {
                     type="button"
                     disabled={loading || !selectedBranch}
                     onClick={handleExecuteEodClick}
-                    className={`w-full md:w-auto px-6 py-2 rounded-lg font-bold text-xs text-white shadow-md transition-all flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-wait' : 'bg-[#0d6efd] hover:bg-blue-700 active:scale-95'}`}
+                    className={`w-full md:w-auto px-6 py-2 rounded-lg font-bold text-xs text-white shadow-md transition-all flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-wait' : 'bg-primary hover:bg-blue-700 active:scale-95'}`}
                   >
                     {loading ? (
                       <>
@@ -439,7 +439,7 @@ export default function EndOfDayPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             {/* Left: Financial Ledger Breakdown */}
             <div className="lg:col-span-6 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-              <div className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between">
+              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between">
                 <span>1. Fiscal Sales Reconciliation Matrix</span>
                 <span className="text-[11px] text-slate-300 font-mono">SO-Z-BATCH-9482</span>
               </div>
@@ -473,7 +473,7 @@ export default function EndOfDayPage() {
 
             {/* Right: Drawer Payment Reconciliation Matrix */}
             <div className="lg:col-span-6 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-              <div className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between">
+              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between">
                 <span>2. Cash Drawer & Settlement Methods Matrix</span>
                 <span className="text-[11px] text-slate-300 font-mono">4 Currencies/Methods</span>
               </div>
@@ -702,7 +702,7 @@ export default function EndOfDayPage() {
             </div>
 
             {/* Thermal Register Slip Preview */}
-            <div className="mt-4 p-5 bg-[#fafafa] border border-dashed border-slate-300 rounded-lg font-mono text-xs text-slate-800 space-y-2">
+            <div className="mt-4 p-5 bg-card border border-dashed border-slate-300 rounded-lg font-mono text-xs text-slate-800 space-y-2">
               <div className="text-center pb-2 border-b border-dashed border-slate-300">
                 <div className="font-black text-sm">{selectedBranch.BARANCHNAME}</div>
                 <div className="text-[11px] text-slate-500 mt-0.5">SOUTHERN OLIVE OIL PRODUCTS S.A.R.L - POS REG #1</div>

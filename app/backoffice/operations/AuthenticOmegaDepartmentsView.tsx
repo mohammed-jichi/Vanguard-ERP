@@ -261,10 +261,10 @@ export default function AuthenticOmegaDepartmentsView() {
   };
 
   return (
-    <div className="min-h-[700px] w-full bg-[#fbfbfb] text-[#333] font-sans pb-16">
+    <div className="min-h-[700px] w-full bg-background text-foreground font-sans pb-16">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#323f4b] text-white px-5 py-3 rounded shadow-2xl animate-fade-in border border-slate-600">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-primary text-white px-5 py-3 rounded shadow-2xl animate-fade-in border border-slate-600">
           <span className="text-xs font-semibold">{toastMessage}</span>
           <button onClick={() => setToastMessage(null)} className="hover:opacity-75">
             <X className="w-4 h-4" />
@@ -276,11 +276,11 @@ export default function AuthenticOmegaDepartmentsView() {
           HEADER SECTION (Matching Screenshot 1)
           ======================================================================= */}
       <div className="px-6 pt-5 pb-3">
-        <h1 className="text-[22px] font-normal text-[#4d5b76] tracking-tight mb-1">
+        <h1 className="text-[22px] font-normal text-muted-foreground tracking-tight mb-1">
           Menus / Departments
         </h1>
-        <div className="flex items-center text-xs text-[#777] gap-1.5">
-          <a href="/backoffice" className="text-[#195a96] hover:underline">
+        <div className="flex items-center text-xs text-muted-foreground gap-1.5">
+          <a href="/backoffice" className="text-primary hover:underline">
             Home
           </a>
           <span>/</span>
@@ -292,9 +292,9 @@ export default function AuthenticOmegaDepartmentsView() {
           MAIN CONTAINER / TABLE CARD (Matching Screenshot 1)
           ======================================================================= */}
       <div className="px-6 mt-3">
-        <div className="bg-white border border-[#edf1f5] shadow-xs rounded-xs overflow-hidden">
+        <div className="bg-white border border-border shadow-xs rounded-xs overflow-hidden">
           {/* Top Filter Bar: Search, All Branches, + New */}
-          <div className="p-4 border-b border-[#edf1f5]">
+          <div className="p-4 border-b border-border">
             <div className="flex flex-col md:flex-row items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 {/* Search Input */}
@@ -310,7 +310,7 @@ export default function AuthenticOmegaDepartmentsView() {
                       setCurrentPage(1);
                     }}
                     placeholder="Search..."
-                    className="w-full pl-8 pr-3 py-1.5 text-xs text-slate-800 border border-[#d6dde6] rounded-xs bg-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs text-slate-800 border border-border rounded-xs bg-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-all placeholder:text-slate-400"
                   />
                 </div>
 
@@ -322,7 +322,7 @@ export default function AuthenticOmegaDepartmentsView() {
                       setSelectedBranch(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="w-full px-3 py-1.5 text-xs text-slate-800 border border-[#d6dde6] rounded-xs bg-white focus:outline-none focus:border-blue-400 transition-all cursor-pointer"
+                    className="w-full px-3 py-1.5 text-xs text-slate-800 border border-border rounded-xs bg-white focus:outline-none focus:border-blue-400 transition-all cursor-pointer"
                   >
                     {OMEGA_BRANCHES.map((b) => (
                       <option key={b.BRANCHID} value={b.BRANCHID}>
@@ -338,7 +338,7 @@ export default function AuthenticOmegaDepartmentsView() {
                 <button
                   type="button"
                   onClick={openNewModal}
-                  className="bg-[#323f4b] hover:bg-[#242d35] text-white px-3.5 py-1.5 rounded-xs text-xs font-medium flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary/90 text-white px-3.5 py-1.5 rounded-xs text-xs font-medium flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>New</span>
@@ -351,13 +351,13 @@ export default function AuthenticOmegaDepartmentsView() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-700">
               <thead>
-                <tr className="border-b border-[#edf1f5] bg-white text-slate-800 font-bold text-[13px]">
+                <tr className="border-b border-border bg-white text-slate-800 font-bold text-[13px]">
                   <th className="py-3 px-4 w-16 font-semibold">#</th>
                   <th className="py-3 px-4 font-semibold">Description</th>
                   <th className="py-3 px-4 w-16 text-end"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#edf1f5]">
+              <tbody className="divide-y divide-border">
                 {paginatedDepartments.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="py-8 text-center text-slate-400 text-xs">
@@ -368,8 +368,8 @@ export default function AuthenticOmegaDepartmentsView() {
                   paginatedDepartments.map((d, index) => (
                     <tr
                       key={d.MENUIDBRANCHID}
-                      className={`hover:bg-[#fcfcfc] transition-colors ${
-                        index % 2 === 1 ? 'bg-[#fbfbfb]' : 'bg-white'
+                      className={`hover:bg-muted/50 transition-colors ${
+                        index % 2 === 1 ? 'bg-background' : 'bg-white'
                       }`}
                     >
                       <td className="py-3 px-4 font-normal text-slate-800">
@@ -395,7 +395,7 @@ export default function AuthenticOmegaDepartmentsView() {
                         <button
                           type="button"
                           onClick={() => openEditModal(d)}
-                          className="bg-[#323f4b] hover:bg-[#242d35] text-white p-1.5 rounded-xs transition-colors inline-flex items-center justify-center cursor-pointer shadow-xs"
+                          className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded-xs transition-colors inline-flex items-center justify-center cursor-pointer shadow-xs"
                           title="Edit Department"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -409,13 +409,13 @@ export default function AuthenticOmegaDepartmentsView() {
           </div>
 
           {/* Centered Pagination (Matching Screenshot 1: < 1 >) */}
-          <div className="py-4 border-t border-[#edf1f5] flex items-center justify-center">
+          <div className="py-4 border-t border-border flex items-center justify-center">
             <div className="inline-flex items-center gap-1 text-xs">
               <button
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-7 h-7 flex items-center justify-center border border-[#d6dde6] rounded-xs text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default"
+                className="w-7 h-7 flex items-center justify-center border border-border rounded-xs text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default"
               >
                 &laquo;
               </button>
@@ -426,8 +426,8 @@ export default function AuthenticOmegaDepartmentsView() {
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-7 h-7 flex items-center justify-center border rounded-xs font-medium cursor-pointer transition-colors ${
                     currentPage === pageNum
-                      ? 'border-[#323f4b] bg-[#323f4b] text-white'
-                      : 'border-[#d6dde6] text-slate-600 hover:bg-slate-50'
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-border text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   {pageNum}
@@ -437,7 +437,7 @@ export default function AuthenticOmegaDepartmentsView() {
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="w-7 h-7 flex items-center justify-center border border-[#d6dde6] rounded-xs text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default"
+                className="w-7 h-7 flex items-center justify-center border border-border rounded-xs text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default"
               >
                 &raquo;
               </button>
@@ -455,12 +455,12 @@ export default function AuthenticOmegaDepartmentsView() {
           style={{ zIndex: 50000 }}
         >
           <div
-            className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
+            className="bg-white border border-border w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
             style={{ zIndex: 50001 }}
           >
             {/* Header */}
-            <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
-              <h2 className="text-[18px] font-normal text-[#4d5b76]">
+            <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-white">
+              <h2 className="text-[18px] font-normal text-muted-foreground">
                 New Menu / Department
               </h2>
               <button
@@ -486,7 +486,7 @@ export default function AuthenticOmegaDepartmentsView() {
                     autoFocus
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
 
@@ -498,7 +498,7 @@ export default function AuthenticOmegaDepartmentsView() {
                     type="number"
                     value={newSorting}
                     onChange={(e) => setNewSorting(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
 
@@ -510,7 +510,7 @@ export default function AuthenticOmegaDepartmentsView() {
                       setIsColorPickerOpen(true);
                     }}
                     style={{ backgroundColor: newColor || '#fff' }}
-                    className={`w-full h-[32px] px-3 border border-[#ced4da] rounded-xs text-xs font-normal cursor-pointer hover:bg-slate-50 transition-colors ${
+                    className={`w-full h-[32px] px-3 border border-border rounded-xs text-xs font-normal cursor-pointer hover:bg-slate-50 transition-colors ${
                       newColor ? 'text-white drop-shadow-xs font-medium' : 'text-slate-700 bg-white'
                     }`}
                   >
@@ -528,18 +528,18 @@ export default function AuthenticOmegaDepartmentsView() {
                   type="text"
                   value={newAccDept}
                   onChange={(e) => setNewAccDept(e.target.value)}
-                  className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                 />
               </div>
 
               {/* Row 3: Image Card */}
-              <div className="border border-[#e5e5e5] rounded-xs overflow-hidden">
-                <div className="bg-[#f8f9fa] px-4 py-2 border-b border-[#e5e5e5] font-bold text-slate-800 text-[12px]">
+              <div className="border border-border rounded-xs overflow-hidden">
+                <div className="bg-muted px-4 py-2 border-b border-border font-bold text-slate-800 text-[12px]">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center justify-center">
                   {/* Image Preview Box */}
-                  <div className="w-[280px] h-[160px] bg-[#e9ecef] flex items-center justify-center overflow-hidden border border-slate-200 mb-3">
+                  <div className="w-[280px] h-[160px] bg-muted flex items-center justify-center overflow-hidden border border-slate-200 mb-3">
                     {newImage ? (
                       <img
                         src={newImage}
@@ -547,7 +547,7 @@ export default function AuthenticOmegaDepartmentsView() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[#a6adb4] font-bold text-2xl tracking-wide select-none">
+                      <span className="text-muted-foreground font-bold text-2xl tracking-wide select-none">
                         no-image
                       </span>
                     )}
@@ -567,14 +567,14 @@ export default function AuthenticOmegaDepartmentsView() {
                     <button
                       type="button"
                       onClick={() => newFileInputRef.current?.click()}
-                      className="bg-[#323f4b] hover:bg-[#242d35] text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                      className="bg-primary hover:bg-primary/90 text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setNewImage('')}
-                      className="bg-[#5c2828] hover:bg-[#481e1e] text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                      className="bg-destructive hover:bg-destructive/90 text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                     >
                       Remove
                     </button>
@@ -583,8 +583,8 @@ export default function AuthenticOmegaDepartmentsView() {
               </div>
 
               {/* Row 4: Branches restriction Card */}
-              <div className="border border-[#e5e5e5] rounded-xs overflow-hidden">
-                <div className="bg-[#f8f9fa] px-4 py-2 border-b border-[#e5e5e5] font-bold text-slate-800 text-[12px]">
+              <div className="border border-border rounded-xs overflow-hidden">
+                <div className="bg-muted px-4 py-2 border-b border-border font-bold text-slate-800 text-[12px]">
                   Branches restriction
                 </div>
                 <div className="p-4">
@@ -598,7 +598,7 @@ export default function AuthenticOmegaDepartmentsView() {
                           'Zeit w zaytoun ljanoub': e.target.checked
                         })
                       }
-                      className="rounded-xs border-[#ced4da] text-[#323f4b] focus:ring-0 cursor-pointer"
+                      className="rounded-xs border-border text-primary focus:ring-0 cursor-pointer"
                     />
                     <span>Zeit w zaytoun ljanoub</span>
                   </label>
@@ -609,7 +609,7 @@ export default function AuthenticOmegaDepartmentsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-[#323f4b] hover:bg-[#242d35] text-white px-4 py-2 rounded-xs text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xs text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -629,12 +629,12 @@ export default function AuthenticOmegaDepartmentsView() {
           style={{ zIndex: 50000 }}
         >
           <div
-            className="bg-white border border-[#4c5c7a] w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
+            className="bg-white border border-border w-full text-slate-800 shadow-2xl max-w-2xl rounded-xs overflow-hidden my-6 relative"
             style={{ zIndex: 50001 }}
           >
             {/* Header */}
-            <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
-              <h2 className="text-[18px] font-normal text-[#4d5b76]">
+            <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-white">
+              <h2 className="text-[18px] font-normal text-muted-foreground">
                 Edit Menu / Department
               </h2>
               <button
@@ -658,7 +658,7 @@ export default function AuthenticOmegaDepartmentsView() {
                     type="text"
                     disabled
                     value={editId}
-                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-[#e9ecef] text-slate-600 cursor-not-allowed"
+                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-muted text-slate-600 cursor-not-allowed"
                   />
                 </div>
 
@@ -672,7 +672,7 @@ export default function AuthenticOmegaDepartmentsView() {
                     autoFocus
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
 
@@ -684,7 +684,7 @@ export default function AuthenticOmegaDepartmentsView() {
                     type="number"
                     value={editSorting}
                     onChange={(e) => setEditSorting(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
 
@@ -696,7 +696,7 @@ export default function AuthenticOmegaDepartmentsView() {
                       setIsColorPickerOpen(true);
                     }}
                     style={{ backgroundColor: editColor || '#fff' }}
-                    className={`w-full h-[32px] px-3 border border-[#ced4da] rounded-xs text-xs font-normal cursor-pointer hover:bg-slate-50 transition-colors ${
+                    className={`w-full h-[32px] px-3 border border-border rounded-xs text-xs font-normal cursor-pointer hover:bg-slate-50 transition-colors ${
                       editColor ? 'text-white drop-shadow-xs font-medium' : 'text-slate-700 bg-white'
                     }`}
                   >
@@ -714,18 +714,18 @@ export default function AuthenticOmegaDepartmentsView() {
                   type="text"
                   value={editAccDept}
                   onChange={(e) => setEditAccDept(e.target.value)}
-                  className="w-full px-3 py-1.5 text-xs rounded-xs border border-[#ced4da] bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full px-3 py-1.5 text-xs rounded-xs border border-border bg-white focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                 />
               </div>
 
               {/* Row 3: Image Card */}
-              <div className="border border-[#e5e5e5] rounded-xs overflow-hidden">
-                <div className="bg-[#f8f9fa] px-4 py-2 border-b border-[#e5e5e5] font-bold text-slate-800 text-[12px]">
+              <div className="border border-border rounded-xs overflow-hidden">
+                <div className="bg-muted px-4 py-2 border-b border-border font-bold text-slate-800 text-[12px]">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center justify-center">
                   {/* Image Preview Box */}
-                  <div className="w-[280px] h-[160px] bg-[#e9ecef] flex items-center justify-center overflow-hidden border border-slate-200 mb-3">
+                  <div className="w-[280px] h-[160px] bg-muted flex items-center justify-center overflow-hidden border border-slate-200 mb-3">
                     {editImage ? (
                       <img
                         src={editImage}
@@ -733,7 +733,7 @@ export default function AuthenticOmegaDepartmentsView() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[#a6adb4] font-bold text-2xl tracking-wide select-none">
+                      <span className="text-muted-foreground font-bold text-2xl tracking-wide select-none">
                         no-image
                       </span>
                     )}
@@ -753,14 +753,14 @@ export default function AuthenticOmegaDepartmentsView() {
                     <button
                       type="button"
                       onClick={() => editFileInputRef.current?.click()}
-                      className="bg-[#323f4b] hover:bg-[#242d35] text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                      className="bg-primary hover:bg-primary/90 text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditImage('')}
-                      className="bg-[#5c2828] hover:bg-[#481e1e] text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
+                      className="bg-destructive hover:bg-destructive/90 text-white px-3.5 py-1.5 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                     >
                       Remove
                     </button>
@@ -769,8 +769,8 @@ export default function AuthenticOmegaDepartmentsView() {
               </div>
 
               {/* Row 4: Branches restriction Card */}
-              <div className="border border-[#e5e5e5] rounded-xs overflow-hidden">
-                <div className="bg-[#f8f9fa] px-4 py-2 border-b border-[#e5e5e5] font-bold text-slate-800 text-[12px]">
+              <div className="border border-border rounded-xs overflow-hidden">
+                <div className="bg-muted px-4 py-2 border-b border-border font-bold text-slate-800 text-[12px]">
                   Branches restriction
                 </div>
                 <div className="p-4">
@@ -784,7 +784,7 @@ export default function AuthenticOmegaDepartmentsView() {
                           'Zeit w zaytoun ljanoub': e.target.checked
                         })
                       }
-                      className="rounded-xs border-[#ced4da] text-[#323f4b] focus:ring-0 cursor-pointer"
+                      className="rounded-xs border-border text-primary focus:ring-0 cursor-pointer"
                     />
                     <span>Zeit w zaytoun ljanoub</span>
                   </label>
@@ -795,7 +795,7 @@ export default function AuthenticOmegaDepartmentsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="bg-[#323f4b] hover:bg-[#242d35] text-white px-4 py-2 rounded-xs text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xs text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -815,12 +815,12 @@ export default function AuthenticOmegaDepartmentsView() {
           style={{ zIndex: 99999 }}
         >
           <div
-            className="bg-white border-2 border-[#4c5c7a] w-full max-w-[620px] rounded-[10px] shadow-2xl overflow-hidden relative"
+            className="bg-white border-2 border-border w-full max-w-[620px] rounded-[10px] shadow-2xl overflow-hidden relative"
             style={{ zIndex: 100000 }}
           >
             {/* Header */}
-            <div className="px-5 py-3 border-b border-[#e5e5e5] flex items-center justify-between bg-white">
-              <h3 className="text-[17px] font-normal text-[#4d5b76]">
+            <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-white">
+              <h3 className="text-[17px] font-normal text-muted-foreground">
                 Choose Color
               </h3>
               <button

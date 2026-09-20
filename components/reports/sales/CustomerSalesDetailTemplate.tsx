@@ -1,7 +1,12 @@
-import React from 'react';
-import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
+'use client';
 
-interface CustomerSalesDetailTemplateProps {
+import React from 'react';
+import {
+  CustomerSalesReportMasterDocument,
+  CustomerSalesReportMasterDocumentProps,
+} from './CustomerSalesReportMasterDocument';
+
+export interface CustomerSalesDetailTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
@@ -9,8 +14,15 @@ interface CustomerSalesDetailTemplateProps {
   fromDate?: string;
   toDate?: string;
   topN?: number;
+  branch?: string;
+  filterValues?: Record<string, any>;
 }
 
+/**
+ * CustomerSalesDetailTemplate
+ * Canonical Master Component delegate enforcing Single Source of Truth via CustomerSalesReportMasterDocument.
+ * Conforms directly to MasterReportDocument accounting standards.
+ */
 export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplateProps> = ({
   hideToolbar = true,
   dynamicPeriodText,
@@ -19,134 +31,21 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
   topN = 10,
+  branch = 'Main Branch (Choueifat Main Facility)',
+  filterValues = {},
 }) => {
-  const isZoneReport = reportTitle.toLowerCase().includes('zone');
-  const isDeliverySummary = reportTitle.toLowerCase().includes('delivery');
-  const isDriverHistory = reportTitle.toLowerCase().includes('driver');
-  const isTopCustomers = reportTitle.toLowerCase().includes('top');
-
-  const reportCode = isZoneReport
-    ? 'REP_SALES_007'
-    : isDeliverySummary
-    ? 'REP_FLT_005'
-    : isDriverHistory
-    ? 'REP_FLT_006'
-    : isTopCustomers
-    ? 'REP_CRM_002'
-    : 'REP_S_00185';
-
-  // 1. Sales by Zone
-  const zoneRows = [
-    { zone: 'South Lebanon Governorate', city: 'Tyr (Standard Product)', topSku: 'EVOO 16L Metallic Tin', units: '480 Tins', revenue: '$33,600.00', share: '42.5%' },
-    { zone: 'South Lebanon Governorate', city: 'Saida (Standard Product)', topSku: 'EVOO 1L Glass Bottle', units: '1,850 Bottles', revenue: '$15,725.00', share: '19.9%' },
-    { zone: 'Nabatieh Governorate', city: 'Nabatieh (Standard Product)', topSku: 'EVOO 16L Metallic Tin', units: '210 Tins', revenue: '$14,700.00', share: '18.6%' },
-    { zone: 'Beirut Governorate', city: 'Beirut Central District', topSku: 'Organic EVOO 500ml Marasca', units: '1,400 Bottles', revenue: '$11,900.00', share: '15.1%' },
-    { zone: 'Mount Lebanon', city: 'Chouf / Aley', topSku: 'EVOO 1L Glass Bottle', units: '380 Bottles', revenue: '$3,230.00', share: '3.9%' },
-  ];
-
-  // 2. Delivery Orders Summary
-  const deliveryRows = [
-    { orderId: 'DO-8891', customer: 'Al-Baraka Supermarket', destination: 'Choueifat Blvd', driver: 'Ziad Kassis', status: 'Delivered', amount: '$1,450.00' },
-    { orderId: 'DO-8892', customer: 'Karem Assaf Grocery', destination: 'Tyre Souk', driver: 'Rabih Ammar', status: 'Delivered', amount: '$3,820.00' },
-    { orderId: 'DO-8893', customer: 'Ahmad Al-Hajj Wholesale', destination: 'Sidon Boulevard', driver: 'Rabih Ammar', status: 'In Transit', amount: '$2,100.00' },
-    { orderId: 'DO-8894', customer: 'Hamra Gourmet Store', destination: 'Beirut Hamra', driver: 'Ziad Kassis', status: 'Delivered', amount: '$890.00' },
-  ];
-
-  // 3. Customer Detail Default
-  const customerDetailRows = [
-    { customer: 'Al-Baraka Supermarket S.A.R.L', invoice: 'INV-103350', date: '12-Aug-2026', itemsCount: 14, subtotal: '$2,800.00', discount: '$100.00', netTotal: '$2,700.00' },
-    { customer: 'Al-Baraka Supermarket S.A.R.L', invoice: 'INV-103395', date: '22-Aug-2026', itemsCount: 8, subtotal: '$1,550.00', discount: '$50.00', netTotal: '$1,500.00' },
-    { customer: 'Karem Assaf Grocery', invoice: 'INV-103310', date: '08-Aug-2026', itemsCount: 22, subtotal: '$3,820.00', discount: '$0.00', netTotal: '$3,820.00' },
-    { customer: 'Ahmad Al-Hajj Wholesale', invoice: 'INV-103280', date: '05-Aug-2026', itemsCount: 12, subtotal: '$2,100.00', discount: '$50.00', netTotal: '$2,050.00' },
-  ];
+  const period = dynamicPeriodText || `Period: ${fromDate} to ${toDate}`;
 
   return (
-    <UnifiedPrintableReportSheet
+    <CustomerSalesReportMasterDocument
+      reportKey={reportTitle}
       reportTitle={reportTitle}
-      reportCode={reportCode}
+      dynamicPeriodText={period}
       executionDate={executionDate}
-      periodText={dynamicPeriodText || `From Date: ${fromDate} To Date: ${toDate}`}
-      pageInfo="Page 1 of 1"
-      branchInfo="Branch: All Active Territories"
-      hideToolbar={hideToolbar}
-    >
-      {isZoneReport ? (
-        <table className="w-full table-fixed text-left border-collapse text-[11px]">
-          <thead>
-            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
-              <th className="py-2 px-2 normal-case w-[25%] font-sans">governorate / zone</th>
-              <th className="py-2 px-2 normal-case w-[20%] font-sans">primary city</th>
-              <th className="py-2 px-2 normal-case w-[25%] font-sans">top selling sku</th>
-              <th className="py-2 px-2 normal-case w-[12%] font-sans text-center">units sold</th>
-              <th className="py-2 px-2 normal-case w-[18%] font-sans text-right pr-2">gross sales ($)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-            {zoneRows.map((z, idx) => (
-              <tr key={idx} className="hover:bg-slate-50">
-                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{z.zone}</td>
-                <td className="py-2 px-2 text-slate-700 font-sans">{z.city}</td>
-                <td className="py-2 px-2 font-medium text-slate-800 font-sans">{z.topSku}</td>
-                <td className="py-2 px-2 text-center font-mono">{z.units}</td>
-                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{z.revenue}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : isDeliverySummary || isDriverHistory ? (
-        <table className="w-full table-fixed text-left border-collapse text-[11px]">
-          <thead>
-            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
-              <th className="py-2 px-2 normal-case w-[15%] font-sans">order id</th>
-              <th className="py-2 px-2 normal-case w-[30%] font-sans">customer</th>
-              <th className="py-2 px-2 normal-case w-[22%] font-sans">destination</th>
-              <th className="py-2 px-2 normal-case w-[18%] font-sans">driver</th>
-              <th className="py-2 px-2 normal-case w-[15%] font-sans text-right pr-2">order amount ($)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-            {deliveryRows.map((d, idx) => (
-              <tr key={idx} className="hover:bg-slate-50">
-                <td className="py-2 px-2 font-mono font-bold text-blue-700">{d.orderId}</td>
-                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{d.customer}</td>
-                <td className="py-2 px-2 text-slate-700 font-sans">{d.destination}</td>
-                <td className="py-2 px-2 font-medium text-slate-800 font-sans">{d.driver}</td>
-                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{d.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <table className="w-full table-fixed text-left border-collapse text-[11px]">
-          <thead>
-            <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
-              <th className="py-2 px-2 normal-case w-[32%] font-sans">customer name</th>
-              <th className="py-2 px-2 normal-case w-[15%] font-sans">invoice #</th>
-              <th className="py-2 px-2 normal-case w-[15%] font-sans">date</th>
-              <th className="py-2 px-2 normal-case w-[12%] font-sans text-center">items</th>
-              <th className="py-2 px-2 normal-case w-[13%] font-sans text-right">subtotal ($)</th>
-              <th className="py-2 px-2 normal-case w-[13%] font-sans text-right pr-2">net total ($)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-            {(isTopCustomers && topN ? customerDetailRows.slice(0, topN) : customerDetailRows).map((c, idx) => (
-              <tr key={idx} className="hover:bg-slate-50">
-                <td className="py-2 px-2 font-bold text-slate-900 font-sans">{c.customer}</td>
-                <td className="py-2 px-2 font-mono text-slate-600">{c.invoice}</td>
-                <td className="py-2 px-2 font-mono text-slate-600">{c.date}</td>
-                <td className="py-2 px-2 text-center font-mono">{c.itemsCount}</td>
-                <td className="py-2 px-2 text-right font-mono">{c.subtotal}</td>
-                <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800 pr-2">{c.netTotal}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      <div className="border-t-2 border-slate-900 mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-800">
-        <span>Logistics Provider: SuperSonic Fleet Services</span>
-        <span>Total Verified Ledger: 100% Reconciled</span>
-      </div>
-    </UnifiedPrintableReportSheet>
+      branch={branch}
+      filterValues={filterValues}
+    />
   );
 };
+
+export default CustomerSalesDetailTemplate;

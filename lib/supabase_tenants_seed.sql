@@ -2,9 +2,17 @@
 -- VANGUARD ERP — MULTI-TENANT SAAS DATABASE MIGRATION & SEED (TENANT #1)
 -- ============================================================================
 
--- 1. CREATE TENANTS TABLE
+-- 1. CREATE SEQUENCE AND TENANTS TABLE
+CREATE SEQUENCE IF NOT EXISTS public.tenants_company_id_seq
+    START WITH 1300
+    INCREMENT BY 1
+    MINVALUE 1300
+    NO MAXVALUE
+    CACHE 1;
+
 CREATE TABLE IF NOT EXISTS public.tenants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id INT UNIQUE DEFAULT nextval('public.tenants_company_id_seq'),
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
@@ -15,6 +23,9 @@ CREATE TABLE IF NOT EXISTS public.tenants (
     subscription_status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (subscription_status IN ('ACTIVE', 'PAST_DUE', 'CANCELLED', 'TRIAL')),
     ai_usage_count INT NOT NULL DEFAULT 0,
     ai_usage_limit INT NOT NULL DEFAULT 1000,
+    enabled_modules TEXT[] DEFAULT ARRAY['sales', 'operations', 'customers', 'feedback', 'loyalty', 'accounting', 'hr', 'fleet', 'social'],
+    primary_color TEXT DEFAULT '#123b70',
+    theme_color TEXT DEFAULT '#123b70',
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -22,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.tenants (
 -- 2. CREATE ALIAS OR COMPATIBILITY VIEW / TABLE FOR COMPANIES
 CREATE TABLE IF NOT EXISTS public.companies (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id INT,
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
@@ -34,19 +46,20 @@ CREATE TABLE IF NOT EXISTS public.companies (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. SEED TENANT #1: 'منتوجات زيت وزيتون الجنوب' (KHADEER OWNER)
-INSERT INTO public.tenants (id, name, slug, brand_name_ar, brand_name_en, owner_email, subscription_tier, subscription_status)
+-- 3. SEED TENANT #1: 'منتوجات زيت وزيتون الجنوب' (KHADEER OWNER, COMPANY_ID = 1300)
+INSERT INTO public.tenants (id, company_id, name, slug, brand_name_ar, brand_name_en, owner_email, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO UPDATE SET 
+  company_id = 1300,
   name = EXCLUDED.name,
   brand_name_ar = EXCLUDED.brand_name_ar,
   owner_email = EXCLUDED.owner_email;
 
-INSERT INTO public.companies (id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
+INSERT INTO public.companies (id, company_id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
-ON CONFLICT (id) DO NOTHING;
+  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
+ON CONFLICT (id) DO UPDATE SET company_id = 1300;
 
 -- 4. CREATE USER PROFILES TABLE WITH TENANT_ID AND KHADEER AS OWNER
 CREATE TABLE IF NOT EXISTS public.profiles (

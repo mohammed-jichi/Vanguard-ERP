@@ -86,7 +86,7 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
         id: 'POI-101',
         code: '528300201',
         barcode: '528300201',
-        description: 'تنكة معدنية فارغة مطبوعة 16 ليتر (Food Grade Sealed Tins)',
+        description: 'Printed Empty Metal Tin 16L (Food Grade Sealed Tins)',
         branchName: 'Main Branch',
         qty: 2000,
         qtyReceived: 0,
@@ -132,7 +132,7 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
         id: 'POI-201',
         code: '528100101',
         barcode: '528100101',
-        description: 'ثمار زيتون صوراني وبلدي نخب أول (Sourani Olive Crop)',
+        description: 'Sourani & Local First Grade Olives (Sourani Olive Crop)',
         branchName: 'Main Branch',
         qty: 15000,
         qtyReceived: 0,
@@ -249,7 +249,7 @@ const SUPPLIERS_CATALOG = [
     emailCc: ''
   },
   {
-    name: 'الضيعة',
+    name: 'Al-Dayaa',
     contact: 'Al Dayaa Co.',
     address: 'Marjeyoun District, South Lebanon',
     phone: '+961 70 325 417',
@@ -257,7 +257,7 @@ const SUPPLIERS_CATALOG = [
     emailCc: ''
   },
   {
-    name: 'مؤسسة عبده للتجارة',
+    name: 'Abdo Trading Est.',
     contact: 'Abdo Trading Est.',
     address: 'Saida Coastal Highway, Lebanon',
     phone: '+961 7 725 330',
@@ -268,7 +268,7 @@ const SUPPLIERS_CATALOG = [
 
 // Inventory products catalog for quick item addition
 const ITEMS_CATALOG = [
-  { code: '528300201', barcode: '528300201', description: 'تنكة معدنية فارغة مطبوعة 16 ليتر', unit: 'TIN', price: 2.35, sp1: 300000 },
+  { code: '528300201', barcode: '528300201', description: 'Printed Empty Metal Tin 16L', unit: 'TIN', price: 2.35, sp1: 300000 },
   { code: '528200301', barcode: '528200301', description: 'قنينة زجاج ماراسكا عاتمة 750مل كرتونة 12', unit: 'BOX', price: 10.75, sp1: 1200000 },
   { code: '528100101', barcode: '528100101', description: 'ثمار زيتون صوراني وبلدي عصير نخب أول', unit: 'KG', price: 0.724, sp1: 95000 },
   { code: '528100102', barcode: '528100102', description: 'زيت زيتون بكر ممتاز قنينة 750مل', unit: 'BOT', price: 5.36, sp1: 620000 },
@@ -352,7 +352,7 @@ export default function PurchaseOrderView() {
           id: 'REC-01',
           code: '528300201',
           barcode: '528300201',
-          description: 'تنكة معدنية فارغة مطبوعة 16 ليتر',
+          description: 'Printed Empty Metal Tin 16L',
           branchName: 'Marjeyoun Press Mill & Silos',
           qty: 1000,
           unit: 'TIN',
@@ -632,10 +632,10 @@ export default function PurchaseOrderView() {
   };
 
   return (
-    <div className="w-full bg-[#f4f6f9] text-[#333] font-sans antialiased min-h-screen text-[13px] leading-normal pb-16 select-text">
+    <div className="w-full bg-background text-foreground font-sans antialiased min-h-screen text-[13px] leading-normal pb-16 select-text">
       {/* GLOBAL NOTIFICATION TOAST */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-[9999] bg-[#27ae60] text-white px-5 py-3 rounded shadow-xl flex items-center gap-3 animate-fade-in border border-[#219d55] text-sm font-medium">
+        <div className="fixed top-5 right-5 z-[9999] bg-emerald-700 text-white px-5 py-3 rounded shadow-xl flex items-center gap-3 animate-fade-in border border-emerald-700 text-sm font-medium">
           <i className="fa fa-check-circle text-lg"></i>
           <span>{toastMessage}</span>
           <button onClick={() => setToastMessage(null)} className="ml-3 text-white hover:opacity-75">
@@ -651,24 +651,24 @@ export default function PurchaseOrderView() {
         <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 py-4">
           {/* OMEGA AUTHENTIC HEADER */}
           <div className="header mb-4">
-            <h1 className="text-[24px] font-normal text-[#2b5797] m-0 mb-1 leading-tight tracking-tight">
+            <h1 className="text-[24px] font-normal text-primary m-0 mb-1 leading-tight tracking-tight">
               Purchase Order
             </h1>
-            <div className="text-[12px] text-[#777]">
+            <div className="text-[12px] text-muted-foreground">
               <a
                 href="#inventory"
                 onClick={(e) => { e.preventDefault(); setShowPreviewList(true); }}
-                className="text-[#337ab7] hover:underline cursor-pointer"
+                className="text-primary hover:underline cursor-pointer"
               >
                 Home
               </a>
-              <span className="mx-1 text-[#999]">/</span>
-              <span className="text-[#777]">Purchase Order</span>
+              <span className="mx-1 text-muted-foreground">/</span>
+              <span className="text-muted-foreground">Purchase Order</span>
             </div>
           </div>
 
           {/* OMEGA AUTHENTIC TWO-ROW FILTER BAR */}
-          <div className="bg-white rounded border border-[#e7ebee] p-3.5 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="bg-white rounded border border-border p-3.5 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             {/* ROW 1 */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center mb-2.5">
               {/* Branch Selector */}
@@ -676,10 +676,10 @@ export default function PurchaseOrderView() {
                 <select
                   value={filterBranch}
                   onChange={(e) => setFilterBranch(e.target.value)}
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="All Branches">All Branches</option>
-                  <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                  <option value="Main Branch">Main Branch</option>
                 </select>
               </div>
 
@@ -690,7 +690,7 @@ export default function PurchaseOrderView() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by Po #, Supplier, Item"
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] placeholder-[#999] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground placeholder-[#999] focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -699,7 +699,7 @@ export default function PurchaseOrderView() {
                 <select
                   value={filterSentStatus}
                   onChange={(e) => setFilterSentStatus(e.target.value)}
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="All Sent/NotSent">All Sent/NotSent</option>
                   <option value="Sent">Sent</option>
@@ -712,7 +712,7 @@ export default function PurchaseOrderView() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Approved">Approved</option>
@@ -727,14 +727,14 @@ export default function PurchaseOrderView() {
                 <button
                   type="button"
                   onClick={() => { setHasAppliedFilter(true); triggerToast('Filtered records'); }}
-                  className="h-[34px] px-4 bg-[#34495e] hover:bg-[#2c3e50] text-white text-[13px] font-medium rounded transition shadow-xs cursor-pointer"
+                  className="h-[34px] px-4 bg-primary hover:bg-primary text-white text-[13px] font-medium rounded transition shadow-xs cursor-pointer"
                 >
                   Filter
                 </button>
                 <button
                   type="button"
                   onClick={handleNewBtnClick}
-                  className="h-[34px] px-4 bg-[#34495e] hover:bg-[#2c3e50] text-white text-[13px] font-medium rounded transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  className="h-[34px] px-4 bg-primary hover:bg-primary text-white text-[13px] font-medium rounded transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-plus text-xs"></i>
                   <span>New</span>
@@ -749,7 +749,7 @@ export default function PurchaseOrderView() {
                 <select
                   value={filterSupplier}
                   onChange={(e) => setFilterSupplier(e.target.value)}
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="All Suppliers">All Suppliers</option>
                   {SUPPLIERS_CATALOG.map(s => (
@@ -763,7 +763,7 @@ export default function PurchaseOrderView() {
                 <select
                   value={filterDateType}
                   onChange={(e) => setFilterDateType(e.target.value)}
-                  className="w-full h-[34px] px-3 py-1 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                  className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
                   <option value="Delivery Date">Delivery Date</option>
                   <option value="Order Date">Order Date</option>
@@ -772,13 +772,13 @@ export default function PurchaseOrderView() {
 
               {/* From Date */}
               <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-                <label className="text-[13px] text-[#333] whitespace-nowrap min-w-[38px]">From</label>
+                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[38px]">From</label>
                 <div className="relative flex-1">
                   <input
                     type="text"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
-                    className="w-full h-[34px] pl-3 pr-8 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                    className="w-full h-[34px] pl-3 pr-8 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                   />
                   <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                     <i className="fa fa-calendar text-xs"></i>
@@ -788,13 +788,13 @@ export default function PurchaseOrderView() {
 
               {/* To Date */}
               <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-                <label className="text-[13px] text-[#333] whitespace-nowrap min-w-[20px]">To</label>
+                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[20px]">To</label>
                 <div className="relative flex-1">
                   <input
                     type="text"
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
-                    className="w-full h-[34px] pl-3 pr-8 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                    className="w-full h-[34px] pl-3 pr-8 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                   />
                   <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                     <i className="fa fa-calendar text-xs"></i>
@@ -805,11 +805,11 @@ export default function PurchaseOrderView() {
           </div>
 
           {/* OMEGA AUTHENTIC PREVIEW TABLE (MATCHING PICTURE 1) */}
-          <div className="bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-[13px] text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#e7ebee] text-[#333] bg-[#fafafa]">
+                  <tr className="border-b border-border text-foreground bg-card">
                     <th className="py-2.5 px-3 font-semibold text-left">Branch</th>
                     <th className="py-2.5 px-3 font-semibold text-left">Delivery Date</th>
                     <th className="py-2.5 px-3 font-semibold text-left">PO Number</th>
@@ -837,18 +837,18 @@ export default function PurchaseOrderView() {
                           key={po.id}
                           className="border-b border-gray-100 hover:bg-slate-50 transition"
                         >
-                          <td className="py-2.5 px-3 text-[#333]">{po.branch}</td>
-                          <td className="py-2.5 px-3 text-[#333]">
+                          <td className="py-2.5 px-3 text-foreground">{po.branch}</td>
+                          <td className="py-2.5 px-3 text-foreground">
                             {po.deliveryDate}
-                            <div className="text-[11px] text-[#337ab7]">#{po.poNumber}</div>
+                            <div className="text-[11px] text-primary">#{po.poNumber}</div>
                           </td>
-                          <td className="py-2.5 px-3 font-medium text-[#333]">{po.poNumber}</td>
-                          <td className="py-2.5 px-3 text-[#333]">{po.supplier}</td>
-                          <td className="py-2.5 px-3 text-right font-medium text-[#333]">
+                          <td className="py-2.5 px-3 font-medium text-foreground">{po.poNumber}</td>
+                          <td className="py-2.5 px-3 text-foreground">{po.supplier}</td>
+                          <td className="py-2.5 px-3 text-right font-medium text-foreground">
                             {amountLL.toLocaleString()}
                           </td>
-                          <td className="py-2.5 px-3 text-[#555]">{po.enteredBy}</td>
-                          <td className="py-2.5 px-3 text-[#777] max-w-[200px] truncate">{po.notes}</td>
+                          <td className="py-2.5 px-3 text-muted-foreground">{po.enteredBy}</td>
+                          <td className="py-2.5 px-3 text-muted-foreground max-w-[200px] truncate">{po.notes}</td>
                           <td className="py-2.5 px-3 text-right">
                             <span
                               className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
@@ -868,7 +868,7 @@ export default function PurchaseOrderView() {
                             <button
                               title="Open"
                               onClick={() => handleEditOrder(po)}
-                              className="w-7 h-7 inline-flex items-center justify-center bg-[#34495e] hover:bg-[#2c3e50] text-white rounded text-xs transition cursor-pointer"
+                              className="w-7 h-7 inline-flex items-center justify-center bg-primary hover:bg-primary text-white rounded text-xs transition cursor-pointer"
                             >
                               <i className="fa fa-pencil"></i>
                             </button>
@@ -882,22 +882,22 @@ export default function PurchaseOrderView() {
             </div>
 
             {/* OMEGA PAGINATION « 1 » (EXACTLY MATCHING PICTURE 1) */}
-            <div className="py-3 px-4 border-t border-[#e7ebee] flex justify-center items-center bg-white">
+            <div className="py-3 px-4 border-t border-border flex justify-center items-center bg-white">
               <div className="inline-flex items-center gap-1 text-[12px]">
                 <button
                   disabled
-                  className="w-8 h-8 rounded border border-[#d2d6de] bg-white text-gray-400 flex items-center justify-center cursor-not-allowed text-xs"
+                  className="w-8 h-8 rounded border border-border bg-white text-gray-400 flex items-center justify-center cursor-not-allowed text-xs"
                 >
                   &laquo;
                 </button>
                 <button
-                  className="w-8 h-8 rounded border border-[#337ab7] bg-[#337ab7] text-white flex items-center justify-center font-medium text-xs"
+                  className="w-8 h-8 rounded border border-primary bg-primary text-white flex items-center justify-center font-medium text-xs"
                 >
                   1
                 </button>
                 <button
                   disabled
-                  className="w-8 h-8 rounded border border-[#d2d6de] bg-white text-gray-400 flex items-center justify-center cursor-not-allowed text-xs"
+                  className="w-8 h-8 rounded border border-border bg-white text-gray-400 flex items-center justify-center cursor-not-allowed text-xs"
                 >
                   &raquo;
                 </button>
@@ -906,16 +906,16 @@ export default function PurchaseOrderView() {
           </div>
 
           {/* OMEGA AUTHENTIC FOOTER (MATCHING PICTURE 1) */}
-          <footer className="mt-16 text-center text-[11px] text-[#777]">
+          <footer className="mt-16 text-center text-[11px] text-muted-foreground">
             <span>&copy; 2026 Omega Software All rights reserved.</span>
             <span className="mx-2">|</span>
-            <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:underline text-[#777]">Privacy Policy</a>
+            <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Privacy Policy</a>
             <span className="mx-2">|</span>
-            <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:underline text-[#777]">Terms and Conditions</a>
+            <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Terms and Conditions</a>
             <span className="mx-2">|</span>
-            <a href="#support" onClick={(e) => e.preventDefault()} className="hover:underline text-[#777]">Support</a>
+            <a href="#support" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Support</a>
             <span className="mx-2">|</span>
-            <a href="#feedback" onClick={(e) => e.preventDefault()} className="hover:underline text-[#777]">Feedback</a>
+            <a href="#feedback" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Feedback</a>
           </footer>
         </div>
       ) : (
@@ -925,31 +925,31 @@ export default function PurchaseOrderView() {
         <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 py-4">
           {/* HEADER */}
           <div className="header mb-3">
-            <h1 className="text-[24px] font-normal text-[#2b5797] m-0 mb-1 leading-tight tracking-tight">
+            <h1 className="text-[24px] font-normal text-primary m-0 mb-1 leading-tight tracking-tight">
               Purchase Order
             </h1>
-            <div className="text-[12px] text-[#777]">
+            <div className="text-[12px] text-muted-foreground">
               <a
                 href="#inventory"
                 onClick={(e) => { e.preventDefault(); setShowPreviewList(true); }}
-                className="text-[#337ab7] hover:underline cursor-pointer"
+                className="text-primary hover:underline cursor-pointer"
               >
                 Home
               </a>
-              <span className="mx-1 text-[#999]">/</span>
-              <span className="text-[#777]">Purchase Order</span>
+              <span className="mx-1 text-muted-foreground">/</span>
+              <span className="text-muted-foreground">Purchase Order</span>
             </div>
           </div>
 
           {/* TOP ACTION TOOLBAR (IDENTICAL TO OMEGA ERP) */}
-          <div className="bg-white border border-[#e7ebee] rounded p-2 mb-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex flex-wrap items-center justify-between gap-2">
+          <div className="bg-white border border-border rounded p-2 mb-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
               {/* Supporting Document */}
               <button
                 type="button"
                 title="Supporting Document"
                 onClick={() => setShowDocModal(true)}
-                className="h-[32px] px-3 bg-[#27ae60] hover:bg-[#219d55] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[32px] px-3 bg-emerald-700 hover:bg-emerald-700 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-upload"></i>
                 <span className="hidden sm:inline">Supporting Document</span>
@@ -960,7 +960,7 @@ export default function PurchaseOrderView() {
                 type="button"
                 title="Email PO"
                 onClick={handleOpenEmailModal}
-                className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-envelope"></i>
                 <span className="hidden sm:inline">Email PO</span>
@@ -970,7 +970,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => setShowPreviewList(true)}
-                className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-search"></i>
                 <span>Preview</span>
@@ -981,14 +981,14 @@ export default function PurchaseOrderView() {
                 <button
                   type="button"
                   onClick={() => setActionsMenuOpen(!actionsMenuOpen)}
-                  className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                  className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>Actions</span>
                   <i className="fa fa-caret-down"></i>
                 </button>
 
                 {actionsMenuOpen && (
-                  <div className="origin-top-left absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1 text-xs text-[#333]">
+                  <div className="origin-top-left absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1 text-xs text-foreground">
                     <button
                       onClick={() => { setShowStoreRecurringModal(true); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
@@ -1046,7 +1046,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={handleNewBtnClick}
-                className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-plus"></i>
                 <span>New</span>
@@ -1058,7 +1058,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => setShowPreviewList(true)}
-                className="h-[32px] px-3 bg-gray-100 hover:bg-gray-200 text-[#555] text-xs rounded border border-gray-300 transition cursor-pointer"
+                className="h-[32px] px-3 bg-gray-100 hover:bg-gray-200 text-muted-foreground text-xs rounded border border-gray-300 transition cursor-pointer"
               >
                 <i className="fa fa-arrow-left me-1"></i> Back to Orders
               </button>
@@ -1068,14 +1068,14 @@ export default function PurchaseOrderView() {
           {/* TWO MAIN PANELS: SUPPLIER & TRANSACTION */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
             {/* LEFT CARD: SUPPLIER */}
-            <div className="lg:col-span-5 bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-              <div className="bg-[#fafafa] border-b border-[#e7ebee] px-3.5 py-2 font-semibold text-[#333] text-[13px] flex items-center justify-between">
+            <div className="lg:col-span-5 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+              <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px] flex items-center justify-between">
                 <span>Supplier</span>
                 <span className="text-gray-400 text-xs">Purchased From</span>
               </div>
               <div className="p-3.5 min-h-[224px]">
                 <div className="flex items-center gap-2 mb-3">
-                  <label className="text-[13px] font-bold text-[#333] whitespace-nowrap min-w-[110px]">
+                  <label className="text-[13px] font-bold text-foreground whitespace-nowrap min-w-[110px]">
                     Purchased From*
                   </label>
                   <div className="relative flex-1">
@@ -1084,13 +1084,13 @@ export default function PurchaseOrderView() {
                       value={formSupplier.name}
                       readOnly
                       placeholder="Search supplier ..."
-                      className="w-full h-[34px] px-3 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none"
+                      className="w-full h-[34px] px-3 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowSupplierModal(true)}
-                    className="h-[34px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white rounded text-xs transition cursor-pointer"
+                    className="h-[34px] px-3 bg-primary hover:bg-primary/90 text-white rounded text-xs transition cursor-pointer"
                     title="Search Supplier"
                   >
                     <i className="fa fa-search"></i>
@@ -1099,22 +1099,22 @@ export default function PurchaseOrderView() {
 
                 {/* Supplier Information Card */}
                 {formSupplier && (
-                  <div className="border-t border-dotted border-gray-300 pt-3 text-[12px] space-y-1.5 text-[#555]">
+                  <div className="border-t border-dotted border-gray-300 pt-3 text-[12px] space-y-1.5 text-muted-foreground">
                     <div className="flex">
-                      <span className="font-semibold text-[#333] w-28">Contact Name:</span>
+                      <span className="font-semibold text-foreground w-28">Contact Name:</span>
                       <span className="flex-1">{formSupplier.contact || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-[#333] w-28">Address:</span>
+                      <span className="font-semibold text-foreground w-28">Address:</span>
                       <span className="flex-1">{formSupplier.address || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-[#333] w-28">Phone:</span>
+                      <span className="font-semibold text-foreground w-28">Phone:</span>
                       <span className="flex-1">{formSupplier.phone || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-[#333] w-28">Email:</span>
-                      <span className="flex-1 text-[#337ab7]">{formSupplier.email || 'N/A'}</span>
+                      <span className="font-semibold text-foreground w-28">Email:</span>
+                      <span className="flex-1 text-primary">{formSupplier.email || 'N/A'}</span>
                     </div>
                   </div>
                 )}
@@ -1122,8 +1122,8 @@ export default function PurchaseOrderView() {
             </div>
 
             {/* RIGHT CARD: TRANSACTION */}
-            <div className="lg:col-span-7 bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-              <div className="bg-[#fafafa] border-b border-[#e7ebee] px-3.5 py-2 font-semibold text-[#333] text-[13px] flex items-center justify-between">
+            <div className="lg:col-span-7 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+              <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px] flex items-center justify-between">
                 <span>Transaction</span>
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs text-gray-500 font-normal">#</span>
@@ -1139,22 +1139,22 @@ export default function PurchaseOrderView() {
                 {/* Branch and Location */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Branch*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Branch*:</label>
                     <select
                       value={formBranch}
                       onChange={(e) => setFormBranch(e.target.value)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
-                      <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                      <option value="Main Branch">Main Branch</option>
                     </select>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Location*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Location*:</label>
                     <select
                       value={formLocation}
                       onChange={(e) => setFormLocation(e.target.value)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
                       <option value="All Locations">All Locations</option>
                       <option value="Choueifat Main Facility">Choueifat Main Facility</option>
@@ -1162,7 +1162,7 @@ export default function PurchaseOrderView() {
                     <button
                       type="button"
                       onClick={() => setShowLocationModal(true)}
-                      className="h-[32px] w-[32px] bg-[#337ab7] hover:bg-[#286090] text-white rounded text-xs flex items-center justify-center cursor-pointer"
+                      className="h-[32px] w-[32px] bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center cursor-pointer"
                       title="Add Location"
                     >
                       <i className="fa fa-plus"></i>
@@ -1173,11 +1173,11 @@ export default function PurchaseOrderView() {
                 {/* Shipment and Order Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Shipment*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Shipment*:</label>
                     <select
                       value={formShipment}
                       onChange={(e) => setFormShipment(e.target.value)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
                       <option value="Local Delivery">Local Delivery</option>
                       <option value="Land Transport">Land Transport</option>
@@ -1187,12 +1187,12 @@ export default function PurchaseOrderView() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Date*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Date*:</label>
                     <input
                       type="date"
                       value={formOrderDate}
                       onChange={(e) => setFormOrderDate(e.target.value)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     />
                   </div>
                 </div>
@@ -1200,7 +1200,7 @@ export default function PurchaseOrderView() {
                 {/* Currency and Delivery Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-1.5">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Currency*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Currency*:</label>
                     <select
                       value={formCurrency}
                       onChange={(e) => {
@@ -1208,7 +1208,7 @@ export default function PurchaseOrderView() {
                         setFormCurrency(cur);
                         setFormCurrencyRate(cur === 'LL' || cur === 'LBP' ? 1 : 89500);
                       }}
-                      className="w-24 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="w-24 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
                       <option value="USD">USD</option>
                       <option value="LL">LL</option>
@@ -1217,7 +1217,7 @@ export default function PurchaseOrderView() {
                     <button
                       type="button"
                       onClick={() => setShowCurrencyModal(true)}
-                      className="h-[32px] w-[32px] bg-[#337ab7] hover:bg-[#286090] text-white rounded text-xs flex items-center justify-center cursor-pointer"
+                      className="h-[32px] w-[32px] bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center cursor-pointer"
                       title="Add Currency"
                     >
                       <i className="fa fa-plus"></i>
@@ -1226,30 +1226,30 @@ export default function PurchaseOrderView() {
                       type="number"
                       value={formCurrencyRate}
                       onChange={(e) => setFormCurrencyRate(parseFloat(e.target.value) || 1)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-right font-mono"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-right font-mono"
                     />
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Delivery:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Delivery:</label>
                     <input
                       type="date"
                       value={formDeliveryDate}
                       onChange={(e) => setFormDeliveryDate(e.target.value)}
-                      className="flex-1 h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                      className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     />
                   </div>
                 </div>
 
                 {/* Note */}
                 <div className="flex items-center gap-2">
-                  <label className="text-[13px] font-bold text-[#333] w-20 whitespace-nowrap">Note:</label>
+                  <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Note:</label>
                   <input
                     type="text"
                     value={formNotes}
                     onChange={(e) => setFormNotes(e.target.value)}
                     placeholder="General purchase order instructions, inspection terms, delivery gates..."
-                    className="flex-1 h-[32px] px-3 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                    className="flex-1 h-[32px] px-3 bg-white border border-border rounded text-[13px] text-foreground"
                   />
                 </div>
               </div>
@@ -1257,13 +1257,13 @@ export default function PurchaseOrderView() {
           </div>
 
           {/* DETAILS CARD: PRODUCTS GRID */}
-          <div className="bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden mb-3">
-            <div className="bg-[#fafafa] border-b border-[#e7ebee] px-3.5 py-2 font-semibold text-[#333] text-[13px]">
+          <div className="bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden mb-3">
+            <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px]">
               Details
             </div>
 
             {/* DETAILS TOOLBAR */}
-            <div className="p-3 border-b border-[#e7ebee] bg-white flex flex-wrap items-center justify-between gap-3">
+            <div className="p-3 border-b border-border bg-white flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2.5 flex-1">
                 {/* Search Item input */}
                 <div className="relative w-72">
@@ -1272,7 +1272,7 @@ export default function PurchaseOrderView() {
                     value={searchItemInput}
                     onChange={(e) => setSearchItemInput(e.target.value)}
                     placeholder="Search items by code or name..."
-                    className="w-full h-[32px] pl-3 pr-8 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333] focus:outline-none focus:border-[#337ab7]"
+                    className="w-full h-[32px] pl-3 pr-8 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         setShowItemModal(true);
@@ -1282,7 +1282,7 @@ export default function PurchaseOrderView() {
                   <button
                     type="button"
                     onClick={() => setShowItemModal(true)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#337ab7]"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
                   >
                     <i className="fa fa-search text-xs"></i>
                   </button>
@@ -1292,7 +1292,7 @@ export default function PurchaseOrderView() {
                 <select
                   value={formDiscType}
                   onChange={(e) => setFormDiscType(e.target.value as any)}
-                  className="h-[32px] px-2 bg-white border border-[#d2d6de] rounded text-[13px] text-[#333]"
+                  className="h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                 >
                   <option value="percent">Discount (%)</option>
                   <option value="amount">Discount ({formCurrency})</option>
@@ -1303,11 +1303,11 @@ export default function PurchaseOrderView() {
                   value={formDiscValue}
                   onChange={(e) => setFormDiscValue(parseFloat(e.target.value) || 0)}
                   placeholder="0"
-                  className="w-20 h-[32px] px-2 text-right bg-white border border-[#d2d6de] rounded text-[13px]"
+                  className="w-20 h-[32px] px-2 text-right bg-white border border-border rounded text-[13px]"
                 />
 
                 {/* Manual Tax Checkbox */}
-                <label className="flex items-center gap-1.5 text-xs text-[#555] cursor-pointer ml-2">
+                <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer ml-2">
                   <input
                     type="checkbox"
                     checked={enableManualTax}
@@ -1318,7 +1318,7 @@ export default function PurchaseOrderView() {
                 </label>
 
                 {/* Enable Total Price Checkbox */}
-                <label className="flex items-center gap-1.5 text-xs text-[#555] cursor-pointer ml-2">
+                <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer ml-2">
                   <input
                     type="checkbox"
                     checked={enableTotalPrice}
@@ -1334,7 +1334,7 @@ export default function PurchaseOrderView() {
                 <button
                   type="button"
                   onClick={() => setShowSupplierItemsModal(true)}
-                  className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                  className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-cubes"></i>
                   <span>Supplier Items</span>
@@ -1342,7 +1342,7 @@ export default function PurchaseOrderView() {
                 <button
                   type="button"
                   onClick={() => setShowItemModal(true)}
-                  className="h-[32px] px-3 bg-[#337ab7] hover:bg-[#286090] text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
+                  className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-plus"></i>
                   <span>Add Line</span>
@@ -1354,7 +1354,7 @@ export default function PurchaseOrderView() {
             <div className="overflow-x-auto">
               <table className="w-full text-[13px] text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#e7ebee] text-[#333] bg-[#fafafa]">
+                  <tr className="border-b border-border text-foreground bg-card">
                     <th className="py-2 px-3 font-semibold w-[120px]">Code</th>
                     <th className="py-2 px-3 font-semibold min-w-[240px]">Description</th>
                     <th className="py-2 px-3 font-semibold w-[160px]">Branch</th>
@@ -1377,7 +1377,7 @@ export default function PurchaseOrderView() {
                         <button
                           type="button"
                           onClick={() => setShowItemModal(true)}
-                          className="mt-2 text-xs text-[#337ab7] hover:underline font-medium inline-flex items-center gap-1"
+                          className="mt-2 text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
                         >
                           <i className="fa fa-plus"></i> Click here to select items from catalog
                         </button>
@@ -1386,13 +1386,13 @@ export default function PurchaseOrderView() {
                   ) : (
                     formItems.map((item, idx) => (
                       <tr key={item.id} className="border-b border-gray-100 hover:bg-slate-50 transition">
-                        <td className="py-2 px-3 font-mono text-xs font-semibold text-[#337ab7]">
+                        <td className="py-2 px-3 font-mono text-xs font-semibold text-primary">
                           {item.code}
                         </td>
-                        <td className="py-2 px-3 font-medium text-[#333]">
+                        <td className="py-2 px-3 font-medium text-foreground">
                           {item.description}
                         </td>
-                        <td className="py-2 px-3 text-[#555] text-xs">
+                        <td className="py-2 px-3 text-muted-foreground text-xs">
                           {item.branchName}
                         </td>
                         <td className="py-2 px-3 text-right">
@@ -1404,7 +1404,7 @@ export default function PurchaseOrderView() {
                             className="w-20 h-[26px] px-1.5 text-right font-mono border border-gray-300 rounded text-xs bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3 text-xs text-[#555]">
+                        <td className="py-2 px-3 text-xs text-muted-foreground">
                           {item.unit}
                         </td>
                         <td className="py-2 px-3 text-right">
@@ -1432,7 +1432,7 @@ export default function PurchaseOrderView() {
                             className="w-16 h-[26px] px-1.5 text-right font-mono border border-gray-300 rounded text-xs bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3 text-right font-mono font-medium text-[#333]">
+                        <td className="py-2 px-3 text-right font-mono font-medium text-foreground">
                           {item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         <td className="py-2 px-3 text-center">
@@ -1464,11 +1464,11 @@ export default function PurchaseOrderView() {
           {/* TOTALS SUMMARY & BOTTOM ACTIONS */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-6">
             {/* OTHER COSTS ACCORDION */}
-            <div className="lg:col-span-6 bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] p-3">
+            <div className="lg:col-span-6 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] p-3">
               <button
                 type="button"
                 onClick={() => setShowOtherCosts(!showOtherCosts)}
-                className="w-full flex items-center justify-between font-semibold text-[#333] text-[13px] cursor-pointer"
+                className="w-full flex items-center justify-between font-semibold text-foreground text-[13px] cursor-pointer"
               >
                 <span>Other Direct Costs (Freight, Customs, Port)</span>
                 <i className={`fa fa-chevron-${showOtherCosts ? 'up' : 'down'} text-gray-400`}></i>
@@ -1477,7 +1477,7 @@ export default function PurchaseOrderView() {
               {showOtherCosts && (
                 <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-2.5">
                   <div>
-                    <label className="text-xs text-[#555] block mb-1">Freight ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Freight ({formCurrency})</label>
                     <input
                       type="number"
                       value={formFreight}
@@ -1486,7 +1486,7 @@ export default function PurchaseOrderView() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#555] block mb-1">Customs ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Customs ({formCurrency})</label>
                     <input
                       type="number"
                       value={formCustoms}
@@ -1495,7 +1495,7 @@ export default function PurchaseOrderView() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#555] block mb-1">Other Cost ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Other Cost ({formCurrency})</label>
                     <input
                       type="number"
                       value={formOtherCost}
@@ -1508,43 +1508,43 @@ export default function PurchaseOrderView() {
             </div>
 
             {/* TOTALS SUMMARY TABLE (MATCHING OMEGA EXACTLY) */}
-            <div className="lg:col-span-6 bg-white border border-[#e7ebee] rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+            <div className="lg:col-span-6 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
               <table className="w-full text-[13px] border-collapse">
                 <tbody>
-                  <tr className="border-b border-[#e7ebee] bg-[#f2f4f7]">
-                    <th className="py-1.5 px-3 font-semibold text-left text-[#333]">Subtotal:</th>
-                    <td className="py-1.5 px-3 text-right font-mono text-[#333]">
+                  <tr className="border-b border-border bg-muted">
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">Subtotal:</th>
+                    <td className="py-1.5 px-3 text-right font-mono text-foreground">
                       {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
-                  <tr className="border-b border-[#e7ebee]">
-                    <th className="py-1.5 px-3 font-semibold text-left text-[#333]">Total Discount:</th>
+                  <tr className="border-b border-border">
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">Total Discount:</th>
                     <td className="py-1.5 px-3 text-right font-mono text-red-600">
                       -{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
                   {(formFreight > 0 || formCustoms > 0 || formOtherCost > 0) && (
-                    <tr className="border-b border-[#e7ebee]">
-                      <th className="py-1.5 px-3 font-semibold text-left text-[#333]">Additional Logistics:</th>
-                      <td className="py-1.5 px-3 text-right font-mono text-[#333]">
+                    <tr className="border-b border-border">
+                      <th className="py-1.5 px-3 font-semibold text-left text-foreground">Additional Logistics:</th>
+                      <td className="py-1.5 px-3 text-right font-mono text-foreground">
                         +{(formFreight + formCustoms + formOtherCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                       </td>
                     </tr>
                   )}
-                  <tr className="border-b border-[#e7ebee]">
-                    <th className="py-1.5 px-3 font-semibold text-left text-[#333]">VAT / Tax (11%):</th>
-                    <td className="py-1.5 px-3 text-right font-mono text-[#333]">
+                  <tr className="border-b border-border">
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">VAT / Tax (11%):</th>
+                    <td className="py-1.5 px-3 text-right font-mono text-foreground">
                       {totalTax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
-                  <tr className="border-b border-[#c9cfd8] bg-[#eef2f7]">
-                    <th className="py-2 px-3 font-bold text-left text-[#2b5797] text-sm">Grand Total:</th>
-                    <td className="py-2 px-3 text-right font-mono font-bold text-[#2b5797] text-base">
+                  <tr className="border-b border-border bg-muted">
+                    <th className="py-2 px-3 font-bold text-left text-primary text-sm">Grand Total:</th>
+                    <td className="py-2 px-3 text-right font-mono font-bold text-primary text-base">
                       {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
                   {formCurrency !== 'LL' && (
-                    <tr className="border-b border-[#e7ebee] bg-white">
+                    <tr className="border-b border-border bg-white">
                       <th className="py-1.5 px-3 text-xs text-gray-500 text-left">Equivalent (LL @ {formCurrencyRate.toLocaleString()}):</th>
                       <td className="py-1.5 px-3 text-right font-mono text-xs text-gray-600 font-semibold">
                         {grandTotalLL.toLocaleString()} LL
@@ -1563,13 +1563,13 @@ export default function PurchaseOrderView() {
           </div>
 
           {/* BOTTOM FORM ACTION BUTTONS (IDENTICAL TO OMEGA ERP) */}
-          <div className="bg-white border border-[#e7ebee] rounded p-3 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-wrap items-center justify-between gap-2">
+          <div className="bg-white border border-border rounded p-3 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               {/* Omega Orange Save Button */}
               <button
                 type="button"
                 onClick={() => handleSaveOrder(false)}
-                className="h-[36px] px-5 bg-[#fb8205] hover:bg-[#e07302] border border-[#da6f00] text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[36px] px-5 bg-amber-600 hover:bg-amber-700 border border-amber-600 text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-save"></i>
                 <span>Save</span>
@@ -1579,7 +1579,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => handleSaveOrder(true)}
-                className="h-[36px] px-5 bg-[#27ae60] hover:bg-[#219d55] text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                className="h-[36px] px-5 bg-emerald-700 hover:bg-emerald-700 text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-check"></i>
                 <span>Save & Post</span>
@@ -1589,7 +1589,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => setShowPreviewList(true)}
-                className="h-[36px] px-4 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-[#555] text-[13px] rounded transition cursor-pointer"
+                className="h-[36px] px-4 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-muted-foreground text-[13px] rounded transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -1603,7 +1603,7 @@ export default function PurchaseOrderView() {
                     <button
                       type="button"
                       onClick={handleApprovePO}
-                      className="h-[36px] px-4 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                      className="h-[36px] px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <i className="fa fa-thumbs-up"></i>
                       <span>Approve</span>
@@ -1623,7 +1623,7 @@ export default function PurchaseOrderView() {
                   <button
                     type="button"
                     onClick={handleConvertToInvoice}
-                    className="h-[36px] px-4 bg-[#27ae60] hover:bg-[#219d55] text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                    className="h-[36px] px-4 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <i className="fa fa-exchange"></i>
                     <span>Convert to Purchase Invoice</span>
@@ -1650,9 +1650,9 @@ export default function PurchaseOrderView() {
       {showSupplierModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#fafafa] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h3 className="font-bold text-[#333] text-sm flex items-center gap-2">
-                <i className="fa fa-building text-[#337ab7]"></i>
+            <div className="bg-card border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+                <i className="fa fa-building text-primary"></i>
                 <span>Select Supplier</span>
               </h3>
               <button onClick={() => setShowSupplierModal(false)} className="text-gray-400 hover:text-gray-600">
@@ -1668,14 +1668,14 @@ export default function PurchaseOrderView() {
                     setShowSupplierModal(false);
                     triggerToast(`Selected supplier: ${s.name}`);
                   }}
-                  className="p-3 border border-gray-200 rounded hover:border-[#337ab7] hover:bg-blue-50/40 transition cursor-pointer flex items-center justify-between"
+                  className="p-3 border border-gray-200 rounded hover:border-primary hover:bg-blue-50/40 transition cursor-pointer flex items-center justify-between"
                 >
                   <div>
-                    <div className="font-bold text-[#333] text-sm">{s.name}</div>
+                    <div className="font-bold text-foreground text-sm">{s.name}</div>
                     <div className="text-xs text-gray-500">Contact: {s.contact} | {s.phone}</div>
                     <div className="text-[11px] text-gray-400">{s.address}</div>
                   </div>
-                  <button className="text-xs px-2.5 py-1 bg-[#337ab7] text-white rounded">Select</button>
+                  <button className="text-xs px-2.5 py-1 bg-primary text-white rounded">Select</button>
                 </div>
               ))}
             </div>
@@ -1683,7 +1683,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => setShowSupplierModal(false)}
-                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-[#333] text-xs rounded"
+                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-foreground text-xs rounded"
               >
                 Close
               </button>
@@ -1698,9 +1698,9 @@ export default function PurchaseOrderView() {
       {showItemModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#fafafa] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-              <h3 className="font-bold text-[#333] text-sm flex items-center gap-2">
-                <i className="fa fa-cubes text-[#337ab7]"></i>
+            <div className="bg-card border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+                <i className="fa fa-cubes text-primary"></i>
                 <span>Search Inventory Item Catalog</span>
               </h3>
               <button onClick={() => setShowItemModal(false)} className="text-gray-400 hover:text-gray-600">
@@ -1721,8 +1721,8 @@ export default function PurchaseOrderView() {
                 <tbody>
                   {ITEMS_CATALOG.map((item) => (
                     <tr key={item.code} className="border-b border-gray-100 hover:bg-blue-50/40">
-                      <td className="p-2 font-mono font-semibold text-[#337ab7]">{item.code}</td>
-                      <td className="p-2 font-medium text-[#333]">{item.description}</td>
+                      <td className="p-2 font-mono font-semibold text-primary">{item.code}</td>
+                      <td className="p-2 font-medium text-foreground">{item.description}</td>
                       <td className="p-2 text-gray-500">{item.unit}</td>
                       <td className="p-2 text-right font-mono font-bold">${item.price.toFixed(2)}</td>
                       <td className="p-2 text-center">
@@ -1732,7 +1732,7 @@ export default function PurchaseOrderView() {
                             addItemToDetails(item);
                             setShowItemModal(false);
                           }}
-                          className="px-2.5 py-1 bg-[#27ae60] hover:bg-[#219d55] text-white rounded text-[11px] font-medium"
+                          className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-[11px] font-medium"
                         >
                           Add
                         </button>
@@ -1746,7 +1746,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={() => setShowItemModal(false)}
-                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-[#333] text-xs rounded"
+                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-foreground text-xs rounded"
               >
                 Close
               </button>
@@ -1761,7 +1761,7 @@ export default function PurchaseOrderView() {
       {showEmailModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-envelope"></i>
                 <span>Email Purchase Order #{formPoNumber}</span>
@@ -1777,7 +1777,7 @@ export default function PurchaseOrderView() {
                   type="email"
                   value={emailTo}
                   onChange={(e) => setEmailTo(e.target.value)}
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
@@ -1786,7 +1786,7 @@ export default function PurchaseOrderView() {
                   type="email"
                   value={emailCc}
                   onChange={(e) => setEmailCc(e.target.value)}
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
@@ -1795,7 +1795,7 @@ export default function PurchaseOrderView() {
                   type="text"
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
@@ -1804,7 +1804,7 @@ export default function PurchaseOrderView() {
                   rows={6}
                   value={emailBody}
                   onChange={(e) => setEmailBody(e.target.value)}
-                  className="w-full p-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none font-mono text-[11px]"
+                  className="w-full p-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none font-mono text-[11px]"
                 />
               </div>
             </div>
@@ -1819,7 +1819,7 @@ export default function PurchaseOrderView() {
               <button
                 type="button"
                 onClick={handleSendEmail}
-                className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded flex items-center gap-1.5"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5"
               >
                 <i className="fa fa-paper-plane"></i>
                 <span>Send PO</span>
@@ -1835,7 +1835,7 @@ export default function PurchaseOrderView() {
       {showDocModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#27ae60] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-emerald-700 text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-upload"></i>
                 <span>Attach Supporting Document</span>
@@ -1852,7 +1852,7 @@ export default function PurchaseOrderView() {
                   value={docNameInput}
                   onChange={(e) => setDocNameInput(e.target.value)}
                   placeholder="e.g. Proforma Invoice / Supplier Quotation #8841"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#27ae60] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-emerald-700 focus:outline-none"
                 />
               </div>
               <div>
@@ -1862,7 +1862,7 @@ export default function PurchaseOrderView() {
                   value={docUrlInput}
                   onChange={(e) => setDocUrlInput(e.target.value)}
                   placeholder="https://storage.vanguard-erp.lb/docs/po-603.pdf"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#27ae60] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-emerald-700 focus:outline-none"
                 />
               </div>
               <div className="p-3 border border-dashed border-gray-300 rounded bg-gray-50 text-center text-gray-500">
@@ -1884,7 +1884,7 @@ export default function PurchaseOrderView() {
                   setShowDocModal(false);
                   triggerToast('Supporting document attached successfully');
                 }}
-                className="px-4 py-1.5 bg-[#27ae60] hover:bg-[#219d55] text-white text-xs font-bold rounded"
+                className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded"
               >
                 Save Document
               </button>
@@ -1899,7 +1899,7 @@ export default function PurchaseOrderView() {
       {showStoreRecurringModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-repeat"></i>
                 <span>Store as Recurring Purchase Template</span>
@@ -1919,7 +1919,7 @@ export default function PurchaseOrderView() {
                   value={recurringName}
                   onChange={(e) => setRecurringName(e.target.value)}
                   placeholder="e.g. Monthly Olive Tin Supply (Marjeyoun)"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
@@ -1943,7 +1943,7 @@ export default function PurchaseOrderView() {
                   triggerToast(`Saved template "${recurringName}"`);
                   setRecurringName('');
                 }}
-                className="px-4 py-1.5 bg-[#337ab7] hover:bg-[#286090] text-white text-xs font-bold rounded"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded"
               >
                 Store Template
               </button>
@@ -1958,7 +1958,7 @@ export default function PurchaseOrderView() {
       {showRecallRecurringModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-history"></i>
                 <span>Recall Recurring Template</span>
@@ -1976,13 +1976,13 @@ export default function PurchaseOrderView() {
                     setShowRecallRecurringModal(false);
                     triggerToast(`Recalled ${t.items.length} items from template "${t.name}"`);
                   }}
-                  className="p-3 border border-gray-200 rounded hover:border-[#337ab7] hover:bg-blue-50/40 transition cursor-pointer flex items-center justify-between"
+                  className="p-3 border border-gray-200 rounded hover:border-primary hover:bg-blue-50/40 transition cursor-pointer flex items-center justify-between"
                 >
                   <div>
-                    <div className="font-bold text-[#333]">{t.name}</div>
+                    <div className="font-bold text-foreground">{t.name}</div>
                     <div className="text-gray-500 text-[11px]">{t.items.length} item lines defined</div>
                   </div>
-                  <button className="px-2.5 py-1 bg-[#337ab7] text-white rounded text-xs">Recall</button>
+                  <button className="px-2.5 py-1 bg-primary text-white rounded text-xs">Recall</button>
                 </div>
               ))}
             </div>
@@ -2005,7 +2005,7 @@ export default function PurchaseOrderView() {
       {showLocationModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-map-marker"></i>
                 <span>Add Storage Location</span>
@@ -2020,7 +2020,7 @@ export default function PurchaseOrderView() {
                 <input
                   type="text"
                   placeholder="e.g. Silo C - Raw Oil Tank #4"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                   id="newLocationName"
                 />
               </div>
@@ -2043,7 +2043,7 @@ export default function PurchaseOrderView() {
                   }
                   setShowLocationModal(false);
                 }}
-                className="px-3 py-1 bg-[#337ab7] text-white text-xs font-bold rounded"
+                className="px-3 py-1 bg-primary text-white text-xs font-bold rounded"
               >
                 Add Location
               </button>
@@ -2058,7 +2058,7 @@ export default function PurchaseOrderView() {
       {showCurrencyModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-money"></i>
                 <span>Add Currency</span>
@@ -2073,7 +2073,7 @@ export default function PurchaseOrderView() {
                 <input
                   type="text"
                   placeholder="e.g. GBP"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                   id="newCurSymbol"
                 />
               </div>
@@ -2082,7 +2082,7 @@ export default function PurchaseOrderView() {
                 <input
                   type="number"
                   placeholder="114000"
-                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-[#337ab7] focus:outline-none"
+                  className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                   id="newCurRate"
                 />
               </div>
@@ -2109,7 +2109,7 @@ export default function PurchaseOrderView() {
                   }
                   setShowCurrencyModal(false);
                 }}
-                className="px-3 py-1 bg-[#337ab7] text-white text-xs font-bold rounded"
+                className="px-3 py-1 bg-primary text-white text-xs font-bold rounded"
               >
                 Add Currency
               </button>
@@ -2124,7 +2124,7 @@ export default function PurchaseOrderView() {
       {showSupplierItemsModal && (
         <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden border border-gray-200 animate-fade-in">
-            <div className="bg-[#337ab7] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-cubes"></i>
                 <span>Items Supplied by {formSupplier.name}</span>
@@ -2140,7 +2140,7 @@ export default function PurchaseOrderView() {
                   className="p-3 border border-gray-200 rounded flex items-center justify-between hover:bg-slate-50"
                 >
                   <div>
-                    <div className="font-bold text-[#333]">{item.description}</div>
+                    <div className="font-bold text-foreground">{item.description}</div>
                     <div className="text-gray-500 font-mono text-[11px]">Code: {item.code} | Unit: {item.unit}</div>
                     <div className="text-emerald-700 font-bold font-mono">${item.price.toFixed(2)}</div>
                   </div>
@@ -2150,7 +2150,7 @@ export default function PurchaseOrderView() {
                       addItemToDetails(item);
                       setShowSupplierItemsModal(false);
                     }}
-                    className="px-3 py-1.5 bg-[#27ae60] hover:bg-[#219d55] text-white rounded font-medium text-xs flex items-center gap-1"
+                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded font-medium text-xs flex items-center gap-1"
                   >
                     <i className="fa fa-plus"></i>
                     <span>Add to PO</span>

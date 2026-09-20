@@ -248,7 +248,7 @@ export default function MessageOnInvoiceView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-background text-slate-800 font-sans min-h-screen">
       {/* TOAST POPUP */}
       {toast.show && (
         <div className="fixed top-5 right-5 z-[9999] animate-fadeIn">
@@ -276,7 +276,7 @@ export default function MessageOnInvoiceView() {
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
-            <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition-colors">
+            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
               Home
             </Link>
           </li>
@@ -324,7 +324,7 @@ export default function MessageOnInvoiceView() {
                 <button
                   type="button"
                   onClick={openAddModal}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>New</span>
@@ -398,7 +398,7 @@ export default function MessageOnInvoiceView() {
                               type="button"
                               onClick={() => setDeleteTarget(row)}
                               title="Delete Message"
-                              className="p-1 rounded bg-[#ef4444] hover:bg-[#dc2626] text-white transition-colors cursor-pointer"
+                              className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -409,7 +409,7 @@ export default function MessageOnInvoiceView() {
                             type="button"
                             onClick={() => setDefaultTarget(row)}
                             title="Set as Default"
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#10b981] hover:bg-[#059669] text-white text-[10px] font-semibold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-semibold transition-colors cursor-pointer"
                           >
                             <Check className="w-3 h-3" />
                             <span className="hidden sm:inline">Default</span>
@@ -420,7 +420,7 @@ export default function MessageOnInvoiceView() {
                             type="button"
                             onClick={() => openEditModal(row)}
                             title="Edit Message"
-                            className="p-1 rounded bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer"
+                            className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -531,7 +531,7 @@ export default function MessageOnInvoiceView() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -642,7 +642,7 @@ export default function MessageOnInvoiceView() {
                 <button
                   type="button"
                   onClick={() => handleUpdate(0)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -650,7 +650,7 @@ export default function MessageOnInvoiceView() {
                 <button
                   type="button"
                   onClick={() => handleUpdate(1)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1e40af] hover:bg-[#1d4ed8] text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1e40af] hover:bg-primary/90 text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save for all Branches</span>
@@ -686,7 +686,7 @@ export default function MessageOnInvoiceView() {
               <button
                 type="button"
                 onClick={confirmSetDefault}
-                className="px-4 py-1.5 bg-[#10b981] hover:bg-[#059669] text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 OK
               </button>
@@ -720,7 +720,7 @@ export default function MessageOnInvoiceView() {
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="px-4 py-1.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
                 OK
               </button>

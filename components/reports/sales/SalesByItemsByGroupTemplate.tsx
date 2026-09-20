@@ -408,7 +408,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
             <input type="text" value={getDateDisplay()} readOnly className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[250px]" />
             
             <div className="flex items-center gap-2 ml-auto">
-              <button onClick={() => setIsFiltered(true)} className="px-10 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
+              <button onClick={() => setIsFiltered(true)} className="px-6 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 text-xs shadow-xs cursor-pointer">Filter Report</button>
             </div>
           </div>
 
@@ -417,11 +417,11 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
             <div className="flex flex-col">
               <span className="text-[11px] font-bold text-slate-500 mb-0.5">Branch</span>
               <select 
-                className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[200px]"
+                className="border border-border rounded-lg p-1.5 text-xs min-w-[200px] bg-card text-foreground"
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               >
-                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                <option value="Main Branch">Main Branch</option>
               </select>
             </div>
             
@@ -484,7 +484,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
             </div>
             
             <div className="flex items-center gap-2 ml-auto mt-auto">
-              <button onClick={() => setIsFiltered(false)} className="px-10 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
+              <button onClick={() => setIsFiltered(false)} className="px-6 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 text-xs shadow-xs cursor-pointer">Reset Filters</button>
             </div>
           </div>
         </div>

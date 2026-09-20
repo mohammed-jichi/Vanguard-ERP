@@ -422,7 +422,7 @@ export default function PaymentTypesView() {
   };
 
   return (
-    <div className="wspaceCont font-sans text-slate-800 bg-[#f8fafc] min-h-screen pb-12">
+    <div className="wspaceCont font-sans text-slate-800 bg-background min-h-screen pb-12">
       {/* Toast Popup Notification */}
       {toast.show && (
         <div
@@ -539,7 +539,7 @@ export default function PaymentTypesView() {
                   <button
                     type="button"
                     onClick={handleOpenSortingModal}
-                    className="px-3 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
+                    className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
                   >
                     <ArrowUpDown className="w-4 h-4" /> Sorting
                   </button>
@@ -547,7 +547,7 @@ export default function PaymentTypesView() {
                   <button
                     type="button"
                     onClick={() => setActiveView('bills')}
-                    className="px-3 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
+                    className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
                   >
                     <Banknote className="w-4 h-4" /> Payment Bills
                   </button>
@@ -555,7 +555,7 @@ export default function PaymentTypesView() {
                   <button
                     type="button"
                     onClick={handleOpenAdd}
-                    className="px-3.5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
+                    className="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
                   >
                     <Plus className="w-4 h-4" /> New
                   </button>
@@ -740,7 +740,7 @@ export default function PaymentTypesView() {
                   <button
                     type="button"
                     onClick={handleOpenAddBill}
-                    className="px-3.5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
+                    className="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
                   >
                     <Plus className="w-4 h-4" /> New Bill
                   </button>
@@ -1150,9 +1150,9 @@ export default function PaymentTypesView() {
       {/* ========================================================================= */}
       {showSortingModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-[#4c5c7a] w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="px-4 py-3 bg-[#4c5c7a] text-white flex items-center justify-between">
+            <div className="px-4 py-3 bg-primary text-white flex items-center justify-between">
               <h3 className="text-base font-bold flex items-center gap-2">
                 <ArrowUpDown className="w-4 h-4" /> Sorting
               </h3>
@@ -1235,7 +1235,7 @@ export default function PaymentTypesView() {
               <button
                 type="button"
                 onClick={handleSaveSorting}
-                className="px-4 py-1.5 bg-[#4c5c7a] hover:bg-[#3c4a63] text-white rounded text-xs font-bold transition-colors flex items-center gap-1"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-bold transition-colors flex items-center gap-1"
               >
                 <Save className="w-3.5 h-3.5" /> Save Sorting
               </button>

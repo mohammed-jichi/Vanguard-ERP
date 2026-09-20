@@ -9,7 +9,16 @@ import {
   FilterOption,
   PRIMARY_TRANSACTION_MODE_FIELD,
   getDuplicateInvoicesModeFilters,
+  MODE_SPECIFIC_FILTERS_MAP,
 } from '@/config/reportRegistry';
+import {
+  resolveDateRangeFromPreset,
+  getDefaultInitialDateRange,
+  getStandardPeriodOptions,
+  isCustomDatePreset,
+  formatDisplayDate,
+  parseISODate,
+} from '@/lib/dateRangeEngine';
 
 // ============================================================================
 // PROPS INTERFACE
@@ -48,22 +57,32 @@ export default function DynamicReportFilterRenderer({
     [activeReportKey, module]
   );
 
-  const isDuplicateInvoices = useMemo(
-    () => activeReportKey.toLowerCase().includes('duplicate invoice'),
-    [activeReportKey]
-  );
+  const isDuplicateInvoices = useMemo(() => {
+    const key = activeReportKey.toLowerCase().trim();
+    const cleanKey = activeReportKey.toUpperCase().trim().replace(/[-_]/g, '_');
+    return (
+      key.includes('duplicate invoice') ||
+      key.includes('duplicate bills') ||
+      key.includes('master transaction engine') ||
+      cleanKey === 'REP_S_00188' ||
+      reportConfig?.code === 'REP_S_00188' ||
+      reportConfig?.reportKey === 'Duplicate Invoices' ||
+      reportConfig?.reportKey === 'Duplicate Invoices / Audit Search'
+    );
+  }, [activeReportKey, reportConfig]);
 
   // Helper to compute initial default values for the current config
   const getInitialValuesForConfig = (config: ReportConfig, mode?: string): Record<string, any> => {
+    const defaultRange = getDefaultInitialDateRange('This Month');
     const initial: Record<string, any> = {
-      period: 'This Month',
-      fromDate: '2026-08-01',
-      toDate: '2026-08-31',
+      period: defaultRange.period,
+      fromDate: defaultRange.fromDate,
+      toDate: defaultRange.toDate,
     };
 
     const targetFilters = isDuplicateInvoices
-      ? [PRIMARY_TRANSACTION_MODE_FIELD, ...getDuplicateInvoicesModeFilters(mode || 'Duplicate Invoices')]
-      : config.filters;
+      ? getDuplicateInvoicesModeFilters('Duplicate Invoices')
+      : (MODE_SPECIFIC_FILTERS_MAP[activeReportKey] || config.filters);
 
     targetFilters.forEach((field) => {
       if (field.defaultValue !== undefined) {
@@ -90,20 +109,16 @@ export default function DynamicReportFilterRenderer({
   const activeValues = externalValues || internalValues;
   const prevReportKeyRef = useRef<string>(activeReportKey);
 
-  const currentMode = isDuplicateInvoices
-    ? (activeValues.primaryMode || 'Duplicate Invoices')
-    : undefined;
-
-  // Dynamic filter schema switcher for Duplicate Invoices master engine
+  // Dynamic filter schema switcher
   const effectiveFilters = useMemo(() => {
     if (isDuplicateInvoices) {
-      return [
-        PRIMARY_TRANSACTION_MODE_FIELD,
-        ...getDuplicateInvoicesModeFilters(currentMode || 'Duplicate Invoices'),
-      ];
+      return getDuplicateInvoicesModeFilters('Duplicate Invoices');
+    }
+    if (MODE_SPECIFIC_FILTERS_MAP[activeReportKey]) {
+      return MODE_SPECIFIC_FILTERS_MAP[activeReportKey];
     }
     return reportConfig.filters;
-  }, [isDuplicateInvoices, currentMode, reportConfig.filters]);
+  }, [isDuplicateInvoices, activeReportKey, reportConfig.filters]);
 
   // 3. State & Reset Handling: Flush obsolete parameters when report changes
   useEffect(() => {
@@ -116,7 +131,7 @@ export default function DynamicReportFilterRenderer({
 
       // Create list of valid field IDs for the new report
       const fieldsToCheck = isDuplicateInvoices
-        ? [PRIMARY_TRANSACTION_MODE_FIELD, ...getDuplicateInvoicesModeFilters('Duplicate Invoices')]
+        ? getDuplicateInvoicesModeFilters('Duplicate Invoices')
         : newConfig.filters;
       const validFieldIds = new Set<string>(fieldsToCheck.map((f) => f.id));
       // Standard date fields are always permissible to preserve if they existed
@@ -147,8 +162,29 @@ export default function DynamicReportFilterRenderer({
       [fieldId]: value,
     };
 
-    if (fieldId === 'primaryMode' && isDuplicateInvoices) {
+    // Dynamic Period Preset Resolution
+    if (fieldId === 'period') {
+      if (value !== 'Custom' && value !== 'Custom Range' && value !== 'Custom Date Range' && value !== 'Date Range') {
+        const resolved = resolveDateRangeFromPreset(value, nextValues.fromDate, nextValues.toDate);
+        nextValues.fromDate = resolved.fromDate;
+        nextValues.toDate = resolved.toDate;
+      }
+    } else if (fieldId === 'fromDate' || fieldId === 'toDate') {
+      nextValues.period = 'Custom';
+    }
+
+    if (fieldId === 'primaryMode') {
       const modeFilters = getDuplicateInvoicesModeFilters(value);
+      const validModeFieldIds = new Set<string>([
+        'primaryMode',
+        'period',
+        'fromDate',
+        'toDate',
+        'branch',
+        ...modeFilters.map((f) => f.id),
+      ]);
+
+      // Initialize defaults for the newly active mode
       modeFilters.forEach((f) => {
         if (nextValues[f.id] === undefined) {
           if (f.defaultValue !== undefined) {
@@ -164,6 +200,13 @@ export default function DynamicReportFilterRenderer({
           }
         }
       });
+
+      // Purge obsolete mode-specific filter fields that are not in the new mode
+      Object.keys(nextValues).forEach((k) => {
+        if (!validModeFieldIds.has(k)) {
+          delete nextValues[k];
+        }
+      });
     }
 
     setInternalValues(nextValues);
@@ -174,7 +217,7 @@ export default function DynamicReportFilterRenderer({
 
   // Reset filter values back to report defaults
   const handleReset = () => {
-    const defaultVals = getInitialValuesForConfig(reportConfig, currentMode);
+    const defaultVals = getInitialValuesForConfig(reportConfig);
     setInternalValues(defaultVals);
     if (onValuesChange) {
       onValuesChange(defaultVals);
@@ -195,8 +238,9 @@ export default function DynamicReportFilterRenderer({
 
   // 4. Conditional Rendering evaluator
   const isFieldVisible = (field: ReportFilterFieldConfig): boolean => {
-    if (!field.dependsOn) return true;
-    const { field: depField, equals, notEquals, in: inArr, isTruthy } = field.dependsOn;
+    const condition = field.dependsOn || field.conditionalOn;
+    if (!condition) return true;
+    const { field: depField, equals, notEquals, in: inArr, isTruthy } = condition;
     const depVal = activeValues[depField];
 
     if (equals !== undefined && depVal !== equals) return false;
@@ -211,12 +255,12 @@ export default function DynamicReportFilterRenderer({
 
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200 p-4 md:p-5 shadow-sm space-y-4 print:hidden select-none ${className}`}
+      className={`bg-card rounded-xl border border-border p-4 md:p-5 shadow-xs space-y-4 print:hidden select-none ${className}`}
       data-testid="dynamic-report-filter-bar"
     >
       {/* SECTION HEADER & ACTIVE REPORT PILL */}
       {showTitleBar && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-border/60">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
@@ -247,7 +291,8 @@ export default function DynamicReportFilterRenderer({
             // TYPE A: DATE-RANGE (Period select + optional custom date inputs)
             if (field.type === 'date-range') {
               const currentPeriod = activeValues.period || field.defaultValue || 'This Month';
-              const isCustom = currentPeriod === 'Custom';
+              const isCustom = isCustomDatePreset(currentPeriod);
+              const resolved = resolveDateRangeFromPreset(currentPeriod, activeValues.fromDate, activeValues.toDate);
 
               return (
                 <React.Fragment key={field.id}>
@@ -268,7 +313,13 @@ export default function DynamicReportFilterRenderer({
                         className="w-full min-w-0 appearance-none bg-white border border-slate-300 rounded-md py-1.5 px-2.5 pr-7 text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-500 transition-all cursor-pointer shadow-2xs truncate"
                       >
                         {(field.options || []).map((opt) => (
-                          <option key={opt.value} value={opt.value}>
+                          <option
+                            key={opt.value}
+                            value={opt.value}
+                            disabled={opt.disabled}
+                            title={opt.tooltip}
+                            className={opt.disabled ? 'text-slate-400 bg-slate-100 italic' : ''}
+                          >
                             {opt.label}
                           </option>
                         ))}
@@ -277,34 +328,55 @@ export default function DynamicReportFilterRenderer({
                     </div>
                   </div>
 
-                  {/* As-Of / From Date */}
-                  <div className="flex flex-col gap-1 text-left min-w-0">
-                    <label className="text-[11px] font-medium text-slate-600 truncate">
-                      {isCustom ? 'From Date' : 'As-of Date'}
-                    </label>
-                    <div className="relative min-w-0">
-                      <input
-                        type="date"
-                        value={activeValues.fromDate || '2026-08-01'}
-                        onChange={(e) => handleFieldChange('fromDate', e.target.value)}
-                        className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
-                      />
-                    </div>
-                  </div>
-
-                  {/* To Date (Only if Custom Range selected) */}
-                  {isCustom && (
-                    <div className="flex flex-col gap-1 text-left min-w-0">
-                      <label className="text-[11px] font-medium text-slate-600 truncate">To Date</label>
-                      <div className="relative min-w-0">
-                        <input
-                          type="date"
-                          value={activeValues.toDate || '2026-08-31'}
-                          onChange={(e) => handleFieldChange('toDate', e.target.value)}
-                          className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
-                        />
+                  {/* Read-Only Contextual Badge for Static Presets */}
+                  {!isCustom ? (
+                    <div className="flex flex-col gap-1 text-left min-w-0 sm:col-span-2">
+                      <label className="text-[11px] font-medium text-slate-500 truncate">
+                        Active Period
+                      </label>
+                      <div className="flex items-center gap-2 h-[34px] px-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-700 shadow-2xs">
+                        <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span className="font-semibold text-slate-800 shrink-0">{currentPeriod}:</span>
+                        <span className="font-mono text-slate-600 truncate">{resolved.displayPeriod}</span>
+                        {resolved.warning && (
+                          <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-auto shrink-0">
+                            {resolved.warning}
+                          </span>
+                        )}
                       </div>
                     </div>
+                  ) : (
+                    <>
+                      {/* From Date - ONLY WHEN CUSTOM */}
+                      <div className="flex flex-col gap-1 text-left min-w-0">
+                        <label className="text-[11px] font-medium text-slate-600 truncate">
+                          From Date
+                        </label>
+                        <div className="relative min-w-0">
+                          <input
+                            type="date"
+                            value={activeValues.fromDate || ''}
+                            onChange={(e) => handleFieldChange('fromDate', e.target.value)}
+                            className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
+                          />
+                        </div>
+                      </div>
+
+                      {/* To Date - ONLY WHEN CUSTOM */}
+                      <div className="flex flex-col gap-1 text-left min-w-0">
+                        <label className="text-[11px] font-medium text-slate-600 truncate">
+                          To Date
+                        </label>
+                        <div className="relative min-w-0">
+                          <input
+                            type="date"
+                            value={activeValues.toDate || ''}
+                            onChange={(e) => handleFieldChange('toDate', e.target.value)}
+                            className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
+                          />
+                        </div>
+                      </div>
+                    </>
                   )}
                 </React.Fragment>
               );
@@ -427,24 +499,24 @@ export default function DynamicReportFilterRenderer({
           {extraControls}
         </div>
 
-        {/* 5. ACTION BUTTONS: PRESERVED SLATE NAVY & BURGUNDY ACTION BUTTONS */}
-        <div className="flex flex-row lg:flex-col gap-2 shrink-0 w-full lg:w-36 pt-0 lg:pt-5 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-4">
-          {/* Primary Action Button: Slate Navy (#334155) */}
+        {/* 5. ACTION BUTTONS: STANDARD VANGUARD DESIGN SYSTEM BUTTONS */}
+        <div className="flex flex-row lg:flex-col gap-2 shrink-0 w-full lg:w-36 pt-0 lg:pt-5 border-t lg:border-t-0 lg:border-l border-border lg:pl-4">
+          {/* Primary Action Button: Standard Vanguard Primary */}
           <button
             type="button"
             onClick={handleApply}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-[#334155] hover:bg-[#1e293b] text-white text-xs px-3 py-2 rounded-md font-medium shadow-2xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
             title="Filter Report"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
             <span>Filter Report</span>
           </button>
 
-          {/* Reset Filters Button: Deep Burgundy (#5c2427) */}
+          {/* Reset Filters Button: Standard Secondary/Outline */}
           <button
             type="button"
             onClick={handleReset}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-[#5c2427] hover:bg-[#4a1d20] text-white text-xs px-3 py-2 rounded-md font-medium shadow-2xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-muted hover:bg-slate-200 text-foreground text-xs px-3 py-2 rounded-lg font-medium border border-border shadow-xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
             title="Reset Filters"
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />

@@ -189,32 +189,32 @@ export default function SalesByItemsReport({
   const handleFilterReport = () => {};
   const handleResetFilters = () => {};
 
-  const solidInputClass = "bg-white border-2 border-slate-400 text-slate-900 font-semibold text-xs rounded px-2.5 py-1.5 focus:border-[#1a629b] focus:outline-none shadow-2xs opacity-100";
+  const solidInputClass = "bg-background border border-border text-foreground font-semibold text-xs rounded px-2.5 py-1.5 focus:border-primary focus:outline-none shadow-2xs opacity-100";
 
   return (
-    <div className="w-full font-sans text-slate-800">
+    <div className="w-full font-sans text-foreground">
       
       {!hideToolbar && (
         <>
           {/* 1. SOLID, HIGH-CONTRAST FILTER CARD */}
-          <div className="bg-white rounded-xl border-2 border-slate-300 shadow-sm p-4 mb-4 print:hidden">
+          <div className="bg-card text-foreground rounded-xl border border-border shadow-xs p-4 mb-4 print:hidden">
             
-            <div className="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-              <div className="w-6 h-6 rounded bg-slate-200 flex items-center justify-center text-slate-700">
+            <div className="flex items-center gap-2 mb-3 border-b border-border pb-2">
+              <div className="w-6 h-6 rounded bg-muted flex items-center justify-center text-foreground">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-900">Filters</div>
-                <div className="text-[11px] text-[#1a629b] font-bold">{reportMode}</div>
+                <div className="text-xs font-bold text-foreground">Filters</div>
+                <div className="text-[11px] text-primary font-bold">{reportMode}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
               {/* Report Mode */}
               <div className="flex flex-col gap-1 md:col-span-3">
-                <label className="text-[11px] font-bold text-slate-700">Report Mode</label>
+                <label className="text-[11px] font-bold text-foreground">Report Mode</label>
                 <select
                   value={reportMode}
                   onChange={(e) => setReportMode(e.target.value)}
@@ -228,7 +228,7 @@ export default function SalesByItemsReport({
 
               {/* Date Period */}
               <div className="flex flex-col gap-1 md:col-span-2">
-                <label className="text-[11px] font-bold text-slate-700">Period</label>
+                <label className="text-[11px] font-bold text-foreground">Period</label>
                 <select
                   value={period}
                   onChange={(e) => handlePeriodChange(e.target.value)}
@@ -242,7 +242,7 @@ export default function SalesByItemsReport({
 
               {/* Date Display */}
               <div className="flex flex-col gap-1 md:col-span-2">
-                <label className="text-[11px] font-bold text-slate-700">Date Info</label>
+                <label className="text-[11px] font-bold text-foreground">Date Info</label>
                 <input
                   type="text"
                   value={dateDisplay}
@@ -255,25 +255,25 @@ export default function SalesByItemsReport({
               {isGroupByMode && (
                 <>
                   <div className="flex flex-col gap-1 md:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-700">Branch</label>
+                    <label className="text-[11px] font-bold text-foreground">Branch</label>
                     <select value={branch} onChange={(e) => setBranch(e.target.value)} className={solidInputClass}>
-                      <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                      <option value="Main Branch">Main Branch</option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-3">
-                    <label className="text-[11px] font-bold text-slate-700">Category</label>
+                    <label className="text-[11px] font-bold text-foreground">Category</label>
                     <select value={category} onChange={(e) => setCategory(e.target.value)} className={solidInputClass}>
                       {CATEGORIES_LIST.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-3">
-                    <label className="text-[11px] font-bold text-slate-700">Division</label>
+                    <label className="text-[11px] font-bold text-foreground">Division</label>
                     <select value={division} onChange={(e) => setDivision(e.target.value)} className={solidInputClass}>
                       {DIVISIONS_LIST.map((d) => <option key={d} value={d}>{d}</option>)}
                     </select>
                   </div>
                   <div className="flex flex-col gap-1 md:col-span-3">
-                    <label className="text-[11px] font-bold text-slate-700">Group</label>
+                    <label className="text-[11px] font-bold text-foreground">Group</label>
                     <select value={group} onChange={(e) => setGroup(e.target.value)} className={solidInputClass}>
                       {GROUPS_LIST.map((g) => <option key={g} value={g}>{g}</option>)}
                     </select>
@@ -284,16 +284,16 @@ export default function SalesByItemsReport({
                       id="removeGrouping"
                       checked={removeGrouping}
                       onChange={(e) => setRemoveGrouping(e.target.checked)}
-                      className="w-4 h-4 text-[#1a629b] rounded border-2 border-slate-400"
+                      className="w-4 h-4 accent-primary rounded border border-border"
                     />
-                    <label htmlFor="removeGrouping" className="text-xs font-bold text-slate-700">Remove Grouping</label>
+                    <label htmlFor="removeGrouping" className="text-xs font-bold text-foreground">Remove Grouping</label>
                   </div>
                 </>
               )}
 
               {isSalesmanMode && (
                 <div className="flex flex-col gap-1 md:col-span-3">
-                  <label className="text-[11px] font-bold text-slate-700">Salesman</label>
+                  <label className="text-[11px] font-bold text-foreground">Salesman</label>
                   <select value={salesman} onChange={(e) => setSalesman(e.target.value)} className={solidInputClass}>
                     {SALESMEN_LIST.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -302,7 +302,7 @@ export default function SalesByItemsReport({
 
               {isSizeColorMode && (
                 <div className="flex flex-col gap-1 md:col-span-3">
-                  <label className="text-[11px] font-bold text-slate-700">Invoices</label>
+                  <label className="text-[11px] font-bold text-foreground">Invoices</label>
                   <select value={invoicesType} onChange={(e) => setInvoicesType(e.target.value)} className={solidInputClass}>
                     <option value="All Invoices">All Invoices</option>
                     <option value="Paid Invoices">Paid Invoices</option>
@@ -318,9 +318,9 @@ export default function SalesByItemsReport({
                   id="showRemark"
                   checked={showRemark}
                   onChange={(e) => setShowRemark(e.target.checked)}
-                  className="w-4 h-4 text-[#1a629b] rounded border-2 border-slate-400"
+                  className="w-4 h-4 accent-primary rounded border border-border"
                 />
-                <label htmlFor="showRemark" className="text-xs font-bold text-slate-700">Show Remark</label>
+                <label htmlFor="showRemark" className="text-xs font-bold text-foreground">Show Remark</label>
               </div>
 
               {/* Action Buttons */}
@@ -328,14 +328,14 @@ export default function SalesByItemsReport({
                 <button
                   type="button"
                   onClick={handleFilterReport}
-                  className="flex-1 bg-[#1a629b] hover:bg-[#154e7d] text-white font-bold py-1.5 px-3 rounded text-xs shadow-sm"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-1.5 px-3 rounded-xl text-xs shadow-xs"
                 >
                   Filter Report
                 </button>
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded border border-slate-300 text-xs shadow-2xs"
+                  className="flex-1 bg-muted hover:bg-muted/80 text-foreground font-bold py-1.5 px-3 rounded-xl border border-border text-xs shadow-2xs"
                 >
                   Reset
                 </button>
@@ -345,13 +345,13 @@ export default function SalesByItemsReport({
           </div>
 
           {/* 2. COMPACT TOOLBAR */}
-          <div className="flex items-center justify-between bg-white border border-slate-300 rounded-t-xl px-4 py-2 print:hidden">
-            <h3 className="text-xs font-bold text-slate-900">{reportMode}</h3>
+          <div className="flex items-center justify-between bg-card border border-border rounded-t-xl px-4 py-2 print:hidden text-foreground">
+            <h3 className="text-xs font-bold">{reportMode}</h3>
             <div className="flex items-center gap-1.5">
-              <button type="button" onClick={() => window.print()} className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
+              <button type="button" onClick={() => window.print()} className="px-3 py-1 bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-semibold rounded-lg shadow-xs">
                 Print Report
               </button>
-              <button type="button" className="px-3 py-1 bg-[#2d3748] text-white text-xs font-semibold rounded shadow-sm">
+              <button type="button" className="px-3 py-1 bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-semibold rounded-lg shadow-xs">
                 Export Report
               </button>
             </div>
@@ -360,24 +360,24 @@ export default function SalesByItemsReport({
       )}
 
       {/* 3. STRICT VANGUARD A4 PRINT CONTAINER (NORMAL-CASE & CONDENSED) */}
-      <div className={hideToolbar ? "w-full overflow-x-auto flex justify-center" : "w-full overflow-x-auto flex justify-center bg-slate-200/60 p-4 md:p-6 rounded-b-xl"}>
-        <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 shadow-md text-[11px] font-['Arial','Helvetica',sans-serif] leading-none text-black select-none">
+      <div className={hideToolbar ? "w-full overflow-x-auto flex justify-center" : "w-full overflow-x-auto flex justify-center bg-muted/40 p-4 md:p-6 rounded-b-xl"}>
+        <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-card p-8 shadow-md text-[11px] font-['Arial','Helvetica',sans-serif] leading-none text-card-foreground select-none">
           
           {/* Header Metadata */}
-          <div className="flex justify-between items-start mb-3 border-b border-slate-200 pb-2">
+          <div className="flex justify-between items-start mb-3 border-b border-border pb-2">
             <div>
-              <div className="text-[#1a629b] font-bold text-[13px] tracking-tight">
+              <div className="text-primary font-bold text-[13px] tracking-tight">
                 Southern Olive Oil Products S.A.R.L
               </div>
-              <div className="text-[10px] text-slate-500 mt-1">{dateDisplay}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">{dateDisplay}</div>
             </div>
 
             <div className="text-center">
               <div className="font-bold text-xs">{reportMode}</div>
-              <div className="text-[10px] text-slate-600 mt-0.5">Year: 2026 - Month: 8</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">Year: 2026 - Month: 8</div>
             </div>
 
-            <div className="text-right text-[10px] text-slate-500 font-mono">
+            <div className="text-right text-[10px] text-muted-foreground font-mono">
               Page 1 of 5
             </div>
           </div>
@@ -385,7 +385,7 @@ export default function SalesByItemsReport({
           {/* Table with STRICT NORMAL-CASE HEADERS */}
           <table className="w-full text-left border-collapse mt-2">
             <thead>
-              <tr className="border-b border-black text-black font-bold normal-case text-[11px]">
+              <tr className="border-b border-border text-foreground font-bold normal-case text-[11px]">
                 <th className="py-[2px] px-1 normal-case w-1/2">description</th>
                 <th className="py-[2px] px-1 normal-case text-center">barcode</th>
                 <th className="py-[2px] px-1 normal-case text-right">qty</th>
@@ -398,7 +398,7 @@ export default function SalesByItemsReport({
                 <td colSpan={4} className="py-1 font-bold">Branch: Main Branch</td>
               </tr>
               <tr>
-                <td colSpan={4} className="py-0.5 font-bold pl-2 border-b border-dashed border-slate-300">
+                <td colSpan={4} className="py-0.5 font-bold pl-2 border-b border-dashed border-border">
                   Division: {division}
                 </td>
               </tr>
@@ -409,25 +409,25 @@ export default function SalesByItemsReport({
               </tr>
 
               <tr>
-                <td className="py-[2px] px-1 pl-6">خل ابيض 500مل</td>
+                <td className="py-[2px] px-1 pl-6">White Vinegar 500ml</td>
                 <td className="py-[2px] px-1 text-center font-mono">5281234123528</td>
                 <td className="py-[2px] px-1 text-right">3.00</td>
                 <td className="py-[2px] px-1 text-right">210,000.00</td>
               </tr>
               <tr>
-                <td className="py-[2px] px-1 pl-6">ماء ورد 500مل</td>
+                <td className="py-[2px] px-1 pl-6">Rose Water 500ml</td>
                 <td className="py-[2px] px-1 text-center font-mono">5281234123597</td>
                 <td className="py-[2px] px-1 text-right">1.00</td>
                 <td className="py-[2px] px-1 text-right">90,000.00</td>
               </tr>
               <tr>
-                <td className="py-[2px] px-1 pl-6">دبس رمان 500 مل</td>
+                <td className="py-[2px] px-1 pl-6">Pomegranate Molasses 500ml</td>
                 <td className="py-[2px] px-1 text-center font-mono">5281234123979</td>
                 <td className="py-[2px] px-1 text-right">4.00</td>
                 <td className="py-[2px] px-1 text-right">480,000.00</td>
               </tr>
 
-              <tr className="border-t border-slate-200 font-bold">
+              <tr className="border-t border-border font-bold">
                 <td colSpan={2} className="py-[2px] px-1 pl-4">Total by Group: {group}</td>
                 <td className="py-[2px] px-1 text-right">8.00</td>
                 <td className="py-[2px] px-1 text-right">780,000.00</td>

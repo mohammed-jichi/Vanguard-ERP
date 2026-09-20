@@ -30,7 +30,7 @@ export default function VanguardHeader({ onSelectScreen }: HeaderProps = {}) {
   ];
 
   return (
-    <header className="w-full bg-[#0f1218] border-b border-slate-800 px-4 py-2.5 text-white flex items-center justify-between shadow-md select-none font-sans">
+    <header className="w-full bg-primary border-b border-slate-800 px-4 py-2.5 text-white flex items-center justify-between shadow-md select-none font-sans">
       
       {/* 1. Brand / Title */}
       <div className="flex items-center gap-3">

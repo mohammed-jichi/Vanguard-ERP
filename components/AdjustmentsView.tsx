@@ -41,6 +41,7 @@ import {
   SEED_ADJUSTMENT_ITEMS,
   INITIAL_SAVED_ADJUSTMENTS
 } from '@/lib/adjustmentsData';
+import { getDefaultInitialDateRange } from '@/lib/dateRangeEngine';
 
 export default function AdjustmentsView() {
   // --------------------------------------------------------------------------
@@ -98,8 +99,9 @@ export default function AdjustmentsView() {
   const [recallSearch, setRecallSearch] = useState<string>('');
   const [recallBranchId, setRecallBranchId] = useState<number>(1);
   const [recallStatus, setRecallStatus] = useState<number>(3); // 1 = posted, 2 = unposted, 3 = all
-  const [recallFromDate, setRecallFromDate] = useState<string>('2026-08-01');
-  const [recallToDate, setRecallToDate] = useState<string>('2026-09-11');
+  const initialRecallRange = getDefaultInitialDateRange('This Month');
+  const [recallFromDate, setRecallFromDate] = useState<string>(initialRecallRange.fromDate);
+  const [recallToDate, setRecallToDate] = useState<string>(initialRecallRange.toDate);
   const [recallAllDates, setRecallAllDates] = useState<boolean>(true);
 
   // CSV Import

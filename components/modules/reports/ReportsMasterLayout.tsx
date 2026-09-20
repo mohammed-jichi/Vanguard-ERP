@@ -165,28 +165,28 @@ export default function ReportsMasterLayout() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] flex flex-col font-sans text-slate-800 text-left select-none">
+    <div className="w-full min-h-screen bg-background flex flex-col font-sans text-foreground text-left select-none">
       
       {/* Top Header Bar */}
-      <div className="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between print:hidden">
+      <div className="h-12 bg-card border-b border-border px-4 flex items-center justify-between print:hidden">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setShowCatalog(!showCatalog)}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors cursor-pointer"
+            className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-lg border border-border transition-colors cursor-pointer"
           >
             {showCatalog ? '◀ Hide Catalog' : '▶ Show Report Categories'}
           </button>
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Active Report:</span>
-            <span className="font-bold text-[#1a629b] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+            <span className="text-muted-foreground">Active Report:</span>
+            <span className="font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
               [{activeReport.code}] {activeReport.title}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="font-mono text-slate-500">Southern Olive Oil Products S.A.R.L</span>
+          <span className="font-mono text-muted-foreground">Southern Olive Oil Products S.A.R.L</span>
         </div>
       </div>
 
@@ -195,24 +195,24 @@ export default function ReportsMasterLayout() {
         
         {/* Left Navigation Tree (93 Reports) */}
         {showCatalog && (
-          <div className="w-[280px] h-[calc(100vh-48px)] bg-white border-r border-slate-300 flex flex-col print:hidden">
-            <div className="p-2 border-b border-slate-200">
+          <div className="w-[280px] h-[calc(100vh-48px)] bg-card border-r border-border flex flex-col print:hidden">
+            <div className="p-2 border-b border-border">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="🔍 Search all 93 reports..."
-                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded text-[11px] font-medium focus:border-[#1a629b] focus:outline-none"
+                className="w-full px-2.5 py-1.5 bg-background border border-border rounded text-[11px] font-medium focus:border-primary focus:outline-none"
               />
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 space-y-2 text-[11px] custom-scrollbar">
               {reportCategories.map((cat) => (
-                <div key={cat.id} className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50/50">
-                  <div className="px-2.5 py-1.5 bg-slate-100 font-bold text-slate-800 text-[11px] flex items-center gap-1.5 border-b border-slate-200">
+                <div key={cat.id} className="border border-border rounded-lg overflow-hidden bg-muted/20">
+                  <div className="px-2.5 py-1.5 bg-muted font-bold text-foreground text-[11px] flex items-center gap-1.5 border-b border-border">
                     <span>{cat.icon}</span> <span>{cat.title}</span>
                   </div>
-                  <div className="p-1 space-y-0.5 bg-white">
+                  <div className="p-1 space-y-0.5 bg-card">
                     {cat.reports
                       .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
                       .map((r) => (
@@ -221,7 +221,7 @@ export default function ReportsMasterLayout() {
                           type="button"
                           onClick={() => setActiveReport({ ...r, category: cat.title })}
                           className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                            activeReport.code === r.code ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                            activeReport.code === r.code ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted text-foreground font-medium'
                           }`}
                         >
                           <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
@@ -236,17 +236,17 @@ export default function ReportsMasterLayout() {
         )}
 
         {/* Right Viewport: Filter Bar + Perfect A4 Sheet */}
-        <div className="flex-1 h-[calc(100vh-48px)] overflow-y-auto p-4 md:p-6 bg-[#f1f5f9] custom-scrollbar">
+        <div className="flex-1 h-[calc(100vh-48px)] overflow-y-auto p-4 md:p-6 bg-muted/40 custom-scrollbar">
           
           {/* Universal Dynamic Filter Toolbar */}
-          <div className="bg-white p-3 rounded-xl border border-slate-300 mb-5 shadow-2xs print:hidden flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="bg-card p-3 rounded-xl border border-border mb-5 shadow-2xs print:hidden flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex flex-wrap items-center gap-3">
               <div>
-                <label className="block font-bold text-slate-700 mb-0.5 text-[11px]">Period:</label>
+                <label className="block font-bold text-foreground mb-0.5 text-[11px]">Period:</label>
                 <select
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                  className="p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none cursor-pointer"
+                  className="p-1.5 bg-background border border-border rounded font-semibold text-xs text-foreground focus:outline-none cursor-pointer"
                 >
                   <option value="THIS_MONTH">This Month (Aug 1 - Aug 31, 2026)</option>
                   <option value="TODAY">Today</option>
@@ -255,11 +255,11 @@ export default function ReportsMasterLayout() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-0.5 text-[11px]">Branch / Location:</label>
+                <label className="block font-bold text-foreground mb-0.5 text-[11px]">Branch / Location:</label>
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none cursor-pointer"
+                  className="p-1.5 bg-background border border-border rounded font-semibold text-xs text-foreground focus:outline-none cursor-pointer"
                 >
                   <option value="ALL">All Operating Branches</option>
                   <option value="Choueifat">Choueifat Main Branch</option>
@@ -268,11 +268,11 @@ export default function ReportsMasterLayout() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-0.5 text-[11px]">Cashier / Server:</label>
+                <label className="block font-bold text-foreground mb-0.5 text-[11px]">Cashier / Server:</label>
                 <select
                   value={repFilter}
                   onChange={(e) => setRepFilter(e.target.value)}
-                  className="p-1.5 bg-white border border-slate-300 rounded font-bold text-[#1a629b] text-xs focus:outline-none cursor-pointer"
+                  className="p-1.5 bg-background border border-border rounded font-bold text-foreground text-xs focus:outline-none cursor-pointer"
                 >
                   <option value="ALL">All Cashiers / Servers</option>
                   <option value="Hiba Aloulou">Hiba Aloulou</option>
@@ -286,7 +286,7 @@ export default function ReportsMasterLayout() {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-4 py-2 bg-[#1a629b] hover:bg-[#124b77] text-white font-bold rounded-lg shadow-sm text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <span>🖨️ Print A4 Document</span>
               </button>
@@ -295,25 +295,25 @@ export default function ReportsMasterLayout() {
 
           {/* PERFECT VANGUARD PAPER (FLEXIBLE TO ALL PAPER SIZES) */}
           {/* ================================================================= */}
-          <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-md print:w-full print:max-w-full print:min-h-0 print:border-none print:shadow-none print:m-0 print:p-0 select-none">
+          <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-card p-8 text-foreground font-sans mx-auto border border-border shadow-md print:w-full print:max-w-full print:min-h-0 print:border-none print:shadow-none print:m-0 print:p-0 select-none">
             
             {/* Header */}
-            <div className="border-b border-black pb-2 mb-2">
+            <div className="border-b border-border pb-2 mb-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <h1 className="text-sm font-bold text-slate-900 uppercase">
+                  <h1 className="text-sm font-bold text-foreground uppercase">
                     Southern Olive Oil Products S.A.R.L
                   </h1>
-                  <h2 className="text-base font-bold mt-1 text-slate-900">{activeReport.title}</h2>
+                  <h2 className="text-base font-bold mt-1 text-foreground">{activeReport.title}</h2>
                 </div>
-                <div className="text-right text-[10.5px] font-mono text-slate-600 space-y-0.5">
+                <div className="text-right text-[10.5px] font-mono text-muted-foreground space-y-0.5">
                   <div>Prepared By: Mohammed</div>
                   <div>Report Code: {activeReport.code}</div>
                   <div>Page 1 of 1</div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-200 text-slate-700">
+              <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-border text-muted-foreground">
                 <div>Period: 01-Aug-2026 to 31-Aug-2026</div>
                 <div>Branch: {branch === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branch}</div>
               </div>
@@ -322,7 +322,7 @@ export default function ReportsMasterLayout() {
             {/* FIXED-WIDTH TABLE (table-fixed WITH EXACT WIDTHS) */}
             <table className="w-full table-fixed text-left border-collapse text-[11px] mt-3">
               <thead>
-                <tr className="border-b border-black bg-slate-50 font-bold text-black leading-tight">
+                <tr className="border-b border-border bg-muted/50 font-bold text-foreground leading-tight">
                   <th className="py-1.5 px-1 normal-case w-[15%]">date</th>
                   <th className="py-1.5 px-1 normal-case w-[15%]">order date</th>
                   <th className="py-1.5 px-1 normal-case w-[12%]">server</th>
@@ -333,40 +333,40 @@ export default function ReportsMasterLayout() {
                   <th className="py-1.5 px-1 normal-case w-[12%]">reason</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 font-medium">
+              <tbody className="divide-y divide-border font-medium">
                 {voidRecords.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 leading-normal align-top">
-                    <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.date}</td>
-                    <td className="py-2 px-1 font-mono text-[10px] text-slate-700">{item.orderDate}</td>
-                    <td className="py-2 px-1 font-semibold text-slate-800">{item.server}</td>
+                  <tr key={item.id} className="hover:bg-muted/40 leading-normal align-top">
+                    <td className="py-2 px-1 font-mono text-[10px] text-muted-foreground">{item.date}</td>
+                    <td className="py-2 px-1 font-mono text-[10px] text-muted-foreground">{item.orderDate}</td>
+                    <td className="py-2 px-1 font-semibold text-foreground">{item.server}</td>
                     <td className="py-2 px-1 font-mono font-bold text-center">{item.invoice}</td>
                     
                     {/* WIDE DESCRIPTION: Proper horizontal flow, no letter-breaking */}
-                    <td className="py-2 px-1 font-bold text-slate-900 leading-snug whitespace-normal break-words">
+                    <td className="py-2 px-1 font-bold text-foreground leading-snug whitespace-normal break-words">
                       {item.description}
                     </td>
 
                     <td className="py-2 px-1 text-center font-mono font-bold">{item.qty.toFixed(2)}</td>
                     <td className="py-2 px-1 text-right font-mono font-bold">{item.valueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    <td className="py-2 px-1 text-slate-700 text-[10.5px] leading-tight font-medium">{item.reason}</td>
+                    <td className="py-2 px-1 text-muted-foreground text-[10.5px] leading-tight font-medium">{item.reason}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
             {/* CORRECTED FOOTER TOTALS (INTEGER COUNTS) */}
-            <div className="border-t-2 border-black mt-4 pt-2 text-[11px] font-mono">
+            <div className="border-t-2 border-border mt-4 pt-2 text-[11px] font-mono">
               <div className="flex justify-end space-y-1">
                 <div className="w-[320px] space-y-1">
-                  <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
+                  <div className="flex justify-between font-bold border-b border-border pb-0.5">
                     <span>Total Voids:</span>
                     <span>{totalVoidsCount}</span>
                   </div>
-                  <div className="flex justify-between font-bold border-b border-slate-200 pb-0.5">
+                  <div className="flex justify-between font-bold border-b border-border pb-0.5">
                     <span>Total Qty:</span>
                     <span>{totalQty.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between font-bold text-[#1a629b] text-xs pt-0.5">
+                  <div className="flex justify-between font-bold text-primary text-xs pt-0.5">
                     <span>Total Value:</span>
                     <span>{totalValueLbp.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP</span>
                   </div>

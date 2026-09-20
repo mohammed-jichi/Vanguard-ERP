@@ -6,6 +6,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+import { logSystemActivity } from './activityLogger';
 
 export interface TenantLicense {
   licenseKey: string;
@@ -25,13 +26,33 @@ export interface TenantLicense {
   unlockedModules: string[];
 }
 
+export const ALL_SYSTEM_MODULES = [
+  'sales',
+  'operations',
+  'customers',
+  'feedback',
+  'loyalty',
+  'accounting',
+  'hr',
+  'fleet',
+  'social'
+];
+
 export interface TenantCompany {
   id: string;
+  companyId?: number | string;
+  company_id?: number | string;
   name: string;
   slug: string;
   brandNameAr: string;
   brandNameEn: string;
   logoUrl: string;
+  primaryColor?: string;
+  themeColor?: string;
+  primary_color?: string;
+  theme_color?: string;
+  enabledModules?: string[];
+  enabled_modules?: string[];
   companyRegistrationNumber?: string;
   taxIdentificationNumber?: string;
   subscriptionTier: 'STARTER' | 'PRO' | 'ENTERPRISE';
@@ -39,6 +60,8 @@ export interface TenantCompany {
   aiUsageCount: number;
   aiUsageLimit: number;
   createdAt?: string;
+  updatedAt?: string;
+  updated_at?: string;
   license?: TenantLicense;
 }
 
@@ -92,6 +115,18 @@ interface TenantContextType {
   isSuperAdmin: boolean;
   switchTenant: (company: TenantCompany) => void;
   updateTenantSettings: (settings: Partial<TenantCompany>) => Promise<{ success: boolean; error?: string }>;
+  updateTenantModulesAndBranding: (
+    tenantId: string,
+    updates: {
+      enabledModules?: string[];
+      brandNameAr?: string;
+      brandNameEn?: string;
+      name?: string;
+      logoUrl?: string;
+      primaryColor?: string;
+      themeColor?: string;
+    }
+  ) => Promise<{ success: boolean; error?: string }>;
   onboardNewTenant: (tenantData: Partial<TenantCompany>, adminEmail: string) => Promise<{ success: boolean; error?: string }>;
   refreshTenants: () => Promise<void>;
   registeredCompanies: TenantCompany[];
@@ -99,11 +134,17 @@ interface TenantContextType {
 
 const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   id: '00000000-0000-0000-0000-000000000001',
+  companyId: 1300,
+  company_id: 1300,
   name: 'Southern Olive Oil Products S.A.R.L',
   slug: 'southern-olive',
-  brandNameAr: 'Southern Olive Oil Products S.A.R.L',
+  brandNameAr: 'منتوجات زيت وزيتون الجنوب',
   brandNameEn: 'Southern Olive Oil Products S.A.R.L',
   logoUrl: '/assets/images/logo.png',
+  primaryColor: '#123b70',
+  themeColor: '#123b70',
+  enabledModules: ALL_SYSTEM_MODULES,
+  enabled_modules: ALL_SYSTEM_MODULES,
   companyRegistrationNumber: 'CR-104928-LB',
   taxIdentificationNumber: 'MOF-7489201',
   subscriptionTier: 'ENTERPRISE',
@@ -146,23 +187,52 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       if (data && Array.isArray(data)) {
-        const fetchedCompanies: TenantCompany[] = data.map((t: any) => ({
+        const fetchedCompanies: TenantCompany[] = data.map((t: any, idx: number) => ({
           id: t.id || 'comp-' + Date.now(),
+          companyId: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+          company_id: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
           name: t.name || t.brand_name_ar || 'Vanguard Enterprise Client',
           slug: t.slug || t.name,
           brandNameAr: t.brand_name_ar || t.name || 'المؤسسة المعتمدة',
           brandNameEn: t.brand_name_en || t.name || 'Vanguard Enterprise Client',
           logoUrl: t.logo_url || '',
+          primaryColor: t.primary_color || t.theme_color || '#123b70',
+          themeColor: t.theme_color || t.primary_color || '#123b70',
+          enabledModules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+            ? t.enabled_modules
+            : ALL_SYSTEM_MODULES,
+          enabled_modules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+            ? t.enabled_modules
+            : ALL_SYSTEM_MODULES,
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,
           aiUsageLimit: t.ai_usage_limit || 1000,
-          createdAt: t.created_at
+          createdAt: t.created_at,
+          updatedAt: t.updated_at || t.created_at,
+          updated_at: t.updated_at || t.created_at
         }));
 
         if (fetchedCompanies.length > 0) {
           setRegisteredCompanies(fetchedCompanies);
-          setCurrentTenant(fetchedCompanies[0]);
+          // Preserve currently selected or saved tenant
+          if (typeof window !== 'undefined') {
+            const savedRaw = localStorage.getItem('vanguard_active_tenant');
+            if (savedRaw) {
+              try {
+                const saved = JSON.parse(savedRaw);
+                const matched = fetchedCompanies.find(c => c.id === saved.id);
+                if (matched) {
+                  setCurrentTenant(matched);
+                  return;
+                }
+              } catch (e) {}
+            }
+          }
+          setCurrentTenant(prev => {
+            const matched = fetchedCompanies.find(c => c.id === prev.id);
+            return matched || fetchedCompanies[0];
+          });
         }
 
         console.log('✅ React TenantContext dynamically loaded real tenants from Supabase:', fetchedCompanies);
@@ -223,6 +293,17 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           localStorage.setItem('vanguard_activation_license', JSON.stringify(SOUTHERN_OLIVE_OFFICIAL_LICENSE));
         }
         
+        const savedActiveTenant = localStorage.getItem('vanguard_active_tenant');
+        if (savedActiveTenant) {
+          const parsed = JSON.parse(savedActiveTenant);
+          setCurrentTenant({
+            ...DEFAULT_SUPERADMIN_TENANT,
+            ...parsed,
+            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
+          });
+          return;
+        }
+
         const saved = localStorage.getItem('vanguard_tenant_branding');
         if (saved) {
           const parsed = JSON.parse(saved);
@@ -237,6 +318,21 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
           }));
         }
+
+        // Restore user role & identity from session
+        const savedRole = localStorage.getItem('vanguard_user_role') as any;
+        const savedEmail = localStorage.getItem('vanguard_user_email');
+        const savedName = localStorage.getItem('vanguard_user_name');
+        const savedUserId = localStorage.getItem('vanguard_user_id');
+
+        if (savedRole || savedEmail) {
+          setCurrentUser({
+            id: savedUserId || 'usr-local',
+            email: savedEmail || 'user@vanguard-erp.com',
+            fullName: savedName || (savedRole === 'SUPER_ADMIN' ? 'Mohammed (Vanguard Super Admin)' : 'Authorized Operator'),
+            role: savedRole || 'COMPANY_ADMIN'
+          });
+        }
       } catch (e) {
         console.error('Error reading tenant branding from localStorage:', e);
       }
@@ -245,6 +341,23 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const switchTenant = (company: TenantCompany) => {
     setCurrentTenant(company);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('vanguard_active_tenant', JSON.stringify(company));
+        localStorage.setItem('vanguard_tenant_id', company.id);
+        localStorage.setItem('vanguard_tenant_branding', JSON.stringify({
+          name: company.name,
+          brandNameAr: company.brandNameAr,
+          brandNameEn: company.brandNameEn,
+          logoUrl: company.logoUrl,
+          companyRegistrationNumber: company.companyRegistrationNumber,
+          taxIdentificationNumber: company.taxIdentificationNumber
+        }));
+        document.cookie = `vanguard_tenant_id=${encodeURIComponent(company.id)}; path=/; max-age=31536000; SameSite=Lax`;
+      } catch (e) {
+        console.error('Error saving active tenant to storage:', e);
+      }
+    }
   };
 
   const updateTenantSettings = async (settings: Partial<TenantCompany>): Promise<{ success: boolean; error?: string }> => {
@@ -287,10 +400,143 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.warn('Supabase tenant update notice (fallback active):', error.message);
       }
 
+      await logSystemActivity({
+        tenantId: updatedTenant.id,
+        companyId: updatedTenant.companyId || (updatedTenant.id === '00000000-0000-0000-0000-000000000001' ? 1300 : null),
+        actionType: 'BRANDING_UPDATED',
+        description: `تم تحديث السجلات القانونية والهوية لمؤسسة: ${updatedTenant.brandNameAr || updatedTenant.name} (معرف الشركة: #${updatedTenant.companyId || 1300})`,
+        performedBy: currentUser?.fullName || 'Super Admin (System Owner)'
+      });
+
       console.log('✅ Successfully updated Tenant Settings & Legal Registration Data:', updatedTenant);
       return { success: true };
     } catch (err: any) {
       console.error('Error updating tenant settings:', err);
+      return { success: false, error: err.message || String(err) };
+    }
+  };
+
+  const updateTenantModulesAndBranding = async (
+    tenantId: string,
+    updates: {
+      enabledModules?: string[];
+      brandNameAr?: string;
+      brandNameEn?: string;
+      name?: string;
+      logoUrl?: string;
+      primaryColor?: string;
+      themeColor?: string;
+    }
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const nowIso = new Date().toISOString();
+      const dbUpdates: any = {
+        updated_at: nowIso
+      };
+      if (updates.enabledModules) dbUpdates.enabled_modules = updates.enabledModules;
+      if (updates.brandNameAr) dbUpdates.brand_name_ar = updates.brandNameAr;
+      if (updates.brandNameEn) dbUpdates.brand_name_en = updates.brandNameEn;
+      if (updates.name) dbUpdates.name = updates.name;
+      if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+      if (updates.primaryColor) {
+        dbUpdates.primary_color = updates.primaryColor;
+        dbUpdates.theme_color = updates.primaryColor;
+      } else if (updates.themeColor) {
+        dbUpdates.theme_color = updates.themeColor;
+        dbUpdates.primary_color = updates.themeColor;
+      }
+
+      const { error } = await supabase
+        .from('tenants')
+        .update(dbUpdates)
+        .eq('id', tenantId);
+
+      if (error) {
+        console.warn('Supabase tenant modules/branding update notice:', error.message);
+      }
+
+      setRegisteredCompanies(prev =>
+        prev.map(c => {
+          if (c.id === tenantId) {
+            return {
+              ...c,
+              name: updates.name || c.name,
+              brandNameAr: updates.brandNameAr || c.brandNameAr,
+              brandNameEn: updates.brandNameEn || c.brandNameEn,
+              logoUrl: updates.logoUrl !== undefined ? updates.logoUrl : c.logoUrl,
+              enabledModules: updates.enabledModules || c.enabledModules,
+              enabled_modules: updates.enabledModules || c.enabled_modules,
+              primaryColor: updates.primaryColor || updates.themeColor || c.primaryColor,
+              themeColor: updates.themeColor || updates.primaryColor || c.themeColor,
+              updatedAt: nowIso,
+              updated_at: nowIso
+            };
+          }
+          return c;
+        })
+      );
+
+      if (currentTenant.id === tenantId) {
+        const updatedCurrent: TenantCompany = {
+          ...currentTenant,
+          name: updates.name || currentTenant.name,
+          brandNameAr: updates.brandNameAr || currentTenant.brandNameAr,
+          brandNameEn: updates.brandNameEn || currentTenant.brandNameEn,
+          logoUrl: updates.logoUrl !== undefined ? updates.logoUrl : currentTenant.logoUrl,
+          enabledModules: updates.enabledModules || currentTenant.enabledModules,
+          enabled_modules: updates.enabledModules || currentTenant.enabled_modules,
+          primaryColor: updates.primaryColor || updates.themeColor || currentTenant.primaryColor,
+          themeColor: updates.themeColor || updates.primaryColor || currentTenant.themeColor,
+          updatedAt: nowIso,
+          updated_at: nowIso
+        };
+        setCurrentTenant(updatedCurrent);
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('vanguard_active_tenant', JSON.stringify(updatedCurrent));
+          localStorage.setItem('vanguard_tenant_branding', JSON.stringify({
+            name: updatedCurrent.name,
+            brandNameAr: updatedCurrent.brandNameAr,
+            brandNameEn: updatedCurrent.brandNameEn,
+            logoUrl: updatedCurrent.logoUrl,
+            companyRegistrationNumber: updatedCurrent.companyRegistrationNumber,
+            taxIdentificationNumber: updatedCurrent.taxIdentificationNumber
+          }));
+        }
+      }
+
+      // Log system audit event
+      const targetCompany = registeredCompanies.find(c => c.id === tenantId);
+      const companyId = targetCompany?.companyId || targetCompany?.company_id || (tenantId === '00000000-0000-0000-0000-000000000001' ? 1300 : null);
+      const displayName = updates.brandNameAr || updates.name || targetCompany?.brandNameAr || targetCompany?.name || 'المؤسسة المعتمدة';
+
+      let actionType = 'TENANT_UPDATED';
+      let logDesc = `تم تحديث إعدادات المؤسسة: ${displayName}`;
+
+      if (updates.enabledModules) {
+        actionType = 'MODULES_UPDATED';
+        logDesc = `تم تعديل صلاحيات الوحدات التشغيلية لمؤسسة ${displayName} (#${companyId || 1300}) — الوحدات المفعلة: [${updates.enabledModules.length} من 9 وحدات]`;
+      } else if (updates.primaryColor || updates.logoUrl) {
+        actionType = 'BRANDING_UPDATED';
+        logDesc = `تم تحديث الهوية البصرية والسمة لمؤسسة ${displayName} (#${companyId || 1300})`;
+      }
+
+      await logSystemActivity({
+        tenantId,
+        companyId,
+        actionType,
+        description: logDesc,
+        performedBy: currentUser?.fullName || 'Super Admin (System Owner)',
+        metadata: {
+          enabledModules: updates.enabledModules,
+          primaryColor: updates.primaryColor || updates.themeColor
+        }
+      });
+
+      console.log('✅ Successfully updated Tenant Modules & Branding:', tenantId, updates);
+      return { success: true };
+    } catch (err: any) {
+      console.error('Error in updateTenantModulesAndBranding:', err);
       return { success: false, error: err.message || String(err) };
     }
   };
@@ -338,6 +584,21 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (data && data[0] && data[0].id) {
         newCompany.id = data[0].id;
       }
+
+      const createdCompanyId = data && data[0] && data[0].company_id ? data[0].company_id : (1300 + registeredCompanies.length);
+      await logSystemActivity({
+        tenantId: newCompany.id,
+        companyId: createdCompanyId,
+        actionType: 'TENANT_CREATED',
+        description: `تم إنشاء واعتماد ترخيص تجاري جديد لمؤسسة: ${newCompany.brandNameAr || newCompany.name} (معرف الشركة: #${createdCompanyId}) ضمن باقة ${newCompany.subscriptionTier}`,
+        performedBy: currentUser?.fullName || 'Super Admin (System Owner)',
+        metadata: {
+          tier: newCompany.subscriptionTier,
+          companyId: createdCompanyId,
+          adminEmail
+        }
+      });
+
       await refreshTenants();
       return { success: true };
     } catch (err: any) {
@@ -347,7 +608,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   return (
-    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, onboardNewTenant, refreshTenants, registeredCompanies }}>
+    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, updateTenantModulesAndBranding, onboardNewTenant, refreshTenants, registeredCompanies }}>
       {children}
     </TenantContext.Provider>
   );
@@ -367,6 +628,7 @@ export const useTenant = () => {
       isSuperAdmin: true,
       switchTenant: () => {},
       updateTenantSettings: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
+      updateTenantModulesAndBranding: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
       onboardNewTenant: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
       refreshTenants: async () => {},
       registeredCompanies: INITIAL_COMPANIES

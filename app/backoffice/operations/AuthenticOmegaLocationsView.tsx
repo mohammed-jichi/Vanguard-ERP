@@ -512,10 +512,10 @@ export default function AuthenticOmegaLocationsView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 min-h-screen p-4 md:p-6 font-sans select-none relative">
+    <div className="w-full bg-background text-slate-800 min-h-screen p-4 md:p-6 font-sans select-none relative">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#1e3a2b] text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in">
+        <div className="fixed top-5 right-5 z-50 bg-primary text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in">
           <span>✓</span>
           <span>{toastMessage}</span>
         </div>
@@ -601,7 +601,7 @@ export default function AuthenticOmegaLocationsView() {
                 <div className="relative" ref={actionsRef}>
                   <button
                     onClick={() => setIsActionsOpen(!isActionsOpen)}
-                    className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold transition flex items-center gap-1 shadow-2xs active:scale-98 cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold transition flex items-center gap-1 shadow-2xs active:scale-98 cursor-pointer"
                   >
                     <span>Actions</span>
                     <ChevronDown className="w-3 h-3 ml-0.5" />
@@ -628,7 +628,7 @@ export default function AuthenticOmegaLocationsView() {
                 {/* + New Button */}
                 <button
                   onClick={() => setIsNewLocationOpen(true)}
-                  className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>+ New</span>
@@ -673,7 +673,7 @@ export default function AuthenticOmegaLocationsView() {
                     filteredLocations.map((row, idx) => (
                       <tr
                         key={row.LOCATIONID}
-                        className={`transition ${idx % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'} hover:bg-blue-50/30`}
+                        className={`transition ${idx % 2 === 0 ? 'bg-white' : 'bg-card'} hover:bg-blue-50/30`}
                       >
                         <td className="px-4 py-2.5 font-normal text-slate-800">{row.LOCATIONID}</td>
                         <td className="px-4 py-2.5 font-normal text-slate-800">{row.LOCATIONDESCRIPTION}</td>
@@ -682,14 +682,14 @@ export default function AuthenticOmegaLocationsView() {
                             <button
                               onClick={() => openEditLocationModal(row)}
                               title="Edit Location"
-                              className="w-6 h-6 rounded-xs bg-[#323f4b] hover:bg-[#242d35] text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
+                              className="w-6 h-6 rounded-xs bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
                             >
                               <Edit2 className="w-3 h-3" />
                             </button>
                             <button
                               onClick={() => handleDeleteLocation(row)}
                               title="Delete Location"
-                              className="w-6 h-6 rounded-xs bg-[#b91c1c] hover:bg-[#991b1b] text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
+                              className="w-6 h-6 rounded-xs bg-destructive hover:bg-destructive/90 text-white flex items-center justify-center transition shadow-2xs cursor-pointer"
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -706,7 +706,7 @@ export default function AuthenticOmegaLocationsView() {
             <div className="py-4 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
               <div className="inline-flex items-center rounded border border-slate-200 overflow-hidden bg-white shadow-2xs">
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">«</button>
-                <button className="px-3 py-1 bg-[#323f4b] text-white font-bold text-xs">1</button>
+                <button className="px-3 py-1 bg-primary text-white font-bold text-xs">1</button>
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">»</button>
               </div>
             </div>
@@ -737,7 +737,7 @@ export default function AuthenticOmegaLocationsView() {
                   setZoneDescription('');
                   setIsNewZoneOpen(true);
                 }}
-                className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ New</span>
@@ -777,7 +777,7 @@ export default function AuthenticOmegaLocationsView() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {filteredZones.map((z, idx) => (
-                    <tr key={z.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'}>
+                    <tr key={z.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-card'}>
                       <td className="px-4 py-2.5 font-normal text-slate-800">{z.id}</td>
                       <td className="px-4 py-2.5 font-normal text-slate-800">{z.name}</td>
                       <td className="px-4 py-2.5 font-normal text-slate-600">{z.code || '-'}</td>
@@ -786,13 +786,13 @@ export default function AuthenticOmegaLocationsView() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEditZone(z)}
-                            className="w-6 h-6 rounded-xs bg-[#323f4b] hover:bg-[#242d35] text-white flex items-center justify-center cursor-pointer shadow-2xs"
+                            className="w-6 h-6 rounded-xs bg-primary hover:bg-primary/90 text-white flex items-center justify-center cursor-pointer shadow-2xs"
                           >
                             <Edit2 className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => handleDeleteZone(z)}
-                            className="w-6 h-6 rounded-xs bg-[#b91c1c] hover:bg-[#991b1b] text-white flex items-center justify-center cursor-pointer shadow-2xs"
+                            className="w-6 h-6 rounded-xs bg-destructive hover:bg-destructive/90 text-white flex items-center justify-center cursor-pointer shadow-2xs"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -807,7 +807,7 @@ export default function AuthenticOmegaLocationsView() {
             <div className="py-4 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
               <div className="inline-flex items-center rounded border border-slate-200 overflow-hidden bg-white shadow-2xs">
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">«</button>
-                <button className="px-3 py-1 bg-[#323f4b] text-white font-bold text-xs">1</button>
+                <button className="px-3 py-1 bg-primary text-white font-bold text-xs">1</button>
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">»</button>
               </div>
             </div>
@@ -838,7 +838,7 @@ export default function AuthenticOmegaLocationsView() {
                   setAisleDescription('');
                   setIsNewAisleOpen(true);
                 }}
-                className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs active:scale-98 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ New</span>
@@ -878,7 +878,7 @@ export default function AuthenticOmegaLocationsView() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {filteredAisles.map((a, idx) => (
-                    <tr key={a.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'}>
+                    <tr key={a.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-card'}>
                       <td className="px-4 py-2.5 font-normal text-slate-800">{a.id}</td>
                       <td className="px-4 py-2.5 font-normal text-slate-800">{a.name}</td>
                       <td className="px-4 py-2.5 font-normal text-slate-600">{a.code || '-'}</td>
@@ -887,13 +887,13 @@ export default function AuthenticOmegaLocationsView() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEditAisle(a)}
-                            className="w-6 h-6 rounded-xs bg-[#323f4b] hover:bg-[#242d35] text-white flex items-center justify-center cursor-pointer shadow-2xs"
+                            className="w-6 h-6 rounded-xs bg-primary hover:bg-primary/90 text-white flex items-center justify-center cursor-pointer shadow-2xs"
                           >
                             <Edit2 className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => handleDeleteAisle(a)}
-                            className="w-6 h-6 rounded-xs bg-[#b91c1c] hover:bg-[#991b1b] text-white flex items-center justify-center cursor-pointer shadow-2xs"
+                            className="w-6 h-6 rounded-xs bg-destructive hover:bg-destructive/90 text-white flex items-center justify-center cursor-pointer shadow-2xs"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -908,7 +908,7 @@ export default function AuthenticOmegaLocationsView() {
             <div className="py-4 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
               <div className="inline-flex items-center rounded border border-slate-200 overflow-hidden bg-white shadow-2xs">
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">«</button>
-                <button className="px-3 py-1 bg-[#323f4b] text-white font-bold text-xs">1</button>
+                <button className="px-3 py-1 bg-primary text-white font-bold text-xs">1</button>
                 <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">»</button>
               </div>
             </div>
@@ -919,7 +919,7 @@ export default function AuthenticOmegaLocationsView() {
       {/* Floating Scroll to Top */}
       <button
         onClick={scrollToTop}
-        className="fixed bottom-6 right-6 p-2 rounded bg-white text-[#195a96] border border-slate-200 shadow-md hover:bg-blue-50 transition-all z-30 cursor-pointer"
+        className="fixed bottom-6 right-6 p-2 rounded bg-white text-primary border border-slate-200 shadow-md hover:bg-blue-50 transition-all z-30 cursor-pointer"
         title="Scroll to Top"
       >
         <ChevronsUp className="w-5 h-5" />
@@ -973,7 +973,7 @@ export default function AuthenticOmegaLocationsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1010,7 +1010,7 @@ export default function AuthenticOmegaLocationsView() {
                     type="text"
                     disabled
                     value={editLocationId}
-                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] text-slate-600 font-mono select-none cursor-not-allowed"
+                    className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-muted text-slate-600 font-mono select-none cursor-not-allowed"
                   />
                 </div>
 
@@ -1044,7 +1044,7 @@ export default function AuthenticOmegaLocationsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1115,7 +1115,7 @@ export default function AuthenticOmegaLocationsView() {
                   type="button"
                   onClick={handleInitiateMerge}
                   disabled={!fromLocationId || !toLocationId}
-                  className="px-4 py-2 rounded-sm bg-[#6c757d] hover:bg-[#5a6268] disabled:opacity-50 text-white font-semibold text-xs shadow-xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-sm bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold text-xs shadow-xs cursor-pointer transition"
                 >
                   Merge Locations
                 </button>
@@ -1138,7 +1138,7 @@ export default function AuthenticOmegaLocationsView() {
             style={{ zIndex: 100000 }}
           >
             {/* Dark Header matching Screenshot 2 */}
-            <div className="px-4 py-3 bg-[#1e1e1e] text-white flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wide">
                 WARNING! THIS ACTION CANNOT BE RECOVERED ONCE EXECUTED.
               </h3>
@@ -1194,8 +1194,8 @@ export default function AuthenticOmegaLocationsView() {
                   disabled={!isMergeConfirmationValid}
                   className={`px-4 py-1.5 rounded-sm text-xs font-bold transition shadow-xs ${
                     isMergeConfirmationValid
-                      ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white cursor-pointer shadow-sm'
-                      : 'bg-[#4b5563] text-white opacity-40 cursor-not-allowed'
+                      ? 'bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-sm'
+                      : 'bg-slate-600 text-white opacity-40 cursor-not-allowed'
                   }`}
                 >
                   OK
@@ -1263,7 +1263,7 @@ export default function AuthenticOmegaLocationsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1331,7 +1331,7 @@ export default function AuthenticOmegaLocationsView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>

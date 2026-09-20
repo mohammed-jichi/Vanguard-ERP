@@ -177,12 +177,12 @@ export default function RejectReasonsView() {
   };
 
   return (
-    <div className="wspaceCont productrequest-rejectreasons-bt5-page bg-[#f3f5f8] min-h-screen text-slate-800">
+    <div className="wspaceCont productrequest-rejectreasons-bt5-page bg-background min-h-screen text-slate-800">
       {/* Toast Notification */}
       {toast && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white font-medium text-sm animate-fade-in ${
-            toast.type === 'success' ? 'bg-[#1ab394] border border-[#18a689]' : 'bg-rose-600 border border-rose-500'
+            toast.type === 'success' ? 'bg-emerald-700 border border-emerald-700' : 'bg-rose-600 border border-rose-500'
           }`}
         >
           {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
@@ -258,7 +258,7 @@ export default function RejectReasonsView() {
                   setNewDescription('');
                   setShowAddModal(true);
                 }}
-                className="btn btn-primary inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm transition active:scale-95"
+                className="btn btn-primary inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm transition active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 <span className="rejectreasons-desktop-text">New Reason</span>
@@ -338,7 +338,7 @@ export default function RejectReasonsView() {
                               setEditRow(row);
                               setEditDescription(row.DESCRIPTION);
                             }}
-                            className="p-1.5 text-slate-600 bg-slate-100 hover:bg-[#1ab394] hover:text-white rounded-md transition shadow-xs"
+                            className="p-1.5 text-slate-600 bg-slate-100 hover:bg-emerald-700 hover:text-white rounded-md transition shadow-xs"
                             title="Edit Reason"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -384,7 +384,7 @@ export default function RejectReasonsView() {
                   onClick={() => setPage(p)}
                   className={`min-w-[30px] py-1 px-2 text-xs font-semibold rounded border transition ${
                     p === page
-                      ? 'bg-[#1ab394] text-white border-[#1ab394]'
+                      ? 'bg-emerald-700 text-white border-emerald-700'
                       : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                   }`}
                 >
@@ -453,7 +453,7 @@ export default function RejectReasonsView() {
                   id="newReasonBtn"
                   type="submit"
                   disabled={addSaving || !newDescription.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm disabled:opacity-50 transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm disabled:opacity-50 transition"
                 >
                   <Save className="w-4 h-4" />
                   <span>{addSaving ? 'Saving...' : 'Save Reason'}</span>
@@ -510,7 +510,7 @@ export default function RejectReasonsView() {
                 <button
                   type="submit"
                   disabled={editSaving || !editDescription.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm disabled:opacity-50 transition"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm disabled:opacity-50 transition"
                 >
                   <Save className="w-4 h-4" />
                   <span>{editSaving ? 'Updating...' : 'Save Changes'}</span>

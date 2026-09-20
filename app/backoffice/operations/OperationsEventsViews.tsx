@@ -953,7 +953,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
 
   return (
-    <div className="w-full bg-[#f8f9fa] min-h-screen text-[#2c3e50] font-sans pb-16">
+    <div className="w-full bg-background min-h-screen text-foreground font-sans pb-16">
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -977,8 +977,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       {/* Main Container */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-4">
         {/* Breadcrumb matching Omega */}
-        <div className="text-xs text-[#6c757d] mb-1">
-          <Link href="/backoffice" className="text-[#007bff] hover:underline">
+        <div className="text-xs text-muted-foreground mb-1">
+          <Link href="/backoffice" className="text-primary hover:underline">
             Home
           </Link>
           <span className="mx-1">/</span>
@@ -992,7 +992,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             <>
               <button
                 onClick={() => setViewType('list')}
-                className="text-[#007bff] hover:underline bg-transparent border-0 p-0 cursor-pointer text-xs"
+                className="text-primary hover:underline bg-transparent border-0 p-0 cursor-pointer text-xs"
               >
                 Events
               </button>
@@ -1005,7 +1005,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         </div>
 
         {/* Page Title */}
-        <h1 className="text-[22px] font-semibold text-[#1e293b] tracking-tight mb-3">
+        <h1 className="text-[22px] font-semibold text-foreground tracking-tight mb-3">
           {activeSection === 'event_venues'
             ? 'Event Venues'
             : activeSection === 'event_resources'
@@ -1021,7 +1021,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         {/* STANDALONE VIEW: EVENT VENUES (MATCHING OMEGA EXACT TABLE)   */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_venues' && (
-          <div className="bg-white rounded border border-[#e2e8f0] shadow-sm p-4 mb-6">
+          <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
             <div className="btn-toolbar list-toolbar mb-3">
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-3">
@@ -1034,7 +1034,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         setVenuePageNumber(1);
                       }}
                       placeholder="Search by venue name, contact name or phone"
-                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                     <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   </div>
@@ -1045,7 +1045,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         setVenueToEdit(null);
                         setVenueModalOpen(true);
                       }}
-                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-primary hover:bg-primary/90 text-white rounded flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" /> New
                     </button>
@@ -1053,12 +1053,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </div>
 
                 {/* Table matching Omega exact EventVenues page */}
-                <div className="table-responsive border border-[#dee2e6] rounded overflow-hidden">
+                <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
-                    <thead className="bg-[#f8f9fa] text-[#495057] font-semibold border-b border-[#dee2e6]">
+                    <thead className="bg-background text-foreground font-semibold border-b border-border">
                       <tr>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setVenueSorting({
                               value: 'venue_name',
@@ -1074,7 +1074,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setVenueSorting({
                               value: 'city',
@@ -1090,7 +1090,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setVenueSorting({
                               value: 'contact_name',
@@ -1106,7 +1106,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setVenueSorting({
                               value: 'contact_phone',
@@ -1124,7 +1124,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         <th className="py-2.5 px-3 text-right"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#dee2e6]">
+                    <tbody className="divide-y divide-border">
                       {paginatedVenues.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-slate-500 italic">
@@ -1134,7 +1134,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       ) : (
                         paginatedVenues.map(row => (
                           <tr key={row.venue_id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-2.5 px-3 font-semibold text-[#1e293b]">
+                            <td className="py-2.5 px-3 font-semibold text-foreground">
                               <div className="flex items-center gap-1.5">
                                 <Building className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                                 <span>{row.venue_name}</span>
@@ -1158,7 +1158,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                     setVenueToEdit(row);
                                     setVenueModalOpen(true);
                                   }}
-                                  className="h-7 w-7 bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                                  className="h-7 w-7 bg-primary hover:bg-primary/90 text-white rounded flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
                                   title="Edit Venue"
                                 >
                                   <Pencil className="w-3.5 h-3.5" />
@@ -1178,7 +1178,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       )}
                     </tbody>
                     {totalVenuePages > 1 && (
-                      <tfoot className="bg-[#f8f9fa] border-t border-[#dee2e6]">
+                      <tfoot className="bg-background border-t border-border">
                         <tr>
                           <td colSpan={5} className="py-2 px-3 text-center">
                             <div className="inline-flex items-center gap-1 text-xs">
@@ -1197,7 +1197,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                   onClick={() => setVenuePageNumber(i + 1)}
                                   className={`px-2.5 py-1 rounded border text-xs font-semibold ${
                                     venuePageNumber === i + 1
-                                      ? 'bg-[#007bff] text-white border-[#007bff]'
+                                      ? 'bg-primary text-white border-primary'
                                       : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                                   }`}
                                 >
@@ -1228,7 +1228,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         {/* STANDALONE VIEW: EVENT RESOURCES (MATCHING OMEGA TABLE SNIPPET) */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_resources' && (
-          <div className="bg-white rounded border border-[#e2e8f0] shadow-sm p-4 mb-6">
+          <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
             <div className="btn-toolbar list-toolbar mb-3">
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-3">
@@ -1238,7 +1238,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       value={resourceSearchValue}
                       onChange={e => setResourceSearchValue(e.target.value)}
                       placeholder="Search by name or description"
-                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                     <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   </div>
@@ -1258,7 +1258,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         });
                         setAddResourceModalOpen(true);
                       }}
-                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center gap-1.5 shadow-sm transition-colors"
+                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-primary hover:bg-primary/90 text-white rounded flex items-center gap-1.5 shadow-sm transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" /> New
                     </button>
@@ -1266,12 +1266,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </div>
 
                 {/* Table matching Omega exact_event_resources_page.html */}
-                <div className="table-responsive border border-[#dee2e6] rounded overflow-hidden">
+                <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
-                    <thead className="bg-[#f8f9fa] text-[#495057] font-semibold border-b border-[#dee2e6]">
+                    <thead className="bg-background text-foreground font-semibold border-b border-border">
                       <tr>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setResourceSorting({
                               value: 'resource_name',
@@ -1287,7 +1287,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setResourceSorting({
                               value: 'resource_description',
@@ -1303,7 +1303,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setResourceSorting({
                               value: 'type',
@@ -1321,7 +1321,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         <th className="py-2.5 px-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#dee2e6]">
+                    <tbody className="divide-y divide-border">
                       {filteredStandaloneResources.length === 0 ? (
                         <tr>
                           <td colSpan={4} className="py-8 text-center text-slate-500 italic">
@@ -1333,7 +1333,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           const isOutSource = row.resource_type === 'Out Source' || row.type === 1;
                           return (
                             <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                              <td className="py-2.5 px-3 font-semibold text-[#1e293b]">{row.resource_name}</td>
+                              <td className="py-2.5 px-3 font-semibold text-foreground">{row.resource_name}</td>
                               <td className="py-2.5 px-3 text-slate-600">
                                 {row.resource_description || row.resource_remark || '—'}
                               </td>
@@ -1353,7 +1353,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEditResource(row)}
-                                    className="h-7 w-7 bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center justify-center transition-colors shadow-sm"
+                                    className="h-7 w-7 bg-primary hover:bg-primary/90 text-white rounded flex items-center justify-center transition-colors shadow-sm"
                                     title="Edit Resource"
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
@@ -1384,7 +1384,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         {/* STANDALONE VIEW: EVENT TYPES (MATCHING OMEGA EXACT TABLE)     */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_types' && (
-          <div className="bg-white rounded border border-[#e2e8f0] shadow-sm p-4 mb-6">
+          <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
             <div className="btn-toolbar list-toolbar mb-3">
               <div className="w-full">
                 <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-3">
@@ -1397,7 +1397,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         setEventTypePageNumber(1);
                       }}
                       placeholder="Search by name or description"
-                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[35px] pl-9 pr-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                     <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                   </div>
@@ -1405,7 +1405,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     <button
                       type="button"
                       onClick={handleOpenAddEventType}
-                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                      className="btn btn-primary h-[35px] px-4 text-xs font-semibold bg-primary hover:bg-primary/90 text-white rounded flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" /> New
                     </button>
@@ -1413,12 +1413,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </div>
 
                 {/* Table matching Omega exact EventTypes page */}
-                <div className="table-responsive border border-[#dee2e6] rounded overflow-hidden">
+                <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
-                    <thead className="bg-[#f8f9fa] text-[#495057] font-semibold border-b border-[#dee2e6]">
+                    <thead className="bg-background text-foreground font-semibold border-b border-border">
                       <tr>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setEventTypeSorting({
                               value: 'type_name',
@@ -1434,7 +1434,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           </div>
                         </th>
                         <th
-                          className="py-2.5 px-3 cursor-pointer hover:text-[#007bff] transition-colors"
+                          className="py-2.5 px-3 cursor-pointer hover:text-primary transition-colors"
                           onClick={() =>
                             setEventTypeSorting({
                               value: 'description',
@@ -1452,7 +1452,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         <th className="py-2.5 px-3 text-right"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#dee2e6]">
+                    <tbody className="divide-y divide-border">
                       {paginatedEventTypes.length === 0 ? (
                         <tr>
                           <td colSpan={3} className="py-8 text-center text-slate-500 italic">
@@ -1462,14 +1462,14 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       ) : (
                         paginatedEventTypes.map(row => (
                           <tr key={row.id || row.evnt_type_id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-2.5 px-3 font-semibold text-[#1e293b]">{row.type_name}</td>
+                            <td className="py-2.5 px-3 font-semibold text-foreground">{row.type_name}</td>
                             <td className="py-2.5 px-3 text-slate-600">{row.description || '—'}</td>
                             <td className="py-2.5 px-3 text-right">
                               <div className="inline-flex items-center gap-1">
                                 <button
                                   type="button"
                                   onClick={() => handleOpenEditEventType(row)}
-                                  className="h-7 w-7 bg-[#007bff] hover:bg-[#0069d9] text-white rounded flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                                  className="h-7 w-7 bg-primary hover:bg-primary/90 text-white rounded flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
                                   title="Edit Event Type"
                                 >
                                   <Pencil className="w-3.5 h-3.5" />
@@ -1489,7 +1489,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       )}
                     </tbody>
                     {totalEventTypePages > 1 && (
-                      <tfoot className="bg-[#f8f9fa] border-t border-[#dee2e6]">
+                      <tfoot className="bg-background border-t border-border">
                         <tr>
                           <td colSpan={3} className="py-2 px-3 text-center">
                             <div className="inline-flex items-center gap-1 text-xs">
@@ -1508,7 +1508,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                   onClick={() => setEventTypePageNumber(i + 1)}
                                   className={`px-2.5 py-1 rounded border text-xs font-semibold ${
                                     eventTypePageNumber === i + 1
-                                      ? 'bg-[#007bff] text-white border-[#007bff]'
+                                      ? 'bg-primary text-white border-primary'
                                       : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                                   }`}
                                 >
@@ -1539,17 +1539,17 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         {/* VIEW TYPE: NEW EVENT (3 TABS MATCHING OMEGA) */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'events' && viewType === 'new_event' && (
-          <div className="bg-white rounded border border-[#e2e8f0] shadow-sm p-4 mb-6">
+          <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
             {/* Toolbar: 3 Tabs on left, Reset & Save on right */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dee2e6] pb-3 mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3 mb-4">
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveNewEventTab('info')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                     activeNewEventTab === 'info'
-                      ? 'border-[#007bff] text-[#007bff] font-semibold'
-                      : 'border-transparent text-[#6c757d] hover:text-[#2c3e50]'
+                      ? 'border-primary text-primary font-semibold'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Event Information
@@ -1559,8 +1559,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   onClick={() => setActiveNewEventTab('resources')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                     activeNewEventTab === 'resources'
-                      ? 'border-[#007bff] text-[#007bff] font-semibold'
-                      : 'border-transparent text-[#6c757d] hover:text-[#2c3e50]'
+                      ? 'border-primary text-primary font-semibold'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Resources
@@ -1575,8 +1575,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   onClick={() => setActiveNewEventTab('drivers')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                     activeNewEventTab === 'drivers'
-                      ? 'border-[#007bff] text-[#007bff] font-semibold'
-                      : 'border-transparent text-[#6c757d] hover:text-[#2c3e50]'
+                      ? 'border-primary text-primary font-semibold'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Drivers
@@ -1600,7 +1600,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   type="button"
                   id="resetEvent"
                   onClick={handleToolbarNewClick}
-                  className="px-3 py-1.5 text-xs font-medium text-white bg-[#007bff] hover:bg-[#0069d9] rounded flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded flex items-center gap-1.5 shadow-sm transition-colors"
                   title={
                     activeNewEventTab === 'drivers'
                       ? 'Create New Driver'
@@ -1620,7 +1620,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   type="button"
                   id="saveNewEvent"
                   onClick={handleSaveNewEvent}
-                  className="px-4 py-1.5 text-xs font-medium text-white bg-[#28a745] hover:bg-[#218838] rounded flex items-center gap-1.5 shadow-sm font-semibold"
+                  className="px-4 py-1.5 text-xs font-medium text-white bg-emerald-700 hover:bg-emerald-800 rounded flex items-center gap-1.5 shadow-sm font-semibold"
                 >
                   <Save className="w-3.5 h-3.5" /> Save
                 </button>
@@ -1646,8 +1646,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {activeNewEventTab === 'info' && (
               <div className="space-y-4">
                 {/* Customer Selection Row */}
-                <div className="p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded">
-                  <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                <div className="p-3 bg-background border border-border rounded">
+                  <label className="block text-xs font-semibold text-foreground mb-1">
                     Select Customer <span className="text-red-500 font-bold">*</span>
                   </label>
 
@@ -1662,12 +1662,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         }}
                         onFocus={() => setShowCustomerSuggestions(true)}
                         placeholder="search for customer by customerid, phone, name...."
-                        className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                        className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                       />
 
                       {/* Suggestions Dropdown */}
                       {showCustomerSuggestions && customerSuggestions.length > 0 && (
-                        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#ced4da] rounded shadow-lg z-30 max-h-48 overflow-y-auto">
+                        <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-border rounded shadow-lg z-30 max-h-48 overflow-y-auto">
                           {customerSuggestions.map(cust => (
                             <div
                               key={cust.CUSTOMERID}
@@ -1694,7 +1694,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     <button
                       type="button"
                       onClick={() => setAddCustomerModalOpen(true)}
-                      className="h-[34px] px-3 bg-[#007bff] hover:bg-[#0069d9] text-white rounded text-xs flex items-center justify-center font-bold"
+                      className="h-[34px] px-3 bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center font-bold"
                       title="Add Customer"
                     >
                       <Plus className="w-4 h-4" />
@@ -1703,7 +1703,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                   {/* Selected Customer Badge (matching Omega ERP exact markup) */}
                   {selectedCustomer && (
-                    <div className="mt-2.5 p-2 bg-[#f9f9f9] border border-[#cccccc] rounded text-[11px] text-[#333] flex justify-between items-start">
+                    <div className="mt-2.5 p-2 bg-muted border border-border rounded text-[11px] text-foreground flex justify-between items-start">
                       <div>
                         {selectedCustomer.COMPANY && (
                           <div className="font-bold text-slate-900">{selectedCustomer.COMPANY}</div>
@@ -1737,7 +1737,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Event Name */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Event Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1746,13 +1746,13 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       value={newEventFormData.event_name}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_name: e.target.value })}
                       placeholder="Enter event name"
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Event Date */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Event Date <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1760,20 +1760,20 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       id="event_date"
                       value={newEventFormData.event_date}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_date: e.target.value })}
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Event Type */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Event Type <span className="text-red-500">*</span>
                     </label>
                     <div className="flex items-center gap-2">
                       <select
                         value={newEventFormData.event_type_id}
                         onChange={e => setNewEventFormData({ ...newEventFormData, event_type_id: Number(e.target.value) })}
-                        className="flex-1 h-[34px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                        className="flex-1 h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                       >
                         {eventTypes.map(t => (
                           <option key={t.id} value={t.id}>
@@ -1784,7 +1784,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <button
                         type="button"
                         onClick={() => setAddEventTypeModalOpen(true)}
-                        className="h-[34px] px-2.5 bg-[#007bff] text-white rounded text-xs hover:bg-[#0069d9]"
+                        className="h-[34px] px-2.5 bg-primary text-white rounded text-xs hover:bg-primary/90"
                         title="Add Type"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -1794,7 +1794,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                   {/* Event Venue */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Event Venue</label>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Event Venue</label>
                     <div className="flex items-center gap-2">
                       <select
                         value={newEventFormData.venue_id || ''}
@@ -1804,7 +1804,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                             venue_id: e.target.value ? Number(e.target.value) : null
                           })
                         }
-                        className="flex-1 h-[34px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                        className="flex-1 h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                       >
                         <option value="">-- No Venue / External Location --</option>
                         {venuesList.map(v => (
@@ -1816,7 +1816,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <button
                         type="button"
                         onClick={() => setAddVenueModalOpen(true)}
-                        className="h-[34px] px-2.5 bg-[#007bff] text-white rounded text-xs hover:bg-[#0069d9]"
+                        className="h-[34px] px-2.5 bg-primary text-white rounded text-xs hover:bg-primary/90"
                         title="Add Venue"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -1826,7 +1826,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                   {/* Event Start Time */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Event Start Time <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1835,13 +1835,13 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       placeholder="17:00"
                       value={newEventFormData.event_start_time}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_start_time: e.target.value })}
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Number of Guests */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Number of Guests <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1853,26 +1853,26 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       onChange={e =>
                         setNewEventFormData({ ...newEventFormData, nb_of_guest: Math.max(1, Number(e.target.value)) })
                       }
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Event End Time */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Event End Time</label>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Event End Time</label>
                     <input
                       type="text"
                       id="event_end_time"
                       placeholder="21:00"
                       value={newEventFormData.event_end_time}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_end_time: e.target.value })}
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Status */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Status <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -1883,7 +1883,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           event_status: e.target.value as 'pending' | 'confirmed'
                         })
                       }
-                      className="w-full h-[34px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                      className="w-full h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -1892,20 +1892,20 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                   {/* Delivery Time */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Delivery Time</label>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Delivery Time</label>
                     <input
                       type="text"
                       id="event_delivery_time"
                       placeholder="16:00"
                       value={newEventFormData.event_delivery_time}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_delivery_time: e.target.value })}
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Delivery Type */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Delivery Type</label>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Delivery Type</label>
                     <select
                       value={newEventFormData.event_delivery_type}
                       onChange={e =>
@@ -1914,7 +1914,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           event_delivery_type: e.target.value as 'pickup' | 'delivery'
                         })
                       }
-                      className="w-full h-[34px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                      className="w-full h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                     >
                       <option value="pickup">Pickup</option>
                       <option value="delivery">Delivery</option>
@@ -1923,26 +1923,26 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                   {/* Setup Time */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Setup Time</label>
+                    <label className="block text-xs font-semibold text-foreground mb-1">Setup Time</label>
                     <input
                       type="text"
                       id="event_setup_time"
                       placeholder="15:00"
                       value={newEventFormData.event_setup_time}
                       onChange={e => setNewEventFormData({ ...newEventFormData, event_setup_time: e.target.value })}
-                      className="w-full h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
                   {/* Main Branch */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                    <label className="block text-xs font-semibold text-foreground mb-1">
                       Select Main Branch <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={newEventFormData.branchid}
                       onChange={e => handleBranchChange(Number(e.target.value))}
-                      className="w-full h-[34px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                      className="w-full h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                     >
                       <option value={1}>Zeit w zaytoun ljanoub</option>
                       <option value={2}>Beirut Central Distribution Depot</option>
@@ -1952,14 +1952,14 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-xs font-semibold text-[#2c3e50] mb-1">Notes</label>
+                  <label className="block text-xs font-semibold text-foreground mb-1">Notes</label>
                   <textarea
                     rows={3}
                     id="event_notes"
                     value={newEventFormData.event_notes}
                     onChange={e => setNewEventFormData({ ...newEventFormData, event_notes: e.target.value })}
                     placeholder="Enter notes (optional)"
-                    className="w-full p-2.5 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                    className="w-full p-2.5 text-xs border border-border rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -1968,16 +1968,16 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {/* TAB 2: RESOURCES */}
             {activeNewEventTab === 'resources' && (
               <div className="space-y-4">
-                <div className="card border border-[#dee2e6] rounded shadow-sm overflow-hidden bg-white mb-3">
-                  <div className="card-header bg-[#f8f9fa] border-b border-[#dee2e6] px-4 py-3">
-                    <span className="font-semibold text-sm text-[#2c3e50]">Event Resources</span>
+                <div className="card border border-border rounded shadow-sm overflow-hidden bg-white mb-3">
+                  <div className="card-header bg-background border-b border-border px-4 py-3">
+                    <span className="font-semibold text-sm text-foreground">Event Resources</span>
                   </div>
 
                   <div className="card-body p-4 space-y-4">
                     {/* Row with Select Resource & Inline + Button matching Omega */}
                     <div className="row g-2">
                       <div className="col-12 col-md-6">
-                        <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                        <label className="block text-xs font-semibold text-foreground mb-1">
                           Select Resource
                         </label>
                         <div className="flex items-center gap-2">
@@ -1989,7 +1989,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               }
                             }}
                             defaultValue=""
-                            className="flex-1 h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-[#495057]"
+                            className="flex-1 h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                           >
                             <option value="" disabled>-- Select Resource to Assign --</option>
                             {resourceList.map(r => {
@@ -2016,7 +2016,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               });
                               setAddResourceModalOpen(true);
                             }}
-                            className="h-[34px] px-3 bg-[#007bff] hover:bg-[#0069d9] text-white rounded text-xs flex items-center justify-center shadow-sm transition-colors"
+                            className="h-[34px] px-3 bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center shadow-sm transition-colors"
                             title="Add New Resource"
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -2026,9 +2026,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     </div>
 
                     {/* Resources Table in Authentic Omega Style */}
-                    <div className="table-responsive border border-[#dee2e6] rounded overflow-hidden">
+                    <div className="table-responsive border border-border rounded overflow-hidden">
                       <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
-                        <thead className="bg-[#f8f9fa] text-[#495057] font-semibold border-b border-[#dee2e6]">
+                        <thead className="bg-background text-foreground font-semibold border-b border-border">
                           <tr>
                             <th className="py-2.5 px-3">Resource Name</th>
                             <th className="py-2.5 px-3">Type</th>
@@ -2037,7 +2037,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                             <th className="py-2.5 px-3 text-right">Action</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#dee2e6]">
+                        <tbody className="divide-y divide-border">
                           {assignedResources.length === 0 ? (
                             <tr>
                               <td colSpan={5} className="py-8 text-center text-slate-500 italic">
@@ -2051,7 +2051,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               const isOutSource = r.resource_type === 'Out Source' || r.type === 1;
                               return (
                                 <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                                  <td className="py-2.5 px-3 font-semibold text-[#1e293b]">{r.resource_name}</td>
+                                  <td className="py-2.5 px-3 font-semibold text-foreground">{r.resource_name}</td>
                                   <td className="py-2.5 px-3">
                                     <span
                                       className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
@@ -2072,7 +2072,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                       min="1"
                                       value={item.quantity}
                                       onChange={e => updateResourceQty(item.id, Number(e.target.value))}
-                                      className="w-16 h-7 px-2 border border-[#ced4da] rounded text-xs focus:outline-none focus:border-[#007bff]"
+                                      className="w-16 h-7 px-2 border border-border rounded text-xs focus:outline-none focus:border-primary"
                                     />
                                   </td>
                                   <td className="py-2.5 px-3 text-right">
@@ -2100,9 +2100,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {/* TAB 3: DRIVERS */}
             {activeNewEventTab === 'drivers' && (
               <div className="space-y-4">
-                <div className="card border border-[#dee2e6] rounded shadow-sm overflow-hidden bg-white mb-3">
-                  <div className="card-header bg-[#f8f9fa] border-b border-[#dee2e6] px-4 py-3">
-                    <span className="font-semibold text-sm text-[#2c3e50]">Event Drivers</span>
+                <div className="card border border-border rounded shadow-sm overflow-hidden bg-white mb-3">
+                  <div className="card-header bg-background border-b border-border px-4 py-3">
+                    <span className="font-semibold text-sm text-foreground">Event Drivers</span>
                     <span className="ml-2 text-xs text-slate-500 font-normal">
                       ({newEventFormData.branchid === 2 ? 'Beirut Central Distribution Depot' : 'Zeit w zaytoun ljanoub'})
                     </span>
@@ -2112,7 +2112,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     {/* Row with Select Employee & Inline + Button matching Omega */}
                     <div className="row g-2">
                       <div className="col-12 col-md-6">
-                        <label className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                        <label className="block text-xs font-semibold text-foreground mb-1">
                           Select Employee / Driver
                         </label>
                         <div className="flex items-center gap-2">
@@ -2124,7 +2124,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               }
                             }}
                             defaultValue=""
-                            className="flex-1 h-[34px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-[#495057]"
+                            className="flex-1 h-[34px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                           >
                             <option value="" disabled>-- Select Driver to Assign --</option>
                             {employeeList.map(emp => {
@@ -2150,7 +2150,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               });
                               setAddDriverModalOpen(true);
                             }}
-                            className="h-[34px] px-3 bg-[#007bff] hover:bg-[#0069d9] text-white rounded text-xs flex items-center justify-center shadow-sm transition-colors"
+                            className="h-[34px] px-3 bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center shadow-sm transition-colors"
                             title="Add New Driver"
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -2160,9 +2160,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     </div>
 
                     {/* Drivers Table in Authentic Omega Style */}
-                    <div className="table-responsive border border-[#dee2e6] rounded overflow-hidden">
+                    <div className="table-responsive border border-border rounded overflow-hidden">
                       <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
-                        <thead className="bg-[#f8f9fa] text-[#495057] font-semibold border-b border-[#dee2e6]">
+                        <thead className="bg-background text-foreground font-semibold border-b border-border">
                           <tr>
                             <th className="py-2.5 px-3">Driver Name</th>
                             <th className="py-2.5 px-3">Mobile / Phone</th>
@@ -2172,7 +2172,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                             <th className="py-2.5 px-3 text-right">Action</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#dee2e6]">
+                        <tbody className="divide-y divide-border">
                           {assignedEmployeeIds.length === 0 ? (
                             <tr>
                               <td colSpan={6} className="py-8 text-center text-slate-500 italic">
@@ -2185,7 +2185,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                               if (!emp) return null;
                               return (
                                 <tr key={empId} className="hover:bg-slate-50 transition-colors">
-                                  <td className="py-2.5 px-3 font-semibold text-[#1e293b]">{emp.NAME}</td>
+                                  <td className="py-2.5 px-3 font-semibold text-foreground">{emp.NAME}</td>
                                   <td className="py-2.5 px-3 font-mono text-slate-700">{emp.MOBILETEL || '—'}</td>
                                   <td className="py-2.5 px-3 text-slate-600">
                                     {emp.branchid === 2 ? 'Beirut Central Depot' : 'Zeit w zaytoun ljanoub'}
@@ -2230,14 +2230,14 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {/* Top Row: Branch Selector on Left, View Switcher on Right (Matches Screenshot 1 & 2) */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-2">
               <div className="w-full sm:w-80">
-                <label htmlFor="branch" className="block text-xs font-semibold text-[#2c3e50] mb-1">
+                <label htmlFor="branch" className="block text-xs font-semibold text-foreground mb-1">
                   Select Branch
                 </label>
                 <select
                   id="branch"
                   value={selectedBranch}
                   onChange={e => handleBranchChange(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                  className="w-full h-[35px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-[#495057]"
+                  className="w-full h-[35px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                 >
                   <option value={1}>Zeit w zaytoun ljanoub</option>
                   <option value={2}>Beirut Central Distribution Depot</option>
@@ -2253,8 +2253,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     onClick={() => setViewType('list')}
                     className={`h-[35px] px-3.5 border text-xs font-medium rounded-l transition-colors flex items-center justify-center ${
                       viewType === 'list'
-                        ? 'bg-[#007bff] border-[#007bff] text-white font-bold'
-                        : 'bg-white border-[#ced4da] text-[#007bff] hover:bg-slate-50'
+                        ? 'bg-primary border-primary text-white font-bold'
+                        : 'bg-white border-border text-primary hover:bg-slate-50'
                     }`}
                     title="List View"
                   >
@@ -2265,8 +2265,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     onClick={() => setViewType('calendar')}
                     className={`h-[35px] px-3.5 border-t border-b border-r text-xs font-medium rounded-r transition-colors flex items-center justify-center ${
                       viewType === 'calendar'
-                        ? 'bg-[#007bff] border-[#007bff] text-white font-bold'
-                        : 'bg-white border-[#ced4da] text-[#007bff] hover:bg-slate-50'
+                        ? 'bg-primary border-primary text-white font-bold'
+                        : 'bg-white border-border text-primary hover:bg-slate-50'
                     }`}
                     title="Calendar View"
                   >
@@ -2280,9 +2280,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {/* 1. LIST VIEW (MATCHES SCREENSHOT 1) */}
             {/* --------------------------------------------------------- */}
             {viewType === 'list' && (
-              <div className="bg-white border border-[#dee2e6] rounded shadow-sm overflow-hidden">
+              <div className="bg-white border border-border rounded shadow-sm overflow-hidden">
                 {/* Search & Filter Toolbar (Screenshot 1) */}
-                <div className="p-3 border-b border-[#dee2e6] bg-[#fdfdfd]">
+                <div className="p-3 border-b border-border bg-card">
                   <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
                     {/* Search Input */}
                     <div className="flex-1 relative">
@@ -2292,7 +2292,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         value={searchValue}
                         onChange={e => setSearchValue(e.target.value)}
                         placeholder="Search by name, phone, email, ID or event name"
-                        className="w-full h-[35px] pl-9 pr-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                        className="w-full h-[35px] pl-9 pr-3 text-xs border border-border rounded focus:outline-none focus:border-primary"
                       />
                     </div>
 
@@ -2301,7 +2301,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <select
                         value={statusFilter}
                         onChange={e => setStatusFilter(e.target.value)}
-                        className="w-full h-[35px] px-2.5 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-[#495057]"
+                        className="w-full h-[35px] px-2.5 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                       >
                         <option value="all">All Events</option>
                         <option value="pending">Pending</option>
@@ -2317,7 +2317,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         value={dateFilter}
                         onChange={e => setDateFilter(e.target.value)}
                         placeholder="dd----yyyy"
-                        className="w-full h-[35px] px-2 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-[#495057]"
+                        className="w-full h-[35px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                       />
                     </div>
 
@@ -2326,7 +2326,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <button
                         type="button"
                         onClick={() => handleOpenNewEvent()}
-                        className="w-full lg:w-auto h-[35px] px-4 bg-[#2d3748] hover:bg-[#1a202c] text-white text-xs font-semibold rounded flex items-center justify-center gap-1 shadow-sm transition-colors"
+                        className="w-full lg:w-auto h-[35px] px-4 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded flex items-center justify-center gap-1 shadow-sm transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" /> New
                       </button>
@@ -2337,7 +2337,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 {/* Table matching Screenshot 1 */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left border-collapse">
-                    <thead className="bg-white border-b border-[#e2e8f0] text-[#2c3e50] font-semibold">
+                    <thead className="bg-white border-b border-border text-foreground font-semibold">
                       <tr>
                         <th
                           className="py-3 px-3 cursor-pointer hover:bg-slate-50 select-none whitespace-nowrap"
@@ -2419,7 +2419,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         <th className="py-3 px-3 text-right"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#edf2f7]">
+                    <tbody className="divide-y divide-border">
                       {eventsList.length === 0 ? (
                         <tr>
                           <td colSpan={8} className="py-8 text-center text-slate-400 font-normal">
@@ -2431,7 +2431,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           <tr key={ev.evnt_id} className="hover:bg-slate-50/80 transition-colors">
                             <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">{ev.branch_name}</td>
                             <td
-                              className="py-2.5 px-3 font-medium text-[#007bff] hover:underline cursor-pointer whitespace-nowrap"
+                              className="py-2.5 px-3 font-medium text-primary hover:underline cursor-pointer whitespace-nowrap"
                               onClick={() => {
                                 setSelectedEventForDetails(ev);
                                 setDetailsModalOpen(true);
@@ -2449,10 +2449,10 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                 <span
                                   className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider text-white ${
                                     ev.event_status === 'confirmed'
-                                      ? 'bg-[#28a745]'
+                                      ? 'bg-emerald-700'
                                       : ev.event_status === 'pending'
-                                      ? 'bg-[#fd7e14]'
-                                      : 'bg-[#6c757d]'
+                                      ? 'bg-amber-600'
+                                      : 'bg-slate-600'
                                   }`}
                                 >
                                   {ev.event_status}
@@ -2475,7 +2475,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                 <button
                                   type="button"
                                   onClick={() => handleEditEvent(ev)}
-                                  className="p-1 bg-[#007bff] text-white rounded hover:bg-[#0069d9]"
+                                  className="p-1 bg-primary text-white rounded hover:bg-primary/90"
                                   title="Edit Event"
                                 >
                                   <Pencil className="w-3 h-3" />
@@ -2483,7 +2483,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteEvent(ev.evnt_id)}
-                                  className="p-1 bg-[#dc3545] text-white rounded hover:bg-[#c82333]"
+                                  className="p-1 bg-destructive text-white rounded hover:bg-destructive/90"
                                   title="Delete Event"
                                 >
                                   <Trash2 className="w-3 h-3" />
@@ -2498,7 +2498,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </div>
 
                 {/* Table Footer with Pagination */}
-                <div className="p-3 bg-white border-t border-[#dee2e6] flex items-center justify-between text-xs text-slate-500">
+                <div className="p-3 bg-white border-t border-border flex items-center justify-between text-xs text-slate-500">
                   <div>
                     Showing {eventsList.length} of {totalEvents} events
                   </div>
@@ -2531,15 +2531,15 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             {/* 2. CALENDAR VIEW (MATCHES SCREENSHOTS 2 & 3) */}
             {/* --------------------------------------------------------- */}
             {viewType === 'calendar' && (
-              <div className="bg-white border border-[#dee2e6] rounded shadow-sm p-4">
+              <div className="bg-white border border-border rounded shadow-sm p-4">
                 {/* Calendar Navigation Sub-toolbar (Screenshot 2) */}
                 <div className="flex items-center justify-between mb-4">
                   {/* Left: < and > navigation buttons */}
-                  <div className="inline-flex rounded border border-[#ced4da] overflow-hidden">
+                  <div className="inline-flex rounded border border-border overflow-hidden">
                     <button
                       type="button"
                       onClick={prevMonth}
-                      className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border-r border-[#ced4da] transition-colors"
+                      className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border-r border-border transition-colors"
                       title="Previous"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -2555,7 +2555,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
 
                   {/* Center: Dynamic Month & Year Header (e.g. September 2026) */}
-                  <div className="text-[20px] font-normal text-[#333333] tracking-tight">
+                  <div className="text-[20px] font-normal text-foreground tracking-tight">
                     {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                   </div>
 
@@ -2564,18 +2564,18 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     <button
                       type="button"
                       onClick={() => handleOpenNewEvent()}
-                      className="h-[32px] px-3.5 bg-[#2d3748] hover:bg-[#1a202c] text-white text-xs font-semibold rounded flex items-center gap-1 shadow-sm transition-colors"
+                      className="h-[32px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded flex items-center gap-1 shadow-sm transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" /> New
                     </button>
 
-                    <div className="inline-flex rounded border border-[#ced4da] overflow-hidden">
+                    <div className="inline-flex rounded border border-border overflow-hidden">
                       <button
                         type="button"
                         onClick={() => setCalendarViewMode('month')}
-                        className={`px-3 py-1 text-xs font-medium border-r border-[#ced4da] transition-colors ${
+                        className={`px-3 py-1 text-xs font-medium border-r border-border transition-colors ${
                           calendarViewMode === 'month'
-                            ? 'bg-[#e2e8f0] text-slate-900 font-semibold'
+                            ? 'bg-muted text-slate-900 font-semibold'
                             : 'bg-white text-slate-700 hover:bg-slate-50'
                         }`}
                       >
@@ -2586,7 +2586,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         onClick={() => setCalendarViewMode('week')}
                         className={`px-3 py-1 text-xs font-medium transition-colors ${
                           calendarViewMode === 'week'
-                            ? 'bg-[#e2e8f0] text-slate-900 font-semibold'
+                            ? 'bg-muted text-slate-900 font-semibold'
                             : 'bg-white text-slate-700 hover:bg-slate-50'
                         }`}
                       >
@@ -2598,9 +2598,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                 {/* MONTH VIEW GRID (Screenshot 2 & 3) */}
                 {calendarViewMode === 'month' && (
-                  <div className="border border-[#dee2e6] rounded overflow-hidden">
+                  <div className="border border-border rounded overflow-hidden">
                     {/* Day Headers: Sun Mon Tue Wed Thu Fri Sat */}
-                    <div className="grid grid-cols-7 bg-[#f8f9fa] border-b border-[#dee2e6] text-center text-xs font-semibold text-[#495057] py-2">
+                    <div className="grid grid-cols-7 bg-background border-b border-border text-center text-xs font-semibold text-foreground py-2">
                       <div>Sun</div>
                       <div>Mon</div>
                       <div>Tue</div>
@@ -2618,12 +2618,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           <div
                             key={idx}
                             onClick={() => handleOpenNewEvent(cell.dateString)}
-                            className={`min-h-[110px] sm:min-h-[125px] p-1.5 border-b border-r border-[#dee2e6] relative transition-colors cursor-pointer group ${
+                            className={`min-h-[110px] sm:min-h-[125px] p-1.5 border-b border-r border-border relative transition-colors cursor-pointer group ${
                               !cell.isCurrentMonth
-                                ? 'bg-[#e2e8f0] text-[#9ca3af]' // Greyed out overflow days (Screenshot 2)
+                                ? 'bg-muted text-muted-foreground' // Greyed out overflow days (Screenshot 2)
                                 : cell.isToday
-                                ? 'bg-[#fffde7] text-[#2c3e50]' // Today yellow highlight (Screenshot 2)
-                                : 'bg-white hover:bg-slate-50/70 text-[#2c3e50]'
+                                ? 'bg-amber-50 text-foreground' // Today yellow highlight (Screenshot 2)
+                                : 'bg-white hover:bg-slate-50/70 text-foreground'
                             }`}
                           >
                             {/* Day Number in top-right */}
@@ -2645,10 +2645,10 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                   }}
                                   className={`px-1.5 py-1 rounded text-[11px] leading-tight text-white shadow-xs cursor-pointer hover:opacity-95 transition-opacity ${
                                     calEv.status === 'confirmed'
-                                      ? 'bg-[#28a745]'
+                                      ? 'bg-emerald-700'
                                       : calEv.status === 'pending'
-                                      ? 'bg-[#fd7e14]'
-                                      : 'bg-[#6c757d]'
+                                      ? 'bg-amber-600'
+                                      : 'bg-slate-600'
                                   }`}
                                   title={`${calEv.title} (${calEv.status})`}
                                 >
@@ -2681,9 +2681,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
                 {/* WEEK VIEW GRID */}
                 {calendarViewMode === 'week' && (
-                  <div className="border border-[#dee2e6] rounded overflow-hidden">
+                  <div className="border border-border rounded overflow-hidden">
                     {/* Header: 7 Days of Active Week */}
-                    <div className="grid grid-cols-8 bg-[#f8f9fa] border-b border-[#dee2e6] text-center text-xs font-semibold text-[#495057] py-2">
+                    <div className="grid grid-cols-8 bg-background border-b border-border text-center text-xs font-semibold text-foreground py-2">
                       <div className="text-slate-400">Time</div>
                       {calendarWeekDays.map((wDay, idx) => (
                         <div
@@ -2713,7 +2713,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                 key={wDay.dateString}
                                 onClick={() => handleOpenNewEvent(wDay.dateString, hour)}
                                 className={`p-1 border-r border-slate-100 relative hover:bg-blue-50/30 cursor-pointer transition-colors ${
-                                  wDay.isToday ? 'bg-[#fffde7]/40' : ''
+                                  wDay.isToday ? 'bg-amber-50/40' : ''
                                 }`}
                               >
                                 {matchingEvents.map(ev => (
@@ -2727,7 +2727,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                       }
                                     }}
                                     className={`p-1 rounded text-[10px] text-white font-medium shadow-xs ${
-                                      ev.status === 'confirmed' ? 'bg-[#28a745]' : 'bg-[#fd7e14]'
+                                      ev.status === 'confirmed' ? 'bg-emerald-700' : 'bg-amber-600'
                                     }`}
                                   >
                                     <div className="truncate font-semibold">{ev.title}</div>
@@ -2778,7 +2778,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 <select
                   value={newStatusValue}
                   onChange={e => setNewStatusValue(e.target.value as any)}
-                  className="w-full h-[36px] px-3 text-xs border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                  className="w-full h-[36px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                 >
                   <option value="pending">Pending</option>
                   <option value="confirmed">Confirmed</option>
@@ -2798,7 +2798,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
               <button
                 type="button"
                 onClick={handleCommitStatusUpdate}
-                className="px-4 py-1.5 text-xs font-medium text-white bg-[#007bff] hover:bg-[#0069d9] rounded shadow-sm font-semibold"
+                className="px-4 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded shadow-sm font-semibold"
               >
                 Save
               </button>
@@ -2930,7 +2930,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     setDetailsModalOpen(false);
                     handleEditEvent(selectedEventForDetails);
                   }}
-                  className="px-3 py-1.5 text-xs text-white bg-[#007bff] hover:bg-[#0069d9] rounded"
+                  className="px-3 py-1.5 text-xs text-white bg-primary hover:bg-primary/90 rounded"
                 >
                   Edit Event
                 </button>
@@ -3027,7 +3027,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded"
                 >
                   Create Customer
                 </button>
@@ -3071,7 +3071,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded"
                 >
                   Save Type
                 </button>
@@ -3108,7 +3108,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       {addResourceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-xl overflow-hidden border border-slate-200">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8f9fa]">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-background">
               <h3 className="text-base font-semibold text-slate-800">
                 {isEditResource ? 'Edit Resource' : 'New Resource'}
               </h3>
@@ -3122,8 +3122,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
             </div>
             <form id="newEventResourceForm" onSubmit={handleSaveResourceModal} className="p-5 space-y-4 text-xs">
               {/* Card 1: General */}
-              <div className="card border border-[#dee2e6] rounded">
-                <div className="card-header bg-[#f8f9fa] border-b border-[#dee2e6] px-3 py-2 font-semibold text-slate-700">
+              <div className="card border border-border rounded">
+                <div className="card-header bg-background border-b border-border px-3 py-2 font-semibold text-slate-700">
                   General
                 </div>
                 <div className="card-body p-3 space-y-3">
@@ -3138,7 +3138,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         placeholder="Enter resource name"
                         value={newResourceForm.resource_name}
                         onChange={e => setNewResourceForm({ ...newResourceForm, resource_name: e.target.value })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                         autoFocus
                       />
                     </div>
@@ -3149,7 +3149,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <select
                         value={newResourceForm.resource_type}
                         onChange={e => setNewResourceForm({ ...newResourceForm, resource_type: Number(e.target.value) })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary bg-white"
                       >
                         <option value={0}>In House</option>
                         <option value={1}>Out Source</option>
@@ -3164,7 +3164,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       placeholder="Enter resource remark"
                       value={newResourceForm.resource_remark}
                       onChange={e => setNewResourceForm({ ...newResourceForm, resource_remark: e.target.value })}
-                      className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -3175,7 +3175,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       placeholder="Enter resource description"
                       value={newResourceForm.resource_description}
                       onChange={e => setNewResourceForm({ ...newResourceForm, resource_description: e.target.value })}
-                      className="w-full p-2 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full p-2 border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -3183,8 +3183,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
               {/* Card 2: Suppliers (conditional if Out Source / 1) */}
               {newResourceForm.resource_type === 1 && (
-                <div className="card border border-[#dee2e6] rounded">
-                  <div className="card-header bg-[#f8f9fa] border-b border-[#dee2e6] px-3 py-2 font-semibold text-slate-700">
+                <div className="card border border-border rounded">
+                  <div className="card-header bg-background border-b border-border px-3 py-2 font-semibold text-slate-700">
                     Suppliers
                   </div>
                   <div className="card-body p-3">
@@ -3199,7 +3199,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                           const selected = Array.from(e.target.selectedOptions, opt => Number(opt.value));
                           setNewResourceForm({ ...newResourceForm, selectedInvSuppliers: selected });
                         }}
-                        className="flex-1 min-h-[70px] p-2 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white text-xs"
+                        className="flex-1 min-h-[70px] p-2 border border-border rounded focus:outline-none focus:border-primary bg-white text-xs"
                       >
                         {suppliersInvList.map(sup => (
                           <option key={sup.SUPPLIERID} value={sup.SUPPLIERID}>
@@ -3224,7 +3224,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 <button
                   type="submit"
                   id="saveNewEventResource"
-                  className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" /> Save
                 </button>
@@ -3240,7 +3240,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       {addDriverModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden border border-slate-200">
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-[#f8f9fa]">
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-background">
               <h3 className="text-base font-semibold text-slate-800">New Driver</h3>
               <button
                 type="button"
@@ -3251,8 +3251,8 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
               </button>
             </div>
             <form id="newDriverForm" onSubmit={handleSaveDriverModal} className="p-5 space-y-4 text-xs">
-              <div className="card border border-[#dee2e6] rounded">
-                <div className="card-header bg-[#f8f9fa] border-b border-[#dee2e6] px-3 py-2 font-semibold text-slate-700">
+              <div className="card border border-border rounded">
+                <div className="card-header bg-background border-b border-border px-3 py-2 font-semibold text-slate-700">
                   Driver Information
                 </div>
                 <div className="card-body p-3 space-y-3">
@@ -3267,7 +3267,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         placeholder="e.g. Charbel Tannous"
                         value={newDriverForm.NAME}
                         onChange={e => setNewDriverForm({ ...newDriverForm, NAME: e.target.value })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                         autoFocus
                       />
                     </div>
@@ -3281,7 +3281,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         placeholder="e.g. +961 70 882 101"
                         value={newDriverForm.MOBILETEL}
                         onChange={e => setNewDriverForm({ ...newDriverForm, MOBILETEL: e.target.value })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -3294,7 +3294,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       <select
                         value={newDriverForm.branchid}
                         onChange={e => setNewDriverForm({ ...newDriverForm, branchid: Number(e.target.value) })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff] bg-white"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary bg-white"
                       >
                         <option value={1}>Zeit w zaytoun ljanoub</option>
                         <option value={2}>Beirut Central Distribution Depot</option>
@@ -3307,7 +3307,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         placeholder="e.g. Senior Transport Driver"
                         value={newDriverForm.role}
                         onChange={e => setNewDriverForm({ ...newDriverForm, role: e.target.value })}
-                        className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                        className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -3319,7 +3319,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       placeholder="e.g. LBN-DRV-0089"
                       value={newDriverForm.license_number}
                       onChange={e => setNewDriverForm({ ...newDriverForm, license_number: e.target.value })}
-                      className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -3330,7 +3330,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       placeholder="Optional notes or vehicle plate assignment..."
                       value={newDriverForm.remark}
                       onChange={e => setNewDriverForm({ ...newDriverForm, remark: e.target.value })}
-                      className="w-full p-2 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                      className="w-full p-2 border border-border rounded focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -3347,7 +3347,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 <button
                   type="submit"
                   id="saveNewDriver"
-                  className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" /> Save Driver
                 </button>
@@ -3363,7 +3363,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       {eventTypeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden border border-slate-200">
-            <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-[#1e1e1e] text-white">
+            <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-900 text-white">
               <h3 className="text-sm font-semibold">
                 {eventTypeToEdit ? 'Edit Event Type' : 'New Event Type'}
               </h3>
@@ -3387,7 +3387,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     placeholder="Enter type name"
                     value={eventTypeFormData.type_name}
                     onChange={e => setEventTypeFormData({ ...eventTypeFormData, type_name: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                    className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary"
                     autoFocus
                   />
                 </div>
@@ -3399,12 +3399,12 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     placeholder="Enter description"
                     value={eventTypeFormData.description}
                     onChange={e => setEventTypeFormData({ ...eventTypeFormData, description: e.target.value })}
-                    className="w-full p-2 border border-[#ced4da] rounded focus:outline-none focus:border-[#007bff]"
+                    className="w-full p-2 border border-border rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-2 border-t border-[#dee2e6]">
+              <div className="pt-2 flex justify-end gap-2 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setEventTypeModalOpen(false)}
@@ -3415,7 +3415,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                 <button
                   type="submit"
                   id="saveNewEventType"
-                  className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded text-xs flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" /> Save
                 </button>
@@ -3426,7 +3426,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       )}
 
       {/* Authentic Footer Matching Screenshots 1, 2, 3 */}
-      <footer className="mt-16 text-center text-xs text-[#6c757d] border-t border-[#dee2e6] pt-4">
+      <footer className="mt-16 text-center text-xs text-muted-foreground border-t border-border pt-4">
         © 2026 Omega Software All rights reserved. &nbsp;|&nbsp;
         <span className="hover:underline cursor-pointer"> Privacy Policy</span> &nbsp;|&nbsp;
         <span className="hover:underline cursor-pointer"> Terms and Conditions</span> &nbsp;|&nbsp;
@@ -3438,7 +3438,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 w-10 h-10 bg-[#007bff] hover:bg-[#0069d9] text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+        className="fixed bottom-6 right-6 w-10 h-10 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
         title="Scroll to Top"
       >
         <ChevronUp className="w-5 h-5" />

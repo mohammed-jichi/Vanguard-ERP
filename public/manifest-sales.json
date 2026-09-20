@@ -1,0 +1,25 @@
+{
+  "name": "Vanguard Sales Rep Mobile PWA",
+  "short_name": "Sales Rep",
+  "description": "Vanguard ERP & Social CRM Mobile Field Representative App",
+  "start_url": "/sales-rep",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/vanguard-emblem.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/vanguard-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

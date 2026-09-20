@@ -132,7 +132,7 @@ export default function PriceModesView() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] p-4 sm:p-6 lg:p-8 font-sans select-none text-slate-800">
+    <div className="w-full min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans select-none text-slate-800">
       {/* Toast Alert */}
       {toast.show && (
         <div
@@ -159,7 +159,7 @@ export default function PriceModesView() {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Modes</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
-            <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition-colors">
+            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
               Home
             </Link>
             <span>/</span>
@@ -299,7 +299,7 @@ export default function PriceModesView() {
                           type="button"
                           disabled={isSaving}
                           onClick={handleSave}
-                          className="flex-1 sm:flex-none px-4 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                          className="flex-1 sm:flex-none px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
                         >
                           <Save className="w-4 h-4" /> Save
                         </button>
@@ -308,7 +308,7 @@ export default function PriceModesView() {
                           type="button"
                           disabled={isSaving}
                           onClick={handleSaveAllBranches}
-                          className="flex-1 sm:flex-none px-4 py-2 bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                          className="flex-1 sm:flex-none px-4 py-2 bg-primary hover:bg-primary text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
                         >
                           <Save className="w-4 h-4" /> Save For All Branches
                         </button>

@@ -88,8 +88,8 @@ const DEFAULT_SUPPLIERS = [
   { id: 'SUP-10', name: 'Sedi Hisham', contact: 'Abir', address: 'Beirut, Lebanon', phone: '+961 1 300 200', email: 'sedihisham@gmail.com' },
   { id: 'SUP-11', name: 'SOOL', contact: 'Southern Olive Oil Products Logistics', address: 'Choueifat Main Facility, Lebanon', phone: '+961 5 432 100', email: 'procurement@sool.com.lb' },
   { id: 'SUP-12', name: 'Zahwe', contact: 'Zahwe Agriculture', address: 'Kfarroummane, Nabatieh, Lebanon', phone: '+961 70 798 854', email: 'zahwe.farm@gmail.com' },
-  { id: 'SUP-13', name: 'الضيعة', contact: 'Al Dayaa Co.', address: 'Marjeyoun District, South Lebanon', phone: '+961 70 325 417', email: 'aldayaa@gmail.com' },
-  { id: 'SUP-14', name: 'مؤسسة عبده للتجارة', contact: 'Abdo Trading Est.', address: 'Saida Coastal Highway, Lebanon', phone: '+961 7 725 330', email: 'abdo.trading@gmail.com' }
+  { id: 'SUP-13', name: 'Al-Dayaa', contact: 'Al Dayaa Co.', address: 'Marjeyoun District, South Lebanon', phone: '+961 70 325 417', email: 'aldayaa@gmail.com' },
+  { id: 'SUP-14', name: 'Abdo Trading Est.', contact: 'Abdo Trading Est.', address: 'Saida Coastal Highway, Lebanon', phone: '+961 7 725 330', email: 'abdo.trading@gmail.com' }
 ];
 
 const PREDEFINED_CATALOG_ITEMS = [
@@ -101,7 +101,7 @@ const PREDEFINED_CATALOG_ITEMS = [
   { barcode: '528400103', description: 'صندوق مربى فريز حب 800غ*12', unit: 'BOX', price: 1800000, spLL: 2250000, spUSD: 25, tax: 0 },
   { barcode: '528500101', description: 'صندوق لبنة بقر مكمزلة سادة 600غ*12', unit: 'BOX', price: 2100000, spLL: 2600000, spUSD: 29, tax: 0 },
   { barcode: '528500102', description: 'صندوق لبنة بقر مكمزلة بحبة البركة 600غ*12', unit: 'BOX', price: 2200000, spLL: 2700000, spUSD: 30, tax: 0 },
-  { barcode: '528300201', description: 'تنكة معدنية فارغة مطبوعة 16 ليتر', unit: 'PCS', price: 300000, spLL: 400000, spUSD: 4.5, tax: 11 },
+  { barcode: '528300201', description: 'Printed Empty Metal Tin 16L', unit: 'PCS', price: 300000, spLL: 400000, spUSD: 4.5, tax: 11 },
   { barcode: '528200301', description: 'قنينة زجاج ماراسكا عاتمة 750مل كرتونة 12', unit: 'BOX', price: 960000, spLL: 1200000, spUSD: 13.5, tax: 11 }
 ];
 
@@ -275,7 +275,7 @@ export default function PurchasesView() {
         {
           id: 'item-3',
           barcode: '528300201',
-          description: 'تنكة معدنية فارغة مطبوعة 16 ليتر',
+          description: 'Printed Empty Metal Tin 16L',
           qty: 150,
           unit: 'PCS',
           priceUnit: 300000,
@@ -700,7 +700,7 @@ export default function PurchasesView() {
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
                     <option value="All Branches">All Branches</option>
-                    <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                    <option value="Main Branch">Main Branch</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -748,14 +748,14 @@ export default function PurchasesView() {
                       setNotice('Purchases filtered.');
                       setTimeout(() => setNotice(null), 2000);
                     }}
-                    className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-4 py-1.5 rounded shadow-2xs cursor-pointer transition-colors"
+                    className="bg-primary hover:bg-primary text-white text-xs font-semibold px-4 py-1.5 rounded shadow-2xs cursor-pointer transition-colors"
                   >
                     Filter
                   </button>
                   <button
                     type="button"
                     onClick={handleOpenNewForm}
-                    className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer transition-colors"
+                    className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>New</span>
@@ -968,7 +968,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={() => setViewMode('list')}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
               >
                 <Eye className="w-3.5 h-3.5" />
                 <span>Preview</span>
@@ -977,7 +977,7 @@ export default function PurchasesView() {
                 <button
                   type="button"
                   onClick={() => alert('Actions: Duplicate, Print Voucher, Cancel')}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
+                  className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
                 >
                   <span>Actions</span>
                   <ChevronDown className="w-3 h-3" />
@@ -986,7 +986,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={handleOpenNewForm}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
+                className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>New</span>
@@ -1082,7 +1082,7 @@ export default function PurchasesView() {
                         onChange={(e) => setFormBranch(e.target.value)}
                         className="w-full border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 bg-white appearance-none pr-7 shadow-2xs focus:outline-none focus:border-blue-500"
                       >
-                        <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                        <option value="Main Branch">Main Branch</option>
                       </select>
                       <ChevronDown className="w-3 h-3 text-slate-500 absolute right-2 top-2 pointer-events-none" />
                     </div>
@@ -1107,7 +1107,7 @@ export default function PurchasesView() {
                       <button
                         type="button"
                         onClick={() => setShowLocationModal(true)}
-                        className="p-1 bg-[#2f3b52] hover:bg-[#1e2736] text-white rounded cursor-pointer shadow-2xs"
+                        className="p-1 bg-primary hover:bg-primary text-white rounded cursor-pointer shadow-2xs"
                         title="Add New Location"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -1162,7 +1162,7 @@ export default function PurchasesView() {
                       <button
                         type="button"
                         onClick={() => setShowCurrencyModal(true)}
-                        className="p-1 bg-[#2f3b52] hover:bg-[#1e2736] text-white rounded cursor-pointer shadow-2xs"
+                        className="p-1 bg-primary hover:bg-primary text-white rounded cursor-pointer shadow-2xs"
                         title="Add New Currency"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -1526,7 +1526,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={handleSaveDraft}
-                className="bg-[#f07e13] hover:bg-[#d96e0d] text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
                 title="Save as Unposted Draft (Invoice saved in Purchases list, stock not yet committed)"
               >
                 <Save className="w-4 h-4" />
@@ -1537,7 +1537,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={handleSaveAndPost}
-                className="bg-[#198754] hover:bg-[#157347] text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
                 title="Save & Post (Immediately commits inventory to stock and posts to Accounts Payable)"
               >
                 <FileText className="w-4 h-4" />
@@ -1602,7 +1602,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={handleSaveNewLocation}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
@@ -1704,7 +1704,7 @@ export default function PurchasesView() {
               <button
                 type="button"
                 onClick={handleSaveNewCurrency}
-                className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                className="bg-primary hover:bg-primary text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>

@@ -281,7 +281,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
     <div className="space-y-4">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-[#195a96] text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in border border-blue-400">
+        <div className="fixed top-4 right-4 z-50 bg-primary text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 animate-fade-in border border-blue-400">
           <CheckCircle2 className="w-4 h-4 text-emerald-300" />
           <span>{toastMessage}</span>
         </div>
@@ -323,7 +323,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
               </button>
               <button
                 onClick={resetVarianceZero}
-                className="flex items-center gap-1 px-3 py-1.5 bg-[#195a96] hover:bg-[#134472] text-white text-xs font-bold rounded-lg shadow-2xs transition"
+                className="flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-2xs transition"
                 title="Match Counted QTY to QOH"
               >
                 <Check className="w-3.5 h-3.5" />
@@ -338,7 +338,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                 type="checkbox"
                 checked={multipleProductionMode}
                 onChange={(e) => setMultipleProductionMode(e.target.checked)}
-                className="rounded text-[#195a96]"
+                className="rounded text-primary"
               />
               <span>Multiple Production</span>
             </label>
@@ -348,13 +348,13 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
             <div className="flex rounded-lg border border-slate-200 overflow-hidden text-xs font-bold">
               <button
                 onClick={() => setLostGoodsMode('INVENTORY')}
-                className={'px-2.5 py-1.5 transition ' + (lostGoodsMode === 'INVENTORY' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
+                className={'px-2.5 py-1.5 transition ' + (lostGoodsMode === 'INVENTORY' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
               >
                 Inventory Items
               </button>
               <button
                 onClick={() => setLostGoodsMode('SALES')}
-                className={'px-2.5 py-1.5 transition ' + (lostGoodsMode === 'SALES' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
+                className={'px-2.5 py-1.5 transition ' + (lostGoodsMode === 'SALES' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
               >
                 Sales Items
               </button>
@@ -364,7 +364,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
           {/* Quick Registry Preview Modal Button */}
           <button
             onClick={() => setPreviewModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#195a96] hover:bg-[#134472] text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
           >
             <Search className="w-3.5 h-3.5 text-amber-400" />
             <span>Preview Registry</span>
@@ -374,13 +374,13 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
           <div className="flex rounded-lg border border-slate-200 overflow-hidden text-xs font-bold">
             <button
               onClick={() => setActiveCurrency('USD')}
-              className={'px-2.5 py-1.5 transition ' + (activeCurrency === 'USD' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
+              className={'px-2.5 py-1.5 transition ' + (activeCurrency === 'USD' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
             >
               USD ($)
             </button>
             <button
               onClick={() => setActiveCurrency('LBP')}
-              className={'px-2.5 py-1.5 transition ' + (activeCurrency === 'LBP' ? 'bg-[#195a96] text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
+              className={'px-2.5 py-1.5 transition ' + (activeCurrency === 'LBP' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')}
             >
               LBP
             </button>
@@ -397,7 +397,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
             placeholder={'Search ' + section.replace('_', ' ') + '...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#195a96]"
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary"
           />
         </div>
 
@@ -425,7 +425,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                     <input
                       type="checkbox"
                       onChange={(e) => handleToggleSelectAllReorder(e.target.checked)}
-                      className="rounded text-[#195a96]"
+                      className="rounded text-primary"
                     />
                   </th>
                   <th className="py-2.5 px-3">Item Code</th>
@@ -448,10 +448,10 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                         type="checkbox"
                         checked={!!rg.selected}
                         onChange={(e) => handleToggleSelectReorder(rg.id, e.target.checked)}
-                        className="rounded text-[#195a96]"
+                        className="rounded text-primary"
                       />
                     </td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#195a96]">{rg.code}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-primary">{rg.code}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{rg.description}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-amber-700">{rg.qtyOnHand}</td>
                     <td className="py-2.5 px-3 text-right font-mono text-slate-500">{rg.minLevel}</td>
@@ -461,7 +461,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                         type="number"
                         value={rg.qtyToOrder}
                         onChange={(e) => handleUpdateReorderQty(rg.id, parseInt(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-slate-900 focus:outline-none focus:border-[#195a96]"
+                        className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-slate-900 focus:outline-none focus:border-primary"
                       />
                     </td>
                     <td className="py-2.5 px-3 text-slate-600">{rg.unit}</td>
@@ -524,7 +524,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                     <td className="py-2.5 px-3 font-mono font-bold text-red-700">{lg.entryNo}</td>
                     <td className="py-2.5 px-3 text-slate-500 font-mono">{lg.date}</td>
                     <td className="py-2.5 px-3 text-slate-700 font-medium">{lg.location}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#195a96]">{lg.code}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-primary">{lg.code}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{lg.description}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-red-700">{lg.qty} {lg.unit}</td>
                     <td className="py-2.5 px-3 text-right font-mono text-slate-700">{formatMoney(lg.unitCostUsd)}</td>
@@ -581,7 +581,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                   <tr key={as.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="py-2.5 px-3 font-mono font-bold text-emerald-800">{as.assemblyNo}</td>
                     <td className="py-2.5 px-3 text-slate-500 font-mono">{as.date}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#195a96]">{as.finishedCode}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-primary">{as.finishedCode}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{as.finishedDescription}</td>
                     <td className="py-2.5 px-3 font-mono text-slate-600">{as.batchNo}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">{as.qtyProduced} {as.unit}</td>
@@ -621,7 +621,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                   <th className="py-2.5 px-3">Code</th>
                   <th className="py-2.5 px-3">Description</th>
                   <th className="py-2.5 px-3 text-right font-bold text-slate-700">QOH</th>
-                  <th className="py-2.5 px-3 text-right font-black text-[#195a96]">Counted QTY</th>
+                  <th className="py-2.5 px-3 text-right font-black text-primary">Counted QTY</th>
                   <th className="py-2.5 px-3 text-right font-black">Variance</th>
                   <th className="py-2.5 px-3 text-right font-black">Variance Value ({currSymbol})</th>
                   <th className="py-2.5 px-3">Reason</th>
@@ -635,7 +635,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                     <td className="py-2.5 px-3 font-mono font-bold text-amber-700">{adj.adjNo}</td>
                     <td className="py-2.5 px-3 text-slate-500 font-mono">{adj.date}</td>
                     <td className="py-2.5 px-3 text-slate-700 font-medium">{adj.branch}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#195a96]">{adj.code}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-primary">{adj.code}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-900">{adj.itemDescription}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-800">{adj.qoh}</td>
                     <td className="py-2.5 px-3 text-right">
@@ -643,7 +643,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                         type="number"
                         value={adj.newQty}
                         onChange={(e) => handleAdjustCountedQty(adj.id, parseFloat(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-[#195a96] focus:outline-none focus:border-[#195a96]"
+                        className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded font-mono font-bold text-primary focus:outline-none focus:border-primary"
                       />
                     </td>
                     <td className={'py-2.5 px-3 text-right font-mono font-black ' + (
@@ -680,7 +680,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
       {previewModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-300 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden text-xs">
-            <div className="bg-[#195a96] text-white p-4 flex items-center justify-between">
+            <div className="bg-primary text-white p-4 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm">Action Section Registry Search: {section.toUpperCase()}</h3>
                 <p className="text-slate-300 text-[11px]">Historical records, auditing, and document lookup</p>
@@ -698,7 +698,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
                   placeholder="Quick search registry records..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -756,7 +756,7 @@ export default function OperationsActionsViews({ section }: OperationsActionsVie
             <div className="p-3 bg-slate-100 border-t border-slate-200 flex justify-end">
               <button
                 onClick={() => setPreviewModalOpen(false)}
-                className="px-4 py-1.5 bg-[#195a96] hover:bg-[#134472] text-white font-bold rounded-lg transition"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition"
               >
                 Close
               </button>

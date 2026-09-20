@@ -3,27 +3,100 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { resolveUserTenantAndRole, persistTenantSession, getPostLoginDestination, getTenantPreview } from "@/lib/authTenantResolver";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [companyId, setCompanyId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [tenantPreview, setTenantPreview] = useState<{
+    brandNameAr: string;
+    brandNameEn: string;
+    companyId: number | string;
+    logoUrl: string;
+    tenantId: string;
+  } | null>(null);
+  const [isResolvingTenant, setIsResolvingTenant] = useState(false);
 
-  const handleSignIn = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cId = params.get("companyId") || params.get("tenant") || params.get("code");
+      if (cId) setCompanyId(cId);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    let isCurrent = true;
+    const trimmed = companyId.trim();
+    if (!trimmed) {
+      setTenantPreview(null);
+      setIsResolvingTenant(false);
+      return;
+    }
+
+    setIsResolvingTenant(true);
+    const timer = setTimeout(async () => {
+      try {
+        const preview = await getTenantPreview(trimmed);
+        if (isCurrent) {
+          setTenantPreview(preview);
+        }
+      } catch (err) {
+        console.warn("Tenant preview lookup failed:", err);
+      } finally {
+        if (isCurrent) {
+          setIsResolvingTenant(false);
+        }
+      }
+    }, 100);
+
+    return () => {
+      isCurrent = false;
+      clearTimeout(timer);
+    };
+  }, [companyId]);
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      localStorage.setItem("so_authenticated", "true");
-      if (email) {
-        localStorage.setItem("vanguard_user_email", email);
+      let authUserId: string | undefined;
+      if (email && password) {
+        try {
+          const { data } = await supabase.auth.signInWithPassword({ email, password });
+          if (data?.session) {
+            authUserId = data.session.user.id;
+            const maxAge = 60 * 60 * 24 * 30; // 30 days
+            document.cookie = `sb-${data.session.user.id}-auth-token=${data.session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+          }
+        } catch (supaErr) {
+          console.warn("Supabase auth fallback:", supaErr);
+        }
       }
-    } catch (err) {
-      console.error("LocalStorage save error:", err);
-    }
 
-    router.push("/erp");
+      // Query user's assigned tenant & authorization role dynamically from Supabase
+      const assignment = await resolveUserTenantAndRole(email, authUserId, companyId);
+
+      // Persist tenant session to cookies and client localStorage
+      persistTenantSession(assignment);
+
+      // Redirect directly to tenant workspace dashboard route (e.g. /[tenant_id]/dashboard)
+      // Strictly reserve /admin for Super Admins
+      const params = new URLSearchParams(window.location.search);
+      const redirectUrl = params.get("redirect");
+      const target = getPostLoginDestination(assignment, redirectUrl);
+
+      window.location.href = target;
+    } catch (err) {
+      console.error("Login processing error:", err);
+      setIsLoading(false);
+    }
   };
 
   const platforms = [
@@ -71,6 +144,13 @@ export default function LoginPage() {
             <h1 className="text-3xl xl:text-4xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
               VANGUARD ERP SYSTEM
             </h1>
+
+            {tenantPreview && tenantPreview.companyId !== 'ADMIN' && (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#d4b055]/15 border border-[#d4b055]/50 text-[#d4b055] text-xs font-bold tracking-wide shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Active Enterprise: {tenantPreview.brandNameAr} (#{tenantPreview.companyId})</span>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Link href="/solutions" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors drop-shadow-md">
@@ -120,7 +200,72 @@ export default function LoginPage() {
             <p className="text-slate-500 mt-2 font-medium">Access your Vanguard dashboard</p>
           </div>
 
+          {/* DYNAMIC TENANT BRANDING PREVIEW CARD */}
+          {tenantPreview && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#09152b] to-[#123b70] border-2 border-[#d4b055]/60 text-white shadow-xl animate-fadeIn transition-all duration-300">
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 rounded-xl bg-white/10 p-1 border border-[#d4b055]/40 overflow-hidden shrink-0 flex items-center justify-center shadow-inner">
+                  <img
+                    src={tenantPreview.logoUrl || "/assets/images/logo.png"}
+                    alt={tenantPreview.brandNameEn}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/vanguard.jpg";
+                    }}
+                  />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#d4b055]/25 text-[#d4b055] border border-[#d4b055]/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      {tenantPreview.companyId === 'ADMIN' ? 'System Master' : `Company #${tenantPreview.companyId}`}
+                    </span>
+                    <span className="text-[10px] text-slate-300 font-medium">
+                      Verified Workspace
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white truncate mt-0.5">
+                    {tenantPreview.brandNameAr}
+                  </h4>
+                  <p className="text-[11px] text-slate-300 truncate font-medium">
+                    {tenantPreview.brandNameEn}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSignIn} className="space-y-5">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  Company ID / Tenant Code
+                </label>
+                <span className="text-[11px] font-semibold text-slate-400">
+                  {isResolvingTenant ? (
+                    <span className="text-[#123b70] animate-pulse">Checking ID...</span>
+                  ) : tenantPreview ? (
+                    <span className="text-emerald-600 font-bold">✓ Verified</span>
+                  ) : (
+                    '(1300 for Primary Tenant / ADMIN for Master)'
+                  )}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={companyId}
+                onChange={(e) => setCompanyId(e.target.value)}
+                placeholder="e.g. 1300, SO-OLIVE, or ADMIN"
+                className={`w-full px-5 py-4 rounded-xl border ${tenantPreview ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-slate-200/80'} bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold uppercase tracking-wider`}
+              />
+              {tenantPreview && (
+                <p className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                  Dynamic Branding: {tenantPreview.brandNameAr} ({tenantPreview.brandNameEn})
+                </p>
+              )}
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Email Address</label>
               <input

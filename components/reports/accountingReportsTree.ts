@@ -59,6 +59,7 @@ export const ACCOUNTING_OMEGA_TREE: ReportCategoryGroup[] = [
     items: [
       'Chart Of Accounts',
       'Budget Overview',
+      'Prepaid Expense Allocations',
     ],
   },
 ];
@@ -81,6 +82,7 @@ const KNOWN_ACCOUNTING_CODES: Record<string, string> = {
   'Top Suppliers': 'REP_ACC_015',
   'Chart Of Accounts': 'REP_ACC_016',
   'Budget Overview': 'REP_ACC_017',
+  'Prepaid Expense Allocations': 'REP_ACC_018',
 };
 
 export function buildAccountingReportsFlatList(): AccountingReportMeta[] {

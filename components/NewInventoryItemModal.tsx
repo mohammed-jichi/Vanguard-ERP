@@ -46,10 +46,10 @@ export default function NewInventoryItemModal({
   const [descriptionEn, setDescriptionEn] = useState<string>('');
   const [barcode, setBarcode] = useState<string>('');
   const [categoryId, setCategoryId] = useState<number>(initialCategory || 2);
-  const [division, setDivision] = useState<string>('مقطرات ومدبسات مفرق');
-  const [group, setGroup] = useState<string>('صناديق زعتر');
-  const [supplier, setSupplier] = useState<string>('المورد الرئيسي (Main Store)');
-  const [brand, setBrand] = useState<string>('زيت و زيتون الجنوب');
+  const [division, setDivision] = useState<string>('Retail Distillates & Molasses');
+  const [group, setGroup] = useState<string>('Thyme Cases');
+  const [supplier, setSupplier] = useState<string>('Main Supplier (Main Store)');
+  const [brand, setBrand] = useState<string>('Southern Olive Oil');
   const [source, setSource] = useState<string>('Local');
   const [itemType, setItemType] = useState<string>('Inventory Item');
 
@@ -151,7 +151,7 @@ export default function NewInventoryItemModal({
       unitCostUsd: Number(unitCostUsd) || 0,
       avgCostUsd: Number(avgCostUsd) || 0,
       categoryId: categoryId,
-      categoryName: catObj ? catObj.name : 'مفرق',
+      categoryName: catObj ? catObj.name : 'Retail',
       divisionName: division,
       groupName: group,
       sellingPrice1: Number(sp1Usd) || 0,
@@ -234,7 +234,7 @@ export default function NewInventoryItemModal({
             onClick={() => setActiveTab('general')}
             className={`px-3.5 py-2 border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'general'
-                ? 'border-[#2c3e50] text-[#2c3e50] bg-white font-bold rounded-t'
+                ? 'border-primary text-foreground bg-white font-bold rounded-t'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -246,7 +246,7 @@ export default function NewInventoryItemModal({
             onClick={() => setActiveTab('units')}
             className={`px-3.5 py-2 border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'units'
-                ? 'border-[#2c3e50] text-[#2c3e50] bg-white font-bold rounded-t'
+                ? 'border-primary text-foreground bg-white font-bold rounded-t'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -258,7 +258,7 @@ export default function NewInventoryItemModal({
             onClick={() => setActiveTab('pricing')}
             className={`px-3.5 py-2 border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'pricing'
-                ? 'border-[#2c3e50] text-[#2c3e50] bg-white font-bold rounded-t'
+                ? 'border-primary text-foreground bg-white font-bold rounded-t'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -270,7 +270,7 @@ export default function NewInventoryItemModal({
             onClick={() => setActiveTab('controls')}
             className={`px-3.5 py-2 border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'controls'
-                ? 'border-[#2c3e50] text-[#2c3e50] bg-white font-bold rounded-t'
+                ? 'border-primary text-foreground bg-white font-bold rounded-t'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -397,7 +397,7 @@ export default function NewInventoryItemModal({
                     type="text"
                     value={group}
                     onChange={(e) => setGroup(e.target.value)}
-                    placeholder="e.g. صناديق زعتر..."
+                    placeholder="e.g. Thyme Cases..."
                     className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:outline-none focus:border-blue-600"
                   />
                 </div>
@@ -714,7 +714,7 @@ export default function NewInventoryItemModal({
                       type="checkbox"
                       checked={isDailyAdjust}
                       onChange={(e) => setIsDailyAdjust(e.target.checked)}
-                      className="w-4 h-4 text-[#2c3e50] rounded focus:ring-1 focus:ring-slate-400"
+                      className="w-4 h-4 text-foreground rounded focus:ring-1 focus:ring-slate-400"
                     />
                     <div>
                       <span className="font-bold text-slate-800">Include in Daily Adjustment</span>
@@ -727,7 +727,7 @@ export default function NewInventoryItemModal({
                       type="checkbox"
                       checked={isWeeklyAdjust}
                       onChange={(e) => setIsWeeklyAdjust(e.target.checked)}
-                      className="w-4 h-4 text-[#2c3e50] rounded focus:ring-1 focus:ring-slate-400"
+                      className="w-4 h-4 text-foreground rounded focus:ring-1 focus:ring-slate-400"
                     />
                     <div>
                       <span className="font-bold text-slate-800">Include in Weekly Adjustment</span>
@@ -740,7 +740,7 @@ export default function NewInventoryItemModal({
                       type="checkbox"
                       checked={isSalesItem}
                       onChange={(e) => setIsSalesItem(e.target.checked)}
-                      className="w-4 h-4 text-[#2c3e50] rounded focus:ring-1 focus:ring-slate-400"
+                      className="w-4 h-4 text-foreground rounded focus:ring-1 focus:ring-slate-400"
                     />
                     <div>
                       <span className="font-bold text-slate-800">Available as Sales Item</span>
@@ -753,7 +753,7 @@ export default function NewInventoryItemModal({
                       type="checkbox"
                       checked={trackExpiry}
                       onChange={(e) => setTrackExpiry(e.target.checked)}
-                      className="w-4 h-4 text-[#2c3e50] rounded focus:ring-1 focus:ring-slate-400"
+                      className="w-4 h-4 text-foreground rounded focus:ring-1 focus:ring-slate-400"
                     />
                     <div>
                       <span className="font-bold text-slate-800">Track Expiry Dates</span>
@@ -791,7 +791,7 @@ export default function NewInventoryItemModal({
             <button
               type="button"
               onClick={() => validateAndSave(true)}
-              className="px-4 py-2 bg-[#2c3e50] hover:bg-slate-800 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+              className="px-4 py-2 bg-primary hover:bg-slate-800 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-amber-300" />
               <span>Save & Select</span>

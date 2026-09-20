@@ -8,13 +8,18 @@ import {
   DUPLICATE_INVOICES_REGISTRY,
   SubReportMode,
   ReportConfig,
+  normalizeSubReportMode,
 } from '@/types/duplicate-invoices';
 import {
   buildTableColumnsFromSchema,
   generateDataForDuplicateInvoiceReport,
   calculateGrandTotalFromSchema,
+  extractRowCurrency,
+  extractRowTotalPrice,
 } from '@/lib/duplicateInvoicesQueryEngine';
-import { formatCurrencyAmount } from '@/lib/currencyEngine';
+import { formatCurrencyAmount, convertCurrency } from '@/lib/currencyEngine';
+import { resolveActiveCurrencyFromFilters, SALESMAN_MAPPINGS } from '@/lib/reportFilterEngine';
+import { resolveCanonicalEmployeeName } from '@/lib/salesmanEmployeeEngine';
 
 export interface TransactionRecord {
   date?: string;
@@ -110,8 +115,15 @@ export function TransactionsByDateMasterDocument({
   // Dynamic filter summary for active filters (Audit Parity)
   const filterSummary = useMemo(() => {
     const parts: string[] = [];
+    if (filterValues.employee && filterValues.employee !== 'ALL') {
+      const cleanEmp = resolveCanonicalEmployeeName(filterValues.employee);
+      parts.push(`Employee: ${cleanEmp}`);
+    }
     if (filterValues.serverCashier && filterValues.serverCashier !== 'ALL') parts.push(`Cashier: ${filterValues.serverCashier}`);
-    if (filterValues.salesman && filterValues.salesman !== 'ALL') parts.push(`Salesman: ${filterValues.salesman}`);
+    if (filterValues.salesman && filterValues.salesman !== 'ALL') {
+      const cleanSalesman = SALESMAN_MAPPINGS[String(filterValues.salesman).toLowerCase()] || filterValues.salesman;
+      parts.push(`Salesman: ${cleanSalesman}`);
+    }
     const pay = filterValues.paymentType || filterValues.paymentMode;
     if (pay && pay !== 'ALL') parts.push(`Payment: ${pay}`);
     const chan = filterValues.departmentChannel || filterValues.channel;
@@ -119,7 +131,8 @@ export function TransactionsByDateMasterDocument({
     const invT = filterValues.invoiceType || filterValues.invoice_type;
     if (invT && invT !== 'ALL') parts.push(`Invoice Type: ${invT}`);
     if (filterValues.workstation && filterValues.workstation !== 'ALL') parts.push(`Workstation: ${filterValues.workstation}`);
-    if (filterValues.customerSearch) parts.push(`Customer: ${filterValues.customerSearch}`);
+    const cust = filterValues.customer || filterValues.customerSearch;
+    if (cust && cust !== 'ALL') parts.push(`Customer: ${cust}`);
     return parts.length > 0 ? parts.join(' | ') : undefined;
   }, [filterValues]);
 
@@ -139,9 +152,14 @@ export function TransactionsByDateMasterDocument({
   }), [config, code, cleanPeriod, executionDate, branch, filterSummary]);
 
   // 4. Generate Table Columns dynamically from config.standardColumns and dynamicColumns
+  const activeCurrency = useMemo(
+    () => resolveActiveCurrencyFromFilters(filterValues, 'USD'),
+    [filterValues]
+  );
+
   const columns = useMemo(
-    () => buildTableColumnsFromSchema(config, showRate),
-    [config, showRate]
+    () => buildTableColumnsFromSchema(config, showRate, activeCurrency, filterValues),
+    [config, showRate, activeCurrency, filterValues]
   );
 
   // 5. Generate authentic data rows matching all column keys of the active report schema
@@ -208,12 +226,139 @@ export function TransactionsByDateMasterDocument({
 
   // 6. Calculate Grand Total / KPI footer according to hasKpiFooter in config
   const grandTotal = useMemo(
-    () => calculateGrandTotalFromSchema(config, records),
-    [config, records]
+    () => calculateGrandTotalFromSchema(config, records, activeCurrency),
+    [config, records, activeCurrency]
   );
 
-  // 7. Grouping into sections when groupByDate is enabled and date column exists
+  // 7. Grouping into sections
   const { sections, flatRows } = useMemo(() => {
+    // Mode-specific grouping for 'Transactions by Employees by Payment'
+    const isEmployeePaymentMode =
+      config.id === 'transactions_by_employees_by_payment' ||
+      normalizeSubReportMode(effectiveMode) === 'transactions_by_employees_by_payment' ||
+      effectiveMode.toLowerCase().includes('by employees by payment') ||
+      effectiveMode.toLowerCase().includes('by employee by payment') ||
+      effectiveMode.toLowerCase().includes('employee & payment tender') ||
+      effectiveMode.toLowerCase().includes('employee and payment tender');
+
+    if (isEmployeePaymentMode && records.length > 0) {
+      const empPayMap = new Map<string, { employee: string; paymentMethod: string; rows: any[] }>();
+
+      records.forEach((r) => {
+        const emp = r.employee_name || r.employee || r.salesman || 'Staff';
+        const pay = r.pay_type || r.payment_method || r.paymentType || 'CASH';
+        const key = `${emp}:::${pay}`;
+
+        if (!empPayMap.has(key)) {
+          empPayMap.set(key, { employee: emp, paymentMethod: pay, rows: [] });
+        }
+        empPayMap.get(key)!.rows.push(r);
+      });
+
+      // Sort sections by employee name, then by payment method
+      const sortedEntries = Array.from(empPayMap.values()).sort((a, b) => {
+        const cmpEmp = a.employee.localeCompare(b.employee);
+        if (cmpEmp !== 0) return cmpEmp;
+        return a.paymentMethod.localeCompare(b.paymentMethod);
+      });
+
+      const builtSections: ReportSection<any>[] = [];
+      sortedEntries.forEach(({ employee, paymentMethod, rows }) => {
+        let sectionConvertedSum = 0;
+        const sectionCurrencies: Record<string, number> = {};
+
+        rows.forEach((r) => {
+          const rowCurr = extractRowCurrency(r, activeCurrency);
+          const rowTotal = extractRowTotalPrice(r);
+          sectionCurrencies[rowCurr] = (sectionCurrencies[rowCurr] || 0) + rowTotal;
+          sectionConvertedSum += convertCurrency(rowTotal, rowCurr, activeCurrency);
+        });
+
+        const formattedSubtotal = formatCurrencyAmount(sectionConvertedSum, activeCurrency, true);
+        const currKeys = Object.keys(sectionCurrencies);
+        const hasMixed = currKeys.length > 1 || (currKeys.length === 1 && currKeys[0] !== activeCurrency);
+
+        builtSections.push({
+          title: `Employee: ${employee} — Payment Method: ${paymentMethod} (${branch})`,
+          type: 'revenue',
+          rows,
+          subtotal: {
+            label: `Subtotal for ${employee} [${paymentMethod}]:`,
+            value: hasMixed
+              ? `${formattedSubtotal} (${activeCurrency})`
+              : formattedSubtotal,
+          },
+        });
+      });
+
+      return { sections: builtSections, flatRows: undefined };
+    }
+
+    // Mode-specific grouping for 'Transactions by Customers by Employee'
+    const isCustomerEmployeeMode =
+      config.id === 'transactions_by_customers_by_employee' ||
+      normalizeSubReportMode(effectiveMode) === 'transactions_by_customers_by_employee' ||
+      effectiveMode.toLowerCase().includes('by customers by employee') ||
+      effectiveMode.toLowerCase().includes('by customer by employee') ||
+      effectiveMode.toLowerCase().includes('customers & serving employee') ||
+      effectiveMode.toLowerCase().includes('customers and serving employee');
+
+    if (isCustomerEmployeeMode && records.length > 0) {
+      const custEmpMap = new Map<string, { customer: string; employee: string; rows: any[] }>();
+
+      records.forEach((r) => {
+        const cust = r.customer_name || r.customer || 'Walk-in Customer';
+        const custId = r.custId || r.cust_id || r.customer_id;
+        const custDisplay = custId && !cust.includes(custId) ? `${cust} (${custId})` : cust;
+        const emp = r.employee_name || r.employee || r.salesman || 'Staff';
+        const key = `${custDisplay}:::${emp}`;
+
+        if (!custEmpMap.has(key)) {
+          custEmpMap.set(key, { customer: custDisplay, employee: emp, rows: [] });
+        }
+        custEmpMap.get(key)!.rows.push(r);
+      });
+
+      // Sort sections by customer name, then by employee name
+      const sortedEntries = Array.from(custEmpMap.values()).sort((a, b) => {
+        const cmpCust = a.customer.localeCompare(b.customer);
+        if (cmpCust !== 0) return cmpCust;
+        return a.employee.localeCompare(b.employee);
+      });
+
+      const builtSections: ReportSection<any>[] = [];
+      sortedEntries.forEach(({ customer, employee, rows }) => {
+        let sectionConvertedSum = 0;
+        const sectionCurrencies: Record<string, number> = {};
+
+        rows.forEach((r) => {
+          const rowCurr = extractRowCurrency(r, activeCurrency);
+          const rowTotal = extractRowTotalPrice(r);
+          sectionCurrencies[rowCurr] = (sectionCurrencies[rowCurr] || 0) + rowTotal;
+          sectionConvertedSum += convertCurrency(rowTotal, rowCurr, activeCurrency);
+        });
+
+        const formattedSubtotal = formatCurrencyAmount(sectionConvertedSum, activeCurrency, true);
+        const currKeys = Object.keys(sectionCurrencies);
+        const hasMixed = currKeys.length > 1 || (currKeys.length === 1 && currKeys[0] !== activeCurrency);
+
+        builtSections.push({
+          title: `Customer: ${customer} — Employee: ${employee} (${branch})`,
+          type: 'revenue',
+          rows,
+          subtotal: {
+            label: `Subtotal for ${customer} [${employee}]:`,
+            value: hasMixed
+              ? `${formattedSubtotal} (${activeCurrency})`
+              : formattedSubtotal,
+          },
+        });
+      });
+
+      return { sections: builtSections, flatRows: undefined };
+    }
+
+    // Default Date Grouping when enabled
     const hasDateGrouping =
       groupByDate &&
       records.length > 0 &&
@@ -231,13 +376,19 @@ export function TransactionsByDateMasterDocument({
 
       const builtSections: ReportSection<any>[] = [];
       dateMap.forEach((rows, dateKey) => {
-        const sum = rows.reduce((acc, r) => {
-          const val = r.total ?? r.total_price ?? r.total_amount ?? r.amount ?? r.totalLbp ?? 0;
-          return acc + (typeof val === 'number' ? val : parseFloat(String(val).replace(/,/g, '')) || 0);
-        }, 0);
+        let sectionConvertedSum = 0;
+        const sectionCurrencies: Record<string, number> = {};
 
-        const sectionCurrency = rows.length > 0 ? (rows[0].currency || 'LBP') : 'LBP';
-        const formattedSubtotal = formatCurrencyAmount(sum, sectionCurrency, true);
+        rows.forEach((r) => {
+          const rowCurr = extractRowCurrency(r, activeCurrency);
+          const rowTotal = extractRowTotalPrice(r);
+          sectionCurrencies[rowCurr] = (sectionCurrencies[rowCurr] || 0) + rowTotal;
+          sectionConvertedSum += convertCurrency(rowTotal, rowCurr, activeCurrency);
+        });
+
+        const formattedSubtotal = formatCurrencyAmount(sectionConvertedSum, activeCurrency, true);
+        const currKeys = Object.keys(sectionCurrencies);
+        const hasMixed = currKeys.length > 1 || (currKeys.length === 1 && currKeys[0] !== activeCurrency);
 
         builtSections.push({
           title: `Date: ${dateKey} — ${branch}`,
@@ -245,7 +396,9 @@ export function TransactionsByDateMasterDocument({
           rows,
           subtotal: {
             label: `Total for Date (${dateKey}):`,
-            value: formattedSubtotal,
+            value: hasMixed
+              ? `${formattedSubtotal} (${activeCurrency})`
+              : formattedSubtotal,
           },
         });
       });
@@ -254,7 +407,7 @@ export function TransactionsByDateMasterDocument({
     }
 
     return { sections: undefined, flatRows: records };
-  }, [records, groupByDate, config.groupBy, branch]);
+  }, [records, groupByDate, config.groupBy, config.id, effectiveMode, branch, activeCurrency]);
 
   return (
     <div className="w-full flex flex-col items-center">

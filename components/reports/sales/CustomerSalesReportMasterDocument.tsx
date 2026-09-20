@@ -206,7 +206,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
     const grandTotal: GrandTotal = {
       label: 'Consolidated Top Accounts Total (8 Key Clients - 187 Orders):',
-      value: '$73,500.00 USD (6,588,715,000.00 LBP)',
+      value: '$73,500.00',
+      targetCurrency: 'USD',
+      breakdownText: 'USD: $73,500.00  |  LBP: 6,588,715,000.00 LBP',
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
     };
 
     return <MasterReportDocument meta={meta} columns={columns} flatRows={TOP_CUSTOMERS_DATA} grandTotal={grandTotal} />;
@@ -272,7 +275,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
     const grandTotal: GrandTotal = {
       label: 'Consolidated Commercial Clients Total (Total AR Outstanding: $27,030.00):',
-      value: '$63,475.42 USD',
+      value: '$63,475.42',
+      targetCurrency: 'USD',
+      breakdownText: 'USD: $63,475.42  |  LBP: 5,681,050,000.00 LBP',
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
     };
 
     return <MasterReportDocument meta={meta} columns={columns} flatRows={SALES_BY_CUSTOMERS_DATA} grandTotal={grandTotal} />;
@@ -338,7 +344,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
     const grandTotal: GrandTotal = {
       label: 'Account Billing Subtotal (Al-Baraka Supermarket S.A.R.L - 5 Invoices):',
-      value: '$1,614.72 USD',
+      value: '$1,614.72',
+      targetCurrency: 'USD',
+      breakdownText: 'USD: $1,614.72  |  LBP: 144,517,440.00 LBP',
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
     };
 
     return <MasterReportDocument meta={meta} columns={columns} flatRows={CUSTOMER_IN_DETAIL_DATA} grandTotal={grandTotal} />;
@@ -405,7 +414,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
     const grandTotal: GrandTotal = {
       label: 'Consolidated Regional Turnover (7 Delivery Zones - 848 Dispatches):',
-      value: '$95,606.68 USD (8,556,800,000.00 LBP)',
+      value: '$95,606.68',
+      targetCurrency: 'USD',
+      breakdownText: 'USD: $95,606.68  |  LBP: 8,556,800,000.00 LBP',
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
     };
 
     return <MasterReportDocument meta={meta} columns={columns} flatRows={SALES_BY_ZONE_DATA} grandTotal={grandTotal} />;
@@ -476,7 +488,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
     const grandTotal: GrandTotal = {
       label: 'Delivered Order Value (6 Regional Dispatches Recorded):',
-      value: '$4,895.00 USD',
+      value: '$4,895.00',
+      targetCurrency: 'USD',
+      breakdownText: 'USD: $4,895.00  |  LBP: 438,102,500.00 LBP',
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
     };
 
     return <MasterReportDocument meta={meta} columns={columns} flatRows={DELIVERY_SALES_SUMMARY_DATA} grandTotal={grandTotal} />;
@@ -547,7 +562,10 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
   const grandTotal: GrandTotal = {
     label: 'Total Cash Handover Reconciled (67 Drops Completed):',
-    value: '545,250,000.00 LBP ($6,092.17)',
+    value: '$6,092.17',
+    targetCurrency: 'USD',
+    breakdownText: 'LBP: 545,250,000.00 LBP  |  USD: $6,092.17',
+    convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
   };
 
   return <MasterReportDocument meta={meta} columns={columns} flatRows={DRIVERS_HISTORY_DATA} grandTotal={grandTotal} />;

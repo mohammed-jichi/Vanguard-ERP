@@ -223,12 +223,12 @@ export default function ProductRequestReportsView() {
   };
 
   return (
-    <div className="wspaceCont productrequests-reports-page bg-[#f3f5f8] min-h-screen text-slate-800">
+    <div className="wspaceCont productrequests-reports-page bg-background min-h-screen text-slate-800">
       {/* Global Toast */}
       {toast && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-white font-medium text-sm animate-fade-in ${
-            toast.type === 'success' ? 'bg-[#1ab394] border border-[#18a689]' : 'bg-rose-600 border border-rose-500'
+            toast.type === 'success' ? 'bg-emerald-700 border border-emerald-700' : 'bg-rose-600 border border-rose-500'
           }`}
         >
           {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
@@ -305,7 +305,7 @@ export default function ProductRequestReportsView() {
                               onClick={() => setSelectedReport(row)}
                               className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between font-medium transition ${
                                 isSel
-                                  ? 'bg-[#1ab394] text-white shadow-xs'
+                                  ? 'bg-emerald-700 text-white shadow-xs'
                                   : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                               }`}
                             >
@@ -503,7 +503,7 @@ export default function ProductRequestReportsView() {
                             <button
                               type="button"
                               onClick={() => handleGenerateReport()}
-                              className="px-4 py-1.5 text-xs font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm transition"
+                              className="px-4 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm transition"
                             >
                               Filter Report
                             </button>
@@ -586,7 +586,7 @@ export default function ProductRequestReportsView() {
                         <button
                           type="button"
                           onClick={() => setShowExportModal(true)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm transition"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm transition"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>Export</span>
@@ -667,7 +667,7 @@ export default function ProductRequestReportsView() {
                               {reportData.summary.totalQtyApp !== undefined && (
                                 <div>
                                   <span className="block text-[11px] font-bold text-slate-500 uppercase">Approved Qty</span>
-                                  <span className="text-lg font-bold text-[#1ab394]">
+                                  <span className="text-lg font-bold text-primary">
                                     {reportData.summary.totalQtyApp}
                                   </span>
                                 </div>
@@ -675,7 +675,7 @@ export default function ProductRequestReportsView() {
                               {reportData.summary.totalAmount !== undefined && (
                                 <div>
                                   <span className="block text-[11px] font-bold text-slate-500 uppercase">Total Value</span>
-                                  <span className="text-lg font-bold text-[#1c84c6]">
+                                  <span className="text-lg font-bold text-primary">
                                     ${reportData.summary.totalAmount.toFixed(2)}
                                   </span>
                                 </div>
@@ -691,7 +691,7 @@ export default function ProductRequestReportsView() {
                               {reportData.summary.totalUnitsNeeded !== undefined && (
                                 <div>
                                   <span className="block text-[11px] font-bold text-slate-500 uppercase">Units Needed</span>
-                                  <span className="text-lg font-bold text-[#1ab394]">
+                                  <span className="text-lg font-bold text-primary">
                                     {reportData.summary.totalUnitsNeeded}
                                   </span>
                                 </div>
@@ -733,7 +733,7 @@ export default function ProductRequestReportsView() {
                                       <td className="py-2.5 px-3 font-medium text-slate-800">{row.ITEMDESCRIPTION}</td>
                                       <td className="py-2.5 px-3 text-center text-slate-600">{row.UNIT}</td>
                                       <td className="py-2.5 px-3 text-right font-bold text-slate-800">{row.QTYREQ}</td>
-                                      <td className="py-2.5 px-3 text-right font-bold text-[#1ab394]">{row.QTYAPP}</td>
+                                      <td className="py-2.5 px-3 text-right font-bold text-primary">{row.QTYAPP}</td>
                                       <td className="py-2.5 px-3 text-right text-slate-600">{row.QTYREC}</td>
                                       <td className="py-2.5 px-3 text-right text-slate-600">${row.COST.toFixed(2)}</td>
                                       <td className="py-2.5 px-3 text-right font-bold text-slate-900">
@@ -774,7 +774,7 @@ export default function ProductRequestReportsView() {
                                           <td className="py-2 px-3 font-mono font-bold text-slate-900">{it.ITEMCODE}</td>
                                           <td className="py-2 px-3 text-slate-800 font-medium">{it.ITEMDESCRIPTION}</td>
                                           <td className="py-2 px-3 text-center text-slate-600">{it.UNIT}</td>
-                                          <td className="py-2 px-3 text-right font-bold text-[#1ab394]">{it.TOTAL_REQUIRED}</td>
+                                          <td className="py-2 px-3 text-right font-bold text-primary">{it.TOTAL_REQUIRED}</td>
                                           <td className="py-2 px-3 text-slate-600 text-[11px]">{it.branchSummary}</td>
                                           <td className="py-2 px-3 text-center text-slate-500 font-mono text-[11px]">
                                             {it.TARGET_DATE}
@@ -819,7 +819,7 @@ export default function ProductRequestReportsView() {
                                       <td className="py-2.5 px-3 font-medium text-slate-800">{row.ITEMDESCRIPTION}</td>
                                       <td className="py-2.5 px-3 text-center text-slate-600">{row.UNIT}</td>
                                       <td className="py-2.5 px-3 text-right font-bold text-slate-800">{row.QTYREQ}</td>
-                                      <td className="py-2.5 px-3 text-right font-bold text-[#1ab394]">{row.QTYAPP}</td>
+                                      <td className="py-2.5 px-3 text-right font-bold text-primary">{row.QTYAPP}</td>
                                       <td className="py-2.5 px-3 text-right text-slate-600">${row.COST.toFixed(2)}</td>
                                       <td className="py-2.5 px-3 text-right font-bold text-slate-900">
                                         ${row.TOTAL_COST.toFixed(2)}
@@ -880,7 +880,7 @@ export default function ProductRequestReportsView() {
                                                 <td className="py-2 px-3 font-medium text-slate-800">{it.ITEMDESCRIPTION}</td>
                                                 <td className="py-2 px-3 text-center text-slate-600">{it.UNIT}</td>
                                                 <td className="py-2 px-3 text-right text-slate-700">{it.QTYREQ}</td>
-                                                <td className="py-2 px-3 text-right font-bold text-[#1ab394]">{it.QTYAPP}</td>
+                                                <td className="py-2 px-3 text-right font-bold text-primary">{it.QTYAPP}</td>
                                                 <td className="py-2 px-3 text-right text-slate-600">${it.COST.toFixed(2)}</td>
                                                 <td className="py-2 px-3 text-right font-bold text-slate-900">
                                                   ${it.TOTAL_COST.toFixed(2)}
@@ -925,7 +925,7 @@ export default function ProductRequestReportsView() {
                                       <td className="py-2.5 px-3 font-medium text-slate-800">{row.ITEMDESCRIPTION}</td>
                                       <td className="py-2.5 px-3 text-center text-slate-600">{row.UNIT}</td>
                                       <td className="py-2.5 px-3 text-right text-slate-700">{row.QTYREQ}</td>
-                                      <td className="py-2.5 px-3 text-right font-bold text-[#1ab394]">{row.QTYAPP}</td>
+                                      <td className="py-2.5 px-3 text-right font-bold text-primary">{row.QTYAPP}</td>
                                       <td className="py-2.5 px-3 text-right font-bold text-rose-600">
                                         {row.DIFF > 0 ? `-${row.DIFF}` : '0'}
                                       </td>
@@ -1029,7 +1029,7 @@ export default function ProductRequestReportsView() {
               <button
                 type="button"
                 onClick={handleDownloadExport}
-                className="px-4 py-1.5 text-xs font-semibold text-white bg-[#1ab394] hover:bg-[#18a689] rounded-lg shadow-sm transition"
+                className="px-4 py-1.5 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm transition"
               >
                 Download File
               </button>

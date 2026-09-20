@@ -82,7 +82,7 @@ export interface UnifiedPrintableReportSheetProps {
  * - Topper & Header
  * - Footer & Verification Code
  * - Dual-header and Body Typography (Font-Sans + Monospace Tabular Figures)
- * - Canvas Background (bg-[#f8fafc]) & Paper Sheet (bg-white)
+ * - Canvas Background (bg-background) & Paper Sheet (bg-white)
  * ============================================================================
  */
 export default function UnifiedPrintableReportSheet({
@@ -139,7 +139,7 @@ export default function UnifiedPrintableReportSheet({
   };
 
   return (
-    <div className={`w-full font-sans text-slate-800 text-left select-none bg-[#f4f6f9] ${className}`}>
+    <div className={`w-full font-sans text-foreground text-left select-none bg-background ${className}`}>
       {/* Dynamic Print Styles for fully fluid print sizing */}
       <style>{`
         @media print {
@@ -161,10 +161,10 @@ export default function UnifiedPrintableReportSheet({
 
       {/* 1. INTERACTIVE ACTION TOOLBAR (SCREEN ONLY) */}
       {!hideToolbar && (
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-xl p-3 mb-4 shadow-sm print:hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border rounded-xl p-3 mb-4 shadow-xs print:hidden">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Report Action:</span>
-            <span className="font-mono font-bold text-xs text-blue-700 bg-blue-50 px-2.5 py-1 rounded border border-blue-200">
+            <span className="text-xs font-bold text-foreground uppercase tracking-wider">Report Action:</span>
+            <span className="font-mono font-bold text-xs text-primary bg-muted px-2.5 py-1 rounded border border-border">
               {reportCode}
             </span>
           </div>
@@ -176,7 +176,7 @@ export default function UnifiedPrintableReportSheet({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.4))}
-                  className="p-1.5 rounded-md bg-[#1b5e20] hover:bg-[#144717] text-white cursor-pointer transition-colors shadow-2xs"
+                  className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
                   title="Zoom in"
                 >
                   <ZoomIn size={14} />
@@ -184,7 +184,7 @@ export default function UnifiedPrintableReportSheet({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.7))}
-                  className="p-1.5 rounded-md bg-[#1b5e20] hover:bg-[#144717] text-white cursor-pointer transition-colors shadow-2xs"
+                  className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
                   title="Zoom out"
                 >
                   <ZoomOut size={14} />
@@ -196,7 +196,7 @@ export default function UnifiedPrintableReportSheet({
               <button
                 type="button"
                 onClick={onRefresh}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-semibold cursor-pointer transition-colors border border-slate-300 shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-slate-200 text-foreground rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-border shadow-xs"
                 title="Refresh Report Data"
               >
                 <RefreshCw size={13} />
@@ -208,7 +208,7 @@ export default function UnifiedPrintableReportSheet({
               <button
                 type="button"
                 onClick={onExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2d3748] hover:bg-[#1a202c] text-white rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
                 title="Export Flat CSV"
               >
                 <Download size={13} />
@@ -219,7 +219,7 @@ export default function UnifiedPrintableReportSheet({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2d3748] hover:bg-[#1a202c] text-white rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
               title="Print Document"
             >
               <Printer size={13} />

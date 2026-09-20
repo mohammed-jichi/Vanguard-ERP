@@ -565,17 +565,17 @@ function OperationsDashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#edf3f9] text-[#0f172a] font-sans pb-16 inventory-dashboard-page">
+    <div className="min-h-screen bg-background text-foreground font-sans pb-16 inventory-dashboard-page">
       <style jsx global>{`
         /* Authentic Vanguard Operation Center / Inventory Dashboard CSS & Measurements */
         .inventory-dashboard-page {
-          --id-bg: #edf3f9;
+          --id-bg: var(--background, #f8fafc);
           --id-surface: #ffffff;
           --id-surface-soft: #f8fafc;
           --id-surface-muted: #e2e8f0;
-          --id-border: #cbd5e1;
-          --id-text: #0f172a;
-          --id-muted: #64748b;
+          --id-border: var(--border, #cbd5e1);
+          --id-text: var(--foreground, #0f172a);
+          --id-muted: var(--muted-foreground, #64748b);
         }
 
         /* Topbar exact Vanguard measurements */
@@ -711,7 +711,7 @@ function OperationsDashboardContent() {
           border-radius: 8px;
           border: 1px solid #cbd5e1;
           background: #ffffff;
-          color: #334155;
+          color: var(--muted-foreground, #64748b);
           transition: all 0.15s ease;
           cursor: pointer;
         }
@@ -735,7 +735,7 @@ function OperationsDashboardContent() {
           transition: all 0.15s ease;
         }
         .inventory-action-icon-btn:hover {
-          background-color: #1e293b;
+          background-color: var(--primary, #0f172a);
         }
 
         /* The 5 Signature Metric Boxes exact CSS */
@@ -831,7 +831,7 @@ function OperationsDashboardContent() {
           min-height: 40px;
           border: 1px solid #cbd5e1;
           background: #ffffff;
-          color: #1e293b;
+          color: var(--primary, #0f172a);
           border-radius: 999px;
           padding: 0 16px;
           font-weight: 700;
@@ -933,7 +933,7 @@ function OperationsDashboardContent() {
             <h1 className="page-title">Operation Overview</h1>
             <div className="flex items-center gap-1.5 lg:hidden">
               <Link
-                href="/backoffice/dashboard"
+                href="/dashboard/sales"
                 target="_blank"
                 className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-xs"
                 title="Sales Dashboard"
@@ -986,7 +986,7 @@ function OperationsDashboardContent() {
                 title="Currency Filter"
               >
                 <option value="USD">USD ($)</option>
-                <option value="LBP">LBP (ل.ل)</option>
+                <option value="LBP">LBP</option>
               </select>
             </div>
 
@@ -1722,7 +1722,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div
                 onClick={() => toggleComparativeAccordion('salesCat')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Current Stock Value by Branch & Categories (Sales Comparative Matrix)</span>
@@ -1740,7 +1740,7 @@ function OperationsDashboardContent() {
                         {comparativeCategories.map(cat => (
                           <th key={cat} className="text-right">{cat}</th>
                         ))}
-                        <th className="text-right font-black bg-[#2d2d2d]">Total</th>
+                        <th className="text-right font-black bg-primary/90">Total</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1789,7 +1789,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div
                 onClick={() => toggleComparativeAccordion('purchaseCat')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Purchases by Branch & Categories (Purchases Comparative Matrix)</span>
@@ -1807,7 +1807,7 @@ function OperationsDashboardContent() {
                         {comparativeCategories.map(cat => (
                           <th key={cat} className="text-right">{cat}</th>
                         ))}
-                        <th className="text-right font-black bg-[#2d2d2d]">Total</th>
+                        <th className="text-right font-black bg-primary/90">Total</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1854,7 +1854,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div
                 onClick={() => toggleComparativeAccordion('purchaseMonth')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Purchases by Month ({selectedYear} Fiscal Year)</span>
@@ -1872,7 +1872,7 @@ function OperationsDashboardContent() {
                         {activeMonthsList.map(month => (
                           <th key={month} className="text-right">{month}</th>
                         ))}
-                        <th className="text-right font-black bg-[#2d2d2d]">Total</th>
+                        <th className="text-right font-black bg-primary/90">Total</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1927,7 +1927,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div
                 onClick={() => toggleComparativeAccordion('wastageMonth')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Lost Goods by Month ({selectedYear} Fiscal Year)</span>
@@ -1945,7 +1945,7 @@ function OperationsDashboardContent() {
                         {activeMonthsList.map(month => (
                           <th key={month} className="text-right">{month}</th>
                         ))}
-                        <th className="text-right font-black bg-[#2d2d2d]">Total</th>
+                        <th className="text-right font-black bg-primary/90">Total</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2009,7 +2009,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div 
                 onClick={() => toggleCostAccordion('realCost')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Real Cost Of Goods Matrix</span>
@@ -2046,7 +2046,7 @@ function OperationsDashboardContent() {
                         <th className="text-right">
                           Ending Stock <span title="Value of stock at end of period based on last cost"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
-                        <th className="text-right bg-[#2d2d2d]">
+                        <th className="text-right bg-primary/90">
                           Consumption / COGS <span title="Consumption / COGS = Beginning Stock + Purchases - Ending Stock"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
@@ -2120,7 +2120,7 @@ function OperationsDashboardContent() {
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-xs">
               <div 
                 onClick={() => toggleCostAccordion('idealProfit')}
-                className="p-3.5 bg-[#3e3e3e] text-white font-bold text-xs flex items-center justify-between cursor-pointer select-none"
+                className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
                   <span>Ideal Profit by Category</span>
@@ -2485,7 +2485,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2542,7 +2542,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2599,7 +2599,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2660,7 +2660,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2730,7 +2730,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2782,7 +2782,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -2883,7 +2883,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setShowQtyNotReceived(false)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>
@@ -3050,7 +3050,7 @@ function OperationsDashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveActionModal(null)}
-                className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#134472] text-xs font-bold text-white transition cursor-pointer shadow-xs"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
                 Close
               </button>

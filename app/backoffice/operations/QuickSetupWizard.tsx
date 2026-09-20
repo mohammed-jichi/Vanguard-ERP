@@ -408,7 +408,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
     {
       id: 1,
       name: 'Raw Materials',
-      secondLangName: 'المواد الأولية',
+      secondLangName: 'Raw Materials',
       sorting: 1,
       image: null,
       divisions: [
@@ -416,7 +416,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           id: 101,
           categoryId: 1,
           name: 'Assembled Items',
-          secondLangName: 'الأصناف المجمعة',
+          secondLangName: 'Assembled Items',
           sorting: 1,
           image: null,
           groups: [
@@ -425,7 +425,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 101,
               name: 'Extra Virgin Olive Oil',
               otherDescription: 'Premium First Cold Pressed Extraction',
-              secondLangName: 'زيت زيتون بكر ممتاز',
+              secondLangName: 'Extra Virgin Olive Oil',
               sorting: 1,
               discountPercentage: 0,
               useAsMasterInEcommerce: false,
@@ -440,7 +440,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10001,
                   groupId: 1001,
                   name: 'EXTRA VIRGIN OLIVE OIL 1 LITRE (J)',
-                  secondLangName: 'زيت زيتون بكر ممتاز 1 لتر (ج)',
+                  secondLangName: 'Extra Virgin Olive Oil 1L (Glass)',
                   barcode: '528000100101',
                   price: 14.5,
                   cost: 9.8,
@@ -450,7 +450,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10002,
                   groupId: 1001,
                   name: 'EXTRA VIRGIN OLIVE OIL 1 LITRE (N)',
-                  secondLangName: 'زيت زيتون بكر ممتاز 1 لتر (ن)',
+                  secondLangName: 'Extra Virgin Olive Oil 1L (PET)',
                   barcode: '528000100102',
                   price: 15.0,
                   cost: 10.2,
@@ -460,7 +460,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10003,
                   groupId: 1001,
                   name: 'EXTRA VIRGIN OLIVE OIL 500ML',
-                  secondLangName: 'زيت زيتون بكر ممتاز 500 مل',
+                  secondLangName: 'Extra Virgin Olive Oil 500ml',
                   barcode: '528000100103',
                   price: 8.5,
                   cost: 5.4,
@@ -470,7 +470,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10004,
                   groupId: 1001,
                   name: 'EXTRA VIRGIN OLIVE OIL 5 LITRE TIN',
-                  secondLangName: 'تنكة زيت زيتون بكر ممتاز 5 لتر',
+                  secondLangName: 'Extra Virgin Olive Oil 5L Tin',
                   barcode: '528000100104',
                   price: 65.0,
                   cost: 44.0,
@@ -483,7 +483,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 101,
               name: 'Vinegars',
               otherDescription: 'Natural Artisanal and Commercial Vinegars',
-              secondLangName: 'خل ومطيبات',
+              secondLangName: 'Vinegar & Seasonings',
               sorting: 2,
               discountPercentage: 0,
               useAsMasterInEcommerce: false,
@@ -498,7 +498,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10005,
                   groupId: 1002,
                   name: 'COMMERCIAL WHITE VINEGAR 1 LITRE',
-                  secondLangName: 'خل أبيض تجاري 1 لتر',
+                  secondLangName: 'Commercial White Vinegar 1L',
                   barcode: '528000100201',
                   price: 2.5,
                   cost: 1.2,
@@ -508,7 +508,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10006,
                   groupId: 1002,
                   name: 'APPLE CIDER VINEGAR 1 LITRE',
-                  secondLangName: 'خل تفاح طبيعي 1 لتر',
+                  secondLangName: 'Natural Apple Cider Vinegar 1L',
                   barcode: '528000100202',
                   price: 4.2,
                   cost: 2.1,
@@ -518,7 +518,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10007,
                   groupId: 1002,
                   name: 'BALSAMIC VINEGAR MODENA 500ML',
-                  secondLangName: 'خل بلسميك مودينا 500 مل',
+                  secondLangName: 'Modena Balsamic Vinegar 500ml',
                   barcode: '528000100203',
                   price: 6.8,
                   cost: 3.5,
@@ -531,7 +531,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 101,
               name: 'Vegetable Oils',
               otherDescription: 'Pure Seed Cooking Oils',
-              secondLangName: 'زيوت نباتية',
+              secondLangName: 'Vegetable Oils',
               sorting: 3,
               discountPercentage: 0,
               useAsMasterInEcommerce: false,
@@ -546,7 +546,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10008,
                   groupId: 1003,
                   name: 'PURE SUNFLOWER OIL 1.8L',
-                  secondLangName: 'زيت دوار الشمس نقي 1.8 لتر',
+                  secondLangName: 'Pure Sunflower Oil 1.8L',
                   barcode: '528000100301',
                   price: 5.5,
                   cost: 3.8,
@@ -556,7 +556,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10009,
                   groupId: 1003,
                   name: 'PURE CORN OIL 1.8L',
-                  secondLangName: 'زيت ذرة نقي 1.8 لتر',
+                  secondLangName: 'Pure Corn Oil 1.8L',
                   barcode: '528000100302',
                   price: 6.0,
                   cost: 4.1,
@@ -570,7 +570,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           id: 102,
           categoryId: 1,
           name: 'Bulk Silos',
-          secondLangName: 'خزانات الجملة',
+          secondLangName: 'Wholesale Bulk Tanks',
           sorting: 2,
           image: null,
           groups: [
@@ -579,7 +579,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 102,
               name: 'Storage Silos',
               otherDescription: 'Stainless Steel Temperature Controlled Silos',
-              secondLangName: 'سيلوهات التخزين',
+              secondLangName: 'Storage Silos',
               sorting: 1,
               discountPercentage: 0,
               useAsMasterInEcommerce: false,
@@ -594,7 +594,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10010,
                   groupId: 1004,
                   name: 'SILO A - BALADI UNFILTERED 1000L',
-                  secondLangName: 'سيلو أ - بلدي غير مصفى',
+                  secondLangName: 'Silo A - Unfiltered Local',
                   barcode: '528000100401',
                   price: 11000,
                   cost: 8500,
@@ -604,7 +604,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 10011,
                   groupId: 1004,
                   name: 'SILO B - SOURI EXTRACTION 1500L',
-                  secondLangName: 'سيلو ب - صوري عصرة أولى',
+                  secondLangName: 'Silo B - First Press Souri',
                   barcode: '528000100402',
                   price: 16500,
                   cost: 12800,
@@ -619,7 +619,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
     {
       id: 2,
       name: 'Bottled Goods',
-      secondLangName: 'بضائع معبأة',
+      secondLangName: 'Packaged Goods',
       sorting: 2,
       image: null,
       divisions: [
@@ -627,7 +627,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           id: 201,
           categoryId: 2,
           name: 'Retail Glass Bottling',
-          secondLangName: 'تعبئة زجاجية للمفرق',
+          secondLangName: 'Retail Glass Bottling',
           sorting: 1,
           image: null,
           groups: [
@@ -636,7 +636,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 201,
               name: 'Gourmet Selection',
               otherDescription: 'Infused & High-Polyphenol oils',
-              secondLangName: 'تشكيلة فاخرة',
+              secondLangName: 'Gourmet Assortment',
               sorting: 1,
               discountPercentage: 0,
               useAsMasterInEcommerce: true,
@@ -651,7 +651,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 20001,
                   groupId: 2001,
                   name: 'CHILI INFUSED EVOO 250ML',
-                  secondLangName: 'زيت زيتون مع فلفل حار 250 مل',
+                  secondLangName: 'Olive Oil Infused with Chili 250ml',
                   barcode: '528000200101',
                   price: 9.5,
                   cost: 5.0,
@@ -661,7 +661,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 20002,
                   groupId: 2001,
                   name: 'GARLIC & HERBS INFUSED EVOO 250ML',
-                  secondLangName: 'زيت زيتون مع ثوم وأعشاب 250 مل',
+                  secondLangName: 'Olive Oil Infused with Garlic & Herbs 250ml',
                   barcode: '528000200102',
                   price: 9.5,
                   cost: 5.0,
@@ -676,7 +676,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
     {
       id: 3,
       name: 'Packaging & Supplies',
-      secondLangName: 'مواد التعبئة والتغليف',
+      secondLangName: 'Packaging Materials',
       sorting: 3,
       image: null,
       divisions: [
@@ -684,7 +684,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           id: 301,
           categoryId: 3,
           name: 'Bottles & Caps',
-          secondLangName: 'قوارير وأغطية',
+          secondLangName: 'Bottles & Caps',
           sorting: 1,
           image: null,
           groups: [
@@ -693,7 +693,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               divisionId: 301,
               name: 'Glass Containers',
               otherDescription: 'Empty bottles and closures for bottling line',
-              secondLangName: 'عبوات زجاجية فارغة',
+              secondLangName: 'Empty Glass Containers',
               sorting: 1,
               discountPercentage: 0,
               useAsMasterInEcommerce: false,
@@ -708,7 +708,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 30001,
                   groupId: 3001,
                   name: 'MARASCA BOTTLE 1000ML UV PROTECT',
-                  secondLangName: 'قنينة ماراسكا 1000 مل',
+                  secondLangName: 'Marasca Bottle 1000ml',
                   barcode: '528000300101',
                   price: 0.85,
                   cost: 0.45,
@@ -718,7 +718,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   id: 30002,
                   groupId: 3001,
                   name: 'DOP ANTI-DROP POURER CAP 31.5MM',
-                  secondLangName: 'غطاء مانع للتنقيط 31.5 مم',
+                  secondLangName: 'Non-Drip Pourer Cap 31.5mm',
                   barcode: '528000300102',
                   price: 0.25,
                   cost: 0.1,
@@ -1365,7 +1365,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           
           {/* Active Progress Fill */}
           <div
-            className="absolute left-12 top-5 h-2.5 bg-[#f05023] rounded-full transition-all duration-300 z-0"
+            className="absolute left-12 top-5 h-2.5 bg-amber-600 rounded-full transition-all duration-300 z-0"
             style={{
               width:
                 activeStep === 1
@@ -1398,9 +1398,9 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-md transition-all ${
                     isCurrent
-                      ? 'bg-[#f05023] text-white ring-4 ring-orange-200 scale-110'
+                      ? 'bg-amber-600 text-white ring-4 ring-orange-200 scale-110'
                       : isCompleted
-                      ? 'bg-[#195a96] text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-slate-400 text-white'
                   }`}
                 >
@@ -1467,7 +1467,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           type="text"
                           value={street}
                           onChange={(e) => setStreet(e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                         />
                       </div>
                     </div>
@@ -1480,7 +1480,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           type="text"
                           value={stateName}
                           onChange={(e) => setStateName(e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                         />
                       </div>
                       <label className="col-span-2 text-right font-semibold text-slate-700">City</label>
@@ -1489,7 +1489,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           type="text"
                           value={cityName}
                           onChange={(e) => setCityName(e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                         />
                       </div>
                     </div>
@@ -1511,7 +1511,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           type="text"
                           value={zipCode}
                           onChange={(e) => setZipCode(e.target.value)}
-                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                          className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                         />
                       </div>
                     </div>
@@ -1537,7 +1537,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             type="text"
                             value={phone2}
                             onChange={(e) => setPhone2(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1549,7 +1549,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             type="text"
                             value={phone3}
                             onChange={(e) => setPhone3(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1561,7 +1561,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             type="text"
                             value={fax}
                             onChange={(e) => setFax(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1618,7 +1618,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           <select
                             value={selectedBusinessType}
                             onChange={(e) => setSelectedBusinessType(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           >
                             {businessTypes.map((bt) => (
                               <option key={bt} value={bt}>
@@ -1631,7 +1631,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           <button
                             type="button"
                             onClick={() => setIsBusinessTypeModalOpen(true)}
-                            className="w-full py-1.5 rounded bg-[#195a96] hover:bg-[#144777] text-white flex items-center justify-center transition shadow-xs"
+                            className="w-full py-1.5 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs"
                             title="Add new business type"
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -1669,10 +1669,10 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
                                 {/* Arabic Text */}
                                 <text x="180" y="42" textAnchor="middle" fill="#2e7d32" fontSize="13" fontWeight="bold" fontFamily="sans-serif">
-                                  منتوجات
+                                  Products
                                 </text>
                                 <text x="180" y="68" textAnchor="middle" fill="#1b5e20" fontSize="22" fontWeight="900" fontFamily="sans-serif">
-                                  زيت زيتون الجنوب
+                                  Southern Olive Oil
                                 </text>
 
                                 {/* English Text */}
@@ -1688,7 +1688,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
                         {/* Logo Buttons & Constraints */}
                         <div className="flex items-center gap-2">
-                          <label className="cursor-pointer px-4 py-1.5 rounded bg-[#2c3b4d] hover:bg-[#1f2937] text-white text-xs font-semibold shadow-xs transition">
+                          <label className="cursor-pointer px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-xs transition">
                             <span>Select image</span>
                             <input
                               type="file"
@@ -1700,7 +1700,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           <button
                             type="button"
                             onClick={handleRemoveLogo}
-                            className="px-4 py-1.5 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white text-xs font-semibold shadow-xs transition"
+                            className="px-4 py-1.5 rounded bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold shadow-xs transition"
                           >
                             Remove
                           </button>
@@ -1719,7 +1719,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             value={taxReg1}
                             onChange={(e) => setTaxReg1(e.target.value)}
                             placeholder="e.g. 108849-601"
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1732,7 +1732,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             value={taxReg2}
                             onChange={(e) => setTaxReg2(e.target.value)}
                             placeholder="e.g. LB-VAT-449"
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1744,7 +1744,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             type="date"
                             value={fiscalStart}
                             onChange={(e) => setFiscalStart(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1756,7 +1756,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             type="date"
                             value={fiscalEnd}
                             onChange={(e) => setFiscalEnd(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                            className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                           />
                         </div>
                       </div>
@@ -1778,7 +1778,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                               type="text"
                               value={m.val}
                               onChange={(e) => m.set(e.target.value)}
-                              className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                              className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-primary"
                             />
                           </div>
                         </div>
@@ -1795,7 +1795,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       setActiveSubStep('currency');
                       showToast('Branch Info saved. Navigated to Currency Setup.');
                     }}
-                    className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                   >
                     Next
                   </button>
@@ -1830,7 +1830,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       <select
                         value={mainCurrency}
                         onChange={(e) => setMainCurrency(e.target.value)}
-                        className="w-28 bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-[#195a96]"
+                        className="w-28 bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-primary"
                       >
                         {availableCurrencies.map((c) => (
                           <option key={c} value={c}>
@@ -1847,7 +1847,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           type="checkbox"
                           checked={useSecondCurrency}
                           onChange={(e) => setUseSecondCurrency(e.target.checked)}
-                          className="rounded border-slate-300 text-[#195a96] focus:ring-0"
+                          className="rounded border-slate-300 text-primary focus:ring-0"
                         />
                         <span>Use Second Currency</span>
                       </label>
@@ -1855,7 +1855,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                         <select
                           value={secondCurrency}
                           onChange={(e) => setSecondCurrency(e.target.value)}
-                          className="w-28 bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-[#195a96]"
+                          className="w-28 bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-primary"
                         >
                           {availableCurrencies.map((c) => (
                             <option key={c} value={c}>
@@ -1872,7 +1872,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setIsNewCurrencyModalOpen(true)}
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#2c3b4d] hover:bg-[#1f2937] text-white text-xs font-semibold transition shadow-xs"
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition shadow-xs"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>New Currency</span>
@@ -1881,7 +1881,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       href="/backoffice/operations?section=currency_setup"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#2c3b4d] hover:bg-[#1f2937] text-white text-xs font-semibold transition shadow-xs"
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition shadow-xs"
                     >
                       <span>Manage Currencies</span>
                       <ExternalLink className="w-3 h-3 text-slate-400" />
@@ -1897,7 +1897,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                         type="checkbox"
                         checked={showOnlyOneCurrencyOnInvoice}
                         onChange={(e) => setShowOnlyOneCurrencyOnInvoice(e.target.checked)}
-                        className="rounded border-slate-300 text-[#195a96] focus:ring-0"
+                        className="rounded border-slate-300 text-primary focus:ring-0"
                       />
                       <span>Show Only One Currency on Invoice</span>
                     </label>
@@ -1909,7 +1909,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   <button
                     type="button"
                     onClick={() => setActiveSubStep('branch')}
-                    className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
                   >
                     Back
                   </button>
@@ -1919,7 +1919,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       setActiveSubStep('tax');
                       showToast('Currency Setup updated. Navigated to Tax Setup.');
                     }}
-                    className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                   >
                     Next
                   </button>
@@ -1948,7 +1948,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Authentic Tax Table (Matching Screenshot 2 & 3) */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-4 py-2.5 w-12">#</th>
                         <th className="px-4 py-2.5">Tax Description</th>
@@ -1968,7 +1968,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             <button
                               type="button"
                               onClick={() => setEditingTax(t)}
-                              className="text-[#337ab7] hover:text-[#195a96] transition p-1 cursor-pointer"
+                              className="text-primary hover:text-primary transition p-1 cursor-pointer"
                               title="Edit Tax Configuration"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -1985,7 +1985,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   <button
                     type="button"
                     onClick={() => setActiveSubStep('currency')}
-                    className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
                   >
                     Back
                   </button>
@@ -1995,7 +1995,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       setActiveSubStep('payment');
                       showToast('Tax Setup verified. Navigated to Payment Types.');
                     }}
-                    className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                   >
                     Next
                   </button>
@@ -2024,7 +2024,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Authentic Payment Types Table (Matching Screenshot 3) */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-4 py-2.5">Payment Description</th>
                         <th className="px-4 py-2.5">Payment Type</th>
@@ -2068,7 +2068,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   });
                                   setIsPaymentTypeModalOpen(true);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition"
+                                className="text-primary hover:text-primary transition"
                                 title="Edit Payment Type"
                               >
                                 <Edit2 className="w-4 h-4" />
@@ -2097,7 +2097,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   <button
                     type="button"
                     onClick={() => setActiveSubStep('tax')}
-                    className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
                   >
                     Back
                   </button>
@@ -2107,7 +2107,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       setActiveStep(2);
                       showToast('Company Info setup finished! Proceeding to Step 2: Device Settings.');
                     }}
-                    className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                    className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                   >
                     Next
                   </button>
@@ -2136,7 +2136,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Logical Warehouse Table */}
                 <div className="lg:col-span-4 border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5">Logical Warehouse</th>
                         <th className="px-3 py-2.5 text-right w-12">
@@ -2168,7 +2168,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   setLogicalWarehouseDesc(lp.description);
                                   setIsLogicalWarehouseModalOpen(true);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                                className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                                 title="Edit Logical Warehouse"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -2195,7 +2195,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Physical Printers Table */}
                 <div className="lg:col-span-8 border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5">Physical Printers</th>
                         <th className="px-3 py-2.5">Printer Type</th>
@@ -2243,7 +2243,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   });
                                   setIsPhysicalPrinterModalOpen(true);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                                className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                                 title="Edit Physical Printer"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -2273,7 +2273,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 <button
                   type="button"
                   onClick={() => setActiveStep(1)}
-                  className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+                  className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
                 >
                   Back
                 </button>
@@ -2282,7 +2282,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   onClick={() => {
                     showToast('Printers verified. Proceed to configure Workstations below.');
                   }}
-                  className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                  className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                 >
                   Next
                 </button>
@@ -2300,7 +2300,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
             <div className="p-6 space-y-6">
               <div className="border border-slate-200 rounded overflow-hidden">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#337ab7] text-white font-bold">
+                  <thead className="bg-primary text-white font-bold">
                     <tr>
                       <th className="px-4 py-2.5 w-16">#</th>
                       <th className="px-4 py-2.5">Workstation Name</th>
@@ -2338,7 +2338,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                               });
                               setShowMoreLocations(false);
                             }}
-                            className="text-[#337ab7] hover:text-[#195a96] transition p-1 cursor-pointer"
+                            className="text-primary hover:text-primary transition p-1 cursor-pointer"
                             title="Edit Workstation"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -2355,7 +2355,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 <button
                   type="button"
                   onClick={() => setActiveStep(1)}
-                  className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+                  className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
                 >
                   Back
                 </button>
@@ -2365,7 +2365,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     setActiveStep(3);
                     showToast('Device settings verified! Proceeding to Step 3: Inventory Setup.');
                   }}
-                  className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm"
+                  className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm"
                 >
                   Next
                 </button>
@@ -2386,7 +2386,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
             {/* Header Accordion Bar (Matching Omega .panel-heading) */}
             <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 text-sm font-bold text-slate-800 flex items-center justify-between">
               <span className="text-slate-800">Categories, Divisions, Groups &amp; Items</span>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-[#195a96]">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-primary">
                 Cloud POS Taxonomy
               </span>
             </div>
@@ -2397,7 +2397,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Table 1: Categories */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5" colSpan={2}>
                           Categories
@@ -2423,7 +2423,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             onClick={() => handleSelectCategory(cat)}
                             className={`cursor-pointer transition ${
                               isSelected
-                                ? 'bg-[#d9edf7] border-l-4 border-[#337ab7] text-slate-900 font-bold'
+                                ? 'bg-muted border-l-4 border-primary text-slate-900 font-bold'
                                 : 'hover:bg-slate-50 text-slate-800'
                             }`}
                           >
@@ -2453,7 +2453,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   e.stopPropagation();
                                   openEditCategoryModal(cat);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                                className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                                 title="Edit Category"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -2489,7 +2489,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Table 2: Divisions (Filtered by active Category) */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5">
                           Divisions
@@ -2521,7 +2521,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             onClick={() => handleSelectDivision(div)}
                             className={`cursor-pointer transition ${
                               isSelected
-                                ? 'bg-[#d9edf7] border-l-4 border-[#337ab7] text-slate-900 font-bold'
+                                ? 'bg-muted border-l-4 border-primary text-slate-900 font-bold'
                                 : 'hover:bg-slate-50 text-slate-800'
                             }`}
                           >
@@ -2540,7 +2540,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   e.stopPropagation();
                                   openEditDivisionModal(div);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                                className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                                 title="Edit Division"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -2581,7 +2581,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Table 3: Groups (Filtered by active Division) */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5">
                           Groups
@@ -2613,7 +2613,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             onClick={() => handleSelectGroup(grp)}
                             className={`cursor-pointer transition ${
                               isSelected
-                                ? 'bg-[#d9edf7] border-l-4 border-[#337ab7] text-slate-900 font-bold'
+                                ? 'bg-muted border-l-4 border-primary text-slate-900 font-bold'
                                 : 'hover:bg-slate-50 text-slate-800'
                             }`}
                           >
@@ -2632,7 +2632,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                   e.stopPropagation();
                                   openEditGroupModal(grp);
                                 }}
-                                className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                                className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                                 title="Edit Group"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -2670,7 +2670,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 {/* Table 4: Items (Filtered by active Group) */}
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#337ab7] text-white font-bold">
+                    <thead className="bg-primary text-white font-bold">
                       <tr>
                         <th className="px-3 py-2.5">
                           Items
@@ -2710,7 +2710,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                             <button
                               type="button"
                               onClick={() => openEditItemModal(item)}
-                              className="text-[#337ab7] hover:text-[#195a96] transition p-0.5 cursor-pointer"
+                              className="text-primary hover:text-primary transition p-0.5 cursor-pointer"
                               title="Edit Item"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -2747,7 +2747,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 <button
                   type="button"
                   onClick={() => setActiveStep(2)}
-                  className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Back
                 </button>
@@ -2757,7 +2757,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     setActiveStep(4);
                     showToast('Inventory setup synchronized! Proceeding to Step 4: Employee Setup.');
                   }}
-                  className="px-8 py-2 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-sm cursor-pointer"
+                  className="px-8 py-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm cursor-pointer"
                 >
                   Next
                 </button>
@@ -2770,7 +2770,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {activeStep === 4 && (
         <div className="bg-white border border-slate-200 rounded-lg shadow-xs p-6 space-y-6">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <Users className="w-6 h-6 text-[#195a96]" />
+            <Users className="w-6 h-6 text-primary" />
             <div>
               <h2 className="text-base font-bold text-slate-900">Step 4: Employee Setup & Access Roles</h2>
               <p className="text-xs text-slate-500">Cashiers, Administrators, Station Operators, and PIN security credentials</p>
@@ -2803,7 +2803,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               </a>
               <a
                 href="/backoffice/operations?section=products_services"
-                className="px-6 py-2 rounded bg-[#195a96] hover:bg-[#144777] text-white text-xs font-bold transition shadow-sm"
+                className="px-6 py-2 rounded bg-primary hover:bg-primary/90 text-white text-xs font-bold transition shadow-sm"
               >
                 Products &amp; Services Matrix
               </a>
@@ -2814,7 +2814,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
             <button
               type="button"
               onClick={() => setActiveStep(3)}
-              className="px-8 py-2 rounded bg-[#5c2d2d] hover:bg-[#451f1f] text-white font-bold text-xs transition shadow-sm"
+              className="px-8 py-2 rounded bg-destructive hover:bg-destructive/90 text-white font-bold text-xs transition shadow-sm"
             >
               Back
             </button>
@@ -2831,7 +2831,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full max-w-lg rounded-xl overflow-hidden shadow-2xl text-slate-800">
             {/* Modal Header */}
-            <div className="px-6 py-3.5 bg-[#337ab7] text-white flex items-center justify-between">
+            <div className="px-6 py-3.5 bg-primary text-white flex items-center justify-between">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <Receipt className="w-4 h-4" />
                 <span>Edit Tax Configuration</span>
@@ -2866,7 +2866,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                           onChange={(e) =>
                             setEditingTax({ ...editingTax, description: e.target.value })
                           }
-                          className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#195a96]"
+                          className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:border-primary"
                         />
                       </td>
                       <td className="px-4 py-3">
@@ -2881,7 +2881,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                                 rate: parseFloat(e.target.value) || 0
                               })
                             }
-                            className="w-20 bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 font-bold font-mono focus:outline-none focus:border-[#195a96]"
+                            className="w-20 bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 font-bold font-mono focus:outline-none focus:border-primary"
                           />
                           <span className="font-bold text-slate-600">%</span>
                         </div>
@@ -2922,7 +2922,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     setEditingTax(null);
                     showToast(`Tax #${editingTax.id} (${editingTax.description}) updated successfully!`);
                   }}
-                  className="px-5 py-1.5 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white text-xs font-bold transition shadow-xs"
+                  className="px-5 py-1.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-xs"
                 >
                   Save
                 </button>
@@ -2938,7 +2938,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {isNewCurrencyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full max-w-md rounded-xl overflow-hidden shadow-2xl text-slate-800">
-            <div className="px-6 py-3.5 bg-[#2c3b4d] text-white flex items-center justify-between">
+            <div className="px-6 py-3.5 bg-primary text-white flex items-center justify-between">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <Coins className="w-4 h-4 text-amber-300" />
                 <span>New Currency Configuration</span>
@@ -2973,7 +2973,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   onChange={(e) =>
                     setNewCurrencyForm({ ...newCurrencyForm, code: e.target.value.toUpperCase() })
                   }
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -2987,7 +2987,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     onChange={(e) =>
                       setNewCurrencyForm({ ...newCurrencyForm, symbol: e.target.value })
                     }
-                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div>
@@ -3003,7 +3003,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                         decimals: parseInt(e.target.value) || 2
                       })
                     }
-                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -3017,7 +3017,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   onChange={(e) =>
                     setNewCurrencyForm({ ...newCurrencyForm, description: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -3034,7 +3034,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       rateVsUsd: parseFloat(e.target.value) || 1
                     })
                   }
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-mono font-bold focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-mono font-bold focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -3048,7 +3048,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-1.5 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold shadow-xs"
+                  className="px-5 py-1.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
                 >
                   Save Currency
                 </button>
@@ -3064,7 +3064,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {isPaymentTypeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full max-w-md rounded-xl overflow-hidden shadow-2xl text-slate-800">
-            <div className="px-6 py-3.5 bg-[#337ab7] text-white flex items-center justify-between">
+            <div className="px-6 py-3.5 bg-primary text-white flex items-center justify-between">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <CreditCard className="w-4 h-4" />
                 <span>
@@ -3122,7 +3122,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   onChange={(e) =>
                     setPaymentTypeForm({ ...paymentTypeForm, description: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-bold focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -3134,7 +3134,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     onChange={(e) =>
                       setPaymentTypeForm({ ...paymentTypeForm, type: e.target.value })
                     }
-                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="Cash">Cash</option>
                     <option value="Credit">Credit</option>
@@ -3150,7 +3150,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     onChange={(e) =>
                       setPaymentTypeForm({ ...paymentTypeForm, currency: e.target.value })
                     }
-                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   >
                     {availableCurrencies.map((c) => (
                       <option key={c} value={c}>
@@ -3171,7 +3171,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-1.5 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold shadow-xs"
+                  className="px-5 py-1.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
                 >
                   Save Payment Type
                 </button>
@@ -3187,7 +3187,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {isBusinessTypeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full max-w-sm rounded-xl overflow-hidden shadow-2xl text-slate-800">
-            <div className="px-5 py-3 bg-[#195a96] text-white flex items-center justify-between">
+            <div className="px-5 py-3 bg-primary text-white flex items-center justify-between">
               <span className="font-bold text-xs">Add New Business Type</span>
               <button
                 type="button"
@@ -3218,7 +3218,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   placeholder="e.g. Olive oil Milling & Bottling"
                   value={newBusinessTypeInput}
                   onChange={(e) => setNewBusinessTypeInput(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
@@ -3231,7 +3231,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#144777] text-white font-bold shadow-xs"
+                  className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-bold shadow-xs"
                 >
                   Add Type
                 </button>
@@ -3249,7 +3249,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           <div className="bg-white border border-slate-300 w-full max-w-md rounded-xl overflow-hidden shadow-2xl text-slate-800">
             <div className="px-6 pt-5 pb-3 flex items-start justify-between border-b border-slate-100">
               <div>
-                <h2 className="text-2xl font-bold text-[#2c3e50]">Logical Warehouse</h2>
+                <h2 className="text-2xl font-bold text-foreground">Logical Warehouse</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {editingLogicalWarehouse ? 'Edit Logical Warehouse' : 'New Logical Warehouse'}
                 </p>
@@ -3303,7 +3303,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-end gap-2">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white text-xs font-semibold transition shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -3328,7 +3328,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     showToast(`Logical Warehouse "${logicalWarehouseDesc}" saved for all Branches!`);
                     setIsLogicalWarehouseModalOpen(false);
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white text-xs font-semibold transition shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save for all Branches</span>
@@ -3347,7 +3347,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded-xl overflow-hidden shadow-2xl text-slate-800">
             <div className="px-6 pt-5 pb-3 flex items-start justify-between border-b border-slate-100">
               <div>
-                <h2 className="text-2xl font-bold text-[#2c3e50]">Physical Printer</h2>
+                <h2 className="text-2xl font-bold text-foreground">Physical Printer</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {editingPhysicalPrinter ? 'Edit Physical Printer' : 'New Physical Printer'}
                 </p>
@@ -3512,7 +3512,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white font-semibold transition shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -3531,7 +3531,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           <div className="bg-white border border-slate-300 w-full max-w-2xl my-8 rounded-xl overflow-hidden shadow-2xl text-slate-800 flex flex-col max-h-[92vh]">
             {/* Modal Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-slate-200 shrink-0">
-              <h2 className="text-2xl font-bold text-[#2c3e50]">Workstation</h2>
+              <h2 className="text-2xl font-bold text-foreground">Workstation</h2>
               <button
                 type="button"
                 onClick={() => setEditingWorkstation(null)}
@@ -3634,7 +3634,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setIsAddMenuModalOpen(true)}
-                      className="p-1 rounded bg-[#2c3b4d] hover:bg-[#1f2937] text-white flex items-center justify-center transition shadow-xs cursor-pointer"
+                      className="p-1 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs cursor-pointer"
                       title="Add Menu"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -3677,7 +3677,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setIsAddScreenModalOpen(true)}
-                      className="p-1 rounded bg-[#2c3b4d] hover:bg-[#1f2937] text-white flex items-center justify-center transition shadow-xs cursor-pointer"
+                      className="p-1 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs cursor-pointer"
                       title="Add Main Screen"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -3798,7 +3798,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       );
                       showToast('Locations applied to all workstations successfully!');
                     }}
-                    className="w-full py-2 px-4 rounded bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-xs transition shadow-xs cursor-pointer text-center"
+                    className="w-full py-2 px-4 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-xs cursor-pointer text-center"
                   >
                     Apply Locations On All Workstations
                   </button>
@@ -3857,7 +3857,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setShowMoreLocations(!showMoreLocations)}
-                      className="px-4 py-1.5 rounded bg-[#343a40] hover:bg-[#23272b] text-white text-xs font-semibold shadow-xs cursor-pointer"
+                      className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-xs cursor-pointer"
                     >
                       {showMoreLocations ? 'Show Less' : 'Show More'}
                     </button>
@@ -3884,7 +3884,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   showToast(`Workstation "${workstationForm.name}" saved successfully!`);
                   setEditingWorkstation(null);
                 }}
-                className="flex items-center gap-1.5 px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white text-xs font-semibold transition shadow-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold transition shadow-xs cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
@@ -3900,7 +3900,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {isAddMenuModalOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-300 w-full max-w-sm rounded-xl overflow-hidden shadow-2xl text-slate-800">
-            <div className="px-5 py-3 bg-[#195a96] text-white flex items-center justify-between">
+            <div className="px-5 py-3 bg-primary text-white flex items-center justify-between">
               <span className="font-bold text-xs">Add New Menu</span>
               <button
                 type="button"
@@ -3945,7 +3945,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#144777] text-white font-bold shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-bold shadow-xs cursor-pointer"
                 >
                   Add Menu
                 </button>
@@ -3958,7 +3958,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       {isAddScreenModalOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-300 w-full max-w-sm rounded-xl overflow-hidden shadow-2xl text-slate-800">
-            <div className="px-5 py-3 bg-[#195a96] text-white flex items-center justify-between">
+            <div className="px-5 py-3 bg-primary text-white flex items-center justify-between">
               <span className="font-bold text-xs">Add New Main Screen</span>
               <button
                 type="button"
@@ -4003,7 +4003,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-[#195a96] hover:bg-[#144777] text-white font-bold shadow-xs cursor-pointer"
+                  className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-bold shadow-xs cursor-pointer"
                 >
                   Add Screen
                 </button>
@@ -4118,7 +4118,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </div>
                 <div className="p-6 flex flex-col items-center justify-center space-y-3">
                   {/* Image Preview Box */}
-                  <div className="w-48 h-32 bg-[#ebebeb] border border-slate-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-48 h-32 bg-muted border border-slate-200 flex items-center justify-center overflow-hidden">
                     {categoryForm.image ? (
                       <img
                         src={categoryForm.image}
@@ -4134,7 +4134,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
                   {/* Buttons: Select image & Remove */}
                   <div className="flex items-center gap-2">
-                    <label className="px-4 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-semibold cursor-pointer shadow-xs">
+                    <label className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold cursor-pointer shadow-xs">
                       Select image
                       <input
                         type="file"
@@ -4150,7 +4150,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setCategoryForm({ ...categoryForm, image: null })}
-                      className="px-4 py-1.5 rounded bg-[#5c2b2f] hover:bg-[#481e22] text-white text-xs font-semibold cursor-pointer shadow-xs"
+                      className="px-4 py-1.5 rounded bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold cursor-pointer shadow-xs"
                     >
                       Remove
                     </button>
@@ -4168,7 +4168,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               <div className="pt-3 flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -4244,7 +4244,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => openNewCategoryModal()}
-                      className="px-2 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white flex items-center justify-center transition shadow-xs cursor-pointer"
+                      className="px-2 py-1.5 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs cursor-pointer"
                       title="Add New Category"
                     >
                       <Plus className="w-4 h-4 font-bold" />
@@ -4289,7 +4289,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </div>
                 <div className="p-6 flex flex-col items-center justify-center space-y-3">
                   {/* Image Preview Box */}
-                  <div className="w-48 h-32 bg-[#ebebeb] border border-slate-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-48 h-32 bg-muted border border-slate-200 flex items-center justify-center overflow-hidden">
                     {divisionForm.image ? (
                       <img
                         src={divisionForm.image}
@@ -4305,7 +4305,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
                   {/* Buttons: Select image & Remove */}
                   <div className="flex items-center gap-2">
-                    <label className="px-4 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-semibold cursor-pointer shadow-xs">
+                    <label className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold cursor-pointer shadow-xs">
                       Select image
                       <input
                         type="file"
@@ -4321,7 +4321,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setDivisionForm({ ...divisionForm, image: null })}
-                      className="px-4 py-1.5 rounded bg-[#5c2b2f] hover:bg-[#481e22] text-white text-xs font-semibold cursor-pointer shadow-xs"
+                      className="px-4 py-1.5 rounded bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold cursor-pointer shadow-xs"
                     >
                       Remove
                     </button>
@@ -4333,7 +4333,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               <div className="pt-3 flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -4424,7 +4424,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => openNewDivisionModal()}
-                      className="px-2 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white flex items-center justify-center transition shadow-xs cursor-pointer"
+                      className="px-2 py-1.5 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs cursor-pointer"
                       title="Add New Division"
                     >
                       <Plus className="w-4 h-4 font-bold" />
@@ -4608,7 +4608,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </div>
                 <div className="p-6 flex flex-col items-center justify-center space-y-3">
                   {/* Image Preview Box */}
-                  <div className="w-48 h-32 bg-[#ebebeb] border border-slate-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-48 h-32 bg-muted border border-slate-200 flex items-center justify-center overflow-hidden">
                     {groupForm.ecommerceImage ? (
                       <img
                         src={groupForm.ecommerceImage}
@@ -4624,7 +4624,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
                   {/* Buttons: Select image & Remove */}
                   <div className="flex items-center gap-2">
-                    <label className="px-4 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-semibold cursor-pointer shadow-xs">
+                    <label className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold cursor-pointer shadow-xs">
                       Select image
                       <input
                         type="file"
@@ -4642,7 +4642,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                       onClick={() =>
                         setGroupForm({ ...groupForm, ecommerceImage: null })
                       }
-                      className="px-4 py-1.5 rounded bg-[#5c2b2f] hover:bg-[#481e22] text-white text-xs font-semibold cursor-pointer shadow-xs"
+                      className="px-4 py-1.5 rounded bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold cursor-pointer shadow-xs"
                     >
                       Remove
                     </button>
@@ -4654,7 +4654,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               <div className="pt-3 flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -4714,7 +4714,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. زيت زيتون بكر ممتاز 1 لتر"
+                    placeholder="e.g. Extra Virgin Olive Oil 1L"
                     value={itemForm.secondLangName}
                     onChange={(e) =>
                       setItemForm({ ...itemForm, secondLangName: e.target.value })
@@ -4748,7 +4748,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => openNewGroupModal()}
-                      className="px-2 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white flex items-center justify-center transition shadow-xs cursor-pointer"
+                      className="px-2 py-1.5 rounded bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition shadow-xs cursor-pointer"
                       title="Add New Group"
                     >
                       <Plus className="w-4 h-4 font-bold" />
@@ -4823,7 +4823,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   Image
                 </div>
                 <div className="p-6 flex flex-col items-center justify-center space-y-3">
-                  <div className="w-48 h-32 bg-[#ebebeb] border border-slate-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-48 h-32 bg-muted border border-slate-200 flex items-center justify-center overflow-hidden">
                     {itemForm.image ? (
                       <img
                         src={itemForm.image}
@@ -4838,7 +4838,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="px-4 py-1.5 rounded bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-semibold cursor-pointer shadow-xs">
+                    <label className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-white text-xs font-semibold cursor-pointer shadow-xs">
                       Select image
                       <input
                         type="file"
@@ -4854,7 +4854,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                     <button
                       type="button"
                       onClick={() => setItemForm({ ...itemForm, image: null })}
-                      className="px-4 py-1.5 rounded bg-[#5c2b2f] hover:bg-[#481e22] text-white text-xs font-semibold cursor-pointer shadow-xs"
+                      className="px-4 py-1.5 rounded bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold cursor-pointer shadow-xs"
                     >
                       Remove
                     </button>
@@ -4866,7 +4866,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
               <div className="pt-3 flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-[#343a40] hover:bg-[#23272b] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>

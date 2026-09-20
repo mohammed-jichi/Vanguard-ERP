@@ -363,10 +363,16 @@ export const ElectronicJournalTemplate: React.FC<ElectronicJournalTemplateProps>
     },
   ], []);
 
-  const grandTotal: GrandTotal = useMemo(() => ({
-    label: `Expected Net Cash Drawer Balance (${filteredRecords.length} Journal Entries):`,
-    value: `${sessionSummary.expectedDrawerCash.toLocaleString('en-US')} LBP`,
-  }), [filteredRecords.length, sessionSummary.expectedDrawerCash]);
+  const grandTotal: GrandTotal = useMemo(() => {
+    const usdVal = (sessionSummary.expectedDrawerCash / 89500).toFixed(2);
+    return {
+      label: `Expected Net Cash Drawer Balance (${filteredRecords.length} Journal Entries):`,
+      value: `$${usdVal}`,
+      targetCurrency: 'USD',
+      breakdownText: `LBP: ${sessionSummary.expectedDrawerCash.toLocaleString('en-US')} LBP  |  USD: $${usdVal}`,
+      convertedSubtext: 'Normalized to USD @ 89,500 LBP/USD',
+    };
+  }, [filteredRecords.length, sessionSummary.expectedDrawerCash]);
 
   return (
     <div className="w-full space-y-6">

@@ -356,7 +356,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
               <button
                 type="button"
                 onClick={handleAddNewVendor}
-                className="bg-[#16a34a] hover:bg-[#15803d] text-white font-black px-4 py-2 rounded-lg border-2 border-[#14532d] shadow-md flex items-center gap-1.5 text-sm"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-black px-4 py-2 rounded-lg border-2 border-[#14532d] shadow-md flex items-center gap-1.5 text-sm"
               >
                 <Plus className="w-4 h-4" /> إضافة (Add)
               </button>
@@ -456,7 +456,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
             <span className="text-sm font-bold">صنف العبوة المستهدفة للتعبئة:</span>
             <button
               onClick={() => setShowAddUnitModal(true)}
-              className="bg-[#16a34a] text-white font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-[#15803d] flex items-center gap-1"
+              className="bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs hover:bg-emerald-800 flex items-center gap-1"
             >
               <Plus className="w-3.5 h-3.5" /> + إضافة صنف/عبوة للمخزون
             </button>
@@ -754,7 +754,7 @@ export default function ReceiveAndProductionMaster({ isModalView = false, onClos
               <div className="flex gap-2 pt-3">
                 <button
                   type="submit"
-                  className="flex-1 bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-2.5 rounded-xl text-xs"
+                  className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-black py-2.5 rounded-xl text-xs"
                 >
                   حفظ وحدة القياس والصنف
                 </button>

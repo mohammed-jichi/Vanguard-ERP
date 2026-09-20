@@ -44,6 +44,13 @@ export interface GrandTotal {
   label: string;
   value: number | string;
   isNegative?: boolean;
+  breakdownText?: string;
+  convertedSubtext?: string;
+  multiCurrencyTotals?: Record<string, number>;
+  normalizedAmount?: number;
+  targetCurrency?: string;
 }
 
 export type PaperSize = 'A4' | 'A3' | 'A5' | 'POS' | 'Barcode' | 'Auto';
+
+export * from '@/types/reports';

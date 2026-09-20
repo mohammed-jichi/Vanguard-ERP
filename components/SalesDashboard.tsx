@@ -1450,7 +1450,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis domain={[0, 300]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<DarkLineTooltip />} />
-                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                     <Line
                       type="monotone"
                       dataKey="revenue"
@@ -1500,7 +1500,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<CategoryComparisonTooltip />} />
-                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                     <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" hide={!!hiddenSeries['retail26'] || !!hiddenSeries['مفرق (2026)']} />
                     <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" hide={!!hiddenSeries['promo26'] || !!hiddenSeries['عروض (2026)']} />
                     <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" hide={!!hiddenSeries['wholesale26'] || !!hiddenSeries['جملة (2026)']} />
@@ -1550,7 +1550,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       <XAxis dataKey="hour" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <Tooltip content={<DarkLineTooltip />} />
-                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                       <Line
                         type="monotone"
                         dataKey="sales"
@@ -1596,7 +1596,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                       <Tooltip content={<DarkLineTooltip />} />
-                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                      <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                       <Bar
                         dataKey="sales"
                         name="Total Revenue"
@@ -1642,7 +1642,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="year" tick={{ fontSize: 12, fill: '#64748b', fontWeight: 'bold' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<YearlyRevenueTooltip />} />
-                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                     {monthKeys.map((m) => (
                       <Bar
                         key={m.key}
@@ -1714,7 +1714,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip content={<EmployeeComparisonTooltip />} />
-                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: '#334155' }} />
+                    <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '11px', color: 'var(--muted-foreground, #64748b)' }} />
                     <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
                     <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#8b5cf6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
                     <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#ec4899" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
@@ -2189,20 +2189,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             {expandedWidget === 'daily-summary-trends' ? (
               <ResponsiveContainer width="100%" height="90%">
                 <LineChart data={dailyTrendsData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#334155' }} />
-                  <YAxis domain={[0, 300]} tick={{ fontSize: 12, fill: '#334155' }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--muted-foreground, #64748b)' }} />
+                  <YAxis domain={[0, 300]} tick={{ fontSize: 12, fill: 'var(--muted-foreground, #64748b)' }} />
                   <Tooltip content={<DarkLineTooltip />} />
-                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: 'var(--muted-foreground, #64748b)' }} />
                   <Line type="monotone" dataKey="revenue" name="Daily Revenue" stroke="#10b981" strokeWidth={4} dot={{ r: 5, fill: '#10b981' }} activeDot={{ r: 8 }} hide={!!hiddenSeries['revenue'] || !!hiddenSeries['Daily Revenue']} />
                 </LineChart>
               </ResponsiveContainer>
             ) : expandedWidget === 'monthly-category-comparison' ? (
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={categoryMonthlyComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#334155' }} />
-                  <YAxis tick={{ fontSize: 13, fill: '#334155' }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
+                  <YAxis tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
                   <Tooltip content={<CategoryComparisonTooltip />} />
-                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: 'var(--muted-foreground, #64748b)' }} />
                   <Bar dataKey="retail26" name="مفرق (2026)" stackId="a" fill="#10b981" hide={!!hiddenSeries['retail26'] || !!hiddenSeries['مفرق (2026)']} />
                   <Bar dataKey="promo26" name="عروض (2026)" stackId="a" fill="#3b82f6" hide={!!hiddenSeries['promo26'] || !!hiddenSeries['عروض (2026)']} />
                   <Bar dataKey="wholesale26" name="جملة (2026)" stackId="a" fill="#f59e0b" hide={!!hiddenSeries['wholesale26'] || !!hiddenSeries['جملة (2026)']} />
@@ -2213,10 +2213,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             ) : expandedWidget === 'employee-monthly-comparison' ? (
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={employeeMonthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#334155' }} />
-                  <YAxis tick={{ fontSize: 13, fill: '#334155' }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
+                  <YAxis tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
                   <Tooltip content={<EmployeeComparisonTooltip />} />
-                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: '#334155' }} />
+                  <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: 'pointer', fontSize: '13px', color: 'var(--muted-foreground, #64748b)' }} />
                   <Bar dataKey="cashierN2" name="Cashier N2" stackId="emp" fill="#10b981" hide={!!hiddenSeries['cashierN2'] || !!hiddenSeries['Cashier N2']} />
                   <Bar dataKey="cashierNK" name="Cashier NK" stackId="emp" fill="#3b82f6" hide={!!hiddenSeries['cashierNK'] || !!hiddenSeries['Cashier NK']} />
                   <Bar dataKey="cashierR" name="Cashier R" stackId="emp" fill="#f59e0b" hide={!!hiddenSeries['cashierR'] || !!hiddenSeries['Cashier R']} />
@@ -2228,8 +2228,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             ) : expandedWidget === 'monthly-revenue' ? (
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={monthlyRevenueData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#334155' }} />
-                  <YAxis tick={{ fontSize: 13, fill: '#334155' }} />
+                  <XAxis dataKey="month" tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
+                  <YAxis tick={{ fontSize: 13, fill: 'var(--muted-foreground, #64748b)' }} />
                   <Tooltip
                     formatter={(val: any) => [`LBP ${val} Million`, 'Revenue']}
                     contentStyle={{ backgroundColor: '#0f172a', borderRadius: '14px', border: 'none', color: '#fff', fontSize: '14px' }}

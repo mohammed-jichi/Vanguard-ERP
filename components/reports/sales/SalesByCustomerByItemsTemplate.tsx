@@ -108,7 +108,7 @@ export const SalesByCustomerByItemsTemplate: React.FC<SalesByCustomerByItemsTemp
               const profit = ((row.unitPrice - row.cost) * row.qty).toFixed(2);
               return (
                 <tr key={idx} className="hover:bg-slate-50">
-                  {isTopSold && <td className="py-2 px-2 text-center font-bold text-[#195a96] font-mono">{row.rank}</td>}
+                  {isTopSold && <td className="py-2 px-2 text-center font-bold text-primary font-mono">{row.rank}</td>}
                   {groupByDate && <td className="py-2 px-2 font-mono text-slate-600">{row.date}</td>}
                   <td className="py-2 px-2 font-bold text-slate-900 font-sans">{row.customer}</td>
                   <td className="py-2 px-2 font-mono text-slate-600">{row.itemCode}</td>

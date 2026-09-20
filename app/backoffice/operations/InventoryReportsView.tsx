@@ -21,6 +21,10 @@ import {
   getInventoryReportMeta,
 } from '@/components/reports/inventoryControlReportsTree';
 import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
+import {
   Factory,
   Layers,
   CheckCircle2,
@@ -769,10 +773,11 @@ export default function AuthenticVanguardInventoryReports() {
   };
 
   // Filters State
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [period, setPeriod] = useState<string>('this_month');
-  const [fromDate, setFromDate] = useState<string>('2026-09-01');
-  const [toDate, setToDate] = useState<string>('2026-09-15');
+  const [period, setPeriod] = useState<string>(initialDateRange.preset);
+  const [fromDate, setFromDate] = useState<string>(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState<string>(initialDateRange.toDate);
   const [selectedShiftLine, setSelectedShiftLine] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -784,13 +789,15 @@ export default function AuthenticVanguardInventoryReports() {
 
   // Filter Reset
   const handleResetFilters = () => {
+    const defRange = getDefaultInitialDateRange('This Month');
     setSearchQuery('');
-    setPeriod('this_month');
-    setFromDate('2026-09-01');
-    setToDate('2026-09-15');
+    setPeriod(defRange.preset);
+    setFromDate(defRange.fromDate);
+    setToDate(defRange.toDate);
     setSelectedShiftLine('all');
     setSelectedCategory('all');
     setSelectedStatus('all');
+    setOpsFilterValues({});
     setCurrentPage(1);
   };
 
@@ -1347,7 +1354,7 @@ export default function AuthenticVanguardInventoryReports() {
           title={activeMeta.name}
           subtitle={`Operations Center & Inventory module audit trails, stock throughput, and balance ledger for ${period.replace('_', ' ')}.`}
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice/dashboard' },
+            { label: 'Home', href: '/backoffice' },
             { label: '2. Operations Center', href: '/operations-center/reports' },
             { label: activeMeta.category },
             ...(activeMeta.subGroup ? [{ label: activeMeta.subGroup }] : []),
@@ -1407,7 +1414,7 @@ export default function AuthenticVanguardInventoryReports() {
               onClick={() => handleSheetChange('REP_OPS_001')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${
                 activeSheet === 'REP_OPS_001'
-                  ? 'bg-[#334155] text-white shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
               }`}
             >
@@ -1428,7 +1435,7 @@ export default function AuthenticVanguardInventoryReports() {
               onClick={() => handleSheetChange('REP_OPS_002')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${
                 activeSheet === 'REP_OPS_002'
-                  ? 'bg-[#334155] text-white shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
               }`}
             >
@@ -1449,7 +1456,7 @@ export default function AuthenticVanguardInventoryReports() {
               onClick={() => handleSheetChange('REP_OPS_003')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${
                 activeSheet === 'REP_OPS_003'
-                  ? 'bg-[#334155] text-white shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
               }`}
             >
@@ -1470,7 +1477,7 @@ export default function AuthenticVanguardInventoryReports() {
               onClick={() => handleSheetChange('REP_OPS_004')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${
                 activeSheet === 'REP_OPS_004'
-                  ? 'bg-[#334155] text-white shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
               }`}
             >
@@ -1491,7 +1498,7 @@ export default function AuthenticVanguardInventoryReports() {
               onClick={() => handleSheetChange('REP_OPS_005')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${
                 activeSheet === 'REP_OPS_005'
-                  ? 'bg-[#334155] text-white shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
               }`}
             >

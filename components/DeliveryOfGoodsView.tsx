@@ -47,7 +47,7 @@ export default function DeliveryOfGoodsView() {
   const [deliveryRecords, setDeliveryRecords] = useState<DeliveryRecord[]>([
     {
       id: 'DEL-4000035',
-      companyName: 'مكسرات أبو حمزه',
+      companyName: 'Abou Hamzeh Nuts',
       customerName: 'Abou Hamza Abou Hamza',
       customerId: '31',
       invoiceNumber: '4000035',
@@ -246,7 +246,7 @@ export default function DeliveryOfGoodsView() {
   }, [deliveryRecords, branchFilter, statusFilter, dateTypeFilter, fromDate, toDate, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-6 flex flex-col justify-between">
+    <div className="min-h-screen bg-background text-slate-800 font-sans p-6 flex flex-col justify-between">
       {/* Click outside backdrop for popover */}
       {activeDropdown && (
         <div
@@ -300,7 +300,7 @@ export default function DeliveryOfGoodsView() {
                 onChange={(e) => setBranchFilter(e.target.value)}
                 className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
               >
-                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                <option value="Main Branch">Main Branch</option>
               </select>
               <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
             </div>
@@ -348,7 +348,7 @@ export default function DeliveryOfGoodsView() {
                           }}
                           className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                             statusFilter === opt
-                              ? 'bg-[#0d6efd] text-white font-medium'
+                              ? 'bg-primary text-white font-medium'
                               : 'text-slate-700 hover:bg-slate-100'
                           }`}
                         >
@@ -418,7 +418,7 @@ export default function DeliveryOfGoodsView() {
                             }}
                             className={`w-full text-left px-3 py-1.5 text-xs cursor-pointer ${
                               dateTypeFilter === opt
-                                ? 'bg-[#0d6efd] text-white font-medium'
+                                ? 'bg-primary text-white font-medium'
                                 : 'text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -458,7 +458,7 @@ export default function DeliveryOfGoodsView() {
                 setNotice('Delivery filters updated.');
                 setTimeout(() => setNotice(null), 2000);
               }}
-              className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+              className="bg-primary hover:bg-primary text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
             >
               <Filter className="w-3.5 h-3.5" />
               <span>Filter</span>
@@ -519,14 +519,14 @@ export default function DeliveryOfGoodsView() {
                             readOnly
                             value={rec.deliveryDate}
                             onClick={() => handleOpenEditModal(rec)}
-                            className="border border-slate-300 rounded px-2.5 py-1 text-xs w-28 bg-[#f1f5f9] text-slate-800 cursor-pointer font-medium shadow-2xs hover:border-slate-400"
+                            className="border border-slate-300 rounded px-2.5 py-1 text-xs w-28 bg-muted text-slate-800 cursor-pointer font-medium shadow-2xs hover:border-slate-400"
                             title="Click to edit delivery date"
                           />
                           {/* Pencil Button (audio requirement: pencil icon triggers 'Do you want to update the delivery date?' modal) */}
                           <button
                             type="button"
                             onClick={() => handleOpenEditModal(rec)}
-                            className="bg-[#2f3b52] hover:bg-[#1e2736] text-white p-1.5 rounded cursor-pointer shadow-2xs transition-colors flex items-center justify-center"
+                            className="bg-primary hover:bg-primary text-white p-1.5 rounded cursor-pointer shadow-2xs transition-colors flex items-center justify-center"
                             title="Edit Delivery Date"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -567,7 +567,7 @@ export default function DeliveryOfGoodsView() {
                           <button
                             type="button"
                             onClick={() => handleOpenSerialModal(rec.invoiceNumber)}
-                            className="bg-[#24344d] hover:bg-[#1a2537] text-white p-1 rounded cursor-pointer shadow-2xs"
+                            className="bg-primary hover:bg-[#1a2537] text-white p-1 rounded cursor-pointer shadow-2xs"
                             title="Manage Item Serial Numbers"
                           >
                             <span className="text-[10px] font-mono px-1">SN</span>
@@ -687,7 +687,7 @@ export default function DeliveryOfGoodsView() {
       {deliveredMarkingModalOpen && deliveredTargetRecord && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs flex items-center justify-center z-50 p-4 animate-in fade-in-50 duration-150">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden text-xs">
-            <div className="bg-[#24344d] text-white px-5 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
               <h3 className="text-sm font-bold">Mark As Delivered / تأكيد التسليم</h3>
               <button
                 type="button"
@@ -776,7 +776,7 @@ export default function DeliveryOfGoodsView() {
       {serialNumbersModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs flex items-center justify-center z-50 p-4 animate-in fade-in-50 duration-150">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-2xl overflow-hidden text-xs">
-            <div className="bg-[#24344d] text-white px-5 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
               <h3 className="text-sm font-bold">Serial Numbers - Delivery of Goods ({serialTargetInvoice})</h3>
               <button
                 type="button"
@@ -860,7 +860,7 @@ export default function DeliveryOfGoodsView() {
                   setNotice(`Serial numbers assigned for ${serialTargetInvoice}.`);
                   setTimeout(() => setNotice(null), 3000);
                 }}
-                className="px-5 py-1.5 bg-[#24344d] hover:bg-[#1a2537] text-white rounded font-bold shadow-xs cursor-pointer"
+                className="px-5 py-1.5 bg-primary hover:bg-[#1a2537] text-white rounded font-bold shadow-xs cursor-pointer"
               >
                 Save Serial Numbers
               </button>
@@ -877,7 +877,7 @@ export default function DeliveryOfGoodsView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-2xs p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scale-up">
             {/* Modal Header */}
-            <div className="bg-[#2f3b52] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Pencil className="w-4 h-4 text-blue-300" />
                 <span className="font-bold text-sm">Edit Delivery Date</span>
@@ -931,7 +931,7 @@ export default function DeliveryOfGoodsView() {
               <button
                 type="button"
                 onClick={handleSaveDeliveryDate}
-                className="px-4 py-1.5 rounded bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors flex items-center gap-1.5"
+                className="px-4 py-1.5 rounded bg-primary hover:bg-primary text-white text-xs font-bold shadow-2xs cursor-pointer transition-colors flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Save / OK</span>

@@ -37,11 +37,11 @@ export default function BackofficeLicensePage() {
       {/* NAVIGATION & ACTION BAR (HIDDEN ON PRINT) */}
       <div className="print:hidden max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4">
         <Link
-          href="/backoffice/dashboard"
+          href="/backoffice"
           className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-amber-500/50 transition-all text-xs font-bold shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Operations Center</span>
+          <span>Back to Enterprise Main Hub</span>
         </Link>
 
         <div className="flex items-center gap-2.5">

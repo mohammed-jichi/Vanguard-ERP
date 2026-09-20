@@ -421,7 +421,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
             placeholder="Search within setup table records..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#195a96] transition"
+            className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary transition"
           />
         </div>
         {section === 'sizes' && (
@@ -447,7 +447,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Reason ID</th>
@@ -494,7 +494,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Group ID</th>
@@ -537,7 +537,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Size ID</th>
@@ -580,7 +580,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Color ID</th>
@@ -630,7 +630,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Discount ID</th>
@@ -685,7 +685,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5 text-center">Sorting</th>
                   <th className="px-4 py-3.5">Payment Type ID</th>
@@ -750,7 +750,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">Currency Code</th>
                   <th className="px-4 py-3.5 text-center">Symbol</th>
@@ -805,7 +805,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Brand ID</th>
@@ -846,7 +846,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Source ID</th>
@@ -901,7 +901,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Provider ID</th>
@@ -995,7 +995,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewReasonForm({ ...newReasonForm, wastageReason: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1008,7 +1008,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewReasonForm({ ...newReasonForm, category: e.target.value as any })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="PRESSING_RESIDUE">Pressing Residue</option>
                   <option value="BOTTLE_BREAKAGE">Bottle Breakage</option>
@@ -1085,7 +1085,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewSizeGroupForm({ ...newSizeGroupForm, groupName: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1100,7 +1100,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewSizeGroupForm({ ...newSizeGroupForm, category: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1170,7 +1170,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   required
                   value={newSizeForm.name}
                   onChange={(e) => setNewSizeForm({ ...newSizeForm, name: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1181,7 +1181,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                 <select
                   value={newSizeForm.groupName}
                   onChange={(e) => setNewSizeForm({ ...newSizeForm, groupName: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   {sizeGroups.map((g) => (
                     <option key={g.id} value={g.groupName}>
@@ -1200,7 +1200,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   required
                   value={newSizeForm.code}
                   onChange={(e) => setNewSizeForm({ ...newSizeForm, code: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96] font-mono uppercase"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary font-mono uppercase"
                 />
               </div>
 
@@ -1271,7 +1271,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewColorForm({ ...newColorForm, colorDescription: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1295,7 +1295,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                     onChange={(e) =>
                       setNewColorForm({ ...newColorForm, hexCode: e.target.value })
                     }
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96] font-mono"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary font-mono"
                   />
                 </div>
               </div>
@@ -1371,7 +1371,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewPaymentTypeForm({ ...newPaymentTypeForm, name: e.target.value })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 />
               </div>
 
@@ -1386,7 +1386,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                         type: e.target.value as any
                       })
                     }
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="CASH">Cash</option>
                     <option value="CREDIT_CARD">Credit Card</option>
@@ -1407,7 +1407,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                         currency: e.target.value as any
                       })
                     }
-                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="LBP">LBP (L.L.)</option>
@@ -1429,7 +1429,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                       accountNumber: e.target.value
                     })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96] font-mono"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary font-mono"
                 />
               </div>
 
@@ -1445,7 +1445,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                       changeStatus: e.target.value as any
                     })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="ALLOWED">Change Allowed (Cash drawers)</option>
                   <option value="EXACT_ONLY">Exact Payment Only (Cards/Wallets)</option>
@@ -1494,7 +1494,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
             <div className="p-6 space-y-4">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
-                  <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+                  <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                     <tr>
                       <th className="px-3 py-2">Date Of JV</th>
                       <th className="px-3 py-2">Account Name</th>
@@ -1599,7 +1599,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   required
                   value={newSourceForm.name}
                   onChange={(e) => setNewSourceForm({ ...newSourceForm, name: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                   placeholder="e.g. Local or Vanguard Market place"
                 />
               </div>
@@ -1613,7 +1613,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   onChange={(e) =>
                     setNewSourceForm({ ...newSourceForm, type: e.target.value as 'LOCAL' | 'MARKETPLACE' })
                   }
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="LOCAL">Direct Domestic Supply (Local)</option>
                   <option value="MARKETPLACE">Vanguard B2B Marketplace & Exchange</option>
@@ -1628,7 +1628,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   rows={3}
                   value={newSourceForm.description}
                   onChange={(e) => setNewSourceForm({ ...newSourceForm, description: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96]"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
                   placeholder="Operational details for this source..."
                 />
               </div>

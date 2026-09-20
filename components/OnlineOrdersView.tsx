@@ -223,7 +223,7 @@ export default function OnlineOrdersView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-background text-slate-800 font-sans min-h-screen">
       {/* TOAST NOTIFICATION */}
       {toast.show && (
         <div className="fixed top-5 right-5 z-[9999] animate-fadeIn">
@@ -258,7 +258,7 @@ export default function OnlineOrdersView() {
           <div className="text-end">
             <ul className="flex items-center gap-1.5 text-xs text-slate-500">
               <li>
-                <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition-colors">
+                <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
                   Home
                 </Link>
               </li>
@@ -400,7 +400,7 @@ export default function OnlineOrdersView() {
                   type="button"
                   onClick={() => setOrderType(1)}
                   className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    orderType === 1 ? 'bg-[#3b82f6] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    orderType === 1 ? 'bg-primary text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {hasPendingOrders(1) && (
@@ -412,7 +412,7 @@ export default function OnlineOrdersView() {
                   type="button"
                   onClick={() => setOrderType(2)}
                   className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    orderType === 2 ? 'bg-[#3b82f6] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    orderType === 2 ? 'bg-primary text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {hasPendingOrders(2) && (
@@ -428,7 +428,7 @@ export default function OnlineOrdersView() {
               <button
                 type="button"
                 onClick={() => showToast(`Filtered ${filteredOrders.length} orders`, 'info')}
-                className="inline-flex items-center gap-1 px-3.5 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 px-3.5 py-2 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
               >
                 <Filter className="w-3.5 h-3.5" />
                 <span>Filter</span>
@@ -581,7 +581,7 @@ export default function OnlineOrdersView() {
                           type="button"
                           onClick={() => setSelectedOrder(order)}
                           title="Preview Order"
-                          className="p-1 rounded bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer"
+                          className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>

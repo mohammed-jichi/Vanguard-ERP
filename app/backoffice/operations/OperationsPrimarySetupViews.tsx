@@ -490,7 +490,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
       {section !== 'quick_setup' && section !== 'categories' && section !== 'divisions' && section !== 'groups' && section !== 'units' && section !== 'locations' && section !== 'suppliers' && section !== 'departments' && section !== 'products_services' && (
         <div className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-50 text-[#195a96] border border-blue-200">
+            <div className="p-2.5 rounded-xl bg-blue-50 text-primary border border-blue-200">
               <Package className="w-6 h-6" />
             </div>
             <div>
@@ -546,7 +546,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-2xl rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Package className="w-5 h-5" />
                 <span>Add New Product &amp; Service</span>
               </div>
@@ -563,7 +563,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                     required
                     value={newProductForm.code}
                     onChange={(e) => setNewProductForm({ ...newProductForm, code: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-mono text-xs focus:ring-1 focus:ring-[#195a96]"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-mono text-xs focus:ring-1 focus:ring-primary"
                   />
                 </div>
                 <div>
@@ -572,7 +572,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                     type="text"
                     value={newProductForm.barcode}
                     onChange={(e) => setNewProductForm({ ...newProductForm, barcode: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-mono text-xs focus:ring-1 focus:ring-[#195a96]"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 font-mono text-xs focus:ring-1 focus:ring-primary"
                   />
                 </div>
               </div>
@@ -584,7 +584,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                   required
                   value={newProductForm.description}
                   onChange={(e) => setNewProductForm({ ...newProductForm, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-[#195a96]"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -658,7 +658,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Product
                 </button>
@@ -673,7 +673,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Layers className="w-5 h-5" />
                 <span>Create Inventory Group</span>
               </div>
@@ -734,7 +734,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Group
                 </button>
@@ -749,7 +749,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Bookmark className="w-5 h-5" />
                 <span>Create Inventory Division</span>
               </div>
@@ -799,7 +799,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Division
                 </button>
@@ -814,7 +814,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Tag className="w-5 h-5" />
                 <span>Create Inventory Category</span>
               </div>
@@ -861,7 +861,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Category
                 </button>
@@ -876,7 +876,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Scale className="w-5 h-5" />
                 <span>Create Unit of Measure</span>
               </div>
@@ -924,7 +924,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Unit
                 </button>
@@ -939,7 +939,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <MapPin className="w-5 h-5" />
                 <span>Create Location / Warehouse</span>
               </div>
@@ -998,7 +998,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Location
                 </button>
@@ -1074,7 +1074,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Users className="w-5 h-5" />
                 <span>Create Supplier &amp; Vendor</span>
               </div>
@@ -1165,7 +1165,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Supplier
                 </button>
@@ -1180,7 +1180,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
           <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[#195a96] font-bold">
+              <div className="flex items-center gap-2 text-primary font-bold">
                 <Building className="w-5 h-5" />
                 <span>Create Menu / Department</span>
               </div>
@@ -1233,7 +1233,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#195a96] hover:bg-[#144777] text-white font-bold text-xs"
+                  className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
                 >
                   Save Department
                 </button>

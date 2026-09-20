@@ -4,6 +4,19 @@
 
 @layer base {
   :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --border: #cbd5e1;
+    --input: #cbd5e1;
+    --primary: #0f172a;
+    --primary-foreground: #ffffff;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
+
     --report-color-company-title: #1d4ed8;
     --report-color-company-subtitle: #475569;
     --report-color-report-title: #0f172a;
@@ -17,8 +30,8 @@
   }
 
   body {
-    background-color: #f7f5f0;
-    color: #292218;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 }

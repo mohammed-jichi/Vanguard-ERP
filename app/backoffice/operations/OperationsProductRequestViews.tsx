@@ -657,7 +657,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
               placeholder="Search by Request #, Item Code, Description, Requester..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#195a96] transition"
+              className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary transition"
             />
           </div>
 
@@ -665,7 +665,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
             <select
               value={filterBranch}
               onChange={(e) => setFilterBranch(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96] transition"
+              className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary transition"
             >
               {branches.map((b) => (
                 <option key={b} value={b}>
@@ -679,7 +679,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-[#195a96] transition"
+              className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary transition"
             >
               <option value="All">All Statuses</option>
               <option value="APPROVED">Approved</option>
@@ -698,7 +698,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">PR #</th>
                   <th className="px-4 py-3.5">Date PR</th>
@@ -817,7 +817,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5 text-center w-12">
                     <button
@@ -954,7 +954,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">PR #</th>
                   <th className="px-4 py-3.5">Request Date</th>
@@ -1088,7 +1088,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                   <select
                     value={reportBranch}
                     onChange={(e) => setReportBranch(e.target.value)}
-                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option>All Branches</option>
                     <option>Beirut Central Distribution Depot</option>
@@ -1106,7 +1106,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                   <select
                     value={reportStatus}
                     onChange={(e) => setReportStatus(e.target.value)}
-                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option>All Statuses</option>
                     <option>Pending</option>
@@ -1124,7 +1124,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                   <select
                     value={reportItemType}
                     onChange={(e) => setReportItemType(e.target.value)}
-                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#195a96]"
+                    className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                   >
                     <option>All Types</option>
                     <option>Extra Virgin Olive Oil</option>
@@ -1153,7 +1153,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                 </button>
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#195a96] hover:bg-[#134472] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
                   title="Print Report"
                 >
                   <Printer className="w-3.5 h-3.5" />
@@ -1227,7 +1227,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+                <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                   {reportGroupBy === 'branch' && (
                     <tr>
                       <th className="px-4 py-3.5">Branch Name</th>
@@ -1352,7 +1352,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#3e3e3e] text-xs uppercase font-bold text-white border-b border-slate-200">
+              <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
                 <tr>
                   <th className="px-4 py-3.5">#</th>
                   <th className="px-4 py-3.5">Reason Code</th>

@@ -129,7 +129,7 @@ export default function CRMSalesRepDashboardView() {
   }, [contacts, quotations]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-slate-800 flex flex-col font-sans">
       {/* ========================================================================= */}
       {/* 1. OMEGA HEADER (Matching Screenshots 3 & 4)                              */}
       {/* ========================================================================= */}
@@ -214,7 +214,7 @@ export default function CRMSalesRepDashboardView() {
           </div>
 
           {/* Dark Header Banner (Screenshot 3) */}
-          <div className="bg-[#151c2c] text-white rounded-lg p-5 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+          <div className="bg-primary text-white rounded-lg p-5 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div>
               <h1 className="text-xl font-bold tracking-tight text-white">My Sales Dashboard</h1>
               <p className="text-xs text-slate-400 mt-1">
@@ -223,7 +223,7 @@ export default function CRMSalesRepDashboardView() {
             </div>
 
             {/* Time Filter Tabs (Audio 4: "Today, Month, 30 Days, Year.. هولي متل الفلاتر") */}
-            <div className="bg-[#242e42] p-1 rounded-md flex items-center gap-1 text-xs select-none">
+            <div className="bg-primary p-1 rounded-md flex items-center gap-1 text-xs select-none">
               {(['Today', 'Month', '30 Days', 'Year'] as const).map((filter) => (
                 <button
                   key={filter}

@@ -40,15 +40,15 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col border border-slate-200 overflow-hidden font-sans">
         
         {/* MODAL HEADER */}
-        <div className="px-6 py-4 bg-gradient-to-r from-[#1e3a2b] via-[#2d5640] to-[#1e3a2b] text-white flex items-center justify-between shrink-0 shadow-md">
+        <div className="px-6 py-4 bg-gradient-to-r bg-primary text-white flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
-              <Network className="w-5 h-5 text-[#c5a059]" />
+              <Network className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-black tracking-tight">Operations Center Matrix & Relational Connections</h2>
-                <span className="text-[10px] bg-[#c5a059] text-black font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-[10px] bg-primary text-black font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Live ERP Graph
                 </span>
               </div>
@@ -75,7 +75,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
                 onClick={() => setActiveLayer(ly)}
                 className={`px-3 py-1 rounded-lg font-bold transition-all ${
                   activeLayer === ly 
-                    ? 'bg-[#1e3a2b] text-white shadow-xs' 
+                    ? 'bg-primary text-white shadow-xs' 
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
               >
@@ -90,7 +90,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
               placeholder="Search matrix nodes (e.g. EVOO, Glass, Mill, Spinneys)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#1e3a2b]"
+              className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-border"
             />
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
           </div>
@@ -102,7 +102,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
           {/* ARCHITECTURAL CONNECTION SUMMARY BANNER */}
           <div className="p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs text-slate-600">
-              <span className="font-bold text-[#1e3a2b]">Topological Pipeline:</span>
+              <span className="font-bold text-primary">Topological Pipeline:</span>
               <span className="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-semibold border border-emerald-200">Category</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
               <span className="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-semibold border border-emerald-200">Division</span>
@@ -118,7 +118,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
               <span className="bg-green-50 text-green-900 px-2 py-0.5 rounded font-bold border border-green-200">Customer Sales</span>
             </div>
             <div className="text-[11px] font-mono text-slate-500">
-              Tenant: <span className="font-bold text-[#1e3a2b]">00001 - Southern Olive Oil Products S.A.R.L</span>
+              Tenant: <span className="font-bold text-primary">00001 - Southern Olive Oil Products S.A.R.L</span>
             </div>
           </div>
 
@@ -127,7 +127,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
             <div key={lIdx} className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary" />
                   <h3 className="font-black text-slate-900 text-sm tracking-tight">{layerGroup.layer}</h3>
                 </div>
                 <span className="text-[11px] text-slate-500 font-mono">{layerGroup.nodes.length} Connected Nodes</span>
@@ -144,7 +144,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
                         onClick={() => setFocusedNode(node.id)}
                         className={`p-4 rounded-xl border transition-all cursor-pointer select-none ${
                           isFocused 
-                            ? 'bg-[#edf2ee] border-[#1e3a2b] ring-2 ring-[#1e3a2b]/20 shadow-sm' 
+                            ? 'bg-muted border-border ring-2 ring-primary/20 shadow-sm' 
                             : 'bg-slate-50/70 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
                         }`}
                       >
@@ -153,7 +153,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
                             {node.id}
                           </span>
                           {isFocused && (
-                            <span className="text-[9px] bg-[#1e3a2b] text-white px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
+                            <span className="text-[9px] bg-primary text-white px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
                               Active Focus
                             </span>
                           )}
@@ -166,7 +166,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
                             {node.connectionsTo.map((target, tIdx) => (
                               <span 
                                 key={tIdx}
-                                className="text-[9.5px] font-mono bg-white text-[#1e3a2b] font-bold px-1.5 py-0.5 rounded border border-slate-200"
+                                className="text-[9.5px] font-mono bg-white text-primary font-bold px-1.5 py-0.5 rounded border border-slate-200"
                               >
                                 ➔ {target}
                               </span>
@@ -183,19 +183,19 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
           {/* MATRIX CONNECTION DETAIL DRAWER */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl p-5 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] text-[#c5a059] font-mono font-bold uppercase tracking-wider block">
+              <span className="text-[10px] text-primary-foreground font-mono font-bold uppercase tracking-wider block">
                 Matrix Topology Insight
               </span>
               <h4 className="text-sm font-black mt-0.5">
                 Every unit of finished Extra Virgin Olive Oil is bi-directionally traceable.
               </h4>
               <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-                From grove harvest ticket (<span className="text-[#c5a059]">RAW-OLV-SOUR</span>) through pressing centrifuge (<span className="text-[#c5a059]">PROD-2026-501</span>), dark glass bottling (<span className="text-[#c5a059]">PKG-BTL-750</span>), inter-hub transfer (<span className="text-[#c5a059]">REQ-2026-201</span>) to customer invoice (<span className="text-[#c5a059]">INV-2026-901</span>).
+                From grove harvest ticket (<span className="text-primary-foreground">RAW-OLV-SOUR</span>) through pressing centrifuge (<span className="text-primary-foreground">PROD-2026-501</span>), dark glass bottling (<span className="text-primary-foreground">PKG-BTL-750</span>), inter-hub transfer (<span className="text-primary-foreground">REQ-2026-201</span>) to customer invoice (<span className="text-primary-foreground">INV-2026-901</span>).
               </p>
             </div>
             <button
               onClick={onClose}
-              className="px-5 py-2.5 bg-[#c5a059] hover:bg-[#b08e4c] text-black font-extrabold text-xs rounded-xl shadow-md transition-all shrink-0"
+              className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-black font-extrabold text-xs rounded-xl shadow-md transition-all shrink-0"
             >
               Return to Operations Workspace
             </button>

@@ -26,9 +26,9 @@ export function MasterReportDocument<T = any>({
   const isLandscape = orientation === 'landscape' || (orientation === 'auto' && columns.length >= 8);
 
   const getSectionTitleColor = (type?: string) => {
-    if (type === 'revenue') return 'text-[var(--report-color-section-revenue,#1a629b)]';
-    if (type === 'cogs') return 'text-[var(--report-color-section-cogs,#7a1c1c)]';
-    return 'text-slate-800';
+    if (type === 'revenue') return 'text-foreground font-semibold';
+    if (type === 'cogs') return 'text-foreground font-semibold';
+    return 'text-slate-800 font-semibold';
   };
 
   const getAlignClass = (align?: 'left' | 'center' | 'right') => {
@@ -64,13 +64,13 @@ export function MasterReportDocument<T = any>({
 
       {/* 1. Header Section */}
       <div className="text-center mb-5">
-        <h1 className="text-[var(--report-color-company-title,#1d4ed8)] text-base sm:text-lg font-bold tracking-wide uppercase">
+        <h1 className="text-foreground text-base sm:text-lg font-bold tracking-wide uppercase">
           {meta.companyName}
         </h1>
         {meta.subtitle && (
           <p className="text-slate-500 text-xs font-normal mt-0.5">{meta.subtitle}</p>
         )}
-        <h2 className="text-[var(--report-color-report-title,#0f172a)] text-sm sm:text-base font-extrabold mt-2.5 tracking-tight">
+        <h2 className="text-foreground text-sm sm:text-base font-extrabold mt-2.5 tracking-tight">
           {meta.reportTitle}
         </h2>
       </div>
@@ -97,7 +97,7 @@ export function MasterReportDocument<T = any>({
       <div className="w-full overflow-x-auto print:overflow-visible">
         <table className="w-full text-[11px] sm:text-xs border-collapse">
           <thead>
-            <tr className="border-y-2 border-slate-900 border-y-[var(--report-border-master-width,2px)] border-[var(--report-border-master-color,#0f172a)] bg-slate-50/70">
+            <tr className="border-y-2 border-slate-900 bg-slate-50/70">
               {columns.map((col, idx) => (
                 <th
                   key={String(col.key) || idx}
@@ -148,8 +148,8 @@ export function MasterReportDocument<T = any>({
                       <td
                         className={`py-1.5 px-1.5 sm:px-2 text-right font-mono tabular-nums ${
                           section.subtotal.isNegative
-                            ? 'text-[var(--report-color-negative,#be123c)]'
-                            : 'text-[var(--report-color-company-title,#1d4ed8)]'
+                            ? 'text-destructive font-bold'
+                            : 'text-foreground font-bold'
                         }`}
                       >
                         {section.subtotal.value}
@@ -196,18 +196,40 @@ export function MasterReportDocument<T = any>({
           {/* 4. Grand Total Row */}
           {grandTotal && (
             <tfoot>
-              <tr className="border-t border-slate-400 border-b-4 border-double border-b-slate-900 font-bold bg-slate-50/40">
-                <td colSpan={columns.length - 1} className="py-2 px-1.5 sm:px-2 text-slate-900 text-xs sm:text-sm">
-                  {grandTotal.label}
+              <tr className="border-t-2 border-slate-400 border-b-4 border-double border-b-slate-900 font-bold bg-slate-50/80">
+                <td colSpan={columns.length - 1} className="py-2.5 px-1.5 sm:px-2 text-slate-900 text-xs sm:text-sm align-top">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-bold text-slate-900 tracking-tight">
+                      {grandTotal.label}
+                    </span>
+                    {grandTotal.breakdownText && (
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono font-medium text-slate-700">
+                        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded">
+                          Breakdown
+                        </span>
+                        <span>{grandTotal.breakdownText}</span>
+                      </div>
+                    )}
+                    {grandTotal.convertedSubtext && (
+                      <span className="text-[10.5px] text-slate-500 font-normal italic">
+                        {grandTotal.convertedSubtext}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td
-                  className={`py-2 px-1.5 sm:px-2 text-right font-mono tabular-nums text-xs sm:text-sm ${
+                  className={`py-2.5 px-1.5 sm:px-2 text-right font-mono tabular-nums text-xs sm:text-sm align-top ${
                     grandTotal.isNegative
-                      ? 'text-[var(--report-color-negative-total,#9f1239)]'
-                      : 'text-slate-900'
+                      ? 'text-destructive font-bold'
+                      : 'text-foreground font-extrabold'
                   }`}
                 >
-                  {grandTotal.value}
+                  <div className="text-xs sm:text-sm font-bold">{grandTotal.value}</div>
+                  {grandTotal.targetCurrency && (
+                    <div className="text-[10px] font-sans font-semibold uppercase tracking-wider text-slate-500 mt-0.5">
+                      Consolidated ({grandTotal.targetCurrency})
+                    </div>
+                  )}
                 </td>
               </tr>
             </tfoot>

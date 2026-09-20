@@ -1,6 +1,27 @@
 'use client';
 
 import React, { useState } from 'react';
+import {
+  BarChart3,
+  MapPin,
+  Clock,
+  Truck,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  DollarSign,
+  Calendar,
+  Search,
+  Building2,
+  Users,
+  Phone,
+  Navigation,
+  X
+} from 'lucide-react';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 interface TrackingOrder {
   id: string;
@@ -9,11 +30,11 @@ interface TrackingOrder {
   customerAddress: string;
   offerDetails: string;
   amountUsd: number;
-  scheduledEta: string; // From SuperSonic
+  scheduledEta: string; // From SuperSonic Fleet
   status: 'IN_TRANSIT' | 'DELIVERED' | 'PENDING' | 'CANCELLED';
   driverName?: string;
   driverPhone?: string;
-  statusReason?: string; // سبب التأجيل أو سبب الإلغاء
+  statusReason?: string;
   repCommission: number;
   driverLocation?: { lat: number; lng: number; lastUpdate: string };
 }
@@ -21,53 +42,53 @@ interface TrackingOrder {
 const SAMPLE_TRACKING_ORDERS: TrackingOrder[] = [
   {
     id: 'ORD-SO-9921',
-    customerName: 'فادي خليل',
-    customerPhone: '03889900',
-    customerAddress: 'بيروت - الحمرا - شارع السادات',
-    offerDetails: 'عرض تنكة زيت زيتون بلدي 17.5 لتر + 2 دبس رمان',
+    customerName: 'Fadi Khalil',
+    customerPhone: '+961 3 889900',
+    customerAddress: 'Beirut - Hamra, Sadat St.',
+    offerDetails: '17.5L Extra Virgin Olive Oil Tin + 2 Pomegranate Molasses',
     amountUsd: 125.0,
-    scheduledEta: 'اليوم الساعة 3:30 عصراً',
+    scheduledEta: 'Today at 3:30 PM',
     status: 'IN_TRANSIT',
-    driverName: 'سمير قاسم (سائق أسطول الشويفات)',
-    driverPhone: '70112233',
+    driverName: 'Samir Kassem (Choueifat Fleet)',
+    driverPhone: '+961 70 112233',
     repCommission: 6.25,
-    driverLocation: { lat: 33.8886, lng: 35.4955, lastUpdate: 'منذ دقيقتين' },
+    driverLocation: { lat: 33.8886, lng: 35.4955, lastUpdate: '2 mins ago' },
   },
   {
     id: 'ORD-SO-9922',
-    customerName: 'جورج حداد',
-    customerPhone: '71445566',
-    customerAddress: 'جونية - حارة صخر',
-    offerDetails: 'عرض المونة: 3 قناني دبس رمان + كبيس مشكل',
+    customerName: 'George Haddad',
+    customerPhone: '+961 71 445566',
+    customerAddress: 'Jounieh - Haret Sakhr',
+    offerDetails: 'Pantry Bundle: 3 Pomegranate Molasses + Mixed Pickles',
     amountUsd: 45.0,
-    scheduledEta: 'اليوم الساعة 5:00 مساءً',
+    scheduledEta: 'Today at 5:00 PM',
     status: 'DELIVERED',
-    driverName: 'علي رضا',
-    driverPhone: '03556677',
+    driverName: 'Ali Reda',
+    driverPhone: '+961 3 556677',
     repCommission: 2.25,
   },
   {
     id: 'ORD-SO-9924',
-    customerName: 'كريم صعب',
-    customerPhone: '70223344',
-    customerAddress: 'الشويفات - قرب البلدية',
-    offerDetails: 'غالون زيت زيتون خضير 5 لتر + صابون بلدي',
+    customerName: 'Karim Saab',
+    customerPhone: '+961 70 223344',
+    customerAddress: 'Choueifat - Municipality Road',
+    offerDetails: '5L Olive Oil Gallon + Organic Olive Soap',
     amountUsd: 65.0,
-    scheduledEta: 'مؤجل ليوم الغد',
+    scheduledEta: 'Tomorrow Morning',
     status: 'PENDING',
-    statusReason: 'طلب الزبون تأجيل الاستلام إلى الغد لعدم تواجده في المنزل',
+    statusReason: 'Customer requested rescheduling to tomorrow (out of town)',
     repCommission: 3.25,
   },
   {
     id: 'ORD-SO-9923',
-    customerName: 'رنا المصري',
-    customerPhone: '76998877',
-    customerAddress: 'صيدا - الشارع التجاري',
-    offerDetails: '2 تنكة زيت زيتون فرجن ممتاز',
+    customerName: 'Rana El-Masri',
+    customerPhone: '+961 76 998877',
+    customerAddress: 'Sidon - Commercial District',
+    offerDetails: '2x 17.5L Extra Virgin Olive Oil Tin',
     amountUsd: 220.0,
-    scheduledEta: 'ملغاة',
+    scheduledEta: 'Cancelled',
     status: 'CANCELLED',
-    statusReason: 'الزبون ألغى الطلب - اشترى من فرع آخر',
+    statusReason: 'Customer cancelled order - purchased from retail store',
     repCommission: 0.0,
   },
 ];
@@ -81,9 +102,10 @@ export default function SocialRepStatisticsAndTracking() {
   const [selectedRepCode, setSelectedRepCode] = useState('ALL');
 
   // Time Period Filter
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [periodFilter, setPeriodFilter] = useState('this_month');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-30');
+  const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState(initialDateRange.toDate);
 
   // Map Modal State for Live Location
   const [selectedLiveOrder, setSelectedLiveOrder] = useState<TrackingOrder | null>(null);
@@ -104,19 +126,19 @@ export default function SocialRepStatisticsAndTracking() {
     .reduce((sum, o) => sum + o.repCommission, 0);
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] p-4 md:p-6 font-sans text-slate-800 text-right select-none">
+    <div className="w-full min-h-screen bg-background p-4 md:p-6 font-sans text-foreground text-left select-none">
       
       {/* 1. Module Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 pb-4 border-b border-slate-200 gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 pb-4 border-b border-border gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#1a629b]"></span>
-            <h1 className="text-[20px] font-bold text-[#1e293b] tracking-tight">
-              إحصائيات المبيعات ومراقبة وتتبع الطلبيات (SuperSonic Live Tracking)
+            <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">
+              Sales Statistics & Order Tracking (SuperSonic Live Tracking)
             </h1>
           </div>
-          <p className="text-xs text-[#527a9e] mt-0.5 font-medium">
-            Southern Olive Oil Products S.A.R.L - تتبع الطلبيات المسلّمة، قيد التوصيل، المؤجلة، والملغاة
+          <p className="text-xs text-muted-foreground mt-0.5 font-medium">
+            Vanguard ERP - Track delivered, in-transit, pending, and cancelled social orders
           </p>
         </div>
 
@@ -125,38 +147,38 @@ export default function SocialRepStatisticsAndTracking() {
           <button
             type="button"
             onClick={() => setIsManagementView(!isManagementView)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
               isManagementView
-                ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
-                : 'bg-white text-slate-700 border-slate-300'
+                ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                : 'bg-card text-foreground border-border hover:bg-muted'
             }`}
           >
-            {isManagementView ? '🏢 وضع الإدارة (عرض كافة المندوبين)' : '👤 وضع المندوب (حسابي فقط)'}
+            {isManagementView ? 'Management View (All Reps)' : 'Personal View (My Account)'}
           </button>
 
-          <div className="flex items-center bg-slate-200/80 p-1 rounded-xl gap-1">
+          <div className="flex items-center bg-muted p-1 rounded-xl border border-border gap-1">
             <button
               type="button"
               onClick={() => setActiveTab('statistics')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'statistics'
-                  ? 'bg-white text-[#1a629b] shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-card text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              📊 لوحة الإحصائيات (Statistics)
+              Statistics Dashboard
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('live_tracking')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'live_tracking'
-                  ? 'bg-white text-[#1a629b] shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-card text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              📍 مراقبة وتتبع الطلبيات (Live Tracking)
+              Live Fleet Tracking
             </button>
           </div>
         </div>
@@ -165,28 +187,35 @@ export default function SocialRepStatisticsAndTracking() {
       {/* =================================================================== */}
       {/* 2. TOP FILTER BAR (PERIODS & REP SELECTOR)                         */}
       {/* =================================================================== */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 mb-5 space-y-3">
+      <div className="bg-card rounded-xl border border-border shadow-xs p-4 mb-5 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           
           {/* Period Selector Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-            <span className="text-slate-500 ml-1">الفترة الزمنية:</span>
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium">
+            <span className="text-muted-foreground mr-1">Period:</span>
             {[
-              { id: 'today', label: 'اليوم (Today)' },
-              { id: 'yesterday', label: 'أمس (Yesterday)' },
-              { id: 'this_month', label: 'هذا الشهر (This Month)' },
-              { id: 'last_month', label: 'الشهر الماضي (Last Month)' },
-              { id: 'last_year', label: 'العام الماضي (Last Year)' },
-              { id: 'custom', label: 'مخصص (From Date to Date)' },
+              { id: 'today', label: 'Today' },
+              { id: 'yesterday', label: 'Yesterday' },
+              { id: 'this_month', label: 'This Month' },
+              { id: 'last_month', label: 'Last Month' },
+              { id: 'last_year', label: 'Last Year' },
+              { id: 'custom', label: 'Custom Range' },
             ].map((btn) => (
               <button
                 key={btn.id}
                 type="button"
-                onClick={() => setPeriodFilter(btn.id)}
-                className={`px-3 py-1.5 rounded-lg border transition-all ${
+                onClick={() => {
+                  setPeriodFilter(btn.id);
+                  if (btn.id !== 'custom') {
+                    const resolved = resolveDateRangeFromPreset(btn.id, fromDate, toDate);
+                    setFromDate(resolved.fromDate);
+                    setToDate(resolved.toDate);
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
                   periodFilter === btn.id
-                    ? 'bg-[#1a629b] text-white border-[#1a629b] shadow-2xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                    : 'bg-muted text-foreground border-border hover:bg-slate-200'
                 }`}
               >
                 {btn.label}
@@ -197,16 +226,16 @@ export default function SocialRepStatisticsAndTracking() {
           {/* Management Mode: Rep Selector */}
           {isManagementView && (
             <div className="flex items-center gap-2">
-              <label className="text-xs font-bold text-slate-700">اختيار المندوب / الكود:</label>
+              <label className="text-xs font-medium text-foreground">Sales Rep:</label>
               <select
                 value={selectedRepCode}
                 onChange={(e) => setSelectedRepCode(e.target.value)}
-                className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-[#1a629b] focus:outline-none focus:border-[#1a629b]"
+                className="px-3 py-1.5 bg-card border border-border rounded-lg text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
               >
-                <option value="ALL">جميع المندوبين (كافة الفروع)</option>
-                <option value="REP-SO-8492">أحمد علي قاسم (كود: ADM-REP-01)</option>
-                <option value="REP-SO-8493">هبة العلو (كود: ADM-REP-02)</option>
-                <option value="REP-SO-8494">حسين مهدي (كود: ADM-REP-03)</option>
+                <option value="ALL">All Representatives (All Branches)</option>
+                <option value="REP-SO-8492">Ahmad Ali Kassem (Code: ADM-REP-01)</option>
+                <option value="REP-SO-8493">Hiba Al-Elw (Code: ADM-REP-02)</option>
+                <option value="REP-SO-8494">Hussein Mehdi (Code: ADM-REP-03)</option>
               </select>
             </div>
           )}
@@ -214,23 +243,23 @@ export default function SocialRepStatisticsAndTracking() {
         </div>
 
         {periodFilter === 'custom' && (
-          <div className="flex items-center gap-3 pt-2 border-t border-slate-100 text-xs">
+          <div className="flex items-center gap-3 pt-2 border-t border-border/60 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-600">من تاريخ (From):</span>
+              <span className="font-medium text-muted-foreground">From Date:</span>
               <input
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="px-2.5 py-1 border border-slate-300 rounded-md font-mono"
+                className="px-2.5 py-1 border border-border rounded-lg font-mono bg-card text-foreground"
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-600">إلى تاريخ (To):</span>
+              <span className="font-medium text-muted-foreground">To Date:</span>
               <input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="px-2.5 py-1 border border-slate-300 rounded-md font-mono"
+                className="px-2.5 py-1 border border-border rounded-lg font-mono bg-card text-foreground"
               />
             </div>
           </div>
@@ -247,94 +276,97 @@ export default function SocialRepStatisticsAndTracking() {
           <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
             
             {/* Total Orders */}
-            <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs text-center space-y-1">
-              <div className="text-[11px] font-bold text-slate-500">إجمالي الطلبات</div>
-              <div className="text-xl font-bold font-mono text-[#1e293b]">{totalOrdersCount}</div>
-              <div className="text-[10px] text-slate-400 font-medium">الواردة من السوشيال</div>
+            <div className="bg-card p-3.5 rounded-xl border border-border shadow-xs text-center space-y-1">
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Total Orders</div>
+              <div className="text-xl font-bold font-mono text-foreground">{totalOrdersCount}</div>
+              <div className="text-[10px] text-muted-foreground">Social Inquiries</div>
             </div>
 
             {/* Delivered */}
-            <div className="bg-white p-3.5 rounded-2xl border border-emerald-200 shadow-2xs text-center space-y-1 bg-emerald-50/30">
-              <div className="text-[11px] font-bold text-emerald-800">المسلّمة (Delivered)</div>
-              <div className="text-xl font-bold font-mono text-emerald-600">{deliveredCount}</div>
-              <div className="text-[10px] text-emerald-700 font-bold">تم تحصيلها بالكامل</div>
+            <div className="bg-card p-3.5 rounded-xl border border-emerald-200 shadow-xs text-center space-y-1 bg-emerald-50/20">
+              <div className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wide">Delivered</div>
+              <div className="text-xl font-bold font-mono text-emerald-700">{deliveredCount}</div>
+              <div className="text-[10px] text-emerald-700 font-medium">Fully Collected</div>
             </div>
 
             {/* In Transit */}
-            <div className="bg-white p-3.5 rounded-2xl border border-blue-200 shadow-2xs text-center space-y-1 bg-blue-50/30">
-              <div className="text-[11px] font-bold text-[#1a629b]">قيد التوصيل (In Transit)</div>
-              <div className="text-xl font-bold font-mono text-[#1a629b]">{inTransitCount}</div>
-              <div className="text-[10px] text-blue-700 font-medium">مع السائق بالطريق</div>
+            <div className="bg-card p-3.5 rounded-xl border border-blue-200 shadow-xs text-center space-y-1 bg-blue-50/20">
+              <div className="text-[11px] font-semibold text-blue-800 uppercase tracking-wide">In Transit</div>
+              <div className="text-xl font-bold font-mono text-blue-700">{inTransitCount}</div>
+              <div className="text-[10px] text-blue-700 font-medium">With Courier</div>
             </div>
 
             {/* Pending / Postponed */}
-            <div className="bg-white p-3.5 rounded-2xl border border-amber-300 shadow-2xs text-center space-y-1 bg-amber-50/30">
-              <div className="text-[11px] font-bold text-amber-800">المؤجلة (Pending)</div>
-              <div className="text-xl font-bold font-mono text-amber-600">{pendingCount}</div>
-              <div className="text-[10px] text-amber-700 font-medium">معلقة مع بيان السبب</div>
+            <div className="bg-card p-3.5 rounded-xl border border-amber-200 shadow-xs text-center space-y-1 bg-amber-50/20">
+              <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wide">Pending</div>
+              <div className="text-xl font-bold font-mono text-amber-700">{pendingCount}</div>
+              <div className="text-[10px] text-amber-700 font-medium">Rescheduled</div>
             </div>
 
             {/* Cancelled */}
-            <div className="bg-white p-3.5 rounded-2xl border border-red-200 shadow-2xs text-center space-y-1 bg-red-50/30">
-              <div className="text-[11px] font-bold text-red-800">الملغاة (Cancelled)</div>
-              <div className="text-xl font-bold font-mono text-red-600">{cancelledCount}</div>
-              <div className="text-[10px] text-red-700 font-medium">مع بيان سبب الإلغاء</div>
+            <div className="bg-card p-3.5 rounded-xl border border-rose-200 shadow-xs text-center space-y-1 bg-rose-50/20">
+              <div className="text-[11px] font-semibold text-rose-800 uppercase tracking-wide">Cancelled</div>
+              <div className="text-xl font-bold font-mono text-rose-700">{cancelledCount}</div>
+              <div className="text-[10px] text-rose-700 font-medium">With Cause Stated</div>
             </div>
 
             {/* Commissions */}
-            <div className="bg-white p-3.5 rounded-2xl border border-emerald-300 shadow-2xs text-center space-y-1 bg-emerald-50/50 col-span-2 md:col-span-1">
-              <div className="text-[11px] font-bold text-emerald-900">العمولات المحصلة</div>
+            <div className="bg-card p-3.5 rounded-xl border border-border shadow-xs text-center space-y-1 col-span-2 md:col-span-1">
+              <div className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Earned Commission</div>
               <div className="text-xl font-bold font-mono text-emerald-700">${earnedCommission.toFixed(2)}</div>
-              <div className="text-[10px] text-slate-500">+ ${pendingCommission.toFixed(2)} معلقة</div>
+              <div className="text-[10px] text-muted-foreground">+ ${pendingCommission.toFixed(2)} Pending</div>
             </div>
 
           </div>
 
           {/* Detailed Performance Table (Vanguard Style) */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-3">
-            <h3 className="text-xs font-bold text-[#1a629b] border-b border-slate-100 pb-2">
-              سجل تفصيل طلبيات المندوب وحالات التسليم
+          <div className="bg-card rounded-xl border border-border shadow-xs p-4 space-y-3">
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-wide border-b border-border/60 pb-2">
+              Representative Orders Ledger & Delivery Status
             </h3>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs border-collapse">
+              <table className="w-full text-left text-xs border-collapse font-sans">
                 <thead>
-                  <tr className="border-b border-slate-300 bg-slate-50 text-slate-700 font-bold">
-                    <th className="py-2.5 px-3 normal-case">رقم الطلب</th>
-                    <th className="py-2.5 px-3 normal-case">اسم الزبون</th>
-                    <th className="py-2.5 px-3 normal-case">تفاصيل العرض</th>
-                    <th className="py-2.5 px-3 normal-case text-center">القيمة ($)</th>
-                    <th className="py-2.5 px-3 normal-case text-center">العمولة ($)</th>
-                    <th className="py-2.5 px-3 normal-case text-center">حالة الطلب</th>
-                    <th className="py-2.5 px-3 normal-case">السبب / الملاحظات</th>
+                  <tr className="border-b border-border bg-muted/50 text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">
+                    <th className="py-2.5 px-3">Order ID</th>
+                    <th className="py-2.5 px-3">Customer & Contact</th>
+                    <th className="py-2.5 px-3">Package / Offer Details</th>
+                    <th className="py-2.5 px-3 text-right">Amount ($)</th>
+                    <th className="py-2.5 px-3 text-right">Commission ($)</th>
+                    <th className="py-2.5 px-3 text-center">Status</th>
+                    <th className="py-2.5 px-3">Remarks / Reason</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-[11.5px]">
+                <tbody className="divide-y divide-border/60 font-medium text-xs">
                   {SAMPLE_TRACKING_ORDERS.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1a629b]">{ord.id}</td>
-                      <td className="py-2.5 px-3 font-bold">{ord.customerName} ({ord.customerPhone})</td>
-                      <td className="py-2.5 px-3 text-slate-600">{ord.offerDetails}</td>
-                      <td className="py-2.5 px-3 text-center font-mono font-bold">${ord.amountUsd.toFixed(2)}</td>
-                      <td className="py-2.5 px-3 text-center font-mono font-bold text-emerald-600">
+                    <tr key={ord.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="py-2.5 px-3 font-mono font-bold text-primary">{ord.id}</td>
+                      <td className="py-2.5 px-3 font-medium text-foreground">
+                        <div>{ord.customerName}</div>
+                        <div className="text-[11px] font-mono text-muted-foreground">{ord.customerPhone}</div>
+                      </td>
+                      <td className="py-2.5 px-3 text-muted-foreground">{ord.offerDetails}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">${ord.amountUsd.toFixed(2)}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">
                         ${ord.repCommission.toFixed(2)}
                       </td>
                       <td className="py-2.5 px-3 text-center">
                         {ord.status === 'DELIVERED' && (
-                          <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10.5px] font-bold">مسلّمة ✓</span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px] font-bold">Delivered ✓</span>
                         )}
                         {ord.status === 'IN_TRANSIT' && (
-                          <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10.5px] font-bold">مع السائق 🚗</span>
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10.5px] font-bold">In Transit 🚗</span>
                         )}
                         {ord.status === 'PENDING' && (
-                          <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10.5px] font-bold">مؤجلة ⏳</span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10.5px] font-bold">Pending ⏳</span>
                         )}
                         {ord.status === 'CANCELLED' && (
-                          <span className="px-2 py-0.5 rounded bg-red-100 text-red-800 text-[10.5px] font-bold">ملغاة ✕</span>
+                          <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">Cancelled ✕</span>
                         )}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600 text-[11px]">
-                        {ord.statusReason || 'تم التسليم بنجاح'}
+                      <td className="py-2.5 px-3 text-muted-foreground text-[11px]">
+                        {ord.statusReason || 'Successfully Delivered'}
                       </td>
                     </tr>
                   ))}
@@ -351,55 +383,56 @@ export default function SocialRepStatisticsAndTracking() {
       {/* TAB 2: LIVE ORDERS TRACKING & SUPERSONIC INTEGRATION                */}
       {/* =================================================================== */}
       {activeTab === 'live_tracking' && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-            <h3 className="text-xs font-bold text-slate-800">
-              مراقبة وتتبع الطلبيات الميدانية غير المسلّمة (SuperSonic Live Tracking)
+        <div className="bg-card rounded-xl border border-border shadow-xs p-4 space-y-3">
+          <div className="flex items-center justify-between border-b border-border/60 pb-2">
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">
+              Active Field Deliveries & Live Fleet Tracking
             </h3>
-            <span className="text-xs text-slate-500 font-mono">Southern Olive Oil Products S.A.R.L</span>
+            <span className="text-xs text-muted-foreground font-mono">SuperSonic Dispatch Dispatcher</span>
           </div>
 
           <div className="space-y-3">
             {SAMPLE_TRACKING_ORDERS.filter((o) => o.status !== 'DELIVERED').map((order) => (
-              <div key={order.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+              <div key={order.id} className="p-4 rounded-xl border border-border bg-muted/20 space-y-2">
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-xs text-[#1a629b]">{order.id}</span>
-                    <span className="font-bold text-xs">{order.customerName}</span>
-                    <span className="text-slate-500 text-xs">({order.customerAddress})</span>
+                    <span className="font-mono font-bold text-xs text-primary">{order.id}</span>
+                    <span className="font-bold text-xs text-foreground">{order.customerName}</span>
+                    <span className="text-muted-foreground text-xs">({order.customerAddress})</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                      order.status === 'IN_TRANSIT' ? 'bg-blue-100 text-blue-900' :
-                      order.status === 'PENDING' ? 'bg-amber-100 text-amber-900' : 'bg-red-100 text-red-900'
+                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
+                      order.status === 'IN_TRANSIT' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      order.status === 'PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200'
                     }`}>
-                      ⏱ موعد الوصول المجدول: {order.scheduledEta}
+                      ETA: {order.scheduledEta}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between pt-2 border-t border-slate-200 text-xs text-slate-600">
+                <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border/60 text-xs text-muted-foreground">
                   <div>
-                    <span>السائق المسؤول: </span>
-                    <span className="font-bold text-slate-800">{order.driverName || 'بانتظار خروج السائق'}</span>
-                    {order.driverPhone && <span className="font-mono text-slate-500 mr-1">({order.driverPhone})</span>}
+                    <span>Assigned Courier: </span>
+                    <span className="font-bold text-foreground">{order.driverName || 'Pending Courier Assignment'}</span>
+                    {order.driverPhone && <span className="font-mono text-muted-foreground ml-1">({order.driverPhone})</span>}
                   </div>
 
                   {order.status === 'IN_TRANSIT' && order.driverLocation && (
                     <button
                       type="button"
                       onClick={() => setSelectedLiveOrder(order)}
-                      className="px-3 py-1.5 bg-[#1a629b] hover:bg-[#124b77] text-white text-xs font-bold rounded-lg shadow-2xs transition-colors flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs font-medium rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
-                      <span>📍 عرض الموقع اللحظي المباشر للسائق (Live Location)</span>
+                      <MapPin size={13} />
+                      <span>View Live GPS Location</span>
                     </button>
                   )}
 
                   {(order.status === 'PENDING' || order.status === 'CANCELLED') && (
-                    <div className="text-amber-800 font-bold">
-                      سبب الحالة: {order.statusReason}
+                    <div className="text-amber-800 font-medium">
+                      Note: {order.statusReason}
                     </div>
                   )}
                 </div>
@@ -415,36 +448,36 @@ export default function SocialRepStatisticsAndTracking() {
       {/* 3. LIVE GPS LOCATION MAP MODAL POPUP                               */}
       {/* =================================================================== */}
       {selectedLiveOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 select-none">
-          <div className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden text-right">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 select-none">
+          <div className="bg-card w-full max-w-lg rounded-xl border border-border shadow-xl overflow-hidden text-left">
             
-            <div className="bg-[#1e232d] text-white px-4 py-3 flex items-center justify-between">
+            <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                <h4 className="text-xs font-bold">
-                  تتبع مباشر لسيارة التوصيل: {selectedLiveOrder.id}
+                <h4 className="text-xs font-bold uppercase tracking-wide">
+                  Live Dispatch Courier Tracking: {selectedLiveOrder.id}
                 </h4>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedLiveOrder(null)}
-                className="text-slate-400 hover:text-white font-bold text-sm"
+                className="text-primary-foreground/70 hover:text-primary-foreground font-bold text-sm cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="p-4 space-y-3 text-xs">
-              <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 text-[#1a629b] space-y-1">
-                <div className="font-bold">السائق: {selectedLiveOrder.driverName}</div>
-                <div>الزبون: {selectedLiveOrder.customerName} - {selectedLiveOrder.customerAddress}</div>
-                <div className="text-[11px] text-slate-500 font-mono">آخر إشارة GPS: {selectedLiveOrder.driverLocation?.lastUpdate}</div>
+              <div className="bg-muted p-3 rounded-xl border border-border text-foreground space-y-1">
+                <div className="font-bold">Courier: {selectedLiveOrder.driverName}</div>
+                <div>Recipient: {selectedLiveOrder.customerName} - {selectedLiveOrder.customerAddress}</div>
+                <div className="text-[11px] text-muted-foreground font-mono">Last GPS Ping: {selectedLiveOrder.driverLocation?.lastUpdate}</div>
               </div>
 
-              <div className="w-full h-48 bg-slate-100 rounded-xl border border-slate-300 flex flex-col items-center justify-center text-slate-500 space-y-2 font-mono">
-                <div className="text-2xl">🚗 📍</div>
-                <div className="text-xs font-bold text-slate-700">خريطة المسار الحي (Live GPS Coordinates)</div>
-                <div className="text-[11px] text-slate-500">
+              <div className="w-full h-48 bg-muted/40 rounded-xl border border-border flex flex-col items-center justify-center text-muted-foreground space-y-2 font-mono">
+                <Navigation size={28} className="text-primary animate-pulse" />
+                <div className="text-xs font-bold text-foreground">Active Corridor Route Coordinates</div>
+                <div className="text-[11px] text-muted-foreground">
                   Lat: {selectedLiveOrder.driverLocation?.lat}, Lng: {selectedLiveOrder.driverLocation?.lng}
                 </div>
               </div>
@@ -453,9 +486,9 @@ export default function SocialRepStatisticsAndTracking() {
                 <button
                   type="button"
                   onClick={() => setSelectedLiveOrder(null)}
-                  className="px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs"
+                  className="px-4 py-2 bg-primary text-primary-foreground hover:bg-slate-800 rounded-lg font-medium text-xs shadow-xs cursor-pointer"
                 >
-                  إغلاق نافذة التتبع
+                  Close Live Tracker
                 </button>
               </div>
             </div>

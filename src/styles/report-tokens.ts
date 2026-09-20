@@ -52,6 +52,11 @@ export interface GrandTotal {
   label: string;
   value: number | string;
   isNegative?: boolean;
+  breakdownText?: string;
+  convertedSubtext?: string;
+  multiCurrencyTotals?: Record<string, number>;
+  normalizedAmount?: number;
+  targetCurrency?: string;
 }
 
 // ============================================================================

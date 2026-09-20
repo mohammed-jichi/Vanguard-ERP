@@ -57,7 +57,7 @@ export default function PosHeaderBar({
   };
 
   return (
-    <header className="h-12 sm:h-14 bg-[#14171e] text-slate-100 border-b border-slate-800 px-3 sm:px-4 flex items-center justify-between select-none font-sans text-xs">
+    <header className="h-12 sm:h-14 bg-background text-slate-100 border-b border-slate-800 px-3 sm:px-4 flex items-center justify-between select-none font-sans text-xs">
       {/* Left: System branding & Workstation */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export default function PosHeaderBar({
         <span className="px-2.5 py-1 rounded bg-slate-800/90 text-slate-200 border border-slate-700 font-bold uppercase tracking-wider text-[11px] hidden sm:inline-block">
           {workstationMode}
         </span>
-        <div className="flex items-center gap-1.5 text-slate-200 bg-[#1e232d] px-2.5 py-1 rounded border border-slate-700/80">
+        <div className="flex items-center gap-1.5 text-slate-200 bg-card px-2.5 py-1 rounded border border-slate-700/80">
           <span className="text-slate-400 text-[11px]">User:</span>
           <span className="font-bold text-amber-300">{currentUser?.name || 'Cashier (101)'}</span>
           <span className="text-[10px] text-slate-400 font-mono">({currentUser?.role || 'Cashier'})</span>

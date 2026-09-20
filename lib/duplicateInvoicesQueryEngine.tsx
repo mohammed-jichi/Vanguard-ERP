@@ -18,6 +18,16 @@ import {
   getExchangeRateForDisplay,
   SUPPORTED_CURRENCIES,
 } from '@/lib/currencyEngine';
+import {
+  SALESMAN_MAPPINGS,
+  matchesSalesmanFilter,
+} from '@/lib/reportFilterEngine';
+import { matchesEmployeeFilter } from '@/lib/salesmanEmployeeEngine';
+import { matchesTenderFilter } from '@/lib/tenderPaymentEngine';
+import { matchesCustomerFilter } from '@/lib/customerDirectoryEngine';
+import { getDefaultInitialDateRange } from '@/lib/dateRangeEngine';
+
+export { SALESMAN_MAPPINGS, matchesSalesmanFilter, matchesEmployeeFilter, matchesTenderFilter, matchesCustomerFilter };
 
 export interface GeneratedQuery {
   mode: SubReportMode;
@@ -44,8 +54,9 @@ export function generateDuplicateInvoiceQuery(
   const params: Record<string, any> = {};
 
   // Resolve standard active filters
-  const fromDate = filterValues.fromDate || '2026-08-01';
-  const toDate = filterValues.toDate || '2026-08-31';
+  const defaultDates = getDefaultInitialDateRange('This Month');
+  const fromDate = filterValues.fromDate || defaultDates.fromDate;
+  const toDate = filterValues.toDate || defaultDates.toDate;
   const branch = filterValues.branch || 'ALL';
 
   // 1. Period / Date filtering
@@ -190,8 +201,10 @@ export function generateDuplicateInvoiceQuery(
   si.invoice_number,
   si.sale_date AS date,
   si.sale_time AS time,
-  si.table_number,
-  si.total_amount AS amount`;
+  e.employee_name,
+  si.payment_method AS pay_type,
+  si.subtotal_amount AS amount,
+  si.total_amount AS total`;
       orderByClause = 'ORDER BY e.employee_name ASC, si.payment_method ASC, si.sale_date DESC';
       break;
 
@@ -199,17 +212,14 @@ export function generateDuplicateInvoiceQuery(
       selectClause = `
   si.invoice_number,
   si.sale_date AS date,
-  si.sale_time AS time,
-  si.table_number,
-  si.customer_headcount AS cust_count,
+  c.customer_name,
+  c.account_number AS cust_id,
+  e.employee_name,
   si.subtotal_amount AS amount,
   si.discount_amount AS discount,
-  si.service_charge AS service,
   si.tax_amount AS tax,
-  si.payment_method AS pay_type,
-  si.total_amount AS total,
-  si.print_count`;
-      orderByClause = 'ORDER BY e.employee_name ASC, c.customer_name ASC, si.sale_date DESC';
+  si.total_amount AS total`;
+      orderByClause = 'ORDER BY c.customer_name ASC, e.employee_name ASC, si.sale_date DESC';
       break;
 
     case 'transactions_by_invoice_number':
@@ -367,7 +377,9 @@ ${orderByClause};`.replace(/\n\s*\n/g, '\n');
  */
 export function buildTableColumnsFromSchema(
   config: ReportConfig,
-  showRate: boolean = false
+  showRate: boolean = false,
+  targetCurrency?: string,
+  filterValues?: Record<string, any>
 ): MasterDocColumn<any>[] {
   const activeCols: SchemaColumn[] = [...config.standardColumns];
 
@@ -375,13 +387,91 @@ export function buildTableColumnsFromSchema(
     activeCols.push(...config.dynamicColumns.onShowRate);
   }
 
+  // 1. Salesman dimensional column injection
+  const hasSalesmanOrEmpCol = activeCols.some(c => c.key === 'salesman' || c.label.toLowerCase().includes('salesman') || c.key === 'employee_name');
+  const isSalesmanFilterActive = filterValues?.salesman && filterValues.salesman !== 'ALL';
+  if (!hasSalesmanOrEmpCol && (isSalesmanFilterActive || config.id === 'transactions_by_salesman')) {
+    const custIdx = activeCols.findIndex(c => c.key.includes('customer') || c.key.includes('cust'));
+    const colDef: SchemaColumn = { key: 'salesman', label: 'Salesman / Rep' };
+    if (custIdx !== -1) {
+      activeCols.splice(custIdx + 1, 0, colDef);
+    } else {
+      activeCols.splice(2, 0, colDef);
+    }
+  }
+
+  // 1b. Mode-specific columns for Transactions by Employees by Payment
+  if (config.id === 'transactions_by_employees_by_payment' || config.title.toLowerCase().includes('by employees by payment') || config.title.toLowerCase().includes('by employee by payment')) {
+    const hasEmpCol = activeCols.some(c => c.key === 'employee_name' || c.key === 'employee');
+    if (!hasEmpCol) {
+      activeCols.splice(3, 0, { key: 'employee_name', label: 'Employee / Cashier Name' });
+    } else {
+      const col = activeCols.find(c => c.key === 'employee_name' || c.key === 'employee');
+      if (col) col.label = 'Employee / Cashier Name';
+    }
+    const hasPayCol = activeCols.some(c => c.key === 'pay_type' || c.key === 'payment_method' || c.key === 'payment_type');
+    if (!hasPayCol) {
+      const empIdx = activeCols.findIndex(c => c.key === 'employee_name' || c.key === 'employee');
+      activeCols.splice(empIdx !== -1 ? empIdx + 1 : 4, 0, { key: 'pay_type', label: 'Payment Type' });
+    } else {
+      const col = activeCols.find(c => c.key === 'pay_type' || c.key === 'payment_method' || c.key === 'payment_type');
+      if (col) col.label = 'Payment Type';
+    }
+  }
+
+  // 1c. Mode-specific columns for Transactions by Customers by Employee
+  if (config.id === 'transactions_by_customers_by_employee' || config.title.toLowerCase().includes('by customers by employee') || config.title.toLowerCase().includes('by customer by employee') || config.title.toLowerCase().includes('customers & serving employee')) {
+    const hasCustCol = activeCols.some(c => c.key === 'customer_name' || c.key === 'customer');
+    if (!hasCustCol) {
+      activeCols.splice(2, 0, { key: 'customer_name', label: 'Customer Name & ID' });
+    } else {
+      const col = activeCols.find(c => c.key === 'customer_name' || c.key === 'customer');
+      if (col) col.label = 'Customer Name & ID';
+    }
+    const hasEmpCol = activeCols.some(c => c.key === 'employee_name' || c.key === 'employee');
+    if (!hasEmpCol) {
+      const custIdx = activeCols.findIndex(c => c.key === 'customer_name' || c.key === 'customer');
+      activeCols.splice(custIdx !== -1 ? custIdx + 1 : 3, 0, { key: 'employee_name', label: 'Employee Name' });
+    } else {
+      const col = activeCols.find(c => c.key === 'employee_name' || c.key === 'employee');
+      if (col) col.label = 'Employee Name';
+    }
+    // Remove raw cust_count column if present
+    const custCountIdx = activeCols.findIndex(c => c.key === 'cust_count' || c.label === 'Cust#');
+    if (custCountIdx !== -1) {
+      activeCols.splice(custCountIdx, 1);
+    }
+  }
+
+  // 2. Tender / Payment Method dimensional column injection
+  const isModeStrict = config.id === 'transactions_by_customers_by_employee' || config.id === 'transactions_by_employees_by_payment';
+  const hasPayCol = activeCols.some(c => c.key === 'pay_type' || c.key === 'payment_method' || c.key === 'payment_type');
+  const isPayFilterActive = (filterValues?.paymentType && filterValues.paymentType !== 'ALL') || (filterValues?.paymentMode && filterValues.paymentMode !== 'ALL');
+  if (!hasPayCol && isPayFilterActive && !isModeStrict) {
+    activeCols.push({ key: 'pay_type', label: 'Tender' });
+  }
+
+  // 3. Void / Refund Reason dimensional column injection
+  const hasVoidReasonCol = activeCols.some(c => c.key === 'void_reason' || c.key === 'reason');
+  const isRefundOrVoidActive = filterValues?.auditFlags === 'SHOW_REFUND' || Boolean(filterValues?.voidReason);
+  if (!hasVoidReasonCol && isRefundOrVoidActive) {
+    activeCols.push({ key: 'void_reason', label: 'Void Reason' });
+  }
+
   return activeCols.map((col): MasterDocColumn<any> => {
     const isNum = col.isCurrency;
     const align = col.align || (isNum ? 'right' : 'left');
 
+    let dynamicLabel = col.label;
+    if (targetCurrency && col.isCurrency) {
+      if (/\((LBP|USD|EUR|GBP|L\.L\.|\$)\)/i.test(col.label)) {
+        dynamicLabel = col.label.replace(/\((LBP|USD|EUR|GBP|L\.L\.|\$)\)/i, `(${targetCurrency})`);
+      }
+    }
+
     return {
       key: col.key,
-      label: col.label,
+      label: dynamicLabel,
       align,
       isMonospace: isNum || col.key.includes('date') || col.key.includes('time') || col.key.includes('invoice') || col.key.includes('rate'),
       render: (row: any) => {
@@ -427,7 +517,42 @@ export function buildTableColumnsFromSchema(
           return <span className="font-mono text-slate-700 tabular-nums">{num.toLocaleString()}</span>;
         }
 
-        // 5. Currency / Numeric format
+        // 4b. Employee / Cashier Column
+        if (col.key === 'employee_name' || col.key === 'employee') {
+          return (
+            <span className="inline-flex items-center gap-1.5 font-semibold text-slate-900">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block shrink-0"></span>
+              {rawVal || 'Staff'}
+            </span>
+          );
+        }
+
+        // 4c. Customer Column
+        if (col.key === 'customer_name' || col.key === 'customer') {
+          const custId = row.custId || row.cust_id || row.customer_id;
+          return (
+            <div className="flex flex-col">
+              <span className="font-semibold text-slate-900">{rawVal || 'Walk-in Customer'}</span>
+              {custId && <span className="text-[10px] font-mono text-slate-500 font-normal">{custId}</span>}
+            </div>
+          );
+        }
+
+        // 5. Salesman Column
+        if (col.key === 'salesman') {
+          return <span className="font-semibold text-slate-900">{rawVal || 'Staff'}</span>;
+        }
+
+        // 6. Void / Refund Reason Column
+        if (col.key === 'void_reason' || col.key === 'reason') {
+          return (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
+              {rawVal || 'Customer Return'}
+            </span>
+          );
+        }
+
+        // 7. Currency / Numeric format
         if (isNum && rawVal !== undefined && rawVal !== null) {
           const num = typeof rawVal === 'number' ? rawVal : parseFloat(String(rawVal).replace(/,/g, '')) || 0;
           const formatted = formatCurrencyAmount(num, row.currency, false);
@@ -464,6 +589,7 @@ export interface MasterMockTransaction {
   custId: string;
   salesman: string;
   employee: string;
+  employee_name?: string;
   server: string;
   branch: string;
   channel: 'Local' | 'Online' | 'International';
@@ -495,6 +621,7 @@ export interface MasterMockTransaction {
   totalUsd: number;
   service?: number;
   isRefund?: boolean;
+  void_reason?: string;
 }
 
 export function parseDateToIso(dateStr: string): string {
@@ -819,9 +946,9 @@ export const DEFAULT_MOCK_TRANSACTIONS: MasterMockTransaction[] = [
     time: '10:10',
     customerName: 'Al-Bustan Restaurant Group',
     custId: 'CUST-007',
-    salesman: 'Hadi Sleiman',
-    employee: 'Hadi Sleiman',
-    server: 'Hadi Sleiman',
+    salesman: 'Ziad Chehab',
+    employee: 'Ziad Chehab',
+    server: 'Ziad Chehab',
     branch: 'Choueifat Main Facility',
     channel: 'Local',
     department: 'LOCAL',
@@ -1326,9 +1453,9 @@ export const DEFAULT_MOCK_TRANSACTIONS: MasterMockTransaction[] = [
     time: '14:20',
     customerName: 'Sidon Agrarian Collective',
     custId: 'CUST-023',
-    salesman: 'Ahmad Al-Hajj',
-    employee: 'Ahmad Al-Hajj',
-    server: 'Ahmad Al-Hajj',
+    salesman: 'Ziad Chehab',
+    employee: 'Ziad Chehab',
+    server: 'Ziad Chehab',
     branch: 'Sidon Hub',
     channel: 'International',
     department: 'INTERNATIONAL',
@@ -1443,9 +1570,9 @@ export const DEFAULT_MOCK_TRANSACTIONS: MasterMockTransaction[] = [
     time: '16:45',
     customerName: 'Mediterranean Import Co (Paris)',
     custId: 'CUST-022',
-    salesman: 'Maya Khoury',
-    employee: 'Maya Khoury',
-    server: 'Maya Khoury',
+    salesman: 'Ziad Chehab',
+    employee: 'Ziad Chehab',
+    server: 'Ziad Chehab',
     branch: 'Beirut Gourmet Depot',
     channel: 'International',
     department: 'INTERNATIONAL',
@@ -1482,9 +1609,9 @@ export const DEFAULT_MOCK_TRANSACTIONS: MasterMockTransaction[] = [
     time: '17:20',
     customerName: 'European Delicacies Ltd',
     custId: 'CUST-024',
-    salesman: 'Hadi Sleiman',
-    employee: 'Hadi Sleiman',
-    server: 'Hadi Sleiman',
+    salesman: 'Ziad Chehab',
+    employee: 'Ziad Chehab',
+    server: 'Ziad Chehab',
     branch: 'Choueifat Main Facility',
     channel: 'International',
     department: 'INTERNATIONAL',
@@ -1513,6 +1640,123 @@ export const DEFAULT_MOCK_TRANSACTIONS: MasterMockTransaction[] = [
     taxLbp: 856081,
     totalLbp: 8638641,
     totalUsd: 94.86,
+    service: 0,
+  },
+  {
+    invoiceNo: '102994',
+    date: '2026-08-31',
+    time: '17:45',
+    customerName: 'Jezzine Mountain Herbs',
+    custId: 'CUST-025',
+    salesman: 'Jad Tannous',
+    employee: 'Jad Tannous',
+    server: 'Jad Tannous',
+    branch: 'Sidon Hub',
+    channel: 'Local',
+    department: 'LOCAL',
+    departmentChannel: 'LOCAL',
+    workstation: 'POS-03',
+    customerGroup: 'RETAIL',
+    table: 'T-05',
+    orderNo: '2',
+    printCount: 1,
+    custCount: 2,
+    invoice_type: 'POS',
+    invoiceType: 'POS',
+    payment_method: 'CASH (USD)',
+    paymentType: 'CASH (USD)',
+    payType: 'CASH (USD)',
+    itemsCount: 3,
+    items: 'Mountain Thyme Honey, Extra Virgin 750ml',
+    subtotal: 48.00,
+    discount: 0.00,
+    tax: 5.28,
+    total: 53.28,
+    currency: 'USD',
+    rate: 89500,
+    subtotalLbp: 4296000,
+    discountLbp: 0,
+    taxLbp: 472560,
+    totalLbp: 4768560,
+    totalUsd: 53.28,
+    service: 0,
+  },
+  {
+    invoiceNo: '102995',
+    date: '2026-08-31',
+    time: '18:15',
+    customerName: 'Phoenician Coast Hospitality',
+    custId: 'CUST-026',
+    salesman: 'Rania Eid',
+    employee: 'Rania Eid',
+    server: 'Rania Eid',
+    branch: 'Beirut Gourmet Depot',
+    channel: 'Online',
+    department: 'ONLINE',
+    departmentChannel: 'ONLINE',
+    workstation: 'POS-02',
+    customerGroup: 'HORECA',
+    table: 'T-08',
+    orderNo: '3',
+    printCount: 2,
+    custCount: 5,
+    invoice_type: 'POS',
+    invoiceType: 'POS',
+    payment_method: 'CARD (USD)',
+    paymentType: 'CARD (USD)',
+    payType: 'CARD (USD)',
+    itemsCount: 6,
+    items: 'Infused Truffle Olive Oil 250ml x 6, Gourmet Gift Box',
+    subtotal: 180.00,
+    discount: 15.00,
+    tax: 18.15,
+    total: 183.15,
+    currency: 'USD',
+    rate: 89500,
+    subtotalLbp: 16110000,
+    discountLbp: 1342500,
+    taxLbp: 1624425,
+    totalLbp: 16391925,
+    totalUsd: 183.15,
+    service: 0,
+  },
+  {
+    invoiceNo: '102996',
+    date: '2026-08-31',
+    time: '18:50',
+    customerName: 'Levant Fine Foods International',
+    custId: 'CUST-027',
+    salesman: 'Ziad Chehab',
+    employee: 'Ziad Chehab',
+    server: 'Ziad Chehab',
+    branch: 'Choueifat Main Facility',
+    channel: 'International',
+    department: 'INTERNATIONAL',
+    departmentChannel: 'INTERNATIONAL',
+    workstation: 'POS-04',
+    customerGroup: 'KEY_ACCOUNTS',
+    table: 'T-15',
+    orderNo: '4',
+    printCount: 2,
+    custCount: 2,
+    invoice_type: 'POS',
+    invoiceType: 'POS',
+    payment_method: 'CASH (USD)',
+    paymentType: 'CASH (USD)',
+    payType: 'CASH (USD)',
+    itemsCount: 10,
+    items: 'Premium Organic Harvest 2026 Tin 5L x 8',
+    subtotal: 320.00,
+    discount: 20.00,
+    tax: 33.00,
+    total: 333.00,
+    currency: 'USD',
+    rate: 89500,
+    subtotalLbp: 28640000,
+    discountLbp: 1790000,
+    taxLbp: 2953500,
+    totalLbp: 29803500,
+    totalUsd: 333.00,
     service: 0,
   },
 ];
@@ -1552,7 +1796,7 @@ export function generateDataForDuplicateInvoiceReport(
     const filterPayment = filters.paymentType || filters.paymentMode;
     if (filterPayment && filterPayment !== 'ALL') {
       const recPay = inv.payment_method || inv.paymentType || inv.payType;
-      if (!matchesPaymentFilter(recPay, filterPayment, inv.currency)) return false;
+      if (!matchesTenderFilter(recPay, filterPayment, inv.currency)) return false;
     }
 
     // 4. Channel / Department Filtering
@@ -1569,18 +1813,24 @@ export function generateDataForDuplicateInvoiceReport(
       if (!matchesInvoiceTypeFilter(recType, filterInvType)) return false;
     }
 
-    // 6. Salesman Filtering
-    if (filters.salesman && filters.salesman !== 'ALL') {
-      const s = String(inv.salesman || '').toLowerCase();
-      const target = String(filters.salesman).toLowerCase();
-      if (!s.includes(target) && !target.includes(s)) return false;
+    // 6. Employee / Salesman Filtering
+    const filterEmp = filters.employee || filters.salesman;
+    if (filterEmp && filterEmp !== 'ALL') {
+      const recEmp = inv.employee || inv.employee_name || inv.salesman || inv.server;
+      if (!matchesEmployeeFilter(recEmp, filterEmp)) return false;
     }
 
     // 7. Server / Cashier Filtering
     if (filters.serverCashier && filters.serverCashier !== 'ALL') {
-      const s = String(inv.server || inv.employee || '').toLowerCase();
-      const target = String(filters.serverCashier).toLowerCase();
-      if (!s.includes(target) && !target.includes(s)) return false;
+      const recCashier = inv.server || inv.employee || inv.employee_name;
+      if (!matchesEmployeeFilter(recCashier, filters.serverCashier)) return false;
+    }
+
+    // 7b. Workstation Filtering
+    if (filters.workstation && filters.workstation !== 'ALL') {
+      const targetWs = String(filters.workstation).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      const rowWs = String(inv.workstation || inv.table_number || inv.table || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      if (rowWs && !rowWs.includes(targetWs) && !targetWs.includes(rowWs)) return false;
     }
 
     // 8. Invoice Number Range
@@ -1590,12 +1840,12 @@ export function generateDataForDuplicateInvoiceReport(
       if (filters.toInvoiceNo && invNum > parseInt(filters.toInvoiceNo, 10)) return false;
     }
 
-    // 9. Customer Search / Account
-    if (filters.customerSearch && String(filters.customerSearch).trim() !== '') {
-      const query = String(filters.customerSearch).toLowerCase();
-      const cName = String(inv.customerName || inv.customer || '').toLowerCase();
-      const cId = String(inv.custId || inv.customer_id || '').toLowerCase();
-      if (!cName.includes(query) && !cId.includes(query)) return false;
+    // 9. Customer Filtering
+    const filterCust = filters.customer || filters.customerSearch || filters.customerAccount;
+    if (filterCust && filterCust !== 'ALL' && String(filterCust).trim() !== '') {
+      if (!matchesCustomerFilter(inv.customerName || inv.customer, filterCust, inv.custId || inv.customer_id)) {
+        return false;
+      }
     }
 
     // 10. Audit Flags
@@ -1625,17 +1875,32 @@ export function generateDataForDuplicateInvoiceReport(
 
   // Grouping aggregation for `transactions_by_customers_by_groups`
   if (mode === 'transactions_by_customers_by_groups') {
-    const groupedMap = new Map<string, number>();
+    const filterCurrency = extractCurrencyFromFilter(filters.paymentType || filters.paymentMode || filters.currency);
+    const targetCurr = filterCurrency || filters.currency || 'USD';
+    const groupedMap = new Map<string, { totalAmt: number; currency: string }>();
+
     filtered.forEach((inv) => {
       const custName = inv.customerName || inv.customer || 'Walk-in Customer';
-      const tot = inv.total ?? inv.totalLbp ?? 0;
-      const current = groupedMap.get(custName) || 0;
-      groupedMap.set(custName, current + tot);
+      const invCurr = inv.currency || 'LBP';
+      const rawSubtotal = inv.subtotal ?? (inv.currency === 'LBP' ? inv.subtotalLbp : undefined) ?? inv.amount ?? 0;
+      const rawDiscount = inv.discount ?? (inv.currency === 'LBP' ? inv.discountLbp : undefined) ?? 0;
+      const rawTax = inv.tax ?? (inv.currency === 'LBP' ? inv.taxLbp : undefined) ?? 0;
+      const rawTotal = inv.total ?? (rawSubtotal - rawDiscount + rawTax);
+      const convertedTot = convertCurrency(rawTotal, invCurr, targetCurr);
+
+      const existing = groupedMap.get(custName) || { totalAmt: 0, currency: targetCurr };
+      groupedMap.set(custName, {
+        totalAmt: existing.totalAmt + convertedTot,
+        currency: targetCurr,
+      });
     });
 
-    return Array.from(groupedMap.entries()).map(([custName, totalAmt]) => ({
+    return Array.from(groupedMap.entries()).map(([custName, item]) => ({
       customer_name: custName,
-      total_amount: totalAmt,
+      total_amount: item.totalAmt,
+      total_price: item.totalAmt,
+      total: item.totalAmt,
+      currency: item.currency,
     }));
   }
 
@@ -1650,10 +1915,10 @@ export function generateDataForDuplicateInvoiceReport(
 
     // 2. Dynamic conversion via convertCurrency
     const invCurr = inv.currency || 'LBP';
-    const rawSubtotal = inv.subtotal ?? inv.subtotalLbp ?? inv.amount ?? 0;
-    const rawDiscount = inv.discount ?? inv.discountLbp ?? 0;
-    const rawTax = inv.tax ?? inv.taxLbp ?? 0;
-    const rawTotal = inv.total ?? inv.totalLbp ?? (rawSubtotal - rawDiscount + rawTax);
+    const rawSubtotal = inv.subtotal ?? (inv.currency === 'LBP' ? inv.subtotalLbp : undefined) ?? inv.amount ?? 0;
+    const rawDiscount = inv.discount ?? (inv.currency === 'LBP' ? inv.discountLbp : undefined) ?? 0;
+    const rawTax = inv.tax ?? (inv.currency === 'LBP' ? inv.taxLbp : undefined) ?? 0;
+    const rawTotal = inv.total ?? (rawSubtotal - rawDiscount + rawTax);
 
     const subtotalVal = convertCurrency(rawSubtotal, invCurr, activeCurrency);
     const discountVal = convertCurrency(rawDiscount, invCurr, activeCurrency);
@@ -1704,41 +1969,162 @@ export function generateDataForDuplicateInvoiceReport(
       total_amount: totalVal,
       currency: currVal,
       rate: rateVal,
+      void_reason: inv.void_reason || (inv.isRefund || String(inv.invoiceNo || '').startsWith('-') ? 'Customer Return' : '-'),
     };
   });
 }
 
+function parseNumericValue(val: any): number {
+  if (val === undefined || val === null || val === '') return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  const cleaned = String(val).replace(/[^0-9.-]+/g, '');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+
+export function extractRowCurrency(row: any, fallbackCurrency: string = 'USD'): string {
+  if (!row) return fallbackCurrency;
+  if (row.currency && typeof row.currency === 'string') {
+    const code = row.currency.toUpperCase().trim();
+    if (SUPPORTED_CURRENCIES[code]) return code;
+  }
+  if (row.curr && typeof row.curr === 'string') {
+    const code = row.curr.toUpperCase().trim();
+    if (SUPPORTED_CURRENCIES[code]) return code;
+  }
+  const tender = row.payment_method || row.paymentType || row.pay_type || row.payType;
+  if (tender && typeof tender === 'string') {
+    const extracted = extractCurrencyFromFilter(tender);
+    if (extracted && SUPPORTED_CURRENCIES[extracted]) return extracted;
+  }
+  return fallbackCurrency;
+}
+
+export function extractRowTotalPrice(row: any, primaryTotalKey?: string): number {
+  if (!row) return 0;
+
+  if (primaryTotalKey && row[primaryTotalKey] !== undefined && row[primaryTotalKey] !== null && row[primaryTotalKey] !== '') {
+    return parseNumericValue(row[primaryTotalKey]);
+  }
+  if (row.total_price !== undefined && row.total_price !== null && row.total_price !== '') {
+    return parseNumericValue(row.total_price);
+  }
+  if (row.total !== undefined && row.total !== null && row.total !== '') {
+    return parseNumericValue(row.total);
+  }
+  if (row.total_amount !== undefined && row.total_amount !== null && row.total_amount !== '') {
+    return parseNumericValue(row.total_amount);
+  }
+  if (row.grandTotal !== undefined && row.grandTotal !== null && row.grandTotal !== '') {
+    return parseNumericValue(row.grandTotal);
+  }
+  if (row.grand_total !== undefined && row.grand_total !== null && row.grand_total !== '') {
+    return parseNumericValue(row.grand_total);
+  }
+  if (row.amount !== undefined && row.amount !== null && row.amount !== '') {
+    const amt = parseNumericValue(row.amount);
+    const disc = parseNumericValue(row.discount ?? row.discountLbp ?? 0);
+    const tx = parseNumericValue(row.tax ?? row.taxLbp ?? 0);
+    return (amt - disc) + tx;
+  }
+  return 0;
+}
+
 /**
- * 4. GRAND TOTAL / KPI CALCULATOR
+ * 4. GRAND TOTAL / KPI CALCULATOR & UNIVERSAL MULTI-CURRENCY AGGREGATION ENGINE
+ *
+ * Implements Dynamic Currency Normalization & True Total Price Accumulation:
+ * 1. Identifies the report target currency (defaulting to USD or active currency filter).
+ * 2. Accumulates final post-discount post-tax row totals (`total_price`), avoiding pre-tax `amount`.
+ * 3. Converts all heterogeneous row totals to the target currency using central exchange rates (89,500 LBP/USD, 0.92 EUR/USD).
+ * 4. Renders a multi-currency breakdown (Total LBP, Total USD, Total EUR) alongside the converted consolidated Grand Total.
  */
 export function calculateGrandTotalFromSchema(
   config: ReportConfig,
-  rows: any[]
+  rows: any[],
+  targetCurrency?: string
 ): GrandTotal | undefined {
-  if (!config.hasKpiFooter || rows.length === 0) {
+  if (!config || !config.hasKpiFooter || !rows || rows.length === 0) {
     return undefined;
   }
 
-  // Find total amount field in the schema
-  const primaryTotalKey =
-    config.standardColumns.find((c) =>
-      ['total', 'total_price', 'total_amount', 'amount'].includes(c.key)
-    )?.key || 'total';
+  // 1. Identify selected / target currency of the report (default to USD or active currency filter)
+  const resolvedTargetCurrency = (targetCurrency || 'USD').toUpperCase().trim();
 
-  const targetCurrency = rows.length > 0 ? (rows[0].currency || 'LBP') : 'LBP';
+  // 2. Candidate keys for final row total, strictly prioritizing post-discount, post-tax fields.
+  // We intentionally EXCLUDE pre-tax 'amount' from candidate keys to prevent summing subtotals.
+  const priorityTotalKeys = ['total_price', 'total', 'total_amount', 'grand_total', 'grandTotal'];
+  const matchedTotalCol = config.standardColumns.find((c) => priorityTotalKeys.includes(c.key));
+  const primaryTotalKey = matchedTotalCol ? matchedTotalCol.key : undefined;
 
-  const sum = rows.reduce((acc, row) => {
-    const val = row[primaryTotalKey] ?? row.total ?? 0;
-    const num = typeof val === 'number' ? val : parseFloat(String(val || 0).replace(/,/g, '')) || 0;
-    return acc + num;
-  }, 0);
+  // 3. Multi-currency aggregation
+  const multiCurrencyTotals: Record<string, number> = {};
+  let consolidatedConvertedSum = 0;
 
-  const formattedValue = formatCurrencyAmount(sum, targetCurrency, true);
+  for (const row of rows) {
+    if (!row) continue;
+
+    const rowCurrency = extractRowCurrency(row, resolvedTargetCurrency);
+    const rowTotal = extractRowTotalPrice(row, primaryTotalKey);
+
+    // Accumulate raw total per native currency
+    multiCurrencyTotals[rowCurrency] = (multiCurrencyTotals[rowCurrency] || 0) + rowTotal;
+
+    // Convert row total to target currency using central exchange rates
+    const convertedRowTotal = convertCurrency(rowTotal, rowCurrency, resolvedTargetCurrency);
+    consolidatedConvertedSum += convertedRowTotal;
+  }
+
+  // 4. Build Multi-Currency Breakdown Text
+  const currenciesPresent = Object.keys(multiCurrencyTotals);
+  const activeCurrencyEntries = Object.entries(multiCurrencyTotals).filter(
+    ([_, val]) => Math.abs(val) > 0.0001
+  );
+
+  const breakdownText =
+    activeCurrencyEntries.length > 0
+      ? activeCurrencyEntries
+          .map(([curr, val]) => `${curr}: ${formatCurrencyAmount(val, curr, true)}`)
+          .join('  |  ')
+      : undefined;
+
+  // 5. Build Converted Subtext (Exchange Rate Reference)
+  const isMultiCurrency =
+    currenciesPresent.length > 1 ||
+    (currenciesPresent.length === 1 && currenciesPresent[0] !== resolvedTargetCurrency);
+
+  let convertedSubtext: string | undefined = undefined;
+  if (isMultiCurrency) {
+    const rateInfo: string[] = [];
+    if (multiCurrencyTotals['LBP'] && resolvedTargetCurrency !== 'LBP') {
+      rateInfo.push('89,500 LBP/USD');
+    }
+    if (multiCurrencyTotals['EUR'] && resolvedTargetCurrency !== 'EUR') {
+      rateInfo.push('0.92 EUR/USD');
+    }
+    if (multiCurrencyTotals['GBP'] && resolvedTargetCurrency !== 'GBP') {
+      rateInfo.push('0.78 GBP/USD');
+    }
+    const rateStr = rateInfo.length > 0 ? ` @ ${rateInfo.join(', ')}` : '';
+    convertedSubtext = `Normalized to ${resolvedTargetCurrency}${rateStr}`;
+  }
+
+  // 6. Formatted consolidated value in target currency
+  const formattedConsolidatedValue = formatCurrencyAmount(
+    consolidatedConvertedSum,
+    resolvedTargetCurrency,
+    true
+  );
 
   return {
-    label: `Grand Total (${config.title})`,
-    value: formattedValue,
-    isNegative: sum < 0,
+    label: `Consolidated Grand Total (${config.title})`,
+    value: formattedConsolidatedValue,
+    isNegative: consolidatedConvertedSum < 0,
+    breakdownText,
+    convertedSubtext,
+    multiCurrencyTotals,
+    normalizedAmount: consolidatedConvertedSum,
+    targetCurrency: resolvedTargetCurrency,
   };
 }
 

@@ -304,7 +304,7 @@ export default function CouponsView() {
   };
 
   return (
-    <div className="wspaceCont font-sans text-slate-800 bg-[#f8fafc] min-h-screen pb-12">
+    <div className="wspaceCont font-sans text-slate-800 bg-background min-h-screen pb-12">
       {/* Toast Popup */}
       {toast.show && (
         <div
@@ -348,10 +348,10 @@ export default function CouponsView() {
         <div className="dashboard grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           {/* Card 1: Total */}
           <div className="rounded-lg overflow-hidden border border-slate-300 shadow-sm">
-            <div className="bg-[#485369] text-[#ebf1ff] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
+            <div className="bg-primary text-[#ebf1ff] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
               Total:
             </div>
-            <div className="bg-[#ebf1ff] text-[#2c3e50] px-3.5 py-3 font-semibold text-sm">
+            <div className="bg-[#ebf1ff] text-foreground px-3.5 py-3 font-semibold text-sm">
               <span className="text-lg font-extrabold">{counts.total}</span>{' '}
               <span className="text-xs font-medium text-slate-600">(${counts.total_value.toFixed(2)})</span>
             </div>
@@ -359,7 +359,7 @@ export default function CouponsView() {
 
           {/* Card 2: Consumed */}
           <div className="rounded-lg overflow-hidden border border-emerald-300 shadow-sm">
-            <div className="bg-[#3c763d] text-[#d4fdd4] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
+            <div className="bg-emerald-700 text-[#d4fdd4] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
               Consumed:
             </div>
             <div className="bg-[#d4fdd4] text-[#274e27] px-3.5 py-3 font-semibold text-sm">
@@ -370,7 +370,7 @@ export default function CouponsView() {
 
           {/* Card 3: Valid */}
           <div className="rounded-lg overflow-hidden border border-amber-300 shadow-sm">
-            <div className="bg-[#d98406] text-[#ffe5bc] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
+            <div className="bg-amber-600 text-[#ffe5bc] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
               Valid:
             </div>
             <div className="bg-[#ffe5bc] text-[#7a4800] px-3.5 py-3 font-semibold text-sm">
@@ -381,7 +381,7 @@ export default function CouponsView() {
 
           {/* Card 4: Expired not used */}
           <div className="rounded-lg overflow-hidden border border-rose-300 shadow-sm">
-            <div className="bg-[#a94442] text-[#ffe1e1] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
+            <div className="bg-destructive text-[#ffe1e1] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
               Expired not used:
             </div>
             <div className="bg-[#ffe1e1] text-[#631e1d] px-3.5 py-3 font-semibold text-sm">
@@ -463,7 +463,7 @@ export default function CouponsView() {
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="w-full sm:w-auto px-4 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-colors"
               >
                 <Plus className="w-4 h-4 stroke-[2.2]" /> New
               </button>
@@ -803,7 +803,7 @@ export default function CouponsView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Save className="w-4 h-4" /> Save
                 </button>
@@ -941,7 +941,7 @@ export default function CouponsView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   <Save className="w-4 h-4" /> Save Changes
                 </button>
@@ -999,7 +999,7 @@ export default function CouponsView() {
                 {/* Company details */}
                 <div className="text-center pb-4 border-b border-slate-200">
                   <h4 className="font-extrabold text-lg text-slate-900">
-                    Zeit w zaytoun ljanoub - شركة منتجات الزيتون والزيت الجنوبية
+                    Zeit w zaytoun ljanoub - Southern Olive Oil Products S.A.R.L
                   </h4>
                   <p className="text-xs text-slate-500 mt-0.5">Old Saida Road, Kfarchima, Lebanon | Phone: 707673828</p>
                 </div>

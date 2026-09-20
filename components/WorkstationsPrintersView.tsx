@@ -298,7 +298,7 @@ export default function WorkstationsPrintersView() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] p-4 sm:p-6 lg:p-8 font-sans select-none text-slate-800">
+    <div className="w-full min-h-screen bg-background p-4 sm:p-6 lg:p-8 font-sans select-none text-slate-800">
       {/* Toast Alert */}
       {toast.show && (
         <div
@@ -325,7 +325,7 @@ export default function WorkstationsPrintersView() {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Device Preferences</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
-            <Link href="/backoffice/dashboard" className="hover:text-blue-600 transition-colors">
+            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
               Home
             </Link>
             <span>/</span>
@@ -394,7 +394,7 @@ export default function WorkstationsPrintersView() {
                       <button
                         type="button"
                         onClick={handleOpenAddWorkstation}
-                        className="px-3 py-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
+                        className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> Add New
                       </button>
@@ -486,7 +486,7 @@ export default function WorkstationsPrintersView() {
                       <button
                         type="button"
                         onClick={handleOpenAddPrinter}
-                        className="px-3 py-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
+                        className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> New
                       </button>
@@ -820,7 +820,7 @@ export default function WorkstationsPrintersView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
                 >
                   <Save className="w-4 h-4" /> Save Workstation
                 </button>
@@ -970,7 +970,7 @@ export default function WorkstationsPrintersView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
                 >
                   <Save className="w-4 h-4" /> Save Physical Printer
                 </button>

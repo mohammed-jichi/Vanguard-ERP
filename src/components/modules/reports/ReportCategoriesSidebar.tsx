@@ -73,10 +73,29 @@ export default function ReportCategoriesSidebar({
         { id: 'ic_03', code: 'REP_IC_003', title: 'Duplicate Invoices', category: 'Internal Control' },
         { id: 'ic_04', code: 'REP_IC_004', title: 'Meter Reports', category: 'Internal Control' },
         { id: 'ic_05', code: 'REP_IC_005', title: 'No Sale', category: 'Internal Control' },
-        { id: 'ic_06', code: 'REP_IC_006', title: 'Transactions on Hold', category: 'Internal Control' },
         { id: 'ic_07', code: 'REP_IC_007', title: 'User Log Report', category: 'Internal Control' },
         { id: 'ic_08', code: 'REP_IC_008', title: 'Discount Summary', category: 'Internal Control' },
       ],
+      subGroups: {
+        transactions: {
+          title: 'Transactions',
+          items: [
+            { id: 'tx_01', code: 'REP_S_00247', title: 'Transactions by Date', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_02', code: 'REP_S_00273', title: 'Transactions by Invoice Number', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_03', code: 'REP_S_00249', title: 'Transactions by Salesman', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_04', code: 'REP_S_00275', title: 'Transactions by Date by Payments', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_05', code: 'REP_S_00276', title: 'Transactions by Customers', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_06', code: 'REP_S_00277', title: 'Transactions by Customers by Groups', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_07', code: 'REP_S_00278', title: 'Transactions by Customers details', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_08', code: 'REP_S_00272', title: 'Transactions by Customers by Employee', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_09', code: 'REP_S_00250', title: 'Transactions by Employees by Payment', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_10', code: 'REP_S_00279', title: 'Transactions by Workstation', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_11', code: 'REP_S_00286', title: 'Transactions by Employees', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_12', code: 'REP_S_00287', title: 'Transactions By Source', category: 'Internal Control', subCategory: 'Transactions' },
+            { id: 'tx_13', code: 'REP_IC_006', title: 'Transactions on Hold', category: 'Internal Control', subCategory: 'Transactions' },
+          ],
+        },
+      },
     },
 
     // 2. Financial
@@ -354,22 +373,56 @@ export default function ReportCategoriesSidebar({
           </div>
 
           {expandedCategories.includes('internal_control') && (
-            <div className="p-1 space-y-0.5">
-              {masterReportsCatalog.internal_control.items
-                .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => handleReportClick(r)}
-                    className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
-                      activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
-                    }`}
+            <div className="p-1 space-y-1">
+              <div className="space-y-0.5">
+                {masterReportsCatalog.internal_control.items
+                  .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => handleReportClick(r)}
+                      className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
+                        activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                      }`}
+                    >
+                      <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
+                      <span>{r.title}</span>
+                    </button>
+                  ))}
+              </div>
+
+              {Object.entries(masterReportsCatalog.internal_control.subGroups).map(([subKey, subGroup]) => (
+                <div key={subKey} className="border border-slate-100 rounded bg-slate-50/50">
+                  <div
+                    onClick={() => toggleSubCategory(subKey)}
+                    className="px-2 py-1 font-bold text-slate-700 hover:text-[#1a629b] cursor-pointer flex items-center justify-between text-[10.5px]"
                   >
-                    <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
-                    <span>{r.title}</span>
-                  </button>
-                ))}
+                    <span>📁 {subGroup.title} ({subGroup.items.length})</span>
+                    <span className="text-[8px]">{expandedSubCategories.includes(subKey) ? '−' : '+'}</span>
+                  </div>
+
+                  {expandedSubCategories.includes(subKey) && (
+                    <div className="pl-2 pr-1 py-0.5 space-y-0.5 border-t border-slate-200/60 bg-white">
+                      {subGroup.items
+                        .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                        .map((r) => (
+                          <button
+                            key={r.id}
+                            type="button"
+                            onClick={() => handleReportClick(r)}
+                            className={`w-full text-left px-2 py-1 rounded truncate block transition-all cursor-pointer ${
+                              activeReportId === r.id ? 'bg-[#1a629b] text-white font-bold' : 'hover:bg-slate-100 text-slate-700 font-medium'
+                            }`}
+                          >
+                            <span className="font-mono text-[9px] opacity-60 mr-1">[{r.code}]</span>
+                            <span>{r.title}</span>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

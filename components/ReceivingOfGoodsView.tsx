@@ -183,7 +183,7 @@ export default function ReceivingOfGoodsView() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* TOAST ALERT */}
       {toastMessage && (
         <div
@@ -206,7 +206,7 @@ export default function ReceivingOfGoodsView() {
       )}
 
       {/* HEADER BREADCRUMB & TITLE */}
-      <div className="bg-white border-b border-[#e7eaec] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
             <span>Operations Center</span>
@@ -234,7 +234,7 @@ export default function ReceivingOfGoodsView() {
 
       {/* TOP FILTERS BAR */}
       <div className="p-6 pb-2 max-w-7xl mx-auto w-full">
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm p-4">
+        <div className="bg-white rounded-lg border border-border shadow-sm p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
             {/* Receiving Branch */}
             <div>
@@ -244,7 +244,7 @@ export default function ReceivingOfGoodsView() {
               <select
                 value={filterBranchId}
                 onChange={e => setFilterBranchId(Number(e.target.value))}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 <option value={0}>All Branches</option>
                 {OMEGA_PR_BRANCHES.map(b => (
@@ -263,7 +263,7 @@ export default function ReceivingOfGoodsView() {
               <select
                 value={filterFromBranchId}
                 onChange={e => setFilterFromBranchId(Number(e.target.value))}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
                 <option value={0}>All Branches</option>
                 {OMEGA_PR_BRANCHES.map(b => (
@@ -283,7 +283,7 @@ export default function ReceivingOfGoodsView() {
                 type="date"
                 value={fromDate}
                 onChange={e => setFromDate(e.target.value)}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               />
             </div>
 
@@ -296,7 +296,7 @@ export default function ReceivingOfGoodsView() {
                 type="date"
                 value={toDate}
                 onChange={e => setToDate(e.target.value)}
-                className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
+                className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               />
             </div>
 
@@ -311,11 +311,11 @@ export default function ReceivingOfGoodsView() {
                   placeholder="PR-1001..."
                   value={searchPrNb}
                   onChange={e => setSearchPrNb(e.target.value)}
-                  className="w-full h-8 px-2.5 bg-white border border-[#e5e6e7] rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500"
+                  className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500"
                 />
                 <button
                   onClick={fetchApprovedRequests}
-                  className="px-3 bg-[#1ab394] hover:bg-[#18a689] text-white rounded text-xs font-bold shadow-sm flex items-center justify-center"
+                  className="px-3 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center justify-center"
                 >
                   <Search className="w-3.5 h-3.5" />
                 </button>
@@ -327,10 +327,10 @@ export default function ReceivingOfGoodsView() {
 
       {/* MASTER APPROVED PRs TABLE */}
       <div className="p-6 pt-3 max-w-7xl mx-auto w-full flex-1">
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg border border-border shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#f9fafb] text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-[#e7eaec]">
+              <thead className="bg-card text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-border">
                 <tr>
                   <th className="py-3 px-3 w-28">PR #</th>
                   <th className="py-3 px-3 min-w-[150px]">Requested By Branch</th>
@@ -382,7 +382,7 @@ export default function ReceivingOfGoodsView() {
                         <td className="py-3 px-3 text-center">
                           <button
                             onClick={() => handleOpenInspection(pr)}
-                            className="px-2.5 py-1 bg-[#1ab394] hover:bg-[#18a689] text-white rounded text-[11px] font-bold shadow-sm"
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-sm"
                           >
                             Open Details
                           </button>
@@ -548,7 +548,7 @@ export default function ReceivingOfGoodsView() {
                 ) : (
                   <button
                     onClick={handleConfirmReceiving}
-                    className="px-4 py-2 bg-[#1ab394] hover:bg-[#18a689] text-white rounded text-xs font-bold shadow-sm flex items-center gap-1.5"
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>Confirm Receiving</span>

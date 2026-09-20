@@ -11,6 +11,10 @@ import ReportPageLayout, {
   MetricCardItem,
 } from '@/components/reports/ReportPageLayout';
 import { Users, Clock, DollarSign, Activity } from 'lucide-react';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+} from '@/lib/dateRangeEngine';
 
 interface AttendanceRecord {
   empId: string;
@@ -102,10 +106,11 @@ const mockAttendanceData: AttendanceRecord[] = [
 
 export default function StandardizedHRReportPage() {
   // State for Filters
+  const initialDateRange = getDefaultInitialDateRange('This Month');
   const [searchQuery, setSearchQuery] = useState('');
-  const [period, setPeriod] = useState('This Month');
-  const [fromDate, setFromDate] = useState('2026-08-01');
-  const [toDate, setToDate] = useState('2026-08-27');
+  const [period, setPeriod] = useState(initialDateRange.preset);
+  const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
+  const [toDate, setToDate] = useState(initialDateRange.toDate);
   const [selectedDept, setSelectedDept] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
 
@@ -216,10 +221,13 @@ export default function StandardizedHRReportPage() {
           }}
           onApplyFilters={() => alert('Filters applied.')}
           onResetFilters={() => {
+            const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');
             setSelectedDept('ALL');
             setSelectedStatus('ALL');
-            setPeriod('This Month');
+            setPeriod(defRange.preset);
+            setFromDate(defRange.fromDate);
+            setToDate(defRange.toDate);
           }}
         >
           {/* Department Select Filter */}
@@ -318,7 +326,7 @@ export default function StandardizedHRReportPage() {
                       {log.status}
                     </span>
                   </td>
-                  <td className="text-right font-mono font-bold text-[#195a96] dark:text-blue-400">
+                  <td className="text-right font-mono font-bold text-foreground">
                     ${log.laborCost.toFixed(2)}
                   </td>
                 </tr>

@@ -524,7 +524,7 @@ export default function ScreensView() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f3f5f8] text-slate-800 p-4 font-sans antialiased text-left relative">
+    <div className="w-full min-h-screen bg-background text-slate-800 p-4 font-sans antialiased text-left relative">
       {/* Toast Banner */}
       {toast.show && (
         <div
@@ -558,13 +558,13 @@ export default function ScreensView() {
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-[#1e3a2b] flex items-center gap-2">
-                <svg className="w-7 h-7 text-[#2563eb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 Screens
               </h1>
               <nav className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
-                <Link href="/backoffice/dashboard" className="text-blue-600 hover:underline">
+                <Link href="/backoffice" className="text-blue-600 hover:underline">
                   Home
                 </Link>
                 <span>/</span>
@@ -577,7 +577,7 @@ export default function ScreensView() {
               <button
                 type="button"
                 onClick={() => setViewMode('setup')}
-                className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -611,7 +611,7 @@ export default function ScreensView() {
                   onChange={e => setBranchFilter(e.target.value)}
                   className="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-slate-700 font-medium"
                 >
-                  <option value="1">00001 - Main Branch (الفرع الرئيسي)</option>
+                  <option value="1">00001 - Main Branch</option>
                 </select>
               </div>
 
@@ -620,7 +620,7 @@ export default function ScreensView() {
                 <button
                   type="button"
                   onClick={() => setIsGroupScreensModalOpen(true)}
-                  className="px-3 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap"
+                  className="px-3 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap"
                 >
                   Create Screens Based On Groups
                 </button>
@@ -632,7 +632,7 @@ export default function ScreensView() {
                     setNewScreenImage(null);
                     setIsNewScreenModalOpen(true);
                   }}
-                  className="px-3.5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                  className="px-3.5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 whitespace-nowrap"
                 >
                   <span className="text-sm leading-none">+</span>
                   <span>New</span>
@@ -712,7 +712,7 @@ export default function ScreensView() {
                             type="button"
                             onClick={() => handleOpenSetup(row)}
                             title="Screen Setup"
-                            className="p-1.5 bg-[#2563eb] hover:bg-blue-700 text-white rounded shadow-2xs transition-colors"
+                            className="p-1.5 bg-primary hover:bg-blue-700 text-white rounded shadow-2xs transition-colors"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -725,7 +725,7 @@ export default function ScreensView() {
                             type="button"
                             onClick={() => handleOpenEdit(row)}
                             title="Edit Screen Properties"
-                            className="p-1.5 bg-[#2563eb] hover:bg-blue-700 text-white rounded shadow-2xs transition-colors"
+                            className="p-1.5 bg-primary hover:bg-blue-700 text-white rounded shadow-2xs transition-colors"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -801,13 +801,13 @@ export default function ScreensView() {
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-[#1e3a2b] flex items-center gap-2">
-                <svg className="w-7 h-7 text-[#2563eb]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
                 Screen Setup Designer
               </h1>
               <nav className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
-                <Link href="/backoffice/dashboard" className="text-blue-600 hover:underline">
+                <Link href="/backoffice" className="text-blue-600 hover:underline">
                   Home
                 </Link>
                 <span>/</span>
@@ -1016,7 +1016,7 @@ export default function ScreensView() {
                       className={`px-4 py-2 text-xs font-bold rounded shadow-xs transition-colors h-[42px] ${
                         leftPanelMode === 'screens'
                           ? 'bg-blue-800 text-white'
-                          : 'bg-[#2563eb] hover:bg-blue-700 text-white'
+                          : 'bg-primary hover:bg-blue-700 text-white'
                       }`}
                     >
                       Screens
@@ -1032,7 +1032,7 @@ export default function ScreensView() {
                       className={`px-4 py-2 text-xs font-bold rounded shadow-xs transition-colors h-[42px] ${
                         leftPanelMode === 'groups'
                           ? 'bg-blue-800 text-white'
-                          : 'bg-[#2563eb] hover:bg-blue-700 text-white'
+                          : 'bg-primary hover:bg-blue-700 text-white'
                       }`}
                     >
                       Groups
@@ -1048,7 +1048,7 @@ export default function ScreensView() {
                       className={`px-4 py-2 text-xs font-bold rounded shadow-xs transition-colors h-[42px] ${
                         leftPanelMode === 'groupsWithItems'
                           ? 'bg-blue-800 text-white'
-                          : 'bg-[#2563eb] hover:bg-blue-700 text-white'
+                          : 'bg-primary hover:bg-blue-700 text-white'
                       }`}
                     >
                       Items
@@ -1058,7 +1058,7 @@ export default function ScreensView() {
                       id="clear"
                       type="button"
                       onClick={handleClearScreen}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Clear Screen
                     </button>
@@ -1067,7 +1067,7 @@ export default function ScreensView() {
                       id="clearItem"
                       type="button"
                       onClick={handleClearItem}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Clear Item
                     </button>
@@ -1076,7 +1076,7 @@ export default function ScreensView() {
                       id="automaticSetup"
                       type="button"
                       onClick={handleClearAllPictures}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Clear Pictures
                     </button>
@@ -1095,7 +1095,7 @@ export default function ScreensView() {
                         setApplyColorToAll(false);
                         setIsColorPickerModalOpen(true);
                       }}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Color
                     </button>
@@ -1107,7 +1107,7 @@ export default function ScreensView() {
                         setApplyColorToAll(true);
                         setIsColorPickerModalOpen(true);
                       }}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Same Color
                     </button>
@@ -1116,7 +1116,7 @@ export default function ScreensView() {
                       id="copyScreen"
                       type="button"
                       onClick={() => setIsCopyModalOpen(true)}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Create Like
                     </button>
@@ -1125,7 +1125,7 @@ export default function ScreensView() {
                       id="automaticSetupBtn"
                       type="button"
                       onClick={handleAutomaticSetup}
-                      className="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
+                      className="px-4 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded shadow-xs transition-colors h-[42px]"
                     >
                       Automatic Setup
                     </button>
@@ -1161,9 +1161,9 @@ export default function ScreensView() {
       {/* MODAL 1: Create Screens Based On Groups */}
       {isGroupScreensModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl border-2 border-[#4c5c7a] max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl border-2 border-border max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h5 className="font-bold text-[#4d5b76] text-base">Create Screens Based On Groups</h5>
+              <h5 className="font-bold text-muted-foreground text-base">Create Screens Based On Groups</h5>
               <button
                 type="button"
                 onClick={() => setIsGroupScreensModalOpen(false)}
@@ -1240,7 +1240,7 @@ export default function ScreensView() {
                 <button
                   type="button"
                   onClick={handleCreateScreensFromGroups}
-                  className="px-5 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
+                  className="px-5 py-2.5 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
                 >
                   Create Screens
                 </button>
@@ -1421,7 +1421,7 @@ export default function ScreensView() {
               <div className="text-right pt-2 border-t border-slate-100">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
+                  className="px-5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -1573,7 +1573,7 @@ export default function ScreensView() {
               <div className="text-right pt-2 border-t border-slate-100">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
+                  className="px-5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -1636,7 +1636,7 @@ export default function ScreensView() {
       {/* MODAL 5: Copy From Another Screen Modal */}
       {isCopyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl border-2 border-[#4c5c7a] max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl border-2 border-border max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <h2 className="font-bold text-slate-800 text-base">Copy From Another Screen</h2>
               <button
@@ -1670,7 +1670,7 @@ export default function ScreensView() {
                 <button
                   type="button"
                   onClick={handleExecCopyScreen}
-                  className="px-5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
+                  className="px-5 py-2 bg-primary hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 ml-auto"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />

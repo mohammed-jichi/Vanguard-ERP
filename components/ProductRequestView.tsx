@@ -432,7 +432,7 @@ export default function ProductRequestView() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* GLOBAL TOAST */}
       {toastMessage && (
         <div
@@ -455,7 +455,7 @@ export default function ProductRequestView() {
       )}
 
       {/* HEADER BREADCRUMB & TITLE */}
-      <div className="bg-white border-b border-[#e7eaec] px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
             <span>Operations Center</span>
@@ -495,7 +495,7 @@ export default function ProductRequestView() {
           {/* Items button */}
           <button
             onClick={() => setShowSearchModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1ab394] hover:bg-[#18a689] text-white rounded-md text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <Boxes className="w-3.5 h-3.5" />
             <span>Items</span>
@@ -504,7 +504,7 @@ export default function ProductRequestView() {
           {/* Recommended Request button */}
           <button
             onClick={handleOpenRecommended}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1c84c6] hover:bg-[#1a7bb9] text-white rounded-md text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Recommended Request</span>
@@ -513,7 +513,7 @@ export default function ProductRequestView() {
           {/* Below Minimum button */}
           <button
             onClick={handleOpenBelowMin}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#f8ac59] hover:bg-[#f7a54a] text-white rounded-md text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-600 text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Below Minimum Items</span>
@@ -523,7 +523,7 @@ export default function ProductRequestView() {
           <button
             onClick={handleSavePr}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#1ab394] hover:bg-[#18a689] text-white rounded-md text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-all shadow-sm disabled:opacity-50"
           >
             {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             <span>Save</span>
@@ -614,7 +614,7 @@ export default function ProductRequestView() {
       {/* WORKSTATION CONTENT */}
       <div className="flex-1 p-6 space-y-5 max-w-7xl mx-auto w-full">
         {/* HEADER CONTROLS CARD */}
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-border shadow-sm p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             {/* Requested By Branch */}
             <div>
@@ -629,7 +629,7 @@ export default function ProductRequestView() {
                   const firstLoc = OMEGA_PR_LOCATIONS.find(l => l.FORBRANCH === bId || l.BRANCHID === bId);
                   if (firstLoc) setLocationId(firstLoc.LOCATIONID);
                 }}
-                className="w-full h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                className="w-full h-9 px-3 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               >
                 {OMEGA_PR_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
@@ -647,7 +647,7 @@ export default function ProductRequestView() {
               <select
                 value={locationId}
                 onChange={e => setLocationId(Number(e.target.value))}
-                className="w-full h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                className="w-full h-9 px-3 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               >
                 {availableLocations.map(l => (
                   <option key={l.LOCATIONID} value={l.LOCATIONID}>
@@ -665,7 +665,7 @@ export default function ProductRequestView() {
               <select
                 value={fromBranchId}
                 onChange={e => setFromBranchId(Number(e.target.value))}
-                className="w-full h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                className="w-full h-9 px-3 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
               >
                 {OMEGA_PR_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
@@ -685,7 +685,7 @@ export default function ProductRequestView() {
                   type="date"
                   value={deliveryDate}
                   onChange={e => setDeliveryDate(e.target.value)}
-                  className="w-full h-9 px-3 pl-8 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  className="w-full h-9 px-3 pl-8 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                 />
                 <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
               </div>
@@ -701,7 +701,7 @@ export default function ProductRequestView() {
                   type="time"
                   value={deliveryTime}
                   onChange={e => setDeliveryTime(e.target.value)}
-                  className="w-full h-9 px-3 pl-8 bg-white border border-[#e5e6e7] rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  className="w-full h-9 px-3 pl-8 bg-white border border-border rounded-md text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                 />
                 <Clock className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
               </div>
@@ -718,14 +718,14 @@ export default function ProductRequestView() {
               value={remark}
               onChange={e => setRemark(e.target.value)}
               placeholder="Enter special instructions or notes for kitchen / dispatch..."
-              className="flex-1 h-9 px-3 bg-white border border-[#e5e6e7] rounded-md text-xs text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+              className="flex-1 h-9 px-3 bg-white border border-border rounded-md text-xs text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
         </div>
 
         {/* MAIN ITEMS TABLE */}
-        <div className="bg-white rounded-lg border border-[#e7eaec] shadow-sm overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50/70 border-b border-[#e7eaec] flex items-center justify-between">
+        <div className="bg-white rounded-lg border border-border shadow-sm overflow-hidden">
+          <div className="px-5 py-3.5 bg-slate-50/70 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Boxes className="w-4 h-4 text-teal-600" />
               <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Requested Items</span>
@@ -745,7 +745,7 @@ export default function ProductRequestView() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#f9fafb] text-slate-500 font-bold uppercase tracking-wider border-b border-[#e7eaec]">
+              <thead className="bg-card text-slate-500 font-bold uppercase tracking-wider border-b border-border">
                 <tr>
                   <th className="py-3 px-4 w-12 text-center">#</th>
                   <th className="py-3 px-4 min-w-[220px]">Description</th>
@@ -778,7 +778,7 @@ export default function ProductRequestView() {
                           step="1"
                           value={it.QTYREQ}
                           onChange={e => handleUpdateItemQty(idx, Number(e.target.value))}
-                          className="w-20 h-7 text-center font-bold text-slate-800 bg-white border border-[#e5e6e7] rounded focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                          className="w-20 h-7 text-center font-bold text-slate-800 bg-white border border-border rounded focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                         />
                       </td>
                       <td className="py-3 px-4 text-right font-mono text-slate-600">
@@ -816,7 +816,7 @@ export default function ProductRequestView() {
 
           {/* TABLE FOOTER SUMMARY */}
           {items.length > 0 && (
-            <div className="bg-[#f9fafb] px-6 py-4 border-t border-[#e7eaec] flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-slate-700">
+            <div className="bg-card px-6 py-4 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-slate-700">
               <div className="flex items-center gap-6">
                 <span>
                   Total Items: <span className="text-teal-700">{items.length}</span>
@@ -1602,7 +1602,7 @@ export default function ProductRequestView() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 bg-[#f3f5f8]">
+            <div className="flex-1 overflow-y-auto p-4 bg-background">
               <ProductReqPreparationView />
             </div>
           </div>

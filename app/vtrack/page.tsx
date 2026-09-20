@@ -179,10 +179,10 @@ export default function VTrackDashboardPage() {
               {/* Link back to Vanguard POS / Dashboard */}
               <div className="flex items-center gap-2">
                 <Link
-                  href="/backoffice/dashboard"
+                  href="/backoffice"
                   className="text-xs text-blue-700 hover:text-blue-900 font-bold hover:underline flex items-center gap-1"
                 >
-                  &larr; Vanguard Backoffice Dashboard
+                  &larr; Vanguard Enterprise Main Hub
                 </Link>
               </div>
             </div>

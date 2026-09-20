@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
+import {
+  getDefaultInitialDateRange,
+  resolveDateRangeFromPreset,
+  formatDisplayDate,
+  parseISODate
+} from '@/lib/dateRangeEngine';
 
 interface TimeReportByDateTemplateProps {
   hideToolbar?: boolean;
   dynamicPeriodText?: string;
   executionDate?: string;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> = ({
   hideToolbar = false,
   dynamicPeriodText,
-  executionDate
+  executionDate,
+  fromDate: propFromDate,
+  toDate: propToDate,
 }) => {
   const [isFiltered, setIsFiltered] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [filterPeriod, setFilterPeriod] = useState('This Month');
+  const initial = getDefaultInitialDateRange('This Month');
+  const [filterPeriod, setFilterPeriod] = useState(initial.preset);
+  const [internalFromDate, setInternalFromDate] = useState(propFromDate || initial.fromDate);
+  const [internalToDate, setInternalToDate] = useState(propToDate || initial.toDate);
+
+  const fromDate = propFromDate ?? internalFromDate;
+  const toDate = propToDate ?? internalToDate;
 
   // ==========================================
   // 1. DATA GENERATION
@@ -41,8 +57,8 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
       <style dangerouslySetInnerHTML={{__html: `
         .force-black { color: #000000 !important; background-color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #000000 !important; font-weight: 700 !important; }
         .force-black option { color: #000000 !important; background-color: #ffffff !important; }
-        .matrix-total-cell { background-color: #dbeafe !important; font-weight: bold !important; color: #000000 !important; }
-        .matrix-grand-total { background-color: #0056b3 !important; color: #ffffff !important; font-weight: bold !important; }
+        .matrix-total-cell { background-color: var(--muted) !important; font-weight: bold !important; color: var(--foreground) !important; }
+        .matrix-grand-total { background-color: var(--primary) !important; color: #ffffff !important; font-weight: bold !important; }
         @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
       `}} />
 
@@ -53,43 +69,62 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
           <select 
             className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[140px]"
             value={filterPeriod}
-            onChange={(e) => setFilterPeriod(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFilterPeriod(val);
+              if (val !== 'Date Range' && val !== 'EOD Date') {
+                const resolved = resolveDateRangeFromPreset(val, fromDate, toDate);
+                setInternalFromDate(resolved.fromDate);
+                setInternalToDate(resolved.toDate);
+              }
+            }}
           >
             <option value="Today">Today</option>
             <option value="Yesterday">Yesterday</option>
+            <option value="This Week">This Week</option>
             <option value="This Month">This Month</option>
             <option value="Last Month">Last Month</option>
-            <option value="Date Range">Date Range</option>
-            <option value="EOD Date">EOD Date</option>
+            <option value="Date Range">Custom Date Range</option>
           </select>
 
-          {/* Conditional Input Rendering based on Dropdown */}
-          {filterPeriod === 'Date Range' ? (
-            <div className="flex items-center gap-2">
-              <input type="date" defaultValue="2026-08-01" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
-              <input type="date" defaultValue="2026-08-29" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
-            </div>
-          ) : filterPeriod === 'EOD Date' || filterPeriod === 'Today' || filterPeriod === 'Yesterday' ? (
-            <input type="date" defaultValue="2026-08-28" className="force-black border border-slate-400 rounded p-1.5 text-[13px]" />
-          ) : (
-            <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
-          )}
+          {/* Dynamic Date Inputs with bidirectional sync */}
+          <div className="flex items-center gap-2">
+            <input 
+              type="date" 
+              value={fromDate} 
+              onChange={(e) => {
+                setInternalFromDate(e.target.value);
+                setFilterPeriod('Date Range');
+              }}
+              className="force-black border border-slate-400 rounded p-1.5 text-[13px]" 
+            />
+            <span className="text-slate-500 font-bold text-xs">to</span>
+            <input 
+              type="date" 
+              value={toDate} 
+              onChange={(e) => {
+                setInternalToDate(e.target.value);
+                setFilterPeriod('Date Range');
+              }}
+              className="force-black border border-slate-400 rounded p-1.5 text-[13px]" 
+            />
+          </div>
 
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
             <option>Southern Olive Oil Products S.A.R.L</option>
           </select>
           
           <div className="flex items-center gap-2 ml-2">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 text-xs shadow-xs cursor-pointer">Filter Report</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 text-xs shadow-xs cursor-pointer">Reset Filters</button>
           </div>
         </div>
         
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800" title="Zoom In">
+          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom In">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
           </button>
-          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-emerald-700 text-white rounded hover:bg-emerald-800" title="Zoom Out">
+          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom Out">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" /></svg>
           </button>
           <button onClick={() => window.print()} className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">
@@ -121,12 +156,12 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
               <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
               
               <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
-                <div className="w-[150px] text-left">28-Aug-2026</div>
+                <div className="w-[150px] text-left">{executionDate || formatDisplayDate(new Date())}</div>
                 <div className="flex-1 flex justify-center gap-16">
-                   <span>From Date: {allDates[0]}</span>
-                   <span>To Date: {allDates[allDates.length - 1]}</span>
+                   <span>From Date: {formatDisplayDate(parseISODate(fromDate))}</span>
+                   <span>To Date: {formatDisplayDate(parseISODate(toDate))}</span>
                 </div>
-                <div className="w-[150px] text-right">Page 1 of 72</div>
+                <div className="w-[150px] text-right">Page 1 of 1</div>
               </div>
               
               <div className="text-left font-bold text-[11px] mt-1 mb-6 leading-tight">

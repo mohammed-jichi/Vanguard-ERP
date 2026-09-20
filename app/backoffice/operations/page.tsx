@@ -24,6 +24,19 @@ import OperationsActionsViews from './OperationsActionsViews';
 import OperationsProductRequestViews from './OperationsProductRequestViews';
 import OperationsEventsViews from './OperationsEventsViews';
 import OperationsSetupViews from './OperationsSetupViews';
+import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
+
+const HANDLED_OPS_SECTIONS = new Set([
+  'dashboard', 'reports', 'sales', 'quotations', 'delivery_goods', 'purchases',
+  'purchase_orders', 'reorder_guide', 'lost_goods', 'item_assembly', 'transfers',
+  'adjustments', 'product_request', 'manage_product_requests', 'product_req_prep',
+  'receiving_goods', 'product_req_reports', 'request_reject_reasons', 'events',
+  'event_venues', 'event_resources', 'event_types', 'quick_setup', 'products_services',
+  'groups', 'divisions', 'categories', 'units', 'locations', 'suppliers',
+  'departments', 'lost_goods_reason', 'sizes_groups', 'sizes', 'colors',
+  'discounts', 'payment_types', 'currency_setup', 'inventory_brands',
+  'inventory_sources', 'delivery_providers'
+]);
 
 export type OpsSectionKey =
   // 1. Dashboard Section
@@ -105,7 +118,7 @@ function OperationsCenterComponent() {
   ].includes(activeSection);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* GLOBAL TOAST */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl animate-fade-in border border-emerald-400">
@@ -240,6 +253,19 @@ function OperationsCenterComponent() {
           activeSection === 'inventory_sources' ||
           activeSection === 'delivery_providers') && (
           <OperationsSetupViews section={activeSection as any} />
+        )}
+
+        {/* =========================================================================
+            FALLBACK: UNFINISHED OR INVALID OPERATIONS SECTION
+            ========================================================================= */}
+        {!HANDLED_OPS_SECTIONS.has(activeSection) && (
+          <StandardUnderDevelopmentPlaceholder
+            moduleTitle={`Operations: ${activeSection}`}
+            moduleCategory="OPERATIONS & PRODUCTION"
+            description={`The operational view or workstation "${activeSection}" is currently undergoing active engineering. Core transaction logs remain preserved.`}
+            backUrl="/backoffice"
+            backLabel="Back to Enterprise Hub"
+          />
         )}
       </main>
     </div>

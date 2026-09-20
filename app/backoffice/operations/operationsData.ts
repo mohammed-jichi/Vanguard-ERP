@@ -549,8 +549,8 @@ export const INITIAL_SUPPLIERS: SupplierRecord[] = [
   { id: 'SUP-10', name: 'Sedi Hisham', contactPerson: 'Abir', phone: '+961 1 300 200', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-04-02', updatedAt: '2026-04-02' },
   { id: 'SUP-11', name: 'SOOL', contactPerson: 'Southern Olive Oil', phone: '+961 5 432 100', grade: 'A+', country: 'Lebanon', notes: '', balanceUsd: 4850.00, balanceLbp: 0, createdAt: '2025-12-15', updatedAt: '2025-12-15' },
   { id: 'SUP-12', name: 'Zahwe', contactPerson: 'Zahwe', phone: '+961 70 798 854', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2025-12-07', updatedAt: '2025-12-07' },
-  { id: 'SUP-13', name: 'الضيعة', contactPerson: 'الضيعة', phone: '+961 70 325 417', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-03-23', updatedAt: '2026-03-23' },
-  { id: 'SUP-14', name: 'مؤسسة عبده للتجارة', contactPerson: 'عبده للتجارة', phone: '+961 7 725 330', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-02-19', updatedAt: '2026-05-13' }
+  { id: 'SUP-13', name: 'Al-Dayaa', contactPerson: 'Al-Dayaa', phone: '+961 70 325 417', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-03-23', updatedAt: '2026-03-23' },
+  { id: 'SUP-14', name: 'Abdo Trading Est.', contactPerson: 'Abdo Trading', phone: '+961 7 725 330', grade: 'A', country: 'Lebanon', notes: '', balanceUsd: 0, balanceLbp: 0, createdAt: '2026-02-19', updatedAt: '2026-05-13' }
 ];
 
 export const INITIAL_DEPARTMENTS: DepartmentRecord[] = [
@@ -591,17 +591,17 @@ export const INITIAL_BRANDS: InventoryBrandRecord[] = [
   { id: 'BRD-28', brandId: 'BRD-TEB', name: 'Teba', manufacturer: 'Teba Products', country: 'Lebanon' },
   { id: 'BRD-29', brandId: 'BRD-TOR', name: 'Tora Bika', manufacturer: 'Mayora', country: 'Indonesia' },
   { id: 'BRD-30', brandId: 'BRD-UNO', name: 'Uno', manufacturer: 'Uno Snacks', country: 'Lebanon' },
-  { id: 'BRD-31', brandId: 'BRD-ALI', name: 'أليشان', manufacturer: 'Alishan Foods', country: 'Lebanon' },
-  { id: 'BRD-32', brandId: 'BRD-SAF', name: 'افران الصفا', manufacturer: 'Safa Bakery', country: 'Lebanon' },
-  { id: 'BRD-33', brandId: 'BRD-AME', name: 'الأمين', manufacturer: 'Al-Amin Mills', country: 'Lebanon' },
-  { id: 'BRD-34', brandId: 'BRD-SHA', name: 'الشرق', manufacturer: 'Al-Sharq Products', country: 'Lebanon' },
-  { id: 'BRD-35', brandId: 'BRD-MUN', name: 'المنى', manufacturer: 'Al-Mona Foods', country: 'Lebanon' },
-  { id: 'BRD-36', brandId: 'BRD-TAG', name: 'تغذية', manufacturer: 'Taghziah Meat & Poultry', country: 'Lebanon' },
-  { id: 'BRD-37', brandId: 'BRD-HIS', name: 'راس الحصان', manufacturer: 'Ras Al-Hossan Mills', country: 'Lebanon' },
-  { id: 'BRD-38', brandId: 'BRD-ZAY', name: 'زيت و زيتون الجنوب', manufacturer: 'Southern Olive Oil Products S.A.R.L', country: 'Lebanon' },
-  { id: 'BRD-39', brandId: 'BRD-SAM', name: 'سما فوودز', manufacturer: 'Sama Foods Co.', country: 'Lebanon' },
-  { id: 'BRD-40', brandId: 'BRD-CRY', name: 'كريستال', manufacturer: 'Crystal Ghee & Oils', country: 'Lebanon' },
-  { id: 'BRD-41', brandId: 'BRD-NIN', name: 'نينا', manufacturer: 'Nina Food Products', country: 'Lebanon' }
+  { id: 'BRD-31', brandId: 'BRD-ALI', name: 'Alishan', manufacturer: 'Alishan Foods', country: 'Lebanon' },
+  { id: 'BRD-32', brandId: 'BRD-SAF', name: 'Safa Bakery', manufacturer: 'Safa Bakery', country: 'Lebanon' },
+  { id: 'BRD-33', brandId: 'BRD-AME', name: 'Al-Amin', manufacturer: 'Al-Amin Mills', country: 'Lebanon' },
+  { id: 'BRD-34', brandId: 'BRD-SHA', name: 'Al-Sharq', manufacturer: 'Al-Sharq Products', country: 'Lebanon' },
+  { id: 'BRD-35', brandId: 'BRD-MUN', name: 'Al-Mona', manufacturer: 'Al-Mona Foods', country: 'Lebanon' },
+  { id: 'BRD-36', brandId: 'BRD-TAG', name: 'Taghziah', manufacturer: 'Taghziah Meat & Poultry', country: 'Lebanon' },
+  { id: 'BRD-37', brandId: 'BRD-HIS', name: 'Ras Al-Hossan', manufacturer: 'Ras Al-Hossan Mills', country: 'Lebanon' },
+  { id: 'BRD-38', brandId: 'BRD-ZAY', name: 'Southern Olive Oil', manufacturer: 'Southern Olive Oil Products S.A.R.L', country: 'Lebanon' },
+  { id: 'BRD-39', brandId: 'BRD-SAM', name: 'Sama Foods', manufacturer: 'Sama Foods Co.', country: 'Lebanon' },
+  { id: 'BRD-40', brandId: 'BRD-CRY', name: 'Crystal', manufacturer: 'Crystal Ghee & Oils', country: 'Lebanon' },
+  { id: 'BRD-41', brandId: 'BRD-NIN', name: 'Nina', manufacturer: 'Nina Food Products', country: 'Lebanon' }
 ];
 
 export const INITIAL_SOURCES: InventorySourceRecord[] = [

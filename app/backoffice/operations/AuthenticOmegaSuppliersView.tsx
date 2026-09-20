@@ -38,8 +38,8 @@ export default function AuthenticOmegaSuppliersView() {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length >= INITIAL_OMEGA_SUPPLIERS.length) {
             return parsed.map((item: SupplierItem) => {
-              if (item.SUPPLIERID === 11 || item.SUPPLIERNAME === 'مؤسسة عبده للتجاره') {
-                return { ...item, SUPPLIERNAME: 'مؤسسة عبده للتجارة' };
+              if (item.SUPPLIERID === 11 || item.SUPPLIERNAME === 'Abdo Trading Est.') {
+                return { ...item, SUPPLIERNAME: 'Abdo Trading Est.' };
               }
               return item;
             });
@@ -666,7 +666,7 @@ export default function AuthenticOmegaSuppliersView() {
     <div className="space-y-4 font-sans text-slate-800 animate-fade-in relative pb-12">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-[99999] bg-[#1e293b] text-white px-4 py-2.5 rounded shadow-lg text-xs font-semibold flex items-center gap-2 border border-slate-700 animate-fade-in">
+        <div className="fixed top-5 right-5 z-[99999] bg-primary text-white px-4 py-2.5 rounded shadow-lg text-xs font-semibold flex items-center gap-2 border border-slate-700 animate-fade-in">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -678,7 +678,7 @@ export default function AuthenticOmegaSuppliersView() {
         <div>
           <h1 className="text-[26px] font-normal text-slate-800 tracking-tight">Suppliers</h1>
           <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-            <span className="text-[#195a96] hover:underline cursor-pointer">Home</span>
+            <span className="text-primary hover:underline cursor-pointer">Home</span>
             <span className="text-slate-400">/</span>
             <span className="text-slate-600">Suppliers</span>
           </div>
@@ -740,7 +740,7 @@ export default function AuthenticOmegaSuppliersView() {
               <button
                 type="button"
                 onClick={() => setIsActionsOpen(!isActionsOpen)}
-                className="px-3 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
+                className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
               >
                 <span>Actions</span>
                 <ChevronDown className="w-3 h-3" />
@@ -769,7 +769,7 @@ export default function AuthenticOmegaSuppliersView() {
             <button
               type="button"
               onClick={openNewModal}
-              className="px-3.5 py-1.5 rounded-sm bg-[#195a96] hover:bg-[#144777] text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer transition"
+              className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer transition"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>New</span>
@@ -784,7 +784,7 @@ export default function AuthenticOmegaSuppliersView() {
       <div className="bg-white border border-slate-200 rounded-sm overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+            <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
               <tr>
                 <th
                   onClick={() => handleSort('SUPPLIERID')}
@@ -895,7 +895,7 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={() => openEditModal(row)}
                           title="Edit Supplier"
-                          className="p-1.5 rounded-sm bg-[#323f4b] hover:bg-[#232c35] text-white cursor-pointer transition shadow-2xs"
+                          className="p-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white cursor-pointer transition shadow-2xs"
                         >
                           <Edit2 className="w-3 h-3" />
                         </button>
@@ -903,7 +903,7 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={() => handleDeleteSupplier(row)}
                           title="Delete Supplier"
-                          className="p-1.5 rounded-sm bg-[#842029] hover:bg-[#681920] text-white cursor-pointer transition shadow-2xs"
+                          className="p-1.5 rounded-sm bg-destructive hover:bg-destructive/90 text-white cursor-pointer transition shadow-2xs"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -920,7 +920,7 @@ export default function AuthenticOmegaSuppliersView() {
         <div className="px-4 py-3 border-t border-slate-200 bg-white flex items-center justify-center">
           <div className="flex items-center gap-1 text-xs">
             <span className="px-2.5 py-1 text-slate-400 select-none">«</span>
-            <span className="px-2.5 py-1 bg-blue-50 text-[#195a96] border border-blue-200 rounded-sm font-bold">1</span>
+            <span className="px-2.5 py-1 bg-blue-50 text-primary border border-blue-200 rounded-sm font-bold">1</span>
             <span className="px-2.5 py-1 text-slate-400 select-none">»</span>
           </div>
         </div>
@@ -957,7 +957,7 @@ export default function AuthenticOmegaSuppliersView() {
             >
               {/* Card 1: General */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
+                <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
                   General
                 </div>
                 <div className="p-4 space-y-3">
@@ -976,7 +976,7 @@ export default function AuthenticOmegaSuppliersView() {
                       <button
                         type="button"
                         title="Search in Omega Marketplace"
-                        className="px-3 py-2 bg-[#23783a] hover:bg-[#1c602e] text-white rounded-sm flex items-center justify-center cursor-pointer transition shadow-2xs"
+                        className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm flex items-center justify-center cursor-pointer transition shadow-2xs"
                       >
                         <Search className="w-4 h-4" />
                       </button>
@@ -1013,7 +1013,7 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={() => setIsTitlesModalOpen(true)}
                           title="Manage Titles"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
+                          className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -1038,7 +1038,7 @@ export default function AuthenticOmegaSuppliersView() {
 
               {/* Card 2: Contact Information */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
+                <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
                   Contact Information
                 </div>
                 <div className="p-4 space-y-3">
@@ -1097,7 +1097,7 @@ export default function AuthenticOmegaSuppliersView() {
 
               {/* Card 3: Address */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
+                <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
                   Address
                 </div>
                 <div className="p-4 space-y-3">
@@ -1150,7 +1150,7 @@ export default function AuthenticOmegaSuppliersView() {
 
               {/* Card 4: Billing */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
+                <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
                   Billing
                 </div>
                 <div className="p-4 space-y-3">
@@ -1173,7 +1173,7 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={handleOpenNewCurrency}
                           title="Add New Currency"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-2xs border border-[#323f4b] shrink-0 flex items-center justify-center"
+                          className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-2xs border border-primary shrink-0 flex items-center justify-center"
                         >
                           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
@@ -1199,7 +1199,7 @@ export default function AuthenticOmegaSuppliersView() {
                           type="button"
                           onClick={handleOpenNewPaymentTerm}
                           title="Add New Payment Term"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-2xs border border-[#323f4b] shrink-0 flex items-center justify-center"
+                          className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-2xs border border-primary shrink-0 flex items-center justify-center"
                         >
                           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
@@ -1260,7 +1260,7 @@ export default function AuthenticOmegaSuppliersView() {
 
               {/* Card 5: Additional Information */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
+                <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
                   Additional Information
                 </div>
                 <div className="p-4 space-y-3">
@@ -1272,13 +1272,13 @@ export default function AuthenticOmegaSuppliersView() {
                           type="text"
                           value={formAccountNumber}
                           onChange={(e) => setFormAccountNumber(e.target.value)}
-                          className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] text-slate-700 font-mono"
+                          className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-muted text-slate-700 font-mono"
                         />
                         <button
                           type="button"
                           onClick={() => setIsAutogenAccountConfirmOpen(true)}
                           title="Autogenerate Account Number"
-                          className="px-3 py-2 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm cursor-pointer shadow-2xs"
+                          className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                         </button>
@@ -1329,7 +1329,7 @@ export default function AuthenticOmegaSuppliersView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-5 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1397,7 +1397,7 @@ export default function AuthenticOmegaSuppliersView() {
                   type="button"
                   onClick={handleInitiateMerge}
                   disabled={!fromSupplierId || !toSupplierId}
-                  className="px-4 py-2 rounded-sm bg-[#6c757d] hover:bg-[#5a6268] disabled:opacity-50 text-white font-semibold text-xs shadow-xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-sm bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold text-xs shadow-xs cursor-pointer transition"
                 >
                   Merge Suppliers
                 </button>
@@ -1420,7 +1420,7 @@ export default function AuthenticOmegaSuppliersView() {
             style={{ zIndex: 100000 }}
           >
             {/* Dark Header */}
-            <div className="px-4 py-3 bg-[#1e1e1e] text-white flex items-center justify-between">
+            <div className="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wide">
                 WARNING! THIS ACTION CANNOT BE RECOVERED ONCE EXECUTED.
               </h3>
@@ -1477,8 +1477,8 @@ export default function AuthenticOmegaSuppliersView() {
                   disabled={!isMergeConfirmationValid}
                   className={`px-4 py-1.5 rounded-sm text-xs font-bold transition shadow-xs ${
                     isMergeConfirmationValid
-                      ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white cursor-pointer shadow-sm'
-                      : 'bg-[#4b5563] text-white opacity-40 cursor-not-allowed'
+                      ? 'bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-sm'
+                      : 'bg-slate-600 text-white opacity-40 cursor-not-allowed'
                   }`}
                 >
                   OK
@@ -1515,12 +1515,12 @@ export default function AuthenticOmegaSuppliersView() {
 
             {/* Table */}
             <div className="p-5">
-              <div className="border border-[#edf1f5] rounded-sm overflow-hidden">
-                <div className="p-3 border-b border-[#edf1f5] flex justify-end">
+              <div className="border border-border rounded-sm overflow-hidden">
+                <div className="p-3 border-b border-border flex justify-end">
                   <button
                     type="button"
                     onClick={handleOpenNewTitle}
-                    className="bg-[#323f4b] hover:bg-[#242d35] text-white px-3 py-1.5 rounded-sm text-xs font-semibold flex items-center gap-1 shadow-xs cursor-pointer"
+                    className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded-sm text-xs font-semibold flex items-center gap-1 shadow-xs cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>New</span>
@@ -1528,13 +1528,13 @@ export default function AuthenticOmegaSuppliersView() {
                 </div>
                 <table className="w-full text-left text-xs text-slate-700">
                   <thead>
-                    <tr className="border-b border-[#edf1f5] bg-white font-bold text-slate-800 text-[12px]">
+                    <tr className="border-b border-border bg-white font-bold text-slate-800 text-[12px]">
                       <th className="py-2.5 px-3 w-12 font-semibold">#</th>
                       <th className="py-2.5 px-3 font-semibold">Description</th>
                       <th className="py-2.5 px-3 w-20 text-end"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#edf1f5]">
+                  <tbody className="divide-y divide-border">
                     {custTitles.map((t, idx) => (
                       <tr key={t.ID} className="hover:bg-slate-50 transition-colors">
                         <td className="py-2.5 px-3 font-normal text-slate-800">{idx + 1}</td>
@@ -1544,7 +1544,7 @@ export default function AuthenticOmegaSuppliersView() {
                             <button
                               type="button"
                               onClick={() => handleOpenEditTitle(t)}
-                              className="bg-[#323f4b] hover:bg-[#242d35] text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
+                              className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
                               title="Edit Title"
                             >
                               <Edit2 className="w-3 h-3" />
@@ -1552,7 +1552,7 @@ export default function AuthenticOmegaSuppliersView() {
                             <button
                               type="button"
                               onClick={() => handleDeleteTitle(t)}
-                              className="bg-[#5c2828] hover:bg-[#481e1e] text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
+                              className="bg-destructive hover:bg-destructive/90 text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
                               title="Delete Title"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -1607,7 +1607,7 @@ export default function AuthenticOmegaSuppliersView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1655,7 +1655,7 @@ export default function AuthenticOmegaSuppliersView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1752,7 +1752,7 @@ export default function AuthenticOmegaSuppliersView() {
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1811,7 +1811,7 @@ export default function AuthenticOmegaSuppliersView() {
                 <div className="shrink-0">
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition h-[35px]"
+                    className="px-5 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition h-[35px]"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save</span>
@@ -1850,7 +1850,7 @@ export default function AuthenticOmegaSuppliersView() {
                 <button
                   type="button"
                   onClick={handleConfirmAutogenAccount}
-                  className="px-5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#242d35] text-white text-xs font-bold cursor-pointer transition shadow-xs"
+                  className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold cursor-pointer transition shadow-xs"
                 >
                   OK
                 </button>

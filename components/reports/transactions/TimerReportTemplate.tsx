@@ -58,9 +58,9 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
       <style dangerouslySetInnerHTML={{__html: `
         .force-black { color: #000000 !important; background-color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #000000 !important; font-weight: 700 !important; }
         .force-black option { color: #000000 !important; background-color: #ffffff !important; }
-        .matrix-total-bg { background-color: #dbeafe !important; color: #000000 !important; }
+        .matrix-total-bg { background-color: var(--muted) !important; color: var(--foreground) !important; }
         .matrix-total-bold { font-weight: bold !important; }
-        .matrix-grand-total { background-color: #0056b3 !important; color: #ffffff !important; font-weight: bold !important; }
+        .matrix-grand-total { background-color: var(--primary) !important; color: #ffffff !important; font-weight: bold !important; }
         @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
       `}} />
 
@@ -84,16 +84,16 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
             Real Date
           </label>
           <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
-            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
+            <button onClick={() => setIsFiltered(true)} className="px-4 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 text-xs shadow-xs cursor-pointer">Filter Report</button>
+            <button onClick={() => setIsFiltered(false)} className="px-4 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 text-xs shadow-xs cursor-pointer">Reset Filters</button>
           </div>
         </div>
         
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-emerald-700 text-white rounded" title="Zoom In">
+          <button onClick={() => setZoomLevel(p => Math.min(p + 0.1, 1.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom In">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
           </button>
-          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-emerald-700 text-white rounded" title="Zoom Out">
+          <button onClick={() => setZoomLevel(p => Math.max(p - 0.1, 0.5))} className="p-2 bg-muted text-foreground border border-border rounded-lg hover:bg-slate-200 shadow-xs cursor-pointer" title="Zoom Out">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" /></svg>
           </button>
           <button onClick={() => window.print()} className="px-4 py-1.5 bg-slate-700 text-white rounded text-[13px] font-bold flex items-center gap-2 hover:bg-slate-800">

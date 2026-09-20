@@ -191,7 +191,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
             )}
 
             <div className="flex items-center gap-2 ml-auto">
-              <button onClick={() => setIsFiltered(true)} className="px-10 py-1.5 bg-[#475569] text-white rounded font-bold hover:bg-slate-700 text-[13px]">Filter Report</button>
+              <button onClick={() => setIsFiltered(true)} className="px-6 py-1.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-slate-800 text-xs shadow-xs cursor-pointer">Filter Report</button>
             </div>
           </div>
 
@@ -200,29 +200,29 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
             <div className="flex flex-col">
               <span className="text-[11px] font-bold text-slate-500 mb-0.5">Branch</span>
               <select 
-                className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[200px]"
+                className="border border-border rounded-lg p-1.5 text-xs w-[200px] bg-card text-foreground"
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               >
-                <option value="Main Branch">Main Branch (الفرع الرئيسي)</option>
+                <option value="Main Branch">Main Branch</option>
               </select>
             </div>
             
             <div className="flex flex-col flex-1 max-w-[400px]">
               <span className="text-[11px] font-bold text-slate-500 mb-0.5">Item</span>
-              <div className="flex border border-slate-400 rounded overflow-hidden bg-white cursor-pointer" onClick={() => setIsModalOpen(true)}>
-                <div className="px-3 py-1.5 bg-slate-100 border-r border-slate-300 text-slate-600 font-bold flex items-center justify-center">🔍</div>
+              <div className="flex border border-slate-400 rounded-lg overflow-hidden bg-card cursor-pointer" onClick={() => setIsModalOpen(true)}>
+                <div className="px-3 py-1.5 bg-muted border-r border-border text-muted-foreground font-bold flex items-center justify-center">🔍</div>
                 <input 
                   type="text" 
                   readOnly 
                   placeholder={selectedItem ? "" : "Search Item... (Leave empty for All)"} 
                   value={selectedItem ? selectedItem.desc : ''}
-                  className="w-full p-1.5 text-[13px] force-black outline-none cursor-pointer" 
+                  className="w-full p-1.5 text-xs text-foreground outline-none cursor-pointer bg-transparent" 
                 />
                 {selectedItem && (
                   <button 
                     onClick={(e) => { e.stopPropagation(); setSelectedItem(null); }} 
-                    className="px-2 text-slate-400 hover:text-red-500 font-bold"
+                    className="px-2 text-muted-foreground hover:text-red-500 font-bold"
                   >
                     ×
                   </button>
@@ -231,7 +231,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
             </div>
             
             <div className="flex items-center gap-2 ml-auto mt-auto">
-              <button onClick={() => {setIsFiltered(false); setSelectedItem(null);}} className="px-10 py-1.5 bg-[#5e3b3b] text-white rounded font-bold hover:bg-red-900 text-[13px]">Reset Filters</button>
+              <button onClick={() => {setIsFiltered(false); setSelectedItem(null);}} className="px-6 py-1.5 bg-muted text-foreground border border-border rounded-lg font-medium hover:bg-slate-200 text-xs shadow-xs cursor-pointer">Reset Filters</button>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ interface SocialRepFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaveSuccess?: () => void;
-  isManagerRole?: boolean; // إذا كان True يتم إخفاء أشرطة العمولات
+  isManagerRole?: boolean;
 }
 
 export default function SocialRepFormModal({
@@ -23,7 +23,7 @@ export default function SocialRepFormModal({
   const [socialPhone, setSocialPhone] = useState('');
 
   // Detailed Address
-  const [region, setRegion] = useState('جبل لبنان');
+  const [region, setRegion] = useState('Mount Lebanon');
   const [city, setCity] = useState('');
   const [street, setStreet] = useState('');
   const [building, setBuilding] = useState('');
@@ -65,7 +65,7 @@ export default function SocialRepFormModal({
 
   const handleSave = () => {
     if (!firstName || !lastName || !personalPhone || !adminCode) {
-      alert('يرجى ملء الحقول الأساسية: الاسم، العائلة، رقم الهاتف، وكود الإدارة');
+      alert('Please fill in required fields: First Name, Last Name, Phone Number, and Admin Code.');
       return;
     }
 
@@ -93,227 +93,234 @@ export default function SocialRepFormModal({
       commission_items_pct: isManagerRole ? 0 : commissionItems,
     };
 
-    console.log('[Southern Olive Oil Products S.A.R.L] Saving Rep:', payload);
-    alert(`تم إنشاء وتثبيت الموظف بنجاح بكود النظام: ${systemCode}`);
+    console.log('[Vanguard ERP] Registering Rep:', payload);
+    alert(`Representative record created successfully with code: ${systemCode}`);
     if (onSaveSuccess) onSaveSuccess();
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans text-right select-none overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-2xl border border-slate-200 shadow-xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 font-sans text-left select-none overflow-y-auto">
+      <div className="bg-card w-full max-w-2xl rounded-xl border border-border shadow-xl overflow-hidden my-6">
         
         {/* Modal Header */}
-        <div className="bg-[#1e232d] text-white px-5 py-3.5 flex items-center justify-between">
+        <div className="bg-primary text-primary-foreground px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <h2 className="text-sm font-bold tracking-tight">
-              {isManagerRole ? 'إضافة مدير سوشيال ميديا (Social Media Manager)' : 'إضافة مندوب سوشيال ميديا جديد (Social Media Rep)'}
+            <h2 className="text-sm font-bold tracking-tight uppercase">
+              {isManagerRole ? 'Add Social Media Manager' : 'Add Social Media Sales Representative'}
             </h2>
           </div>
           <button 
             type="button" 
             onClick={onClose} 
-            className="text-slate-400 hover:text-white text-base font-bold transition-colors"
+            className="text-primary-foreground/70 hover:text-primary-foreground text-base font-bold transition-colors cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Modal Body Form */}
-        <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar text-xs text-slate-800">
+        <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar text-xs text-foreground">
           
           {/* Section 1: Full Name */}
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-[#1a629b] mb-2">1. الاسم الكامل</h3>
+          <div className="border-b border-border/60 pb-3">
+            <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">1. Full Legal Name</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">الاسم الأول *</label>
+                <label className="block font-medium text-muted-foreground mb-1">First Name *</label>
                 <input
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="الاسم"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-medium focus:border-[#1a629b] focus:outline-none"
+                  placeholder="First name"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">اسم الأب *</label>
+                <label className="block font-medium text-muted-foreground mb-1">Middle / Father's Name *</label>
                 <input
                   type="text"
                   value={fatherName}
                   onChange={(e) => setFatherName(e.target.value)}
-                  placeholder="اسم الأب"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-medium focus:border-[#1a629b] focus:outline-none"
+                  placeholder="Middle name"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">الشهرة / العائلة *</label>
+                <label className="block font-medium text-muted-foreground mb-1">Last / Family Name *</label>
                 <input
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="العائلة"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-medium focus:border-[#1a629b] focus:outline-none"
+                  placeholder="Last name"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
           {/* Section 2: Contact Numbers */}
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-[#1a629b] mb-2">2. أرقام الهاتف</h3>
+          <div className="border-b border-border/60 pb-3">
+            <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">2. Contact Numbers</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">رقم الهاتف الخاص *</label>
+                <label className="block font-medium text-muted-foreground mb-1">Primary Mobile Phone *</label>
                 <input
                   type="text"
                   value={personalPhone}
                   onChange={(e) => setPersonalPhone(e.target.value)}
-                  placeholder="03xxxxxx أو 70xxxxxx"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-mono focus:border-[#1a629b] focus:outline-none"
+                  placeholder="+961 70 123456"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">رقم هاتف السوشيال ميديا (WhatsApp) *</label>
+                <label className="block font-medium text-muted-foreground mb-1">WhatsApp / Social Business Number *</label>
                 <input
                   type="text"
                   value={socialPhone}
                   onChange={(e) => setSocialPhone(e.target.value)}
-                  placeholder="رقم الواتساب المعتمد للزبائن"
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-mono focus:border-[#1a629b] focus:outline-none"
+                  placeholder="+961 3 123456"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* Section 3: Detailed Address */}
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-[#1a629b] mb-2">3. العنوان الكامل</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          {/* Section 3: Physical Address */}
+          <div className="border-b border-border/60 pb-3">
+            <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">3. Address & Territory</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-2.5">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">المنطقة</label>
-                <input
-                  type="text"
+                <label className="block font-medium text-muted-foreground mb-1">Governorate / Region</label>
+                <select
                   value={region}
                   onChange={(e) => setRegion(e.target.value)}
-                  placeholder="جبل لبنان / الجنوب"
-                  className="w-full px-2 py-1.5 border border-slate-300 rounded-md font-medium"
-                />
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
+                >
+                  <option value="Beirut">Beirut</option>
+                  <option value="Mount Lebanon">Mount Lebanon</option>
+                  <option value="South Lebanon">South Lebanon</option>
+                  <option value="Nabatieh">Nabatieh</option>
+                  <option value="North Lebanon">North Lebanon</option>
+                  <option value="Bekaa">Bekaa</option>
+                </select>
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">المدينة</label>
+                <label className="block font-medium text-muted-foreground mb-1">City / Town</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="الشويفات / بيروت"
-                  className="w-full px-2 py-1.5 border border-slate-300 rounded-md font-medium"
+                  placeholder="City"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">الشارع</label>
+                <label className="block font-medium text-muted-foreground mb-1">Street Address</label>
                 <input
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  placeholder="الشارع العام"
-                  className="w-full px-2 py-1.5 border border-slate-300 rounded-md font-medium"
+                  placeholder="Street"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">المبنى</label>
+                <label className="block font-medium text-muted-foreground mb-1">Building / Complex</label>
                 <input
                   type="text"
                   value={building}
                   onChange={(e) => setBuilding(e.target.value)}
-                  placeholder="بناية..."
-                  className="w-full px-2 py-1.5 border border-slate-300 rounded-md font-medium"
+                  placeholder="Building name"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">الطابق</label>
+                <label className="block font-medium text-muted-foreground mb-1">Floor / Unit</label>
                 <input
                   type="text"
                   value={floor}
                   onChange={(e) => setFloor(e.target.value)}
-                  placeholder="الطابق 3"
-                  className="w-full px-2 py-1.5 border border-slate-300 rounded-md font-medium"
+                  placeholder="Floor or Apt"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* Section 4: Dual Codes (Admin Code + System Auto-Code) */}
-          <div className="border-b border-slate-100 pb-3 bg-slate-50 p-3 rounded-xl">
-            <h3 className="font-bold text-[#1a629b] mb-2">4. رموز التعريف والكود المزدوج</h3>
+          {/* Section 4: Identification Codes */}
+          <div className="border-b border-border/60 pb-3">
+            <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">4. Identification & Codes</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">كود الإدارة المخصص (Admin Code) *</label>
+                <label className="block font-medium text-muted-foreground mb-1">Admin Assigned Code *</label>
                 <input
                   type="text"
                   value={adminCode}
                   onChange={(e) => setAdminCode(e.target.value)}
-                  placeholder="مثال: ADM-REP-01"
-                  className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-md font-bold text-[#1a629b] focus:outline-none"
+                  placeholder="e.g. ADM-REP-01"
+                  className="w-full px-2.5 py-1.5 bg-card border border-border rounded-lg font-bold text-primary focus:outline-none focus:border-primary"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">كود النظام التلقائي (System Code)</label>
+                <label className="block font-medium text-muted-foreground mb-1">System Internal Code (Auto)</label>
                 <input
                   type="text"
                   value={systemCode}
                   readOnly
-                  className="w-full px-2.5 py-1.5 bg-slate-200/80 border border-slate-300 rounded-md font-mono font-bold text-slate-600 cursor-not-allowed"
+                  className="w-full px-2.5 py-1.5 bg-muted border border-border rounded-lg font-mono font-bold text-muted-foreground cursor-not-allowed"
                 />
               </div>
             </div>
           </div>
 
           {/* Section 5: Social Media Platform Links */}
-          <div className="border-b border-slate-100 pb-3">
+          <div className="border-b border-border/60 pb-3">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-bold text-[#1a629b]">5. روابط منصات السوشيال ميديا</h3>
+              <h3 className="font-bold text-foreground uppercase tracking-wide">5. Social Media Channels</h3>
               <button
                 type="button"
                 onClick={handleAddOtherLink}
-                className="px-2 py-1 bg-blue-50 text-[#1a629b] border border-blue-200 rounded-md text-[11px] font-bold hover:bg-blue-100 transition-colors flex items-center gap-1"
+                className="px-2 py-1 bg-muted text-foreground border border-border rounded-lg text-[11px] font-semibold hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <span>+ إضافة رابط منصة أخرى</span>
+                <span>+ Add Channel</span>
               </button>
             </div>
 
             <div className="space-y-2">
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">رابط صفحة الفيسبوك (Facebook)</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">Facebook Page URL</label>
                 <input
                   type="text"
                   value={facebookLink}
                   onChange={(e) => setFacebookLink(e.target.value)}
                   placeholder="https://facebook.com/..."
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-mono text-left"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">رابط صفحة الإنستغرام (Instagram)</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">Instagram Profile URL</label>
                 <input
                   type="text"
                   value={instagramLink}
                   onChange={(e) => setInstagramLink(e.target.value)}
                   placeholder="https://instagram.com/..."
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-mono text-left"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">رابط صفحة التيك توك (TikTok)</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">TikTok Channel URL</label>
                 <input
                   type="text"
                   value={tiktokLink}
                   onChange={(e) => setTiktokLink(e.target.value)}
                   placeholder="https://tiktok.com/@..."
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md font-mono text-left"
+                  className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono"
                 />
               </div>
 
@@ -324,20 +331,20 @@ export default function SocialRepFormModal({
                     type="text"
                     value={link.title}
                     onChange={(e) => handleUpdateOtherLink(link.id, 'title', e.target.value)}
-                    placeholder="اسم المنصة (مثال: سناب شات)"
-                    className="w-1/3 px-2 py-1.5 border border-slate-300 rounded-md text-xs font-semibold"
+                    placeholder="Platform (e.g. Snapchat)"
+                    className="w-1/3 px-2 py-1.5 border border-border rounded-lg bg-card text-foreground text-xs font-semibold"
                   />
                   <input
                     type="text"
                     value={link.url}
                     onChange={(e) => handleUpdateOtherLink(link.id, 'url', e.target.value)}
-                    placeholder="الرابط https://..."
-                    className="flex-1 px-2 py-1.5 border border-slate-300 rounded-md font-mono text-xs text-left"
+                    placeholder="https://..."
+                    className="flex-1 px-2 py-1.5 border border-border rounded-lg bg-card text-foreground font-mono text-xs"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveOtherLink(link.id)}
-                    className="px-2 py-1.5 text-red-500 hover:bg-red-50 rounded"
+                    className="px-2 py-1.5 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"
                   >
                     ✕
                   </button>
@@ -348,14 +355,14 @@ export default function SocialRepFormModal({
 
           {/* Section 6: Commission Percentage Bars (Hidden for Managers) */}
           {!isManagerRole && (
-            <div className="bg-amber-50/60 border border-amber-200/80 p-3.5 rounded-xl space-y-3">
-              <h3 className="font-bold text-amber-900">6. أشرطة احتساب النسبة المئوية للعمولات (Commissions)</h3>
+            <div className="bg-muted/40 border border-border p-3.5 rounded-xl space-y-3">
+              <h3 className="font-bold text-foreground uppercase tracking-wide">6. Sales Commission Rates</h3>
               
               {/* Offers Commission Bar */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="font-bold text-slate-700">النسبة المئوية على العروضات (% on Offers):</label>
-                  <span className="font-bold font-mono text-[#1a629b] text-sm">{commissionOffers}%</span>
+                  <label className="font-medium text-foreground">Commission on Promotional Offers (%):</label>
+                  <span className="font-bold font-mono text-primary text-sm">{commissionOffers}%</span>
                 </div>
                 <input
                   type="range"
@@ -364,15 +371,15 @@ export default function SocialRepFormModal({
                   step="0.5"
                   value={commissionOffers}
                   onChange={(e) => setCommissionOffers(parseFloat(e.target.value))}
-                  className="w-full accent-[#1a629b] cursor-pointer"
+                  className="w-full accent-primary cursor-pointer"
                 />
               </div>
 
               {/* Regular Items Commission Bar */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="font-bold text-slate-700">النسبة المئوية على باقي الأصناف (% on Other Items):</label>
-                  <span className="font-bold font-mono text-[#1a629b] text-sm">{commissionItems}%</span>
+                  <label className="font-medium text-foreground">Commission on Standard Catalog Items (%):</label>
+                  <span className="font-bold font-mono text-primary text-sm">{commissionItems}%</span>
                 </div>
                 <input
                   type="range"
@@ -381,7 +388,7 @@ export default function SocialRepFormModal({
                   step="0.5"
                   value={commissionItems}
                   onChange={(e) => setCommissionItems(parseFloat(e.target.value))}
-                  className="w-full accent-[#1a629b] cursor-pointer"
+                  className="w-full accent-primary cursor-pointer"
                 />
               </div>
             </div>
@@ -390,22 +397,22 @@ export default function SocialRepFormModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-slate-50 border-t border-slate-200 px-5 py-3 flex items-center justify-between">
-          <span className="text-[11px] text-slate-500 font-mono">Southern Olive Oil Products S.A.R.L</span>
+        <div className="bg-muted border-t border-border px-5 py-3 flex items-center justify-between">
+          <span className="text-[11px] text-muted-foreground font-mono">Vanguard ERP Personnel Ledger</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-bold hover:bg-slate-100 transition-colors"
+              className="px-4 py-2 border border-border bg-card rounded-lg text-foreground font-semibold hover:bg-muted transition-colors cursor-pointer"
             >
-              إلغاء
+              Cancel
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="px-5 py-2 bg-[#1a629b] hover:bg-[#124b77] text-white font-bold rounded-lg shadow-sm transition-colors"
+              className="px-5 py-2 bg-primary hover:bg-slate-800 text-primary-foreground font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
             >
-              حفظ وإنشاء الموظف
+              Save Representative
             </button>
           </div>
         </div>

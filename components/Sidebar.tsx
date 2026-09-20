@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ChevronDown,
@@ -34,6 +34,9 @@ import {
   Crown,
   Droplets,
   Building,
+  Building2,
+  ListFilter,
+  Split,
   Tag,
   Lock,
   CalendarDays,
@@ -79,7 +82,7 @@ import {
   Activity
 } from 'lucide-react';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import TenantSettingsModal from './TenantSettingsModal';
@@ -100,6 +103,7 @@ export default function Sidebar({
   className
 }: SidebarProps = {}) {
   const router = useRouter();
+  const pathname = usePathname();
   const { currentTenant } = useTenant();
   const { language, dir, t } = useLanguage();
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(true);
@@ -150,6 +154,17 @@ export default function Sidebar({
     social: false,
   });
 
+  useEffect(() => {
+    if (pathname && (pathname.includes('/accounting') || pathname.includes('/backoffice/accounting'))) {
+      setExpandedGroups(prev => ({
+        ...prev,
+        acc: true,
+        acc_actions: true,
+        acc_setup: prev.acc_setup || pathname.includes('setup') || pathname.includes('currencies') || pathname.includes('rates') || pathname.includes('aux') || pathname.includes('classes') || pathname.includes('department'),
+      }));
+    }
+  }, [pathname]);
+
   const toggleGroup = (groupKey: string) => {
     setExpandedGroups(prev => ({
       ...prev,
@@ -170,6 +185,38 @@ export default function Sidebar({
   const matchesSearch = (title: string) => {
     if (!sidebarFilter) return true;
     return title.toLowerCase().includes(sidebarFilter.toLowerCase());
+  };
+
+  // Helper to check if a specific system module is enabled for the active tenant
+  const isModuleEnabled = (moduleKey: string): boolean => {
+    const modules = currentTenant.enabledModules || (currentTenant as any).enabled_modules;
+    // Default to true if not configured yet (full system access)
+    if (!modules || !Array.isArray(modules) || modules.length === 0) {
+      return true;
+    }
+    const lowerKey = moduleKey.toLowerCase();
+
+    // Comprehensive alias matching
+    const aliases: Record<string, string[]> = {
+      sales: ['sales', 'pos', 'sales_control', 'sales-control'],
+      pos: ['sales', 'pos', 'sales_control', 'sales-control'],
+      operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
+      op: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
+      inventory: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
+      customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
+      cust: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
+      feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys'],
+      loyalty: ['loyalty', 'loyalty_management', 'loyalty-management', 'rewards'],
+      accounting: ['accounting', 'acc', 'finance', 'financials'],
+      acc: ['accounting', 'acc', 'finance', 'financials'],
+      hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
+      fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
+      supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack'],
+      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel']
+    };
+
+    const targetList = aliases[lowerKey] || [lowerKey];
+    return modules.some((m: string) => targetList.includes(m.toLowerCase()));
   };
 
   return (
@@ -193,9 +240,9 @@ export default function Sidebar({
 
           {/* HOME ICON (🏠) */}
           <Link
-            href="/backoffice/dashboard"
+            href="/backoffice"
             onClick={() => handleNav('grid-dash')}
-            title="Home Dashboard"
+            title="Enterprise Main Hub"
             className="p-1.5 hover:bg-amber-50 rounded-lg text-amber-600 transition-colors cursor-pointer"
           >
             <Home className="w-5 h-5" />
@@ -223,16 +270,17 @@ export default function Sidebar({
         {/* ===================================================================
             MODULE 1: SALES CONTROL
             =================================================================== */}
+        {isModuleEnabled('sales') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('sales'); }}
             title='Sales Control'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['sales'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['sales'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <ShoppingCart className="w-4 h-4 text-[#195a96] shrink-0" />
+              <ShoppingCart className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">1. Sales Control</span>}
             </div>
             {isOpen && (expandedGroups['sales'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -240,45 +288,45 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['sales'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/dashboard" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Dashboard</Link>
-              <Link href="/backoffice/reportview" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Reports</Link>
-              <Link href="/backoffice/online-orders" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Online Orders</Link>
-              <Link href="/backoffice/end-of-day" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">End of Day</Link>
+              <Link href="/dashboard/sales" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
+              <Link href="/backoffice/reportview" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Reports</Link>
+              <Link href="/backoffice/online-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Online Orders</Link>
+              <Link href="/backoffice/end-of-day" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">End of Day</Link>
 
               {/* Setup */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('sc_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Setup</span>
                   <span className="text-[9px]">{expandedGroups['sc_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['sc_setup'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/screens" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Screens</Link>
-                    <Link href="/backoffice/payment-types" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Payment Types</Link>
-                    <Link href="/backoffice/coupons" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Coupons &amp; Gift Certificates</Link>
-                    <Link href="/backoffice/discounts" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Discounts</Link>
-                    <Link href="/backoffice/price-modes" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Price Modes</Link>
-                    <Link href="/backoffice/workstations-printers" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Workstations &amp; Printers</Link>
+                    <Link href="/backoffice/screens" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Screens</Link>
+                    <Link href="/backoffice/payment-types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payment Types</Link>
+                    <Link href="/backoffice/coupons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Coupons &amp; Gift Certificates</Link>
+                    <Link href="/backoffice/discounts" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Discounts</Link>
+                    <Link href="/backoffice/price-modes" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Price Modes</Link>
+                    <Link href="/backoffice/workstations-printers" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Workstations &amp; Printers</Link>
 
                     {/* More Setup */}
                     <div className="pt-0.5">
                       <button
                         onClick={() => toggleGroup('sc_moresetup')}
-                        className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-[#195a96] hover:bg-slate-50 rounded font-semibold text-xs transition-colors"
+                        className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-primary hover:bg-slate-50 rounded font-semibold text-xs transition-colors"
                       >
                         <span>More Setup</span>
-                        <span className="text-[9px] text-[#195a96]">{expandedGroups['sc_moresetup'] ? '▲' : '▼'}</span>
+                        <span className="text-[9px] text-primary">{expandedGroups['sc_moresetup'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['sc_moresetup'] && (
                         <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/void-reasons" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Void Reasons</Link>
-                          <Link href="/backoffice/vat-exemptions" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Vat Exemption Reason</Link>
-                          <Link href="/backoffice/invoice-messages" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Message On Invoice</Link>
-                          <Link href="/backoffice/zone-setup" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Zone Setup</Link>
-                          <Link href="/backoffice/currency-setup" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Currency Setup</Link>
+                          <Link href="/backoffice/void-reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Void Reasons</Link>
+                          <Link href="/backoffice/vat-exemptions" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Vat Exemption Reason</Link>
+                          <Link href="/backoffice/invoice-messages" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Message On Invoice</Link>
+                          <Link href="/backoffice/zone-setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Zone Setup</Link>
+                          <Link href="/backoffice/currency-setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Currency Setup</Link>
                         </div>
                       )}
                     </div>
@@ -288,20 +336,22 @@ export default function Sidebar({
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 2: OPERATIONS CENTER
             =================================================================== */}
+        {isModuleEnabled('operations') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('op'); }}
             title='Operations Center'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['op'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['op'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Factory className="w-4 h-4 text-[#195a96] shrink-0" />
+              <Factory className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">2. Operations Center</span>}
             </div>
             {isOpen && (expandedGroups['op'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -309,48 +359,48 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['op'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/operations?section=dashboard" className="block w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors font-semibold">Dashboard</Link>
-              <Link href="/backoffice/operations?section=reports" className="block w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors font-semibold">Reports</Link>
+              <Link href="/backoffice/operations?section=dashboard" className="block w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Dashboard</Link>
+              <Link href="/backoffice/operations?section=reports" className="block w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Reports</Link>
 
               {/* Actions */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('op_actions')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Actions</span>
                   <span className="text-[9px]">{expandedGroups['op_actions'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['op_actions'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/operations?section=sales" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Sales</Link>
-                    <Link href="/backoffice/operations?section=quotations" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Quotations</Link>
-                    <Link href="/backoffice/operations?section=delivery_goods" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Delivery of Goods</Link>
-                    <Link href="/backoffice/operations?section=purchases" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Purchases</Link>
-                    <Link href="/backoffice/operations?section=purchase_orders" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Purchase Orders</Link>
-                    <Link href="/backoffice/operations?section=reorder_guide" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Reorder Guide</Link>
-                    <Link href="/backoffice/operations?section=transfers" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Transfers</Link>
-                    <Link href="/backoffice/operations?section=lost_goods" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Lost Goods</Link>
-                    <Link href="/backoffice/operations?section=item_assembly" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Item Assembly</Link>
-                    <Link href="/backoffice/operations?section=adjustments" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Adjustments</Link>
+                    <Link href="/backoffice/operations?section=sales" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Sales</Link>
+                    <Link href="/backoffice/operations?section=quotations" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Quotations</Link>
+                    <Link href="/backoffice/operations?section=delivery_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Delivery of Goods</Link>
+                    <Link href="/backoffice/operations?section=purchases" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Purchases</Link>
+                    <Link href="/backoffice/operations?section=purchase_orders" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Purchase Orders</Link>
+                    <Link href="/backoffice/operations?section=reorder_guide" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Reorder Guide</Link>
+                    <Link href="/backoffice/operations?section=transfers" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Transfers</Link>
+                    <Link href="/backoffice/operations?section=lost_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Lost Goods</Link>
+                    <Link href="/backoffice/operations?section=item_assembly" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Item Assembly</Link>
+                    <Link href="/backoffice/operations?section=adjustments" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Adjustments</Link>
 
                     {/* Product Request */}
                     <div className="pt-0.5">
                       <button
                         onClick={() => toggleGroup('op_prodreq')}
-                        className="w-full flex items-center justify-between p-1 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                        className="w-full flex items-center justify-between p-1 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                       >
                         <span>Product Request</span>
                         <span className="text-[9px]">{expandedGroups['op_prodreq'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_prodreq'] && (
                         <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=product_request" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Product Request</Link>
-                          <Link href="/backoffice/operations?section=manage_product_requests" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Manage Product Requests</Link>
-                          <Link href="/backoffice/operations?section=product_req_prep" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded font-bold text-teal-700">Product Req. Preparation</Link>
-                          <Link href="/backoffice/operations?section=receiving_goods" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Receiving of goods</Link>
-                          <Link href="/backoffice/operations?section=product_req_reports" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Reports</Link>
-                          <Link href="/backoffice/operations?section=request_reject_reasons" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Request Reject Reasons</Link>
+                          <Link href="/backoffice/operations?section=product_request" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Product Request</Link>
+                          <Link href="/backoffice/operations?section=manage_product_requests" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Manage Product Requests</Link>
+                          <Link href="/backoffice/operations?section=product_req_prep" className="block p-1 hover:text-primary hover:bg-slate-50 rounded font-bold text-teal-700">Product Req. Preparation</Link>
+                          <Link href="/backoffice/operations?section=receiving_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Receiving of goods</Link>
+                          <Link href="/backoffice/operations?section=product_req_reports" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Reports</Link>
+                          <Link href="/backoffice/operations?section=request_reject_reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Request Reject Reasons</Link>
                         </div>
                       )}
                     </div>
@@ -359,17 +409,17 @@ export default function Sidebar({
                     <div className="pt-0.5">
                       <button
                         onClick={() => toggleGroup('op_events')}
-                        className="w-full flex items-center justify-between p-1 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                        className="w-full flex items-center justify-between p-1 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                       >
                         <span>Events</span>
                         <span className="text-[9px]">{expandedGroups['op_events'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_events'] && (
                         <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=events" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Events</Link>
-                          <Link href="/backoffice/operations?section=event_venues" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Event Venues</Link>
-                          <Link href="/backoffice/operations?section=event_resources" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Event Resources</Link>
-                          <Link href="/backoffice/operations?section=event_types" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Event Types</Link>
+                          <Link href="/backoffice/operations?section=events" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Events</Link>
+                          <Link href="/backoffice/operations?section=event_venues" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Event Venues</Link>
+                          <Link href="/backoffice/operations?section=event_resources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Event Resources</Link>
+                          <Link href="/backoffice/operations?section=event_types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Event Types</Link>
                         </div>
                       )}
                     </div>
@@ -381,46 +431,46 @@ export default function Sidebar({
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('op_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Setup</span>
                   <span className="text-[9px]">{expandedGroups['op_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['op_setup'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/operations?section=quick_setup" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=quick_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Sliders className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                       <span>Quick Setup</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=products_services" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=products_services" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Package className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       <span>Products &amp; Services</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=groups" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Layers className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                       <span>Groups</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=divisions" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=divisions" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Bookmark className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                       <span>Divisions</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=categories" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=categories" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Tag className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>Categories</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=units" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=units" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Scale className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
                       <span>Units</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=locations" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=locations" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                       <span>Locations</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=suppliers" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=suppliers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Users className="w-3.5 h-3.5 text-violet-500 shrink-0" />
                       <span>Suppliers</span>
                     </Link>
-                    <Link href="/backoffice/operations?section=departments" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                    <Link href="/backoffice/operations?section=departments" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Building className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <span>Departments</span>
                     </Link>
@@ -429,46 +479,46 @@ export default function Sidebar({
                     <div className="pt-1">
                       <button
                         onClick={() => toggleGroup('op_more')}
-                        className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-[#195a96] hover:bg-slate-50 rounded font-semibold text-xs transition-colors"
+                        className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-primary hover:bg-slate-50 rounded font-semibold text-xs transition-colors"
                       >
                         <span className="font-semibold text-slate-800">More</span>
-                        <span className="text-[9px] text-[#195a96]">{expandedGroups['op_more'] ? '▲' : '▼'}</span>
+                        <span className="text-[9px] text-primary">{expandedGroups['op_more'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_more'] && (
                         <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=lost_goods_reason" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=lost_goods_reason" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Search className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                             <span>Lost Goods Reason</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=sizes_groups" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=sizes_groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Maximize2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                             <span>Sizes Groups</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=sizes" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=sizes" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Maximize2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
                             <span>Sizes</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=colors" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=colors" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Palette className="w-3.5 h-3.5 text-pink-500 shrink-0" />
                             <span>Colors</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=discounts" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=discounts" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Percent className="w-3.5 h-3.5 text-teal-500 shrink-0" />
                             <span>Discounts</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=payment_types" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=payment_types" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <CreditCard className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                             <span>Payment Types</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=currency_setup" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=currency_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Coins className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                             <span>Currency Setup</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=inventory_brands" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=inventory_brands" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Award className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                             <span>Inventory Brands</span>
                           </Link>
-                          <Link href="/backoffice/operations?section=delivery_providers" className="flex items-center gap-2 p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">
+                          <Link href="/backoffice/operations?section=delivery_providers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Truck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>Delivery Providers</span>
                           </Link>
@@ -481,20 +531,22 @@ export default function Sidebar({
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 3: CUSTOMER MANAGEMENT
             =================================================================== */}
+        {isModuleEnabled('customers') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('cust'); }}
             title='Customer Management'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['cust'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['cust'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Users className="w-4 h-4 text-[#195a96] shrink-0" />
+              <Users className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">3. Customer Management</span>}
             </div>
             {isOpen && (expandedGroups['cust'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -502,52 +554,54 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['cust'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/customers" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Customers</Link>
-              <Link href="/backoffice/customers?section=receipts" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Customer Receipts</Link>
-              <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Customer Aged</Link>
+              <Link href="/backoffice/customers" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Customers</Link>
+              <Link href="/backoffice/customers?section=receipts" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Customer Receipts</Link>
+              <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Customer Aged</Link>
               <Link href="/customer-insights" className="w-full text-left p-1.5 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between block">
                 <span>Customer Insights</span>
                 <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">AI CRM</span>
               </Link>
-              <Link href="/schedule" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Tasks and Appointments</Link>
-              <Link href="/backoffice/customers?section=leads" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Leads &amp; Contacts</Link>
-              <Link href="/sales-manager-dashboard" target="_blank" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Sales Team Performance</Link>
+              <Link href="/schedule" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Tasks and Appointments</Link>
+              <Link href="/backoffice/customers?section=leads" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Leads &amp; Contacts</Link>
+              <Link href="/sales-manager-dashboard" target="_blank" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Sales Team Performance</Link>
 
               {/* Settings */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('cm_settings')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Settings</span>
                   <span className="text-[9px]">{expandedGroups['cm_settings'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['cm_settings'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Customers Groups</Link>
-                    <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Customers Categories</Link>
-                    <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Customers Tags</Link>
-                    <Link href="/backoffice/customers?section=leads_settings" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Leads Settings</Link>
+                    <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Groups</Link>
+                    <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Categories</Link>
+                    <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Tags</Link>
+                    <Link href="/backoffice/customers?section=leads_settings" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Leads Settings</Link>
                   </div>
                 )}
               </div>
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 4: FEEDBACK & SURVEYS
             =================================================================== */}
+        {isModuleEnabled('feedback') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('feedback'); }}
             title='Feedback & Surveys'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['feedback'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['feedback'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <MessageSquare className="w-4 h-4 text-[#195a96] shrink-0" />
+              <MessageSquare className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">4. Feedback &amp; Surveys</span>}
             </div>
             {isOpen && (expandedGroups['feedback'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -555,48 +609,50 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['feedback'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/feedback?section=dashboard" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Dashboard</Link>
-              <Link href="/backoffice/feedback?section=manage_complaints" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Manage Complaints</Link>
-              <Link href="/backoffice/feedback?section=add_complaints" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Add Complaints</Link>
-              <Link href="/backoffice/feedback?section=manage_surveys" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Manage Surveys</Link>
-              <Link href="/backoffice/feedback?section=send_survey_emails" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Send Survey Emails</Link>
+              <Link href="/backoffice/feedback?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
+              <Link href="/backoffice/feedback?section=manage_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Manage Complaints</Link>
+              <Link href="/backoffice/feedback?section=add_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Add Complaints</Link>
+              <Link href="/backoffice/feedback?section=manage_surveys" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Manage Surveys</Link>
+              <Link href="/backoffice/feedback?section=send_survey_emails" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Send Survey Emails</Link>
 
               {/* Setup */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('fb_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Setup</span>
                   <span className="text-[9px]">{expandedGroups['fb_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['fb_setup'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/feedback?section=complaint_sources" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Complaint Sources</Link>
-                    <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Complaint Categories</Link>
-                    <Link href="/backoffice/feedback?section=complaint_action_types" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Complaint Action Types</Link>
-                    <Link href="/backoffice/feedback?section=customer_care" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Customer Care</Link>
-                    <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Surveys Setup</Link>
+                    <Link href="/backoffice/feedback?section=complaint_sources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Sources</Link>
+                    <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Categories</Link>
+                    <Link href="/backoffice/feedback?section=complaint_action_types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Action Types</Link>
+                    <Link href="/backoffice/feedback?section=customer_care" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customer Care</Link>
+                    <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Surveys Setup</Link>
                   </div>
                 )}
               </div>
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 5: LOYALTY MANAGEMENT
             =================================================================== */}
+        {isModuleEnabled('loyalty') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('loyalty'); }}
             title='Loyalty Management'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['loyalty'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['loyalty'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Award className="w-4 h-4 text-[#195a96] shrink-0" />
+              <Award className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">5. Loyalty Management</span>}
             </div>
             {isOpen && (expandedGroups['loyalty'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -604,115 +660,346 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['loyalty'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/loyalty?section=dashboard" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Dashboard</Link>
-              <Link href="/backoffice/loyalty?section=reports" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Reports</Link>
-              <Link href="/backoffice/loyalty?section=members" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Members</Link>
-              <Link href="/backoffice/loyalty?section=loyalty_levels" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Loyalty Levels</Link>
-              <Link href="/backoffice/loyalty?section=loyalty_programs" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Loyalty Programs</Link>
-              <Link href="/backoffice/loyalty?section=send_messages" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Send Messages</Link>
-              <Link href="/backoffice/loyalty?section=company_info" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Company Info</Link>
+              <Link href="/backoffice/loyalty?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
+              <Link href="/backoffice/loyalty?section=reports" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Reports</Link>
+              <Link href="/backoffice/loyalty?section=members" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Members</Link>
+              <Link href="/backoffice/loyalty?section=loyalty_levels" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Loyalty Levels</Link>
+              <Link href="/backoffice/loyalty?section=loyalty_programs" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Loyalty Programs</Link>
+              <Link href="/backoffice/loyalty?section=send_messages" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Send Messages</Link>
+              <Link href="/backoffice/loyalty?section=company_info" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Company Info</Link>
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 6: ACCOUNTING
             =================================================================== */}
+        {isModuleEnabled('accounting') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('acc'); }}
             title='Accounting'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['acc'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['acc'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <FileSpreadsheet className="w-4 h-4 text-[#195a96] shrink-0" />
+              <FileSpreadsheet className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">6. Accounting</span>}
             </div>
             {isOpen && (expandedGroups['acc'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['acc'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/accounting?section=dashboard" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Dashboard</Link>
-              <Link href="/backoffice/accounting?section=reports" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Reports</Link>
+            <div className="relative ml-2.5 pl-2.5 border-l-2 border-border/80 space-y-0.5 mt-1 text-xs">
+              <Link
+                href="/backoffice/accounting?section=dashboard"
+                className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <Home className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                href="/backoffice/accounting?section=reports"
+                className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                <span>Reports</span>
+              </Link>
 
               {/* Actions */}
               <div className="pt-0.5">
                 <button
+                  type="button"
                   onClick={() => toggleGroup('acc_actions')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between px-2 py-1.5 text-foreground hover:text-primary hover:bg-accent rounded-md font-semibold text-xs transition-colors cursor-pointer group"
                 >
-                  <span>Actions</span>
-                  <span className="text-[9px]">{expandedGroups['acc_actions'] ? '▲' : '▼'}</span>
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Actions</span>
+                  </div>
+                  <ChevronRight
+                    className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
+                      expandedGroups['acc_actions'] ? 'rotate-90 text-foreground' : ''
+                    }`}
+                  />
                 </button>
                 {expandedGroups['acc_actions'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/accounting?section=jv" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Journal Voucher</Link>
-                    <Link href="/backoffice/accounting?section=purchase" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Purchase</Link>
-                    <Link href="/backoffice/accounting?section=payments" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Payments</Link>
-                    <Link href="/backoffice/accounting?section=receipts" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Receipts</Link>
-                    <Link href="/backoffice/accounting?section=ar" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Accounts Receivables</Link>
-                    <Link href="/backoffice/accounting?section=ap" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Accounts Payables</Link>
-                    <Link href="/backoffice/accounting?section=bank_recon" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Bank Reconciliation</Link>
-                    <Link href="/backoffice/accounting?section=vat_closing" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">VAT Period Closing</Link>
+                  <div className="relative ml-2.5 pl-2.5 border-l-2 border-border/80 space-y-0.5 mt-0.5 text-xs transition-all">
+                    <Link
+                      href="/accounting/journal-voucher"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/journal-voucher'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <FileSpreadsheet className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/journal-voucher' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Journal Voucher</span>
+                    </Link>
+                    <Link
+                      href="/accounting/purchase"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/purchase'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <ShoppingCart className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/purchase' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Purchase</span>
+                    </Link>
+                    <Link
+                      href="/accounting/payment"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/payment'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <CreditCard className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/payment' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Payments</span>
+                    </Link>
+                    <Link
+                      href="/accounting/receipt"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/receipt'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <Receipt className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/receipt' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Receipts</span>
+                    </Link>
+                    <Link
+                      href="/accounting/receivables"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/receivables'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <TrendingUp className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/receivables' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Accounts Receivables</span>
+                    </Link>
+                    <Link
+                      href="/accounting/payables"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/payables'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <DollarSign className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/payables' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Accounts Payables</span>
+                    </Link>
+                    <Link
+                      href="/accounting/bank-reconciliation"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/bank-reconciliation'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <Scale className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/bank-reconciliation' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>Bank Reconciliation</span>
+                    </Link>
+                    <Link
+                      href="/accounting/vat-closing"
+                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
+                        pathname === '/accounting/vat-closing'
+                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <Clock className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/vat-closing' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
+                      <span>VAT Period Closing</span>
+                    </Link>
                   </div>
                 )}
               </div>
 
-              {/* Setup */}
+              {/* Setup (Parent Root) */}
               <div className="pt-0.5">
                 <button
+                  type="button"
                   onClick={() => toggleGroup('acc_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between px-2 py-1.5 text-foreground hover:text-primary hover:bg-accent rounded-md font-semibold text-xs transition-colors cursor-pointer group"
                 >
-                  <span>Setup</span>
-                  <span className="text-[9px]">{expandedGroups['acc_setup'] ? '▲' : '▼'}</span>
+                  <div className="flex items-center gap-2">
+                    <Settings className="w-3.5 h-3.5 text-primary shrink-0 transition-transform group-hover:rotate-45 duration-300" />
+                    <span>Setup</span>
+                  </div>
+                  <ChevronRight
+                    className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
+                      expandedGroups['acc_setup'] ? 'rotate-90 text-foreground' : ''
+                    }`}
+                  />
                 </button>
-                {expandedGroups['acc_setup'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/accounting?section=accounts" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Accounts</Link>
 
-                    {/* Account Auxiliaries */}
+                {expandedGroups['acc_setup'] && (
+                  <div className="relative ml-2.5 pl-2.5 border-l-2 border-border/80 space-y-0.5 mt-0.5 text-xs transition-all">
+                    {/* 1. Accounts (direct route) */}
+                    <Link
+                      href="/backoffice/accounting?section=accounts"
+                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      <span>Accounts</span>
+                    </Link>
+
+                    {/* 2. Account Auxiliaries (Collapsible Nested Sub-menu) */}
                     <div className="pt-0.5">
                       <button
+                        type="button"
                         onClick={() => toggleGroup('acc_aux')}
-                        className="w-full flex items-center justify-between p-1 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                        className="w-full flex items-center justify-between px-2 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md font-semibold text-xs transition-colors cursor-pointer group"
                       >
-                        <span>Account Auxiliaries</span>
-                        <span className="text-[9px]">{expandedGroups['acc_aux'] ? '▲' : '▼'}</span>
+                        <div className="flex items-center gap-2">
+                          <FolderTree className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                          <span>Account Auxiliaries</span>
+                        </div>
+                        <ChevronRight
+                          className={`w-3 h-3 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
+                            expandedGroups['acc_aux'] ? 'rotate-90 text-foreground' : ''
+                          }`}
+                        />
                       </button>
-                      {expandedGroups['acc_aux'] && (
-                        <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/accounting?section=aux_classes" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Accounts Classes</Link>
-                          <Link href="/backoffice/accounting?section=aux_header1" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Account Header 1</Link>
-                          <Link href="/backoffice/accounting?section=aux_header2" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Account Header 2</Link>
-                          <Link href="/backoffice/accounting?section=aux_header3" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Account Header 3</Link>
-                          <Link href="/backoffice/accounting?section=aux_group" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Account Group</Link>
-                          <Link href="/backoffice/accounting?section=aux_jv_desc" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Jv Description</Link>
-                          <Link href="/backoffice/accounting?section=aux_jv_types" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Jv Types</Link>
-                          <Link href="/backoffice/accounting?section=aux_currency" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Currency</Link>
-                          <Link href="/backoffice/accounting?section=aux_currency_rates" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Currency Rates</Link>
 
-                          {/* Departments */}
-                          <div className="pt-0.5">
-                            <button
-                              onClick={() => toggleGroup('acc_dept')}
-                              className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-[#195a96] hover:bg-slate-50 rounded font-semibold text-xs transition-colors"
-                            >
-                              <span>Departments</span>
-                              <span className="text-[9px] text-[#195a96]">{expandedGroups['acc_dept'] ? '▲' : '▼'}</span>
-                            </button>
-                            {expandedGroups['acc_dept'] && (
-                              <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                                <Link href="/backoffice/accounting?section=dept_groups" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Department Groups</Link>
-                                <Link href="/backoffice/accounting?section=department" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Department</Link>
-                                <Link href="/backoffice/accounting?section=cash_flow_setup" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Cash Flow Report Setup</Link>
-                                <Link href="/backoffice/accounting?section=sub_dept" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Sub Department</Link>
-                              </div>
-                            )}
-                          </div>
+                      {expandedGroups['acc_aux'] && (
+                        <div className="relative ml-2.5 pl-2.5 border-l-2 border-border/60 space-y-0.5 mt-0.5 transition-all">
+                          {/* Accounts Classes */}
+                          <Link
+                            href="/backoffice/accounting?section=aux_classes"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <Layers className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Accounts Classes</span>
+                          </Link>
+                          {/* Account Header 1 */}
+                          <Link
+                            href="/backoffice/accounting?section=aux_header1"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <ListFilter className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Account Header 1</span>
+                          </Link>
+                          {/* Account Header 2 */}
+                          <Link
+                            href="/backoffice/accounting?section=aux_header2"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <ListFilter className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Account Header 2</span>
+                          </Link>
+                          {/* Account Header 3 */}
+                          <Link
+                            href="/backoffice/accounting?section=aux_header3"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <ListFilter className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Account Header 3</span>
+                          </Link>
+                          {/* Account Group */}
+                          <Link
+                            href="/backoffice/accounting?section=aux_group"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <Boxes className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Account Group</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 3. Jv Description (direct route) */}
+                    <Link
+                      href="/backoffice/accounting?section=aux_jv_desc"
+                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      <span>Jv Description</span>
+                    </Link>
+
+                    {/* 4. Jv Types (direct route) */}
+                    <Link
+                      href="/backoffice/accounting?section=aux_jv_types"
+                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      <span>Jv Types</span>
+                    </Link>
+
+                    {/* 5. Currency (direct route) */}
+                    <Link
+                      href="/backoffice/accounting?section=aux_currency"
+                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                      <Coins className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      <span>Currency</span>
+                    </Link>
+
+                    {/* 6. Currency Rates (direct route) */}
+                    <Link
+                      href="/backoffice/accounting?section=aux_currency_rates"
+                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      <span>Currency Rates</span>
+                    </Link>
+
+                    {/* 7. Departments (Collapsible Nested Sub-menu) */}
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup('acc_dept')}
+                        className="w-full flex items-center justify-between px-2 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md font-semibold text-xs transition-colors cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                          <span>Departments</span>
+                        </div>
+                        <ChevronRight
+                          className={`w-3 h-3 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
+                            expandedGroups['acc_dept'] ? 'rotate-90 text-foreground' : ''
+                          }`}
+                        />
+                      </button>
+
+                      {expandedGroups['acc_dept'] && (
+                        <div className="relative ml-2.5 pl-2.5 border-l-2 border-border/60 space-y-0.5 mt-0.5 transition-all">
+                          {/* Department Groups */}
+                          <Link
+                            href="/backoffice/accounting?section=dept_groups"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <FolderTree className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Department Groups</span>
+                          </Link>
+                          {/* Department */}
+                          <Link
+                            href="/backoffice/accounting?section=department"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <Building className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Department</span>
+                          </Link>
+                          {/* Cash Flow Report Setup */}
+                          <Link
+                            href="/backoffice/accounting?section=cash_flow_setup"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Cash Flow Report Setup</span>
+                          </Link>
+                          {/* Sub Department */}
+                          <Link
+                            href="/backoffice/accounting?section=sub_dept"
+                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                          >
+                            <Split className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                            <span>Sub Department</span>
+                          </Link>
                         </div>
                       )}
                     </div>
@@ -722,20 +1009,22 @@ export default function Sidebar({
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 7: HUMAN RESOURCES
             =================================================================== */}
+        {isModuleEnabled('hr') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('hr'); }}
             title='Human Resources'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['hr'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['hr'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <UserCheck className="w-4 h-4 text-[#195a96] shrink-0" />
+              <UserCheck className="w-4 h-4 text-primary shrink-0" />
               {isOpen && <span className="truncate font-semibold">7. Human Resources</span>}
             </div>
             {isOpen && (expandedGroups['hr'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
@@ -743,24 +1032,24 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/hr?section=schedule_overview" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Schedule Overview</Link>
-              <Link href="/backoffice/hr?section=personnel" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Personnel</Link>
-              <Link href="/backoffice/hr?section=schedules" className="block p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded">Schedules</Link>
+              <Link href="/backoffice/hr?section=schedule_overview" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Schedule Overview</Link>
+              <Link href="/backoffice/hr?section=personnel" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Personnel</Link>
+              <Link href="/backoffice/hr?section=schedules" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Schedules</Link>
 
               {/* Organization Setup */}
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('hr_orgsetup')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Organization Setup</span>
                   <span className="text-[9px]">{expandedGroups['hr_orgsetup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_orgsetup'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/hr?section=internal_departments" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Internal Departments</Link>
-                    <Link href="/backoffice/hr?section=designations" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Designations</Link>
-                    <Link href="/backoffice/hr?section=pos_employee_roles" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">POS Employee Roles</Link>
+                    <Link href="/backoffice/hr?section=internal_departments" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Internal Departments</Link>
+                    <Link href="/backoffice/hr?section=designations" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Designations</Link>
+                    <Link href="/backoffice/hr?section=pos_employee_roles" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">POS Employee Roles</Link>
                   </div>
                 )}
               </div>
@@ -769,18 +1058,18 @@ export default function Sidebar({
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('hr_attendance')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Time &amp; Attendance</span>
                   <span className="text-[9px]">{expandedGroups['hr_attendance'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_attendance'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/hr?section=time_off_requests" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Time Off Requests</Link>
-                    <Link href="/backoffice/hr?section=schedule_templates" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Schedule Templates</Link>
-                    <Link href="/backoffice/hr?section=time_off_reasons" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Time Off Reasons</Link>
-                    <Link href="/backoffice/hr?section=attendance_summary" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Attendance Summary</Link>
-                    <Link href="/backoffice/hr?section=attendance_log" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Attendance Log</Link>
+                    <Link href="/backoffice/hr?section=time_off_requests" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Time Off Requests</Link>
+                    <Link href="/backoffice/hr?section=schedule_templates" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Schedule Templates</Link>
+                    <Link href="/backoffice/hr?section=time_off_reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Time Off Reasons</Link>
+                    <Link href="/backoffice/hr?section=attendance_summary" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Attendance Summary</Link>
+                    <Link href="/backoffice/hr?section=attendance_log" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Attendance Log</Link>
                   </div>
                 )}
               </div>
@@ -789,41 +1078,43 @@ export default function Sidebar({
               <div className="pt-0.5">
                 <button
                   onClick={() => toggleGroup('hr_payroll')}
-                  className="w-full flex items-center justify-between p-1.5 text-[#195a96] hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
                 >
                   <span>Payroll</span>
                   <span className="text-[9px]">{expandedGroups['hr_payroll'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_payroll'] && (
                   <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/hr?section=payroll_dashboard" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Payroll Dashboard</Link>
-                    <Link href="/backoffice/hr?section=salary_processing" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Salary Processing</Link>
-                    <Link href="/backoffice/hr?section=payment_settings" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Payment Settings</Link>
-                    <Link href="/backoffice/hr?section=earnings_deductions" className="block p-1 hover:text-[#195a96] hover:bg-slate-50 rounded">Earnings &amp; Deductions</Link>
+                    <Link href="/backoffice/hr?section=payroll_dashboard" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payroll Dashboard</Link>
+                    <Link href="/backoffice/hr?section=salary_processing" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Salary Processing</Link>
+                    <Link href="/backoffice/hr?section=payment_settings" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payment Settings</Link>
+                    <Link href="/backoffice/hr?section=earnings_deductions" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Earnings &amp; Deductions</Link>
                   </div>
                 )}
               </div>
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 8: SUPERSONIC FLEET MANAGEMENT (VANGUARD CUSTOM - PRESERVED)
             =================================================================== */}
+        {isModuleEnabled('fleet') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
             title='Supersonic Fleet Management'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['supersonic'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['supersonic'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Truck className="w-4 h-4 text-[#195a96] shrink-0" />
+              <Truck className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>8. Supersonic Fleet Management</span>
-                  <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
+                  <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
                 </span>
               )}
             </div>
@@ -832,16 +1123,16 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['supersonic'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/fleet" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Fleet Dashboard</Link>
-              <Link href="/backoffice/fleet?tab=reports" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
+              <Link href="/backoffice/fleet" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Fleet Dashboard</Link>
+              <Link href="/backoffice/fleet?tab=reports" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>Fleet Reports</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=dispatch" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Active Dispatches</Link>
-              <Link href="/backoffice/fleet?tab=vendors" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Driver Management</Link>
-              <Link href="/backoffice/fleet?tab=path-cards" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Route Optimization</Link>
-              <Link href="/backoffice/fleet?tab=vehicles" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Vehicle Maintenance</Link>
-              <Link href="/backoffice/fleet?tab=accounting" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Driver Settlements</Link>
+              <Link href="/backoffice/fleet?tab=dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Active Dispatches</Link>
+              <Link href="/backoffice/fleet?tab=vendors" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Management</Link>
+              <Link href="/backoffice/fleet?tab=path-cards" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Route Optimization</Link>
+              <Link href="/backoffice/fleet?tab=vehicles" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Vehicle Maintenance</Link>
+              <Link href="/backoffice/fleet?tab=accounting" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Settlements</Link>
               <Link href="/vtrack" className="w-full text-left p-1.5 text-blue-700 bg-blue-50/70 hover:bg-blue-100 rounded flex items-center justify-between font-bold transition-colors mt-1 block">
                 <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-600" /> V-Track Geographics</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">ACTIVE</span>
@@ -849,24 +1140,26 @@ export default function Sidebar({
             </div>
           )}
         </div>
+        )}
 
         {/* ===================================================================
             MODULE 9: SOCIAL CRM & SUPPORT (VANGUARD CUSTOM - PRESERVED)
             =================================================================== */}
+        {isModuleEnabled('social') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('social'); }}
             title='Social CRM & Support'
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['social'] ? 'bg-slate-50 text-[#195a96] font-bold' : 'hover:bg-slate-50 hover:text-[#195a96] text-slate-700'
+              expandedGroups['social'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <Share2 className="w-4 h-4 text-[#195a96] shrink-0" />
+              <Share2 className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>9. Social CRM &amp; Support</span>
-                  <span className="bg-blue-100 text-[#195a96] text-[9px] px-1 py-0.2 rounded font-bold">ENT</span>
+                  <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">ENT</span>
                 </span>
               )}
             </div>
@@ -875,18 +1168,19 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['social'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Social CRM Dashboard</Link>
-              <Link href="/backoffice/social-crm?tab=reports" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
+              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Social CRM Dashboard</Link>
+              <Link href="/backoffice/social-crm?tab=reports" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>Reports Hub</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
               </Link>
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Omnichannel Inbox</Link>
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Campaign Analytics</Link>
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Lead Pipeline</Link>
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-[#195a96] hover:bg-slate-50 rounded transition-colors block">Automation Bots</Link>
+              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Omnichannel Inbox</Link>
+              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Campaign Analytics</Link>
+              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Lead Pipeline</Link>
+              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Automation Bots</Link>
             </div>
           )}
         </div>
+        )}
 
         {/* PROFILE & ADMIN FOOTER BUTTONS */}
         <div className="pt-2 border-t border-gray-200 space-y-1">

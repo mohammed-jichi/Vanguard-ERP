@@ -121,11 +121,11 @@ export default function AuthenticOmegaProductsServicesView() {
   }, [products, isMounted]);
 
   // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['مفرق']);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['Retail']);
   const [isMultiCategory, setIsMultiCategory] = useState<boolean>(false);
-  const [selectedDivisions, setSelectedDivisions] = useState<string[]>(['مقطرات ومدبسات مفرق']);
+  const [selectedDivisions, setSelectedDivisions] = useState<string[]>(['Retail Distillates & Molasses']);
   const [isMultiDivision, setIsMultiDivision] = useState<boolean>(false);
-  const [selectedGroups, setSelectedGroups] = useState<string[]>(['مقطرات مفرق 250مل']);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(['Retail Distillates 250ml']);
   const [isMultiGroup, setIsMultiGroup] = useState<boolean>(false);
 
   // Toolbar Filter States
@@ -326,8 +326,8 @@ export default function AuthenticOmegaProductsServicesView() {
   const [showSCPriceColumn, setShowSCPriceColumn] = useState<boolean>(false);
   const [isTreeViewMode, setIsTreeViewMode] = useState<boolean>(false);
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>({ 'Raw Materials': true });
-  const [expandedDivisions, setExpandedDivisions] = useState<{ [key: string]: boolean }>({ 'مقطرات ومدبسات جملة': true });
-  const [expandedGroups, setExpandedGroups] = useState<{ [key: string]: boolean }>({ 'مقطرات جملة': true });
+  const [expandedDivisions, setExpandedDivisions] = useState<{ [key: string]: boolean }>({ 'Wholesale Distillates & Molasses': true });
+  const [expandedGroups, setExpandedGroups] = useState<{ [key: string]: boolean }>({ 'Wholesale Distillates': true });
 
   // Modals for Actions
   const [isUpdatePricesModalOpen, setIsUpdatePricesModalOpen] = useState<boolean>(false);
@@ -862,7 +862,7 @@ export default function AuthenticOmegaProductsServicesView() {
       id: Date.now() + 1,
       parentProductId: 991,
       parentProductCode: 'PALLET-WV500ML',
-      parentDescription: 'طبلية خل ابيض 500مل (100 صندوق) - PALLET 100 BOXES',
+      parentDescription: 'White Vinegar 500ml Pallet (100 Boxes)',
       qtyConsumed: 100,
       unit: 'BOX',
       componentCostLL: editingProduct.unitCostLL || 543960,
@@ -882,7 +882,7 @@ export default function AuthenticOmegaProductsServicesView() {
       id: Date.now() + 2,
       parentProductId: 992,
       parentProductCode: 'KIT-REST-01',
-      parentDescription: 'مجموعة تجهيز مطاعم (صندوق خل + صندوق دبس) - RESTAURANT SUPPLY COMBO',
+      parentDescription: 'Restaurant Supply Combo (Vinegar Case + Molasses Case)',
       qtyConsumed: 1,
       unit: 'BOX',
       componentCostLL: editingProduct.unitCostLL || 543960,
@@ -902,7 +902,7 @@ export default function AuthenticOmegaProductsServicesView() {
       id: Date.now() + 3,
       parentProductId: 106,
       parentProductCode: 'CWV500MLB106',
-      parentDescription: 'خل ابيض 500مل (قنينة مفرق)',
+      parentDescription: 'White Vinegar 500ml (Retail Bottle)',
       qtyConsumed: 0.08,
       unit: 'BOX',
       componentCostLL: editingProduct.unitCostLL || 543960,
@@ -966,8 +966,8 @@ export default function AuthenticOmegaProductsServicesView() {
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       'Product Code,Product Description,Qty,Unit,Cost,Avg. Cost\n' +
-      'CWV500MLB106,خل ابيض 500مل,-,-,-,-\n' +
-      'CWV500ML*12B106,صندوق خل ابيض 500مل*12قنينة,0.08,BOX,45692.64,45692.64\n' +
+      'CWV500MLB106,White Vinegar 500ml,-,-,-,-\n' +
+      'CWV500ML*12B106,White Vinegar 500ml Case (12 Bottles),0.08,BOX,45692.64,45692.64\n' +
       'Total By Product,-,-,-,45692.64,45692.64\n';
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -1520,11 +1520,11 @@ export default function AuthenticOmegaProductsServicesView() {
     setSelectedSupplier('All');
     setSelectedBrand('All');
     setSelectedSource('All');
-    setSelectedCategories(['مفرق']);
+    setSelectedCategories(['Retail']);
     setIsMultiCategory(false);
-    setSelectedDivisions(['مقطرات ومدبسات مفرق']);
+    setSelectedDivisions(['Retail Distillates & Molasses']);
     setIsMultiDivision(false);
-    setSelectedGroups(['مقطرات مفرق 250مل']);
+    setSelectedGroups(['Retail Distillates 250ml']);
     setIsMultiGroup(false);
     setMoreFilters({
       serialNumber: false,
@@ -1691,11 +1691,11 @@ export default function AuthenticOmegaProductsServicesView() {
       secondLangItemComment: '',
       internalNote: '',
       categoryId: 2,
-      categoryName: selectedCategories[0] || 'مفرق',
+      categoryName: selectedCategories[0] || 'Retail',
       divisionId: 5,
-      divisionName: selectedDivisions[0] || 'مقطرات ومدبسات مفرق',
+      divisionName: selectedDivisions[0] || 'Retail Distillates & Molasses',
       groupId: 14,
-      groupName: selectedGroups[0] || 'مقطرات مفرق 250مل',
+      groupName: selectedGroups[0] || 'Retail Distillates 250ml',
       sellingFunction: 'Revenue',
       defaultLocationId: 12,
       defaultLocationName: 'Showroom',
@@ -1704,7 +1704,7 @@ export default function AuthenticOmegaProductsServicesView() {
       mainSupplierId: 5,
       mainSupplierName: 'SOOL',
       lastSupplierName: 'SOOL',
-      itemBrand: 'زيت و زيتون الجنوب',
+      itemBrand: 'Southern Olive Oil Products',
       itemLeadTime: '2 Days',
       source: 'Local',
       buyingFormat: 'UNIT',
@@ -1878,7 +1878,7 @@ export default function AuthenticOmegaProductsServicesView() {
     <div className="space-y-4 text-xs font-sans text-slate-800">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2.5 bg-[#323f4b] text-white px-4 py-2.5 rounded-sm shadow-xl animate-fade-in border border-slate-600 text-xs">
+        <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2.5 bg-primary text-white px-4 py-2.5 rounded-sm shadow-xl animate-fade-in border border-slate-600 text-xs">
           <span>{toastMessage}</span>
           <button onClick={() => setToastMessage(null)} className="hover:opacity-75 cursor-pointer ml-2">
             <X className="w-3.5 h-3.5" />
@@ -1889,9 +1889,9 @@ export default function AuthenticOmegaProductsServicesView() {
       {/* Top Header & Breadcrumbs (Matching Screenshot 1) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
         <div>
-          <h1 className="text-[20px] font-normal text-[#4d5b76]">Products & Services</h1>
+          <h1 className="text-[20px] font-normal text-muted-foreground">Products & Services</h1>
           <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
-            <span className="text-[#195a96] hover:underline cursor-pointer">Home</span>
+            <span className="text-primary hover:underline cursor-pointer">Home</span>
             <span>/</span>
             <span>Products & Services</span>
           </div>
@@ -1903,7 +1903,7 @@ export default function AuthenticOmegaProductsServicesView() {
               e.preventDefault();
               showToast('Opening Omega Products Tutorial Video');
             }}
-            className="text-[12px] text-[#195a96] hover:underline cursor-pointer flex items-center gap-1 font-medium"
+            className="text-[12px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium"
           >
             <span>Watch Tutorial</span>
           </a>
@@ -1947,7 +1947,7 @@ export default function AuthenticOmegaProductsServicesView() {
             <button
               type="button"
               onClick={openNewModal}
-              className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
+              className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>New</span>
@@ -1957,7 +1957,7 @@ export default function AuthenticOmegaProductsServicesView() {
             <button
               type="button"
               onClick={() => setIsFilterModalOpen(true)}
-              className="px-3 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
+              className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
             >
               <Filter className="w-3 h-3" />
               <span>Filters</span>
@@ -1968,7 +1968,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <button
                 type="button"
                 onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-                className="px-3 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
+                className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
               >
                 <SlidersHorizontal className="w-3 h-3" />
                 <span>Sorting</span>
@@ -2030,7 +2030,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <button
                 type="button"
                 onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
-                className="px-3 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
+                className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1 shadow-2xs cursor-pointer transition"
               >
                 <span>Actions</span>
                 <ChevronDown className="w-3 h-3" />
@@ -2243,9 +2243,9 @@ export default function AuthenticOmegaProductsServicesView() {
                         setInventoryProductionsReportMode('omega_anomaly');
                         setIsInventoryProductionsReportOpen(true);
                       }}
-                      className="w-full text-left px-3 py-1.5 text-[#195a96] hover:bg-blue-50 flex items-center gap-2.5 cursor-pointer font-semibold"
+                      className="w-full text-left px-3 py-1.5 text-primary hover:bg-blue-50 flex items-center gap-2.5 cursor-pointer font-semibold"
                     >
-                      <FileText className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span>Inventory Productions [REP_I_0041]</span>
                     </button>
                   </div>
@@ -2380,7 +2380,7 @@ export default function AuthenticOmegaProductsServicesView() {
               type="button"
               onClick={handleClearFilters}
               title="Reset all filters"
-              className="p-1.5 bg-[#5c2828] hover:bg-[#481e1e] text-white rounded-xs cursor-pointer transition shadow-2xs"
+              className="p-1.5 bg-destructive hover:bg-destructive/90 text-white rounded-xs cursor-pointer transition shadow-2xs"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -2450,7 +2450,7 @@ export default function AuthenticOmegaProductsServicesView() {
           ======================================================================= */}
       <div className="bg-white border border-slate-200 rounded-sm shadow-2xs overflow-hidden">
         {/* Tier 1: Categories */}
-        <div className="bg-[#f8fafc] border-b border-slate-200 px-2 py-1 flex items-center gap-1 overflow-x-auto">
+        <div className="bg-background border-b border-slate-200 px-2 py-1 flex items-center gap-1 overflow-x-auto">
           <button
             type="button"
             className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
@@ -2488,7 +2488,7 @@ export default function AuthenticOmegaProductsServicesView() {
         </div>
 
         {/* Tier 2: Divisions */}
-        <div className="bg-[#f1f5f9] border-b border-slate-200 px-2 py-1 flex items-center gap-1 overflow-x-auto">
+        <div className="bg-muted border-b border-slate-200 px-2 py-1 flex items-center gap-1 overflow-x-auto">
           <button
             type="button"
             className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
@@ -2544,7 +2544,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   onClick={() => handleGroupClick(grp.GROUPNAME)}
                   className={`px-3 py-1 text-[11px] rounded-xs transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-[#e2e8f0] text-slate-900 font-bold border border-slate-400 shadow-2xs'
+                      ? 'bg-muted text-slate-900 font-bold border border-slate-400 shadow-2xs'
                       : 'text-slate-700 hover:bg-slate-100 font-medium'
                   }`}
                 >
@@ -2693,7 +2693,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                                   )}
                                                   <button
                                                     type="button"
-                                                    className="p-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs"
+                                                    className="p-1 bg-primary hover:bg-primary/90 text-white rounded-xs"
                                                     title="Edit Item"
                                                   >
                                                     <Edit2 className="w-3 h-3" />
@@ -2723,7 +2723,7 @@ export default function AuthenticOmegaProductsServicesView() {
         <div className="bg-white border border-slate-200 rounded-sm overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+              <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
                 <tr>
                   <th
                     onClick={() => handleSort('description')}
@@ -2838,7 +2838,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   </th>
                   <th className="px-3 py-2.5 w-16 text-center">
-                    <span className="bg-[#195a96] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-xs">
+                    <span className="bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-xs">
                       {filteredProducts.length}
                     </span>
                   </th>
@@ -2886,7 +2886,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => openEditModal(prod)}
-                          className="bg-[#323f4b] hover:bg-[#28323c] text-white p-1 rounded-xs cursor-pointer shadow-2xs transition"
+                          className="bg-primary hover:bg-primary/90 text-white p-1 rounded-xs cursor-pointer shadow-2xs transition"
                           title="Edit Product"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -2906,7 +2906,7 @@ export default function AuthenticOmegaProductsServicesView() {
           </div>
 
         {/* Pagination Footer */}
-        <div className="px-4 py-2.5 border-t border-slate-200 flex items-center justify-between text-xs bg-[#f8fafc]">
+        <div className="px-4 py-2.5 border-t border-slate-200 flex items-center justify-between text-xs bg-background">
           <span className="text-slate-500">
             Showing {filteredProducts.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{' '}
             {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of {filteredProducts.length} entries
@@ -2951,12 +2951,12 @@ export default function AuthenticOmegaProductsServicesView() {
           >
             {/* Header */}
             <div className="px-6 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
-              <h2 className="text-[18px] font-normal text-[#4d5b76]">New Inventory Item</h2>
+              <h2 className="text-[18px] font-normal text-muted-foreground">New Inventory Item</h2>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleSaveProduct}
-                  className="px-4 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-4 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -2972,13 +2972,13 @@ export default function AuthenticOmegaProductsServicesView() {
             </div>
 
             {/* Navigation Tabs on New Item: Exactly Main, More, Pictures & Videos */}
-            <div className="px-6 border-b border-slate-200 flex items-center gap-4 text-xs font-medium bg-[#f8fafc] shrink-0">
+            <div className="px-6 border-b border-slate-200 flex items-center gap-4 text-xs font-medium bg-background shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveModalTab('main')}
                 className={`py-2.5 border-b-2 transition-colors cursor-pointer ${
                   activeModalTab === 'main'
-                    ? 'border-[#195a96] text-[#195a96] font-bold'
+                    ? 'border-primary text-primary font-bold'
                     : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -2989,7 +2989,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 onClick={() => setActiveModalTab('more')}
                 className={`py-2.5 border-b-2 transition-colors cursor-pointer ${
                   activeModalTab === 'more'
-                    ? 'border-[#195a96] text-[#195a96] font-bold'
+                    ? 'border-primary text-primary font-bold'
                     : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -3000,7 +3000,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 onClick={() => setActiveModalTab('media')}
                 className={`py-2.5 border-b-2 transition-colors cursor-pointer ${
                   activeModalTab === 'media'
-                    ? 'border-[#195a96] text-[#195a96] font-bold'
+                    ? 'border-primary text-primary font-bold'
                     : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -3014,7 +3014,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <>
                   {/* Card: General */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       General
                     </div>
                     <div className="p-4 space-y-3">
@@ -3036,7 +3036,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsVanguardMarketplaceModalOpen(true)}
                               title="Search in Vanguard Marketplace"
-                              className="px-2.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs"
+                              className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm cursor-pointer shadow-2xs"
                             >
                               <Search className="w-3.5 h-3.5" />
                             </button>
@@ -3144,7 +3144,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddGroupModalOpen(true)}
                               title="Add Group"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-xs"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3152,7 +3152,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           {!editingProduct.groupName && (
                             <p className="text-[10px] text-amber-700 mt-1 flex items-center gap-1 font-medium">
                               <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
-                              <span>Map to correct revenue bucket (e.g. مدبسات جملة or مقطرات جملة) for financial reports & APIs.</span>
+                              <span>Map to correct revenue bucket (e.g. Wholesale Molasses or Wholesale Distillates) for financial reports & APIs.</span>
                             </p>
                           )}
                         </div>
@@ -3177,7 +3177,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveSellingFunctionForGroup}
                               title="Save selling function for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -3207,7 +3207,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveDefaultLocationForGroup}
                               title="Save default location for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer shadow-2xs"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -3215,7 +3215,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddLocationModalOpen(true)}
                               title="Add Location"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer shadow-xs"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3223,7 +3223,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsFloorZoneAisleOpen(!isFloorZoneAisleOpen)}
                               title="Toggle Floor, Zone, Aisle"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
                             >
                               ...
                             </button>
@@ -3250,7 +3250,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveLogicalWarehouseForGroup}
                               title="Apply logical warehouse to all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -3295,7 +3295,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="button"
                                 onClick={() => setIsAddZoneModalOpen(true)}
                                 title="Add Zone"
-                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                                className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -3323,7 +3323,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="button"
                                 onClick={() => setIsAddAisleModalOpen(true)}
                                 title="Add Aisle"
-                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                                className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -3353,7 +3353,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveSupplierForGroup}
                               title="Save supplier for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer shadow-2xs"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -3361,7 +3361,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsPurchaseHistoryModalOpen(true)}
                               title="Purchase History"
-                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
+                              className="px-2 py-1.5 bg-primary hover:bg-primary/90 text-white cursor-pointer"
                             >
                               <History className="w-3.5 h-3.5" />
                             </button>
@@ -3369,7 +3369,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3397,7 +3397,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddBrandModalOpen(true)}
                               title="Add Brand"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3424,7 +3424,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Add Source"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -3448,11 +3448,11 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card: Unit Format */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Unit Format</span>
                       <button
                         type="button"
-                        className="bg-[#323f4b] text-white p-1 rounded-xs cursor-pointer shadow-2xs"
+                        className="bg-primary text-white p-1 rounded-xs cursor-pointer shadow-2xs"
                         title="Add Unit Format"
                       >
                         <Plus className="w-3 h-3" />
@@ -3708,14 +3708,14 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 3: Cost (Image 1) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Cost
                     </div>
                     <div className="p-4 space-y-3">
                       {/* Currency & Margin Integrity Note */}
                       <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <DollarSign className="w-3.5 h-3.5 text-[#23783a]" />
+                          <DollarSign className="w-3.5 h-3.5 text-emerald-700" />
                           <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
                         </div>
                         <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
@@ -3760,7 +3760,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 value={editingProduct.unitCostUSD || ''}
                                 onChange={(e) => handleUnitCostUSDChange(Number(e.target.value))}
                                 placeholder="e.g. 2.00"
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-[#195a96]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-primary"
                               />
                             </div>
                             <div>
@@ -3821,7 +3821,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   type="button"
                                   onClick={handleSaveMarkupForGroup}
                                   title="Save Markup % for all items in same group"
-                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
                                   <Save className="w-3 h-3" />
                                 </button>
@@ -3845,7 +3845,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   type="button"
                                   onClick={() => setIsApplyRecommendedPriceModalOpen(true)}
                                   title="Apply recommended price to selling prices"
-                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
                                   <Save className="w-3 h-3" />
                                 </button>
@@ -3856,7 +3856,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={handleRecalculateCost}
-                            className="w-full py-2 bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs rounded-sm flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition"
+                            className="w-full py-2 bg-primary hover:bg-primary/90 text-white font-semibold text-xs rounded-sm flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition"
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
                             <span>Recalculate Production Item Cost</span>
@@ -3868,20 +3868,20 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 4: Selling Price (Image 1) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Selling Price</span>
                       <div className="flex items-center gap-4 text-xs">
                         <button
                           type="button"
                           onClick={() => setIsPriceVariationsModalOpen(true)}
-                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                          className="text-primary hover:underline font-medium cursor-pointer"
                         >
                           Price Variations
                         </button>
                         <button
                           type="button"
                           onClick={() => setIsLastPricesModalOpen(true)}
-                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                          className="text-primary hover:underline font-medium cursor-pointer"
                         >
                           Last Prices
                         </button>
@@ -3891,7 +3891,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             type="button"
                             onClick={handleApplySecondCurrencyRates}
                             title="Calculate USD prices at second currency rate"
-                            className="p-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                            className="p-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                           >
                             <Save className="w-3 h-3" />
                           </button>
@@ -3943,7 +3943,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] font-mono"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-muted font-mono"
                               />
                             </div>
 
@@ -4015,7 +4015,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 value={Number(editingProduct[usdKey]) || ''}
                                 onChange={(e) => handleSellingPriceUSDChange(num, Number(e.target.value))}
                                 placeholder="e.g. 2.67"
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-[#195a96]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-primary"
                               />
                             </div>
                           </div>
@@ -4044,7 +4044,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 5: Barcodes (Image 1) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Barcodes
                     </div>
                     <div className="p-4 space-y-3">
@@ -4063,7 +4063,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Barcode Scanner / Generate"
-                              className="px-2.5 py-1.5 bg-[#4c5c7a] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary text-white rounded-r-sm cursor-pointer"
                             >
                               <Barcode className="w-3.5 h-3.5" />
                             </button>
@@ -4139,7 +4139,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => setIsMoreBarcodesModalOpen(true)}
-                          className="px-3.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
+                          className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>More Barcodes</span>
@@ -4150,9 +4150,9 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 6: Customs, Freight Logistics & POS Interface */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-[#195a96]" />
+                        <Truck className="w-4 h-4 text-primary" />
                         <span>Customs, Freight Logistics & POS Interface</span>
                       </div>
                       <span className="text-[11px] font-normal text-slate-500">
@@ -4334,7 +4334,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('accounts')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'accounts'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -4345,7 +4345,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('taxes')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'taxes'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -4356,7 +4356,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('advanced')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'advanced'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -4861,7 +4861,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <div className="space-y-4">
                   {/* Strict 200KB Limit & Dimension Banner */}
                   <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
-                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                    <div className="flex items-center justify-between font-bold text-primary">
                       <div className="flex items-center gap-1.5">
                         <ImageIcon className="w-4 h-4" />
                         <span>Strict 200KB Limit & Dimension Crop Policy (API Optimization)</span>
@@ -4889,7 +4889,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <button
                       type="button"
                       onClick={handleSaveImages}
-                      className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Save Images</span>
@@ -4932,7 +4932,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
                         >
                           Select Image
                         </button>
@@ -4940,7 +4940,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={() => setEditingProduct({ ...editingProduct, mainImage: '' })}
-                            className="px-3 py-1.5 bg-[#5c2828] hover:bg-[#451f1f] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                            className="px-3 py-1.5 bg-destructive hover:bg-destructive/90 text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
                           >
                             Remove
                           </button>
@@ -4989,7 +4989,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                            className="px-2.5 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Add Image</span>
@@ -5023,7 +5023,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <button
                                 type="button"
                                 onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                                className="mt-2 text-xs text-[#195a96] font-semibold hover:underline cursor-pointer"
+                                className="mt-2 text-xs text-primary font-semibold hover:underline cursor-pointer"
                               >
                                 + Add Back-Label / Nutrition Fact Image
                               </button>
@@ -5073,7 +5073,7 @@ export default function AuthenticOmegaProductsServicesView() {
             {/* Header (Screenshot 5) */}
             <div className="px-6 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
               <div>
-                <h2 className="text-[17px] font-normal text-[#4d5b76]">Edit Inventory Item</h2>
+                <h2 className="text-[17px] font-normal text-muted-foreground">Edit Inventory Item</h2>
                 <div className="text-[13px] font-medium text-slate-700 mt-0.5">
                   {editingProduct.id} : ID - {editingProduct.description}
                 </div>
@@ -5081,7 +5081,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="px-3.5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
                 >
                   <span>Actions</span>
                   <ChevronDown className="w-3 h-3" />
@@ -5092,7 +5092,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     setInventoryProductionsReportMode('omega_anomaly');
                     setIsInventoryProductionsReportOpen(true);
                   }}
-                  className="px-3 py-1.5 rounded-sm bg-[#195a96] hover:bg-[#144777] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                   title="View Authentic Omega Inventory Productions Ingredients Report (REP_I_0041)"
                 >
                   <FileText className="w-3.5 h-3.5" />
@@ -5101,7 +5101,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={handleSaveProduct}
-                  className="px-4 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                  className="px-4 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -5117,7 +5117,7 @@ export default function AuthenticOmegaProductsServicesView() {
             </div>
 
             {/* Navigation Tabs (Screenshot 5: Main, Stock, Pictures & Videos, Item Assembly, Included Items, History, Sales Performance, More) */}
-            <div className="px-6 border-b border-slate-200 flex items-center gap-4 text-xs font-medium bg-[#f8fafc] shrink-0 overflow-x-auto">
+            <div className="px-6 border-b border-slate-200 flex items-center gap-4 text-xs font-medium bg-background shrink-0 overflow-x-auto">
               {[
                 { key: 'main', label: 'Main' },
                 { key: 'stock', label: 'Stock' },
@@ -5135,7 +5135,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   onClick={() => setActiveModalTab(tab.key as any)}
                   className={`py-2.5 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
                     activeModalTab === tab.key
-                      ? 'border-[#195a96] text-[#195a96] font-bold'
+                      ? 'border-primary text-primary font-bold'
                       : 'border-transparent text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -5151,7 +5151,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <>
                   {/* Card 1: General (Screenshot 5) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       General
                     </div>
                     <div className="p-4 space-y-3">
@@ -5267,7 +5267,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddGroupModalOpen(true)}
                               title="Add Group"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer shadow-xs"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -5275,7 +5275,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           {!editingProduct.groupName && (
                             <p className="text-[10px] text-amber-700 mt-1 flex items-center gap-1 font-medium">
                               <AlertCircle className="w-3 h-3 text-amber-600 shrink-0" />
-                              <span>Map to correct revenue bucket (e.g. مدبسات جملة or مقطرات جملة) for financial reports & APIs.</span>
+                              <span>Map to correct revenue bucket (e.g. Wholesale Molasses or Wholesale Distillates) for financial reports & APIs.</span>
                             </p>
                           )}
                         </div>
@@ -5300,7 +5300,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveSellingFunctionForGroup}
                               title="Save selling function for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -5330,7 +5330,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveDefaultLocationForGroup}
                               title="Save default location for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer shadow-2xs"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -5338,7 +5338,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddLocationModalOpen(true)}
                               title="Add Location"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer shadow-xs"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -5346,7 +5346,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsFloorZoneAisleOpen(!isFloorZoneAisleOpen)}
                               title="Toggle Floor, Zone, Aisle"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer font-bold tracking-widest text-[11px]"
                             >
                               ...
                             </button>
@@ -5373,7 +5373,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveLogicalWarehouseForGroup}
                               title="Apply logical warehouse to all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm cursor-pointer shadow-2xs transition"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm cursor-pointer shadow-2xs transition"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -5418,7 +5418,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="button"
                                 onClick={() => setIsAddZoneModalOpen(true)}
                                 title="Add Zone"
-                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                                className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -5446,7 +5446,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 type="button"
                                 onClick={() => setIsAddAisleModalOpen(true)}
                                 title="Add Aisle"
-                                className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                                className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -5476,7 +5476,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveSupplierForGroup}
                               title="Save supplier for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer shadow-2xs"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -5484,7 +5484,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsPurchaseHistoryModalOpen(true)}
                               title="Purchase History"
-                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
+                              className="px-2 py-1.5 bg-primary hover:bg-primary/90 text-white cursor-pointer"
                             >
                               <History className="w-3.5 h-3.5" />
                             </button>
@@ -5492,7 +5492,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -5520,7 +5520,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddBrandModalOpen(true)}
                               title="Add Brand"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -5547,7 +5547,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Add Source"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -5572,11 +5572,11 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 2: Unit Format */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Unit Format</span>
                       <button
                         type="button"
-                        className="bg-[#323f4b] text-white p-1 rounded-xs cursor-pointer shadow-2xs"
+                        className="bg-primary text-white p-1 rounded-xs cursor-pointer shadow-2xs"
                         title="Add Unit Format"
                       >
                         <Plus className="w-3 h-3" />
@@ -5832,14 +5832,14 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 3: Cost */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Cost
                     </div>
                     <div className="p-4 space-y-3">
                       {/* Currency & Margin Integrity Note */}
                       <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <DollarSign className="w-3.5 h-3.5 text-[#23783a]" />
+                          <DollarSign className="w-3.5 h-3.5 text-emerald-700" />
                           <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
                         </div>
                         <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
@@ -5884,7 +5884,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 value={editingProduct.unitCostUSD || ''}
                                 onChange={(e) => handleUnitCostUSDChange(Number(e.target.value))}
                                 placeholder="e.g. 2.00"
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-[#195a96]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500 font-mono font-semibold text-primary"
                               />
                             </div>
                             <div>
@@ -5945,7 +5945,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   type="button"
                                   onClick={handleSaveMarkupForGroup}
                                   title="Save Markup % for all items in same group"
-                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
                                   <Save className="w-3 h-3" />
                                 </button>
@@ -5969,7 +5969,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   type="button"
                                   onClick={() => setIsApplyRecommendedPriceModalOpen(true)}
                                   title="Apply recommended price to selling prices"
-                                  className="px-2 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                                 >
                                   <Save className="w-3 h-3" />
                                 </button>
@@ -5980,7 +5980,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={handleRecalculateCost}
-                            className="w-full py-2 bg-[#323f4b] hover:bg-[#28323c] text-white font-semibold text-xs rounded-sm flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition"
+                            className="w-full py-2 bg-primary hover:bg-primary/90 text-white font-semibold text-xs rounded-sm flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition"
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
                             <span>Recalculate Production Item Cost</span>
@@ -5992,20 +5992,20 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 4: Selling Price */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <span>Selling Price</span>
                       <div className="flex items-center gap-4 text-xs">
                         <button
                           type="button"
                           onClick={() => setIsPriceVariationsModalOpen(true)}
-                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                          className="text-primary hover:underline font-medium cursor-pointer"
                         >
                           Price Variations
                         </button>
                         <button
                           type="button"
                           onClick={() => setIsLastPricesModalOpen(true)}
-                          className="text-[#195a96] hover:underline font-medium cursor-pointer"
+                          className="text-primary hover:underline font-medium cursor-pointer"
                         >
                           Last Prices
                         </button>
@@ -6015,7 +6015,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             type="button"
                             onClick={handleApplySecondCurrencyRates}
                             title="Calculate USD prices at second currency rate"
-                            className="p-1 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-xs cursor-pointer shadow-2xs"
+                            className="p-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xs cursor-pointer shadow-2xs"
                           >
                             <Save className="w-3 h-3" />
                           </button>
@@ -6067,7 +6067,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 onChange={(e) =>
                                   setEditingProduct({ ...editingProduct, [btKey]: Number(e.target.value) })
                                 }
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef] font-mono"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-muted font-mono"
                               />
                             </div>
 
@@ -6139,7 +6139,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 value={Number(editingProduct[usdKey]) || ''}
                                 onChange={(e) => handleSellingPriceUSDChange(num, Number(e.target.value))}
                                 placeholder="e.g. 2.67"
-                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-[#195a96]"
+                                className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono font-semibold text-primary"
                               />
                             </div>
                           </div>
@@ -6168,7 +6168,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 5: Barcodes (Screenshot 3) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Barcodes
                     </div>
                     <div className="p-4 space-y-3">
@@ -6187,7 +6187,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Barcode Scanner / Generate"
-                              className="px-2.5 py-1.5 bg-[#4c5c7a] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary text-white rounded-r-sm cursor-pointer"
                             >
                               <Barcode className="w-3.5 h-3.5" />
                             </button>
@@ -6263,7 +6263,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => setIsMoreBarcodesModalOpen(true)}
-                          className="px-3.5 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
+                          className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer transition"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>More Barcodes</span>
@@ -6274,7 +6274,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 6: Supplier (Screenshot 3) */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800">
                       Supplier
                     </div>
                     <div className="p-4 space-y-3">
@@ -6299,7 +6299,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={handleSaveSupplierForGroup}
                               title="Save supplier for all items in same group"
-                              className="px-2 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white cursor-pointer shadow-2xs"
+                              className="px-2 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer shadow-2xs"
                             >
                               <Save className="w-3.5 h-3.5" />
                             </button>
@@ -6307,7 +6307,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsPurchaseHistoryModalOpen(true)}
                               title="Purchase History"
-                              className="px-2 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white cursor-pointer"
+                              className="px-2 py-1.5 bg-primary hover:bg-primary/90 text-white cursor-pointer"
                             >
                               <History className="w-3.5 h-3.5" />
                             </button>
@@ -6315,7 +6315,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -6343,7 +6343,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               type="button"
                               onClick={() => setIsAddSupplierModalOpen(true)}
                               title="Add Supplier"
-                              className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -6357,7 +6357,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             onChange={(e) =>
                               setEditingProduct({ ...editingProduct, lastSupplierName: e.target.value })
                             }
-                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-[#e9ecef]"
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-muted"
                           >
                             {INITIAL_OMEGA_SUPPLIERS.map((s: SupplierItem) => (
                               <option key={s.SUPPLIERID} value={s.SUPPLIERNAME}>
@@ -6388,7 +6388,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              className="px-2.5 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -6414,7 +6414,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             </select>
                             <button
                               type="button"
-                              className="px-2.5 py-1.5 bg-[#323f4b] text-white rounded-r-sm cursor-pointer"
+                              className="px-2.5 py-1.5 bg-primary text-white rounded-r-sm cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -6435,7 +6435,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               title="Copy"
-                              className="px-2 py-1.5 bg-[#23783a] text-white rounded-sm cursor-pointer"
+                              className="px-2 py-1.5 bg-emerald-700 text-white rounded-sm cursor-pointer"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
@@ -6447,9 +6447,9 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Card 7: Customs, Freight Logistics & POS Interface */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-[#195a96]" />
+                        <Truck className="w-4 h-4 text-primary" />
                         <span>Customs, Freight Logistics & POS Interface</span>
                       </div>
                       <span className="text-[11px] font-normal text-slate-500">
@@ -6632,7 +6632,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         onClick={() => setStockSubTab('qtyOH')}
                         className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                           stockSubTab === 'qtyOH'
-                            ? 'bg-[#323f4b] text-white shadow-xs'
+                            ? 'bg-primary text-white shadow-xs'
                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                       >
@@ -6644,7 +6644,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         onClick={() => setStockSubTab('reorderLevel')}
                         className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                           stockSubTab === 'reorderLevel'
-                            ? 'bg-[#323f4b] text-white shadow-xs'
+                            ? 'bg-primary text-white shadow-xs'
                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                         }`}
                       >
@@ -6660,14 +6660,14 @@ export default function AuthenticOmegaProductsServicesView() {
                       <button
                         type="button"
                         onClick={() => showToast('Stock adjustment form opened')}
-                        className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer text-xs"
+                        className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer text-xs"
                       >
                         + Adjust Stock
                       </button>
                       <button
                         type="button"
                         onClick={() => showToast('Inter-warehouse transfer opened')}
-                        className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer text-xs"
+                        className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer text-xs"
                       >
                         Transfer Stock
                       </button>
@@ -6774,7 +6774,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       {/* Staging Warehouse Structure Notice */}
                       <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-1">
                         <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-                          <Info className="w-3.5 h-3.5 text-[#195a96]" />
+                          <Info className="w-3.5 h-3.5 text-primary" />
                           <span>Warehouse Logistics Structure & Multi-Echelon Staging</span>
                         </div>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
@@ -6784,7 +6784,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Physical Stock Records Table */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden">
-                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                        <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                           <span>Physical Stock by Warehouse & Staging Location</span>
                           <span className="text-[11px] font-normal text-slate-500">
                             Total Asset Value: {((editingProduct.qtyOH || 12) * (editingProduct.unitCostLL || 543960)).toLocaleString()} LBP
@@ -6871,7 +6871,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <div className="space-y-4">
                       {/* Supply Chain Blindspot Notice */}
                       <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
-                        <div className="flex items-center gap-1.5 font-bold text-[#195a96]">
+                        <div className="flex items-center gap-1.5 font-bold text-primary">
                           <ShieldAlert className="w-4 h-4" />
                           <span>Supply Chain Blindspot Elimination & Production Trigger Matrix</span>
                         </div>
@@ -6915,7 +6915,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Safety Stock Configuration Form */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 text-xs">
+                        <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 text-xs">
                           Configure Warehouse Reorder Thresholds
                         </div>
                         <div className="p-4">
@@ -6963,7 +6963,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <button
                                 type="button"
                                 onClick={handleSaveReorderRule}
-                                className="w-full py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center justify-center gap-1.5"
+                                className="w-full py-1.5 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center justify-center gap-1.5"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                                 <span>Save Threshold Rule</span>
@@ -6975,7 +6975,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Configured Safety Stock Matrix Table */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden">
-                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                        <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                           <span>Active Reorder Rules & Replenishment Thresholds</span>
                           <span className="text-[11px] text-slate-500 font-normal">
                             Monitored automatically by Vanguard Dispatch & POS
@@ -7068,7 +7068,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <div className="space-y-4">
                   {/* Strict 200KB Limit & Dimension Banner */}
                   <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-sm text-xs space-y-1">
-                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                    <div className="flex items-center justify-between font-bold text-primary">
                       <div className="flex items-center gap-1.5">
                         <ImageIcon className="w-4 h-4" />
                         <span>Strict 200KB Limit & Dimension Crop Policy (API Optimization)</span>
@@ -7096,7 +7096,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <button
                       type="button"
                       onClick={handleSaveImages}
-                      className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-sm shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Save Images</span>
@@ -7139,7 +7139,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => handleSetMainImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
                         >
                           Select Image
                         </button>
@@ -7147,7 +7147,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={() => setEditingProduct({ ...editingProduct, mainImage: '' })}
-                            className="px-3 py-1.5 bg-[#5c2828] hover:bg-[#451f1f] text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
+                            className="px-3 py-1.5 bg-destructive hover:bg-destructive/90 text-white rounded-sm font-semibold text-xs cursor-pointer shadow-xs"
                           >
                             Remove
                           </button>
@@ -7196,7 +7196,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <button
                             type="button"
                             onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                            className="px-2.5 py-1 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-sm shadow-2xs flex items-center gap-1 cursor-pointer"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Add Image</span>
@@ -7230,7 +7230,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <button
                                 type="button"
                                 onClick={() => handleAddAdditionalImage('https://images.unsplash.com/photo-1598170845058-32b9d6a5c317?w=400&auto=format&fit=crop&q=80')}
-                                className="mt-2 text-xs text-[#195a96] font-semibold hover:underline cursor-pointer"
+                                className="mt-2 text-xs text-primary font-semibold hover:underline cursor-pointer"
                               >
                                 + Add Back-Label / Nutrition Fact Image
                               </button>
@@ -7316,7 +7316,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => setIsSameAsBOMModalOpen(true)}
-                          className="px-3 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                          className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                           title="Clone recipe from existing standard commercial product"
                         >
                           <Copy className="w-3.5 h-3.5" />
@@ -7325,7 +7325,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={handleAddPackagingComponents}
-                          className="px-3 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                          className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                           title="Add corrugated box, partitions & product labels to recipe"
                         >
                           <Package className="w-3.5 h-3.5" />
@@ -7342,7 +7342,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={handleRecalculateBOMCost}
-                          className="px-3 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+                          className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           <span>Recalculate Cost</span>
@@ -7353,7 +7353,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* Liquid Volume & Packaging Depletion Equations */}
                   <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-sm text-xs space-y-1">
-                    <div className="flex items-center justify-between font-bold text-[#195a96]">
+                    <div className="flex items-center justify-between font-bold text-primary">
                       <div className="flex items-center gap-1.5">
                         <Info className="w-4 h-4" />
                         <span>Manufacturing Yield & Finished Case Volume Ratios</span>
@@ -7421,7 +7421,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   {/* USD Cost Valuation Safeguard Notice */}
                   <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-sm text-xs flex items-center justify-between">
                     <div className="flex items-center gap-2 text-slate-700">
-                      <ShieldCheck className="w-4 h-4 text-[#195a96] shrink-0" />
+                      <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
                       <span>
                         <strong>USD Valuation Safeguard Active:</strong> Unit Cost USD is calculated dynamically by dividing LBP recipe sum by {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ (<strong>${((editingProduct.unitCostLL || 543960) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)} USD</strong>). Prevents erroneous 1:1 currency duplication.
                       </span>
@@ -7433,7 +7433,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* BOM Recipe Line Items Table */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                    <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                    <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span>Bill of Materials Components</span>
                         <span className="text-xs text-slate-500 font-normal">
@@ -7484,7 +7484,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   <td className="px-3 py-2 font-medium text-slate-900">
                                     <div className="flex items-center gap-1.5">
                                       {asm.mainIngredient && (
-                                        <span className="px-1.5 py-0.2 bg-blue-100 text-[#195a96] text-[9px] font-bold rounded">
+                                        <span className="px-1.5 py-0.2 bg-blue-100 text-primary text-[9px] font-bold rounded">
                                           CORE
                                         </span>
                                       )}
@@ -7533,10 +7533,10 @@ export default function AuthenticOmegaProductsServicesView() {
                               <td colSpan={6} className="px-3 py-2.5 text-right text-slate-700">
                                 Extended Recipe Total Cost:
                               </td>
-                              <td colSpan={2} className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                              <td colSpan={2} className="px-3 py-2.5 text-right font-mono text-sm text-primary font-bold">
                                 {editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP
                               </td>
-                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-primary font-bold">
                                 ${(editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)}
                               </td>
                               <td></td>
@@ -7555,7 +7555,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <button
                       type="button"
                       onClick={handleRecalculateBOMCost}
-                      className="px-4 py-2 bg-[#23783a] hover:bg-[#1b602e] text-white font-bold text-xs rounded-sm shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition"
+                      className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-sm shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0 transition"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Sync to Master Item Cost & Selling Prices</span>
@@ -7571,10 +7571,10 @@ export default function AuthenticOmegaProductsServicesView() {
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-2">
                     <div className="flex items-center justify-between font-bold text-slate-800 text-sm">
                       <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-[#195a96]" />
+                        <Layers className="w-4 h-4 text-primary" />
                         <span>Architectural Distinction: &quot;Item Assembly&quot; vs. &quot;Included Items&quot;</span>
                       </div>
-                      <span className="text-[10px] font-mono bg-blue-100 text-[#195a96] px-2 py-0.5 rounded font-bold">
+                      <span className="text-[10px] font-mono bg-blue-100 text-primary px-2 py-0.5 rounded font-bold">
                         OMEGA ERP INVENTORY ARCHITECTURE
                       </span>
                     </div>
@@ -7662,7 +7662,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* 3. When to Actually Use This Tab Guidance & Action Bar */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                    <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                    <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span>Included Items in Package / Combo</span>
                         <span className="text-xs font-normal text-slate-500">
@@ -7674,7 +7674,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => setIsAddIncludedItemModalOpen(true)}
-                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                          className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>+ Add Included Item</span>
@@ -7702,7 +7702,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                     {/* Notice on Promotional Bundling */}
                     <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] text-slate-600 flex items-center gap-2">
-                      <Info className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <Info className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span>
                         <strong>When to use this tab:</strong> Strictly for promotional SKUs (e.g. <em>&quot;Salad Dressing Promo Pack&quot;</em> containing 1 bottle of White Vinegar and 1 bottle of Pomegranate Molasses shrink-wrapped together at dispatch depot) where selling the bundle dynamically depletes both standalone bottles.
                       </span>
@@ -7733,7 +7733,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                   <td className="px-3 py-2 text-center font-mono text-slate-400">
                                     {idx + 1}
                                   </td>
-                                  <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                  <td className="px-3 py-2 font-mono text-[11px] font-semibold text-primary">
                                     {item.itemCode}
                                   </td>
                                   <td className="px-3 py-2 font-medium text-slate-900">
@@ -7790,7 +7790,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <td colSpan={7} className="px-3 py-2.5 text-right text-slate-700">
                                 Total Bundle Selling Price:
                               </td>
-                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-primary font-bold">
                                 {editingProduct.includedItems.reduce((sum, item) => sum + item.qty * item.sellingPriceLL, 0).toLocaleString()} LBP
                               </td>
                               <td></td>
@@ -7810,10 +7810,10 @@ export default function AuthenticOmegaProductsServicesView() {
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-2">
                     <div className="flex items-center justify-between font-bold text-slate-800 text-sm">
                       <div className="flex items-center gap-2">
-                        <ArrowUpRight className="w-4 h-4 text-[#195a96]" />
+                        <ArrowUpRight className="w-4 h-4 text-primary" />
                         <span>The &quot;Where Used&quot; Hierarchy (Reverse Supply Chain View)</span>
                       </div>
-                      <span className="text-[10px] font-mono bg-blue-100 text-[#195a96] px-2 py-0.5 rounded font-bold">
+                      <span className="text-[10px] font-mono bg-blue-100 text-primary px-2 py-0.5 rounded font-bold">
                         OMEGA UPWARD DEPENDENCY TRACEABILITY
                       </span>
                     </div>
@@ -7862,7 +7862,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           </div>
                           <div className="text-slate-700 text-[11px] leading-relaxed space-y-1">
                             <p>
-                              <strong>As identified in Omega Report <code>REP_I_0041</code>:</strong> Parent Product <strong>CWV500MLB106</strong> (<em>خل ابيض 500مل</em> - single bottle) is configured to consume <strong>0.08 BOX</strong> of this finished 12-pack case.
+                              <strong>As identified in Omega Report <code>REP_I_0041</code>:</strong> Parent Product <strong>CWV500MLB106</strong> (<em>White Vinegar 500ml</em> - single bottle) is configured to consume <strong>0.08 BOX</strong> of this finished 12-pack case.
                             </p>
                             <p className="text-rose-900 font-semibold">
                               <strong>Why this is fatal:</strong> Your database relationships are inverted. The system mathematically assumes that producing an individual raw bottle requires consuming a finished 12-pack box. This creates an impossible circular loop, triggers unboxing bottlenecks at POS checkout, and invalidates Choueifat&apos;s forward production batches.
@@ -7927,7 +7927,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   {/* 3. Valid System Connections Guidance & Action Bar */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                    <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                    <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span>Parent Products Consuming This Item</span>
                         <span className="text-xs font-normal text-slate-500">
@@ -7939,7 +7939,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <button
                           type="button"
                           onClick={() => setIsAddUsedInModalOpen(true)}
-                          className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                          className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>+ Add Parent Dependency</span>
@@ -7986,7 +7986,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             setInventoryProductionsReportMode('omega_anomaly');
                             setIsInventoryProductionsReportOpen(true);
                           }}
-                          className="px-3 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-sm font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                          className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
                           title="Open the authentic Omega Inventory Productions (REP_I_0041) print report modal"
                         >
                           <FileText className="w-3.5 h-3.5" />
@@ -7997,7 +7997,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                     {/* Notice on Valid Upward Reasons */}
                     <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] text-slate-600 flex items-center gap-2">
-                      <Info className="w-3.5 h-3.5 text-[#195a96] shrink-0" />
+                      <Info className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span>
                         <strong>When this grid should NOT be empty:</strong> Only under <strong>Palletization</strong> (master export pallet containing 100 boxes) or <strong>Wholesale Kitting</strong> (e.g. restaurant supply combo). If raw vinegar or single bottles appear here, production relationships are inverted.
                       </span>
@@ -8031,7 +8031,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 <td className="px-3 py-2 text-center font-mono text-slate-400">
                                   {idx + 1}
                                 </td>
-                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-primary">
                                   {item.parentProductCode}
                                 </td>
                                 <td className="px-3 py-2 font-medium text-slate-900">
@@ -8097,7 +8097,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <td colSpan={6} className="px-3 py-2.5 text-right text-slate-700">
                                 Total Parent Consumption Value:
                               </td>
-                              <td className="px-3 py-2.5 text-right font-mono text-sm text-[#195a96] font-bold">
+                              <td className="px-3 py-2.5 text-right font-mono text-sm text-primary font-bold">
                                 {editingProduct.usedInItems
                                   .reduce((sum, item) => sum + item.impactOnParentCostLL, 0)
                                   .toLocaleString()}{' '}
@@ -8123,7 +8123,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setHistorySubTab('movements')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         historySubTab === 'movements'
-                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8134,7 +8134,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setHistorySubTab('costVariation')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'costVariation'
-                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8148,7 +8148,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setHistorySubTab('supplierPricing')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'supplierPricing'
-                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8162,7 +8162,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setHistorySubTab('salesPerformance')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'salesPerformance'
-                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8176,7 +8176,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setHistorySubTab('audit')}
                       className={`px-3 py-1.5 rounded-sm text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
                         historySubTab === 'audit'
-                          ? 'bg-[#323f4b] text-white shadow-xs'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8208,7 +8208,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <tr key={m.id} className="hover:bg-slate-50">
                                 <td className="px-3 py-2 font-mono text-[11px]">{m.date}</td>
                                 <td className="px-3 py-2 font-medium">{m.type}</td>
-                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                <td className="px-3 py-2 font-mono text-[11px] font-semibold text-primary">
                                   {m.reference}
                                 </td>
                                 <td
@@ -8274,7 +8274,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Cost Variation Matrix Table */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                        <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 flex items-center justify-between font-semibold text-slate-800 text-xs">
+                        <div className="bg-background px-4 py-2 border-b border-slate-200 flex items-center justify-between font-semibold text-slate-800 text-xs">
                           <span>Cost Variation Log &amp; Form Tracking</span>
                           <span className="text-[11px] font-normal text-slate-500">
                             Tracks every automated &amp; manual moving average cost change
@@ -8304,7 +8304,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 >
                                   <td className="px-3 py-2 text-slate-700">{cv.date}</td>
                                   <td className="px-3 py-2 font-sans font-semibold text-slate-900">{cv.form}</td>
-                                  <td className="px-3 py-2 font-semibold text-[#195a96]">{cv.refNo}</td>
+                                  <td className="px-3 py-2 font-semibold text-primary">{cv.refNo}</td>
                                   <td className="px-3 py-2 text-right text-slate-600">
                                     {cv.oldCostLL.toLocaleString()}
                                   </td>
@@ -8371,7 +8371,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Action Bar */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                        <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div className="font-semibold text-slate-800 text-xs">
                             Vendor Procurement Pricing Matrix ({editingProduct.supplierPricings?.length || 0} contracts)
                           </div>
@@ -8382,7 +8382,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 setNewSuppPriceBuyingUnit(editingProduct.buyingFormat || 'BOX');
                                 setIsNewSupplierPricingModalOpen(true);
                               }}
-                              className="px-3 py-1 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                              className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
                               <span>+ New Item Supplier Pricing</span>
@@ -8443,7 +8443,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                           {sp.currency}
                                         </span>
                                       </td>
-                                      <td className="px-3 py-2 font-mono text-[11px] font-semibold text-[#195a96]">
+                                      <td className="px-3 py-2 font-mono text-[11px] font-semibold text-primary">
                                         {sp.supplierCode}
                                       </td>
                                       <td className="px-3 py-2 text-center font-mono">
@@ -8527,7 +8527,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                         <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm space-y-1.5">
                           <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                            <BarChart2 className="w-4 h-4 text-[#195a96]" />
+                            <BarChart2 className="w-4 h-4 text-primary" />
                             <span>Calculation Method (Revenue and Yield Audit)</span>
                           </div>
                           <p className="text-[11px] text-slate-600 leading-relaxed">
@@ -8551,7 +8551,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Interactive Transaction Matrix */}
                       <div className="border border-slate-200 rounded-sm overflow-hidden bg-white">
-                        <div className="bg-[#f8fafc] px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-slate-800 text-xs">
                               Transactional Sales Ledger & Margin Audit
@@ -8579,7 +8579,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <button
                               type="button"
                               onClick={handleSimulateLiveDispatchSale}
-                              className="px-2.5 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
+                              className="px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
                               title="Simulate order processed via Next.js Supersonic Dispatch API"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -8624,7 +8624,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                     <td className="px-3 py-2 font-sans">
                                       <div className="font-medium text-slate-900 flex items-center gap-1">
                                         {tx.source.includes('Dispatch') ? (
-                                          <Truck className="w-3 h-3 text-[#195a96] shrink-0" />
+                                          <Truck className="w-3 h-3 text-primary shrink-0" />
                                         ) : (
                                           <Package className="w-3 h-3 text-slate-500 shrink-0" />
                                         )}
@@ -8779,7 +8779,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                           ? 'text-emerald-700'
                                           : isCorrupted
                                           ? 'text-rose-700 text-xs'
-                                          : 'text-[#195a96]'
+                                          : 'text-primary'
                                       }`}
                                     >
                                       {Number(a.newValue) ? Number(a.newValue).toLocaleString() : a.newValue}
@@ -8807,7 +8807,7 @@ export default function AuthenticOmegaProductsServicesView() {
               {activeModalTab === 'sales' && (
                 <div className="space-y-4">
                   {/* Top Bar with KPI cards & Round Flash Refresh button */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafc] p-3 rounded-sm border border-slate-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-background p-3 rounded-sm border border-slate-200">
                     <div className="flex items-center gap-3">
                       <Calendar className="w-4 h-4 text-slate-500" />
                       <span className="font-semibold text-slate-800">Sales Performance Overview: Year 2026</span>
@@ -8815,7 +8815,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         type="button"
                         onClick={handleRefreshPerformance}
                         title="Autogenerate and refresh live sales telemetry"
-                        className="p-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-full cursor-pointer shadow-xs transition"
+                        className="p-1.5 bg-primary hover:bg-primary/90 text-white rounded-full cursor-pointer shadow-xs transition"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                       </button>
@@ -8862,7 +8862,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       </h4>
                       <div className="flex items-center gap-4 text-[11px]">
                         <div className="flex items-center gap-1">
-                          <span className="w-3 h-3 bg-[#195a96] rounded-xs inline-block"></span>
+                          <span className="w-3 h-3 bg-primary rounded-xs inline-block"></span>
                           <span>2026 (This Year)</span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -8885,7 +8885,7 @@ export default function AuthenticOmegaProductsServicesView() {
                               <div
                                 style={{ height: `${heightThis}%` }}
                                 title={`2026: ${sp.qtyThisYear} units`}
-                                className="w-3 bg-[#195a96] hover:bg-[#144777] rounded-t-xs transition-all cursor-pointer"
+                                className="w-3 bg-primary hover:bg-primary/90 rounded-t-xs transition-all cursor-pointer"
                               ></div>
                               <div
                                 style={{ height: `${heightLast}%` }}
@@ -8953,7 +8953,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('accounts')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'accounts'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8964,7 +8964,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('taxes')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'taxes'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -8975,7 +8975,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setMoreSubTab('advanced')}
                       className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
                         moreSubTab === 'advanced'
-                          ? 'bg-[#323f4b] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -9482,7 +9482,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <button
                 type="button"
                 onClick={handleSaveProduct}
-                className="px-5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-bold cursor-pointer shadow-xs"
+                className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer shadow-xs"
               >
                 Save
               </button>
@@ -9504,7 +9504,7 @@ export default function AuthenticOmegaProductsServicesView() {
             style={{ zIndex: 70001 }}
           >
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h3 className="text-[16px] font-normal text-[#4d5b76]">Filter Products & Services</h3>
+              <h3 className="text-[16px] font-normal text-muted-foreground">Filter Products & Services</h3>
               <button
                 type="button"
                 onClick={() => setIsFilterModalOpen(false)}
@@ -9575,7 +9575,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsFilterModalOpen(false)}
-                  className="px-5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-bold rounded-sm cursor-pointer"
+                  className="px-5 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-sm cursor-pointer"
                 >
                   Apply Filters
                 </button>
@@ -9638,14 +9638,14 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsApplyRecommendedPriceModalOpen(false)}
-                  className="px-4 py-1.5 rounded-sm bg-[#606f7b] hover:bg-[#4d5a64] text-white font-medium cursor-pointer transition text-xs shadow-xs"
+                  className="px-4 py-1.5 rounded-sm bg-slate-600 hover:bg-slate-700 text-white font-medium cursor-pointer transition text-xs shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleApplyRecommendedPrice}
-                  className="px-5 py-1.5 rounded-sm bg-[#323f4b] hover:bg-[#28323c] text-white font-bold cursor-pointer transition text-xs shadow-xs"
+                  className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer transition text-xs shadow-xs"
                 >
                   Apply
                 </button>
@@ -9726,7 +9726,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsLastPricesModalOpen(false)}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
                 >
                   Close
                 </button>
@@ -9798,7 +9798,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsPriceVariationsModalOpen(false)}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
                 >
                   Close
                 </button>
@@ -9857,7 +9857,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   </select>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white font-semibold rounded-sm cursor-pointer shadow-xs"
+                    className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-sm cursor-pointer shadow-xs"
                   >
                     + Add Barcode
                   </button>
@@ -9905,7 +9905,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsMoreBarcodesModalOpen(false)}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
                 >
                   Done
                 </button>
@@ -9982,7 +9982,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsPurchaseHistoryModalOpen(false)}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
                 >
                   Close
                 </button>
@@ -10026,7 +10026,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 />
                 <button
                   type="button"
-                  className="px-4 py-1.5 bg-[#23783a] hover:bg-[#1b602e] text-white rounded-sm font-semibold cursor-pointer shadow-xs flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm font-semibold cursor-pointer shadow-xs flex items-center gap-1.5"
                 >
                   <Search className="w-3.5 h-3.5" />
                   <span>Search</span>
@@ -10045,7 +10045,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       setIsVanguardMarketplaceModalOpen(false);
                       showToast('Imported product specs from Vanguard Marketplace');
                     }}
-                    className="px-3 py-1 bg-[#195a96] hover:bg-[#144777] text-white rounded-xs font-semibold cursor-pointer shadow-xs"
+                    className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold cursor-pointer shadow-xs"
                   >
                     Import Specs
                   </button>
@@ -10092,7 +10092,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Group
                 </button>
@@ -10129,7 +10129,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Location
                 </button>
@@ -10166,7 +10166,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Supplier
                 </button>
@@ -10203,7 +10203,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Brand
                 </button>
@@ -10240,7 +10240,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Zone
                 </button>
@@ -10277,7 +10277,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
                 >
                   Save Aisle
                 </button>
@@ -10300,9 +10300,9 @@ export default function AuthenticOmegaProductsServicesView() {
             style={{ zIndex: 80001 }}
           >
             {/* Modal Header */}
-            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc] shrink-0">
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-background shrink-0">
               <div className="flex items-center gap-2">
-                <Copy className="w-4 h-4 text-[#195a96]" />
+                <Copy className="w-4 h-4 text-primary" />
                 <h3 className="font-semibold text-slate-800 text-sm">
                   Clone Recipe from Existing Product (&quot;Same As&quot; BOM)
                 </h3>
@@ -10334,7 +10334,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     onClick={() => setSelectedSameAsTemplateId(tmpl.id)}
                     className={`p-3.5 border rounded-sm cursor-pointer transition ${
                       isSelected
-                        ? 'border-[#195a96] bg-blue-50/40 ring-1 ring-[#195a96]'
+                        ? 'border-primary bg-blue-50/40 ring-1 ring-primary'
                         : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
@@ -10345,7 +10345,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           name="selected_bom_template"
                           checked={isSelected}
                           onChange={() => setSelectedSameAsTemplateId(tmpl.id)}
-                          className="mt-0.5 w-4 h-4 text-[#195a96]"
+                          className="mt-0.5 w-4 h-4 text-primary"
                         />
                         <div>
                           <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
@@ -10359,7 +10359,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="font-bold font-mono text-[#195a96] text-sm">
+                        <div className="font-bold font-mono text-primary text-sm">
                           {tmpl.totalCostLL.toLocaleString()} LBP
                         </div>
                         <div className="text-[11px] font-mono text-slate-500">
@@ -10409,7 +10409,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       handleApplySameAsBOM(tmpl);
                     }
                   }}
-                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#154b7d] text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center gap-1.5"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Apply Recipe (Clone BOM)</span>
@@ -10432,7 +10432,7 @@ export default function AuthenticOmegaProductsServicesView() {
             className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
             style={{ zIndex: 80001 }}
           >
-            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-background">
               <div className="flex items-center gap-2">
                 <Gift className="w-4 h-4 text-purple-700" />
                 <h4 className="font-semibold text-slate-800 text-sm">Add Child Product to Promotional Kit</h4>
@@ -10518,7 +10518,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     )}
                     <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
                       <span>Extended Bundle Item Total:</span>
-                      <span className="font-mono text-[#195a96]">{total.toLocaleString()} LBP</span>
+                      <span className="font-mono text-primary">{total.toLocaleString()} LBP</span>
                     </div>
                   </div>
                 );
@@ -10534,7 +10534,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add to Bundle</span>
@@ -10557,9 +10557,9 @@ export default function AuthenticOmegaProductsServicesView() {
             className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
             style={{ zIndex: 80001 }}
           >
-            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-background">
               <div className="flex items-center gap-2">
-                <ArrowUpRight className="w-4 h-4 text-[#195a96]" />
+                <ArrowUpRight className="w-4 h-4 text-primary" />
                 <h4 className="font-semibold text-slate-800 text-sm">Add Parent Consuming Product</h4>
               </div>
               <button
@@ -10592,7 +10592,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   value={newUsedInParentDesc}
                   onChange={(e) => setNewUsedInParentDesc(e.target.value)}
                   className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
-                  placeholder="e.g. طبلية خل ابيض 500مل (100 صندوق)"
+                  placeholder="e.g. White Vinegar 500ml Pallet (100 Boxes)"
                 />
               </div>
 
@@ -10637,7 +10637,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                     <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
                       <span>Extended Impact on Parent Cost:</span>
-                      <span className="font-mono text-[#195a96]">{total.toLocaleString()} LBP</span>
+                      <span className="font-mono text-primary">{total.toLocaleString()} LBP</span>
                     </div>
                   </div>
                 );
@@ -10653,7 +10653,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Dependency</span>
@@ -10678,7 +10678,7 @@ export default function AuthenticOmegaProductsServicesView() {
             style={{ zIndex: 90001 }}
           >
             {/* Modal Title Bar */}
-            <div className="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-[#f8fafc]">
+            <div className="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-background">
               <h3 className="text-base font-semibold text-slate-800">Inventory Productions</h3>
               <button
                 type="button"
@@ -10735,14 +10735,14 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={handlePrintInventoryProductionsReport}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
                 >
                   Print
                 </button>
                 <button
                   type="button"
                   onClick={handleExportInventoryProductionsReport}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
                 >
                   Export
                 </button>
@@ -10796,14 +10796,14 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                         <div>
                           <span className="underline font-bold">Description:</span>{' '}
-                          <span>خل ابيض 500مل</span>
+                          <span>White Vinegar 500ml</span>
                         </div>
                       </div>
 
                       {/* Consumed Child Items (The Inverted Box Anomaly) */}
                       <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
                         <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
-                        <span className="col-span-4 font-sans text-[11px]">صندوق خل ابيض 500مل*12قنينة</span>
+                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
                         <span className="col-span-1 text-right font-bold">0.08</span>
                         <span className="col-span-1 text-center font-sans">BOX</span>
                         <span className="col-span-1 text-right">45,692.64</span>
@@ -10833,7 +10833,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                         <div>
                           <span className="underline font-bold">Description:</span>{' '}
-                          <span>صندوق خل ابيض 500مل*12قنينة</span>
+                          <span>White Vinegar 500ml Case (12 Bottles)</span>
                         </div>
                       </div>
 
@@ -10888,14 +10888,14 @@ export default function AuthenticOmegaProductsServicesView() {
                         </div>
                         <div>
                           <span className="underline font-bold">Description:</span>{' '}
-                          <span>طبلية خل ابيض 500مل (100 صندوق)</span>
+                          <span>White Vinegar 500ml Pallet (100 Boxes)</span>
                         </div>
                       </div>
 
                       {/* Pallet Master Linkage */}
                       <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
                         <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
-                        <span className="col-span-4 font-sans text-[11px]">صندوق خل ابيض 500مل*12قنينة</span>
+                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
                         <span className="col-span-1 text-right font-bold">100.00</span>
                         <span className="col-span-1 text-center font-sans">BOX</span>
                         <span className="col-span-1 text-right">543,960.00</span>
@@ -10977,7 +10977,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       <select
                         value={newSuppPriceSupplierId}
                         onChange={(e) => setNewSuppPriceSupplierId(Number(e.target.value))}
-                        className="flex-1 border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                        className="flex-1 border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                       >
                         <option value="" disabled>Select supplier</option>
                         {suppliersList.map((s) => (
@@ -10989,7 +10989,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       <button
                         type="button"
                         onClick={() => setIsAddSupplierModalOpen(true)}
-                        className="px-2.5 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs cursor-pointer flex items-center justify-center transition"
+                        className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs cursor-pointer flex items-center justify-center transition"
                         title="Add New Supplier"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -11003,7 +11003,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <select
                       value={newSuppPriceBuyingUnit}
                       onChange={(e) => setNewSuppPriceBuyingUnit(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     >
                       <option value="BOX">BOX</option>
                       <option value="PCS">PCS</option>
@@ -11027,7 +11027,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       value={newSuppPriceAmount}
                       onChange={(e) => setNewSuppPriceAmount(e.target.value)}
                       required
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -11037,7 +11037,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     <select
                       value={newSuppPriceCurrency}
                       onChange={(e) => setNewSuppPriceCurrency(e.target.value as 'LBP' | 'USD' | 'EUR')}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     >
                       <option value="LBP">LBP</option>
                       <option value="USD">USD</option>
@@ -11053,7 +11053,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         type="text"
                         value={newSuppPriceDate}
                         onChange={(e) => setNewSuppPriceDate(e.target.value)}
-                        className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96] pr-7"
+                        className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary pr-7"
                       />
                       <Calendar className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2 pointer-events-none" />
                     </div>
@@ -11076,7 +11076,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceSupplierCode}
                       onChange={(e) => setNewSuppPriceSupplierCode(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -11088,7 +11088,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceTarget}
                       onChange={(e) => setNewSuppPriceTarget(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -11100,7 +11100,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceFree}
                       onChange={(e) => setNewSuppPriceFree(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -11114,7 +11114,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder="0"
                       value={newSuppPriceDiscountPct}
                       onChange={(e) => setNewSuppPriceDiscountPct(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -11126,7 +11126,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceDiscountNotes}
                       onChange={(e) => setNewSuppPriceDiscountNotes(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -11140,7 +11140,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceBonusPct}
                       onChange={(e) => setNewSuppPriceBonusPct(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -11152,7 +11152,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       placeholder=""
                       value={newSuppPriceBonusNotes}
                       onChange={(e) => setNewSuppPriceBonusNotes(e.target.value)}
-                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#195a96]"
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
@@ -11162,7 +11162,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -11180,7 +11180,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isUpdatePricesModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Coins className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold">Update Prices (Bulk Financial Markup Tool)</h3>
@@ -11232,8 +11232,8 @@ export default function AuthenticOmegaProductsServicesView() {
                     className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
                   >
                     <option value="All">All Groups ({products.length} items)</option>
-                    <option value="مقطرات جملة">مقطرات جملة</option>
-                    <option value="مقطرات ومواد غذائية مفرق">مقطرات ومواد غذائية مفرق</option>
+                    <option value="Wholesale Distillates">Wholesale Distillates</option>
+                    <option value="Retail Distillates & Foodstuffs">Retail Distillates & Foodstuffs</option>
                     <option value="Raw Materials">Raw Materials</option>
                   </select>
                 </div>
@@ -11256,7 +11256,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <div className="bg-slate-50 border border-slate-200 rounded-xs p-3">
                 <span className="text-[11px] font-bold text-slate-600 block mb-1">Live Calculation Preview:</span>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-800 font-medium">صندوق خل ابيض 500مل*12قنينة</span>
+                  <span className="text-slate-800 font-medium">White Vinegar 500ml Case (12 Bottles)</span>
                   <div className="flex items-center gap-2">
                     <span className="text-slate-500 line-through">750,000 LL ($8.33)</span>
                     <span className="font-bold text-emerald-700">
@@ -11279,7 +11279,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Coins className="w-3.5 h-3.5" />
                   <span>Apply Bulk Price Adjustment</span>
@@ -11294,7 +11294,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isUpdateCostModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Calculator className="w-4 h-4 text-blue-400" />
                 <h3 className="font-bold">Update Cost (Bulk Supplier Expense Recalibration)</h3>
@@ -11339,7 +11339,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
                   >
                     <option value="Raw Materials">Raw Materials (Safe: Bottles, Caps, Syrup)</option>
-                    <option value="مقطرات جملة">مقطرات جملة (Caution: Finished Assemblies)</option>
+                    <option value="Wholesale Distillates">Wholesale Distillates (Caution: Finished Assemblies)</option>
                     <option value="All">All Items (High Risk)</option>
                   </select>
                 </div>
@@ -11355,7 +11355,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Calculator className="w-3.5 h-3.5" />
                   <span>Apply Bulk Cost Recalibration</span>
@@ -11370,7 +11370,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isItemMaintenanceModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Wrench className="w-4 h-4 text-blue-400" />
                 <h3 className="font-bold">Item Maintenance (Database Diagnostic Sweep)</h3>
@@ -11434,7 +11434,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   type="button"
                   disabled={isMaintenanceRunning}
                   onClick={handleRunItemMaintenance}
-                  className="px-4 py-1.5 bg-[#195a96] hover:bg-[#134675] disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Wrench className="w-3.5 h-3.5" />
                   <span>{isMaintenanceRunning ? 'Running Sweep...' : 'Execute Diagnostic Sweep'}</span>
@@ -11449,7 +11449,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isItemsPricingModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-5xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <List className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold">Items Pricing (B2B Wholesale Tiers Rapid-Entry Matrix)</h3>
@@ -11490,7 +11490,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
               <div className="border border-slate-200 rounded-xs overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                  <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
                       <th className="px-3 py-2">Item Description</th>
                       <th className="px-3 py-2">Code</th>
@@ -11572,7 +11572,7 @@ export default function AuthenticOmegaProductsServicesView() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => setIsItemsPricingModalOpen(false)}
@@ -11583,7 +11583,7 @@ export default function AuthenticOmegaProductsServicesView() {
               <button
                 type="button"
                 onClick={handleSaveItemsPricingMatrix}
-                className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save Pricing Matrix</span>
@@ -11597,7 +11597,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isExportPLUModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Download className="w-4 h-4 text-blue-400" />
                 <h3 className="font-bold">Export PLU (Price Look-Up File &amp; ERP Sync)</h3>
@@ -11643,7 +11643,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={handleExportPLUDownload}
-                  className="w-full sm:w-auto px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="w-full sm:w-auto px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download PLU (.CSV)</span>
@@ -11658,7 +11658,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isExpiredItemsModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-amber-400" />
                 <h3 className="font-bold">Expired Items &amp; Shelf-Life Forecasting Report</h3>
@@ -11695,7 +11695,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       onClick={() => setExpiredHorizonDays(days)}
                       className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold cursor-pointer transition ${
                         expiredHorizonDays === days
-                          ? 'bg-[#195a96] text-white shadow-2xs'
+                          ? 'bg-primary text-white shadow-2xs'
                           : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -11711,7 +11711,7 @@ export default function AuthenticOmegaProductsServicesView() {
               {/* Batches Table */}
               <div className="border border-slate-200 rounded-xs overflow-hidden">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                  <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
                       <th className="px-3 py-2">Batch / Lot #</th>
                       <th className="px-3 py-2">Product Description</th>
@@ -11725,7 +11725,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   <tbody className="divide-y divide-slate-200">
                     <tr className="hover:bg-slate-50">
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-VNG-04</td>
-                      <td className="px-3 py-2 font-semibold text-slate-900">صندوق خل ابيض 500مل*12قنينة</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">White Vinegar 500ml Case (12 Bottles)</td>
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CWV500ML*12B106</td>
                       <td className="px-3 py-2 font-mono text-slate-700">15-Oct-2026</td>
                       <td className="px-3 py-2 text-center">
@@ -11746,7 +11746,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-APL-02</td>
-                      <td className="px-3 py-2 font-semibold text-slate-900">خل تفاح بلدي 500مل (صندوق 12)</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">Local Apple Cider Vinegar 500ml (12-Pack)</td>
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CAV500ML*12B107</td>
                       <td className="px-3 py-2 font-mono text-slate-700">01-Nov-2026</td>
                       <td className="px-3 py-2 text-center">
@@ -11767,7 +11767,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     </tr>
                     <tr className="hover:bg-slate-50">
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-POM-01</td>
-                      <td className="px-3 py-2 font-semibold text-slate-900">دبس رمان تجاري درجة اولى 1كغ</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">Pomegranate Molasses Commercial Grade 1kg</td>
                       <td className="px-3 py-2 font-mono text-[11px] text-slate-600">POM1KG101</td>
                       <td className="px-3 py-2 font-mono text-slate-700">05-Dec-2026</td>
                       <td className="px-3 py-2 text-center">
@@ -11791,11 +11791,11 @@ export default function AuthenticOmegaProductsServicesView() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => setIsExpiredItemsModalOpen(false)}
-                className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs cursor-pointer"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs cursor-pointer"
               >
                 Close
               </button>
@@ -11808,7 +11808,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isPrintBarcodesModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold">Print Barcodes (Choueifat Carton Label Printing Matrix)</h3>
@@ -11874,7 +11874,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
                 <div className="border border-slate-200 rounded-xs overflow-hidden">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#f8fafc] text-slate-700 font-semibold border-b border-slate-200">
+                    <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
                       <tr>
                         <th className="px-3 py-2 w-10 text-center">Queue</th>
                         <th className="px-3 py-2">Description</th>
@@ -11899,7 +11899,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             className="w-4 h-4 text-blue-600 rounded cursor-pointer"
                           />
                         </td>
-                        <td className="px-3 py-2 font-bold text-slate-900">صندوق خل ابيض 500مل*12قنينة</td>
+                        <td className="px-3 py-2 font-bold text-slate-900">White Vinegar 500ml Case (12 Bottles)</td>
                         <td className="px-3 py-2 font-mono text-slate-700">CWV500ML*12B106</td>
                         <td className="px-3 py-2 font-mono text-slate-600">5281000000015</td>
                         <td className="px-3 py-2 text-right font-semibold text-slate-900">12.00 BOX</td>
@@ -11937,7 +11937,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   </div>
 
                   <div className="space-y-0.5 pt-1">
-                    <h4 className="font-extrabold text-sm text-slate-950">صندوق خل ابيض 500مل*12قنينة</h4>
+                    <h4 className="font-extrabold text-sm text-slate-950">White Vinegar 500ml Case (12 Bottles)</h4>
                     <div className="flex items-center justify-between text-[11px] font-mono text-slate-700">
                       <span>SKU: CWV500ML*12B106</span>
                       <span>PKG: 12 BTL / CTN</span>
@@ -11968,7 +11968,7 @@ export default function AuthenticOmegaProductsServicesView() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8fafc] border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
               <span className="text-[11px] text-slate-600">
                 Print Spool: <strong>12 adhesive labels</strong> ready for thermal transmission.
               </span>
@@ -11983,7 +11983,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={handleExecutePrintBarcodes}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print 12 Labels</span>
@@ -11998,7 +11998,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isSizeColorModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-purple-400" />
                 <h3 className="font-bold">Items Size &amp; Color Matrix Generator</h3>
@@ -12024,7 +12024,7 @@ export default function AuthenticOmegaProductsServicesView() {
               </div>
 
               <div className="border border-slate-200 rounded-xs overflow-hidden text-[11px]">
-                <div className="bg-[#f8fafc] px-3 py-2 font-bold text-slate-800 border-b border-slate-200">
+                <div className="bg-background px-3 py-2 font-bold text-slate-800 border-b border-slate-200">
                   Active Volumetric Formats in Distillates Group:
                 </div>
                 <div className="p-3 space-y-1 text-slate-700">
@@ -12051,7 +12051,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   onClick={() => setIsSizeColorModalOpen(false)}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold text-xs cursor-pointer"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs cursor-pointer"
                 >
                   Close
                 </button>
@@ -12065,7 +12065,7 @@ export default function AuthenticOmegaProductsServicesView() {
       {isImportExcelModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
-            <div className="bg-[#323f4b] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold">Import From Excel (Bulk Injection Engine)</h3>
@@ -12118,7 +12118,7 @@ export default function AuthenticOmegaProductsServicesView() {
                     setIsImportExcelModalOpen(false);
                     showToast('Processed Excel import payload: 42 recipe rows mapped & synchronized.');
                   }}
-                  className="px-4 py-1.5 bg-[#323f4b] hover:bg-[#28323c] text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
                   <span>Upload &amp; Process</span>

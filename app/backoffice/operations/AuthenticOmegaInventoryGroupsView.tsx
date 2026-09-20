@@ -110,7 +110,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
   const [newGroupForm, setNewGroupForm] = useState({
     name: '',
     otherDesc: '',
-    divisionName: 'مرطبان',
+    divisionName: 'Jars',
     divisionId: 40,
     sorting: 1,
     secondLang: '',
@@ -134,7 +134,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
     groupId: 0,
     name: '',
     otherDesc: '',
-    divisionName: 'مرطبان',
+    divisionName: 'Jars',
     divisionId: 40,
     sorting: 1,
     secondLang: '',
@@ -251,7 +251,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
   // ---------------------------------------------------------------------------
   const handleOpenNew = () => {
     const maxSort = groups.reduce((max, g) => Math.max(max, g.SORTING || 0), 0);
-    const defaultDiv = divisions.length > 0 ? divisions[0].DIVISIONNAME : 'مرطبان';
+    const defaultDiv = divisions.length > 0 ? divisions[0].DIVISIONNAME : 'Jars';
     const defaultDivId = divisions.length > 0 ? divisions[0].DIVISIONID : 40;
 
     setNewGroupForm({
@@ -702,14 +702,14 @@ export default function AuthenticOmegaInventoryGroupsView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-[600px] p-2 sm:p-4">
+    <div className="w-full bg-background text-slate-800 font-sans min-h-[600px] p-2 sm:p-4">
       {/* Toast alert */}
       {toastMessage && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-xl text-white border text-sm font-semibold transition-all ${
             toastMessage.type === 'success'
-              ? 'bg-[#1e7e34] border-[#1c7430]'
-              : 'bg-[#bd2130] border-[#b21f2d]'
+              ? 'bg-emerald-700 border-emerald-800'
+              : 'bg-destructive border-destructive'
           }`}
         >
           <CheckCircle2 className="w-5 h-5" />
@@ -725,11 +725,11 @@ export default function AuthenticOmegaInventoryGroupsView() {
           ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-200 gap-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1f2d3d] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
             Inventory Groups
           </h1>
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-            <a href="#home" className="text-[#0d6efd] hover:underline">
+            <a href="#home" className="text-primary hover:underline">
               Home
             </a>
             <span>/</span>
@@ -740,7 +740,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
         <div>
           <button
             onClick={() => setIsTutorialOpen(true)}
-            className="text-xs text-[#0d6efd] hover:underline font-semibold flex items-center gap-1.5"
+            className="text-xs text-primary hover:underline font-semibold flex items-center gap-1.5"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Watch Tutorial
@@ -763,7 +763,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:border-[#2b3940] focus:ring-1 focus:ring-[#2b3940] transition"
+                className="w-full pl-9 pr-3 py-1.5 text-xs text-slate-800 bg-white border border-slate-300 rounded focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
               />
             </div>
 
@@ -772,7 +772,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <select
                 value={selectedDivision}
                 onChange={(e) => setSelectedDivision(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs text-slate-700 bg-white border border-slate-300 rounded focus:outline-none focus:border-[#2b3940] cursor-pointer"
+                className="w-full px-3 py-1.5 text-xs text-slate-700 bg-white border border-slate-300 rounded focus:outline-none focus:border-primary cursor-pointer"
               >
                 <option value="All Divisions">All Divisions</option>
                 {divisions.map((div) => (
@@ -789,7 +789,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
             {/* + New Button */}
             <button
               onClick={handleOpenNew}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>New</span>
@@ -799,7 +799,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
             <div className="relative" ref={actionsRef}>
               <button
                 onClick={() => setActionsOpen(!actionsOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
               >
                 <span>Actions</span>
                 <ChevronDown className="w-3.5 h-3.5" />
@@ -828,7 +828,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 text-slate-700 font-bold bg-[#fafbfc]">
+              <tr className="border-b border-slate-200 text-slate-700 font-bold bg-card">
                 <th
                   onClick={() => toggleSort('GROUPID')}
                   className="px-3 py-3 w-12 cursor-pointer select-none hover:bg-slate-100 transition"
@@ -946,7 +946,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         <button
                           onClick={() => handleOpenEdit(item)}
                           title="Edit"
-                          className="w-7 h-7 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white shadow-2xs transition"
+                          className="w-7 h-7 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white shadow-2xs transition"
                         >
                           <Edit className="w-3.5 h-3.5" />
                         </button>
@@ -954,7 +954,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         <button
                           onClick={() => handleDeleteGroup(item)}
                           title="Delete"
-                          className="w-7 h-7 flex items-center justify-center rounded bg-[#782b2b] hover:bg-[#5e2020] text-white shadow-2xs transition"
+                          className="w-7 h-7 flex items-center justify-center rounded bg-destructive hover:bg-destructive/90 text-white shadow-2xs transition"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -968,7 +968,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
         </div>
 
         {/* Pagination Bar */}
-        <div className="px-4 py-3 bg-[#fafbfc] border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-4 py-3 bg-card border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
           <div>
             Showing <span className="font-semibold text-slate-700">{filteredGroups.length}</span> of{' '}
             <span className="font-semibold text-slate-700">{groups.length}</span> groups
@@ -980,7 +980,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
             >
               «
             </button>
-            <span className="px-3 py-1 bg-[#2b3940] text-white rounded font-bold">1</span>
+            <span className="px-3 py-1 bg-primary text-white rounded font-bold">1</span>
             <button
               disabled
               className="px-2 py-1 border border-slate-200 rounded text-slate-400 bg-white cursor-not-allowed"
@@ -999,7 +999,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
           <div className="bg-white border border-slate-300 w-full max-w-2xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">New Inventory Group</h2>
+              <h2 className="text-base font-semibold text-foreground">New Inventory Group</h2>
               <button
                 onClick={() => setIsNewModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1029,7 +1029,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         otherDesc: prev.otherDesc === prev.name || prev.otherDesc === '' ? val : prev.otherDesc
                       }));
                     }}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1042,7 +1042,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     type="text"
                     value={newGroupForm.otherDesc}
                     onChange={(e) => setNewGroupForm({ ...newGroupForm, otherDesc: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1063,7 +1063,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                           divisionId: found ? found.DIVISIONID : 40
                         });
                       }}
-                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                     >
                       {divisions.map((div) => (
                         <option key={div.DIVISIONID} value={div.DIVISIONNAME}>
@@ -1076,7 +1076,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="button"
                       onClick={handleOpenQuickAddDivision}
                       title="Add New Division"
-                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -1084,7 +1084,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="button"
                       onClick={() => handleOpenEditDivision(newGroupForm.divisionId)}
                       title="Edit Division"
-                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
@@ -1100,7 +1100,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     type="text"
                     value={newGroupForm.secondLang}
                     onChange={(e) => setNewGroupForm({ ...newGroupForm, secondLang: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1115,7 +1115,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setNewGroupForm({ ...newGroupForm, sorting: Number(e.target.value) || 1 })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1130,7 +1130,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setNewGroupForm({ ...newGroupForm, discount: Number(e.target.value) || 0 })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1143,7 +1143,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       onChange={(e) =>
                         setNewGroupForm({ ...newGroupForm, masterItem: e.target.checked })
                       }
-                      className="w-4 h-4 rounded border-slate-300 text-[#2b3940] focus:ring-0 cursor-pointer"
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-0 cursor-pointer"
                     />
                     <span>Use as Master in E-Commerce</span>
                   </label>
@@ -1152,7 +1152,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* Accounting Section Panel */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Accounting
                 </div>
                 <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1208,7 +1208,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* Tax Section Panel */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Tax
                 </div>
                 <div className="p-4 grid grid-cols-3 gap-3">
@@ -1217,7 +1217,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax1}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax1: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax1</span>
                   </label>
@@ -1226,7 +1226,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax2}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax2: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax2</span>
                   </label>
@@ -1235,7 +1235,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax3}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax3: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax3</span>
                   </label>
@@ -1244,7 +1244,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax4}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax4: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax4</span>
                   </label>
@@ -1253,7 +1253,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax5}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax5: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax5</span>
                   </label>
@@ -1262,7 +1262,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={newGroupForm.tax6}
                       onChange={(e) => setNewGroupForm({ ...newGroupForm, tax6: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax6</span>
                   </label>
@@ -1271,11 +1271,11 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* E-Commerce Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   E-Commerce Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {newGroupForm.image ? (
                       <img
                         src={newGroupForm.image}
@@ -1291,19 +1291,19 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('new')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setNewGroupForm({ ...newGroupForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1313,7 +1313,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1332,7 +1332,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
           <div className="bg-white border border-slate-300 w-full max-w-2xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Edit Inventory Group</h2>
+              <h2 className="text-base font-semibold text-foreground">Edit Inventory Group</h2>
               <button
                 onClick={() => setIsEditModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1368,7 +1368,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditGroupForm({ ...editGroupForm, name: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1383,7 +1383,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditGroupForm({ ...editGroupForm, otherDesc: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1404,7 +1404,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                           divisionId: found ? found.DIVISIONID : 40
                         });
                       }}
-                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                      className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                     >
                       {divisions.map((div) => (
                         <option key={div.DIVISIONID} value={div.DIVISIONNAME}>
@@ -1417,7 +1417,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="button"
                       onClick={handleOpenQuickAddDivision}
                       title="Add New Division"
-                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-9 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -1425,7 +1425,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="button"
                       onClick={() => handleOpenEditDivision(editGroupForm.divisionId)}
                       title="Edit Division"
-                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-[#2b3940] hover:bg-[#1a2328] text-white transition shadow-2xs"
+                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded bg-primary hover:bg-primary/90 text-white transition shadow-2xs"
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
@@ -1443,7 +1443,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditGroupForm({ ...editGroupForm, secondLang: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1458,7 +1458,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditGroupForm({ ...editGroupForm, sorting: Number(e.target.value) || 1 })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1473,7 +1473,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditGroupForm({ ...editGroupForm, discount: Number(e.target.value) || 0 })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1486,7 +1486,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       onChange={(e) =>
                         setEditGroupForm({ ...editGroupForm, masterItem: e.target.checked })
                       }
-                      className="w-4 h-4 rounded border-slate-300 text-[#2b3940] focus:ring-0 cursor-pointer"
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-0 cursor-pointer"
                     />
                     <span>Use as Master in E-Commerce</span>
                   </label>
@@ -1495,7 +1495,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* Accounting Section Panel */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Accounting
                 </div>
                 <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1557,7 +1557,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* Tax Section Panel */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Tax
                 </div>
                 <div className="p-4 grid grid-cols-3 gap-3">
@@ -1566,7 +1566,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax1}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax1: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax1</span>
                   </label>
@@ -1575,7 +1575,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax2}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax2: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax2</span>
                   </label>
@@ -1584,7 +1584,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax3}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax3: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax3</span>
                   </label>
@@ -1593,7 +1593,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax4}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax4: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax4</span>
                   </label>
@@ -1602,7 +1602,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax5}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax5: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax5</span>
                   </label>
@@ -1611,7 +1611,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                       type="checkbox"
                       checked={editGroupForm.tax6}
                       onChange={(e) => setEditGroupForm({ ...editGroupForm, tax6: e.target.checked })}
-                      className="rounded border-slate-300 text-[#2b3940]"
+                      className="rounded border-slate-300 text-primary"
                     />
                     <span>Tax6</span>
                   </label>
@@ -1620,11 +1620,11 @@ export default function AuthenticOmegaInventoryGroupsView() {
 
               {/* E-Commerce Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   E-Commerce Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {editGroupForm.image ? (
                       <img
                         src={editGroupForm.image}
@@ -1640,19 +1640,19 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('edit')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditGroupForm({ ...editGroupForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1662,7 +1662,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1681,7 +1681,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">New Inventory Division</h2>
+              <h2 className="text-base font-semibold text-foreground">New Inventory Division</h2>
               <button
                 onClick={() => setIsNewDivisionModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1705,7 +1705,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setQuickDivisionForm({ ...quickDivisionForm, name: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1724,7 +1724,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         categoryId: c ? c.CATEGORYID : 6
                       });
                     }}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   >
                     {OMEGA_DIVISION_CATEGORIES.map((c) => (
                       <option key={c.CATEGORYID} value={c.CATEGORYNAME}>
@@ -1747,7 +1747,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         sorting: Number(e.target.value) || 1
                       })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1761,18 +1761,18 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setQuickDivisionForm({ ...quickDivisionForm, secondLang: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {quickDivisionForm.image ? (
                       <img
                         src={quickDivisionForm.image}
@@ -1788,19 +1788,19 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('division')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setQuickDivisionForm({ ...quickDivisionForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1810,7 +1810,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1829,7 +1829,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Edit Inventory Division</h2>
+              <h2 className="text-base font-semibold text-foreground">Edit Inventory Division</h2>
               <button
                 onClick={() => setIsEditDivisionModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -1863,7 +1863,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditDivisionForm({ ...editDivisionForm, name: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1882,7 +1882,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         categoryId: c ? c.CATEGORYID : 6
                       });
                     }}
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   >
                     {OMEGA_DIVISION_CATEGORIES.map((c) => (
                       <option key={c.CATEGORYID} value={c.CATEGORYNAME}>
@@ -1905,7 +1905,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                         sorting: Number(e.target.value) || 1
                       })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
 
@@ -1919,18 +1919,18 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     onChange={(e) =>
                       setEditDivisionForm({ ...editDivisionForm, secondLang: e.target.value })
                     }
-                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-[#2b3940]"
+                    className="w-full px-3 py-1.5 text-xs border border-slate-300 rounded focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               {/* Image Section Card */}
               <div className="border border-slate-200 rounded overflow-hidden">
-                <div className="bg-[#f8fafc] px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
+                <div className="bg-background px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-800">
                   Image
                 </div>
                 <div className="p-4 flex flex-col items-center">
-                  <div className="w-48 h-36 bg-[#f1f3f5] border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="w-48 h-36 bg-muted border border-dashed border-slate-300 rounded flex items-center justify-center mb-3 overflow-hidden">
                     {editDivisionForm.image ? (
                       <img
                         src={editDivisionForm.image}
@@ -1946,19 +1946,19 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     <button
                       type="button"
                       onClick={() => handleImageUpload('division_edit')}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#2b3940] hover:bg-[#1f2937] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded transition"
                     >
                       Select image
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditDivisionForm({ ...editDivisionForm, image: '' })}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-[#782b2b] hover:bg-[#5e2020] rounded transition"
+                      className="px-3 py-1 text-xs font-semibold text-white bg-destructive hover:bg-destructive/90 rounded transition"
                     >
                       Remove
                     </button>
                   </div>
-                  <div className="text-[11px] text-[#eb231a] font-medium text-center">
+                  <div className="text-[11px] text-destructive font-medium text-center">
                     50 x 50px &nbsp; &nbsp; Max: 10KB
                   </div>
                 </div>
@@ -1968,7 +1968,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -1987,7 +1987,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
           <div className="bg-white border border-slate-300 w-full max-w-md rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h2 className="text-base font-semibold text-[#1f2d3d]">Sorting</h2>
+              <h2 className="text-base font-semibold text-foreground">Sorting</h2>
               <button
                 onClick={() => setIsSortingModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 transition"
@@ -2028,7 +2028,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                           <button
                             type="button"
                             onClick={() => adjustSortingItem(item.id, -1)}
-                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-[#2b3940]"
+                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -2036,7 +2036,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                           <button
                             type="button"
                             onClick={() => adjustSortingItem(item.id, 1)}
-                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-[#2b3940]"
+                            className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -2052,7 +2052,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                 <button
                   type="button"
                   onClick={handleSaveSorting}
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2b3940] hover:bg-[#1f2937] text-white text-xs font-semibold rounded shadow-xs transition"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded shadow-xs transition"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>
@@ -2069,7 +2069,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
       {isTutorialOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/50 backdrop-blur-2xs animate-in fade-in duration-150">
           <div className="bg-white border border-slate-300 w-full max-w-xl rounded shadow-2xl overflow-hidden text-slate-800 animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-3.5 bg-[#2b3940] text-white">
+            <div className="flex items-center justify-between px-5 py-3.5 bg-primary text-white">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 <h2 className="text-sm font-semibold">Inventory Groups Tutorial</h2>
@@ -2087,7 +2087,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                 <Info className="w-4 h-4 shrink-0 text-blue-600 mt-0.5" />
                 <div>
                   <div className="font-bold mb-1">About Inventory Groups</div>
-                  Inventory Groups structure items within divisions (e.g. مرطبان 509, Assembled Items Per 1, Bottles, CLASSIC-C/R, Demijohn, JAR, Plastic Bottles, etc.) and define their default accounting accounts, tax assignments, and e-commerce configurations.
+                  Inventory Groups structure items within divisions (e.g. Jars 509, Assembled Items Per 1, Bottles, CLASSIC-C/R, Demijohn, JAR, Plastic Bottles, etc.) and define their default accounting accounts, tax assignments, and e-commerce configurations.
                 </div>
               </div>
 
@@ -2118,7 +2118,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
               <div className="pt-3 border-t border-slate-200 flex justify-end">
                 <button
                   onClick={() => setIsTutorialOpen(false)}
-                  className="px-4 py-1.5 bg-[#2b3940] text-white rounded text-xs font-semibold hover:bg-[#1f2937]"
+                  className="px-4 py-1.5 bg-primary text-white rounded text-xs font-semibold hover:bg-primary/90"
                 >
                   Got It
                 </button>

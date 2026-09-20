@@ -123,7 +123,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
     assembledBy: 'Mohammed Jichi',
     productId: 1095,
     productCode: 'PGO230GJAR505',
-    productDescription: 'مرطبان زيتون اخضر بلدي اول 230غ',
+    productDescription: 'Pickled Local Green Olives Jar 230g',
     qty: 12,
     unit: 'JAR',
     unitCost: 70460,
@@ -137,7 +137,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-7-1',
         productId: 265,
         code: 'PGO11KGWS',
-        description: 'زيتون اخضر بلدي اول جملة',
+        description: 'Local Green Olives Bulk First Grade',
         qty: 2.76,
         unit: 'KG',
         unitCost: 252000,
@@ -147,7 +147,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-7-2',
         productId: 901,
         code: 'JAR230G-EMPTY',
-        description: 'مرطبان زجاج فارغ 230غ',
+        description: 'Empty Glass Jar 230g',
         qty: 12,
         unit: 'UNIT',
         unitCost: 8500,
@@ -157,7 +157,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-7-3',
         productId: 902,
         code: 'CAP-JAR-230G',
-        description: 'غطاء مرطبان معدني 230غ',
+        description: 'Metal Jar Lid 230g',
         qty: 12,
         unit: 'UNIT',
         unitCost: 2500,
@@ -167,7 +167,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-7-4',
         productId: 903,
         code: 'LBL-OLIVE-230G',
-        description: 'ليبل لاصق زيتون بلدي 230غ',
+        description: 'Adhesive Label Local Olives 230g',
         qty: 12,
         unit: 'UNIT',
         unitCost: 1500,
@@ -186,7 +186,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
     assembledBy: 'Mohammed Jichi',
     productId: 1095,
     productCode: 'PGO230GJAR505',
-    productDescription: 'مرطبان زيتون اخضر بلدي اول 230غ',
+    productDescription: 'Pickled Local Green Olives Jar 230g',
     qty: 1,
     unit: 'JAR',
     unitCost: 70460,
@@ -200,7 +200,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-6-1',
         productId: 265,
         code: 'PGO11KGWS',
-        description: 'زيتون اخضر بلدي اول جملة',
+        description: 'Local Green Olives Bulk First Grade',
         qty: 0.23,
         unit: 'KG',
         unitCost: 252000,
@@ -210,7 +210,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-6-2',
         productId: 901,
         code: 'JAR230G-EMPTY',
-        description: 'مرطبان زجاج فارغ 230غ',
+        description: 'Empty Glass Jar 230g',
         qty: 1,
         unit: 'UNIT',
         unitCost: 8500,
@@ -220,7 +220,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-6-3',
         productId: 902,
         code: 'CAP-JAR-230G',
-        description: 'غطاء مرطبان معدني 230غ',
+        description: 'Metal Jar Lid 230g',
         qty: 1,
         unit: 'UNIT',
         unitCost: 2500,
@@ -230,7 +230,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-6-4',
         productId: 903,
         code: 'LBL-OLIVE-230G',
-        description: 'ليبل لاصق زيتون بلدي 230غ',
+        description: 'Adhesive Label Local Olives 230g',
         qty: 1,
         unit: 'UNIT',
         unitCost: 1500,
@@ -273,7 +273,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-5-2',
         productId: 901,
         code: 'JAR230G-EMPTY',
-        description: 'مرطبان زجاج فارغ 230غ',
+        description: 'Empty Glass Jar 230g',
         qty: 13,
         unit: 'UNIT',
         unitCost: 8500,
@@ -283,7 +283,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
         id: 'ing-5-3',
         productId: 902,
         code: 'CAP-JAR-230G',
-        description: 'غطاء مرطبان معدني 230غ',
+        description: 'Metal Jar Lid 230g',
         qty: 13,
         unit: 'UNIT',
         unitCost: 2500,
@@ -1218,7 +1218,7 @@ export default function ItemAssemblyView() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="px-4 py-2 bg-[#195a96] hover:bg-[#134472] text-white rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition"
             >
               <Printer className="w-4 h-4" />
               <span>Print</span>
@@ -1345,7 +1345,7 @@ export default function ItemAssemblyView() {
   // RENDER: MAIN ITEM ASSEMBLY WORKSTATION
   // ==========================================================================
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f5f8] text-slate-800 font-sans">
+    <div className="flex flex-col min-h-screen bg-background text-slate-800 font-sans">
       {/* Toast Alert */}
       {toastMessage && (
         <div
@@ -1353,7 +1353,7 @@ export default function ItemAssemblyView() {
             toastType === 'error'
               ? 'bg-red-700 text-white border-red-500'
               : toastType === 'info'
-              ? 'bg-[#195a96] text-white border-blue-400'
+              ? 'bg-primary text-white border-blue-400'
               : 'bg-emerald-600 text-white border-emerald-400'
           }`}
         >
@@ -1460,7 +1460,7 @@ export default function ItemAssemblyView() {
                   setMultiBranchId(selectedBranchId);
                   setMultiLocationId(selectedLocationId);
                 }}
-                className="bg-[#28a745] hover:bg-[#218838] text-white px-3.5 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Multiple Item Assembly</span>
@@ -1477,7 +1477,7 @@ export default function ItemAssemblyView() {
                 className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition shadow-xs ${
                   isSingleBranchLocked
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                    : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                    : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                 }`}
               >
                 <Search className="w-3.5 h-3.5" />
@@ -1487,7 +1487,7 @@ export default function ItemAssemblyView() {
               {/* + New Button */}
               <button
                 onClick={handleClearSingleForm}
-                className="bg-[#2d3748] hover:bg-[#1a202c] text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>New</span>
@@ -1501,7 +1501,7 @@ export default function ItemAssemblyView() {
                   className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition shadow-xs ${
                     isSingleBranchLocked
                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                      : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                      : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                   }`}
                 >
                   <span>Actions</span>
@@ -1561,7 +1561,7 @@ export default function ItemAssemblyView() {
                 className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition ${
                   isMultiBranchLocked
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                    : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                    : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                 }`}
               >
                 <Eraser className="w-3.5 h-3.5" />
@@ -1574,7 +1574,7 @@ export default function ItemAssemblyView() {
                 className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition ${
                   isMultiBranchLocked
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                    : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                    : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                 }`}
               >
                 <Search className="w-3.5 h-3.5" />
@@ -1587,7 +1587,7 @@ export default function ItemAssemblyView() {
                 className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition ${
                   isMultiBranchLocked || multiItems.length === 0
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                    : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                    : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                 }`}
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -1672,7 +1672,7 @@ export default function ItemAssemblyView() {
                         className={`p-1.5 rounded transition ${
                           isSingleBranchLocked
                             ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                            : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                            : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                         }`}
                       >
                         <Plus className="w-4 h-4" />
@@ -1742,7 +1742,7 @@ export default function ItemAssemblyView() {
                           className={`p-2 rounded text-white transition ${
                             isSingleBranchLocked
                               ? 'bg-slate-300 cursor-not-allowed opacity-60'
-                              : 'bg-[#2d3748] hover:bg-[#1a202c] cursor-pointer'
+                              : 'bg-primary hover:bg-primary/90 cursor-pointer'
                           }`}
                         >
                           <Search className="w-3.5 h-3.5" />
@@ -1780,7 +1780,7 @@ export default function ItemAssemblyView() {
                           className={`p-1.5 rounded transition ${
                             isSingleBranchLocked || !selectedItem
                               ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                              : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer'
+                              : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                           }`}
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
@@ -1871,7 +1871,7 @@ export default function ItemAssemblyView() {
                     className={`p-2 rounded text-white transition ${
                       isSingleBranchLocked || !selectedItem
                         ? 'bg-slate-300 cursor-not-allowed opacity-60'
-                        : 'bg-[#195a96] hover:bg-[#134472] cursor-pointer'
+                        : 'bg-primary hover:bg-primary/90 cursor-pointer'
                     }`}
                   >
                     <Search className="w-3.5 h-3.5" />
@@ -1979,7 +1979,7 @@ export default function ItemAssemblyView() {
                         className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
                           isSingleBranchLocked || !selectedItem || quantity <= 0
                             ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                            : 'bg-[#fb8205] hover:bg-[#da6f00] text-white'
+                            : 'bg-amber-600 hover:bg-amber-600 text-white'
                         }`}
                       >
                         <Save className="w-3.5 h-3.5" />
@@ -1993,7 +1993,7 @@ export default function ItemAssemblyView() {
                         className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
                           isSingleBranchLocked || !selectedItem || quantity <= 0
                             ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                            : 'bg-[#28a745] hover:bg-[#218838] text-white'
+                            : 'bg-emerald-700 hover:bg-emerald-800 text-white'
                         }`}
                       >
                         <Save className="w-3.5 h-3.5" />
@@ -2202,7 +2202,7 @@ export default function ItemAssemblyView() {
                       className={`p-2 rounded text-white transition ${
                         isMultiLocationLocked
                           ? 'bg-slate-300 cursor-not-allowed opacity-60'
-                          : 'bg-[#195a96] hover:bg-[#134472] cursor-pointer'
+                          : 'bg-primary hover:bg-primary/90 cursor-pointer'
                       }`}
                     >
                       <Search className="w-3.5 h-3.5" />
@@ -2217,7 +2217,7 @@ export default function ItemAssemblyView() {
                       className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition ${
                         isMultiLocationLocked
                           ? 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-60'
-                          : 'bg-[#195a96] hover:bg-[#134472] text-white cursor-pointer shadow-xs'
+                          : 'bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-xs'
                       }`}
                     >
                       <Upload className="w-3.5 h-3.5" />
@@ -2324,7 +2324,7 @@ export default function ItemAssemblyView() {
                       className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
                         isMultiLocationLocked || multiItems.length === 0
                           ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                          : 'bg-[#fb8205] hover:bg-[#da6f00] text-white'
+                          : 'bg-amber-600 hover:bg-amber-600 text-white'
                       }`}
                     >
                       <Save className="w-3.5 h-3.5" />
@@ -2338,7 +2338,7 @@ export default function ItemAssemblyView() {
                       className={`px-4 py-2 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
                         isMultiLocationLocked || multiItems.length === 0
                           ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                          : 'bg-[#28a745] hover:bg-[#218838] text-white'
+                          : 'bg-emerald-700 hover:bg-emerald-800 text-white'
                       }`}
                     >
                       <Save className="w-3.5 h-3.5" />
@@ -2497,7 +2497,7 @@ function PreviewSingleProductionsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in font-sans">
         {/* Modal Header */}
-        <div className="bg-[#195a96] text-white px-5 py-3.5 flex items-center justify-between">
+        <div className="bg-primary text-white px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Search className="w-4 h-4 text-blue-200" />
             <h2 className="text-sm font-bold tracking-wide">
@@ -2528,7 +2528,7 @@ function PreviewSingleProductionsModal({
               <button
                 onClick={() => setStatusFilter('ALL')}
                 className={`px-3 py-1 font-medium ${
-                  statusFilter === 'ALL' ? 'bg-[#195a96] text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
+                  statusFilter === 'ALL' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 All
@@ -2536,7 +2536,7 @@ function PreviewSingleProductionsModal({
               <button
                 onClick={() => setStatusFilter('POSTED')}
                 className={`px-3 py-1 font-medium ${
-                  statusFilter === 'POSTED' ? 'bg-[#195a96] text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
+                  statusFilter === 'POSTED' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 Posted
@@ -2544,7 +2544,7 @@ function PreviewSingleProductionsModal({
               <button
                 onClick={() => setStatusFilter('DRAFT')}
                 className={`px-3 py-1 font-medium ${
-                  statusFilter === 'DRAFT' ? 'bg-[#195a96] text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
+                  statusFilter === 'DRAFT' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 Draft
@@ -2609,7 +2609,7 @@ function PreviewSingleProductionsModal({
                         <button
                           type="button"
                           onClick={() => onOpenRecord(rec)}
-                          className="px-2 py-1 bg-[#195a96] hover:bg-[#134472] text-white rounded text-[11px] font-bold"
+                          className="px-2 py-1 bg-primary hover:bg-primary/90 text-white rounded text-[11px] font-bold"
                           title="Open in workstation"
                         >
                           Open
@@ -2677,7 +2677,7 @@ function PreviewMultipleProductionsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-4xl max-h-[80vh] flex flex-col overflow-hidden animate-scale-in font-sans">
-        <div className="bg-[#195a96] text-white px-5 py-3.5 flex items-center justify-between">
+        <div className="bg-primary text-white px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Search className="w-4 h-4 text-blue-200" />
             <h2 className="text-sm font-bold tracking-wide">
@@ -2724,7 +2724,7 @@ function PreviewMultipleProductionsModal({
                       <button
                         type="button"
                         onClick={() => onOpenRecord(r)}
-                        className="px-2 py-1 bg-[#195a96] hover:bg-[#134472] text-white rounded text-[11px] font-bold cursor-pointer"
+                        className="px-2 py-1 bg-primary hover:bg-primary/90 text-white rounded text-[11px] font-bold cursor-pointer"
                       >
                         Load Items
                       </button>
@@ -2775,7 +2775,7 @@ function AddLocationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scale-in font-sans">
-        <div className="bg-[#195a96] text-white px-5 py-3 flex items-center justify-between">
+        <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
           <h2 className="text-sm font-bold">Add Location</h2>
           <button onClick={onClose} className="text-white hover:opacity-75">
             <X className="w-4 h-4" />
@@ -2808,7 +2808,7 @@ function AddLocationModal({
                 }
               }}
               disabled={!locationName.trim()}
-              className="px-4 py-1.5 bg-[#195a96] hover:bg-[#134472] text-white text-xs font-bold rounded disabled:opacity-50"
+              className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded disabled:opacity-50"
             >
               Save Location
             </button>
@@ -2863,7 +2863,7 @@ function ImportCsvModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-scale-in font-sans">
-        <div className="bg-[#195a96] text-white px-5 py-3 flex items-center justify-between">
+        <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
           <h2 className="text-sm font-bold">Import CSV - Multiple Item Assembly</h2>
           <button onClick={onClose} className="text-white hover:opacity-75">
             <X className="w-4 h-4" />
@@ -2900,7 +2900,7 @@ function ImportCsvModal({
               </button>
               <button
                 onClick={handleParseCsv}
-                className="px-4 py-1.5 bg-[#195a96] hover:bg-[#134472] text-white font-bold rounded"
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded"
               >
                 Import Items
               </button>

@@ -71,7 +71,7 @@ export default function GlobalReportTemplate<T = any>({
   const totalsList = grandTotals || (grandTotal ? [grandTotal] : []);
 
   return (
-    <div className={`w-full font-sans text-slate-800 text-left select-none bg-[#f4f6f9] py-2 print:p-0 print:bg-white ${className}`}>
+    <div className={`w-full font-sans text-slate-800 text-left select-none bg-background py-2 print:p-0 print:bg-white ${className}`}>
       {/* 1. OPTIONAL ACTION TOOLBAR (SCREEN ONLY) */}
       {!hideToolbar && (
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-xl p-3 mb-4 shadow-sm print:hidden">
@@ -88,7 +88,7 @@ export default function GlobalReportTemplate<T = any>({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.4))}
-                  className="p-1.5 rounded-md bg-[#1b5e20] hover:bg-[#144717] text-white cursor-pointer transition-colors shadow-2xs"
+                  className="p-1.5 rounded-md bg-muted hover:bg-muted/80 text-foreground border border-border cursor-pointer transition-colors shadow-2xs"
                   title="Zoom in"
                 >
                   <ZoomIn size={14} />
@@ -96,7 +96,7 @@ export default function GlobalReportTemplate<T = any>({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.7))}
-                  className="p-1.5 rounded-md bg-[#1b5e20] hover:bg-[#144717] text-white cursor-pointer transition-colors shadow-2xs"
+                  className="p-1.5 rounded-md bg-muted hover:bg-muted/80 text-foreground border border-border cursor-pointer transition-colors shadow-2xs"
                   title="Zoom out"
                 >
                   <ZoomOut size={14} />
@@ -108,7 +108,7 @@ export default function GlobalReportTemplate<T = any>({
               <button
                 type="button"
                 onClick={onExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2d3748] hover:bg-[#1a202c] text-white rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
                 title="Export Flat CSV"
               >
                 <Download size={13} />
@@ -119,7 +119,7 @@ export default function GlobalReportTemplate<T = any>({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#2d3748] hover:bg-[#1a202c] text-white rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-xs font-medium cursor-pointer transition-colors shadow-2xs"
               title="Print Document"
             >
               <Printer size={13} />
@@ -241,10 +241,10 @@ export default function GlobalReportTemplate<T = any>({
                     sections.map((section, sIdx) => {
                       const sectionColor =
                         section.type === 'revenue'
-                          ? 'text-report-sectionRevenue text-[#1a629b]'
+                          ? 'text-foreground font-bold'
                           : section.type === 'cogs'
-                          ? 'text-report-sectionCogs text-[#7a1c1c]'
-                          : 'text-slate-800';
+                          ? 'text-foreground font-bold'
+                          : 'text-slate-800 font-bold';
 
                       return (
                         <React.Fragment key={`section-${sIdx}`}>

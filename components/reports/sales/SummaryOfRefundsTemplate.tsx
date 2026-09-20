@@ -3,7 +3,8 @@
 import React, { useMemo } from 'react';
 import MasterReportDocument from '@/components/reports/MasterReportDocument';
 import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
-import { applyGlobalReportFilters } from '@/lib/reportFilterEngine';
+import { applyGlobalReportFilters, resolveActiveCurrencyFromFilters, getDynamicCurrencyColumnHeader } from '@/lib/reportFilterEngine';
+import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
 
 export interface RefundRecord {
   branch: string;
@@ -201,14 +202,21 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
     return `${fromDate} to ${toDate}`;
   }, [dynamicPeriodText, fromDate, toDate]);
 
+  const activeCurrency = useMemo(() => {
+    return resolveActiveCurrencyFromFilters(filterValues, 'LBP');
+  }, [filterValues]);
+
   // Dynamic filter summary
   const filterSummary = useMemo(() => {
     const parts: string[] = [];
+    if (filterValues.branch && filterValues.branch !== 'ALL') parts.push(`Branch: ${filterValues.branch}`);
+    if (filterValues.workstation && filterValues.workstation !== 'ALL') parts.push(`WS: ${filterValues.workstation}`);
     if (filterValues.paymentType && filterValues.paymentType !== 'ALL') parts.push(`Tender: ${filterValues.paymentType}`);
     if (filterValues.refundReason && filterValues.refundReason !== 'ALL') parts.push(`Reason: ${filterValues.refundReason}`);
     if (filterValues.supervisor && filterValues.supervisor !== 'ALL') parts.push(`Supervisor: ${filterValues.supervisor}`);
     if (filterValues.channel && filterValues.channel !== 'ALL') parts.push(`Channel: ${filterValues.channel}`);
     if (filterValues.customerSearch) parts.push(`Customer: ${filterValues.customerSearch}`);
+    if (filterValues.currency && filterValues.currency !== 'ALL') parts.push(`Cur: ${filterValues.currency}`);
     return parts.length > 0 ? parts.join(' | ') : undefined;
   }, [filterValues]);
 
@@ -324,26 +332,39 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
     },
     {
       key: 'grandTotal',
-      label: 'Refund Total (LBP)',
+      label: getDynamicCurrencyColumnHeader('Refund Total (LBP)', activeCurrency),
       align: 'right',
       width: '14%',
       isMonospace: true,
-      render: (row) => (
-        <span className="font-mono text-xs font-bold text-red-700">
-          {row.grandTotal}
-        </span>
-      ),
+      render: (row) => {
+        const valLbp = parseFloat(row.grandTotal.replace(/[^0-9.-]+/g, '')) || 0;
+        const converted = convertCurrency(valLbp, 'LBP', activeCurrency);
+        return (
+          <span className="font-mono text-xs font-bold text-red-700">
+            {formatCurrencyAmount(converted, activeCurrency, false)}
+          </span>
+        );
+      },
     },
-  ], []);
+  ], [activeCurrency]);
 
   const grandTotal: GrandTotal = useMemo(() => {
+    const convertedTotal = convertCurrency(totalLbpNum, 'LBP', activeCurrency);
     const usdEquiv = (Math.abs(totalLbpNum) / 89500).toFixed(2);
+    const primaryStr = formatCurrencyAmount(convertedTotal, activeCurrency, true);
+    const secondaryLbpStr = `${totalLbpNum.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP`;
+
     return {
       label: `Net Refund Total (${filteredRefunds.length} Customer Credit Notes Issued):`,
-      value: `${totalLbpNum.toLocaleString('en-US', { minimumFractionDigits: 2 })} LBP (-$${usdEquiv})`,
+      value: primaryStr,
       isNegative: true,
+      targetCurrency: activeCurrency,
+      breakdownText: activeCurrency === 'USD'
+        ? `USD: ${primaryStr}  |  LBP: ${secondaryLbpStr}`
+        : `LBP: ${primaryStr}  |  USD: -$${usdEquiv}`,
+      convertedSubtext: `Normalized to ${activeCurrency} @ 89,500 LBP/USD`,
     };
-  }, [filteredRefunds.length, totalLbpNum]);
+  }, [filteredRefunds.length, totalLbpNum, activeCurrency]);
 
   return (
     <div className="w-full space-y-4 font-sans">

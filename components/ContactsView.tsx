@@ -394,7 +394,7 @@ export default function ContactsView() {
   }, [contacts, searchTerm, selectedCountry, selectedSalesOwner]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-slate-800 flex flex-col font-sans">
       {/* ========================================================================= */}
       {/* 1. OMEGA HEADER (Matching Screenshot 1 exactly)                           */}
       {/* ========================================================================= */}
@@ -477,7 +477,7 @@ export default function ContactsView() {
 
           {/* Title & Breadcrumb */}
           <div className="mb-4">
-            <h1 className="text-xl font-bold text-[#1e3a8a]">Contacts</h1>
+            <h1 className="text-xl font-bold text-primary">Contacts</h1>
             <div className="text-[11px] text-slate-500 mt-0.5">
               <Link href="/" className="text-blue-600 hover:underline">Home</Link>
               <span className="mx-1 text-slate-400">/</span>
@@ -513,7 +513,7 @@ export default function ContactsView() {
                 {/* My Sales Button (Audio 2: "تكبس My Sales بتروح على My Sales Dashboard") */}
                 <Link
                   href="/my-sales"
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                   title="Go to Sales Rep Dashboard"
                 >
                   <TrendingUp className="w-3.5 h-3.5 text-cyan-300" />
@@ -524,7 +524,7 @@ export default function ContactsView() {
                 <button
                   type="button"
                   onClick={handleOpenCreate}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                   title="Create New Contact"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -598,7 +598,7 @@ export default function ContactsView() {
                 <button
                   type="button"
                   onClick={() => showNotification('Filters applied successfully.')}
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <Filter className="w-3.5 h-3.5" />
                   <span>Filter</span>
@@ -682,7 +682,7 @@ export default function ContactsView() {
                             <button
                               type="button"
                               onClick={() => handleOpenEdit(c)}
-                              className="w-6 h-6 bg-[#2f3b52] hover:bg-blue-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                              className="w-6 h-6 bg-primary hover:bg-blue-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
                               title="Edit Contact"
                             >
                               <Edit2 className="w-3 h-3" />
@@ -692,7 +692,7 @@ export default function ContactsView() {
                             <button
                               type="button"
                               onClick={() => setDeletingContact(c)}
-                              className="w-6 h-6 bg-[#7f1d1d] hover:bg-rose-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                              className="w-6 h-6 bg-destructive hover:bg-rose-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
                               title="Delete Contact"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -741,7 +741,7 @@ export default function ContactsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-3xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-base font-semibold text-[#1e3a8a]">
+              <h2 className="text-base font-semibold text-primary">
                 {modalMode === 'create' ? 'New Contact' : 'Edit Contact'}
               </h2>
               <button
@@ -999,7 +999,7 @@ export default function ContactsView() {
               <div className="flex justify-end pt-2">
                 <button
                   type="submit"
-                  className="bg-[#2f3b52] hover:bg-[#1e2736] text-white text-xs font-semibold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                  className="bg-primary hover:bg-primary text-white text-xs font-semibold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save</span>

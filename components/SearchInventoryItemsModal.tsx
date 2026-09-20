@@ -272,7 +272,7 @@ export default function SearchInventoryItemsModal({
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#337ab7] shadow-2xs"
+                className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary shadow-2xs"
                 autoFocus
               />
             </div>
@@ -282,7 +282,7 @@ export default function SearchInventoryItemsModal({
               type="button"
               onClick={() => setIsNewItemModalOpen(true)}
               title="Create New Inventory Item"
-              className="px-3.5 py-1.5 bg-[#27ae60] hover:bg-[#219653] text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+              className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New</span>
@@ -292,7 +292,7 @@ export default function SearchInventoryItemsModal({
             <button
               type="button"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="px-3.5 py-1.5 bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+              className="px-3.5 py-1.5 bg-primary hover:bg-primary text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
             >
               <FilterIcon className="w-3.5 h-3.5" />
               <span>Filters</span>
@@ -302,7 +302,7 @@ export default function SearchInventoryItemsModal({
             <button
               type="button"
               onClick={handleAddSelected}
-              className="px-4 py-1.5 bg-[#34495e] hover:bg-[#2c3e50] text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
+              className="px-4 py-1.5 bg-primary hover:bg-primary text-white text-xs font-bold rounded flex items-center gap-1.5 shadow-2xs transition cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Add</span>
@@ -320,7 +320,7 @@ export default function SearchInventoryItemsModal({
                     setSelectedCategoryId(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 >
                   {OMEGA_INVENTORY_CATEGORIES.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -335,7 +335,7 @@ export default function SearchInventoryItemsModal({
                 <select
                   value={filterSupplier}
                   onChange={(e) => setFilterSupplier(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="ALL">All Suppliers</option>
                   <option value="Abbas & Hussein Dirani">Abbas & Hussein Dirani</option>
@@ -350,8 +350,8 @@ export default function SearchInventoryItemsModal({
                   <option value="Sedi Hisham">Sedi Hisham</option>
                   <option value="SOOL">SOOL</option>
                   <option value="Zahwe">Zahwe</option>
-                  <option value="الضيعة">الضيعة</option>
-                  <option value="مؤسسة عبده للتجارة">مؤسسة عبده للتجارة</option>
+                  <option value="Al-Dayaa">Al-Dayaa</option>
+                  <option value="Abdo Trading Est.">Abdo Trading Est.</option>
                 </select>
               </div>
 
@@ -360,7 +360,7 @@ export default function SearchInventoryItemsModal({
                 <select
                   value={filterSource}
                   onChange={(e) => setFilterSource(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]"
+                  className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary"
                 >
                   <option value="ALL">All Sources</option>
                   <option value="Local">Local</option>
@@ -370,7 +370,7 @@ export default function SearchInventoryItemsModal({
 
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Location</label>
-                <select className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#337ab7]">
+                <select className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary">
                   <option value="0">All Locations</option>
                   <option value="1">Choueifat Main Facility</option>
                 </select>
@@ -404,7 +404,7 @@ export default function SearchInventoryItemsModal({
                   }}
                   className={`px-5 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${
                     isActive
-                      ? 'bg-slate-100 text-slate-900 border-b-2 border-[#337ab7]'
+                      ? 'bg-slate-100 text-slate-900 border-b-2 border-primary'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
@@ -435,7 +435,7 @@ export default function SearchInventoryItemsModal({
                     type="checkbox"
                     checked={isAllCurrentSelected}
                     onChange={(e) => handleToggleSelectAll(e.target.checked)}
-                    className="rounded text-[#337ab7] focus:ring-0 cursor-pointer"
+                    className="rounded text-primary focus:ring-0 cursor-pointer"
                   />
                 </th>
                 <th className="py-2.5 px-3">Description</th>
@@ -471,7 +471,7 @@ export default function SearchInventoryItemsModal({
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleToggleItem(item.code)}
-                          className="rounded text-[#337ab7] focus:ring-0 cursor-pointer"
+                          className="rounded text-primary focus:ring-0 cursor-pointer"
                         />
                       </td>
                       <td className="py-2 px-3 font-semibold text-slate-900">
@@ -493,7 +493,7 @@ export default function SearchInventoryItemsModal({
                           value={qtyVal}
                           onChange={(e) => handleQuantityChange(item.code, e.target.value)}
                           placeholder=""
-                          className="w-24 px-2 py-1 text-center bg-white border border-slate-300 rounded text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-[#337ab7] shadow-2xs"
+                          className="w-24 px-2 py-1 text-center bg-white border border-slate-300 rounded text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-primary shadow-2xs"
                         />
                       </td>
                       <td className="py-2 px-3">
@@ -502,7 +502,7 @@ export default function SearchInventoryItemsModal({
                           value={remarkVal}
                           onChange={(e) => handleRemarkChange(item.code, e.target.value)}
                           placeholder=""
-                          className="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-[#337ab7] shadow-2xs"
+                          className="w-full px-2 py-1 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-primary shadow-2xs"
                         />
                       </td>
                     </tr>
@@ -521,7 +521,7 @@ export default function SearchInventoryItemsModal({
             type="button"
             disabled={currentPage <= 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="px-2.5 py-1 border border-slate-300 rounded text-xs text-[#337ab7] hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="px-2.5 py-1 border border-slate-300 rounded text-xs text-primary hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             «
           </button>
@@ -535,8 +535,8 @@ export default function SearchInventoryItemsModal({
                 onClick={() => setCurrentPage(pg)}
                 className={`px-3 py-1 text-xs rounded transition font-medium ${
                   isActive
-                    ? 'border border-[#337ab7] bg-white text-[#337ab7] font-bold shadow-2xs'
-                    : 'border border-slate-300 text-[#337ab7] hover:bg-slate-50'
+                    ? 'border border-primary bg-white text-primary font-bold shadow-2xs'
+                    : 'border border-slate-300 text-primary hover:bg-slate-50'
                 }`}
               >
                 {pg}
@@ -548,7 +548,7 @@ export default function SearchInventoryItemsModal({
             type="button"
             disabled={currentPage >= totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="px-2.5 py-1 border border-slate-300 rounded text-xs text-[#337ab7] hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="px-2.5 py-1 border border-slate-300 rounded text-xs text-primary hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             »
           </button>

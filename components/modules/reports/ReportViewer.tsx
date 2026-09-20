@@ -37,9 +37,9 @@ export default function UniversalReportViewer({
           border-radius: 4px !important;
         }
         select:focus, input:focus {
-          border-color: #1a629b !important;
+          border-color: var(--primary) !important;
           outline: none !important;
-          box-shadow: 0 0 0 1px #1a629b !important;
+          box-shadow: 0 0 0 1px var(--primary) !important;
         }
         /* Enforce Vanguard TH normal-case on all tables */
         th {

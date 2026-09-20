@@ -68,7 +68,7 @@ export default function PosCommandModal({
         onOpenOlderSales();
       } else if (e.ctrlKey && e.key === 'F8') {
         e.preventDefault();
-        router.push('/backoffice/dashboard');
+        router.push('/backoffice');
       }
     };
 
@@ -243,7 +243,7 @@ export default function PosCommandModal({
 
           {/* 6. Back Office Navigation (Ctrl+F8) */}
           <Link
-            href="/backoffice/dashboard"
+            href="/backoffice"
             className={`${cmdCardClass} bg-[#151922] hover:bg-slate-800 border-slate-700 hover:border-slate-500`}
           >
             <div className="flex justify-between items-start mb-3">
