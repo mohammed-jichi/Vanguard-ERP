@@ -668,6 +668,178 @@
   ],
   "vouchers": [
     {
+      "id": "jv-1789933000183-1121",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "jv_number": "JV-2026-2820",
+      "date_of_jv": "2026-09-20",
+      "jv_type": "JV",
+      "currency_id": "USD",
+      "description": "Live Supabase End-to-End Persistence Voucher 1789933000182",
+      "department": "Finance & Treasury",
+      "sub_department": "General Operations",
+      "created_by": "Super Admin (Finance Controller)",
+      "total_debit": 7500.25,
+      "total_credit": 7500.25,
+      "is_posted": false,
+      "status": "DRAFT",
+      "lines": [
+        {
+          "id": "line-1789933000182-1",
+          "line_number": 1,
+          "account_id": "acc-53000",
+          "account_number": "53000",
+          "account_name": "Cash (Main Physical Vault)",
+          "amount_debit": 7500.25,
+          "amount_credit": 0,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Debit Test Entry"
+        },
+        {
+          "id": "line-1789933000182-2",
+          "line_number": 2,
+          "account_id": "acc-5121",
+          "account_number": "5121",
+          "account_name": "Bank Bob Lbp (Bank of Beirut Commercial)",
+          "amount_debit": 0,
+          "amount_credit": 7500.25,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Credit Test Entry"
+        }
+      ],
+      "updated_at": "2026-09-20T19:36:42.411Z"
+    },
+    {
+      "id": "jv-1789932954185-9888",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "jv_number": "JV-2026-3772",
+      "date_of_jv": "2026-09-20",
+      "jv_type": "JV",
+      "currency_id": "USD",
+      "description": "Live Supabase End-to-End Persistence Voucher 1789932954183",
+      "department": "Finance & Treasury",
+      "sub_department": "General Operations",
+      "created_by": "Super Admin (Finance Controller)",
+      "total_debit": 7500.25,
+      "total_credit": 7500.25,
+      "is_posted": false,
+      "status": "DRAFT",
+      "lines": [
+        {
+          "id": "line-1789932954183-1",
+          "line_number": 1,
+          "account_id": "acc-53000",
+          "account_number": "53000",
+          "account_name": "Cash (Main Physical Vault)",
+          "amount_debit": 7500.25,
+          "amount_credit": 0,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Debit Test Entry"
+        },
+        {
+          "id": "line-1789932954183-2",
+          "line_number": 2,
+          "account_id": "acc-5121",
+          "account_number": "5121",
+          "account_name": "Bank Bob Lbp (Bank of Beirut Commercial)",
+          "amount_debit": 0,
+          "amount_credit": 7500.25,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Credit Test Entry"
+        }
+      ],
+      "updated_at": "2026-09-20T19:35:56.305Z"
+    },
+    {
+      "id": "jv-1789932912998-3264",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "jv_number": "JV-2026-4414",
+      "date_of_jv": "2026-09-20",
+      "jv_type": "JV",
+      "currency_id": "USD",
+      "description": "Live Supabase End-to-End Persistence Voucher 1789932912996",
+      "department": "Finance & Treasury",
+      "sub_department": "General Operations",
+      "created_by": "Super Admin (Finance Controller)",
+      "total_debit": 7500.25,
+      "total_credit": 7500.25,
+      "is_posted": false,
+      "status": "DRAFT",
+      "lines": [
+        {
+          "id": "line-1789932912996-1",
+          "line_number": 1,
+          "account_id": "acc-53000",
+          "account_number": "53000",
+          "account_name": "Cash (Main Physical Vault)",
+          "amount_debit": 7500.25,
+          "amount_credit": 0,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Debit Test Entry"
+        },
+        {
+          "id": "line-1789932912996-2",
+          "line_number": 2,
+          "account_id": "acc-5121",
+          "account_number": "5121",
+          "account_name": "Bank Bob Lbp (Bank of Beirut Commercial)",
+          "amount_debit": 0,
+          "amount_credit": 7500.25,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Credit Test Entry"
+        }
+      ],
+      "updated_at": "2026-09-20T19:35:14.619Z"
+    },
+    {
+      "id": "jv-1789932847088-7142",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "jv_number": "JV-2026-1100",
+      "date_of_jv": "2026-09-20",
+      "jv_type": "JV",
+      "currency_id": "USD",
+      "description": "Live Supabase End-to-End Persistence Voucher 1789932847086",
+      "department": "Finance & Treasury",
+      "sub_department": "General Operations",
+      "created_by": "Super Admin (Finance Controller)",
+      "total_debit": 7500.25,
+      "total_credit": 7500.25,
+      "is_posted": false,
+      "status": "DRAFT",
+      "lines": [
+        {
+          "id": "line-1789932847086-1",
+          "line_number": 1,
+          "account_id": "acc-53000",
+          "account_number": "53000",
+          "account_name": "Cash (Main Physical Vault)",
+          "amount_debit": 7500.25,
+          "amount_credit": 0,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Debit Test Entry"
+        },
+        {
+          "id": "line-1789932847086-2",
+          "line_number": 2,
+          "account_id": "acc-5121",
+          "account_number": "5121",
+          "account_name": "Bank Bob Lbp (Bank of Beirut Commercial)",
+          "amount_debit": 0,
+          "amount_credit": 7500.25,
+          "currency_rate": 1,
+          "amount_native": 7500.25,
+          "description": "Live Credit Test Entry"
+        }
+      ],
+      "updated_at": "2026-09-20T19:34:08.927Z"
+    },
+    {
       "id": "jv-1789911245832-2314",
       "tenant_id": "00000000-0000-0000-0000-000000000001",
       "jv_number": "JV-2026-6610",
@@ -2685,6 +2857,106 @@
   ],
   "expenses": [
     {
+      "id": "ev-1789933003456-4406",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "payee": "Lebanon Global Logistics S.A.L",
+      "reference": "REF-8110",
+      "date": "2026-09-20",
+      "ev": "EV-2026-9767",
+      "dateOfEv": "2026-09-20",
+      "amount": 3200,
+      "totalDisbursed": 3200,
+      "paymentDifference": 0,
+      "description": "Fleet Import & Freight Duty",
+      "enteredBy": "Operations Manager",
+      "department": "Logistics",
+      "posted": true,
+      "status": "FULLY_CLOSED_RECONCILED",
+      "purchaseAccountId": "",
+      "purchaseDept": "Main Department",
+      "purchaseRef": "",
+      "expenseRows": [],
+      "paymentRows": [],
+      "created_at": "2026-09-20T19:36:43.456Z",
+      "updated_at": "2026-09-20T19:36:43.456Z",
+      "posted_at": "2026-09-20T19:36:43.456Z"
+    },
+    {
+      "id": "ev-1789932957196-5812",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "payee": "Lebanon Global Logistics S.A.L",
+      "reference": "REF-1641",
+      "date": "2026-09-20",
+      "ev": "EV-2026-8586",
+      "dateOfEv": "2026-09-20",
+      "amount": 3200,
+      "totalDisbursed": 3200,
+      "paymentDifference": 0,
+      "description": "Fleet Import & Freight Duty",
+      "enteredBy": "Operations Manager",
+      "department": "Logistics",
+      "posted": true,
+      "status": "FULLY_CLOSED_RECONCILED",
+      "purchaseAccountId": "",
+      "purchaseDept": "Main Department",
+      "purchaseRef": "",
+      "expenseRows": [],
+      "paymentRows": [],
+      "created_at": "2026-09-20T19:35:57.196Z",
+      "updated_at": "2026-09-20T19:35:57.196Z",
+      "posted_at": "2026-09-20T19:35:57.196Z"
+    },
+    {
+      "id": "ev-1789932915310-3424",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "payee": "Lebanon Global Logistics S.A.L",
+      "reference": "REF-4489",
+      "date": "2026-09-20",
+      "ev": "EV-2026-3023",
+      "dateOfEv": "2026-09-20",
+      "amount": 3200,
+      "totalDisbursed": 3200,
+      "paymentDifference": 0,
+      "description": "Fleet Import & Freight Duty",
+      "enteredBy": "Operations Manager",
+      "department": "Logistics",
+      "posted": true,
+      "status": "FULLY_CLOSED_RECONCILED",
+      "purchaseAccountId": "",
+      "purchaseDept": "Main Department",
+      "purchaseRef": "",
+      "expenseRows": [],
+      "paymentRows": [],
+      "created_at": "2026-09-20T19:35:15.310Z",
+      "updated_at": "2026-09-20T19:35:15.310Z",
+      "posted_at": "2026-09-20T19:35:15.310Z"
+    },
+    {
+      "id": "ev-1789932849524-7030",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "payee": "Lebanon Global Logistics S.A.L",
+      "reference": "REF-6380",
+      "date": "2026-09-20",
+      "ev": "EV-2026-9862",
+      "dateOfEv": "2026-09-20",
+      "amount": 3200,
+      "totalDisbursed": 3200,
+      "paymentDifference": 0,
+      "description": "Fleet Import & Freight Duty",
+      "enteredBy": "Operations Manager",
+      "department": "Logistics",
+      "posted": true,
+      "status": "FULLY_CLOSED_RECONCILED",
+      "purchaseAccountId": "",
+      "purchaseDept": "Main Department",
+      "purchaseRef": "",
+      "expenseRows": [],
+      "paymentRows": [],
+      "created_at": "2026-09-20T19:34:09.524Z",
+      "updated_at": "2026-09-20T19:34:09.524Z",
+      "posted_at": "2026-09-20T19:34:09.524Z"
+    },
+    {
       "id": "ev-1789911247993-2178",
       "tenant_id": "00000000-0000-0000-0000-000000000001",
       "payee": "Supplier / Creditor",
@@ -3969,7 +4241,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-09-20T13:34:09.193Z",
+  "last_updated": "2026-09-20T19:36:43.457Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4116,6 +4388,170 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-1789933003456-1020",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "EXPENSE_POSTED",
+      "description": "Expense Voucher EV-2026-9767 ($3,200) recorded for Lebanon Global Logistics S.A.L",
+      "performed_by": "Operations Manager",
+      "metadata": {
+        "ev": "EV-2026-9767",
+        "amount": 3200,
+        "status": "FULLY_CLOSED_RECONCILED"
+      },
+      "created_at": "2026-09-20T19:36:43.456Z"
+    },
+    {
+      "id": "act-1789933002412-9095",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_UNPOSTED",
+      "description": "Voucher JV-2026-2820 unposted and returned to Draft status.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789933000183-1121",
+        "jvNumber": "JV-2026-2820"
+      },
+      "created_at": "2026-09-20T19:36:42.411Z"
+    },
+    {
+      "id": "act-1789933001532-8672",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_POSTED",
+      "description": "Voucher JV-2026-2820 ($7500.25) posted to General Ledger.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789933000183-1121",
+        "jvNumber": "JV-2026-2820",
+        "amount": 7500.25
+      },
+      "created_at": "2026-09-20T19:36:41.531Z"
+    },
+    {
+      "id": "act-1789932957197-4747",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "EXPENSE_POSTED",
+      "description": "Expense Voucher EV-2026-8586 ($3,200) recorded for Lebanon Global Logistics S.A.L",
+      "performed_by": "Operations Manager",
+      "metadata": {
+        "ev": "EV-2026-8586",
+        "amount": 3200,
+        "status": "FULLY_CLOSED_RECONCILED"
+      },
+      "created_at": "2026-09-20T19:35:57.196Z"
+    },
+    {
+      "id": "act-1789932956305-4733",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_UNPOSTED",
+      "description": "Voucher JV-2026-3772 unposted and returned to Draft status.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932954185-9888",
+        "jvNumber": "JV-2026-3772"
+      },
+      "created_at": "2026-09-20T19:35:56.305Z"
+    },
+    {
+      "id": "act-1789932955421-9287",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_POSTED",
+      "description": "Voucher JV-2026-3772 ($7500.25) posted to General Ledger.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932954185-9888",
+        "jvNumber": "JV-2026-3772",
+        "amount": 7500.25
+      },
+      "created_at": "2026-09-20T19:35:55.421Z"
+    },
+    {
+      "id": "act-1789932915310-6728",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "EXPENSE_POSTED",
+      "description": "Expense Voucher EV-2026-3023 ($3,200) recorded for Lebanon Global Logistics S.A.L",
+      "performed_by": "Operations Manager",
+      "metadata": {
+        "ev": "EV-2026-3023",
+        "amount": 3200,
+        "status": "FULLY_CLOSED_RECONCILED"
+      },
+      "created_at": "2026-09-20T19:35:15.310Z"
+    },
+    {
+      "id": "act-1789932914619-5515",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_UNPOSTED",
+      "description": "Voucher JV-2026-4414 unposted and returned to Draft status.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932912998-3264",
+        "jvNumber": "JV-2026-4414"
+      },
+      "created_at": "2026-09-20T19:35:14.619Z"
+    },
+    {
+      "id": "act-1789932914023-2704",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_POSTED",
+      "description": "Voucher JV-2026-4414 ($7500.25) posted to General Ledger.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932912998-3264",
+        "jvNumber": "JV-2026-4414",
+        "amount": 7500.25
+      },
+      "created_at": "2026-09-20T19:35:14.023Z"
+    },
+    {
+      "id": "act-1789932849524-8875",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "EXPENSE_POSTED",
+      "description": "Expense Voucher EV-2026-9862 ($3,200) recorded for Lebanon Global Logistics S.A.L",
+      "performed_by": "Operations Manager",
+      "metadata": {
+        "ev": "EV-2026-9862",
+        "amount": 3200,
+        "status": "FULLY_CLOSED_RECONCILED"
+      },
+      "created_at": "2026-09-20T19:34:09.524Z"
+    },
+    {
+      "id": "act-1789932848927-2491",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_UNPOSTED",
+      "description": "Voucher JV-2026-1100 unposted and returned to Draft status.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932847088-7142",
+        "jvNumber": "JV-2026-1100"
+      },
+      "created_at": "2026-09-20T19:34:08.927Z"
+    },
+    {
+      "id": "act-1789932848256-5257",
+      "tenant_id": "00000000-0000-0000-0000-000000000001",
+      "company_id": 1300,
+      "action_type": "VOUCHER_POSTED",
+      "description": "Voucher JV-2026-1100 ($7500.25) posted to General Ledger.",
+      "performed_by": "Chief Financial Officer",
+      "metadata": {
+        "voucherId": "jv-1789932847088-7142",
+        "jvNumber": "JV-2026-1100",
+        "amount": 7500.25
+      },
+      "created_at": "2026-09-20T19:34:08.256Z"
+    },
     {
       "id": "act-1789911249193-5855",
       "tenant_id": "00000000-0000-0000-0000-000000000001",

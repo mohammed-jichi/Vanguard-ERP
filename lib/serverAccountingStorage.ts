@@ -148,6 +148,15 @@ interface PersistentDatabaseState {
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'vanguard_accounting_db.json');
 
+// High-Performance In-Memory Cache & Non-Blocking SWR Revalidation Engine
+let inMemoryDbState: PersistentDatabaseState | null = null;
+let lastDbFileMtime = 0;
+let lastVoucherReconcileTime = 0;
+let lastExpenseReconcileTime = 0;
+let activeVoucherReconcilePromise: Promise<void> | null = null;
+let activeExpenseReconcilePromise: Promise<void> | null = null;
+const RECONCILE_INTERVAL_MS = 60 * 1000; // 60-second SWR cache window
+
 function ensureDbFileExists(): PersistentDatabaseState {
   try {
     if (!fs.existsSync(DB_DIR)) {
@@ -167,11 +176,34 @@ function ensureDbFileExists(): PersistentDatabaseState {
         last_updated: new Date().toISOString()
       };
       fs.writeFileSync(DB_FILE, JSON.stringify(initialState, null, 2), 'utf-8');
+      inMemoryDbState = initialState;
+      try {
+        lastDbFileMtime = fs.statSync(DB_FILE).mtimeMs;
+      } catch {
+        lastDbFileMtime = Date.now();
+      }
       return initialState;
+    }
+
+    // Fast-path: Return cached in-memory state if file modification timestamp is unchanged (0ms read latency)
+    if (inMemoryDbState) {
+      try {
+        const currentMtime = fs.statSync(DB_FILE).mtimeMs;
+        if (currentMtime <= lastDbFileMtime) {
+          return inMemoryDbState;
+        }
+      } catch {
+        return inMemoryDbState;
+      }
     }
 
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed: PersistentDatabaseState = JSON.parse(raw);
+    try {
+      lastDbFileMtime = fs.statSync(DB_FILE).mtimeMs;
+    } catch {
+      lastDbFileMtime = Date.now();
+    }
 
     // Fallback if data array is missing
     if (!parsed.accounts || parsed.accounts.length === 0) {
@@ -605,10 +637,11 @@ function ensureDbFileExists(): PersistentDatabaseState {
       ];
     }
 
+    inMemoryDbState = parsed;
     return parsed;
   } catch (err) {
     console.error('[serverAccountingStorage] Error initializing DB file:', err);
-    return {
+    const fallback = {
       accounts: INITIAL_ACCOUNT_DETAILS.map(normalizeAccount),
       vouchers: INITIAL_JOURNAL_VOUCHERS,
       expenses: [],
@@ -617,15 +650,23 @@ function ensureDbFileExists(): PersistentDatabaseState {
       system_activities: [],
       last_updated: new Date().toISOString()
     };
+    inMemoryDbState = fallback;
+    return fallback;
   }
 }
 
 function writeDbState(state: PersistentDatabaseState): void {
   try {
     state.last_updated = new Date().toISOString();
+    inMemoryDbState = state;
     const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
     fs.writeFileSync(tempFile, JSON.stringify(state, null, 2), 'utf-8');
     fs.renameSync(tempFile, DB_FILE);
+    try {
+      lastDbFileMtime = fs.statSync(DB_FILE).mtimeMs;
+    } catch {
+      lastDbFileMtime = Date.now();
+    }
   } catch (err) {
     console.error('[serverAccountingStorage] Error writing DB state to disk:', err);
   }
@@ -730,38 +771,62 @@ export class ServerAccountingStorage {
     const state = ensureDbFileExists();
     let list = [...state.vouchers];
 
-    // Supabase database query reconciliation
-    try {
-      const { data: sbData, error: sbErr } = await supabase.from('acc_journal_vouchers').select('*, lines:acc_journal_voucher_lines(*)');
-      if (!sbErr && Array.isArray(sbData) && sbData.length > 0) {
-        for (const sbV of sbData) {
-          const exists = list.some((v) => v.id === sbV.id || v.jv_number === sbV.jv_number);
-          if (!exists) {
-            list.unshift({
-              id: sbV.id,
-              tenant_id: sbV.tenant_id,
-              jv_number: sbV.jv_number,
-              date_of_jv: sbV.date_of_jv,
-              jv_type: sbV.jv_type,
-              currency_id: sbV.currency_id,
-              doc_ref_number: sbV.doc_ref_number,
-              description: sbV.description,
-              internal_remark: sbV.internal_remark,
-              department: sbV.department,
-              sub_department: sbV.sub_department,
-              total_debit: Number(sbV.total_debit) || 0,
-              total_credit: Number(sbV.total_credit) || 0,
-              is_posted: Boolean(sbV.is_posted),
-              posted_at: sbV.posted_at,
-              posted_by: sbV.posted_by,
-              created_by: sbV.created_by,
-              lines: Array.isArray(sbV.lines) ? sbV.lines : []
-            });
+    // Local-First Read Optimization with Non-Blocking Background SWR Reconciliation
+    const shouldReconcile = Date.now() - lastVoucherReconcileTime > RECONCILE_INTERVAL_MS;
+    if (shouldReconcile && !activeVoucherReconcilePromise) {
+      lastVoucherReconcileTime = Date.now();
+      activeVoucherReconcilePromise = (async () => {
+        try {
+          const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+            setTimeout(() => resolve({ data: null, error: new Error('Supabase read timeout') }), 2500)
+          );
+          const fetchPromise = supabase
+            .from('acc_journal_vouchers')
+            .select('*, lines:acc_journal_voucher_lines(*)');
+          const res = await Promise.race([fetchPromise, timeoutPromise]);
+          const { data: sbData, error: sbErr } = res as any;
+
+          if (!sbErr && Array.isArray(sbData) && sbData.length > 0) {
+            const currentState = ensureDbFileExists();
+            let stateMutated = false;
+            for (const sbV of sbData) {
+              const exists = currentState.vouchers.some(
+                (v) => v.id === sbV.id || v.jv_number === sbV.jv_number
+              );
+              if (!exists) {
+                currentState.vouchers.unshift({
+                  id: sbV.id,
+                  tenant_id: sbV.tenant_id,
+                  jv_number: sbV.jv_number,
+                  date_of_jv: sbV.date_of_jv,
+                  jv_type: sbV.jv_type,
+                  currency_id: sbV.currency_id,
+                  doc_ref_number: sbV.doc_ref_number,
+                  description: sbV.description,
+                  internal_remark: sbV.internal_remark,
+                  department: sbV.department,
+                  sub_department: sbV.sub_department,
+                  total_debit: Number(sbV.total_debit) || 0,
+                  total_credit: Number(sbV.total_credit) || 0,
+                  is_posted: Boolean(sbV.is_posted),
+                  posted_at: sbV.posted_at,
+                  posted_by: sbV.posted_by,
+                  created_by: sbV.created_by,
+                  lines: Array.isArray(sbV.lines) ? sbV.lines : []
+                });
+                stateMutated = true;
+              }
+            }
+            if (stateMutated) {
+              writeDbState(currentState);
+            }
           }
+        } catch (e) {
+          // Non-blocking fallback
+        } finally {
+          activeVoucherReconcilePromise = null;
         }
-      }
-    } catch (e) {
-      // Non-blocking fallback
+      })();
     }
 
     if (filters?.search) {
@@ -1071,7 +1136,7 @@ export class ServerAccountingStorage {
     // Commit state atomically to disk
     writeDbState(state);
 
-    // Direct Database Mutations: Supabase vouchers, voucher_lines, gl_entries & system_activities
+    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled
     try {
       const headerPayload = {
         id: persistedVoucher.id,
@@ -1091,11 +1156,12 @@ export class ServerAccountingStorage {
         updated_at: nowIso
       };
 
-      // 1. Write Voucher Header (acc_journal_vouchers / vouchers)
+      // 1. Insert/upsert parent voucher header first (satisfies foreign key constraints in Postgres)
       const vRes = await supabase.from('acc_journal_vouchers').upsert(headerPayload);
       if (vRes.error) {
         await supabase.from('vouchers').upsert({
           id: persistedVoucher.id,
+          voucher_number: persistedVoucher.jv_number,
           jv_number: persistedVoucher.jv_number,
           description: persistedVoucher.description,
           total_debit: persistedVoucher.total_debit,
@@ -1105,62 +1171,68 @@ export class ServerAccountingStorage {
         });
       }
 
-      // 2. Write Voucher Lines (acc_journal_voucher_lines / voucher_lines)
-      if (persistedLines.length > 0) {
-        const linesPayload = persistedLines.map((l) => ({
-          id: l.id,
-          voucher_id: persistedVoucher.id,
-          account_id: l.account_id || null,
-          account_number: l.account_number || '',
-          account_name: l.account_name || '',
-          description: l.description || '',
-          debit: l.amount_debit || 0,
-          credit: l.amount_credit || 0
-        }));
+      // 2. Parallelize voucher lines, GL ledger entries, and audit activities via Promise.allSettled
+      const linesTask = (async () => {
+        if (persistedLines.length > 0) {
+          const linesPayload = persistedLines.map((l) => ({
+            id: l.id,
+            voucher_id: persistedVoucher.id,
+            account_id: l.account_id || null,
+            account_number: l.account_number || '',
+            account_name: l.account_name || '',
+            description: l.description || '',
+            debit: l.amount_debit || 0,
+            credit: l.amount_credit || 0
+          }));
 
-        const lRes = await supabase.from('acc_journal_voucher_lines').upsert(linesPayload);
-        if (lRes.error) {
-          await supabase.from('voucher_lines').upsert(linesPayload);
+          const lRes = await supabase.from('acc_journal_voucher_lines').upsert(linesPayload);
+          if (lRes.error) {
+            await supabase.from('voucher_lines').upsert(linesPayload);
+          }
         }
-      }
+      })();
 
-      // 3. Write General Ledger entries if posted (acc_gl_ledger_entries / gl_entries)
-      if (args.postImmediately && createdGlEntries.length > 0) {
-        const glPayload = createdGlEntries.map((g) => ({
-          id: g.id,
-          voucher_id: g.voucher_id,
-          voucher_number: g.voucher_number,
-          entry_date: g.entry_date,
-          account_id: g.account_id || null,
-          debit: g.debit || 0,
-          credit: g.credit || 0,
-          description: g.narration || '',
-          created_at: g.created_at || nowIso
-        }));
+      const glTask = (async () => {
+        if (args.postImmediately && createdGlEntries.length > 0) {
+          const glPayload = createdGlEntries.map((g) => ({
+            id: g.id,
+            voucher_id: g.voucher_id,
+            voucher_number: g.voucher_number,
+            entry_date: g.entry_date,
+            account_id: g.account_id || null,
+            debit: g.debit || 0,
+            credit: g.credit || 0,
+            description: g.narration || '',
+            created_at: g.created_at || nowIso
+          }));
 
-        const gRes = await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
-        if (gRes.error) {
-          await supabase.from('gl_entries').upsert(glPayload);
+          const gRes = await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
+          if (gRes.error) {
+            await supabase.from('gl_entries').upsert(glPayload);
+          }
         }
-      }
+      })();
 
-      // 4. Record to system_activities audit log in Supabase
-      await supabase.from('system_activities').insert([
-        {
-          tenant_id: persistedVoucher.tenant_id,
-          company_id: 1300,
-          action_type: args.postImmediately ? 'VOUCHER_POSTED' : 'VOUCHER_SAVED',
-          description: `${persistedVoucher.jv_type} Voucher ${persistedVoucher.jv_number} ($${balanceInfo.totalDebit.toLocaleString()}) ${args.postImmediately ? 'posted to GL' : 'saved as draft'}`,
-          performed_by: user,
-          metadata: {
-            voucherId: persistedVoucher.id,
-            jvNumber: persistedVoucher.jv_number,
-            type: persistedVoucher.jv_type,
-            amount: balanceInfo.totalDebit
-          },
-          created_at: nowIso
-        }
-      ]);
+      const activityTask = (async () => {
+        await supabase.from('system_activities').insert([
+          {
+            tenant_id: persistedVoucher.tenant_id,
+            company_id: 1300,
+            action_type: args.postImmediately ? 'VOUCHER_POSTED' : 'VOUCHER_SAVED',
+            description: `${persistedVoucher.jv_type} Voucher ${persistedVoucher.jv_number} ($${balanceInfo.totalDebit.toLocaleString()}) ${args.postImmediately ? 'posted to GL' : 'saved as draft'}`,
+            performed_by: user,
+            metadata: {
+              voucherId: persistedVoucher.id,
+              jvNumber: persistedVoucher.jv_number,
+              type: persistedVoucher.jv_type,
+              amount: balanceInfo.totalDebit
+            },
+            created_at: nowIso
+          }
+        ]);
+      })();
+
+      await Promise.allSettled([linesTask, glTask, activityTask]);
     } catch (e) {
       // Non-blocking sync
     }
@@ -1305,9 +1377,9 @@ export class ServerAccountingStorage {
     state.vouchers[vIdx] = voucher;
     writeDbState(state);
 
-    // Background sync to Supabase
+    // Parallel Dual-Sync to Supabase Postgres via Promise.allSettled
     try {
-      await supabase
+      const vTask = supabase
         .from('acc_journal_vouchers')
         .update({
           is_posted: voucher.is_posted,
@@ -1318,30 +1390,32 @@ export class ServerAccountingStorage {
         })
         .eq('id', voucher.id);
 
-      if (args.isPosted) {
-        const addedGlEntries = state.gl_entries.filter(
-          (g) => g.voucher_id === voucher.id || g.voucher_number === voucher.jv_number
-        );
-        if (addedGlEntries.length > 0) {
-          const glPayload = addedGlEntries.map((g) => ({
-            id: g.id,
-            voucher_id: g.voucher_id,
-            voucher_number: g.voucher_number,
-            account_id: g.account_id || null,
-            entry_date: g.entry_date,
-            debit: g.debit || 0,
-            credit: g.credit || 0,
-            description: g.narration || '',
-            created_at: g.created_at || nowIso
-          }));
-          await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
-        }
-      } else {
-        await supabase
-          .from('acc_gl_ledger_entries')
-          .delete()
-          .or(`voucher_id.eq.${voucher.id},voucher_number.eq.${voucher.jv_number}`);
-      }
+      const glTask = args.isPosted
+        ? (async () => {
+            const addedGlEntries = state.gl_entries.filter(
+              (g) => g.voucher_id === voucher.id || g.voucher_number === voucher.jv_number
+            );
+            if (addedGlEntries.length > 0) {
+              const glPayload = addedGlEntries.map((g) => ({
+                id: g.id,
+                voucher_id: g.voucher_id,
+                voucher_number: g.voucher_number,
+                account_id: g.account_id || null,
+                entry_date: g.entry_date,
+                debit: g.debit || 0,
+                credit: g.credit || 0,
+                description: g.narration || '',
+                created_at: g.created_at || nowIso
+              }));
+              await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
+            }
+          })()
+        : supabase
+            .from('acc_gl_ledger_entries')
+            .delete()
+            .or(`voucher_id.eq.${voucher.id},voucher_number.eq.${voucher.jv_number}`);
+
+      await Promise.allSettled([vTask, glTask]);
     } catch (e) {
       // Non-blocking
     }
@@ -1639,42 +1713,66 @@ export class ServerAccountingStorage {
   // =========================================================================
   public static async getExpenses(): Promise<PersistedExpenseRecord[]> {
     const state = ensureDbFileExists();
-    try {
-      const { data: sbData, error: sbErr } = await supabase.from('acc_expense_vouchers').select('*');
-      if (!sbErr && Array.isArray(sbData) && sbData.length > 0) {
-        for (const sbE of sbData) {
-          const exists = (state.expenses || []).some((e) => e.id === sbE.id || e.ev === sbE.ev_number);
-          if (!exists) {
-            state.expenses.unshift({
-              id: sbE.id,
-              tenant_id: sbE.tenant_id,
-              payee: sbE.payee,
-              reference: sbE.reference,
-              date: sbE.date_of_ev,
-              ev: sbE.ev_number,
-              dateOfEv: sbE.date_of_ev,
-              amount: Number(sbE.amount) || 0,
-              totalDisbursed: Number(sbE.total_disbursed) || 0,
-              paymentDifference: Number(sbE.payment_difference) || 0,
-              description: sbE.description,
-              enteredBy: sbE.created_by || 'Super Admin',
-              department: sbE.purchase_dept || 'Main Department',
-              posted: Boolean(sbE.is_posted),
-              status: sbE.status,
-              purchaseAccountId: sbE.purchase_account_id || '',
-              purchaseDept: sbE.purchase_dept || 'Main Department',
-              purchaseRef: sbE.reference || '',
-              supportingDocUrl: sbE.supporting_doc_url,
-              expenseRows: [],
-              paymentRows: [],
-              created_at: sbE.created_at || new Date().toISOString(),
-              updated_at: sbE.updated_at || new Date().toISOString()
-            });
+    // Local-First Read Optimization with Non-Blocking Background SWR Reconciliation
+    const shouldReconcile = Date.now() - lastExpenseReconcileTime > RECONCILE_INTERVAL_MS;
+    if (shouldReconcile && !activeExpenseReconcilePromise) {
+      lastExpenseReconcileTime = Date.now();
+      activeExpenseReconcilePromise = (async () => {
+        try {
+          const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+            setTimeout(() => resolve({ data: null, error: new Error('Supabase read timeout') }), 2500)
+          );
+          const fetchPromise = supabase.from('acc_expense_vouchers').select('*');
+          const res = await Promise.race([fetchPromise, timeoutPromise]);
+          const { data: sbData, error: sbErr } = res as any;
+
+          if (!sbErr && Array.isArray(sbData) && sbData.length > 0) {
+            const currentState = ensureDbFileExists();
+            let stateMutated = false;
+            for (const sbE of sbData) {
+              const exists = (currentState.expenses || []).some(
+                (e) => e.id === sbE.id || e.ev === sbE.ev_number
+              );
+              if (!exists) {
+                if (!currentState.expenses) currentState.expenses = [];
+                currentState.expenses.unshift({
+                  id: sbE.id,
+                  tenant_id: sbE.tenant_id,
+                  payee: sbE.payee,
+                  reference: sbE.reference,
+                  date: sbE.date_of_ev,
+                  ev: sbE.ev_number,
+                  dateOfEv: sbE.date_of_ev,
+                  amount: Number(sbE.amount) || 0,
+                  totalDisbursed: Number(sbE.total_disbursed) || 0,
+                  paymentDifference: Number(sbE.payment_difference) || 0,
+                  description: sbE.description,
+                  enteredBy: sbE.created_by || 'Super Admin',
+                  department: sbE.purchase_dept || 'Main Department',
+                  posted: Boolean(sbE.is_posted),
+                  status: sbE.status,
+                  purchaseAccountId: sbE.purchase_account_id || '',
+                  purchaseDept: sbE.purchase_dept || 'Main Department',
+                  purchaseRef: sbE.reference || '',
+                  supportingDocUrl: sbE.supporting_doc_url,
+                  expenseRows: [],
+                  paymentRows: [],
+                  created_at: sbE.created_at || new Date().toISOString(),
+                  updated_at: sbE.updated_at || new Date().toISOString()
+                });
+                stateMutated = true;
+              }
+            }
+            if (stateMutated) {
+              writeDbState(currentState);
+            }
           }
+        } catch (e) {
+          // Non-blocking fallback
+        } finally {
+          activeExpenseReconcilePromise = null;
         }
-      }
-    } catch (e) {
-      // Non-blocking fallback
+      })();
     }
     return state.expenses || [];
   }
@@ -1784,7 +1882,7 @@ export class ServerAccountingStorage {
 
     writeDbState(state);
 
-    // Direct Supabase database mutations
+    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled
     try {
       const expensePayload = {
         id: record.id,
@@ -1799,35 +1897,43 @@ export class ServerAccountingStorage {
         updated_at: nowIso
       };
 
-      const eRes = await supabase.from('acc_expense_vouchers').upsert(expensePayload);
-      if (eRes.error) {
-        await supabase.from('expenses').upsert({
-          id: record.id,
-          amount: record.amount,
-          description: record.description,
-          updated_at: nowIso
-        });
-      }
-
-      if (record.paymentRows && record.paymentRows.length > 0) {
-        const payPayload = record.paymentRows.map((p: any, idx: number) => ({
-          id: p.id || `evl-${record.id}-${idx + 1}`,
-          payment_method: p.paymentMethod || 'Cash'
-        }));
-        await supabase.from('acc_expense_payment_lines').upsert(payPayload);
-      }
-
-      await supabase.from('system_activities').insert([
-        {
-          tenant_id: record.tenant_id,
-          company_id: 1300,
-          action_type: record.posted ? 'EXPENSE_POSTED' : 'EXPENSE_RECORDED',
-          description: `Expense Voucher ${record.ev} ($${record.amount.toLocaleString()}) recorded for ${record.payee}`,
-          performed_by: record.enteredBy,
-          metadata: { ev: record.ev, amount: record.amount, status: record.status },
-          created_at: nowIso
+      const expenseTask = (async () => {
+        const eRes = await supabase.from('acc_expense_vouchers').upsert(expensePayload);
+        if (eRes.error) {
+          await supabase.from('expenses').upsert({
+            id: record.id,
+            amount: record.amount,
+            description: record.description,
+            updated_at: nowIso
+          });
         }
-      ]);
+      })();
+
+      const paymentLinesTask = (async () => {
+        if (record.paymentRows && record.paymentRows.length > 0) {
+          const payPayload = record.paymentRows.map((p: any, idx: number) => ({
+            id: p.id || `evl-${record.id}-${idx + 1}`,
+            payment_method: p.paymentMethod || 'Cash'
+          }));
+          await supabase.from('acc_expense_payment_lines').upsert(payPayload);
+        }
+      })();
+
+      const activityTask = (async () => {
+        await supabase.from('system_activities').insert([
+          {
+            tenant_id: record.tenant_id,
+            company_id: 1300,
+            action_type: record.posted ? 'EXPENSE_POSTED' : 'EXPENSE_RECORDED',
+            description: `Expense Voucher ${record.ev} ($${record.amount.toLocaleString()}) recorded for ${record.payee}`,
+            performed_by: record.enteredBy,
+            metadata: { ev: record.ev, amount: record.amount, status: record.status },
+            created_at: nowIso
+          }
+        ]);
+      })();
+
+      await Promise.allSettled([expenseTask, paymentLinesTask, activityTask]);
     } catch (e) {
       // Non-blocking sync
     }
@@ -2051,60 +2157,72 @@ export class ServerAccountingStorage {
     // Commit state atomically to disk
     writeDbState(state);
 
-    // Direct Supabase database sync
-    try {
-      const inboxPayload = {
-        id: item.id,
-        status: item.status,
-        updated_at: nowIso
-      };
-      const iRes = await supabase.from('acc_inbox_items').upsert(inboxPayload);
-      if (iRes.error) {
-        await supabase.from('inbox').upsert(inboxPayload);
-      }
-
-      if (updatedVoucher) {
-        const vPayload = {
-          id: updatedVoucher.id,
-          is_posted: updatedVoucher.is_posted,
-          posted_at: updatedVoucher.posted_at || null,
-          posted_by: updatedVoucher.posted_by || null,
-          status: updatedVoucher.status || (updatedVoucher.is_posted ? 'POSTED' : 'DRAFT'),
+    // Non-blocking Parallel Background Dual-Sync to Remote Supabase (0ms UI latency)
+    (async () => {
+      try {
+        const inboxPayload = {
+          id: item.id,
+          status: item.status,
           updated_at: nowIso
         };
-        const uvRes = await supabase.from('acc_journal_vouchers').upsert(vPayload);
-        if (uvRes.error) {
-          await supabase.from('vouchers').upsert(vPayload);
-        }
-      }
+        const inboxTask = (async () => {
+          const iRes = await supabase.from('acc_inbox_items').upsert(inboxPayload);
+          if (iRes.error) {
+            await supabase.from('inbox').upsert(inboxPayload);
+          }
+        })();
 
-      if (updatedExpense) {
-        const ePayload = {
-          id: updatedExpense.id,
-          status: updatedExpense.status,
-          is_posted: updatedExpense.posted ?? false,
-          updated_at: nowIso
-        };
-        const ueRes = await supabase.from('acc_expense_vouchers').upsert(ePayload);
-        if (ueRes.error) {
-          await supabase.from('expenses').upsert(ePayload);
-        }
-      }
+        const voucherTask = (async () => {
+          if (updatedVoucher) {
+            const vPayload = {
+              id: updatedVoucher.id,
+              is_posted: updatedVoucher.is_posted,
+              posted_at: updatedVoucher.posted_at || null,
+              posted_by: updatedVoucher.posted_by || null,
+              status: updatedVoucher.status || (updatedVoucher.is_posted ? 'POSTED' : 'DRAFT'),
+              updated_at: nowIso
+            };
+            const uvRes = await supabase.from('acc_journal_vouchers').upsert(vPayload);
+            if (uvRes.error) {
+              await supabase.from('vouchers').upsert(vPayload);
+            }
+          }
+        })();
 
-      await supabase.from('system_activities').insert([
-        {
-          tenant_id: item.tenant_id,
-          company_id: 1300,
-          action_type: auditActivity.action_type,
-          description: auditActivity.description,
-          performed_by: user,
-          metadata: auditActivity.metadata,
-          created_at: nowIso
-        }
-      ]);
-    } catch (e) {
-      // Non-blocking sync
-    }
+        const expenseTask = (async () => {
+          if (updatedExpense) {
+            const ePayload = {
+              id: updatedExpense.id,
+              status: updatedExpense.status,
+              is_posted: updatedExpense.posted ?? false,
+              updated_at: nowIso
+            };
+            const ueRes = await supabase.from('acc_expense_vouchers').upsert(ePayload);
+            if (ueRes.error) {
+              await supabase.from('expenses').upsert(ePayload);
+            }
+          }
+        })();
+
+        const activityTask = (async () => {
+          await supabase.from('system_activities').insert([
+            {
+              tenant_id: item.tenant_id,
+              company_id: 1300,
+              action_type: auditActivity.action_type,
+              description: auditActivity.description,
+              performed_by: user,
+              metadata: auditActivity.metadata,
+              created_at: nowIso
+            }
+          ]);
+        })();
+
+        await Promise.allSettled([inboxTask, voucherTask, expenseTask, activityTask]);
+      } catch (e) {
+        // Non-blocking sync
+      }
+    })();
 
     const message = params.action === 'APPROVE'
       ? `Request ${item.id} successfully approved.${updatedVoucher ? ` Voucher ${updatedVoucher.jv_number} posted to General Ledger.` : ''}`
