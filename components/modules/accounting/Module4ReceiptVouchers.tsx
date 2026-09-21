@@ -19,12 +19,19 @@ import {
   X,
   Search
 } from 'lucide-react';
-import { AccountDetail, LBP_RATE, isCustomerAccount, isDisbursingAccount, JournalVoucher } from '@/lib/accountingData';
+import {
+  AccountDetail,
+  LBP_RATE,
+  isCustomerAccount,
+  isTreasuryDisbursingAccount,
+  JournalVoucher
+} from '@/lib/accountingData';
 import {
   apiSaveReceiptVoucher,
   apiFetchVouchersByType,
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
+import QuickAddAccountModal from './QuickAddAccountModal';
 
 interface ReceiptLine {
   id: string;
@@ -52,30 +59,22 @@ export function Module4ReceiptVouchers({
   prefillFromAccount,
   prefillMemo
 }: Module4ReceiptVouchersProps) {
-  // Account groupings (Dynamic functional mapping)
+  // Account groupings (Strict Lebanese PCG standard)
   const clientAccounts = useMemo(
     () =>
       accounts.filter(
         (a) =>
           a.type === 'Customer' ||
           a.account_sub_type === 'CUSTOMER' ||
-          isCustomerAccount(a) ||
-          a.class_type === 'Assets' ||
-          a.account_type === 'ASSET'
+          isCustomerAccount(a)
       ),
     [accounts]
   );
   const bankAndVaultAccounts = useMemo(
-    () =>
-      accounts.filter(
-        (a) =>
-          a.type === 'Cash' ||
-          a.type === 'Bank' ||
-          a.account_sub_type === 'CASH' ||
-          a.account_sub_type === 'BANK' ||
-          a.checking_account ||
-          isDisbursingAccount(a)
-      ),
+    () => {
+      const list = accounts.filter(isTreasuryDisbursingAccount);
+      return list.length > 0 ? list : accounts.filter((a) => a.account_number.startsWith('5'));
+    },
     [accounts]
   );
 
@@ -84,10 +83,20 @@ export function Module4ReceiptVouchers({
     prefillFromAccount || clientAccounts[0]?.id || accounts[0]?.id || ''
   );
   const [toAccountId, setToAccountId] = useState(
-    bankAndVaultAccounts[0]?.id || accounts[0]?.id || ''
+    bankAndVaultAccounts.find((a) => a.account_number === '53000' || a.account_number === '51210')?.id ||
+      bankAndVaultAccounts[0]?.id ||
+      accounts[0]?.id ||
+      ''
   );
   const [amount, setAmount] = useState<number>(0);
   const [currency, setCurrency] = useState<'USD' | 'LBP'>('USD');
+
+  // Quick Add Modal state
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+
+  const handleQuickAddSuccess = (newAccount: AccountDetail) => {
+    setToAccountId(newAccount.id);
+  };
   const [checkNumber, setCheckNumber] = useState('');
   const [description, setDescription] = useState(prefillMemo || '');
 
@@ -332,20 +341,41 @@ export function Module4ReceiptVouchers({
             </select>
           </div>
 
-          {/* To Account * (Vault/Bank account) */}
+          {/* To Account * (Vault/Bank account - Class 5) */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">To Account *</label>
-            <select
-              value={toAccountId}
-              onChange={(e) => setToAccountId(e.target.value)}
-              className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
-            >
-              {bankAndVaultAccounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  #{a.account_number} - {a.account_name}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-foreground font-semibold">To Account *</label>
+              <button
+                type="button"
+                onClick={() => setShowQuickAddModal(true)}
+                className="text-[10px] text-emerald-700 hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
+                title="Quick-Add New Cash Vault or Bank (#53xxx / #51xxx)"
+              >
+                <Plus className="w-2.5 h-2.5" />
+                <span>New Vault/Bank</span>
+              </button>
+            </div>
+            <div className="flex items-center gap-1">
+              <select
+                value={toAccountId}
+                onChange={(e) => setToAccountId(e.target.value)}
+                className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
+              >
+                {bankAndVaultAccounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    #{a.account_number} - {a.account_name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowQuickAddModal(true)}
+                className="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded-lg transition-colors cursor-pointer shrink-0"
+                title="Quick-Add New Cash Vault or Bank Account (+) [Class 5]"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           {/* Amount & Currency */}
@@ -674,6 +704,16 @@ export function Module4ReceiptVouchers({
           </div>
         </div>
       )}
+
+      {/* Quick Add Modal */}
+      <QuickAddAccountModal
+        isOpen={showQuickAddModal}
+        onClose={() => setShowQuickAddModal(false)}
+        presetType="DISBURSING"
+        existingAccounts={accounts}
+        onSuccess={handleQuickAddSuccess}
+        onShowToast={onShowToast}
+      />
     </div>
   );
 }

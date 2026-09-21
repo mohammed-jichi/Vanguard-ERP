@@ -61,13 +61,17 @@ import {
   isBankAccount,
   isDisbursingAccount,
   isSupplierAccount,
-  isExpenseAccount
+  isExpenseAccount,
+  isTreasuryDisbursingAccount,
+  isTradeSupplierAccount,
+  isPurchaseExpenseOrAssetAccount
 } from '@/lib/accountingData';
 import {
   apiSaveExpense,
   apiFetchExpenses,
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
+import QuickAddAccountModal, { QuickAddPreset } from './QuickAddAccountModal';
 
 export type VoucherLifecycleStatus =
   | 'NEW'
@@ -134,46 +138,47 @@ export function Module2PurchasesExpenses({
   // Current date helper
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  // Filtered account groups for lookups
-  // Filtered account groups for dynamic lookups (Fully internationalized without numeric prefix checks)
+  // Filtered account groups for lookups (Strict Lebanese PCG standard)
   const supplierAccounts = useMemo(() => {
-    const list = accounts.filter(
-      (a) =>
-        a.type === 'Supplier' ||
-        a.account_sub_type === 'SUPPLIER' ||
-        a.class_type === 'Liabilities' ||
-        a.account_type === 'LIABILITY' ||
-        isSupplierAccount(a)
-    );
-    return list.length > 0 ? list : accounts;
+    const list = accounts.filter(isTradeSupplierAccount);
+    return list.length > 0 ? list : accounts.filter((a) => a.account_number.startsWith('40'));
   }, [accounts]);
 
   const disbursingAccounts = useMemo(() => {
-    const list = accounts.filter(
-      (a) =>
-        a.type === 'Cash' ||
-        a.type === 'Bank' ||
-        a.type === 'Employee' ||
-        a.account_sub_type === 'CASH' ||
-        a.account_sub_type === 'BANK' ||
-        a.account_sub_type === 'EMPLOYEE' ||
-        a.checking_account === true ||
-        isDisbursingAccount(a)
-    );
-    return list.length > 0 ? list : accounts;
+    const list = accounts.filter(isTreasuryDisbursingAccount);
+    return list.length > 0 ? list : accounts.filter((a) => a.account_number.startsWith('5'));
   }, [accounts]);
 
   const expenseAccounts = useMemo(() => {
-    const list = accounts.filter(
-      (a) =>
-        a.type === 'Expense' ||
-        a.account_sub_type === 'EXPENSE' ||
-        a.class_type === 'Expense' ||
-        a.account_type === 'EXPENSE' ||
-        isExpenseAccount(a)
-    );
-    return list.length > 0 ? list : accounts;
+    const list = accounts.filter(isPurchaseExpenseOrAssetAccount);
+    return list.length > 0
+      ? list
+      : accounts.filter((a) => a.account_number.startsWith('6') || a.account_number.startsWith('2'));
   }, [accounts]);
+
+  // Quick Add Account Modal State
+  const [quickAddModal, setQuickAddModal] = useState<{
+    isOpen: boolean;
+    presetType: QuickAddPreset;
+    targetIndex?: number;
+  }>({
+    isOpen: false,
+    presetType: 'SUPPLIER'
+  });
+
+  const handleQuickAddSuccess = (newAccount: AccountDetail) => {
+    if (quickAddModal.presetType === 'SUPPLIER') {
+      setPurchaseAccountId(newAccount.id);
+    } else if (quickAddModal.presetType === 'DISBURSING') {
+      if (typeof quickAddModal.targetIndex === 'number') {
+        handleUpdatePaymentRow(quickAddModal.targetIndex, 'disbursingAccount', newAccount.id);
+      }
+    } else if (quickAddModal.presetType === 'EXPENSE_OR_ASSET') {
+      if (typeof quickAddModal.targetIndex === 'number') {
+        handleUpdateExpenseRow(quickAddModal.targetIndex, 'accountId', newAccount.id);
+      }
+    }
+  };
 
   // =========================================================================
   // VOUCHER LIFECYCLE & ACTIVE VOUCHER STATE
@@ -212,9 +217,9 @@ export function Module2PurchasesExpenses({
       disbursingAccount:
         disbursingAccounts.find(
           (a) =>
-            a.type === 'Employee' ||
-            a.account_sub_type === 'EMPLOYEE' ||
-            a.account_name.toLowerCase().includes('advance')
+            a.account_number === '53000' ||
+            a.account_number === '53200' ||
+            a.account_sub_type === 'CASH'
         )?.id ||
         disbursingAccounts[0]?.id ||
         '',
@@ -230,7 +235,10 @@ export function Module2PurchasesExpenses({
   // =========================================================================
   // A. Fixed Purchase Row ("Purchase From:")
   const [purchaseAccountId, setPurchaseAccountId] = useState<string>(
-    supplierAccounts[0]?.id || accounts[0]?.id || ''
+    supplierAccounts.find((a) => a.account_number === '40110')?.id ||
+    supplierAccounts[0]?.id ||
+    accounts[0]?.id ||
+    ''
   );
   const [purchaseAmount, setPurchaseAmount] = useState<number>(0);
   const [purchaseDept, setPurchaseDept] = useState<string>('Main Department');
@@ -1180,23 +1188,33 @@ export function Module2PurchasesExpenses({
                           </select>
                         </td>
 
-                        {/* 2. Disbursing Account (Cash Vault, Bank, or Employee Advance) */}
+                        {/* 2. Disbursing Account (Class 5: Cash Vault, Petty Cash, or Bank) */}
                         <td className="p-2">
-                          <select
-                            value={pRow.disbursingAccount}
-                            disabled={rowIsLocked}
-                            onChange={(e) =>
-                              handleUpdatePaymentRow(pIdx, 'disbursingAccount', e.target.value)
-                            }
-                            className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed"
-                          >
-                            {disbursingAccounts.map((acc) => (
-                              <option key={acc.id} value={acc.id}>
-                                #{acc.account_number} - {acc.account_name} (
-                                {acc.account_sub_type || acc.account_type})
-                              </option>
-                            ))}
-                          </select>
+                          <div className="flex items-center gap-1">
+                            <select
+                              value={pRow.disbursingAccount}
+                              disabled={rowIsLocked}
+                              onChange={(e) =>
+                                handleUpdatePaymentRow(pIdx, 'disbursingAccount', e.target.value)
+                              }
+                              className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed"
+                            >
+                              {disbursingAccounts.map((acc) => (
+                                <option key={acc.id} value={acc.id}>
+                                  #{acc.account_number} - {acc.account_name} ({acc.account_sub_type || acc.account_type})
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => setQuickAddModal({ isOpen: true, presetType: 'DISBURSING', targetIndex: pIdx })}
+                              disabled={rowIsLocked}
+                              className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded-md transition-colors cursor-pointer shrink-0 disabled:opacity-40"
+                              title="Quick-Add New Cash Vault or Bank Account (+) [Class 5]"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
                         </td>
 
                         {/* 3. Amount Paid */}
@@ -1323,20 +1341,43 @@ export function Module2PurchasesExpenses({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 text-xs font-medium">
             {/* Account */}
-            <div>
-              <label className="text-muted-foreground mb-0.5 block text-[11px]">Account</label>
-              <select
-                value={purchaseAccountId}
-                disabled={isExpenseLocked}
-                onChange={(e) => setPurchaseAccountId(e.target.value)}
-                className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed"
-              >
-                {supplierAccounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    #{a.account_number} - {a.account_name}
-                  </option>
-                ))}
-              </select>
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-0.5">
+                <label className="text-muted-foreground block text-[11px]">Account (Supplier / Creditor)</label>
+                <button
+                  type="button"
+                  onClick={() => setQuickAddModal({ isOpen: true, presetType: 'SUPPLIER' })}
+                  disabled={isExpenseLocked}
+                  className="text-[10px] text-primary hover:underline font-bold flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
+                  title="Quick-Add New Supplier Account (#40110...)"
+                >
+                  <Plus className="w-2.5 h-2.5" />
+                  <span>New Supplier</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-1">
+                <select
+                  value={purchaseAccountId}
+                  disabled={isExpenseLocked}
+                  onChange={(e) => setPurchaseAccountId(e.target.value)}
+                  className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed"
+                >
+                  {supplierAccounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      #{a.account_number} - {a.account_name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setQuickAddModal({ isOpen: true, presetType: 'SUPPLIER' })}
+                  disabled={isExpenseLocked}
+                  className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-md transition-colors cursor-pointer shrink-0 disabled:opacity-40"
+                  title="Quick-Add New Supplier (+) [Class 40]"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             {/* Amount (Currency) */}
@@ -1423,26 +1464,49 @@ export function Module2PurchasesExpenses({
               }`}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 text-xs font-medium items-end">
-                {/* Expense Account */}
+                {/* Expense / Asset Account */}
                 <div className="md:col-span-2">
-                  <label className="text-muted-foreground mb-0.5 block text-[11px]">
-                    Expense Account:
-                  </label>
-                  <select
-                    value={row.accountId}
-                    disabled={isExpenseLocked}
-                    onChange={(e) => handleUpdateExpenseRow(idx, 'accountId', e.target.value)}
-                    className={`w-full bg-card border rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed ${
-                      row.hasError ? 'border-destructive ring-1 ring-destructive' : 'border-input'
-                    }`}
-                  >
-                    <option value="">-- Select Expense Account --</option>
-                    {expenseAccounts.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        #{a.account_number} - {a.account_name} ({a.account_type})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <label className="text-muted-foreground block text-[11px]">
+                      Expense / Asset Account:
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setQuickAddModal({ isOpen: true, presetType: 'EXPENSE_OR_ASSET', targetIndex: idx })}
+                      disabled={isExpenseLocked}
+                      className="text-[10px] text-primary hover:underline font-bold flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
+                      title="Quick-Add Expense or Asset Account"
+                    >
+                      <Plus className="w-2.5 h-2.5" />
+                      <span>New Account</span>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <select
+                      value={row.accountId}
+                      disabled={isExpenseLocked}
+                      onChange={(e) => handleUpdateExpenseRow(idx, 'accountId', e.target.value)}
+                      className={`w-full bg-card border rounded-md p-1.5 text-foreground text-xs shadow-2xs font-mono disabled:bg-muted disabled:cursor-not-allowed ${
+                        row.hasError ? 'border-destructive ring-1 ring-destructive' : 'border-input'
+                      }`}
+                    >
+                      <option value="">-- Select Expense or Asset Account --</option>
+                      {expenseAccounts.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          #{a.account_number} - {a.account_name} ({a.account_type})
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setQuickAddModal({ isOpen: true, presetType: 'EXPENSE_OR_ASSET', targetIndex: idx })}
+                      disabled={isExpenseLocked}
+                      className="p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 border border-blue-500/30 rounded-md transition-colors cursor-pointer shrink-0 disabled:opacity-40"
+                      title="Quick-Add Expense or Capitalized Asset (+) [Class 6 / Class 2]"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Amount */}
@@ -1856,6 +1920,16 @@ export function Module2PurchasesExpenses({
           </div>
         </div>
       )}
+
+      {/* QUICK ADD ACCOUNT MODAL (LEBANESE PCG STANDARD) */}
+      <QuickAddAccountModal
+        isOpen={quickAddModal.isOpen}
+        onClose={() => setQuickAddModal((prev) => ({ ...prev, isOpen: false }))}
+        presetType={quickAddModal.presetType}
+        existingAccounts={accounts}
+        onSuccess={handleQuickAddSuccess}
+        onShowToast={onShowToast}
+      />
     </div>
   );
 }

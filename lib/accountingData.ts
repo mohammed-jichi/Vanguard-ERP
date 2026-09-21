@@ -285,6 +285,8 @@ export const OMEGA_SUB_CLASSES_3: AccountHeader3[] = [
   { id: 101, sub_class2_id: 11, account_number_ref: 1010, account_name: 'Capital and Reserves' },
   { id: 111, sub_class2_id: 11, account_number_ref: 1110, account_name: 'Legal and Statutory Reserves' },
   { id: 138, sub_class2_id: 13, account_number_ref: 1381, account_name: 'Profit / Loss Brought Forward' },
+  { id: 215, sub_class2_id: 21, account_number_ref: 2151, account_name: 'Industrial Machinery & Equipment' },
+  { id: 218, sub_class2_id: 21, account_number_ref: 2182, account_name: 'Vehicles & Office Equipment' },
   { id: 223, sub_class2_id: 22, account_number_ref: 2231, account_name: 'Buildings & Installations' },
   { id: 224, sub_class2_id: 22, account_number_ref: 2244, account_name: 'Industrial Tools & Equipment' },
   { id: 225, sub_class2_id: 22, account_number_ref: 2250, account_name: 'Transport Equipment & Vehicles' },
@@ -292,6 +294,7 @@ export const OMEGA_SUB_CLASSES_3: AccountHeader3[] = [
   { id: 291, sub_class2_id: 29, account_number_ref: 2911, account_name: 'Intangible Trademarks & Licenses' },
   { id: 311, sub_class2_id: 31, account_number_ref: 3111, account_name: 'Raw Materials & Harvests' },
   { id: 401, sub_class2_id: 40, account_number_ref: 4011, account_name: 'Domestic Suppliers & Payables' },
+  { id: 404, sub_class2_id: 40, account_number_ref: 4041, account_name: 'Fixed Asset & Machinery Suppliers' },
   { id: 411, sub_class2_id: 41, account_number_ref: 4111, account_name: 'Trade Customers & Receivables' },
   { id: 415, sub_class2_id: 41, account_number_ref: 4115, account_name: 'Doubtful & Bad Debtors' },
   { id: 441, sub_class2_id: 44, account_number_ref: 4411, account_name: 'State Tax Dues & VAT Payables' },
@@ -299,8 +302,10 @@ export const OMEGA_SUB_CLASSES_3: AccountHeader3[] = [
   { id: 443, sub_class2_id: 44, account_number_ref: 4427, account_name: 'Customer VAT Collected on Sales' },
   { id: 470, sub_class2_id: 47, account_number_ref: 4700, account_name: 'Due Salaries & Wages' },
   { id: 512, sub_class2_id: 51, account_number_ref: 5121, account_name: 'Bank Operating Accounts (LBP/USD)' },
-  { id: 530, sub_class2_id: 53, account_number_ref: 5300, account_name: 'Cash Vaults & Petty Cash Drawers' },
+  { id: 530, sub_class2_id: 53, account_number_ref: 5300, account_name: 'Cash Vaults & Physical Cash Drawers' },
+  { id: 532, sub_class2_id: 53, account_number_ref: 5320, account_name: 'Petty Cash & Floor Vaults' },
   { id: 611, sub_class2_id: 61, account_number_ref: 6111, account_name: 'Raw Materials Consumed' },
+  { id: 612, sub_class2_id: 61, account_number_ref: 6121, account_name: 'Packaging, Consumables & Fuels' },
   { id: 614, sub_class2_id: 61, account_number_ref: 6114, account_name: 'Electricity & Utilities' },
   { id: 626, sub_class2_id: 62, account_number_ref: 6264, account_name: 'Rents, Maintenance & Operations' },
   { id: 631, sub_class2_id: 63, account_number_ref: 6311, account_name: 'Salaries & Personnel Expenses' },
@@ -315,6 +320,9 @@ export const OMEGA_SUB_CLASSES_4: AccountGroup4[] = [
   { id: 1110, sub_class3_id: 111, account_number_ref: 11100, account_name: 'Legal Reserves', depreciation_interval: 'NONE' },
   { id: 1381, sub_class3_id: 138, account_number_ref: 13810, account_name: 'Retained Profit Results', depreciation_interval: 'NONE' },
   { id: 1391, sub_class3_id: 138, account_number_ref: 13910, account_name: 'Accumulated Loss Results', depreciation_interval: 'NONE' },
+  { id: 2151, sub_class3_id: 215, account_number_ref: 21510, account_name: 'Industrial Machinery & Production Equipment', depreciation_interval: 'YEARLY' },
+  { id: 2182, sub_class3_id: 218, account_number_ref: 21820, account_name: 'Transport & Logistics Vehicles', depreciation_interval: 'YEARLY' },
+  { id: 2184, sub_class3_id: 218, account_number_ref: 21840, account_name: 'Office Hardware & IT Equipment', depreciation_interval: 'YEARLY' },
   { id: 2231, sub_class3_id: 223, account_number_ref: 22310, account_name: 'Buildings & Warehouses', depreciation_interval: 'YEARLY' },
   { id: 2244, sub_class3_id: 224, account_number_ref: 22440, account_name: 'Industrial Extraction Tools', depreciation_interval: 'YEARLY' },
   { id: 2250, sub_class3_id: 225, account_number_ref: 22500, account_name: 'Transport Equipment & Trucks', depreciation_interval: 'YEARLY' },
@@ -322,6 +330,8 @@ export const OMEGA_SUB_CLASSES_4: AccountGroup4[] = [
   { id: 2911, sub_class3_id: 291, account_number_ref: 29110, account_name: 'Trade Marks & Brand Assets', depreciation_interval: 'NONE' },
   { id: 3111, sub_class3_id: 311, account_number_ref: 31110, account_name: 'Raw Harvest Inventory Assets', depreciation_interval: 'NONE' },
   { id: 4011, sub_class3_id: 401, account_number_ref: 40110, account_name: 'Trade Accounts Payables', depreciation_interval: 'NONE' },
+  { id: 4012, sub_class3_id: 401, account_number_ref: 40110002, account_name: 'Packaging & Raw Material Vendors', depreciation_interval: 'NONE' },
+  { id: 4041, sub_class3_id: 404, account_number_ref: 40410, account_name: 'Fixed Asset & Machinery Vendors', depreciation_interval: 'NONE' },
   { id: 4111, sub_class3_id: 411, account_number_ref: 41110, account_name: 'Trade Account Receivables', depreciation_interval: 'NONE' },
   { id: 4115, sub_class3_id: 415, account_number_ref: 41150, account_name: 'Doubtful Debtors', depreciation_interval: 'NONE' },
   { id: 4411, sub_class3_id: 441, account_number_ref: 44111, account_name: 'VAT Payables to State', depreciation_interval: 'NONE' },
@@ -330,7 +340,11 @@ export const OMEGA_SUB_CLASSES_4: AccountGroup4[] = [
   { id: 4700, sub_class3_id: 470, account_number_ref: 47000, account_name: 'Due Salaries to Personnel', depreciation_interval: 'NONE' },
   { id: 5121, sub_class3_id: 512, account_number_ref: 51210, account_name: 'Bank Bob LBP Account', depreciation_interval: 'NONE' },
   { id: 5300, sub_class3_id: 530, account_number_ref: 53000, account_name: 'Vault Cash Reserves', depreciation_interval: 'NONE' },
+  { id: 5320, sub_class3_id: 532, account_number_ref: 53200, account_name: 'Petty Cash & Floor Vault', depreciation_interval: 'NONE' },
   { id: 6111, sub_class3_id: 611, account_number_ref: 61110, account_name: 'Purchase Of Raw Materials', depreciation_interval: 'NONE' },
+  { id: 6121, sub_class3_id: 612, account_number_ref: 61210, account_name: 'Packaging Materials (Jars, Bottles, Caps, Labels)', depreciation_interval: 'NONE' },
+  { id: 6122, sub_class3_id: 612, account_number_ref: 61220, account_name: 'Food & Chemical Consumables / Production Ingredients', depreciation_interval: 'NONE' },
+  { id: 6123, sub_class3_id: 612, account_number_ref: 61230, account_name: 'Diesel & Fuel (Generators / Boilers)', depreciation_interval: 'NONE' },
   { id: 6114, sub_class3_id: 614, account_number_ref: 61140, account_name: 'Electricity & Generators', depreciation_interval: 'NONE' },
   { id: 6262, sub_class3_id: 626, account_number_ref: 62620, account_name: 'Repairs & Maintenance', depreciation_interval: 'NONE' },
   { id: 6264, sub_class3_id: 626, account_number_ref: 62640, account_name: 'Rent & Operating Expenses', depreciation_interval: 'NONE' },
@@ -363,6 +377,40 @@ export const INITIAL_ACCOUNT_DETAILS: AccountDetail[] = [
     currency_id: 'USD',
     balance_first_cur: 48500.00,
     balance_sec_cur: 48500.00 * LBP_RATE,
+    checking_account: true,
+    is_active: true
+  },
+  {
+    id: 'acc-53200',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '53200',
+    account_name: 'Petty Cash & Floor Vault',
+    account_name_ar: 'صندوق المصاريف النثرية وقسم المعصرة',
+    description: 'Petty cash and operational till fund on the pressing plant floor',
+    class_id: 5,
+    sub_class4_id: 5320,
+    account_type: 'ASSET',
+    account_sub_type: 'CASH',
+    currency_id: 'USD',
+    balance_first_cur: 6500.00,
+    balance_sec_cur: 6500.00 * LBP_RATE,
+    checking_account: true,
+    is_active: true
+  },
+  {
+    id: 'acc-51210',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '51210',
+    account_name: 'Commercial Bank Accounts',
+    account_name_ar: 'الحسابات المصرفية التجارية الجارية',
+    description: 'Corporate commercial bank checking accounts (BLOM, Audi, Bank of Beirut)',
+    class_id: 5,
+    sub_class4_id: 5121,
+    account_type: 'ASSET',
+    account_sub_type: 'BANK',
+    currency_id: 'USD',
+    balance_first_cur: 184200.00,
+    balance_sec_cur: 184200.00 * LBP_RATE,
     checking_account: true,
     is_active: true
   },
@@ -484,6 +532,57 @@ export const INITIAL_ACCOUNT_DETAILS: AccountDetail[] = [
     currency_id: 'USD',
     balance_first_cur: 95000.00,
     balance_sec_cur: 95000.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-21510',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '21510',
+    account_name: 'Industrial Machinery & Production Equipment',
+    account_name_ar: 'الآلات والمعدات الصناعية للإنتاج والمعاصر',
+    description: 'Heavy hydraulic olive oil extraction presses, centrifuges, and decanters',
+    class_id: 2,
+    sub_class4_id: 2151,
+    account_type: 'ASSET',
+    account_sub_type: 'OTHERS',
+    currency_id: 'USD',
+    balance_first_cur: 380000.00,
+    balance_sec_cur: 380000.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-21820',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '21820',
+    account_name: 'Transport & Logistics Vehicles',
+    account_name_ar: 'مركبات النقل والخدمات اللوجستية',
+    description: 'Olive harvest hauling trucks and distribution vans',
+    class_id: 2,
+    sub_class4_id: 2182,
+    account_type: 'ASSET',
+    account_sub_type: 'OTHERS',
+    currency_id: 'USD',
+    balance_first_cur: 165000.00,
+    balance_sec_cur: 165000.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-21840',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '21840',
+    account_name: 'Office Hardware & IT Equipment',
+    account_name_ar: 'معدات المكاتب وتكنولوجيا المعلومات والخوادم',
+    description: 'Enterprise ERP workstations, servers, network switches, and automated scale terminals',
+    class_id: 2,
+    sub_class4_id: 2184,
+    account_type: 'ASSET',
+    account_sub_type: 'OTHERS',
+    currency_id: 'USD',
+    balance_first_cur: 45000.00,
+    balance_sec_cur: 45000.00 * LBP_RATE,
     checking_account: false,
     is_active: true
   },
@@ -626,6 +725,40 @@ export const INITIAL_ACCOUNT_DETAILS: AccountDetail[] = [
     is_active: true
   },
   {
+    id: 'acc-40110002',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '40110002',
+    account_name: 'Packaging & Raw Material Vendors',
+    account_name_ar: 'موردو مواد التعبئة والتغليف والمواد الأولية',
+    description: 'Direct procurement balances for packaging, glass bottles, and raw harvest materials',
+    class_id: 4,
+    sub_class4_id: 4011,
+    account_type: 'LIABILITY',
+    account_sub_type: 'SUPPLIER',
+    currency_id: 'USD',
+    balance_first_cur: 34500.00,
+    balance_sec_cur: 34500.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-40410',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '40410',
+    account_name: 'Fixed Asset & Machinery Vendors',
+    account_name_ar: 'موردو الأصول الثابتة والآلات والمعدات',
+    description: 'Payables to industrial machinery suppliers and capital plant contractors',
+    class_id: 4,
+    sub_class4_id: 4041,
+    account_type: 'LIABILITY',
+    account_sub_type: 'SUPPLIER',
+    currency_id: 'USD',
+    balance_first_cur: 78000.00,
+    balance_sec_cur: 78000.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
     id: 'acc-47000',
     tenant_id: '00000000-0000-0000-0000-000000000001',
     account_number: '47000',
@@ -760,6 +893,57 @@ export const INITIAL_ACCOUNT_DETAILS: AccountDetail[] = [
     currency_id: 'USD',
     balance_first_cur: 215000.00,
     balance_sec_cur: 215000.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-61210',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '61210',
+    account_name: 'Packaging Materials (Jars, Bottles, Caps, Labels)',
+    account_name_ar: 'مواد التعبئة والتغليف (مرطبانات، زجاجات، أغطية، ملصقات)',
+    description: 'Bottling supplies, dark glass bottles, tinplate cans, and branded labels',
+    class_id: 6,
+    sub_class4_id: 6121,
+    account_type: 'EXPENSE',
+    account_sub_type: 'EXPENSE',
+    currency_id: 'USD',
+    balance_first_cur: 42500.00,
+    balance_sec_cur: 42500.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-61220',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '61220',
+    account_name: 'Food & Chemical Consumables / Production Ingredients',
+    account_name_ar: 'المستهلكات الغذائية والكيميائية ومواد الإنتاج',
+    description: 'Nitrogen gas blanketing, filtration media, and food-grade cleaning consumables',
+    class_id: 6,
+    sub_class4_id: 6122,
+    account_type: 'EXPENSE',
+    account_sub_type: 'EXPENSE',
+    currency_id: 'USD',
+    balance_first_cur: 14200.00,
+    balance_sec_cur: 14200.00 * LBP_RATE,
+    checking_account: false,
+    is_active: true
+  },
+  {
+    id: 'acc-61230',
+    tenant_id: '00000000-0000-0000-0000-000000000001',
+    account_number: '61230',
+    account_name: 'Diesel & Fuel (Generators / Boilers)',
+    account_name_ar: 'المازوت والوقود (مولدات وغلايات المعصرة)',
+    description: 'Diesel fuel for backup generators, boilers, and mill pressing heating lines',
+    class_id: 6,
+    sub_class4_id: 6123,
+    account_type: 'EXPENSE',
+    account_sub_type: 'EXPENSE',
+    currency_id: 'USD',
+    balance_first_cur: 21800.00,
+    balance_sec_cur: 21800.00 * LBP_RATE,
     checking_account: false,
     is_active: true
   },
@@ -1679,36 +1863,119 @@ export function normalizeAccount(acc: AccountDetail): AccountDetail {
 }
 
 export function isCashAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
   const t = (acc.type || acc.account_sub_type || '').toLowerCase();
-  return t === 'cash';
+  return (t === 'cash' || num.startsWith('53')) && !num.startsWith('4');
 }
 
 export function isBankAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
   const t = (acc.type || acc.account_sub_type || '').toLowerCase();
-  return t === 'bank';
+  return (t === 'bank' || num.startsWith('51')) && !num.startsWith('4');
+}
+
+/**
+ * Strict Lebanese PCG Treasury / Disbursing Account Filter:
+ * Strictly Class 5 financial and treasury accounts (Main Cash Vault, Petty Cash, Commercial Banks).
+ * Explicitly removes Staff Loans (#42810) and Accrued Salaries (#47000).
+ */
+export function isTreasuryDisbursingAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
+  const idStr = String(acc.id || '').trim();
+
+  // Explicitly remove staff loans #42810 and accrued salaries #47000
+  if (
+    num === '42810' ||
+    num === '47000' ||
+    idStr.includes('42810') ||
+    idStr.includes('47000') ||
+    num.startsWith('42') ||
+    num.startsWith('47')
+  ) {
+    return false;
+  }
+
+  // Strictly Class 5 accounts
+  if (acc.class_id === 5) return true;
+  if (num.startsWith('5')) return true;
+
+  const t = (acc.type || acc.account_sub_type || '').toLowerCase();
+  if ((t === 'cash' || t === 'bank') && !num.startsWith('4')) {
+    return true;
+  }
+  return false;
 }
 
 export function isDisbursingAccount(acc: Partial<AccountDetail>): boolean {
+  return isTreasuryDisbursingAccount(acc);
+}
+
+/**
+ * Strict Lebanese PCG Supplier / Creditor Account Filter:
+ * Strictly Class 40 trade accounts (e.g. #40110 Master Suppliers, #40110002 Packaging/Raw Materials, #40410 Machinery Vendors).
+ * Explicitly removes Customer VAT (#44270), Tax Dues (#44110), and VAT Payables (#44111).
+ */
+export function isTradeSupplierAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
+  const idStr = String(acc.id || '').trim();
+
+  // Explicitly remove Customer VAT (#44270), Tax dues (#44110), and VAT payables (#44111)
+  if (
+    num.startsWith('44') ||
+    num.startsWith('42') ||
+    num.startsWith('47') ||
+    num.startsWith('41') ||
+    idStr.includes('4427') ||
+    idStr.includes('4411')
+  ) {
+    return false;
+  }
+
+  // Strictly Class 40 accounts
+  if (num.startsWith('40')) return true;
+
   const t = (acc.type || acc.account_sub_type || '').toLowerCase();
-  return t === 'cash' || t === 'bank' || t === 'employee' || acc.checking_account === true;
+  return t === 'supplier' && !num.startsWith('44') && !num.startsWith('47') && !num.startsWith('41');
 }
 
 export function isSupplierAccount(acc: Partial<AccountDetail>): boolean {
-  const t = (acc.type || acc.account_sub_type || '').toLowerCase();
-  const c = (acc.class_type || acc.account_type || '').toLowerCase();
-  return t === 'supplier' || c === 'liabilities' || c === 'liability';
+  return isTradeSupplierAccount(acc);
 }
 
 export function isCustomerAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
+  if (num.startsWith('41')) return true;
   const t = (acc.type || acc.account_sub_type || '').toLowerCase();
   const c = (acc.class_type || acc.account_type || '').toLowerCase();
-  return t === 'customer' || (c === 'assets' && t !== 'cash' && t !== 'bank');
+  return (t === 'customer' || (c === 'assets' && t !== 'cash' && t !== 'bank')) && !num.startsWith('5');
+}
+
+/**
+ * Lebanese PCG Purchase / Expense / Asset Breakdown Account Filter:
+ * Accepts both Class 6 (Operating Purchases & Expenses) and Class 2 (Capitalized Fixed Assets/Machinery).
+ */
+export function isPurchaseExpenseOrAssetAccount(acc: Partial<AccountDetail>): boolean {
+  if (!acc) return false;
+  const num = String(acc.account_number || '').trim();
+
+  // Accept Class 6 (Expenses) and Class 2 (Fixed Assets/Capitalized Machinery)
+  if (acc.class_id === 6 || acc.class_id === 2) return true;
+  if (num.startsWith('6') || num.startsWith('2')) return true;
+
+  const t = (acc.type || acc.account_sub_type || '').toLowerCase();
+  const c = (acc.class_type || acc.account_type || '').toLowerCase();
+  if (t === 'expense' || c === 'expense' || c === 'expenses') return true;
+  if (c === 'assets' && !num.startsWith('5') && !num.startsWith('3') && !num.startsWith('4')) return true;
+  return false;
 }
 
 export function isExpenseAccount(acc: Partial<AccountDetail>): boolean {
-  const t = (acc.type || acc.account_sub_type || '').toLowerCase();
-  const c = (acc.class_type || acc.account_type || '').toLowerCase();
-  return t === 'expense' || c === 'expense' || c === 'expenses';
+  return isPurchaseExpenseOrAssetAccount(acc);
 }
 
 // 1. Preset: International Standard (IFRS / US GAAP - 4-Digit)

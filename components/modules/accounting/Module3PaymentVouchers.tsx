@@ -22,13 +22,20 @@ import {
   Building2,
   FileText
 } from 'lucide-react';
-import { AccountDetail, LBP_RATE, isSupplierAccount, isDisbursingAccount, JournalVoucher } from '@/lib/accountingData';
+import {
+  AccountDetail,
+  LBP_RATE,
+  isTradeSupplierAccount,
+  isTreasuryDisbursingAccount,
+  JournalVoucher
+} from '@/lib/accountingData';
 import {
   apiSavePaymentVoucher,
   apiFetchVouchersByType,
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
 import { SupportingDocModal } from './ModalsShared';
+import QuickAddAccountModal, { QuickAddPreset } from './QuickAddAccountModal';
 
 interface Module3PaymentVouchersProps {
   accounts: AccountDetail[];
@@ -41,39 +48,53 @@ export function Module3PaymentVouchers({
   onShowToast,
   prefillPayToAccount
 }: Module3PaymentVouchersProps) {
-  // Card 1: Accounts (Dynamic functional mapping)
+  // Card 1: Accounts (Strict Lebanese PCG standard)
   const supplierAccounts = useMemo(
-    () =>
-      accounts.filter(
-        (a) =>
-          a.type === 'Supplier' ||
-          a.account_sub_type === 'SUPPLIER' ||
-          a.class_type === 'Liabilities' ||
-          a.account_type === 'LIABILITY' ||
-          isSupplierAccount(a)
-      ),
+    () => {
+      const list = accounts.filter(isTradeSupplierAccount);
+      return list.length > 0 ? list : accounts.filter((a) => a.account_number.startsWith('40'));
+    },
     [accounts]
   );
   const bankAndCashAccounts = useMemo(
-    () =>
-      accounts.filter(
-        (a) =>
-          a.type === 'Cash' ||
-          a.type === 'Bank' ||
-          a.account_sub_type === 'CASH' ||
-          a.account_sub_type === 'BANK' ||
-          a.checking_account ||
-          isDisbursingAccount(a)
-      ),
+    () => {
+      const list = accounts.filter(isTreasuryDisbursingAccount);
+      return list.length > 0 ? list : accounts.filter((a) => a.account_number.startsWith('5'));
+    },
     [accounts]
   );
 
   const [payToAccountId, setPayToAccountId] = useState(
-    prefillPayToAccount || supplierAccounts[0]?.id || accounts[0]?.id || ''
+    prefillPayToAccount ||
+      supplierAccounts.find((a) => a.account_number === '40110')?.id ||
+      supplierAccounts[0]?.id ||
+      accounts[0]?.id ||
+      ''
   );
   const [fromAccountId, setFromAccountId] = useState(
-    bankAndCashAccounts[0]?.id || accounts[0]?.id || ''
+    bankAndCashAccounts.find((a) => a.account_number === '53000' || a.account_number === '51210')?.id ||
+      bankAndCashAccounts[0]?.id ||
+      accounts[0]?.id ||
+      ''
   );
+
+  // Quick Add Modal state
+  const [quickAddModal, setQuickAddModal] = useState<{
+    isOpen: boolean;
+    presetType: QuickAddPreset;
+    targetField?: 'PAY_TO' | 'DISBURSING';
+  }>({
+    isOpen: false,
+    presetType: 'SUPPLIER'
+  });
+
+  const handleQuickAddSuccess = (newAccount: AccountDetail) => {
+    if (quickAddModal.targetField === 'PAY_TO') {
+      setPayToAccountId(newAccount.id);
+    } else if (quickAddModal.targetField === 'DISBURSING') {
+      setFromAccountId(newAccount.id);
+    }
+  };
 
   // Card 2: Notes
   const [jvDescription, setJvDescription] = useState('');
@@ -299,37 +320,79 @@ export function Module3PaymentVouchers({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-foreground font-semibold">Pay To *</label>
-                {/* Live balance badge */}
-                <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
-                  Balance: {liveBalanceFormatted}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setQuickAddModal({ isOpen: true, presetType: 'SUPPLIER', targetField: 'PAY_TO' })}
+                    className="text-[10px] text-primary hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
+                    title="Quick-Add New Supplier Account (#40110...)"
+                  >
+                    <Plus className="w-2.5 h-2.5" />
+                    <span>New Supplier</span>
+                  </button>
+                  {/* Live balance badge */}
+                  <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
+                    Balance: {liveBalanceFormatted}
+                  </span>
+                </div>
               </div>
-              <select
-                value={payToAccountId}
-                onChange={(e) => setPayToAccountId(e.target.value)}
-                className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
-              >
-                {supplierAccounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    #{a.account_number} - {a.account_name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-1">
+                <select
+                  value={payToAccountId}
+                  onChange={(e) => setPayToAccountId(e.target.value)}
+                  className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
+                >
+                  {supplierAccounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      #{a.account_number} - {a.account_name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setQuickAddModal({ isOpen: true, presetType: 'SUPPLIER', targetField: 'PAY_TO' })}
+                  className="p-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg transition-colors cursor-pointer shrink-0"
+                  title="Quick-Add New Supplier (+) [Class 40]"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">From Account *</label>
-              <select
-                value={fromAccountId}
-                onChange={(e) => setFromAccountId(e.target.value)}
-                className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
-              >
-                {bankAndCashAccounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    #{a.account_number} - {a.account_name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-foreground block font-semibold">From Account *</label>
+                <button
+                  type="button"
+                  onClick={() => setQuickAddModal({ isOpen: true, presetType: 'DISBURSING', targetField: 'DISBURSING' })}
+                  className="text-[10px] text-emerald-700 hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
+                  title="Quick-Add New Cash Vault or Bank (#53xxx / #51xxx)"
+                >
+                  <Plus className="w-2.5 h-2.5" />
+                  <span>New Vault/Bank</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-1">
+                <select
+                  value={fromAccountId}
+                  onChange={(e) => setFromAccountId(e.target.value)}
+                  className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-mono"
+                >
+                  {bankAndCashAccounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      #{a.account_number} - {a.account_name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setQuickAddModal({ isOpen: true, presetType: 'DISBURSING', targetField: 'DISBURSING' })}
+                  className="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 rounded-lg transition-colors cursor-pointer shrink-0"
+                  title="Quick-Add New Cash Vault or Bank Account (+) [Class 5]"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -626,6 +689,16 @@ export function Module3PaymentVouchers({
           setDocUrl(url);
           onShowToast('Supporting document link saved to payment voucher.');
         }}
+      />
+
+      {/* QUICK ADD ACCOUNT MODAL (LEBANESE PCG STANDARD) */}
+      <QuickAddAccountModal
+        isOpen={quickAddModal.isOpen}
+        onClose={() => setQuickAddModal((prev) => ({ ...prev, isOpen: false }))}
+        presetType={quickAddModal.presetType}
+        existingAccounts={accounts}
+        onSuccess={handleQuickAddSuccess}
+        onShowToast={onShowToast}
       />
     </div>
   );

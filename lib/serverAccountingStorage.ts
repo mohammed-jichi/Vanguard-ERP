@@ -208,6 +208,16 @@ function ensureDbFileExists(): PersistentDatabaseState {
     // Fallback if data array is missing
     if (!parsed.accounts || parsed.accounts.length === 0) {
       parsed.accounts = INITIAL_ACCOUNT_DETAILS.map(normalizeAccount);
+    } else {
+      // Guarantee all standard Lebanese PCG accounts permanently exist globally
+      for (const stdAcc of INITIAL_ACCOUNT_DETAILS) {
+        const exists = parsed.accounts.some(
+          (a) => a.account_number === stdAcc.account_number || a.id === stdAcc.id
+        );
+        if (!exists) {
+          parsed.accounts.push(normalizeAccount(stdAcc));
+        }
+      }
     }
     if (!parsed.vouchers) {
       parsed.vouchers = INITIAL_JOURNAL_VOUCHERS;

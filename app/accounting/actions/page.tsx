@@ -39,15 +39,48 @@ import {
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
 
-// Modular 8 Workstations
-import { Module1JournalVouchers } from '@/components/modules/accounting/Module1JournalVouchers';
-import { Module2PurchasesExpenses } from '@/components/modules/accounting/Module2PurchasesExpenses';
-import { Module3PaymentVouchers } from '@/components/modules/accounting/Module3PaymentVouchers';
-import { Module4ReceiptVouchers } from '@/components/modules/accounting/Module4ReceiptVouchers';
-import { Module5AccountsReceivables } from '@/components/modules/accounting/Module5AccountsReceivables';
-import { Module6AccountsPayables } from '@/components/modules/accounting/Module6AccountsPayables';
-import { Module7BankReconciliation } from '@/components/modules/accounting/Module7BankReconciliation';
-import { Module8VatClosing } from '@/components/modules/accounting/Module8VatClosing';
+import dynamic from 'next/dynamic';
+
+const ModuleSkeleton = ({ label }: { label: string }) => (
+  <div className="p-8 border border-border/60 bg-card rounded-2xl flex flex-col items-center justify-center space-y-3 shadow-xs animate-pulse min-h-[300px]">
+    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+    <span className="text-xs font-semibold text-muted-foreground">Loading {label} Workstation...</span>
+  </div>
+);
+
+// Modular 8 Workstations (Code-Split via next/dynamic for instant < 100ms INP)
+const Module1JournalVouchers = dynamic(
+  () => import('@/components/modules/accounting/Module1JournalVouchers').then((m) => m.Module1JournalVouchers),
+  { loading: () => <ModuleSkeleton label="Journal Vouchers" /> }
+);
+const Module2PurchasesExpenses = dynamic(
+  () => import('@/components/modules/accounting/Module2PurchasesExpenses').then((m) => m.Module2PurchasesExpenses),
+  { loading: () => <ModuleSkeleton label="Purchases & Expenses" /> }
+);
+const Module3PaymentVouchers = dynamic(
+  () => import('@/components/modules/accounting/Module3PaymentVouchers').then((m) => m.Module3PaymentVouchers),
+  { loading: () => <ModuleSkeleton label="Payment Vouchers" /> }
+);
+const Module4ReceiptVouchers = dynamic(
+  () => import('@/components/modules/accounting/Module4ReceiptVouchers').then((m) => m.Module4ReceiptVouchers),
+  { loading: () => <ModuleSkeleton label="Receipt Vouchers" /> }
+);
+const Module5AccountsReceivables = dynamic(
+  () => import('@/components/modules/accounting/Module5AccountsReceivables').then((m) => m.Module5AccountsReceivables),
+  { loading: () => <ModuleSkeleton label="Accounts Receivables" /> }
+);
+const Module6AccountsPayables = dynamic(
+  () => import('@/components/modules/accounting/Module6AccountsPayables').then((m) => m.Module6AccountsPayables),
+  { loading: () => <ModuleSkeleton label="Accounts Payables" /> }
+);
+const Module7BankReconciliation = dynamic(
+  () => import('@/components/modules/accounting/Module7BankReconciliation').then((m) => m.Module7BankReconciliation),
+  { loading: () => <ModuleSkeleton label="Bank Reconciliation" /> }
+);
+const Module8VatClosing = dynamic(
+  () => import('@/components/modules/accounting/Module8VatClosing').then((m) => m.Module8VatClosing),
+  { loading: () => <ModuleSkeleton label="VAT Period Closing" /> }
+);
 
 export type AccountingActionTab =
   | 'JV'
@@ -262,6 +295,37 @@ function AccountingActionsContent({ initialTab, initialScreenMode }: AccountingA
           <span className="text-xs">{toastMessage}</span>
         </div>
       )}
+
+      {/* TOP TAB NAVIGATOR (Instant Zero-Blocking Transitions < 100ms) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-border/60 text-xs scrollbar-none">
+        {[
+          { id: 'JV', label: 'Journal Vouchers (JV)' },
+          { id: 'PURCHASE', label: 'Purchases & Expenses' },
+          { id: 'PAYMENT', label: 'Payments (PV)' },
+          { id: 'RECEIPT', label: 'Receipts (RV)' },
+          { id: 'AR', label: 'Receivables (AR)' },
+          { id: 'AP', label: 'Payables (AP)' },
+          { id: 'RECON', label: 'Bank Reconciliation' },
+          { id: 'VAT', label: 'VAT Period Closing' }
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => {
+              startTabTransition(() => {
+                setActiveTab(tab.id as AccountingActionTab);
+              });
+            }}
+            className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors cursor-pointer text-xs ${
+              activeTab === tab.id
+                ? 'bg-primary text-primary-foreground font-semibold shadow-2xs'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {/* MODULE 1: JOURNAL VOUCHERS (JV) */}
       {activeTab === 'JV' && (
