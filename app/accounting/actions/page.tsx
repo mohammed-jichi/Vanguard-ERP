@@ -88,13 +88,16 @@ function AccountingActionsContent({ initialTab, initialScreenMode }: AccountingA
   };
 
   const [activeTab, setActiveTab] = useState<AccountingActionTab>(resolveTab);
+  const [isTabPending, startTabTransition] = React.useTransition();
 
   useEffect(() => {
-    if (initialTab) {
-      setActiveTab(initialTab);
-    } else if (rawParam) {
-      setActiveTab(resolveTab());
-    }
+    startTabTransition(() => {
+      if (initialTab) {
+        setActiveTab(initialTab);
+      } else if (rawParam) {
+        setActiveTab(resolveTab());
+      }
+    });
   }, [rawParam, initialTab]);
 
   useEffect(() => {

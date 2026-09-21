@@ -21,6 +21,7 @@ import AccountingDashboardPage from '@/app/accounting/page';
 import AccountingActionsPage from '@/app/accounting/actions/page';
 import AccountingReportsPage from '@/app/accounting/reports/page';
 import AccountingSetupPage from '@/app/accounting/setup/page';
+import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
 
 // ============================================================================
 // 1. MOCK DATASETS FOR ACCOUNTING & FINANCE
@@ -1116,7 +1117,7 @@ function AccountingPageRouter() {
     if (['receipts', 'receipt', 'module4', 'rv'].includes(rawSection)) return 'receipts';
     if (['ar', 'accounts-receivables', 'receivables', 'module5'].includes(rawSection)) return 'ar';
     if (['ap', 'accounts-payables', 'payables', 'module6'].includes(rawSection)) return 'ap';
-    if (['bank_recon', 'bank-reconciliation', 'recon', 'module7'].includes(rawSection)) return 'bank_recon';
+    if (['bank_recon', 'bank-reconciliation', 'recon', 'reconciliation', 'module7'].includes(rawSection)) return 'bank_recon';
     if (['vat_closing', 'vat-period-closing', 'vat', 'module8'].includes(rawSection)) return 'vat_closing';
 
     // Setup & Auxiliaries
@@ -1183,26 +1184,15 @@ function AccountingPageRouter() {
       {['aux_currency', 'aux_currency_rates'].includes(activeSection) && <AccountingSetupPage initialTab="CURRENCIES" />}
       {['dept_groups', 'department', 'cash_flow_setup', 'sub_dept'].includes(activeSection) && <AccountingSetupPage initialTab="DEPTS" />}
 
-      {/* 5. GRACEFUL FALLBACK FOR UNIMPLEMENTED SUB-VIEWS */}
+      {/* 5. LIGHTWEIGHT PLACEHOLDER FOR UNIMPLEMENTED OR UPCOMING SUB-VIEWS */}
       {!isKnownSection && (
-        <div className="p-4">
-          <div className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">ℹ️</span>
-              <div>
-                <p className="font-bold text-xs">Section &quot;{rawSection}&quot; is currently being finalized</p>
-                <p className="text-[11px] text-amber-700">Gracefully displaying the primary Journal Vouchers & Accounting Actions workstation.</p>
-              </div>
-            </div>
-            <a
-              href="/backoffice/accounting?section=jv"
-              className="px-3 py-1.5 bg-white border border-amber-400 text-amber-900 font-bold text-xs rounded-lg shadow-2xs hover:bg-amber-50"
-            >
-              Reset to Primary View
-            </a>
-          </div>
-          <AccountingActionsPage initialTab="JV" />
-        </div>
+        <StandardUnderDevelopmentPlaceholder
+          moduleTitle={`Accounting: ${rawSection}`}
+          moduleCategory="ACCOUNTING & FINANCIALS"
+          description={`The requested accounting sub-view or workstation "${rawSection}" is currently undergoing active engineering. Core General Ledger entries and balance integrity remain preserved.`}
+          backUrl="/backoffice/accounting"
+          backLabel="Back to Accounting Hub"
+        />
       )}
     </div>
   );

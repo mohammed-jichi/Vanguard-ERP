@@ -18,7 +18,7 @@
  * - ACC_R_0045: Cash Flow Statement
  */
 
-import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -163,6 +163,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
     return match ? match.code : 'ACC_R_0015';
   };
 
+  const [isPending, startTransition] = useTransition();
   const [selectedReport, setSelectedReport] = useState<ReportKey>(resolveReport);
 
   useEffect(() => {
@@ -393,7 +394,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => startTransition(() => setSelectedCategory(cat.id))}
                   className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                     selectedCategory === cat.id
                       ? 'bg-primary text-primary-foreground font-semibold shadow-2xs'
@@ -426,7 +427,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
               <button
                 key={rep.code}
                 type="button"
-                onClick={() => setSelectedReport(rep.code)}
+                onClick={() => startTransition(() => setSelectedReport(rep.code))}
                 className={`text-left p-3 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? 'bg-muted border-primary ring-1 ring-primary shadow-2xs'

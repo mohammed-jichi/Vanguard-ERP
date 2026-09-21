@@ -694,7 +694,8 @@ export class ServerAccountingStorage {
   }
 
   public static async saveAccount(
-    input: Partial<AccountDetail> & { account_number: string; account_name: string }
+    input: Partial<AccountDetail> & { account_number: string; account_name: string },
+    options?: { awaitRemoteSync?: boolean }
   ): Promise<AccountDetail> {
     const state = ensureDbFileExists();
 
@@ -740,18 +741,24 @@ export class ServerAccountingStorage {
 
     writeDbState(state);
 
-    // Direct background sync to Supabase
-    try {
-      await supabase.from('acc_accounts').upsert({
-        id: savedAccount.id,
-        account_number: savedAccount.account_number,
-        account_name: savedAccount.account_name,
-        account_type: savedAccount.account_type || 'ASSET',
-        is_active: savedAccount.is_active ?? true,
-        updated_at: nowIso
-      });
-    } catch (e) {
-      // Non-blocking background sync
+    // Non-blocking optimistic dual-sync to Supabase Postgres (0ms UI latency)
+    const remoteSyncPromise = (async () => {
+      try {
+        await supabase.from('acc_accounts').upsert({
+          id: savedAccount.id,
+          account_number: savedAccount.account_number,
+          account_name: savedAccount.account_name,
+          account_type: savedAccount.account_type || 'ASSET',
+          is_active: savedAccount.is_active ?? true,
+          updated_at: nowIso
+        });
+      } catch (e) {
+        // Non-blocking background sync
+      }
+    })();
+
+    if (options?.awaitRemoteSync) {
+      await remoteSyncPromise;
     }
 
     return savedAccount;
@@ -929,6 +936,7 @@ export class ServerAccountingStorage {
     lines: JVLine[];
     postImmediately: boolean;
     user?: string;
+    awaitRemoteSync?: boolean;
   }): Promise<{
     voucher: JournalVoucher;
     updatedAccounts: AccountDetail[];
@@ -1136,105 +1144,111 @@ export class ServerAccountingStorage {
     // Commit state atomically to disk
     writeDbState(state);
 
-    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled
-    try {
-      const headerPayload = {
-        id: persistedVoucher.id,
-        voucher_number: persistedVoucher.jv_number,
-        date: persistedVoucher.date_of_jv || new Date().toISOString().split('T')[0],
-        reference: persistedVoucher.doc_ref_number || null,
-        description: persistedVoucher.description,
-        currency: persistedVoucher.currency_id || 'USD',
-        exchange_rate: 1,
-        total_debit: persistedVoucher.total_debit,
-        total_credit: persistedVoucher.total_credit,
-        is_posted: persistedVoucher.is_posted ?? false,
-        status: (persistedVoucher.status || (persistedVoucher.is_posted ? 'POSTED' : 'DRAFT')).toUpperCase(),
-        posted_at: persistedVoucher.posted_at || null,
-        posted_by: persistedVoucher.posted_by || null,
-        created_by: persistedVoucher.created_by || 'Super Admin',
-        updated_at: nowIso
-      };
-
-      // 1. Insert/upsert parent voucher header first (satisfies foreign key constraints in Postgres)
-      const vRes = await supabase.from('acc_journal_vouchers').upsert(headerPayload);
-      if (vRes.error) {
-        await supabase.from('vouchers').upsert({
+    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled (Non-blocking optimistic by default)
+    const remoteSyncPromise = (async () => {
+      try {
+        const headerPayload = {
           id: persistedVoucher.id,
           voucher_number: persistedVoucher.jv_number,
-          jv_number: persistedVoucher.jv_number,
+          date: persistedVoucher.date_of_jv || new Date().toISOString().split('T')[0],
+          reference: persistedVoucher.doc_ref_number || null,
           description: persistedVoucher.description,
+          currency: persistedVoucher.currency_id || 'USD',
+          exchange_rate: 1,
           total_debit: persistedVoucher.total_debit,
           total_credit: persistedVoucher.total_credit,
-          is_posted: persistedVoucher.is_posted,
+          is_posted: persistedVoucher.is_posted ?? false,
+          status: (persistedVoucher.status || (persistedVoucher.is_posted ? 'POSTED' : 'DRAFT')).toUpperCase(),
+          posted_at: persistedVoucher.posted_at || null,
+          posted_by: persistedVoucher.posted_by || null,
+          created_by: persistedVoucher.created_by || 'Super Admin',
           updated_at: nowIso
-        });
+        };
+
+        // 1. Insert/upsert parent voucher header first (satisfies foreign key constraints in Postgres)
+        const vRes = await supabase.from('acc_journal_vouchers').upsert(headerPayload);
+        if (vRes.error) {
+          await supabase.from('vouchers').upsert({
+            id: persistedVoucher.id,
+            voucher_number: persistedVoucher.jv_number,
+            jv_number: persistedVoucher.jv_number,
+            description: persistedVoucher.description,
+            total_debit: persistedVoucher.total_debit,
+            total_credit: persistedVoucher.total_credit,
+            is_posted: persistedVoucher.is_posted,
+            updated_at: nowIso
+          });
+        }
+
+        // 2. Parallelize voucher lines, GL ledger entries, and audit activities via Promise.allSettled
+        const linesTask = (async () => {
+          if (persistedLines.length > 0) {
+            const linesPayload = persistedLines.map((l) => ({
+              id: l.id,
+              voucher_id: persistedVoucher.id,
+              account_id: l.account_id || null,
+              account_number: l.account_number || '',
+              account_name: l.account_name || '',
+              description: l.description || '',
+              debit: l.amount_debit || 0,
+              credit: l.amount_credit || 0
+            }));
+
+            const lRes = await supabase.from('acc_journal_voucher_lines').upsert(linesPayload);
+            if (lRes.error) {
+              await supabase.from('voucher_lines').upsert(linesPayload);
+            }
+          }
+        })();
+
+        const glTask = (async () => {
+          if (args.postImmediately && createdGlEntries.length > 0) {
+            const glPayload = createdGlEntries.map((g) => ({
+              id: g.id,
+              voucher_id: g.voucher_id,
+              voucher_number: g.voucher_number,
+              entry_date: g.entry_date,
+              account_id: g.account_id || null,
+              debit: g.debit || 0,
+              credit: g.credit || 0,
+              description: g.narration || '',
+              created_at: g.created_at || nowIso
+            }));
+
+            const gRes = await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
+            if (gRes.error) {
+              await supabase.from('gl_entries').upsert(glPayload);
+            }
+          }
+        })();
+
+        const activityTask = (async () => {
+          await supabase.from('system_activities').insert([
+            {
+              tenant_id: persistedVoucher.tenant_id,
+              company_id: 1300,
+              action_type: args.postImmediately ? 'VOUCHER_POSTED' : 'VOUCHER_SAVED',
+              description: `${persistedVoucher.jv_type} Voucher ${persistedVoucher.jv_number} ($${balanceInfo.totalDebit.toLocaleString()}) ${args.postImmediately ? 'posted to GL' : 'saved as draft'}`,
+              performed_by: user,
+              metadata: {
+                voucherId: persistedVoucher.id,
+                jvNumber: persistedVoucher.jv_number,
+                type: persistedVoucher.jv_type,
+                amount: balanceInfo.totalDebit
+              },
+              created_at: nowIso
+            }
+          ]);
+        })();
+
+        await Promise.allSettled([linesTask, glTask, activityTask]);
+      } catch (e) {
+        // Non-blocking sync
       }
+    })();
 
-      // 2. Parallelize voucher lines, GL ledger entries, and audit activities via Promise.allSettled
-      const linesTask = (async () => {
-        if (persistedLines.length > 0) {
-          const linesPayload = persistedLines.map((l) => ({
-            id: l.id,
-            voucher_id: persistedVoucher.id,
-            account_id: l.account_id || null,
-            account_number: l.account_number || '',
-            account_name: l.account_name || '',
-            description: l.description || '',
-            debit: l.amount_debit || 0,
-            credit: l.amount_credit || 0
-          }));
-
-          const lRes = await supabase.from('acc_journal_voucher_lines').upsert(linesPayload);
-          if (lRes.error) {
-            await supabase.from('voucher_lines').upsert(linesPayload);
-          }
-        }
-      })();
-
-      const glTask = (async () => {
-        if (args.postImmediately && createdGlEntries.length > 0) {
-          const glPayload = createdGlEntries.map((g) => ({
-            id: g.id,
-            voucher_id: g.voucher_id,
-            voucher_number: g.voucher_number,
-            entry_date: g.entry_date,
-            account_id: g.account_id || null,
-            debit: g.debit || 0,
-            credit: g.credit || 0,
-            description: g.narration || '',
-            created_at: g.created_at || nowIso
-          }));
-
-          const gRes = await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
-          if (gRes.error) {
-            await supabase.from('gl_entries').upsert(glPayload);
-          }
-        }
-      })();
-
-      const activityTask = (async () => {
-        await supabase.from('system_activities').insert([
-          {
-            tenant_id: persistedVoucher.tenant_id,
-            company_id: 1300,
-            action_type: args.postImmediately ? 'VOUCHER_POSTED' : 'VOUCHER_SAVED',
-            description: `${persistedVoucher.jv_type} Voucher ${persistedVoucher.jv_number} ($${balanceInfo.totalDebit.toLocaleString()}) ${args.postImmediately ? 'posted to GL' : 'saved as draft'}`,
-            performed_by: user,
-            metadata: {
-              voucherId: persistedVoucher.id,
-              jvNumber: persistedVoucher.jv_number,
-              type: persistedVoucher.jv_type,
-              amount: balanceInfo.totalDebit
-            },
-            created_at: nowIso
-          }
-        ]);
-      })();
-
-      await Promise.allSettled([linesTask, glTask, activityTask]);
-    } catch (e) {
-      // Non-blocking sync
+    if (args.awaitRemoteSync) {
+      await remoteSyncPromise;
     }
 
     return {
@@ -1254,6 +1268,7 @@ export class ServerAccountingStorage {
     voucherId: string;
     isPosted: boolean;
     user?: string;
+    awaitRemoteSync?: boolean;
   }): Promise<{ voucher: JournalVoucher; message: string }> {
     const state = ensureDbFileExists();
     const nowIso = new Date().toISOString();
@@ -1377,47 +1392,53 @@ export class ServerAccountingStorage {
     state.vouchers[vIdx] = voucher;
     writeDbState(state);
 
-    // Parallel Dual-Sync to Supabase Postgres via Promise.allSettled
-    try {
-      const vTask = supabase
-        .from('acc_journal_vouchers')
-        .update({
-          is_posted: voucher.is_posted,
-          posted_at: voucher.posted_at || null,
-          posted_by: voucher.posted_by || null,
-          status: (voucher.status || (voucher.is_posted ? 'POSTED' : 'DRAFT')).toUpperCase(),
-          updated_at: nowIso
-        })
-        .eq('id', voucher.id);
+    // Parallel Dual-Sync to Supabase Postgres (Non-blocking optimistic by default)
+    const remoteSyncPromise = (async () => {
+      try {
+        const vTask = supabase
+          .from('acc_journal_vouchers')
+          .update({
+            is_posted: voucher.is_posted,
+            posted_at: voucher.posted_at || null,
+            posted_by: voucher.posted_by || null,
+            status: (voucher.status || (voucher.is_posted ? 'POSTED' : 'DRAFT')).toUpperCase(),
+            updated_at: nowIso
+          })
+          .eq('id', voucher.id);
 
-      const glTask = args.isPosted
-        ? (async () => {
-            const addedGlEntries = state.gl_entries.filter(
-              (g) => g.voucher_id === voucher.id || g.voucher_number === voucher.jv_number
-            );
-            if (addedGlEntries.length > 0) {
-              const glPayload = addedGlEntries.map((g) => ({
-                id: g.id,
-                voucher_id: g.voucher_id,
-                voucher_number: g.voucher_number,
-                account_id: g.account_id || null,
-                entry_date: g.entry_date,
-                debit: g.debit || 0,
-                credit: g.credit || 0,
-                description: g.narration || '',
-                created_at: g.created_at || nowIso
-              }));
-              await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
-            }
-          })()
-        : supabase
-            .from('acc_gl_ledger_entries')
-            .delete()
-            .or(`voucher_id.eq.${voucher.id},voucher_number.eq.${voucher.jv_number}`);
+        const glTask = args.isPosted
+          ? (async () => {
+              const addedGlEntries = state.gl_entries.filter(
+                (g) => g.voucher_id === voucher.id || g.voucher_number === voucher.jv_number
+              );
+              if (addedGlEntries.length > 0) {
+                const glPayload = addedGlEntries.map((g) => ({
+                  id: g.id,
+                  voucher_id: g.voucher_id,
+                  voucher_number: g.voucher_number,
+                  account_id: g.account_id || null,
+                  entry_date: g.entry_date,
+                  debit: g.debit || 0,
+                  credit: g.credit || 0,
+                  description: g.narration || '',
+                  created_at: g.created_at || nowIso
+                }));
+                await supabase.from('acc_gl_ledger_entries').upsert(glPayload);
+              }
+            })()
+          : supabase
+              .from('acc_gl_ledger_entries')
+              .delete()
+              .or(`voucher_id.eq.${voucher.id},voucher_number.eq.${voucher.jv_number}`);
 
-      await Promise.allSettled([vTask, glTask]);
-    } catch (e) {
-      // Non-blocking
+        await Promise.allSettled([vTask, glTask]);
+      } catch (e) {
+        // Non-blocking
+      }
+    })();
+
+    if (args.awaitRemoteSync) {
+      await remoteSyncPromise;
     }
 
     return {
@@ -1514,6 +1535,23 @@ export class ServerAccountingStorage {
     });
 
     writeDbState(state);
+
+    // Non-blocking optimistic background sync to Supabase Postgres (0ms UI latency)
+    (async () => {
+      try {
+        const vPayloads = unposted.map((v) => ({
+          id: v.id,
+          is_posted: true,
+          posted_at: nowIso,
+          posted_by: actor,
+          status: 'POSTED',
+          updated_at: nowIso
+        }));
+        await supabase.from('acc_journal_vouchers').upsert(vPayloads);
+      } catch (e) {
+        // Non-blocking sync
+      }
+    })();
 
     return {
       postedCount: unposted.length,
@@ -1699,10 +1737,25 @@ export class ServerAccountingStorage {
 
   public static async deleteVoucher(id: string): Promise<boolean> {
     const state = ensureDbFileExists();
-    const idx = state.vouchers.findIndex((v) => v.id === id);
+    const idx = state.vouchers.findIndex((v) => v.id === id || v.jv_number === id);
     if (idx >= 0) {
-      state.vouchers.splice(idx, 1);
+      const removed = state.vouchers.splice(idx, 1)[0];
+      state.gl_entries = state.gl_entries.filter((g) => g.voucher_id !== removed.id && g.voucher_number !== removed.jv_number);
       writeDbState(state);
+
+      // Non-blocking optimistic background sync delete to Supabase Postgres (0ms UI latency)
+      (async () => {
+        try {
+          await Promise.allSettled([
+            supabase.from('acc_journal_vouchers').delete().eq('id', removed.id),
+            supabase.from('acc_journal_voucher_lines').delete().eq('voucher_id', removed.id),
+            supabase.from('acc_gl_ledger_entries').delete().or(`voucher_id.eq.${removed.id},voucher_number.eq.${removed.jv_number}`)
+          ]);
+        } catch (e) {
+          // Non-blocking background sync
+        }
+      })();
+
       return true;
     }
     return false;
@@ -1778,7 +1831,8 @@ export class ServerAccountingStorage {
   }
 
   public static async saveExpense(
-    inputOrArgs: (Partial<PersistedExpenseRecord> & { description: string; amount: number }) | { expense: Partial<PersistedExpenseRecord>; postImmediately?: boolean; user?: string }
+    inputOrArgs: (Partial<PersistedExpenseRecord> & { description: string; amount: number }) | { expense: Partial<PersistedExpenseRecord>; postImmediately?: boolean; user?: string; awaitRemoteSync?: boolean },
+    options?: { awaitRemoteSync?: boolean }
   ): Promise<PersistedExpenseRecord> {
     const state = ensureDbFileExists();
     const nowIso = new Date().toISOString();
@@ -1882,60 +1936,67 @@ export class ServerAccountingStorage {
 
     writeDbState(state);
 
-    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled
-    try {
-      const expensePayload = {
-        id: record.id,
-        voucher_number: record.ev || `EV-${Date.now()}`,
-        payee: record.payee || 'Vendor/Supplier',
-        amount: record.amount || 0,
-        total_disbursed: record.totalDisbursed || 0,
-        payment_difference: record.paymentDifference || 0,
-        description: record.description || 'Expense Voucher',
-        status: record.status || 'DRAFT',
-        is_posted: record.posted ?? false,
-        updated_at: nowIso
-      };
+    // Parallel Dual-Sync to Remote Supabase via Promise.allSettled (Non-blocking optimistic by default)
+    const remoteSyncPromise = (async () => {
+      try {
+        const expensePayload = {
+          id: record.id,
+          voucher_number: record.ev || `EV-${Date.now()}`,
+          payee: record.payee || 'Vendor/Supplier',
+          amount: record.amount || 0,
+          total_disbursed: record.totalDisbursed || 0,
+          payment_difference: record.paymentDifference || 0,
+          description: record.description || 'Expense Voucher',
+          status: record.status || 'DRAFT',
+          is_posted: record.posted ?? false,
+          updated_at: nowIso
+        };
 
-      const expenseTask = (async () => {
-        const eRes = await supabase.from('acc_expense_vouchers').upsert(expensePayload);
-        if (eRes.error) {
-          await supabase.from('expenses').upsert({
-            id: record.id,
-            amount: record.amount,
-            description: record.description,
-            updated_at: nowIso
-          });
-        }
-      })();
-
-      const paymentLinesTask = (async () => {
-        if (record.paymentRows && record.paymentRows.length > 0) {
-          const payPayload = record.paymentRows.map((p: any, idx: number) => ({
-            id: p.id || `evl-${record.id}-${idx + 1}`,
-            payment_method: p.paymentMethod || 'Cash'
-          }));
-          await supabase.from('acc_expense_payment_lines').upsert(payPayload);
-        }
-      })();
-
-      const activityTask = (async () => {
-        await supabase.from('system_activities').insert([
-          {
-            tenant_id: record.tenant_id,
-            company_id: 1300,
-            action_type: record.posted ? 'EXPENSE_POSTED' : 'EXPENSE_RECORDED',
-            description: `Expense Voucher ${record.ev} ($${record.amount.toLocaleString()}) recorded for ${record.payee}`,
-            performed_by: record.enteredBy,
-            metadata: { ev: record.ev, amount: record.amount, status: record.status },
-            created_at: nowIso
+        const expenseTask = (async () => {
+          const eRes = await supabase.from('acc_expense_vouchers').upsert(expensePayload);
+          if (eRes.error) {
+            await supabase.from('expenses').upsert({
+              id: record.id,
+              amount: record.amount,
+              description: record.description,
+              updated_at: nowIso
+            });
           }
-        ]);
-      })();
+        })();
 
-      await Promise.allSettled([expenseTask, paymentLinesTask, activityTask]);
-    } catch (e) {
-      // Non-blocking sync
+        const paymentLinesTask = (async () => {
+          if (record.paymentRows && record.paymentRows.length > 0) {
+            const payPayload = record.paymentRows.map((p: any, idx: number) => ({
+              id: p.id || `evl-${record.id}-${idx + 1}`,
+              payment_method: p.paymentMethod || 'Cash'
+            }));
+            await supabase.from('acc_expense_payment_lines').upsert(payPayload);
+          }
+        })();
+
+        const activityTask = (async () => {
+          await supabase.from('system_activities').insert([
+            {
+              tenant_id: record.tenant_id,
+              company_id: 1300,
+              action_type: record.posted ? 'EXPENSE_POSTED' : 'EXPENSE_RECORDED',
+              description: `Expense Voucher ${record.ev} ($${record.amount.toLocaleString()}) recorded for ${record.payee}`,
+              performed_by: record.enteredBy,
+              metadata: { ev: record.ev, amount: record.amount, status: record.status },
+              created_at: nowIso
+            }
+          ]);
+        })();
+
+        await Promise.allSettled([expenseTask, paymentLinesTask, activityTask]);
+      } catch (e) {
+        // Non-blocking sync
+      }
+    })();
+
+    const shouldAwaitRemote = Boolean((inputOrArgs as any)?.awaitRemoteSync || options?.awaitRemoteSync);
+    if (shouldAwaitRemote) {
+      await remoteSyncPromise;
     }
 
     return record;
@@ -2503,6 +2564,158 @@ export class ServerAccountingStorage {
       unreadInboxCount,
       activeAlertsCount
     };
+  }
+
+  /**
+   * High-Performance Concurrent Supabase Reconciler:
+   * Executes concurrent queries across accounts, vouchers, expenses, and inbox items
+   * using Promise.all to eliminate sequential waterfalls and prime the local-first cache.
+   */
+  public static async reconcileAllFromSupabaseConcurrently(timeoutMs = 3500): Promise<{
+    syncedAccounts: number;
+    syncedVouchers: number;
+    syncedExpenses: number;
+    syncedInbox: number;
+  }> {
+    const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
+      setTimeout(() => resolve({ timeout: true }), timeoutMs)
+    );
+
+    const accountsTask = supabase.from('acc_accounts').select('*');
+    const vouchersTask = supabase.from('acc_journal_vouchers').select('*, lines:acc_journal_voucher_lines(*)');
+    const expensesTask = supabase.from('acc_expense_vouchers').select('*');
+    const inboxTask = supabase.from('acc_inbox_items').select('*');
+
+    try {
+      const result = await Promise.race([
+        Promise.all([accountsTask, vouchersTask, expensesTask, inboxTask]),
+        timeoutPromise
+      ]);
+
+      if ('timeout' in result) {
+        return { syncedAccounts: 0, syncedVouchers: 0, syncedExpenses: 0, syncedInbox: 0 };
+      }
+
+      const [accRes, vRes, expRes, inboxRes] = result;
+      const currentState = ensureDbFileExists();
+      let mutated = false;
+
+      // 1. Concurrent Accounts Ingestion
+      let accCount = 0;
+      if (!accRes.error && Array.isArray(accRes.data)) {
+        for (const a of accRes.data) {
+          const idx = currentState.accounts.findIndex(
+            (local) => local.id === a.id || local.account_number === a.account_number
+          );
+          if (idx === -1) {
+            currentState.accounts.push(normalizeAccount(a));
+            mutated = true;
+            accCount++;
+          }
+        }
+      }
+
+      // 2. Concurrent Vouchers Ingestion
+      let vCount = 0;
+      if (!vRes.error && Array.isArray(vRes.data)) {
+        for (const v of vRes.data) {
+          const exists = currentState.vouchers.some(
+            (local) => local.id === v.id || local.jv_number === v.jv_number
+          );
+          if (!exists) {
+            currentState.vouchers.unshift({
+              id: v.id,
+              tenant_id: v.tenant_id,
+              jv_number: v.jv_number,
+              date_of_jv: v.date_of_jv,
+              jv_type: v.jv_type,
+              currency_id: v.currency_id,
+              doc_ref_number: v.doc_ref_number,
+              description: v.description,
+              internal_remark: v.internal_remark,
+              department: v.department,
+              sub_department: v.sub_department,
+              total_debit: Number(v.total_debit) || 0,
+              total_credit: Number(v.total_credit) || 0,
+              is_posted: Boolean(v.is_posted),
+              posted_at: v.posted_at,
+              posted_by: v.posted_by,
+              created_by: v.created_by,
+              lines: Array.isArray(v.lines) ? v.lines : []
+            });
+            mutated = true;
+            vCount++;
+          }
+        }
+      }
+
+      // 3. Concurrent Expenses Ingestion
+      let expCount = 0;
+      if (!expRes.error && Array.isArray(expRes.data)) {
+        if (!currentState.expenses) currentState.expenses = [];
+        for (const exp of expRes.data) {
+          const exists = currentState.expenses.some(
+            (local) => local.id === exp.id || local.ev === exp.ev_number
+          );
+          if (!exists) {
+            currentState.expenses.unshift({
+              id: exp.id,
+              tenant_id: exp.tenant_id,
+              payee: exp.payee,
+              reference: exp.reference,
+              date: exp.date_of_ev,
+              ev: exp.ev_number,
+              dateOfEv: exp.date_of_ev,
+              amount: Number(exp.amount) || 0,
+              totalDisbursed: Number(exp.total_disbursed) || 0,
+              paymentDifference: Number(exp.payment_difference) || 0,
+              description: exp.description,
+              enteredBy: exp.created_by || 'Super Admin',
+              department: exp.purchase_dept || 'Main Department',
+              posted: Boolean(exp.is_posted),
+              status: exp.status,
+              purchaseAccountId: exp.purchase_account_id || '',
+              purchaseDept: exp.purchase_dept || 'Main Department',
+              purchaseRef: exp.reference || '',
+              supportingDocUrl: exp.supporting_doc_url,
+              expenseRows: [],
+              paymentRows: [],
+              created_at: exp.created_at || new Date().toISOString(),
+              updated_at: exp.updated_at || new Date().toISOString()
+            });
+            mutated = true;
+            expCount++;
+          }
+        }
+      }
+
+      // 4. Concurrent Inbox Items Ingestion
+      let inboxCount = 0;
+      if (!inboxRes.error && Array.isArray(inboxRes.data)) {
+        if (!currentState.inbox_items) currentState.inbox_items = [];
+        for (const item of inboxRes.data) {
+          const exists = currentState.inbox_items.some((local) => local.id === item.id);
+          if (!exists) {
+            currentState.inbox_items.unshift(item);
+            mutated = true;
+            inboxCount++;
+          }
+        }
+      }
+
+      if (mutated) {
+        writeDbState(currentState);
+      }
+
+      return {
+        syncedAccounts: accCount,
+        syncedVouchers: vCount,
+        syncedExpenses: expCount,
+        syncedInbox: inboxCount
+      };
+    } catch (e) {
+      return { syncedAccounts: 0, syncedVouchers: 0, syncedExpenses: 0, syncedInbox: 0 };
+    }
   }
 }
 

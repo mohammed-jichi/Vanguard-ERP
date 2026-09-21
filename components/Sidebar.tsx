@@ -166,20 +166,24 @@ export default function Sidebar({
   }, [pathname]);
 
   const toggleGroup = (groupKey: string) => {
-    setExpandedGroups(prev => ({
-      ...prev,
-      [groupKey]: !prev[groupKey]
-    }));
+    React.startTransition(() => {
+      setExpandedGroups(prev => ({
+        ...prev,
+        [groupKey]: !prev[groupKey]
+      }));
+    });
   };
 
   const handleNav = (screenKey: string, href?: string) => {
-    if (onSelectScreen) {
-      onSelectScreen(screenKey);
-    }
-    if (href) {
-      router.push(href);
-      return;
-    }
+    React.startTransition(() => {
+      if (onSelectScreen) {
+        onSelectScreen(screenKey);
+      }
+      if (href) {
+        router.push(href);
+        return;
+      }
+    });
   };
 
   const matchesSearch = (title: string) => {

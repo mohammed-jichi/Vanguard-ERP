@@ -72,36 +72,44 @@ export default function ReportSidebarNav({
 
   // Handle report item click: update active view & refresh recent history
   const handleReportClick = (reportName: string) => {
-    if (onSelectReport) {
-      onSelectReport(reportName);
-    }
+    React.startTransition(() => {
+      if (onSelectReport) {
+        onSelectReport(reportName);
+      }
+    });
 
     setRecentReports((prev) => {
       // Filter out duplicate, push to top, limit strictly to last 5
       const updated = [reportName, ...prev.filter((r) => r !== reportName)].slice(0, 5);
-      try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(storageKey, JSON.stringify(updated));
-        }
-      } catch (err) {
-        console.warn(`[ReportSidebarNav] Error writing ${storageKey}:`, err);
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(updated));
+          } catch (err) {
+            console.warn(`[ReportSidebarNav] Error writing ${storageKey}:`, err);
+          }
+        }, 0);
       }
       return updated;
     });
   };
 
   const toggleGroup = (title: string) => {
-    setCollapsedGroups((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
+    React.startTransition(() => {
+      setCollapsedGroups((prev) => ({
+        ...prev,
+        [title]: !prev[title],
+      }));
+    });
   };
 
   const toggleSubGroup = (key: string) => {
-    setCollapsedSubGroups((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    React.startTransition(() => {
+      setCollapsedSubGroups((prev) => ({
+        ...prev,
+        [key]: !prev[key],
+      }));
+    });
   };
 
   // Filter out any hardcoded "Recently Viewed" from passed categories to prevent duplicates

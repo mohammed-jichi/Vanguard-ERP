@@ -54,6 +54,7 @@ import {
 import AccountingActionsPage from './actions/page';
 import AccountingReportsPage from './reports/page';
 import AccountingSetupPage from './setup/page';
+import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
 
 export function AccountingDashboardContent() {
   // Top Header Filter States
@@ -723,7 +724,7 @@ function AccountingRootRouter() {
     if (['receipts', 'receipt'].includes(rawSection)) return 'receipts';
     if (['ar', 'accounts-receivables', 'receivables'].includes(rawSection)) return 'ar';
     if (['ap', 'accounts-payables', 'payables'].includes(rawSection)) return 'ap';
-    if (['bank_recon', 'bank-reconciliation', 'recon'].includes(rawSection)) return 'bank_recon';
+    if (['bank_recon', 'bank-reconciliation', 'recon', 'reconciliation'].includes(rawSection)) return 'bank_recon';
     if (['vat_closing', 'vat-period-closing', 'vat'].includes(rawSection)) return 'vat_closing';
 
     // Setup
@@ -744,6 +745,16 @@ function AccountingRootRouter() {
 
     return rawSection;
   }, [rawSection]);
+
+  const KNOWN_SECTIONS = [
+    'dashboard', 'reports', 'jv', 'purchase', 'payments', 'receipts', 'ar', 'ap',
+    'bank_recon', 'vat_closing', 'accounts', 'aux_classes', 'aux_header1',
+    'aux_header2', 'aux_header3', 'aux_group', 'aux_jv_desc', 'aux_jv_types',
+    'aux_currency', 'aux_currency_rates', 'dept_groups', 'department',
+    'cash_flow_setup', 'sub_dept'
+  ];
+
+  const isKnownSection = KNOWN_SECTIONS.includes(activeSection);
 
   return (
     <div key={activeSection} className="w-full">
@@ -773,6 +784,17 @@ function AccountingRootRouter() {
       {['aux_jv_desc', 'aux_jv_types'].includes(activeSection) && <AccountingSetupPage initialTab="JV_SETUP" />}
       {['aux_currency', 'aux_currency_rates'].includes(activeSection) && <AccountingSetupPage initialTab="CURRENCIES" />}
       {['dept_groups', 'department', 'cash_flow_setup', 'sub_dept'].includes(activeSection) && <AccountingSetupPage initialTab="DEPTS" />}
+
+      {/* 5. LIGHTWEIGHT PLACEHOLDER FOR UNIMPLEMENTED OR UPCOMING SUB-VIEWS */}
+      {!isKnownSection && (
+        <StandardUnderDevelopmentPlaceholder
+          moduleTitle={`Accounting: ${rawSection}`}
+          moduleCategory="ACCOUNTING & FINANCIALS"
+          description={`The requested accounting sub-view or workstation "${rawSection}" is currently undergoing active engineering. Core General Ledger entries and balance integrity remain preserved.`}
+          backUrl="/accounting"
+          backLabel="Back to Accounting Hub"
+        />
+      )}
     </div>
   );
 }
