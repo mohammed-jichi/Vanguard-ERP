@@ -15,6 +15,13 @@ import { useRouter } from 'next/navigation';
 import { useTenant, TenantCompany, ALL_SYSTEM_MODULES } from '../lib/TenantContext';
 import { supabase } from '../lib/supabaseClient';
 import {
+  COUNTRY_FISCAL_PROFILES,
+  getCountryFiscalProfile,
+  isLebaneseFiscalStandard,
+  CountryFiscalProfile
+} from '../lib/countryFiscalProfiles';
+import { applyCoaPreset, setActiveCoaPresetId } from '../lib/accountingData';
+import {
   SystemActivity,
   getRecentSystemActivities,
   logSystemActivity,
@@ -411,6 +418,10 @@ export default function SuperAdminWorkspaceManager() {
   const [onboardBaseCurrency, setOnboardBaseCurrency] = useState<'USD' | 'LBP'>('USD');
   const [onboardCrNumber, setOnboardCrNumber] = useState<string>('CR-104928-LB');
   const [onboardTaxId, setOnboardTaxId] = useState<string>('MOF-7489201');
+  const [onboardCountry, setOnboardCountry] = useState<string>('Lebanon');
+  const [onboardFinancialTemplate, setOnboardFinancialTemplate] = useState<'lebanese_pca' | 'international_ifrs'>('lebanese_pca');
+  const [onboardCountryDropdownOpen, setOnboardCountryDropdownOpen] = useState<boolean>(false);
+  const [onboardCountryFilterText, setOnboardCountryFilterText] = useState<string>('');
   const [onboardLogoUrl, setOnboardLogoUrl] = useState<string>('');
   const [onboardLogoPreview, setOnboardLogoPreview] = useState<string>('');
   const [isUploadingOnboardLogo, setIsUploadingOnboardLogo] = useState<boolean>(false);
@@ -440,10 +451,66 @@ export default function SuperAdminWorkspaceManager() {
   const [editAddress, setEditAddress] = useState<string>('');
   const [editCity, setEditCity] = useState<string>('');
   const [editCountry, setEditCountry] = useState<string>('Lebanon');
+  const [editFinancialTemplate, setEditFinancialTemplate] = useState<'lebanese_pca' | 'international_ifrs' | 'custom_blank'>('lebanese_pca');
+  const [editVatPercentage, setEditVatPercentage] = useState<number>(11);
+  const [editTaxIdLabel, setEditTaxIdLabel] = useState<string>('Tax ID Number (MOF / الرقم المالي - وزارة المالية)');
+  const [editCrNumberLabel, setEditCrNumberLabel] = useState<string>('Commercial Registration (CR / السجل التجاري)');
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState<boolean>(false);
+  const [countryFilterText, setCountryFilterText] = useState<string>('');
   const [editPhone, setEditPhone] = useState<string>('');
   const [editBillingEmail, setEditBillingEmail] = useState<string>('');
   const [editBaseCurrency, setEditBaseCurrency] = useState<'USD' | 'LBP'>('USD');
   const [editExchangeRatePolicy, setEditExchangeRatePolicy] = useState<'PLATFORM_FIXED' | 'TENANT_MANAGED'>('PLATFORM_FIXED');
+
+  // Computed Country Fiscal Profiles
+  const currentCountryProfile = useMemo(() => {
+    return getCountryFiscalProfile(editCountry);
+  }, [editCountry]);
+
+  const filteredCountryProfiles = useMemo(() => {
+    if (!countryFilterText.trim()) return COUNTRY_FISCAL_PROFILES;
+    const q = countryFilterText.toLowerCase().trim();
+    return COUNTRY_FISCAL_PROFILES.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q) ||
+      c.financialTemplateName.toLowerCase().includes(q)
+    );
+  }, [countryFilterText]);
+
+  const onboardCountryProfile = useMemo(() => {
+    return getCountryFiscalProfile(onboardCountry);
+  }, [onboardCountry]);
+
+  const filteredOnboardCountryProfiles = useMemo(() => {
+    if (!onboardCountryFilterText.trim()) return COUNTRY_FISCAL_PROFILES;
+    const q = onboardCountryFilterText.toLowerCase().trim();
+    return COUNTRY_FISCAL_PROFILES.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q) ||
+      c.financialTemplateName.toLowerCase().includes(q)
+    );
+  }, [onboardCountryFilterText]);
+
+  const handleCountryChange = (countryName: string) => {
+    setEditCountry(countryName);
+    const profile = getCountryFiscalProfile(countryName);
+    setEditFinancialTemplate(profile.financialSeedTemplate);
+    setEditVatPercentage(profile.vatPercentage);
+    setEditTaxIdLabel(profile.taxIdLabel);
+    setEditCrNumberLabel(profile.crNumberLabel);
+    setCountryDropdownOpen(false);
+    setCountryFilterText('');
+  };
+
+  const handleOnboardCountryChange = (countryName: string) => {
+    setOnboardCountry(countryName);
+    const profile = getCountryFiscalProfile(countryName);
+    setOnboardFinancialTemplate(profile.financialSeedTemplate);
+    setOnboardCrNumber(profile.crNumberPlaceholder);
+    setOnboardTaxId(profile.taxIdPlaceholder);
+    setOnboardCountryDropdownOpen(false);
+    setOnboardCountryFilterText('');
+  };
 
   // Tab 4: Operational Quotas & Lifecycle
   const [editMaxBranches, setEditMaxBranches] = useState<number>(5);
@@ -577,6 +644,11 @@ export default function SuperAdminWorkspaceManager() {
             headquarters_address: corp.headquartersAddress || t.headquarters_address || 'Central Highway Blvd, Bldg 4',
             city: corp.city || t.city || 'Nabatieh',
             country: corp.country || t.country || 'Lebanon',
+            financial_seed_template: corp.financial_seed_template || t.financial_seed_template || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+            financialSeedTemplate: corp.financial_seed_template || t.financial_seed_template || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+            vat_percentage: corp.vat_percentage ?? ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+            tax_id_label: corp.tax_id_label || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+            cr_label: corp.cr_label || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
             phone_number: corp.phoneNumber || t.phone_number || '+961 70 882 110',
             billing_email: corp.billingEmail || t.billing_email || 'billing@southernolive.com',
             base_currency: corp.baseCurrency || t.base_currency || 'USD',
@@ -728,6 +800,10 @@ export default function SuperAdminWorkspaceManager() {
         headquartersAddress: t?.headquarters_address || 'Central Highway Blvd, Bldg 4',
         city: t?.city || 'Nabatieh',
         country: t?.country || 'Lebanon',
+        financialSeedTemplate: t?.financial_seed_template || t?.financialSeedTemplate || ((t?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+        vatPercentage: t?.vat_percentage ?? ((t?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+        taxIdLabel: t?.tax_id_label || ((t?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+        crNumberLabel: t?.cr_label || ((t?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
         phoneNumber: t?.phone_number || '+961 70 882 110',
         billingEmail: t?.billing_email || 'accounts@southernolive.com',
         baseCurrency: t?.base_currency || 'USD',
@@ -745,6 +821,15 @@ export default function SuperAdminWorkspaceManager() {
       };
 
       switchTenant(fullTenantObj);
+
+      // Auto-activate the tenant's bound Chart of Accounts template
+      const targetCoaPreset = (fullTenantObj.financialSeedTemplate === 'international_ifrs' ? 'international_ifrs' : 'lebanese_pca') as any;
+      try {
+        setActiveCoaPresetId(targetCoaPreset);
+        applyCoaPreset(targetCoaPreset);
+      } catch (coaErr) {
+        console.warn('COA Preset initialization notice:', coaErr);
+      }
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('vanguard_active_tenant', JSON.stringify(fullTenantObj));
@@ -802,7 +887,18 @@ export default function SuperAdminWorkspaceManager() {
     setEditTaxId(t.tax_identification_number || 'MOF-7489201');
     setEditAddress(t.headquarters_address || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4');
     setEditCity(t.city || 'Nabatieh');
-    setEditCountry(t.country || 'Lebanon');
+
+    // Country Jurisdiction & Fiscal Template Auto-Binding
+    const initialCountry = t.country || 'Lebanon';
+    setEditCountry(initialCountry);
+    const fiscalProfile = getCountryFiscalProfile(initialCountry);
+    const boundTemplate = (t.financial_seed_template || t.financialSeedTemplate || fiscalProfile.financialSeedTemplate) as any;
+    setEditFinancialTemplate(boundTemplate);
+    setEditVatPercentage(t.vat_percentage ?? fiscalProfile.vatPercentage);
+    setEditTaxIdLabel(t.tax_id_label || fiscalProfile.taxIdLabel);
+    setEditCrNumberLabel(t.cr_label || fiscalProfile.crNumberLabel);
+    setCountryDropdownOpen(false);
+    setCountryFilterText('');
     setEditPhone(t.phone_number || '+961 70 882 110');
     setEditBillingEmail(t.billing_email || 'accounts@southernolive.com');
     setEditBaseCurrency(t.base_currency || 'USD');
@@ -915,6 +1011,10 @@ export default function SuperAdminWorkspaceManager() {
         headquartersAddress: editAddress.trim(),
         city: editCity.trim(),
         country: editCountry.trim(),
+        financial_seed_template: editFinancialTemplate,
+        vat_percentage: Number(editVatPercentage),
+        tax_id_label: editTaxIdLabel,
+        cr_label: editCrNumberLabel,
         phoneNumber: editPhone.trim(),
         billingEmail: editBillingEmail.trim(),
         baseCurrency: editBaseCurrency,
@@ -958,6 +1058,10 @@ export default function SuperAdminWorkspaceManager() {
         headquartersAddress: editAddress.trim(),
         city: editCity.trim(),
         country: editCountry.trim(),
+        financialSeedTemplate: editFinancialTemplate,
+        vatPercentage: Number(editVatPercentage),
+        taxIdLabel: editTaxIdLabel,
+        crNumberLabel: editCrNumberLabel,
         phoneNumber: editPhone.trim(),
         billingEmail: editBillingEmail.trim(),
         baseCurrency: editBaseCurrency,
@@ -1044,6 +1148,11 @@ export default function SuperAdminWorkspaceManager() {
           subscriptionTier: onboardTier,
           logoUrl: onboardLogoUrl || onboardLogoPreview || '/assets/images/logo.png',
           officialLegalEntityName: compName.trim(),
+          country: onboardCountry,
+          financialSeedTemplate: onboardFinancialTemplate,
+          vatPercentage: onboardCountryProfile.vatPercentage,
+          taxIdLabel: onboardCountryProfile.taxIdLabel,
+          crNumberLabel: onboardCountryProfile.crNumberLabel,
           companyRegistrationNumber: onboardCrNumber.trim(),
           taxIdentificationNumber: onboardTaxId.trim(),
           baseCurrency: onboardBaseCurrency,
@@ -1063,6 +1172,8 @@ export default function SuperAdminWorkspaceManager() {
         setBrandAr('');
         setBrandEn('');
         setAdminEmail('');
+        setOnboardCountry('Lebanon');
+        setOnboardFinancialTemplate('lebanese_pca');
         setOnboardLogoUrl('');
         setOnboardLogoPreview('');
         await fetchAdminTenants();
@@ -1102,7 +1213,11 @@ export default function SuperAdminWorkspaceManager() {
             taxIdentificationNumber: t.tax_identification_number,
             headquartersAddress: t.headquarters_address,
             city: t.city,
-            country: t.country,
+            country: t.country || 'Lebanon',
+            financialSeedTemplate: t.financial_seed_template || t.financialSeedTemplate || ((t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+            vatPercentage: t.vat_percentage ?? ((t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+            taxIdLabel: t.tax_id_label || ((t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+            crNumberLabel: t.cr_label || ((t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
             phoneNumber: t.phone_number,
             billingEmail: t.billing_email,
             baseCurrency: t.base_currency,
@@ -1661,11 +1776,45 @@ export default function SuperAdminWorkspaceManager() {
                           </td>
                         </tr>
 
-                        {/* EXPANDABLE ROW: CLEAN 12-MODULE INSPECTION MATRIX */}
+                        {/* EXPANDABLE ROW: CLEAN 12-MODULE INSPECTION MATRIX & FISCAL PROFILE */}
                         {isExpanded && (
                           <tr className="bg-amber-50/40 border-b border-amber-200">
                             <td colSpan={7} className="p-3.5">
-                              <div className="space-y-2 bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs text-left">
+                              <div className="space-y-3 bg-white p-3.5 rounded-xl border border-amber-200/80 shadow-xs text-left">
+                                {/* Fiscal Profile & CoA Template Status Strip */}
+                                <div className="p-2.5 bg-gradient-to-r from-slate-50 to-amber-50/40 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="font-extrabold text-slate-800 flex items-center gap-1.5">
+                                      <Globe className="w-3.5 h-3.5 text-amber-600" />
+                                      <span>Jurisdiction:</span>
+                                      <span className="text-slate-900 font-black">{t.country === 'Lebanon' || !t.country ? '🇱🇧 Lebanon' : `🌐 ${t.country}`}</span>
+                                    </span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="font-semibold text-slate-600 flex items-center gap-1">
+                                      <span>Seed Template:</span>
+                                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] font-mono ${
+                                        (t.financial_seed_template || t.financialSeedTemplate) === 'international_ifrs'
+                                          ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                                          : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                                      }`}>
+                                        {(t.financial_seed_template || t.financialSeedTemplate) === 'international_ifrs'
+                                          ? 'IFRS Dual-Currency'
+                                          : 'PCGL (Plan Comptable Libanais)'}
+                                      </span>
+                                    </span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-slate-600 text-[11px] font-medium">
+                                      Tax Rate: <strong className="text-emerald-700">{t.vat_percentage ? `${t.vat_percentage}%` : (t.country === 'Lebanon' || !t.country ? '11% VAT' : '15%')}</strong>
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 font-mono text-[10.5px] text-slate-500">
+                                    <span>CR: <strong className="text-slate-800">{t.company_registration_number || 'N/A'}</strong></span>
+                                    <span>•</span>
+                                    <span>MOF/Tax: <strong className="text-slate-800">{t.tax_identification_number || 'N/A'}</strong></span>
+                                  </div>
+                                </div>
+
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
                                   <span className="font-extrabold text-xs text-slate-800 flex items-center gap-1.5">
                                     <Layers className="w-3.5 h-3.5 text-amber-500" />
@@ -2412,23 +2561,27 @@ export default function SuperAdminWorkspaceManager() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-bold mb-1">Commercial Registration (CR / السجل التجاري)</label>
+                      <label className="block text-slate-700 font-bold mb-1 truncate" title={currentCountryProfile.crNumberLabel}>
+                        {currentCountryProfile.crNumberLabel}
+                      </label>
                       <input
                         type="text"
                         value={editCrNumber}
                         onChange={(e) => setEditCrNumber(e.target.value)}
-                        placeholder="e.g. CR-104928-LB"
+                        placeholder={currentCountryProfile.crNumberPlaceholder}
                         className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-bold mb-1">Tax ID Number (MOF / الرقم المالي)</label>
+                      <label className="block text-slate-700 font-bold mb-1 truncate" title={currentCountryProfile.taxIdLabel}>
+                        {currentCountryProfile.taxIdLabel}
+                      </label>
                       <input
                         type="text"
                         value={editTaxId}
                         onChange={(e) => setEditTaxId(e.target.value)}
-                        placeholder="e.g. MOF-7489201"
+                        placeholder={currentCountryProfile.taxIdPlaceholder}
                         className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
                       />
                     </div>
@@ -2455,15 +2608,221 @@ export default function SuperAdminWorkspaceManager() {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Country</label>
-                      <input
-                        type="text"
-                        value={editCountry}
-                        onChange={(e) => setEditCountry(e.target.value)}
-                        placeholder="Country"
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                      />
+                    {/* SEARCHABLE COUNTRY DROPDOWN (SELECT MENU) */}
+                    <div className="relative">
+                      <label className="block text-slate-700 font-bold mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <Globe className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Country Jurisdiction</span>
+                        </span>
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                          editCountry.toLowerCase() === 'lebanon'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            : 'bg-blue-50 text-blue-800 border-blue-300'
+                        }`}>
+                          {editCountry.toLowerCase() === 'lebanon' ? '🇱🇧 PCGL (Lebanon)' : '🌐 IFRS Standard'}
+                        </span>
+                      </label>
+
+                      {/* Dropdown Trigger Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCountryDropdownOpen(!countryDropdownOpen);
+                          setCountryFilterText('');
+                        }}
+                        className="w-full bg-white hover:bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-left text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs flex items-center justify-between transition-all cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="text-xl shrink-0">{currentCountryProfile.flag}</span>
+                          <span className="font-bold text-slate-900 truncate">{currentCountryProfile.name}</span>
+                          <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md border border-slate-200 shrink-0">
+                            {currentCountryProfile.code}
+                          </span>
+                        </div>
+                        <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${countryDropdownOpen ? 'rotate-180 text-amber-600' : ''}`} />
+                      </button>
+
+                      {/* Searchable Dropdown Popover */}
+                      {countryDropdownOpen && (
+                        <div className="absolute z-50 mt-1.5 w-full bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                          {/* Live Search Input */}
+                          <div className="p-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                            <input
+                              type="text"
+                              autoFocus
+                              value={countryFilterText}
+                              onChange={(e) => setCountryFilterText(e.target.value)}
+                              placeholder="Search country name or code..."
+                              className="w-full bg-transparent text-xs text-slate-900 font-semibold focus:outline-none placeholder:text-slate-400"
+                            />
+                            {countryFilterText && (
+                              <button
+                                type="button"
+                                onClick={() => setCountryFilterText('')}
+                                className="text-slate-400 hover:text-slate-600 p-0.5"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Filtered Country List */}
+                          <div className="max-h-56 overflow-y-auto divide-y divide-slate-100 p-1">
+                            {filteredCountryProfiles.length === 0 ? (
+                              <div className="p-4 text-center text-xs text-slate-400">
+                                No country matching &ldquo;{countryFilterText}&rdquo;
+                              </div>
+                            ) : (
+                              filteredCountryProfiles.map((country) => {
+                                const isSelected = editCountry.toLowerCase() === country.name.toLowerCase();
+                                const isLeb = country.code === 'LB';
+                                return (
+                                  <button
+                                    key={country.name + country.code}
+                                    type="button"
+                                    onClick={() => handleCountryChange(country.name)}
+                                    className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-amber-50 text-slate-950 font-bold border border-amber-300'
+                                        : 'hover:bg-slate-100 text-slate-700'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5 truncate">
+                                      <span className="text-xl shrink-0">{country.flag}</span>
+                                      <div>
+                                        <div className="font-bold flex items-center gap-1.5">
+                                          <span>{country.name}</span>
+                                          {isLeb && (
+                                            <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded-md border border-emerald-300">
+                                              DEFAULT
+                                            </span>
+                                          )}
+                                        </div>
+                                        <span className="text-[10px] text-slate-500 block truncate">
+                                          {country.financialTemplateName} • {country.vatName}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${
+                                        isLeb ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                                      }`}>
+                                        {country.financialSeedTemplate === 'lebanese_pca' ? 'PCGL' : 'IFRS'}
+                                      </span>
+                                      {isSelected && <Check className="w-4 h-4 text-amber-600 stroke-[3]" />}
+                                    </div>
+                                  </button>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* FISCAL & CHART OF ACCOUNTS AUTO-BINDING PANEL */}
+                    <div className="md:col-span-2 p-4 bg-gradient-to-br from-slate-50 via-amber-50/20 to-white border-2 border-amber-300/80 rounded-2xl space-y-3 shadow-xs">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-700 shrink-0">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h5 className="font-black text-xs text-slate-900 flex items-center gap-2">
+                              <span>Fiscal Profile & Chart of Accounts Auto-Binding</span>
+                              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full border border-emerald-300">
+                                ✓ Auto-Bound by Jurisdiction
+                              </span>
+                            </h5>
+                            <p className="text-[11px] text-slate-500">
+                              Selected Jurisdiction: <strong className="text-slate-900">{currentCountryProfile.flag} {currentCountryProfile.name}</strong> ({currentCountryProfile.code})
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Financial Template Override Selector */}
+                        <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                          <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">COA Template:</label>
+                          <select
+                            value={editFinancialTemplate}
+                            onChange={(e: any) => setEditFinancialTemplate(e.target.value)}
+                            className="bg-white border border-slate-300 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-800 focus:border-amber-500 focus:outline-none shadow-2xs"
+                          >
+                            <option value="lebanese_pca">Plan Comptable Général Libanais (PCGL)</option>
+                            <option value="international_ifrs">Standard IFRS Dual-Currency Chart of Accounts</option>
+                            <option value="custom_blank">Custom / Blank Slate</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Auto-Bound Specifications Cards */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        {/* 1. Accounting Standard & Seed Structure */}
+                        <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Financial Seed Template</span>
+                            <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded font-mono ${
+                              editFinancialTemplate === 'lebanese_pca' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-blue-100 text-blue-800 border border-blue-200'
+                            }`}>
+                              {editFinancialTemplate === 'lebanese_pca' ? 'PCGL' : 'IFRS'}
+                            </span>
+                          </div>
+                          <div className="font-black text-xs text-slate-900 flex items-center gap-1.5 truncate">
+                            <span className="text-base shrink-0">{editFinancialTemplate === 'lebanese_pca' ? '🇱🇧' : '🌐'}</span>
+                            <span className="truncate">
+                              {editFinancialTemplate === 'lebanese_pca'
+                                ? 'Plan Comptable Général Libanais (PCGL)'
+                                : editFinancialTemplate === 'international_ifrs'
+                                ? 'Standard IFRS Dual-Currency'
+                                : 'Custom / Blank Slate'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 block leading-tight font-medium">
+                            {editFinancialTemplate === 'lebanese_pca'
+                              ? 'Classes 1–7 • 5-Digit Structure (53000 Cash, 51210 Bank, 40110 Suppliers)'
+                              : '4-Digit Standard IFRS: 1000s Assets, 2000s Liab, 3000s Equity, 4000s Rev, 5000s Exp'}
+                          </span>
+                        </div>
+
+                        {/* 2. Fiscal Tax Framework */}
+                        <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">National Tax System</span>
+                            <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-200 font-mono">
+                              {currentCountryProfile.vatPercentage}% VAT
+                            </span>
+                          </div>
+                          <div className="font-black text-xs text-emerald-700 flex items-center gap-1.5 truncate">
+                            <DollarSign className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">{currentCountryProfile.vatName}</span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 block leading-tight font-medium truncate">
+                            {currentCountryProfile.regulatoryBody}
+                          </span>
+                        </div>
+
+                        {/* 3. Regulatory Identifiers */}
+                        <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Statutory Identifiers</span>
+                            <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                              LAW COMPLIANT
+                            </span>
+                          </div>
+                          <div className="font-bold text-xs text-slate-800 flex items-center gap-1.5 truncate">
+                            <Hash className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                            <span className="truncate">
+                              {editCountry.toLowerCase() === 'lebanon' ? 'MOF (الرقم المالي) & CR (السجل)' : 'TRN / Tax ID & Legal CRN'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-500 block leading-tight font-medium truncate">
+                            {currentCountryProfile.accountingStandard}
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
                     <div>
@@ -2913,22 +3272,124 @@ export default function SuperAdminWorkspaceManager() {
                 />
               </div>
 
+              {/* Country Jurisdiction Dropdown */}
+              <div className="relative md:col-span-2">
+                <label className="block text-slate-700 font-bold mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Country Jurisdiction & Fiscal Standards</span>
+                  </span>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                    onboardCountry.toLowerCase() === 'lebanon'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                      : 'bg-blue-50 text-blue-800 border-blue-300'
+                  }`}>
+                    {onboardCountry.toLowerCase() === 'lebanon' ? '🇱🇧 Plan Comptable Libanais (PCGL)' : '🌐 Standard IFRS'}
+                  </span>
+                </label>
+
+                {/* Country Trigger */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOnboardCountryDropdownOpen(!onboardCountryDropdownOpen);
+                    setOnboardCountryFilterText('');
+                  }}
+                  className="w-full bg-white hover:bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-left text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs flex items-center justify-between transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="text-xl shrink-0">{onboardCountryProfile.flag}</span>
+                    <span className="font-bold text-slate-900 truncate">{onboardCountryProfile.name}</span>
+                    <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md border border-slate-200 shrink-0">
+                      {onboardCountryProfile.code}
+                    </span>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${onboardCountryDropdownOpen ? 'rotate-180 text-emerald-600' : ''}`} />
+                </button>
+
+                {/* Searchable Country Popover */}
+                {onboardCountryDropdownOpen && (
+                  <div className="absolute z-50 mt-1.5 w-full bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                    <div className="p-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                      <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                      <input
+                        type="text"
+                        autoFocus
+                        value={onboardCountryFilterText}
+                        onChange={(e) => setOnboardCountryFilterText(e.target.value)}
+                        placeholder="Search country name or code..."
+                        className="w-full bg-transparent text-xs text-slate-900 font-semibold focus:outline-none placeholder:text-slate-400"
+                      />
+                      {onboardCountryFilterText && (
+                        <button
+                          type="button"
+                          onClick={() => setOnboardCountryFilterText('')}
+                          className="text-slate-400 hover:text-slate-600 p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-48 overflow-y-auto divide-y divide-slate-100 p-1">
+                      {filteredOnboardCountryProfiles.map((country) => {
+                        const isSelected = onboardCountry.toLowerCase() === country.name.toLowerCase();
+                        const isLeb = country.code === 'LB';
+                        return (
+                          <button
+                            key={country.name + country.code}
+                            type="button"
+                            onClick={() => handleOnboardCountryChange(country.name)}
+                            className={`w-full p-2 rounded-xl text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                              isSelected
+                                ? 'bg-emerald-50 text-emerald-950 font-bold border border-emerald-300'
+                                : 'hover:bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="text-xl shrink-0">{country.flag}</span>
+                              <div className="truncate">
+                                <span className="font-bold block truncate">{country.name}</span>
+                                <span className="text-[10px] text-slate-500 block truncate">
+                                  {country.financialTemplateName}
+                                </span>
+                              </div>
+                            </div>
+                            <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                              isLeb ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {country.financialSeedTemplate === 'lebanese_pca' ? 'PCGL' : 'IFRS'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Commercial Registration (CR)</label>
+                <label className="block text-slate-700 font-bold mb-1 truncate" title={onboardCountryProfile.crNumberLabel}>
+                  {onboardCountryProfile.crNumberLabel}
+                </label>
                 <input
                   type="text"
                   value={onboardCrNumber}
                   onChange={(e) => setOnboardCrNumber(e.target.value)}
+                  placeholder={onboardCountryProfile.crNumberPlaceholder}
                   className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Tax ID (MOF)</label>
+                <label className="block text-slate-700 font-bold mb-1 truncate" title={onboardCountryProfile.taxIdLabel}>
+                  {onboardCountryProfile.taxIdLabel}
+                </label>
                 <input
                   type="text"
                   value={onboardTaxId}
                   onChange={(e) => setOnboardTaxId(e.target.value)}
+                  placeholder={onboardCountryProfile.taxIdPlaceholder}
                   className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
                 />
               </div>

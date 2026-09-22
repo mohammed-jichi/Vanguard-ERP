@@ -313,3 +313,38 @@ Executed via `npx tsx scratch/test_navigation_routing.ts`:
   - TypeScript compiler: Finished in 2.2s with 0 errors.
   - Static page generation: 227/227 pages cleanly generated with exit code 0.
 
+---
+
+## 15. Fiscal Profile: Country Dropdown & Financial Template Mapping
+
+### A. Searchable Country Jurisdiction Dropdown
+- **Country Selector**: Replaced the plain-text "Country" input in Tab "2. Corporate & Fiscal" of the Tenant Modal with a modern **Searchable Country Dropdown** (select menu).
+- **Default Value**: Set strictly to **"Lebanon"** (`🇱🇧 Lebanon`, code `LB`).
+- **Catalog**: Integrated complete country registry ([`lib/countryFiscalProfiles.ts`](file:///c:/Projects/Vanguard_ERP/lib/countryFiscalProfiles.ts)) spanning Lebanon, UAE, Saudi Arabia, Qatar, Kuwait, Jordan, Egypt, Iraq, USA, UK, France, Germany, Canada, Cyprus, Turkey, and Global International.
+- **Fast Search & Selection**: Includes auto-focus live search input filtering by country name, ISO code, and template keywords with visual flag indicators, code pills, and keyboard navigation.
+
+### B. Fiscal & Chart of Accounts Auto-Binding
+- **Automatic Template Binding**:
+  - **Lebanon (`🇱🇧 Lebanon`)**:
+    - **Chart of Accounts**: Plan Comptable Général Libanais (`PCGL` / `lebanese_pca`), 5-digit structure across classes 1–7 (`53000 Cash`, `51210 Bank`, `40110 Suppliers`).
+    - **Fiscal Tax Rule**: VAT 11% (`TVA Libanaise`).
+    - **Regulatory Identifiers**: Tax ID Number (`MOF / الرقم المالي - وزارة المالية`), Commercial Registration (`CR / السجل التجاري`).
+    - **Regulatory Framework**: Lebanese Code of Commerce & Decree 4256/81.
+  - **International / Other (`🌐 International`, `🇦🇪 UAE`, `🇸🇦 Saudi Arabia`, etc.)**:
+    - **Chart of Accounts**: Standard IFRS Dual-Currency Chart of Accounts (`international_ifrs`), 4-digit structure (`1000s Assets`, `2000s Liabilities`, `3000s Equity`, `4000s Revenue`, `5000s-6000s Expenses`).
+    - **Fiscal Tax Rule**: Regional/national VAT (e.g., UAE 5%, Saudi 15%, UK 20%, Global standard 15%).
+    - **Regulatory Identifiers**: Tax Identification Number (`TRN / TIN / Tax ID`), Company Registration Number (`CRN / Legal Entity ID`).
+- **Interactive Fiscal Binding Panel**:
+  - Live specifications card displaying the bound Financial Seed Template with `PCGL` vs `IFRS` badges, national tax rate, and law-compliant identifier mapping.
+  - Template override dropdown allowing Super Admins to manually switch between PCGL, IFRS, or Custom Blank if required.
+- **Persistence & Workspace Activation**:
+  - Persisted in Supabase `tenants.feature_flags.corporate_profile` (`country`, `financial_seed_template`, `vat_percentage`, `tax_id_label`, `cr_label`) and `TenantCompany` context.
+  - When entering a workspace (`handleEnterWorkspace`), the tenant's bound CoA template is dynamically activated via `applyCoaPreset` and synced to `localStorage.vanguard_accounting_coa_preset_id`.
+  - Added Country Dropdown and auto-binding indicator to the "Provision New Client Form" (Add New Tenant modal).
+  - Enriched expandable table sub-row with an instant Jurisdiction and CoA template status strip.
+
+### C. Validation & Verification
+- `npx tsc --noEmit`: Exited with code 0 (0 errors).
+- `npm run build`: Compiled all 246 static and dynamic routes successfully with Turbopack (code 0).
+
+

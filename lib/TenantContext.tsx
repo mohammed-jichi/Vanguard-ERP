@@ -74,6 +74,10 @@ export interface TenantCompany {
   headquartersAddress?: string;
   city?: string;
   country?: string;
+  financialSeedTemplate?: 'lebanese_pca' | 'international_ifrs' | 'custom_blank' | string;
+  vatPercentage?: number;
+  taxIdLabel?: string;
+  crNumberLabel?: string;
   phoneNumber?: string;
   billingEmail?: string;
   baseCurrency?: 'USD' | 'LBP';
@@ -158,15 +162,7 @@ interface TenantContextType {
   updateTenantSettings: (settings: Partial<TenantCompany>) => Promise<{ success: boolean; error?: string }>;
   updateTenantModulesAndBranding: (
     tenantId: string,
-    updates: {
-      enabledModules?: string[];
-      brandNameAr?: string;
-      brandNameEn?: string;
-      name?: string;
-      logoUrl?: string;
-      primaryColor?: string;
-      themeColor?: string;
-    }
+    updates: Partial<TenantCompany> & { [key: string]: any }
   ) => Promise<{ success: boolean; error?: string }>;
   onboardNewTenant: (tenantData: Partial<TenantCompany>, adminEmail: string) => Promise<{ success: boolean; error?: string }>;
   refreshTenants: () => Promise<void>;
@@ -186,6 +182,11 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   themeColor: '#123b70',
   enabledModules: ALL_SYSTEM_MODULES,
   enabled_modules: ALL_SYSTEM_MODULES,
+  country: 'Lebanon',
+  financialSeedTemplate: 'lebanese_pca',
+  vatPercentage: 11,
+  taxIdLabel: 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)',
+  crNumberLabel: 'Commercial Registration (CR / السجل التجاري)',
   companyRegistrationNumber: 'CR-104928-LB',
   taxIdentificationNumber: 'MOF-7489201',
   subscriptionTier: 'ENTERPRISE',
@@ -522,6 +523,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           headquarters_address: updates.headquartersAddress ?? existingTenant.headquartersAddress ?? 'Industrial Boulevard, Plant Bldg 4',
           city: updates.city ?? existingTenant.city ?? 'Choueifat / Tyre',
           country: updates.country ?? existingTenant.country ?? 'Lebanon',
+          financial_seed_template: updates.financialSeedTemplate ?? existingTenant.financialSeedTemplate ?? ((updates.country || existingTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+          vat_percentage: updates.vatPercentage ?? existingTenant.vatPercentage ?? ((updates.country || existingTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+          tax_id_label: updates.taxIdLabel ?? existingTenant.taxIdLabel ?? ((updates.country || existingTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+          cr_label: updates.crNumberLabel ?? existingTenant.crNumberLabel ?? ((updates.country || existingTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
           phone_number: updates.phoneNumber ?? existingTenant.phoneNumber ?? '+961 7 740120',
           billing_email: updates.billingEmail ?? existingTenant.billingEmail ?? 'finance@client.com',
           base_currency: updates.baseCurrency ?? existingTenant.baseCurrency ?? 'USD',
@@ -577,6 +582,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               headquartersAddress: updates.headquartersAddress ?? c.headquartersAddress,
               city: updates.city ?? c.city,
               country: updates.country ?? c.country,
+              financialSeedTemplate: updates.financialSeedTemplate ?? c.financialSeedTemplate ?? ((updates.country || c.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+              vatPercentage: updates.vatPercentage ?? c.vatPercentage ?? ((updates.country || c.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+              taxIdLabel: updates.taxIdLabel ?? c.taxIdLabel,
+              crNumberLabel: updates.crNumberLabel ?? c.crNumberLabel,
               phoneNumber: updates.phoneNumber ?? c.phoneNumber,
               billingEmail: updates.billingEmail ?? c.billingEmail,
               baseCurrency: updates.baseCurrency ?? c.baseCurrency,
@@ -617,6 +626,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           headquartersAddress: updates.headquartersAddress ?? currentTenant.headquartersAddress,
           city: updates.city ?? currentTenant.city,
           country: updates.country ?? currentTenant.country,
+          financialSeedTemplate: updates.financialSeedTemplate ?? currentTenant.financialSeedTemplate ?? ((updates.country || currentTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+          vatPercentage: updates.vatPercentage ?? currentTenant.vatPercentage ?? ((updates.country || currentTenant.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+          taxIdLabel: updates.taxIdLabel ?? currentTenant.taxIdLabel,
+          crNumberLabel: updates.crNumberLabel ?? currentTenant.crNumberLabel,
           phoneNumber: updates.phoneNumber ?? currentTenant.phoneNumber,
           billingEmail: updates.billingEmail ?? currentTenant.billingEmail,
           baseCurrency: updates.baseCurrency ?? currentTenant.baseCurrency,
@@ -706,6 +719,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       headquartersAddress: tenantData.headquartersAddress || 'Industrial Boulevard, Plant Bldg 4',
       city: tenantData.city || 'Beirut',
       country: tenantData.country || 'Lebanon',
+      financialSeedTemplate: tenantData.financialSeedTemplate || ((tenantData.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+      vatPercentage: tenantData.vatPercentage ?? ((tenantData.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+      taxIdLabel: tenantData.taxIdLabel || ((tenantData.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+      crNumberLabel: tenantData.crNumberLabel || ((tenantData.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
       phoneNumber: tenantData.phoneNumber || '+961 1 800000',
       billingEmail: tenantData.billingEmail || adminEmail,
       baseCurrency: tenantData.baseCurrency || 'USD',
@@ -742,6 +759,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           headquarters_address: newCompany.headquartersAddress,
           city: newCompany.city,
           country: newCompany.country,
+          financial_seed_template: newCompany.financialSeedTemplate,
+          vat_percentage: newCompany.vatPercentage,
+          tax_id_label: newCompany.taxIdLabel,
+          cr_label: newCompany.crNumberLabel,
           phone_number: newCompany.phoneNumber,
           billing_email: newCompany.billingEmail,
           base_currency: newCompany.baseCurrency,
