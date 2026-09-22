@@ -20,6 +20,12 @@ import {
   isLebaneseFiscalStandard,
   CountryFiscalProfile
 } from '../lib/countryFiscalProfiles';
+import {
+  GLOBAL_ISO_CURRENCIES,
+  getCurrencyMeta,
+  searchCurrencies,
+  ISOCurrency
+} from '../lib/currencyRegistry';
 import { applyCoaPreset, setActiveCoaPresetId } from '../lib/accountingData';
 import {
   SystemActivity,
@@ -76,6 +82,7 @@ import {
   ChevronLeft,
   Search,
   LayoutGrid,
+  ArrowRightLeft,
   Table as TableIcon
 } from 'lucide-react';
 
@@ -105,6 +112,8 @@ const DEFAULT_ADMIN_TENANT: TenantCompany = {
   phoneNumber: '+961 70 882 110',
   billingEmail: 'accounts@southernolive.com',
   baseCurrency: 'USD',
+  secondaryCurrency: 'LBP',
+  isDualCurrencyEnabled: true,
   exchangeRatePolicy: 'PLATFORM_FIXED',
   maxBranches: 5,
   maxConcurrentUsers: 25,
@@ -415,7 +424,11 @@ export default function SuperAdminWorkspaceManager() {
   const [adminInitialPassword, setAdminInitialPassword] = useState<string>('Vanguard!2026');
   const [onboardTier, setOnboardTier] = useState<'STARTER' | 'PRO' | 'ENTERPRISE' | 'CUSTOM'>('ENTERPRISE');
   const [onboardMonthlyValue, setOnboardMonthlyValue] = useState<number>(3000);
-  const [onboardBaseCurrency, setOnboardBaseCurrency] = useState<'USD' | 'LBP'>('USD');
+  const [onboardBaseCurrency, setOnboardBaseCurrency] = useState<string>('USD');
+  const [onboardSecondaryCurrency, setOnboardSecondaryCurrency] = useState<string>('LBP');
+  const [onboardIsDualCurrency, setOnboardIsDualCurrency] = useState<boolean>(true);
+  const [onboardBaseCurrencyDropdownOpen, setOnboardBaseCurrencyDropdownOpen] = useState<boolean>(false);
+  const [onboardBaseCurrencyFilterText, setOnboardBaseCurrencyFilterText] = useState<string>('');
   const [onboardCrNumber, setOnboardCrNumber] = useState<string>('CR-104928-LB');
   const [onboardTaxId, setOnboardTaxId] = useState<string>('MOF-7489201');
   const [onboardCountry, setOnboardCountry] = useState<string>('Lebanon');
@@ -459,8 +472,39 @@ export default function SuperAdminWorkspaceManager() {
   const [countryFilterText, setCountryFilterText] = useState<string>('');
   const [editPhone, setEditPhone] = useState<string>('');
   const [editBillingEmail, setEditBillingEmail] = useState<string>('');
-  const [editBaseCurrency, setEditBaseCurrency] = useState<'USD' | 'LBP'>('USD');
+  const [editBaseCurrency, setEditBaseCurrency] = useState<string>('USD');
+  const [editSecondaryCurrency, setEditSecondaryCurrency] = useState<string>('LBP');
+  const [editIsDualCurrency, setEditIsDualCurrency] = useState<boolean>(true);
   const [editExchangeRatePolicy, setEditExchangeRatePolicy] = useState<'PLATFORM_FIXED' | 'TENANT_MANAGED'>('PLATFORM_FIXED');
+  const [baseCurrencyDropdownOpen, setBaseCurrencyDropdownOpen] = useState<boolean>(false);
+  const [baseCurrencyFilterText, setBaseCurrencyFilterText] = useState<string>('');
+  const [secondaryCurrencyDropdownOpen, setSecondaryCurrencyDropdownOpen] = useState<boolean>(false);
+  const [secondaryCurrencyFilterText, setSecondaryCurrencyFilterText] = useState<string>('');
+
+  // Currency Matrix & ISO Filter Memos
+  const currentBaseCurrencyMeta = useMemo(() => {
+    return getCurrencyMeta(editBaseCurrency);
+  }, [editBaseCurrency]);
+
+  const currentSecondaryCurrencyMeta = useMemo(() => {
+    return getCurrencyMeta(editSecondaryCurrency);
+  }, [editSecondaryCurrency]);
+
+  const filteredBaseCurrencies = useMemo(() => {
+    return searchCurrencies(baseCurrencyFilterText);
+  }, [baseCurrencyFilterText]);
+
+  const filteredSecondaryCurrencies = useMemo(() => {
+    return searchCurrencies(secondaryCurrencyFilterText);
+  }, [secondaryCurrencyFilterText]);
+
+  const currentOnboardBaseCurrencyMeta = useMemo(() => {
+    return getCurrencyMeta(onboardBaseCurrency);
+  }, [onboardBaseCurrency]);
+
+  const filteredOnboardBaseCurrencies = useMemo(() => {
+    return searchCurrencies(onboardBaseCurrencyFilterText);
+  }, [onboardBaseCurrencyFilterText]);
 
   // Computed Country Fiscal Profiles
   const currentCountryProfile = useMemo(() => {
@@ -500,6 +544,18 @@ export default function SuperAdminWorkspaceManager() {
     setEditCrNumberLabel(profile.crNumberLabel);
     setCountryDropdownOpen(false);
     setCountryFilterText('');
+
+    if (countryName.toLowerCase() === 'lebanon') {
+      setEditBaseCurrency('USD');
+      setEditSecondaryCurrency('LBP');
+      setEditIsDualCurrency(true);
+    } else {
+      if (profile.currency) {
+        setEditBaseCurrency(profile.currency);
+      }
+      setEditSecondaryCurrency('USD');
+      setEditIsDualCurrency(false);
+    }
   };
 
   const handleOnboardCountryChange = (countryName: string) => {
@@ -510,6 +566,18 @@ export default function SuperAdminWorkspaceManager() {
     setOnboardTaxId(profile.taxIdPlaceholder);
     setOnboardCountryDropdownOpen(false);
     setOnboardCountryFilterText('');
+
+    if (countryName.toLowerCase() === 'lebanon') {
+      setOnboardBaseCurrency('USD');
+      setOnboardSecondaryCurrency('LBP');
+      setOnboardIsDualCurrency(true);
+    } else {
+      if (profile.currency) {
+        setOnboardBaseCurrency(profile.currency);
+      }
+      setOnboardSecondaryCurrency('USD');
+      setOnboardIsDualCurrency(false);
+    }
   };
 
   // Tab 4: Operational Quotas & Lifecycle
@@ -651,8 +719,10 @@ export default function SuperAdminWorkspaceManager() {
             cr_label: corp.cr_label || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
             phone_number: corp.phoneNumber || t.phone_number || '+961 70 882 110',
             billing_email: corp.billingEmail || t.billing_email || 'billing@southernolive.com',
-            base_currency: corp.baseCurrency || t.base_currency || 'USD',
-            exchange_rate_policy: corp.exchangeRatePolicy || t.exchange_rate_policy || 'PLATFORM_FIXED',
+            base_currency: corp.baseCurrency || corp.base_currency || t.base_currency || 'USD',
+            secondary_currency: corp.secondaryCurrency || corp.secondary_currency || t.secondary_currency || 'LBP',
+            is_dual_currency_enabled: corp.isDualCurrencyEnabled ?? corp.is_dual_currency_enabled ?? t.is_dual_currency_enabled ?? ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon'),
+            exchange_rate_policy: corp.exchangeRatePolicy || corp.exchange_rate_policy || t.exchange_rate_policy || 'PLATFORM_FIXED',
             max_branches: quotas.maxBranches ?? (t.max_branches ?? 5),
             max_concurrent_users: quotas.maxConcurrentUsers ?? (t.max_concurrent_users ?? 25),
             max_pos_terminals: quotas.maxPosTerminals ?? (t.max_pos_terminals ?? 10),
@@ -806,8 +876,10 @@ export default function SuperAdminWorkspaceManager() {
         crNumberLabel: t?.cr_label || ((t?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
         phoneNumber: t?.phone_number || '+961 70 882 110',
         billingEmail: t?.billing_email || 'accounts@southernolive.com',
-        baseCurrency: t?.base_currency || 'USD',
-        exchangeRatePolicy: t?.exchange_rate_policy || 'PLATFORM_FIXED',
+        baseCurrency: t?.base_currency || t?.baseCurrency || 'USD',
+        secondaryCurrency: t?.secondary_currency || t?.secondaryCurrency || 'LBP',
+        isDualCurrencyEnabled: t?.is_dual_currency_enabled ?? t?.isDualCurrencyEnabled ?? ((t?.country || 'Lebanon').toLowerCase() === 'lebanon'),
+        exchangeRatePolicy: t?.exchange_rate_policy || t?.exchangeRatePolicy || 'PLATFORM_FIXED',
         maxBranches: t?.max_branches ?? 5,
         maxConcurrentUsers: t?.max_concurrent_users ?? 25,
         maxPosTerminals: t?.max_pos_terminals ?? 10,
@@ -901,8 +973,19 @@ export default function SuperAdminWorkspaceManager() {
     setCountryFilterText('');
     setEditPhone(t.phone_number || '+961 70 882 110');
     setEditBillingEmail(t.billing_email || 'accounts@southernolive.com');
-    setEditBaseCurrency(t.base_currency || 'USD');
-    setEditExchangeRatePolicy(t.exchange_rate_policy || 'PLATFORM_FIXED');
+    setEditBaseCurrency(t.base_currency || t.baseCurrency || 'USD');
+    setEditSecondaryCurrency(t.secondary_currency || t.secondaryCurrency || 'LBP');
+    const isDual = t.is_dual_currency_enabled !== undefined
+      ? Boolean(t.is_dual_currency_enabled)
+      : (t.isDualCurrencyEnabled !== undefined
+          ? Boolean(t.isDualCurrencyEnabled)
+          : ((t.country || 'Lebanon').toLowerCase() === 'lebanon'));
+    setEditIsDualCurrency(isDual);
+    setEditExchangeRatePolicy(t.exchange_rate_policy || t.exchangeRatePolicy || 'PLATFORM_FIXED');
+    setBaseCurrencyDropdownOpen(false);
+    setBaseCurrencyFilterText('');
+    setSecondaryCurrencyDropdownOpen(false);
+    setSecondaryCurrencyFilterText('');
 
     // Quotas & Lifecycle
     setEditMaxBranches(t.max_branches ?? 5);
@@ -1018,7 +1101,13 @@ export default function SuperAdminWorkspaceManager() {
         phoneNumber: editPhone.trim(),
         billingEmail: editBillingEmail.trim(),
         baseCurrency: editBaseCurrency,
-        exchangeRatePolicy: editExchangeRatePolicy
+        base_currency: editBaseCurrency,
+        secondaryCurrency: editIsDualCurrency ? editSecondaryCurrency : '',
+        secondary_currency: editIsDualCurrency ? editSecondaryCurrency : '',
+        isDualCurrencyEnabled: editIsDualCurrency,
+        is_dual_currency_enabled: editIsDualCurrency,
+        exchangeRatePolicy: editExchangeRatePolicy,
+        exchange_rate_policy: editExchangeRatePolicy
       };
 
       const quotas = {
@@ -1065,6 +1154,8 @@ export default function SuperAdminWorkspaceManager() {
         phoneNumber: editPhone.trim(),
         billingEmail: editBillingEmail.trim(),
         baseCurrency: editBaseCurrency,
+        secondaryCurrency: editIsDualCurrency ? editSecondaryCurrency : '',
+        isDualCurrencyEnabled: editIsDualCurrency,
         exchangeRatePolicy: editExchangeRatePolicy,
         maxBranches: Number(editMaxBranches),
         maxConcurrentUsers: Number(editMaxUsers),
@@ -1156,6 +1247,8 @@ export default function SuperAdminWorkspaceManager() {
           companyRegistrationNumber: onboardCrNumber.trim(),
           taxIdentificationNumber: onboardTaxId.trim(),
           baseCurrency: onboardBaseCurrency,
+          secondaryCurrency: onboardIsDualCurrency ? onboardSecondaryCurrency : '',
+          isDualCurrencyEnabled: onboardIsDualCurrency,
           contractMonthlyValue: onboardMonthlyValue,
           adminName: adminName.trim(),
           adminEmail: adminEmail.trim(),
@@ -1220,8 +1313,10 @@ export default function SuperAdminWorkspaceManager() {
             crNumberLabel: t.cr_label || ((t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
             phoneNumber: t.phone_number,
             billingEmail: t.billing_email,
-            baseCurrency: t.base_currency,
-            exchangeRatePolicy: t.exchange_rate_policy
+            baseCurrency: t.base_currency || t.baseCurrency,
+            secondaryCurrency: t.secondary_currency || t.secondaryCurrency,
+            isDualCurrencyEnabled: t.is_dual_currency_enabled ?? t.isDualCurrencyEnabled,
+            exchangeRatePolicy: t.exchange_rate_policy || t.exchangeRatePolicy
           },
           quotas: {
             maxBranches: t.max_branches,
@@ -1805,6 +1900,17 @@ export default function SuperAdminWorkspaceManager() {
                                     <span className="text-slate-300">•</span>
                                     <span className="text-slate-600 text-[11px] font-medium">
                                       Tax Rate: <strong className="text-emerald-700">{t.vat_percentage ? `${t.vat_percentage}%` : (t.country === 'Lebanon' || !t.country ? '11% VAT' : '15%')}</strong>
+                                    </span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-slate-600 text-[11px] font-medium flex items-center gap-1">
+                                      <DollarSign className="w-3 h-3 text-amber-600" />
+                                      <span>Currency:</span>
+                                      <strong className="text-slate-900 font-bold">{t.base_currency || t.baseCurrency || 'USD'}</strong>
+                                      {(t.is_dual_currency_enabled ?? t.isDualCurrencyEnabled ?? (t.country === 'Lebanon')) && (
+                                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.2 rounded border border-emerald-300">
+                                          Dual: {t.secondary_currency || t.secondaryCurrency || 'LBP'}
+                                        </span>
+                                      )}
                                     </span>
                                   </div>
 
@@ -2847,29 +2953,378 @@ export default function SuperAdminWorkspaceManager() {
                       />
                     </div>
 
-                    {/* Fiscal Currency & Exchange Rate Policy */}
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Base Currency</label>
-                      <select
-                        value={editBaseCurrency}
-                        onChange={(e: any) => setEditBaseCurrency(e.target.value)}
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
-                      >
-                        <option value="USD">USD ($) - Primary United States Dollar</option>
-                        <option value="LBP">LBP (ل.ل) - Lebanese Pound</option>
-                      </select>
-                    </div>
+                    {/* ENHANCED CURRENCY CONFIGURATION & MULTI-CURRENCY ENGINE */}
+                    <div className="md:col-span-2 p-4 bg-gradient-to-br from-slate-50 via-white to-amber-50/20 border-2 border-slate-200 hover:border-amber-300 rounded-2xl space-y-4 shadow-xs transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-700 shrink-0">
+                            <DollarSign className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h5 className="font-black text-xs text-slate-900 flex items-center gap-2">
+                              <span>Currency Matrix & Multi-Currency Engine</span>
+                              <span className="text-[10px] bg-slate-100 text-slate-700 font-extrabold px-2 py-0.5 rounded-full border border-slate-200">
+                                ISO 4217 Standard
+                              </span>
+                            </h5>
+                            <p className="text-[11px] text-slate-500">
+                              Define functional book-keeping currency and optional secondary parallel valuation ledger.
+                            </p>
+                          </div>
+                        </div>
 
-                    <div>
-                      <label className="block text-slate-700 font-bold mb-1">Exchange Rate Policy</label>
-                      <select
-                        value={editExchangeRatePolicy}
-                        onChange={(e: any) => setEditExchangeRatePolicy(e.target.value)}
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
-                      >
-                        <option value="PLATFORM_FIXED">Platform Fixed (Central Treasury Sync 89,500 LBP/USD)</option>
-                        <option value="TENANT_MANAGED">Tenant Managed (Independent Daily Rates)</option>
-                      </select>
+                        <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                          <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-xl border flex items-center gap-1.5 ${
+                            editIsDualCurrency
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : 'bg-slate-100 text-slate-600 border-slate-200'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${editIsDualCurrency ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                            {editIsDualCurrency ? 'Dual-Currency Active' : 'Single-Currency Mode'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 1. Global Base Currency Dropdown (ISO 4217) */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="text-slate-800 font-extrabold text-xs flex items-center gap-1.5">
+                            <span>Base Functional Currency</span>
+                            <span className="text-[10px] text-amber-700 bg-amber-100/80 px-1.5 py-0.2 rounded font-mono font-bold">
+                              PRIMARY
+                            </span>
+                          </label>
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            Operating Standard: ISO 4217
+                          </span>
+                        </div>
+
+                        {/* Searchable Dropdown Trigger */}
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setBaseCurrencyDropdownOpen(prev => !prev);
+                              setSecondaryCurrencyDropdownOpen(false);
+                            }}
+                            className="w-full bg-white border border-slate-300 rounded-xl p-2.5 flex items-center justify-between hover:border-amber-500 focus:border-amber-500 focus:outline-none transition-colors cursor-pointer shadow-xs text-xs"
+                          >
+                            <div className="flex items-center gap-2.5 truncate">
+                              <span className="text-xl shrink-0">{currentBaseCurrencyMeta.flag || '🌐'}</span>
+                              <div className="text-left truncate">
+                                <span className="font-extrabold text-slate-900">{currentBaseCurrencyMeta.code}</span>
+                                <span className="font-mono text-slate-500 font-bold ml-1.5 text-xs">({currentBaseCurrencyMeta.symbol})</span>
+                                <span className="text-slate-400 ml-2 text-xs truncate">— {currentBaseCurrencyMeta.name}</span>
+                              </div>
+                            </div>
+                            <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${baseCurrencyDropdownOpen ? 'rotate-180 text-amber-600' : ''}`} />
+                          </button>
+
+                          {/* Backdrop click-to-close */}
+                          {baseCurrencyDropdownOpen && (
+                            <div
+                              className="fixed inset-0 z-40"
+                              onClick={() => setBaseCurrencyDropdownOpen(false)}
+                            />
+                          )}
+
+                          {/* Searchable Popover Menu */}
+                          {baseCurrencyDropdownOpen && (
+                            <div className="absolute z-50 mt-1.5 w-full bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                              <div className="p-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                                <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                                <input
+                                  type="text"
+                                  autoFocus
+                                  value={baseCurrencyFilterText}
+                                  onChange={(e) => setBaseCurrencyFilterText(e.target.value)}
+                                  placeholder="Search currency code or name (USD, EUR, SAR, LBP, TRY, CAD...)"
+                                  className="w-full bg-transparent text-xs text-slate-900 font-semibold focus:outline-none placeholder:text-slate-400"
+                                />
+                                {baseCurrencyFilterText && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setBaseCurrencyFilterText('')}
+                                    className="text-slate-400 hover:text-slate-600 p-0.5"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="max-h-56 overflow-y-auto divide-y divide-slate-100 p-1">
+                                {filteredBaseCurrencies.length === 0 ? (
+                                  <div className="p-4 text-center text-xs text-slate-400">
+                                    No currency matching &ldquo;{baseCurrencyFilterText}&rdquo;
+                                  </div>
+                                ) : (
+                                  filteredBaseCurrencies.map((curr) => {
+                                    const isSelected = editBaseCurrency.toUpperCase() === curr.code.toUpperCase();
+                                    return (
+                                      <button
+                                        key={curr.code}
+                                        type="button"
+                                        onClick={() => {
+                                          setEditBaseCurrency(curr.code);
+                                          setBaseCurrencyDropdownOpen(false);
+                                          setBaseCurrencyFilterText('');
+                                        }}
+                                        className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-amber-50 text-slate-950 font-bold border border-amber-300'
+                                            : 'hover:bg-slate-100 text-slate-700'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2.5 truncate">
+                                          <span className="text-xl shrink-0">{curr.flag || '🌐'}</span>
+                                          <div>
+                                            <div className="font-bold flex items-center gap-1.5">
+                                              <span>{curr.code}</span>
+                                              <span className="text-slate-500 font-normal">({curr.symbol})</span>
+                                              {curr.popular && (
+                                                <span className="text-[9px] bg-slate-100 text-slate-600 font-extrabold px-1.5 py-0.2 rounded border border-slate-200">
+                                                  POPULAR
+                                                </span>
+                                              )}
+                                            </div>
+                                            <span className="text-[10px] text-slate-500 block truncate">
+                                              {curr.name} {curr.nativeName ? `• ${curr.nativeName}` : ''}
+                                            </span>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                                          <span className="font-mono font-bold text-[11px] text-slate-600">
+                                            {curr.symbol}
+                                          </span>
+                                          {isSelected && <Check className="w-4 h-4 text-amber-600 stroke-[3]" />}
+                                        </div>
+                                      </button>
+                                    );
+                                  })
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 2. Flexible Multi-Currency Engine Switch */}
+                      <div className="p-3.5 bg-white border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${
+                            editIsDualCurrency
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700'
+                              : 'bg-slate-100 border-slate-200 text-slate-400'
+                          }`}>
+                            <ArrowRightLeft className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-xs text-slate-900">
+                                Enable Secondary Currency (Dual-Currency Mode)
+                              </span>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                editIsDualCurrency
+                                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}>
+                                {editIsDualCurrency ? 'Dual-Currency Active' : 'Single-Currency (Default)'}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500">
+                              {editIsDualCurrency
+                                ? 'Enables parallel dual-ledger accounting, daily FX valuation, and automated currency conversions.'
+                                : 'Single-currency ledger mode. All accounts and transactions operate strictly in the primary base currency.'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Interactive Toggle Pill */}
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={editIsDualCurrency}
+                          onClick={() => setEditIsDualCurrency(prev => !prev)}
+                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
+                            editIsDualCurrency ? 'bg-emerald-600' : 'bg-slate-300'
+                          }`}
+                        >
+                          <span
+                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                              editIsDualCurrency ? 'translate-x-5' : 'translate-x-0'
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {/* 3. Conditional Secondary Currency & Exchange Rate Policy Panel */}
+                      {editIsDualCurrency ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 p-3.5 bg-emerald-50/40 border border-emerald-200 rounded-xl animate-in fade-in duration-150">
+                          {/* Secondary Currency (Searchable ISO Dropdown) */}
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <label className="text-slate-800 font-extrabold text-xs flex items-center gap-1.5">
+                                <span>Secondary Currency</span>
+                                <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded font-mono font-bold border border-emerald-200">
+                                  PARALLEL
+                                </span>
+                              </label>
+                              <span className="text-[10px] text-slate-400 font-medium">
+                                ISO 4217
+                              </span>
+                            </div>
+
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSecondaryCurrencyDropdownOpen(prev => !prev);
+                                  setBaseCurrencyDropdownOpen(false);
+                                }}
+                                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 flex items-center justify-between hover:border-emerald-500 focus:border-emerald-500 focus:outline-none transition-colors cursor-pointer shadow-xs text-xs"
+                              >
+                                <div className="flex items-center gap-2.5 truncate">
+                                  <span className="text-xl shrink-0">{currentSecondaryCurrencyMeta.flag || '🌐'}</span>
+                                  <div className="text-left truncate">
+                                    <span className="font-extrabold text-slate-900">{currentSecondaryCurrencyMeta.code}</span>
+                                    <span className="font-mono text-slate-500 font-bold ml-1.5 text-xs">({currentSecondaryCurrencyMeta.symbol})</span>
+                                    <span className="text-slate-400 ml-2 text-xs truncate">— {currentSecondaryCurrencyMeta.name}</span>
+                                  </div>
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${secondaryCurrencyDropdownOpen ? 'rotate-180 text-emerald-600' : ''}`} />
+                              </button>
+
+                              {/* Backdrop click-to-close */}
+                              {secondaryCurrencyDropdownOpen && (
+                                <div
+                                  className="fixed inset-0 z-40"
+                                  onClick={() => setSecondaryCurrencyDropdownOpen(false)}
+                                />
+                              )}
+
+                              {/* Secondary Currency Popover */}
+                              {secondaryCurrencyDropdownOpen && (
+                                <div className="absolute z-50 mt-1.5 w-full bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                                  <div className="p-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                                    <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                                    <input
+                                      type="text"
+                                      autoFocus
+                                      value={secondaryCurrencyFilterText}
+                                      onChange={(e) => setSecondaryCurrencyFilterText(e.target.value)}
+                                      placeholder="Search secondary currency (LBP, USD, EUR, SAR...)"
+                                      className="w-full bg-transparent text-xs text-slate-900 font-semibold focus:outline-none placeholder:text-slate-400"
+                                    />
+                                    {secondaryCurrencyFilterText && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setSecondaryCurrencyFilterText('')}
+                                        className="text-slate-400 hover:text-slate-600 p-0.5"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div className="max-h-56 overflow-y-auto divide-y divide-slate-100 p-1">
+                                    {filteredSecondaryCurrencies.length === 0 ? (
+                                      <div className="p-4 text-center text-xs text-slate-400">
+                                        No currency matching &ldquo;{secondaryCurrencyFilterText}&rdquo;
+                                      </div>
+                                    ) : (
+                                      filteredSecondaryCurrencies.map((curr) => {
+                                        const isSelected = editSecondaryCurrency.toUpperCase() === curr.code.toUpperCase();
+                                        return (
+                                          <button
+                                            key={curr.code}
+                                            type="button"
+                                            onClick={() => {
+                                              setEditSecondaryCurrency(curr.code);
+                                              setSecondaryCurrencyDropdownOpen(false);
+                                              setSecondaryCurrencyFilterText('');
+                                            }}
+                                            className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                                              isSelected
+                                                ? 'bg-emerald-50 text-slate-950 font-bold border border-emerald-300'
+                                                : 'hover:bg-slate-100 text-slate-700'
+                                            }`}
+                                          >
+                                            <div className="flex items-center gap-2.5 truncate">
+                                              <span className="text-xl shrink-0">{curr.flag || '🌐'}</span>
+                                              <div>
+                                                <div className="font-bold flex items-center gap-1.5">
+                                                  <span>{curr.code}</span>
+                                                  <span className="text-slate-500 font-normal">({curr.symbol})</span>
+                                                  {curr.popular && (
+                                                    <span className="text-[9px] bg-slate-100 text-slate-600 font-extrabold px-1.5 py-0.2 rounded border border-slate-200">
+                                                      POPULAR
+                                                    </span>
+                                                  )}
+                                                </div>
+                                                <span className="text-[10px] text-slate-500 block truncate">
+                                                  {curr.name} {curr.nativeName ? `• ${curr.nativeName}` : ''}
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                                              <span className="font-mono font-bold text-[11px] text-slate-600">
+                                                {curr.symbol}
+                                              </span>
+                                              {isSelected && <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />}
+                                            </div>
+                                          </button>
+                                        );
+                                      })
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Exchange Rate Policy */}
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <label className="text-slate-800 font-extrabold text-xs flex items-center gap-1.5">
+                                <span>Exchange Rate Policy</span>
+                                <span className="text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded font-mono font-bold border border-slate-200">
+                                  FX ENGINE
+                                </span>
+                              </label>
+                              <span className="text-[10px] text-slate-400 font-medium">
+                                Conversion Rules
+                              </span>
+                            </div>
+
+                            <select
+                              value={editExchangeRatePolicy}
+                              onChange={(e: any) => setEditExchangeRatePolicy(e.target.value)}
+                              className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs text-xs"
+                            >
+                              <option value="PLATFORM_FIXED">Platform Fixed (Central Treasury Sync 89,500 LBP/USD)</option>
+                              <option value="TENANT_MANAGED">Tenant Managed (Independent Daily Rates)</option>
+                            </select>
+
+                            <p className="text-[10px] text-slate-500">
+                              {editExchangeRatePolicy === 'PLATFORM_FIXED'
+                                ? '• Synchronized with Vanguard central treasury rate across all branches.'
+                                : '• Tenant managers maintain daily currency exchange rates in Treasury.'}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-slate-100/70 border border-slate-200 rounded-xl flex items-center justify-between text-xs text-slate-500">
+                          <span className="flex items-center gap-2">
+                            <Lock className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Secondary currency & exchange rate policy fields are deactivated in single-currency mode.</span>
+                          </span>
+                          <span className="text-[10px] font-mono bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded">
+                            LOCKED TO {editBaseCurrency}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -3392,6 +3847,113 @@ export default function SuperAdminWorkspaceManager() {
                   placeholder={onboardCountryProfile.taxIdPlaceholder}
                   className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
                 />
+              </div>
+
+              {/* Base Currency & Dual-Currency Configuration for Onboarding */}
+              <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-black text-slate-800">Currency & Valuation Architecture</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOnboardIsDualCurrency(prev => !prev)}
+                    className="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer"
+                  >
+                    <span>Dual-Currency:</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                      onboardIsDualCurrency ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {onboardIsDualCurrency ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Searchable Base Currency */}
+                  <div className="relative">
+                    <label className="block text-slate-700 font-bold text-xs mb-1">Base Currency (ISO 4217)</label>
+                    <button
+                      type="button"
+                      onClick={() => setOnboardBaseCurrencyDropdownOpen(prev => !prev)}
+                      className="w-full bg-white border border-slate-300 rounded-xl p-2.5 flex items-center justify-between hover:border-amber-500 focus:border-amber-500 focus:outline-none transition-colors cursor-pointer shadow-xs text-xs"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="text-lg shrink-0">{currentOnboardBaseCurrencyMeta.flag || '🌐'}</span>
+                        <span className="font-extrabold text-slate-900">{currentOnboardBaseCurrencyMeta.code}</span>
+                        <span className="text-slate-500 truncate">({currentOnboardBaseCurrencyMeta.symbol}) - {currentOnboardBaseCurrencyMeta.name}</span>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                    </button>
+
+                    {onboardBaseCurrencyDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setOnboardBaseCurrencyDropdownOpen(false)}
+                      />
+                    )}
+
+                    {onboardBaseCurrencyDropdownOpen && (
+                      <div className="absolute z-50 mt-1.5 w-full bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                        <div className="p-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                          <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                          <input
+                            type="text"
+                            autoFocus
+                            value={onboardBaseCurrencyFilterText}
+                            onChange={(e) => setOnboardBaseCurrencyFilterText(e.target.value)}
+                            placeholder="Search currency (USD, EUR, SAR...)"
+                            className="w-full bg-transparent text-xs text-slate-900 font-semibold focus:outline-none"
+                          />
+                        </div>
+                        <div className="max-h-48 overflow-y-auto divide-y divide-slate-100 p-1">
+                          {filteredOnboardBaseCurrencies.map(curr => (
+                            <button
+                              key={curr.code}
+                              type="button"
+                              onClick={() => {
+                                setOnboardBaseCurrency(curr.code);
+                                setOnboardBaseCurrencyDropdownOpen(false);
+                                setOnboardBaseCurrencyFilterText('');
+                              }}
+                              className="w-full p-2 rounded-lg text-left flex items-center justify-between text-xs hover:bg-slate-100"
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                <span>{curr.flag || '🌐'}</span>
+                                <span className="font-bold">{curr.code}</span>
+                                <span className="text-slate-400 truncate">({curr.symbol}) {curr.name}</span>
+                              </div>
+                              {onboardBaseCurrency === curr.code && <Check className="w-3.5 h-3.5 text-amber-600" />}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Secondary Currency (if enabled) */}
+                  {onboardIsDualCurrency ? (
+                    <div>
+                      <label className="block text-slate-700 font-bold text-xs mb-1">Secondary Currency</label>
+                      <select
+                        value={onboardSecondaryCurrency}
+                        onChange={(e) => setOnboardSecondaryCurrency(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs text-xs"
+                      >
+                        {GLOBAL_ISO_CURRENCIES.map(c => (
+                          <option key={c.code} value={c.code}>
+                            {c.flag} {c.code} ({c.symbol}) - {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="p-2.5 bg-slate-100 rounded-xl flex items-center justify-center text-xs text-slate-500">
+                      <span>Single-currency mode active</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>

@@ -80,7 +80,9 @@ export interface TenantCompany {
   crNumberLabel?: string;
   phoneNumber?: string;
   billingEmail?: string;
-  baseCurrency?: 'USD' | 'LBP';
+  baseCurrency?: string;
+  secondaryCurrency?: string;
+  isDualCurrencyEnabled?: boolean;
   exchangeRatePolicy?: 'PLATFORM_FIXED' | 'TENANT_MANAGED';
   // Operational Quotas
   maxBranches?: number | string;
@@ -189,6 +191,10 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   crNumberLabel: 'Commercial Registration (CR / السجل التجاري)',
   companyRegistrationNumber: 'CR-104928-LB',
   taxIdentificationNumber: 'MOF-7489201',
+  baseCurrency: 'USD',
+  secondaryCurrency: 'LBP',
+  isDualCurrencyEnabled: true,
+  exchangeRatePolicy: 'PLATFORM_FIXED',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
@@ -250,6 +256,23 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
                 ? t.feature_flags.enabled_modules
                 : ALL_SYSTEM_MODULES),
+          legalEntityName: t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
+          officialLegalEntityName: t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
+          companyRegistrationNumber: t.feature_flags?.corporate_profile?.cr_number || t.company_registration_number,
+          taxIdentificationNumber: t.feature_flags?.corporate_profile?.tax_id || t.tax_identification_number,
+          headquartersAddress: t.feature_flags?.corporate_profile?.headquarters_address,
+          city: t.feature_flags?.corporate_profile?.city,
+          country: t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon',
+          financialSeedTemplate: t.feature_flags?.corporate_profile?.financial_seed_template || t.financial_seed_template || ((t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+          vatPercentage: t.feature_flags?.corporate_profile?.vat_percentage ?? (t.vat_percentage ?? 11),
+          taxIdLabel: t.feature_flags?.corporate_profile?.tax_id_label || t.tax_id_label,
+          crNumberLabel: t.feature_flags?.corporate_profile?.cr_label || t.cr_number_label,
+          phoneNumber: t.feature_flags?.corporate_profile?.phone_number || t.phone_number,
+          billingEmail: t.feature_flags?.corporate_profile?.billing_email || t.billing_email,
+          baseCurrency: t.feature_flags?.corporate_profile?.base_currency || t.base_currency || 'USD',
+          secondaryCurrency: t.feature_flags?.corporate_profile?.secondary_currency || t.secondary_currency || 'LBP',
+          isDualCurrencyEnabled: t.feature_flags?.corporate_profile?.is_dual_currency_enabled ?? t.is_dual_currency_enabled ?? ((t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon').toLowerCase() === 'lebanon'),
+          exchangeRatePolicy: t.feature_flags?.corporate_profile?.exchange_rate_policy || t.exchange_rate_policy || 'PLATFORM_FIXED',
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,
@@ -530,6 +553,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           phone_number: updates.phoneNumber ?? existingTenant.phoneNumber ?? '+961 7 740120',
           billing_email: updates.billingEmail ?? existingTenant.billingEmail ?? 'finance@client.com',
           base_currency: updates.baseCurrency ?? existingTenant.baseCurrency ?? 'USD',
+          secondary_currency: updates.isDualCurrencyEnabled !== false ? (updates.secondaryCurrency ?? existingTenant.secondaryCurrency ?? 'LBP') : '',
+          is_dual_currency_enabled: updates.isDualCurrencyEnabled ?? existingTenant.isDualCurrencyEnabled ?? ((updates.country || existingTenant.country || 'Lebanon').toLowerCase() === 'lebanon'),
           exchange_rate_policy: updates.exchangeRatePolicy ?? existingTenant.exchangeRatePolicy ?? 'PLATFORM_FIXED'
         },
         quotas: {
@@ -589,6 +614,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               phoneNumber: updates.phoneNumber ?? c.phoneNumber,
               billingEmail: updates.billingEmail ?? c.billingEmail,
               baseCurrency: updates.baseCurrency ?? c.baseCurrency,
+              secondaryCurrency: updates.isDualCurrencyEnabled !== false ? (updates.secondaryCurrency ?? c.secondaryCurrency) : '',
+              isDualCurrencyEnabled: updates.isDualCurrencyEnabled ?? c.isDualCurrencyEnabled,
               exchangeRatePolicy: updates.exchangeRatePolicy ?? c.exchangeRatePolicy,
               maxBranches: updates.maxBranches ?? c.maxBranches,
               maxConcurrentUsers: updates.maxConcurrentUsers ?? c.maxConcurrentUsers,
@@ -633,6 +660,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           phoneNumber: updates.phoneNumber ?? currentTenant.phoneNumber,
           billingEmail: updates.billingEmail ?? currentTenant.billingEmail,
           baseCurrency: updates.baseCurrency ?? currentTenant.baseCurrency,
+          secondaryCurrency: updates.isDualCurrencyEnabled !== false ? (updates.secondaryCurrency ?? currentTenant.secondaryCurrency) : '',
+          isDualCurrencyEnabled: updates.isDualCurrencyEnabled ?? currentTenant.isDualCurrencyEnabled,
           exchangeRatePolicy: updates.exchangeRatePolicy ?? currentTenant.exchangeRatePolicy,
           maxBranches: updates.maxBranches ?? currentTenant.maxBranches,
           maxConcurrentUsers: updates.maxConcurrentUsers ?? currentTenant.maxConcurrentUsers,
@@ -726,6 +755,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       phoneNumber: tenantData.phoneNumber || '+961 1 800000',
       billingEmail: tenantData.billingEmail || adminEmail,
       baseCurrency: tenantData.baseCurrency || 'USD',
+      secondaryCurrency: tenantData.isDualCurrencyEnabled ? (tenantData.secondaryCurrency || 'LBP') : '',
+      isDualCurrencyEnabled: tenantData.isDualCurrencyEnabled ?? ((tenantData.country || 'Lebanon').toLowerCase() === 'lebanon'),
       exchangeRatePolicy: tenantData.exchangeRatePolicy || 'PLATFORM_FIXED',
       maxBranches: tenantData.maxBranches || 5,
       maxConcurrentUsers: tenantData.maxConcurrentUsers || 25,
@@ -766,6 +797,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           phone_number: newCompany.phoneNumber,
           billing_email: newCompany.billingEmail,
           base_currency: newCompany.baseCurrency,
+          secondary_currency: newCompany.secondaryCurrency,
+          is_dual_currency_enabled: newCompany.isDualCurrencyEnabled,
           exchange_rate_policy: newCompany.exchangeRatePolicy
         },
         quotas: {
