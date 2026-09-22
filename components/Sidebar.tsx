@@ -85,6 +85,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
+import { isModuleLicensed } from '@/lib/license';
 import TenantSettingsModal from './TenantSettingsModal';
 
 interface SidebarProps {
@@ -206,38 +207,9 @@ export default function Sidebar({
   };
 
   // Helper to check if a specific system module is enabled for the active tenant
+  // Enforces unconditional enterprise entitlement for Company #1300
   const isModuleEnabled = (moduleKey: string): boolean => {
-    const modules = currentTenant.enabledModules || (currentTenant as any).enabled_modules;
-    // Default to true if not configured yet (full system access)
-    if (!modules || !Array.isArray(modules) || modules.length === 0) {
-      return true;
-    }
-    const lowerKey = moduleKey.toLowerCase();
-
-    // Comprehensive alias matching
-    const aliases: Record<string, string[]> = {
-      sales: ['sales', 'pos', 'sales_control', 'sales-control'],
-      pos: ['sales', 'pos', 'sales_control', 'sales-control'],
-      operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-      op: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-      inventory: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-      customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
-      cust: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
-      feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys'],
-      loyalty: ['loyalty', 'loyalty_management', 'loyalty-management', 'rewards'],
-      accounting: ['accounting', 'acc', 'finance', 'financials'],
-      acc: ['accounting', 'acc', 'finance', 'financials'],
-      hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
-      fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-      supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel'],
-      'pressing-mill': ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
-      pressing: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
-      module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill']
-    };
-
-    const targetList = aliases[lowerKey] || [lowerKey];
-    return modules.some((m: string) => targetList.includes(m.toLowerCase()));
+    return isModuleLicensed(currentTenant, moduleKey);
   };
 
   return (
@@ -404,13 +376,6 @@ export default function Sidebar({
                     <Link href="/backoffice/operations?section=lost_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Lost Goods</Link>
                     <Link href="/backoffice/operations?section=item_assembly" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Item Assembly</Link>
                     <Link href="/backoffice/operations?section=adjustments" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Adjustments</Link>
-                    <Link href="/pressing-mill" className="flex items-center justify-between p-1 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-800">
-                      <span className="flex items-center gap-1.5">
-                        <Scale className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        {t('pressing_mill', 'Pressing Mill')}
-                      </span>
-                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full">New</span>
-                    </Link>
 
                     {/* Product Request */}
                     <div className="pt-0.5">
@@ -1211,9 +1176,8 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 10: PRESSING MILL (DEDICATED STANDALONE MODULE)
+            MODULE 10: PRESSING MILL (PERMANENT ROOT-LEVEL PRIMARY MODULE)
             =================================================================== */}
-        {isModuleEnabled('MODULE_PRESSING_MILL') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('pressing-mill'); }}
@@ -1339,7 +1303,6 @@ export default function Sidebar({
             </div>
           )}
         </div>
-        )}
 
         {/* PROFILE & ADMIN FOOTER BUTTONS */}
         <div className="pt-2 border-t border-gray-200 space-y-1">

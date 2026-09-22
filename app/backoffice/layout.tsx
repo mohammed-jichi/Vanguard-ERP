@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { TenantProvider, useTenant } from '@/lib/TenantContext';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
+import { isModuleLicensed } from '@/lib/license';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -180,6 +181,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     if (path.startsWith('/backoffice/hr')) return 'hr';
     if (path.startsWith('/backoffice/fleet') || path.startsWith('/vtrack')) return 'fleet';
     if (path.startsWith('/backoffice/social-crm')) return 'social';
+    if (path.startsWith('/pressing-mill') || path.startsWith('/pressing')) return 'pressing';
     if (
       path.startsWith('/backoffice/online-orders') ||
       path.startsWith('/backoffice/end-of-day') ||
@@ -204,26 +206,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
 
   const currentModuleKey = getRouteModuleKey(pathname);
 
-  // Check if current module is enabled for currentTenant
+  // Check if current module is enabled for currentTenant (unconditionally true for Company #1300)
   const isCurrentModuleEnabled = (): boolean => {
     if (!currentModuleKey) return true;
-    const modules = currentTenant?.enabledModules || (currentTenant as any)?.enabled_modules;
-    if (!modules || !Array.isArray(modules) || modules.length === 0) return true;
-
-    const aliases: Record<string, string[]> = {
-      sales: ['sales', 'pos', 'sales_control', 'sales-control'],
-      operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-      customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
-      feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys'],
-      loyalty: ['loyalty', 'loyalty_management', 'loyalty-management', 'rewards'],
-      accounting: ['accounting', 'acc', 'finance', 'financials'],
-      hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
-      fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel']
-    };
-
-    const targetList = aliases[currentModuleKey] || [currentModuleKey];
-    return modules.some((m: string) => targetList.includes(m.toLowerCase()));
+    return isModuleLicensed(currentTenant, currentModuleKey);
   };
 
   const moduleNamesMap: Record<string, { ar: string; en: string; num: number }> = {
@@ -235,7 +221,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     accounting: { ar: 'Accounting & Financials', en: 'Accounting & Financials', num: 6 },
     hr: { ar: 'Human Resources & Payroll', en: 'Human Resources & Payroll', num: 7 },
     fleet: { ar: 'Supersonic Fleet Logistics', en: 'Supersonic Fleet Logistics', num: 8 },
-    social: { ar: 'Social CRM & Support', en: 'Social CRM & Support', num: 9 }
+    social: { ar: 'Social CRM & Support', en: 'Social CRM & Support', num: 9 },
+    pressing: { ar: '10. Pressing Mill', en: '10. Pressing Mill', num: 10 }
   };
 
   return (

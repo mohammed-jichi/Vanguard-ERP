@@ -35,7 +35,10 @@ export const ALL_SYSTEM_MODULES = [
   'accounting',
   'hr',
   'fleet',
-  'social'
+  'social',
+  'pressing-mill',
+  'pressing',
+  'MODULE_PRESSING_MILL'
 ];
 
 export interface TenantCompany {
@@ -87,6 +90,8 @@ export const SOUTHERN_OLIVE_OFFICIAL_LICENSE: TenantLicense = {
     'WASTAGE_SHRINKAGE_ANALYTICS',
     'FINANCIALS_GENERAL_LEDGER',
     'OIL_PRESSING_PRODUCTION_FACILITY',
+    'MODULE_PRESSING_MILL',
+    'PRESSING_MILL',
     'SUPERSONIC_FLEET_LOGISTICS',
     'VTRACK_CLOUD_MOBILE_PLATFORM',
     'HR_PAYROLL_ATTENDANCE',
