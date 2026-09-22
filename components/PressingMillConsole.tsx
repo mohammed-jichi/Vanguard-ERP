@@ -12,9 +12,11 @@ import {
   ShoppingCart,
   BookOpen,
   Settings,
-  ExternalLink
+  ExternalLink,
+  Calendar
 } from "lucide-react";
 import PressingDashboardView from "./modules/pressing/PressingDashboardView";
+import SeasonManagementView from "./modules/pressing/SeasonManagementView";
 import WeighbridgeIntakeView from "./modules/pressing/WeighbridgeIntakeView";
 import PressingBatchesView from "./modules/pressing/PressingBatchesView";
 import TanksMatrixView from "./modules/pressing/TanksMatrixView";
@@ -27,6 +29,7 @@ import { useLanguage } from "@/lib/LanguageContext";
 
 export type PressingTabId =
   | "dashboard"
+  | "seasons"
   | "intake"
   | "batches"
   | "tanks"
@@ -42,6 +45,7 @@ export default function PressingMillPage() {
 
   const tabs = [
     { id: "dashboard", key: "pm_dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "seasons", key: "pm_seasons", label: "Season Management", icon: Calendar },
     { id: "intake", key: "pm_intake", label: "Weighbridge & Intake", icon: Scale },
     { id: "batches", key: "pm_batches", label: "Pressing Lines & Batches", icon: Layers },
     { id: "tanks", key: "pm_tanks", label: "Tanks Matrix (1-50)", icon: Landmark },
@@ -49,7 +53,7 @@ export default function PressingMillPage() {
     { id: "dispatch", key: "pm_dispatch", label: "Oil Handover & Dispatch", icon: Truck },
     { id: "pos", key: "pm_pos", label: "Direct Counter Sales & POS", icon: ShoppingCart },
     { id: "directory", key: "pm_directory", label: "Directory & Ledgers", icon: BookOpen },
-    { id: "setup", key: "pm_setup", label: "Mill Settings", icon: Settings },
+    { id: "setup", key: "pm_setup", label: "Mill Settings & Line Config", icon: Settings },
   ] as const;
 
   return (
@@ -100,6 +104,7 @@ export default function PressingMillPage() {
 
       {/* Render selected view */}
       {activeTab === "dashboard" && <PressingDashboardView />}
+      {activeTab === "seasons" && <SeasonManagementView />}
       {activeTab === "intake" && <WeighbridgeIntakeView />}
       {activeTab === "batches" && <PressingBatchesView />}
       {activeTab === "tanks" && <TanksMatrixView />}

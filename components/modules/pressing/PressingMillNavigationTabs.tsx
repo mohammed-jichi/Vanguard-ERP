@@ -12,12 +12,14 @@ import {
   Truck,
   ShoppingCart,
   BookOpen,
-  Settings
+  Settings,
+  Calendar
 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 
 export const PRESSING_MILL_TABS = [
   { id: 'dashboard', key: 'pm_dashboard', label: 'Dashboard', path: '/pressing-mill/dashboard', icon: LayoutDashboard },
+  { id: 'seasons', key: 'pm_seasons', label: 'Season Management', path: '/pressing-mill/seasons', icon: Calendar },
   { id: 'intake', key: 'pm_intake', label: 'Weighbridge & Intake', path: '/pressing-mill/intake', icon: Scale },
   { id: 'batches', key: 'pm_batches', label: 'Pressing Lines & Batches', path: '/pressing-mill/batches', icon: Layers },
   { id: 'tanks', key: 'pm_tanks', label: 'Tanks Matrix (1-50)', path: '/pressing-mill/tanks', icon: Landmark },
@@ -25,7 +27,7 @@ export const PRESSING_MILL_TABS = [
   { id: 'dispatch', key: 'pm_dispatch', label: 'Oil Handover & Dispatch', path: '/pressing-mill/dispatch', icon: Truck },
   { id: 'pos', key: 'pm_pos', label: 'Direct Counter Sales & POS', path: '/pressing-mill/pos', icon: ShoppingCart },
   { id: 'directory', key: 'pm_directory', label: 'Directory & Ledgers', path: '/pressing-mill/directory', icon: BookOpen },
-  { id: 'setup', key: 'pm_setup', label: 'Mill Settings', path: '/pressing-mill/setup', icon: Settings },
+  { id: 'setup', key: 'pm_setup', label: 'Mill Settings & Line Config', path: '/pressing-mill/setup', icon: Settings },
 ];
 
 export default function PressingMillNavigationTabs() {

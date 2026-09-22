@@ -40,7 +40,56 @@ export interface ScaleTicket {
   tinCountEquivalent: number; // 15 KG per standard 16L tin
   pomaceKg: number; // ~40% of net olives
   status: TicketStatus;
+  seasonId?: string;
+  seasonName?: string;
+  lineId?: string;
+  lineName?: string;
   notes?: string;
+}
+
+export type SeasonStatus = 'Planned' | 'Active' | 'Closed';
+
+export interface HarvestSeason {
+  id: string;
+  seasonName: string; // e.g. "Season 2026/2027"
+  startDateTime: string; // e.g. "2026-09-15T06:00"
+  endDateTime: string;   // e.g. "2027-01-31T20:00"
+  status: SeasonStatus;
+  notes?: string;
+  totalOliveIntakeKg: number;
+  totalVirginOilKg: number;
+  totalTinsYield: number;
+  overallYieldPct: number;
+  totalPomaceKg: number;
+  retainedOilKg: number;
+  deliveredOilKg: number;
+  totalCashFeesUSD: number;
+  createdAt: string;
+}
+
+export type LineOperationalStatus = 'Active' | 'Cleaning' | 'Maintenance' | 'Inactive';
+
+export interface DynamicPressingLine {
+  id: string;
+  name: string; // e.g. "Line 01 - Pieralisi Leopard"
+  model: string; // e.g. "Pieralisi Leopard 8 DMF"
+  hourlyThroughputKg: number; // e.g. 4500
+  malaxerBatchLimitKg: number; // e.g. 2500
+  status: LineOperationalStatus;
+  currentBatchId?: string;
+  currentFarmerName?: string;
+  batchProgressPct: number;
+  malaxingTempC: number;
+  decanterRpm: number;
+  separatorRpm: number;
+  flowRateLitersPerHour: number;
+  totalCrushedTodayKg: number;
+}
+
+export interface PressingLinesLicenseQuota {
+  maxAllowedLines: number;
+  licensedTierName: string;
+  isLicensed: boolean;
 }
 
 export interface PressingLineState {
@@ -136,6 +185,8 @@ export interface FarmerAccountLedger {
 export interface MillSettingsConfig {
   facilityName: string;
   millLocation: string;
+  activeSeasonId: string;
+  maxAllowedLines: number;
   line1ThroughputTonsPerHour: number;
   line2ThroughputTonsPerHour: number;
   standardRetentionPct: number; // e.g. 10%

@@ -436,6 +436,7 @@ export const navigationConfig: NavItem[] = [
     path: '/pressing-mill',
     items: [
       { title: 'Dashboard', href: '/pressing-mill/dashboard', path: '/pressing-mill/dashboard', icon: LayoutDashboard },
+      { title: 'Season Management', href: '/pressing-mill/seasons', path: '/pressing-mill/seasons', icon: Calendar },
       { title: 'Weighbridge & Intake', href: '/pressing-mill/intake', path: '/pressing-mill/intake', icon: Scale },
       { title: 'Pressing Lines & Batches', href: '/pressing-mill/batches', path: '/pressing-mill/batches', icon: Layers },
       { title: 'Tanks Matrix (1-50)', href: '/pressing-mill/tanks', path: '/pressing-mill/tanks', icon: Landmark },
@@ -443,7 +444,7 @@ export const navigationConfig: NavItem[] = [
       { title: 'Oil Handover & Dispatch', href: '/pressing-mill/dispatch', path: '/pressing-mill/dispatch', icon: Truck },
       { title: 'Direct Counter Sales & POS', href: '/pressing-mill/pos', path: '/pressing-mill/pos', icon: ShoppingCart },
       { title: 'Directory & Ledgers', href: '/pressing-mill/directory', path: '/pressing-mill/directory', icon: BookOpen },
-      { title: 'Mill Settings', href: '/pressing-mill/setup', path: '/pressing-mill/setup', icon: Settings }
+      { title: 'Mill Settings & Line Config', href: '/pressing-mill/setup', path: '/pressing-mill/setup', icon: Settings }
     ]
   }
 ];

@@ -5,12 +5,17 @@ import {
   SettlementVoucher,
   OilDispatchPass,
   FarmerAccountLedger,
-  MillSettingsConfig
+  MillSettingsConfig,
+  HarvestSeason,
+  DynamicPressingLine,
+  PressingLinesLicenseQuota
 } from '@/types/pressingMill';
 
 export const INITIAL_MILL_SETTINGS: MillSettingsConfig = {
   facilityName: 'Southern Olive Oil Products S.A.R.L - Choueifat Central Mill',
   millLocation: 'Choueifat Industrial Zone, Mount Lebanon',
+  activeSeasonId: 'SEASON-2026-2027',
+  maxAllowedLines: 4,
   line1ThroughputTonsPerHour: 4.5,
   line2ThroughputTonsPerHour: 3.2,
   standardRetentionPct: 10,
@@ -20,6 +25,84 @@ export const INITIAL_MILL_SETTINGS: MillSettingsConfig = {
   coldPressMaxTempC: 27.0,
   totalStainlessTanksCount: 50
 };
+
+export const INITIAL_SEASONS: HarvestSeason[] = [
+  {
+    id: 'SEASON-2026-2027',
+    seasonName: 'Season 2026/2027 (Active Campaign)',
+    startDateTime: '2026-09-15T06:00',
+    endDateTime: '2027-01-31T20:00',
+    status: 'Active',
+    notes: 'Primary winter pressing campaign across Mount Lebanon, Hasbaya, and Chouf.',
+    totalOliveIntakeKg: 248500,
+    totalVirginOilKg: 51940,
+    totalTinsYield: 3462,
+    overallYieldPct: 20.9,
+    totalPomaceKg: 99400,
+    retainedOilKg: 5194,
+    deliveredOilKg: 46746,
+    totalCashFeesUSD: 19880.00,
+    createdAt: '2026-09-01T08:00'
+  },
+  {
+    id: 'SEASON-2025-2026',
+    seasonName: 'Season 2025/2026 (Archived)',
+    startDateTime: '2025-09-20T06:00',
+    endDateTime: '2026-01-25T18:00',
+    status: 'Closed',
+    notes: 'Prior year closed campaign with audited reconciliations and zero pending farmer deposits.',
+    totalOliveIntakeKg: 382400,
+    totalVirginOilKg: 77245,
+    totalTinsYield: 5149,
+    overallYieldPct: 20.2,
+    totalPomaceKg: 152960,
+    retainedOilKg: 7725,
+    deliveredOilKg: 69520,
+    totalCashFeesUSD: 30592.00,
+    createdAt: '2025-09-01T08:00'
+  }
+];
+
+export const DEFAULT_LICENSE_QUOTA: PressingLinesLicenseQuota = {
+  maxAllowedLines: 4,
+  licensedTierName: 'Enterprise Pressing Plant (Max 4 Continuous Lines)',
+  isLicensed: true
+};
+
+export const INITIAL_DYNAMIC_LINES: DynamicPressingLine[] = [
+  {
+    id: 'LINE-01',
+    name: 'Line 01 - Pieralisi Leopard Cold Press',
+    model: 'Pieralisi Leopard 8 DMF Continuous Decanter',
+    hourlyThroughputKg: 4500,
+    malaxerBatchLimitKg: 2500,
+    status: 'Active',
+    currentBatchId: 'B-2026-0142',
+    currentFarmerName: 'Abu Hassan Jaber (Hasbaya Souri)',
+    batchProgressPct: 74,
+    malaxingTempC: 26.6,
+    decanterRpm: 3200,
+    separatorRpm: 6400,
+    flowRateLitersPerHour: 680,
+    totalCrushedTodayKg: 18450
+  },
+  {
+    id: 'LINE-02',
+    name: 'Line 02 - Alfa Laval 3-Phase Continuous',
+    model: 'Alfa Laval Sigma 65 Industrial Unit',
+    hourlyThroughputKg: 3500,
+    malaxerBatchLimitKg: 2000,
+    status: 'Active',
+    currentBatchId: 'B-2026-0143',
+    currentFarmerName: 'Michel El-Khoury (Nabali)',
+    batchProgressPct: 91,
+    malaxingTempC: 25.4,
+    decanterRpm: 3450,
+    separatorRpm: 6800,
+    flowRateLitersPerHour: 720,
+    totalCrushedTodayKg: 14200
+  }
+];
 
 // Generate 50 realistic stainless steel tanks (T-01 to T-50)
 export const INITIAL_TANKS: StainlessTank[] = Array.from({ length: 50 }, (_, i) => {
@@ -142,6 +225,10 @@ export const INITIAL_SCALE_TICKETS: ScaleTicket[] = [
     ticketNumber: 'TK-2026-0142',
     date: '2026-09-22',
     time: '08:30 AM',
+    seasonId: 'SEASON-2026-2027',
+    seasonName: 'Season 2026/2027',
+    lineId: 'LINE-01',
+    lineName: 'Line 01 - Pieralisi Leopard Cold Press',
     farmerId: 'FRM-01',
     farmerName: 'Abu Hassan Jaber',
     farmerPhone: '+961 3 452 189',
@@ -169,6 +256,10 @@ export const INITIAL_SCALE_TICKETS: ScaleTicket[] = [
     ticketNumber: 'TK-2026-0143',
     date: '2026-09-22',
     time: '09:45 AM',
+    seasonId: 'SEASON-2026-2027',
+    seasonName: 'Season 2026/2027',
+    lineId: 'LINE-02',
+    lineName: 'Line 02 - Alfa Laval 3-Phase Continuous',
     farmerId: 'FRM-02',
     farmerName: 'Michel El-Khoury',
     farmerPhone: '+961 70 881 234',
@@ -196,6 +287,10 @@ export const INITIAL_SCALE_TICKETS: ScaleTicket[] = [
     ticketNumber: 'TK-2026-0144',
     date: '2026-09-22',
     time: '11:15 AM',
+    seasonId: 'SEASON-2026-2027',
+    seasonName: 'Season 2026/2027',
+    lineId: 'LINE-01',
+    lineName: 'Line 01 - Pieralisi Leopard Cold Press',
     farmerId: 'FRM-03',
     farmerName: 'Chouf Olive Farmers Union',
     farmerPhone: '+961 5 501 192',
