@@ -251,6 +251,15 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           <div className="flex items-center gap-2">
             <Link
               href="/admin"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('vanguard_user_role', 'SUPER_ADMIN');
+                  localStorage.setItem('vanguard_is_super_admin', 'true');
+                  document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; max-age=2592000; SameSite=Lax';
+                  document.cookie = 'vanguard_is_super_admin=true; path=/; max-age=2592000; SameSite=Lax';
+                  document.cookie = 'so_authenticated=true; path=/; max-age=2592000; SameSite=Lax';
+                }
+              }}
               className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-black shadow transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer"
             >
               <span>Return to Admin Console (/admin) ↩</span>

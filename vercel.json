@@ -20,8 +20,7 @@
     { "source": "/social", "destination": "/social.html" },
     { "source": "/activate", "destination": "/activate.html" },
     { "source": "/developer", "destination": "/developer.html" },
-    { "source": "/admin", "destination": "/vanguard-admin.html" },
-    { "source": "/vanguard-admin", "destination": "/vanguard-admin.html" },
+    { "source": "/vanguard-admin", "destination": "/admin" },
     { "source": "/user-manual", "destination": "/user_manual_ar.html" }
   ]
 }

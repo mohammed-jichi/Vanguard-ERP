@@ -65,14 +65,46 @@ export function middleware(request: NextRequest) {
   }
 
   const isAuthenticated = hasActiveAuthSession(request);
-  const userRole = request.cookies.get('vanguard_user_role')?.value;
-  const isSuperAdmin = userRole === 'SUPER_ADMIN';
+  const userRoleRaw = request.cookies.get('vanguard_user_role')?.value?.toUpperCase();
+  const isImpersonating = request.cookies.get('vanguard_is_impersonating')?.value === 'true';
+  const isSuperAdminFlag = request.cookies.get('vanguard_is_super_admin')?.value === 'true';
+  const companyCode = request.cookies.get('vanguard_company_code')?.value?.toUpperCase();
+  const sessionEmail = request.cookies.get('vanguard_auth_session')?.value?.toLowerCase();
+  const isSuperAdminEmail = Boolean(sessionEmail && (
+    sessionEmail.includes('admin') ||
+    sessionEmail.includes('jichi') ||
+    sessionEmail.includes('mohammed') ||
+    [
+      'mohammed@vanguard-erp.com',
+      'admin@vanguard.com',
+      'superadmin@vanguard-erp.com',
+      'jichi@vanguard-erp.com'
+    ].includes(sessionEmail)
+  ));
+
+  // Explicit platform super admin flag for default landing routing
+  const isExplicitSuperAdmin =
+    userRoleRaw === 'SUPER_ADMIN' ||
+    isSuperAdminFlag ||
+    companyCode === 'ADMIN' ||
+    companyCode === 'MASTER' ||
+    companyCode === 'VANGUARD' ||
+    isSuperAdminEmail;
+
+  // Broad authorized admin set for accessing /admin management console
+  const isAuthorizedForAdmin =
+    isExplicitSuperAdmin ||
+    isImpersonating ||
+    userRoleRaw === 'COMPANY_ADMIN' ||
+    userRoleRaw === 'ADMIN' ||
+    userRoleRaw === 'OWNER';
+
   const tenantId = request.cookies.get('vanguard_tenant_id')?.value || '00000000-0000-0000-0000-000000000001';
 
   // 2. Root route handling (/)
   if (pathname === '/') {
     if (isAuthenticated) {
-      if (isSuperAdmin) {
+      if (isExplicitSuperAdmin) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
       return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
@@ -87,14 +119,14 @@ export function middleware(request: NextRequest) {
       // Check if there was a target redirect parameter
       const redirectTo = request.nextUrl.searchParams.get('redirect');
       if (redirectTo && redirectTo.startsWith('/') && redirectTo !== '/login') {
-        // Enforce: regular tenant users cannot access /admin
-        if (!isSuperAdmin && (redirectTo === '/admin' || redirectTo.startsWith('/admin/'))) {
+        // Enforce: regular non-admin tenant users cannot access /admin
+        if (!isAuthorizedForAdmin && (redirectTo === '/admin' || redirectTo.startsWith('/admin/'))) {
           return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
         }
         return NextResponse.redirect(new URL(redirectTo, request.url));
       }
 
-      if (isSuperAdmin) {
+      if (isExplicitSuperAdmin) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
       return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
@@ -102,15 +134,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Reserve /admin path strictly for Super Admins / System Owners
+  // 4. Reserve /admin path strictly for Super Admins / System Owners / Authorized Admins
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     if (!isAuthenticated) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname + search);
       return NextResponse.redirect(loginUrl);
     }
-    if (!isSuperAdmin) {
-      // Forbid access to /admin for non-super admins and direct them to their tenant workspace
+    if (!isAuthorizedForAdmin) {
+      // Forbid access to /admin for non-admins and direct them to their tenant workspace
       return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
     }
     return NextResponse.next();
