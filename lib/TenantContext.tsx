@@ -29,6 +29,7 @@ export interface TenantLicense {
 export const ALL_SYSTEM_MODULES = [
   'sales',
   'operations',
+  'purchasing',
   'customers',
   'feedback',
   'loyalty',
@@ -40,6 +41,8 @@ export const ALL_SYSTEM_MODULES = [
   'v-driver',
   'v-store',
   // Backward compatibility aliases
+  'purchases',
+  'procurement',
   'pressing',
   'MODULE_PRESSING_MILL',
   'connect',
@@ -63,10 +66,36 @@ export interface TenantCompany {
   theme_color?: string;
   enabledModules?: string[];
   enabled_modules?: string[];
+  // Corporate, Legal & Fiscal Profile
+  legalEntityName?: string;
+  officialLegalEntityName?: string;
   companyRegistrationNumber?: string;
   taxIdentificationNumber?: string;
-  subscriptionTier: 'STARTER' | 'PRO' | 'ENTERPRISE';
-  subscriptionStatus: 'ACTIVE' | 'PAST_DUE' | 'CANCELLED';
+  headquartersAddress?: string;
+  city?: string;
+  country?: string;
+  phoneNumber?: string;
+  billingEmail?: string;
+  baseCurrency?: 'USD' | 'LBP';
+  exchangeRatePolicy?: 'PLATFORM_FIXED' | 'TENANT_MANAGED';
+  // Operational Quotas
+  maxBranches?: number | string;
+  maxConcurrentUsers?: number | string;
+  maxPosTerminals?: number | string;
+  storageQuotaGb?: number | string;
+  // Subscription Lifecycle
+  contractMonthlyValue?: number;
+  billingCycle?: 'MONTHLY' | 'ANNUAL';
+  renewalDate?: string;
+  subscriptionTier: 'STARTER' | 'PRO' | 'ENTERPRISE' | 'CUSTOM';
+  subscriptionStatus: 'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE_MODE' | 'PAST_DUE' | 'CANCELLED';
+  // Primary Admin Credentials & Meta
+  adminFullName?: string;
+  adminName?: string;
+  adminEmail?: string;
+  adminPhone?: string;
+  adminPassword?: string;
+  feature_flags?: any;
   aiUsageCount: number;
   aiUsageLimit: number;
   createdAt?: string;
@@ -444,7 +473,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateTenantModulesAndBranding = async (
     tenantId: string,
-    updates: {
+    updates: Partial<TenantCompany> & {
       enabledModules?: string[];
       brandNameAr?: string;
       brandNameEn?: string;
@@ -452,6 +481,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       logoUrl?: string;
       primaryColor?: string;
       themeColor?: string;
+      featureFlags?: any;
     }
   ): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -464,6 +494,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (updates.brandNameEn) dbUpdates.brand_name_en = updates.brandNameEn;
       if (updates.name) dbUpdates.name = updates.name;
       if (updates.logoUrl !== undefined) dbUpdates.logo_url = updates.logoUrl;
+      if (updates.subscriptionTier) dbUpdates.subscription_tier = updates.subscriptionTier;
+      if (updates.subscriptionStatus) dbUpdates.subscription_status = updates.subscriptionStatus;
       if (updates.primaryColor) {
         dbUpdates.primary_color = updates.primaryColor;
         dbUpdates.theme_color = updates.primaryColor;
@@ -471,6 +503,50 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         dbUpdates.theme_color = updates.themeColor;
         dbUpdates.primary_color = updates.themeColor;
       }
+
+      // Merge feature_flags JSONB with all corporate, legal, quota, and lifecycle data
+      const existingTenant = registeredCompanies.find(c => c.id === tenantId) || currentTenant;
+      const mergedFeatureFlags = {
+        ...(existingTenant.feature_flags || {}),
+        ...(updates.feature_flags || {}),
+        ...(updates.featureFlags || {}),
+        enabled_modules: updates.enabledModules || existingTenant.enabledModules || ALL_SYSTEM_MODULES,
+        modules_count: (updates.enabledModules || existingTenant.enabledModules || ALL_SYSTEM_MODULES).length,
+        full_enterprise_unlocked: (updates.enabledModules || existingTenant.enabledModules || ALL_SYSTEM_MODULES).length >= 12,
+        corporate_profile: {
+          legal_entity_name: updates.legalEntityName ?? existingTenant.legalEntityName ?? existingTenant.name,
+          trade_name_en: updates.brandNameEn ?? existingTenant.brandNameEn,
+          trade_name_ar: updates.brandNameAr ?? existingTenant.brandNameAr,
+          cr_number: updates.companyRegistrationNumber ?? existingTenant.companyRegistrationNumber ?? 'CR-104928-LB',
+          tax_id: updates.taxIdentificationNumber ?? existingTenant.taxIdentificationNumber ?? 'MOF-7489201',
+          headquarters_address: updates.headquartersAddress ?? existingTenant.headquartersAddress ?? 'Industrial Boulevard, Plant Bldg 4',
+          city: updates.city ?? existingTenant.city ?? 'Choueifat / Tyre',
+          country: updates.country ?? existingTenant.country ?? 'Lebanon',
+          phone_number: updates.phoneNumber ?? existingTenant.phoneNumber ?? '+961 7 740120',
+          billing_email: updates.billingEmail ?? existingTenant.billingEmail ?? 'finance@client.com',
+          base_currency: updates.baseCurrency ?? existingTenant.baseCurrency ?? 'USD',
+          exchange_rate_policy: updates.exchangeRatePolicy ?? existingTenant.exchangeRatePolicy ?? 'PLATFORM_FIXED'
+        },
+        quotas: {
+          max_branches: updates.maxBranches ?? existingTenant.maxBranches ?? 10,
+          max_concurrent_users: updates.maxConcurrentUsers ?? existingTenant.maxConcurrentUsers ?? 50,
+          max_pos_terminals: updates.maxPosTerminals ?? existingTenant.maxPosTerminals ?? 20,
+          storage_quota_gb: updates.storageQuotaGb ?? existingTenant.storageQuotaGb ?? 100
+        },
+        subscription_lifecycle: {
+          contract_monthly_value: updates.contractMonthlyValue ?? existingTenant.contractMonthlyValue ?? 3000,
+          billing_cycle: updates.billingCycle ?? existingTenant.billingCycle ?? 'ANNUAL',
+          renewal_date: updates.renewalDate ?? existingTenant.renewalDate ?? '2027-01-01',
+          account_status: updates.subscriptionStatus ?? existingTenant.subscriptionStatus ?? 'ACTIVE'
+        },
+        primary_admin: {
+          full_name: updates.adminFullName ?? existingTenant.adminFullName ?? 'Administrator',
+          email: updates.adminEmail ?? existingTenant.adminEmail ?? 'admin@client.com',
+          phone: updates.adminPhone ?? existingTenant.adminPhone ?? '+961 70 123456'
+        }
+      };
+
+      dbUpdates.feature_flags = mergedFeatureFlags;
 
       const { error } = await supabase
         .from('tenants')
@@ -486,6 +562,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           if (c.id === tenantId) {
             return {
               ...c,
+              ...updates,
               name: updates.name || c.name,
               brandNameAr: updates.brandNameAr || c.brandNameAr,
               brandNameEn: updates.brandNameEn || c.brandNameEn,
@@ -494,6 +571,26 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               enabled_modules: updates.enabledModules || c.enabled_modules,
               primaryColor: updates.primaryColor || updates.themeColor || c.primaryColor,
               themeColor: updates.themeColor || updates.primaryColor || c.themeColor,
+              legalEntityName: updates.legalEntityName ?? c.legalEntityName,
+              companyRegistrationNumber: updates.companyRegistrationNumber ?? c.companyRegistrationNumber,
+              taxIdentificationNumber: updates.taxIdentificationNumber ?? c.taxIdentificationNumber,
+              headquartersAddress: updates.headquartersAddress ?? c.headquartersAddress,
+              city: updates.city ?? c.city,
+              country: updates.country ?? c.country,
+              phoneNumber: updates.phoneNumber ?? c.phoneNumber,
+              billingEmail: updates.billingEmail ?? c.billingEmail,
+              baseCurrency: updates.baseCurrency ?? c.baseCurrency,
+              exchangeRatePolicy: updates.exchangeRatePolicy ?? c.exchangeRatePolicy,
+              maxBranches: updates.maxBranches ?? c.maxBranches,
+              maxConcurrentUsers: updates.maxConcurrentUsers ?? c.maxConcurrentUsers,
+              maxPosTerminals: updates.maxPosTerminals ?? c.maxPosTerminals,
+              storageQuotaGb: updates.storageQuotaGb ?? c.storageQuotaGb,
+              contractMonthlyValue: updates.contractMonthlyValue ?? c.contractMonthlyValue,
+              billingCycle: updates.billingCycle ?? c.billingCycle,
+              renewalDate: updates.renewalDate ?? c.renewalDate,
+              subscriptionStatus: updates.subscriptionStatus ?? c.subscriptionStatus,
+              subscriptionTier: updates.subscriptionTier ?? c.subscriptionTier,
+              feature_flags: mergedFeatureFlags,
               updatedAt: nowIso,
               updated_at: nowIso
             };
@@ -505,6 +602,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (currentTenant.id === tenantId) {
         const updatedCurrent: TenantCompany = {
           ...currentTenant,
+          ...updates,
           name: updates.name || currentTenant.name,
           brandNameAr: updates.brandNameAr || currentTenant.brandNameAr,
           brandNameEn: updates.brandNameEn || currentTenant.brandNameEn,
@@ -513,6 +611,26 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           enabled_modules: updates.enabledModules || currentTenant.enabled_modules,
           primaryColor: updates.primaryColor || updates.themeColor || currentTenant.primaryColor,
           themeColor: updates.themeColor || updates.primaryColor || currentTenant.themeColor,
+          legalEntityName: updates.legalEntityName ?? currentTenant.legalEntityName,
+          companyRegistrationNumber: updates.companyRegistrationNumber ?? currentTenant.companyRegistrationNumber,
+          taxIdentificationNumber: updates.taxIdentificationNumber ?? currentTenant.taxIdentificationNumber,
+          headquartersAddress: updates.headquartersAddress ?? currentTenant.headquartersAddress,
+          city: updates.city ?? currentTenant.city,
+          country: updates.country ?? currentTenant.country,
+          phoneNumber: updates.phoneNumber ?? currentTenant.phoneNumber,
+          billingEmail: updates.billingEmail ?? currentTenant.billingEmail,
+          baseCurrency: updates.baseCurrency ?? currentTenant.baseCurrency,
+          exchangeRatePolicy: updates.exchangeRatePolicy ?? currentTenant.exchangeRatePolicy,
+          maxBranches: updates.maxBranches ?? currentTenant.maxBranches,
+          maxConcurrentUsers: updates.maxConcurrentUsers ?? currentTenant.maxConcurrentUsers,
+          maxPosTerminals: updates.maxPosTerminals ?? currentTenant.maxPosTerminals,
+          storageQuotaGb: updates.storageQuotaGb ?? currentTenant.storageQuotaGb,
+          contractMonthlyValue: updates.contractMonthlyValue ?? currentTenant.contractMonthlyValue,
+          billingCycle: updates.billingCycle ?? currentTenant.billingCycle,
+          renewalDate: updates.renewalDate ?? currentTenant.renewalDate,
+          subscriptionStatus: updates.subscriptionStatus ?? currentTenant.subscriptionStatus,
+          subscriptionTier: updates.subscriptionTier ?? currentTenant.subscriptionTier,
+          feature_flags: mergedFeatureFlags,
           updatedAt: nowIso,
           updated_at: nowIso
         };
@@ -534,17 +652,17 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Log system audit event
       const targetCompany = registeredCompanies.find(c => c.id === tenantId);
       const companyId = targetCompany?.companyId || targetCompany?.company_id || (tenantId === '00000000-0000-0000-0000-000000000001' ? 1300 : null);
-      const displayName = updates.brandNameAr || updates.name || targetCompany?.brandNameAr || targetCompany?.name || 'المؤسسة المعتمدة';
+      const displayName = updates.brandNameEn || updates.name || targetCompany?.brandNameEn || targetCompany?.name || 'Vanguard Enterprise Client';
 
       let actionType = 'TENANT_UPDATED';
-      let logDesc = `تم تحديث إعدادات المؤسسة: ${displayName}`;
+      let logDesc = `Updated enterprise tenant settings and legal profile for: ${displayName}`;
 
       if (updates.enabledModules) {
         actionType = 'MODULES_UPDATED';
-        logDesc = `تم تعديل صلاحيات الوحدات التشغيلية لمؤسسة ${displayName} (#${companyId || 1300}) — الوحدات المفعلة: [${updates.enabledModules.length} من 9 وحدات]`;
+        logDesc = `Updated operational module permissions for ${displayName} (#${companyId || 1300}) — Active Modules: [${updates.enabledModules.length} of 12 modules]`;
       } else if (updates.primaryColor || updates.logoUrl) {
         actionType = 'BRANDING_UPDATED';
-        logDesc = `تم تحديث الهوية البصرية والسمة لمؤسسة ${displayName} (#${companyId || 1300})`;
+        logDesc = `Updated brand identity and logo for ${displayName} (#${companyId || 1300})`;
       }
 
       await logSystemActivity({
@@ -552,7 +670,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         companyId,
         actionType,
         description: logDesc,
-        performedBy: currentUser?.fullName || 'Super Admin (System Owner)',
+        performedBy: currentUser?.fullName || 'Super Admin (Mohammed Jichi)',
         metadata: {
           enabledModules: updates.enabledModules,
           primaryColor: updates.primaryColor || updates.themeColor
@@ -567,7 +685,11 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const onboardNewTenant = async (tenantData: Partial<TenantCompany>, adminEmail: string): Promise<{ success: boolean; error?: string }> => {
+  const onboardNewTenant = async (
+    tenantData: Partial<TenantCompany>,
+    adminEmail: string,
+    initialPassword?: string
+  ): Promise<{ success: boolean; error?: string }> => {
     const tenantName = tenantData.name || 'Vanguard Enterprise Client';
     const slug = tenantData.slug || tenantName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `tenant-${Date.now()}`;
 
@@ -578,26 +700,84 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       brandNameAr: tenantData.brandNameAr || tenantName,
       brandNameEn: tenantData.brandNameEn || 'Vanguard Enterprise Client',
       logoUrl: tenantData.logoUrl || '',
+      legalEntityName: tenantData.legalEntityName || tenantName,
       companyRegistrationNumber: tenantData.companyRegistrationNumber || 'CR-104928-LB',
       taxIdentificationNumber: tenantData.taxIdentificationNumber || 'MOF-7489201',
+      headquartersAddress: tenantData.headquartersAddress || 'Industrial Boulevard, Plant Bldg 4',
+      city: tenantData.city || 'Beirut',
+      country: tenantData.country || 'Lebanon',
+      phoneNumber: tenantData.phoneNumber || '+961 1 800000',
+      billingEmail: tenantData.billingEmail || adminEmail,
+      baseCurrency: tenantData.baseCurrency || 'USD',
+      exchangeRatePolicy: tenantData.exchangeRatePolicy || 'PLATFORM_FIXED',
+      maxBranches: tenantData.maxBranches || 5,
+      maxConcurrentUsers: tenantData.maxConcurrentUsers || 25,
+      maxPosTerminals: tenantData.maxPosTerminals || 10,
+      storageQuotaGb: tenantData.storageQuotaGb || 50,
+      contractMonthlyValue: tenantData.contractMonthlyValue || (tenantData.subscriptionTier === 'STARTER' ? 150 : tenantData.subscriptionTier === 'PRO' ? 450 : 3000),
+      billingCycle: tenantData.billingCycle || 'ANNUAL',
+      renewalDate: tenantData.renewalDate || new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString().split('T')[0],
       subscriptionTier: tenantData.subscriptionTier || 'PRO',
-      subscriptionStatus: 'ACTIVE',
-      aiUsageCount: tenantData.aiUsageCount || 0,
-      aiUsageLimit: tenantData.aiUsageLimit || 1000
+      subscriptionStatus: tenantData.subscriptionStatus || 'ACTIVE',
+      adminFullName: tenantData.adminFullName || 'Primary Administrator',
+      adminEmail: adminEmail,
+      adminPhone: tenantData.adminPhone || '',
+      enabledModules: tenantData.enabledModules || (tenantData.subscriptionTier === 'ENTERPRISE' ? ALL_SYSTEM_MODULES : ['sales', 'operations', 'customers', 'accounting']),
+      enabled_modules: tenantData.enabledModules || (tenantData.subscriptionTier === 'ENTERPRISE' ? ALL_SYSTEM_MODULES : ['sales', 'operations', 'customers', 'accounting']),
+      aiUsageCount: 0,
+      aiUsageLimit: 1000
     };
 
     try {
+      const featureFlagsJson = {
+        enabled_modules: newCompany.enabledModules,
+        modules_count: newCompany.enabledModules?.length || 4,
+        full_enterprise_unlocked: newCompany.subscriptionTier === 'ENTERPRISE' || (newCompany.enabledModules?.length || 0) >= 12,
+        corporate_profile: {
+          legal_entity_name: newCompany.legalEntityName,
+          trade_name_en: newCompany.brandNameEn,
+          trade_name_ar: newCompany.brandNameAr,
+          cr_number: newCompany.companyRegistrationNumber,
+          tax_id: newCompany.taxIdentificationNumber,
+          headquarters_address: newCompany.headquartersAddress,
+          city: newCompany.city,
+          country: newCompany.country,
+          phone_number: newCompany.phoneNumber,
+          billing_email: newCompany.billingEmail,
+          base_currency: newCompany.baseCurrency,
+          exchange_rate_policy: newCompany.exchangeRatePolicy
+        },
+        quotas: {
+          max_branches: newCompany.maxBranches,
+          max_concurrent_users: newCompany.maxConcurrentUsers,
+          max_pos_terminals: newCompany.maxPosTerminals,
+          storage_quota_gb: newCompany.storageQuotaGb
+        },
+        subscription_lifecycle: {
+          contract_monthly_value: newCompany.contractMonthlyValue,
+          billing_cycle: newCompany.billingCycle,
+          renewal_date: newCompany.renewalDate,
+          account_status: newCompany.subscriptionStatus
+        },
+        primary_admin: {
+          full_name: newCompany.adminFullName,
+          email: adminEmail,
+          phone: newCompany.adminPhone,
+          initial_password: initialPassword || 'Vanguard@2026!'
+        }
+      };
+
       const { data, error } = await supabase
         .from('tenants')
         .insert([{
           name: tenantName,
           slug: slug,
-          brand_name_ar: tenantData.brandNameAr || tenantName,
-          brand_name_en: tenantData.brandNameEn || 'Southern Olive Oil Products S.A.R.L',
-          logo_url: tenantData.logoUrl || '',
-          company_registration_number: tenantData.companyRegistrationNumber || 'CR-104928-LB',
-          tax_identification_number: tenantData.taxIdentificationNumber || 'MOF-7489201',
-          owner_email: adminEmail
+          brand_name_ar: newCompany.brandNameAr,
+          brand_name_en: newCompany.brandNameEn,
+          logo_url: newCompany.logoUrl,
+          subscription_tier: newCompany.subscriptionTier,
+          subscription_status: newCompany.subscriptionStatus,
+          feature_flags: featureFlagsJson
         }])
         .select();
 
@@ -616,19 +796,19 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         tenantId: newCompany.id,
         companyId: createdCompanyId,
         actionType: 'TENANT_CREATED',
-        description: `تم إنشاء واعتماد ترخيص تجاري جديد لمؤسسة: ${newCompany.brandNameAr || newCompany.name} (معرف الشركة: #${createdCompanyId}) ضمن باقة ${newCompany.subscriptionTier}`,
-        performedBy: currentUser?.fullName || 'Super Admin (System Owner)',
+        description: `Provisioned new enterprise workspace: ${newCompany.brandNameEn || newCompany.name} (#${createdCompanyId}) under ${newCompany.subscriptionTier} tier`,
+        performedBy: currentUser?.fullName || 'Super Admin (Mohammed Jichi)',
         metadata: {
-          tier: newCompany.subscriptionTier,
-          companyId: createdCompanyId,
-          adminEmail
+          adminEmail,
+          subscriptionTier: newCompany.subscriptionTier,
+          contractMonthlyValue: newCompany.contractMonthlyValue
         }
       });
 
-      await refreshTenants();
+      setRegisteredCompanies(prev => [...prev, newCompany]);
       return { success: true };
     } catch (err: any) {
-      console.error('Exception executing Supabase insert in TenantContext:', err);
+      console.error('Exception in onboardNewTenant:', err);
       return { success: false, error: err.message || String(err) };
     }
   };

@@ -253,21 +253,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <Home className="w-4.5 h-4.5 text-amber-400" />
           </button>
 
-          {/* MAIL / INBOX ICON */}
+          {/* OPERATIONAL ALERTS BELL ICON */}
           <button
             onClick={() => {
-              setIsInboxOpen(true);
-              setHasUnread(false);
+              setIsQuickMenuOpen(true);
+              setQuickMenuTab('alerts');
             }}
-            title="Inbox between locations"
+            title="Internal Operational Notifications"
             className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors relative"
           >
-            <Mail className="w-4.5 h-4.5 text-amber-400" />
-            {hasUnread && (
-              <>
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full"></span>
-              </>
+            <Bell className="w-4.5 h-4.5 text-amber-400" />
+            {dynamicAlerts.length > 0 && (
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-[#12121e]">
+                {dynamicAlerts.length > 9 ? '9+' : dynamicAlerts.length}
+              </span>
             )}
           </button>
 
@@ -745,6 +744,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               {/* LATEST UPDATES TAB (WITH SHOW MORE SCROLLABLE AREA) */}
               {quickMenuTab === 'updates' && (
                 <div className="space-y-3">
+                  <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
+                    <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">
+                      Published Platform Release Notes
+                    </span>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
+                      Official platform-wide version releases, changelogs, and engine deployments.
+                    </p>
+                  </div>
+
                   <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-1">
                     <span className="text-[10px] text-amber-700 font-bold font-mono uppercase tracking-wider">v2026.8.26 Release</span>
                     <h5 className="font-black text-amber-950 text-xs">Vanguard ERP Accounting & UOM Engine</h5>
@@ -792,6 +800,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               {/* ALERTS TAB (DYNAMIC DATABASE ALERTS & WORKFLOWS) */}
               {quickMenuTab === 'alerts' && (
                 <div className="space-y-3">
+                  <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-2xl">
+                    <span className="text-[10px] text-blue-800 font-black uppercase tracking-wider block">
+                      Internal Tenant Operational Notifications
+                    </span>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
+                      Active operational notifications, unposted reconciliations, and workflow exceptions for {currentTenant?.name || 'Active Tenant'}.
+                    </p>
+                  </div>
+
                   <div className="flex items-center justify-between pb-2 border-b border-gray-100 px-0.5">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                       {includeResolvedAlerts ? 'All Historical Alerts' : 'Active Live Feed'}

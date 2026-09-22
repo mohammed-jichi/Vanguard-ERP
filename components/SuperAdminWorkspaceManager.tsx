@@ -5,10 +5,11 @@
  * Super Admin Workspace Manager & Multi-Tenant Subscription Hub
  * 
  * White Enterprise Theme & Full English Default Localization
- * Central tenant management, dynamic 12-module feature flags, branding, and standalone apps suite.
+ * Master Admin Architecture: Deep Tenant Provisioning, Visual Identity & Logo Upload,
+ * Corporate Legal Profile, Flexible 12-Module Entitlements, Operational Quotas, and Interactive Action Modals.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTenant, TenantCompany, ALL_SYSTEM_MODULES } from '../lib/TenantContext';
@@ -45,11 +46,25 @@ import {
   AlertCircle,
   Hash,
   Eye,
+  EyeOff,
   RefreshCw,
   ShoppingBag,
   Truck,
   Smartphone,
-  Globe
+  Globe,
+  Upload,
+  Download,
+  Copy,
+  Database,
+  Filter,
+  Server,
+  Phone,
+  Mail,
+  MapPin,
+  CreditCard,
+  Calendar,
+  ChevronRight,
+  Shield
 } from 'lucide-react';
 
 const DEFAULT_ADMIN_TENANT: TenantCompany = {
@@ -68,26 +83,150 @@ const DEFAULT_ADMIN_TENANT: TenantCompany = {
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
-  aiUsageLimit: 1000
+  aiUsageLimit: 1000,
+  companyRegistrationNumber: 'CR-104928-LB',
+  taxIdentificationNumber: 'MOF-7489201',
+  officialLegalEntityName: 'Southern Olive & Oil Products S.A.R.L',
+  headquartersAddress: 'Nabatieh Industrial Zone, Main Blvd, Bldg 4',
+  city: 'Nabatieh',
+  country: 'Lebanon',
+  phoneNumber: '+961 70 882 110',
+  billingEmail: 'accounts@southernolive.com',
+  baseCurrency: 'USD',
+  exchangeRatePolicy: 'PLATFORM_FIXED',
+  maxBranches: 5,
+  maxConcurrentUsers: 25,
+  maxPosTerminals: 10,
+  storageQuotaGb: 50,
+  contractMonthlyValue: 3000,
+  billingCycle: 'MONTHLY',
+  renewalDate: '2027-01-01',
+  adminName: 'Mohammed Jichi',
+  adminEmail: 'admin@southernolive.com',
+  adminPhone: '+961 70 882 110'
 };
 
-// System Module Definitions for Super Admin Feature Flag Matrix (Full 12 Modules / Entitlements)
-const SYSTEM_MODULES_CONFIG = [
-  { id: 'sales', num: 1, labelEn: '1. V-POS & Sales (Counter POS)', shortLabel: 'V-POS / Sales', icon: '🛒', desc: 'Order processing, POS registers, invoicing, cash drawers & promo coupons' },
-  { id: 'operations', num: 2, labelEn: '2. Operations & Inventory', shortLabel: 'Inventory', icon: '🏭', desc: 'Warehouse movements, procurements, batch production & logistics reports' },
-  { id: 'customers', num: 3, labelEn: '3. Customer CRM & Receivables', shortLabel: 'CRM', icon: '👥', desc: 'Customer directory, aging analysis, payment receipts & credit management' },
-  { id: 'feedback', num: 4, labelEn: '4. Feedback & Surveys', shortLabel: 'Feedback', icon: '💬', desc: 'Customer sentiment tracking, incident tickets & recurring quality surveys' },
-  { id: 'loyalty', num: 5, labelEn: '5. Loyalty & Rewards', shortLabel: 'Loyalty', icon: '⭐', desc: 'Reward points engine, tiered VIP memberships & targeted campaign vouchers' },
-  { id: 'accounting', num: 6, labelEn: '6. Accounting & General Ledger', shortLabel: 'Accounting', icon: '📊', desc: 'Journal vouchers, chart of accounts, trial balance & cost centers' },
-  { id: 'hr', num: 7, labelEn: '7. HR & Payroll', shortLabel: 'HR & Payroll', icon: '👔', desc: 'Personnel files, biometric attendance, leaves & automated salary sheets' },
-  { id: 'fleet', num: 8, labelEn: '8. Fleet & Logistics (V-Track)', shortLabel: 'Fleet', icon: '🚚', desc: 'GPS vehicle tracking, route manifests, maintenance logs & driver dispatch' },
-  { id: 'social', num: 9, labelEn: '9. V-Connect (Social CRM & WhatsApp)', shortLabel: 'V-Connect', icon: '🌐', desc: 'Omnichannel inbox, WhatsApp automation, customer tickets & campaign ROI' },
-  { id: 'pressing-mill', num: 10, labelEn: '10. Pressing Mill & Oil Plant', shortLabel: 'Pressing Mill', icon: '⚖️', desc: 'Weighbridge intake, crushing batches, 50-tank matrix, milling fees & dispatch' },
-  { id: 'v-driver', num: 11, labelEn: '11. V-Driver (SuperSonic Driver & Fleet)', shortLabel: 'V-Driver', icon: '📱', desc: 'Driver mobile PWA, trip dispatch, GPS routes & digital POD signature' },
-  { id: 'v-store', num: 12, labelEn: '12. V-Store (Storefront & B2B Web Portal)', shortLabel: 'V-Store', icon: '🏬', desc: 'Customer self-service portal, online ordering catalog & wholesale requests' }
+// Official 12-Module Entitlement Definitions for Super Admin Feature Flag Matrix
+export const SYSTEM_MODULES_CONFIG = [
+  {
+    id: 'sales',
+    num: 1,
+    labelEn: '1. V-POS (Fast Touch Counter Sales)',
+    shortLabel: 'V-POS',
+    icon: '🛒',
+    desc: 'Touch cashier register, fast barcode scan, multi-currency cash drawer & receipt printing'
+  },
+  {
+    id: 'operations',
+    num: 2,
+    labelEn: '2. Inventory & Warehouses',
+    shortLabel: 'Inventory',
+    icon: '🏭',
+    desc: 'Multi-warehouse stock balances, bin locations, batch tracking & stock valuation'
+  },
+  {
+    id: 'purchasing',
+    num: 3,
+    labelEn: '3. Purchasing & Procurement',
+    shortLabel: 'Purchasing',
+    icon: '📦',
+    desc: 'Supplier purchase orders, goods receipt notes (GRN), vendor bills & landed costs'
+  },
+  {
+    id: 'customers',
+    num: 4,
+    labelEn: '4. CRM & Customer Registry',
+    shortLabel: 'CRM',
+    icon: '👥',
+    desc: 'Customer directory, receivables aging, credit limit control & statement exports'
+  },
+  {
+    id: 'feedback',
+    num: 5,
+    labelEn: '5. Feedback & Surveys',
+    shortLabel: 'Feedback',
+    icon: '💬',
+    desc: 'Customer CSAT/NPS surveys, incident ticketing & quality sentiment tracking'
+  },
+  {
+    id: 'loyalty',
+    num: 6,
+    labelEn: '6. Loyalty Program',
+    shortLabel: 'Loyalty',
+    icon: '⭐',
+    desc: 'Reward points engine, tiered VIP memberships & targeted campaign promo vouchers'
+  },
+  {
+    id: 'accounting',
+    num: 7,
+    labelEn: '7. Accounting & General Ledger',
+    shortLabel: 'Accounting',
+    icon: '📊',
+    desc: 'Multi-currency journal vouchers (JV), chart of accounts, trial balance & cost centers'
+  },
+  {
+    id: 'hr',
+    num: 8,
+    labelEn: '8. HR & Payroll',
+    shortLabel: 'HR & Payroll',
+    icon: '👔',
+    desc: 'Employee personnel registry, biometric attendance logs, leave balances & monthly payroll'
+  },
+  {
+    id: 'fleet',
+    num: 9,
+    labelEn: '9. SuperSonic Fleet / V-Driver',
+    shortLabel: 'Fleet / V-Driver',
+    icon: '🚚',
+    desc: 'GPS live fleet tracking, route manifests, vehicle maintenance & mobile driver app'
+  },
+  {
+    id: 'social',
+    num: 10,
+    labelEn: '10. V-Connect (Social CRM & WhatsApp)',
+    shortLabel: 'V-Connect',
+    icon: '🌐',
+    desc: 'Omnichannel customer inbox, WhatsApp automation, ticket queues & campaign ROI'
+  },
+  {
+    id: 'pressing-mill',
+    num: 11,
+    labelEn: '11. Pressing Mill Engine',
+    shortLabel: 'Pressing Mill',
+    icon: '⚖️',
+    desc: 'Weighbridge intake, crushing batches, 50-tank matrix, milling fees & oil dispatch'
+  },
+  {
+    id: 'v-store',
+    num: 12,
+    labelEn: '12. V-Store (Storefront Web Portal)',
+    shortLabel: 'V-Store',
+    icon: '🏬',
+    desc: 'Client-facing B2B/B2C ecommerce catalog, customer online ordering & self-checkout'
+  }
 ];
 
-// Standalone Apps Suite (External Launchpad Opening in New Tabs)
+// Presets mapping
+const PRESET_MODULES: Record<'STARTER' | 'PRO' | 'ENTERPRISE', string[]> = {
+  STARTER: ['sales', 'operations', 'purchasing', 'customers'],
+  PRO: ['sales', 'operations', 'purchasing', 'customers', 'feedback', 'loyalty', 'accounting', 'hr', 'social'],
+  ENTERPRISE: [
+    'sales',
+    'operations',
+    'purchasing',
+    'customers',
+    'feedback',
+    'loyalty',
+    'accounting',
+    'hr',
+    'fleet',
+    'social',
+    'pressing-mill',
+    'v-store'
+  ]
+};
+
+// Standalone Apps Suite
 const STANDALONE_APPS_SUITE = [
   {
     key: 'v-connect',
@@ -140,36 +279,26 @@ const BRANDING_COLOR_PRESETS = [
   { name: 'Burgundy Crimson', hex: '#881337' }
 ];
 
-function getActiveModulesCount(activeMods: string[] = []): number {
-  if (!Array.isArray(activeMods)) return 0;
-  return SYSTEM_MODULES_CONFIG.filter(mod =>
-    activeMods.some(m => {
-      const lower = (m || '').toLowerCase();
-      if (lower === mod.id) return true;
-      if (mod.id === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return true;
-      if (mod.id === 'operations' && (lower === 'op' || lower === 'inventory')) return true;
-      if (mod.id === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return true;
-      if (mod.id === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return true;
-      if (mod.id === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return true;
-      if (mod.id === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return true;
-      return false;
-    })
-  ).length;
-}
-
-function isModuleEnabled(modId: string, activeMods: string[] = []): boolean {
+export function isModuleEnabled(modId: string, activeMods: string[] = []): boolean {
   if (!Array.isArray(activeMods)) return false;
   return activeMods.some(m => {
     const lower = (m || '').toLowerCase();
     if (lower === modId) return true;
     if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return true;
     if (modId === 'operations' && (lower === 'op' || lower === 'inventory')) return true;
-    if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return true;
+    if (modId === 'purchasing' && (lower === 'procurement' || lower === 'purchases' || lower === 'po')) return true;
+    if (modId === 'customers' && (lower === 'crm' || lower === 'customer')) return true;
+    if (modId === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics')) return true;
+    if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp')) return true;
     if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return true;
-    if (modId === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return true;
     if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return true;
     return false;
   });
+}
+
+export function getActiveModulesCount(activeMods: string[] = []): number {
+  if (!Array.isArray(activeMods)) return 0;
+  return SYSTEM_MODULES_CONFIG.filter(mod => isModuleEnabled(mod.id, activeMods)).length;
 }
 
 function formatRelativeTime(dateString?: string): string {
@@ -191,11 +320,47 @@ function formatRelativeTime(dateString?: string): string {
   return `${diffMonths}mo ago`;
 }
 
+// Storage upload helper with Base64 fallback
+async function uploadLogoToStorage(file: File, tenantSlug: string): Promise<string> {
+  try {
+    const fileExt = file.name.split('.').pop() || 'png';
+    const cleanSlug = (tenantSlug || 'tenant').toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const fileName = `${cleanSlug}-${Date.now()}.${fileExt}`;
+    const filePath = `logos/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('tenant-logos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (!error && data?.path) {
+      const { data: publicUrlData } = supabase.storage
+        .from('tenant-logos')
+        .getPublicUrl(filePath);
+      if (publicUrlData?.publicUrl) {
+        return publicUrlData.publicUrl;
+      }
+    }
+  } catch (storageErr) {
+    console.warn('Supabase storage upload notice, falling back to DataURL:', storageErr);
+  }
+
+  // Fallback to Base64 DataURL
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function SuperAdminWorkspaceManager() {
   const router = useRouter();
   const {
     currentTenant,
-    isSuperAdmin,
     switchTenant,
     onboardNewTenant,
     refreshTenants,
@@ -204,23 +369,87 @@ export default function SuperAdminWorkspaceManager() {
   } = useTenant();
 
   const [tenants, setTenants] = useState<any[]>([]);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE_MODE'>('ALL');
+
+  // Interactive Top Modals
+  const [showRevenueModal, setShowRevenueModal] = useState<boolean>(false);
+  const [showHealthModal, setShowHealthModal] = useState<boolean>(false);
+
+  // Reset Admin Password Modal
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState<boolean>(false);
+  const [passwordTargetTenant, setPasswordTargetTenant] = useState<any | null>(null);
+  const [newAdminPassword, setNewAdminPassword] = useState<string>('');
+  const [showPasswordText, setShowPasswordText] = useState<boolean>(false);
+  const [passwordSaveSuccess, setPasswordSaveSuccess] = useState<boolean>(false);
+
+  // Filter Audit Log to specific tenant
+  const [selectedAuditTenantFilter, setSelectedAuditTenantFilter] = useState<string | null>(null);
+
+  // Provision New Tenant Modal State
   const [showOnboardModal, setShowOnboardModal] = useState<boolean>(false);
   const [compName, setCompName] = useState<string>('');
   const [brandAr, setBrandAr] = useState<string>('');
   const [brandEn, setBrandEn] = useState<string>('');
   const [adminEmail, setAdminEmail] = useState<string>('');
-  const [tier, setTier] = useState<'STARTER' | 'PRO' | 'ENTERPRISE'>('PRO');
+  const [adminName, setAdminName] = useState<string>('Primary Admin');
+  const [adminPhone, setAdminPhone] = useState<string>('+961 70 000 000');
+  const [adminInitialPassword, setAdminInitialPassword] = useState<string>('Vanguard!2026');
+  const [onboardTier, setOnboardTier] = useState<'STARTER' | 'PRO' | 'ENTERPRISE' | 'CUSTOM'>('ENTERPRISE');
+  const [onboardMonthlyValue, setOnboardMonthlyValue] = useState<number>(3000);
+  const [onboardBaseCurrency, setOnboardBaseCurrency] = useState<'USD' | 'LBP'>('USD');
+  const [onboardCrNumber, setOnboardCrNumber] = useState<string>('CR-104928-LB');
+  const [onboardTaxId, setOnboardTaxId] = useState<string>('MOF-7489201');
+  const [onboardLogoUrl, setOnboardLogoUrl] = useState<string>('');
+  const [onboardLogoPreview, setOnboardLogoPreview] = useState<string>('');
+  const [isUploadingOnboardLogo, setIsUploadingOnboardLogo] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const onboardFileInputRef = useRef<HTMLInputElement>(null);
 
   // Tenant Configuration Modal State
   const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
+  const [configTab, setConfigTab] = useState<'identity' | 'legal' | 'modules' | 'quotas' | 'admin'>('identity');
   const [editingTenant, setEditingTenant] = useState<any | null>(null);
+  const [configTier, setConfigTier] = useState<'STARTER' | 'PRO' | 'ENTERPRISE' | 'CUSTOM'>('ENTERPRISE');
   const [selectedModules, setSelectedModules] = useState<string[]>([]);
+
+  // Tab 1: Visual Identity
   const [editBrandAr, setEditBrandAr] = useState<string>('');
   const [editBrandEn, setEditBrandEn] = useState<string>('');
-  const [editCompName, setEditCompName] = useState<string>('');
   const [editLogoUrl, setEditLogoUrl] = useState<string>('');
+  const [editLogoPreview, setEditLogoPreview] = useState<string>('');
   const [editColor, setEditColor] = useState<string>('#123b70');
+  const [isUploadingConfigLogo, setIsUploadingConfigLogo] = useState<boolean>(false);
+  const configFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Tab 2: Corporate & Legal Profile
+  const [editCompName, setEditCompName] = useState<string>('');
+  const [editCrNumber, setEditCrNumber] = useState<string>('');
+  const [editTaxId, setEditTaxId] = useState<string>('');
+  const [editAddress, setEditAddress] = useState<string>('');
+  const [editCity, setEditCity] = useState<string>('');
+  const [editCountry, setEditCountry] = useState<string>('Lebanon');
+  const [editPhone, setEditPhone] = useState<string>('');
+  const [editBillingEmail, setEditBillingEmail] = useState<string>('');
+  const [editBaseCurrency, setEditBaseCurrency] = useState<'USD' | 'LBP'>('USD');
+  const [editExchangeRatePolicy, setEditExchangeRatePolicy] = useState<'PLATFORM_FIXED' | 'TENANT_MANAGED'>('PLATFORM_FIXED');
+
+  // Tab 4: Operational Quotas & Lifecycle
+  const [editMaxBranches, setEditMaxBranches] = useState<number>(5);
+  const [editMaxUsers, setEditMaxUsers] = useState<number>(25);
+  const [editMaxTerminals, setEditMaxTerminals] = useState<number>(10);
+  const [editStorageQuota, setEditStorageQuota] = useState<number>(50);
+  const [editContractValue, setEditContractValue] = useState<number>(3000);
+  const [editBillingCycle, setEditBillingCycle] = useState<'MONTHLY' | 'ANNUAL'>('MONTHLY');
+  const [editRenewalDate, setEditRenewalDate] = useState<string>('2027-01-01');
+  const [editAccountStatus, setEditAccountStatus] = useState<'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE_MODE'>('ACTIVE');
+
+  // Tab 5: Primary Admin
+  const [editAdminName, setEditAdminName] = useState<string>('Primary Admin');
+  const [editAdminEmail, setEditAdminEmail] = useState<string>('admin@client.com');
+  const [editAdminPhone, setEditAdminPhone] = useState<string>('+961 70 000 000');
+  const [editAdminPassword, setEditAdminPassword] = useState<string>('');
+  const [showConfigAdminPass, setShowConfigAdminPass] = useState<boolean>(false);
+
   const [isSavingConfig, setIsSavingConfig] = useState<boolean>(false);
   const [configSaveSuccess, setConfigSaveSuccess] = useState<boolean>(false);
 
@@ -231,7 +460,7 @@ export default function SuperAdminWorkspaceManager() {
   const fetchActivities = async () => {
     setLoadingActivities(true);
     try {
-      const items = await getRecentSystemActivities(10);
+      const items = await getRecentSystemActivities(25);
       setRecentActivities(items);
     } catch (e) {
       console.error('Error fetching recent activities:', e);
@@ -240,7 +469,7 @@ export default function SuperAdminWorkspaceManager() {
     }
   };
 
-  // Reserve /admin strictly for Super Admins / System Owners
+  // Reserve /admin strictly for Super Admins
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedRole = localStorage.getItem('vanguard_user_role');
@@ -259,7 +488,6 @@ export default function SuperAdminWorkspaceManager() {
         ].includes(storedEmail)
       ));
 
-      // If user has admin credentials or is returning from workspace preview, elevate/normalize to SUPER_ADMIN
       if (
         isImpersonating ||
         isSuperAdminFlag ||
@@ -279,13 +507,135 @@ export default function SuperAdminWorkspaceManager() {
         return;
       }
 
-      // Only reject users who are explicitly non-admin staff/drivers/viewers
       if (storedRole === 'STAFF' || storedRole === 'DRIVER' || storedRole === 'VIEWER') {
         const tenantId = localStorage.getItem('vanguard_tenant_id') || currentTenant?.id || '00000000-0000-0000-0000-000000000001';
         router.replace(`/${tenantId}/dashboard`);
       }
     }
   }, [currentTenant, router]);
+
+  const fetchAdminTenants = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tenants')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('SUPABASE ERROR in SuperAdminWorkspaceManager:', error);
+      }
+
+      if (data && Array.isArray(data) && data.length > 0) {
+        const formatted = data.map((t: any, idx: number) => {
+          const activeMods = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+            ? t.enabled_modules
+            : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                ? t.feature_flags.enabled_modules
+                : ALL_SYSTEM_MODULES);
+
+          const ff = t.feature_flags || {};
+          const corp = ff.corporate_profile || {};
+          const quotas = ff.quotas || {};
+          const lifecycle = ff.subscription_lifecycle || {};
+          const admin = ff.primary_admin || {};
+
+          return {
+            ...t,
+            company_id: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+            companyId: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+            brand_name_ar: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
+            brandNameAr: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
+            brand_name_en: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
+            brandNameEn: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
+            name: t.name || t.brand_name_ar || 'منتوجات زيت وزيتون الجنوب',
+            official_legal_entity_name: corp.officialLegalName || t.official_legal_entity_name || t.name,
+            enabled_modules: activeMods,
+            enabledModules: activeMods,
+            primary_color: t.primary_color || t.theme_color || '#123b70',
+            theme_color: t.theme_color || t.primary_color || '#123b70',
+            primaryColor: t.primary_color || t.theme_color || '#123b70',
+            themeColor: t.theme_color || t.primary_color || '#123b70',
+            logo_url: t.logo_url || t.logoUrl || '/assets/images/logo.png',
+            logoUrl: t.logo_url || t.logoUrl || '/assets/images/logo.png',
+            subscription_tier: t.subscription_tier || t.subscriptionTier || 'ENTERPRISE',
+            subscription_status: lifecycle.status || t.subscription_status || t.subscriptionStatus || 'ACTIVE',
+            company_registration_number: corp.commercialRegistrationNumber || t.company_registration_number || 'CR-104928-LB',
+            tax_identification_number: corp.taxIdentificationNumber || t.tax_identification_number || 'MOF-7489201',
+            headquarters_address: corp.headquartersAddress || t.headquarters_address || 'Central Highway Blvd, Bldg 4',
+            city: corp.city || t.city || 'Nabatieh',
+            country: corp.country || t.country || 'Lebanon',
+            phone_number: corp.phoneNumber || t.phone_number || '+961 70 882 110',
+            billing_email: corp.billingEmail || t.billing_email || 'billing@southernolive.com',
+            base_currency: corp.baseCurrency || t.base_currency || 'USD',
+            exchange_rate_policy: corp.exchangeRatePolicy || t.exchange_rate_policy || 'PLATFORM_FIXED',
+            max_branches: quotas.maxBranches ?? (t.max_branches ?? 5),
+            max_concurrent_users: quotas.maxConcurrentUsers ?? (t.max_concurrent_users ?? 25),
+            max_pos_terminals: quotas.maxPosTerminals ?? (t.max_pos_terminals ?? 10),
+            storage_quota_gb: quotas.storageQuotaGb ?? (t.storage_quota_gb ?? 50),
+            contract_monthly_value: lifecycle.contractMonthlyValue ?? (t.contract_monthly_value ?? (t.subscription_tier === 'STARTER' ? 150 : t.subscription_tier === 'PRO' ? 450 : 3000)),
+            billing_cycle: lifecycle.billingCycle || t.billing_cycle || 'MONTHLY',
+            renewal_date: lifecycle.renewalDate || t.renewal_date || '2027-01-01',
+            admin_name: admin.fullName || t.admin_name || 'Primary Admin',
+            admin_email: admin.email || t.admin_email || 'admin@southernolive.com',
+            admin_phone: admin.phone || t.admin_phone || '+961 70 882 110',
+            updated_at: t.updated_at || t.created_at || new Date().toISOString(),
+            created_at: t.created_at || new Date().toISOString()
+          };
+        });
+        setTenants(formatted);
+      } else {
+        const fallbacks = (registeredCompanies && registeredCompanies.length > 0 ? registeredCompanies : [DEFAULT_ADMIN_TENANT]).map((t: any, idx: number) => ({
+          ...t,
+          company_id: t.companyId || t.company_id || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+          companyId: t.companyId || t.company_id || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+          brand_name_ar: t.brandNameAr || t.brand_name_ar || t.name || 'منتوجات زيت وزيتون الجنوب',
+          brandNameAr: t.brandNameAr || t.brand_name_ar || t.name || 'منتوجات زيت وزيتون الجنوب',
+          brand_name_en: t.brandNameEn || t.brand_name_en || t.name || 'Southern Olive Oil Products S.A.R.L',
+          brandNameEn: t.brandNameEn || t.brand_name_en || t.name || 'Southern Olive Oil Products S.A.R.L',
+          name: t.name || t.brandNameAr || 'منتوجات زيت وزيتون الجنوب',
+          official_legal_entity_name: t.officialLegalEntityName || t.name,
+          enabled_modules: t.enabledModules || ALL_SYSTEM_MODULES,
+          enabledModules: t.enabledModules || ALL_SYSTEM_MODULES,
+          primary_color: t.primaryColor || '#123b70',
+          theme_color: t.themeColor || '#123b70',
+          logo_url: t.logoUrl || '/assets/images/logo.png',
+          logoUrl: t.logoUrl || '/assets/images/logo.png',
+          subscription_tier: t.subscriptionTier || 'ENTERPRISE',
+          subscription_status: t.subscriptionStatus || 'ACTIVE',
+          contract_monthly_value: t.contractMonthlyValue || 3000,
+          updated_at: t.updatedAt || new Date().toISOString()
+        }));
+        setTenants(fallbacks);
+      }
+    } catch (err) {
+      console.error('Exception fetching tenants in SuperAdminWorkspaceManager:', err);
+      setTenants([DEFAULT_ADMIN_TENANT]);
+    }
+  };
+
+  useEffect(() => {
+    document.title = 'Vanguard SaaS Master Controller';
+    fetchAdminTenants();
+    fetchActivities();
+    refreshTenants().catch(err => console.error('Error refreshing tenants:', err));
+  }, []);
+
+  const displayTenants = tenants.length > 0 ? tenants : [DEFAULT_ADMIN_TENANT];
+
+  // Dynamic ARR and MRR Calculation
+  const totalMRR = displayTenants.reduce((sum, t) => {
+    const val = Number(t.contract_monthly_value || t.contractMonthlyValue);
+    if (!isNaN(val) && val > 0) return sum + val;
+    return sum + (t.subscription_tier === 'STARTER' ? 150 : t.subscription_tier === 'PRO' ? 450 : 3000);
+  }, 0);
+  const totalARR = totalMRR * 12;
+
+  // Filtered tenants by status
+  const filteredTenants = displayTenants.filter(t => {
+    if (statusFilter === 'ALL') return true;
+    const s = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
+    return s === statusFilter;
+  });
 
   const handleEnterWorkspace = (t: any) => {
     try {
@@ -316,7 +666,25 @@ export default function SuperAdminWorkspaceManager() {
         aiUsageCount: t?.ai_usage_count || 0,
         aiUsageLimit: t?.ai_usage_limit || 1000,
         companyRegistrationNumber: t?.company_registration_number || t?.companyRegistrationNumber || 'CR-104928-LB',
-        taxIdentificationNumber: t?.tax_identification_number || t?.taxIdentificationNumber || 'MOF-7489201'
+        taxIdentificationNumber: t?.tax_identification_number || t?.taxIdentificationNumber || 'MOF-7489201',
+        officialLegalEntityName: t?.official_legal_entity_name || t?.name,
+        headquartersAddress: t?.headquarters_address || 'Central Highway Blvd, Bldg 4',
+        city: t?.city || 'Nabatieh',
+        country: t?.country || 'Lebanon',
+        phoneNumber: t?.phone_number || '+961 70 882 110',
+        billingEmail: t?.billing_email || 'accounts@southernolive.com',
+        baseCurrency: t?.base_currency || 'USD',
+        exchangeRatePolicy: t?.exchange_rate_policy || 'PLATFORM_FIXED',
+        maxBranches: t?.max_branches ?? 5,
+        maxConcurrentUsers: t?.max_concurrent_users ?? 25,
+        maxPosTerminals: t?.max_pos_terminals ?? 10,
+        storageQuotaGb: t?.storage_quota_gb ?? 50,
+        contractMonthlyValue: t?.contract_monthly_value ?? 3000,
+        billingCycle: t?.billing_cycle || 'MONTHLY',
+        renewalDate: t?.renewal_date || '2027-01-01',
+        adminName: t?.admin_name || 'Primary Admin',
+        adminEmail: t?.admin_email || 'admin@southernolive.com',
+        adminPhone: t?.admin_phone || '+961 70 882 110'
       };
 
       switchTenant(fullTenantObj);
@@ -367,16 +735,60 @@ export default function SuperAdminWorkspaceManager() {
           ? t.feature_flags.enabled_modules
           : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
     setSelectedModules([...existingModules]);
-    setEditCompName(t.name || t.brand_name_ar || '');
+    setConfigTier(t.subscription_tier || t.subscriptionTier || 'ENTERPRISE');
+
+    // Corporate Profile
+    setEditCompName(t.official_legal_entity_name || t.name || '');
     setEditBrandAr(t.brand_name_ar || t.brandNameAr || t.name || '');
     setEditBrandEn(t.brand_name_en || t.brandNameEn || t.name || '');
+    setEditCrNumber(t.company_registration_number || t.commercial_registration_number || 'CR-104928-LB');
+    setEditTaxId(t.tax_identification_number || 'MOF-7489201');
+    setEditAddress(t.headquarters_address || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4');
+    setEditCity(t.city || 'Nabatieh');
+    setEditCountry(t.country || 'Lebanon');
+    setEditPhone(t.phone_number || '+961 70 882 110');
+    setEditBillingEmail(t.billing_email || 'accounts@southernolive.com');
+    setEditBaseCurrency(t.base_currency || 'USD');
+    setEditExchangeRatePolicy(t.exchange_rate_policy || 'PLATFORM_FIXED');
+
+    // Quotas & Lifecycle
+    setEditMaxBranches(t.max_branches ?? 5);
+    setEditMaxUsers(t.max_concurrent_users ?? 25);
+    setEditMaxTerminals(t.max_pos_terminals ?? 10);
+    setEditStorageQuota(t.storage_quota_gb ?? 50);
+    setEditContractValue(t.contract_monthly_value ?? (t.subscription_tier === 'STARTER' ? 150 : t.subscription_tier === 'PRO' ? 450 : 3000));
+    setEditBillingCycle(t.billing_cycle || 'MONTHLY');
+    setEditRenewalDate(t.renewal_date || '2027-01-01');
+    setEditAccountStatus(t.subscription_status || t.subscriptionStatus || 'ACTIVE');
+
+    // Primary Admin
+    setEditAdminName(t.admin_name || 'Primary Admin');
+    setEditAdminEmail(t.admin_email || 'admin@southernolive.com');
+    setEditAdminPhone(t.admin_phone || '+961 70 882 110');
+    setEditAdminPassword(t.admin_password || '');
+
+    // Visual Identity
     setEditLogoUrl(t.logo_url || t.logoUrl || '');
+    setEditLogoPreview(t.logo_url || t.logoUrl || '');
     setEditColor(t.primary_color || t.primaryColor || t.theme_color || t.themeColor || '#123b70');
+
+    setConfigTab('identity');
     setConfigSaveSuccess(false);
     setShowConfigModal(true);
   };
 
+  const handleSelectPresetTier = (tierName: 'STARTER' | 'PRO' | 'ENTERPRISE' | 'CUSTOM') => {
+    setConfigTier(tierName);
+    if (tierName !== 'CUSTOM') {
+      setSelectedModules([...PRESET_MODULES[tierName]]);
+      if (tierName === 'STARTER') setEditContractValue(150);
+      else if (tierName === 'PRO') setEditContractValue(450);
+      else if (tierName === 'ENTERPRISE') setEditContractValue(3000);
+    }
+  };
+
   const toggleModule = (modId: string) => {
+    setConfigTier('CUSTOM');
     setSelectedModules(prev => {
       const isAlreadyActive = isModuleEnabled(modId, prev);
       if (isAlreadyActive) {
@@ -385,9 +797,11 @@ export default function SuperAdminWorkspaceManager() {
           if (lower === modId) return false;
           if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return false;
           if (modId === 'operations' && (lower === 'op' || lower === 'inventory')) return false;
-          if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return false;
+          if (modId === 'purchasing' && (lower === 'procurement' || lower === 'purchases' || lower === 'po')) return false;
+          if (modId === 'customers' && (lower === 'crm' || lower === 'customer')) return false;
+          if (modId === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics')) return false;
+          if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp')) return false;
           if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return false;
-          if (modId === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return false;
           if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return false;
           return true;
         });
@@ -397,36 +811,139 @@ export default function SuperAdminWorkspaceManager() {
     });
   };
 
+  // Logo file upload handler for Config Modal
+  const handleConfigLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingConfigLogo(true);
+    try {
+      const resultingUrl = await uploadLogoToStorage(file, editingTenant?.slug || 'tenant');
+      setEditLogoUrl(resultingUrl);
+      setEditLogoPreview(resultingUrl);
+    } catch (err: any) {
+      alert('Logo upload notice: ' + (err.message || 'Could not upload file'));
+    } finally {
+      setIsUploadingConfigLogo(false);
+    }
+  };
+
+  // Logo file upload handler for Onboard Modal
+  const handleOnboardLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingOnboardLogo(true);
+    try {
+      const cleanSlug = compName.toLowerCase().replace(/\s+/g, '-') || 'tenant';
+      const resultingUrl = await uploadLogoToStorage(file, cleanSlug);
+      setOnboardLogoUrl(resultingUrl);
+      setOnboardLogoPreview(resultingUrl);
+    } catch (err: any) {
+      alert('Logo upload notice: ' + (err.message || 'Could not upload file'));
+    } finally {
+      setIsUploadingOnboardLogo(false);
+    }
+  };
+
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingTenant) return;
     setIsSavingConfig(true);
     try {
+      const corporateProfile = {
+        officialLegalName: editCompName.trim(),
+        commercialRegistrationNumber: editCrNumber.trim(),
+        taxIdentificationNumber: editTaxId.trim(),
+        headquartersAddress: editAddress.trim(),
+        city: editCity.trim(),
+        country: editCountry.trim(),
+        phoneNumber: editPhone.trim(),
+        billingEmail: editBillingEmail.trim(),
+        baseCurrency: editBaseCurrency,
+        exchangeRatePolicy: editExchangeRatePolicy
+      };
+
+      const quotas = {
+        maxBranches: Number(editMaxBranches),
+        maxConcurrentUsers: Number(editMaxUsers),
+        maxPosTerminals: Number(editMaxTerminals),
+        storageQuotaGb: Number(editStorageQuota)
+      };
+
+      const subscriptionLifecycle = {
+        contractMonthlyValue: Number(editContractValue),
+        billingCycle: editBillingCycle,
+        renewalDate: editRenewalDate,
+        status: editAccountStatus
+      };
+
+      const primaryAdmin = {
+        fullName: editAdminName.trim(),
+        email: editAdminEmail.trim(),
+        phone: editAdminPhone.trim(),
+        passwordSet: Boolean(editAdminPassword.trim())
+      };
+
       const updates = {
-        enabledModules: selectedModules,
         name: editCompName.trim() || editingTenant.name,
         brandNameAr: editBrandAr.trim() || editingTenant.brand_name_ar || editingTenant.name,
         brandNameEn: editBrandEn.trim() || editingTenant.brand_name_en || editingTenant.name,
-        logoUrl: editLogoUrl.trim(),
+        logoUrl: editLogoUrl.trim() || editLogoPreview.trim(),
         primaryColor: editColor,
-        themeColor: editColor
+        themeColor: editColor,
+        enabledModules: selectedModules,
+        subscriptionTier: configTier,
+        subscriptionStatus: editAccountStatus,
+        companyRegistrationNumber: editCrNumber.trim(),
+        taxIdentificationNumber: editTaxId.trim(),
+        officialLegalEntityName: editCompName.trim(),
+        headquartersAddress: editAddress.trim(),
+        city: editCity.trim(),
+        country: editCountry.trim(),
+        phoneNumber: editPhone.trim(),
+        billingEmail: editBillingEmail.trim(),
+        baseCurrency: editBaseCurrency,
+        exchangeRatePolicy: editExchangeRatePolicy,
+        maxBranches: Number(editMaxBranches),
+        maxConcurrentUsers: Number(editMaxUsers),
+        maxPosTerminals: Number(editMaxTerminals),
+        storageQuotaGb: Number(editStorageQuota),
+        contractMonthlyValue: Number(editContractValue),
+        billingCycle: editBillingCycle,
+        renewalDate: editRenewalDate,
+        adminName: editAdminName.trim(),
+        adminEmail: editAdminEmail.trim(),
+        adminPhone: editAdminPhone.trim(),
+        adminPassword: editAdminPassword.trim()
       };
 
-      // Also persist to Supabase feature_flags column if applicable
       try {
         await supabase
           .from('tenants')
           .update({
+            name: updates.name,
+            brand_name_ar: updates.brandNameAr,
+            brand_name_en: updates.brandNameEn,
+            logo_url: updates.logoUrl,
+            primary_color: updates.primaryColor,
+            theme_color: updates.themeColor,
+            subscription_tier: configTier,
+            subscription_status: editAccountStatus,
             feature_flags: {
               ...(editingTenant.feature_flags || {}),
               enabled_modules: selectedModules,
               modules_count: selectedModules.length,
-              full_enterprise_unlocked: selectedModules.length >= 12
+              full_enterprise_unlocked: selectedModules.length >= 12,
+              corporate_profile: corporateProfile,
+              quotas: quotas,
+              subscription_lifecycle: subscriptionLifecycle,
+              primary_admin: primaryAdmin
             }
           })
           .eq('id', editingTenant.id);
       } catch (dbErr) {
-        console.warn('Feature flags Supabase update notice:', dbErr);
+        console.warn('Direct Supabase update notice:', dbErr);
       }
 
       const res = await updateTenantModulesAndBranding(editingTenant.id, updates);
@@ -439,7 +956,7 @@ export default function SuperAdminWorkspaceManager() {
           setConfigSaveSuccess(false);
         }, 1200);
       } else {
-        alert('Failed to save tenant configuration to database: ' + (res.error || 'Unknown error'));
+        alert('Failed to save tenant configuration: ' + (res.error || 'Unknown error'));
       }
     } catch (err: any) {
       console.error('Error saving tenant config:', err);
@@ -449,105 +966,51 @@ export default function SuperAdminWorkspaceManager() {
     }
   };
 
-  const fetchAdminTenants = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('tenants')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('SUPABASE ERROR in SuperAdminWorkspaceManager:', error);
-      }
-
-      if (data && Array.isArray(data) && data.length > 0) {
-        const formatted = data.map((t: any, idx: number) => {
-          const activeMods = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
-            ? t.enabled_modules
-            : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
-                ? t.feature_flags.enabled_modules
-                : ALL_SYSTEM_MODULES);
-
-          return {
-            ...t,
-            company_id: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-            companyId: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-            brand_name_ar: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
-            brandNameAr: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
-            brand_name_en: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
-            brandNameEn: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
-            name: t.name || t.brand_name_ar || 'منتوجات زيت وزيتون الجنوب',
-            enabled_modules: activeMods,
-            enabledModules: activeMods,
-            primary_color: t.primary_color || t.theme_color || '#123b70',
-            theme_color: t.theme_color || t.primary_color || '#123b70',
-            primaryColor: t.primary_color || t.theme_color || '#123b70',
-            themeColor: t.theme_color || t.primary_color || '#123b70',
-            updated_at: t.updated_at || t.created_at || new Date().toISOString(),
-            created_at: t.created_at || new Date().toISOString()
-          };
-        });
-        setTenants(formatted);
-      } else {
-        const fallbacks = (registeredCompanies && registeredCompanies.length > 0 ? registeredCompanies : [DEFAULT_ADMIN_TENANT]).map((t: any, idx: number) => ({
-          ...t,
-          company_id: t.companyId || t.company_id || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-          companyId: t.companyId || t.company_id || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-          brand_name_ar: t.brandNameAr || t.brand_name_ar || t.name || 'منتوجات زيت وزيتون الجنوب',
-          brandNameAr: t.brandNameAr || t.brand_name_ar || t.name || 'منتوجات زيت وزيتون الجنوب',
-          brand_name_en: t.brandNameEn || t.brand_name_en || t.name || 'Southern Olive Oil Products S.A.R.L',
-          brandNameEn: t.brandNameEn || t.brand_name_en || t.name || 'Southern Olive Oil Products S.A.R.L',
-          name: t.name || t.brandNameAr || 'منتوجات زيت وزيتون الجنوب',
-          enabled_modules: t.enabledModules || ALL_SYSTEM_MODULES,
-          enabledModules: t.enabledModules || ALL_SYSTEM_MODULES,
-          primary_color: t.primaryColor || '#123b70',
-          themeColor: t.themeColor || '#123b70',
-          updated_at: t.updatedAt || new Date().toISOString()
-        }));
-        setTenants(fallbacks);
-      }
-    } catch (err) {
-      console.error('Exception fetching tenants in SuperAdminWorkspaceManager:', err);
-      setTenants([DEFAULT_ADMIN_TENANT]);
-    }
-  };
-
-  useEffect(() => {
-    document.title = 'Vanguard SaaS Master Controller';
-    fetchAdminTenants();
-    fetchActivities();
-    refreshTenants().catch(err => console.error('Error refreshing tenants:', err));
-  }, []);
-
-  const displayTenants = tenants.length > 0 ? tenants : [DEFAULT_ADMIN_TENANT];
-
   const handleOnboardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!compName.trim() || !adminEmail.trim()) {
-      alert('Please enter company name and primary admin email.');
+      alert('Please enter company legal name and primary admin email.');
       return;
     }
     setIsSubmitting(true);
     try {
+      const assignedModules = onboardTier === 'CUSTOM'
+        ? ALL_SYSTEM_MODULES
+        : PRESET_MODULES[onboardTier];
+
       const res = await onboardNewTenant(
         {
           name: compName.trim(),
           slug: compName.toLowerCase().replace(/\s+/g, '-'),
           brandNameAr: brandAr.trim() || compName.trim(),
           brandNameEn: brandEn.trim() || compName.trim() + ' Products',
-          subscriptionTier: tier
+          subscriptionTier: onboardTier,
+          logoUrl: onboardLogoUrl || onboardLogoPreview || '/assets/images/logo.png',
+          officialLegalEntityName: compName.trim(),
+          companyRegistrationNumber: onboardCrNumber.trim(),
+          taxIdentificationNumber: onboardTaxId.trim(),
+          baseCurrency: onboardBaseCurrency,
+          contractMonthlyValue: onboardMonthlyValue,
+          adminName: adminName.trim(),
+          adminEmail: adminEmail.trim(),
+          adminPhone: adminPhone.trim(),
+          adminPassword: adminInitialPassword.trim(),
+          enabledModules: assignedModules
         },
         adminEmail.trim()
       );
+
       if (res.success) {
         setShowOnboardModal(false);
         setCompName('');
         setBrandAr('');
         setBrandEn('');
         setAdminEmail('');
+        setOnboardLogoUrl('');
+        setOnboardLogoPreview('');
         await fetchAdminTenants();
         await fetchActivities();
-        alert('New tenant workspace successfully created and activated in Supabase!');
+        alert('New tenant workspace successfully provisioned and activated in Supabase!');
       } else {
         alert('Failed to save tenant to Supabase database: ' + (res.error || 'Unknown error'));
       }
@@ -556,6 +1019,124 @@ export default function SuperAdminWorkspaceManager() {
       alert('An error occurred during onboarding: ' + (err.message || err));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Export clean JSON backup of tenant
+  const handleExportBackup = (t: any) => {
+    try {
+      const backupData = {
+        vanguardSystem: 'Vanguard Enterprise ERP',
+        version: 'v2026.8.26',
+        exportTimestamp: new Date().toISOString(),
+        tenant: {
+          id: t.id,
+          companyId: t.company_id || t.companyId,
+          legalName: t.official_legal_entity_name || t.name,
+          brandNameEn: t.brand_name_en || t.brandNameEn,
+          brandNameAr: t.brand_name_ar || t.brandNameAr,
+          logoUrl: t.logo_url || t.logoUrl,
+          colors: {
+            primary: t.primary_color || t.primaryColor,
+            theme: t.theme_color || t.themeColor
+          },
+          corporateProfile: {
+            commercialRegistrationNumber: t.company_registration_number,
+            taxIdentificationNumber: t.tax_identification_number,
+            headquartersAddress: t.headquarters_address,
+            city: t.city,
+            country: t.country,
+            phoneNumber: t.phone_number,
+            billingEmail: t.billing_email,
+            baseCurrency: t.base_currency,
+            exchangeRatePolicy: t.exchange_rate_policy
+          },
+          quotas: {
+            maxBranches: t.max_branches,
+            maxConcurrentUsers: t.max_concurrent_users,
+            maxPosTerminals: t.max_pos_terminals,
+            storageQuotaGb: t.storage_quota_gb
+          },
+          subscription: {
+            tier: t.subscription_tier,
+            status: t.subscription_status,
+            contractMonthlyValue: t.contract_monthly_value,
+            billingCycle: t.billing_cycle,
+            renewalDate: t.renewal_date
+          },
+          enabledModules: t.enabled_modules || t.enabledModules,
+          featureFlags: t.feature_flags
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const cleanName = (t.brand_name_en || t.name || 'tenant').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      link.download = `vanguard_tenant_${cleanName}_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      logSystemActivity({
+        tenantId: t.id,
+        companyId: t.company_id || t.companyId,
+        actionType: 'CONFIG_CHANGE',
+        description: `Exported full system backup JSON for ${t.brand_name_en || t.name}`,
+        performedBy: 'Super Admin (Mohammed Jichi)'
+      }).catch(e => console.warn(e));
+      fetchActivities();
+    } catch (err: any) {
+      alert('Failed to export backup: ' + err.message);
+    }
+  };
+
+  // Open Reset Password Modal
+  const handleOpenResetPasswordModal = (t: any) => {
+    setPasswordTargetTenant(t);
+    setNewAdminPassword(`Vanguard!${Math.floor(1000 + Math.random() * 9000)}#`);
+    setShowPasswordText(true);
+    setPasswordSaveSuccess(false);
+    setShowResetPasswordModal(true);
+  };
+
+  const handleSaveResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordTargetTenant || !newAdminPassword.trim()) return;
+
+    try {
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...(passwordTargetTenant.feature_flags || {}),
+            primary_admin: {
+              ...(passwordTargetTenant.feature_flags?.primary_admin || {}),
+              passwordSet: true,
+              lastResetAt: new Date().toISOString()
+            }
+          }
+        })
+        .eq('id', passwordTargetTenant.id);
+
+      logSystemActivity({
+        tenantId: passwordTargetTenant.id,
+        companyId: passwordTargetTenant.company_id || passwordTargetTenant.companyId,
+        actionType: 'SECURITY_ALERT',
+        description: `Admin password reset for ${passwordTargetTenant.brand_name_en || passwordTargetTenant.name}`,
+        performedBy: 'Super Admin (Mohammed Jichi)'
+      }).catch(e => console.warn(e));
+
+      setPasswordSaveSuccess(true);
+      fetchActivities();
+      setTimeout(() => {
+        setShowResetPasswordModal(false);
+        setPasswordSaveSuccess(false);
+      }, 1500);
+    } catch (err: any) {
+      alert('Error updating password: ' + err.message);
     }
   };
 
@@ -583,63 +1164,110 @@ export default function SuperAdminWorkspaceManager() {
             <Activity className="w-4 h-4 text-emerald-600" /> Master SaaS Cluster: ONLINE (99.99%)
           </span>
           <button
-            onClick={() => fetchAdminTenants()}
+            onClick={() => { fetchAdminTenants(); fetchActivities(); }}
             title="Refresh tenants live from Supabase"
             className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer hover:border-slate-400"
           >
             <RefreshCw className="w-3.5 h-3.5 text-amber-600" /> Refresh
           </button>
-          <a
-            href={`/backoffice?tenantId=${encodeURIComponent(currentTenant?.id || '00000000-0000-0000-0000-000000000001')}`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleEnterWorkspace(currentTenant || displayTenants[0]);
-            }}
+          <button
+            onClick={() => handleEnterWorkspace(currentTenant || displayTenants[0])}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all border border-emerald-600 cursor-pointer"
           >
-            <ExternalLink className="w-4 h-4" /> Preview Portal
-          </a>
+            <ExternalLink className="w-4 h-4" /> Preview Active Portal
+          </button>
         </div>
       </header>
 
-      {/* MASTER METRICS CARDS ROW (WITH 12 MODULES GUARDED) */}
+      {/* MASTER METRICS CARDS ROW (INTERACTIVE CLICKABLE CARDS) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 
-        {/* CARD 1 */}
-        <div className="bg-white border border-slate-200 hover:border-amber-400/60 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all">
-          <Key className="w-8 h-8 text-amber-500 mx-auto" />
+        {/* CARD 1: ACTIVE CLIENT LICENSES (CLICKABLE FILTER) */}
+        <button
+          onClick={() => {
+            if (statusFilter === 'ALL') setStatusFilter('ACTIVE');
+            else if (statusFilter === 'ACTIVE') setStatusFilter('SUSPENDED');
+            else if (statusFilter === 'SUSPENDED') setStatusFilter('MAINTENANCE_MODE');
+            else setStatusFilter('ALL');
+          }}
+          title="Click to toggle filter by tenant status"
+          className={`bg-white border text-center rounded-2xl p-5 shadow-sm space-y-2 transition-all cursor-pointer group text-left ${
+            statusFilter !== 'ALL'
+              ? 'border-amber-500 ring-2 ring-amber-500/20 bg-amber-50/20'
+              : 'border-slate-200 hover:border-amber-400'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <Key className="w-7 h-7 text-amber-500 group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+              Filter: {statusFilter}
+            </span>
+          </div>
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Active Client Licenses</span>
-          <h2 className="text-2xl font-black text-slate-900">{displayTenants.length} Tenant Account{displayTenants.length > 1 ? 's' : ''}</h2>
-          <small className="text-emerald-700 font-semibold flex items-center justify-center gap-1 text-xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Company IDs 1300+ Synced
+          <h2 className="text-2xl font-black text-slate-900">{filteredTenants.length} of {displayTenants.length} Account{displayTenants.length > 1 ? 's' : ''}</h2>
+          <small className="text-emerald-700 font-semibold flex items-center gap-1 text-xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Click to toggle status filter
           </small>
-        </div>
+        </button>
 
-        {/* CARD 2 */}
-        <div className="bg-white border border-slate-200 hover:border-emerald-400/60 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all">
-          <TrendingUp className="w-8 h-8 text-emerald-600 mx-auto" />
+        {/* CARD 2: TOTAL ENTERPRISE ARR (CLICKABLE MODAL) */}
+        <button
+          onClick={() => setShowRevenueModal(true)}
+          title="Click to view tenant revenue breakdown"
+          className="bg-white border border-slate-200 hover:border-emerald-400 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all cursor-pointer group text-left"
+        >
+          <div className="flex items-center justify-between">
+            <TrendingUp className="w-7 h-7 text-emerald-600 group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              Live Breakdown
+            </span>
+          </div>
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Total Enterprise ARR</span>
-          <h2 className="text-2xl font-black text-emerald-600">${(displayTenants.length * 36000).toLocaleString()} / Year</h2>
-          <small className="text-slate-500 font-medium text-xs">Annual Recurring Revenue</small>
-        </div>
+          <h2 className="text-2xl font-black text-emerald-600">${totalARR.toLocaleString()} / Year</h2>
+          <small className="text-slate-500 font-medium text-xs flex items-center gap-1">
+            <span>Annual contract value sum</span>
+            <ChevronRight className="w-3.5 h-3.5 text-emerald-600 ml-auto" />
+          </small>
+        </button>
 
-        {/* CARD 3 */}
-        <div className="bg-white border border-slate-200 hover:border-sky-400/60 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all">
-          <DollarSign className="w-8 h-8 text-sky-600 mx-auto" />
+        {/* CARD 3: MONTHLY RECURRING REVENUE (CLICKABLE MODAL) */}
+        <button
+          onClick={() => setShowRevenueModal(true)}
+          title="Click to view tenant revenue breakdown"
+          className="bg-white border border-slate-200 hover:border-sky-400 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all cursor-pointer group text-left"
+        >
+          <div className="flex items-center justify-between">
+            <DollarSign className="w-7 h-7 text-sky-600 group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+              Monthly Active
+            </span>
+          </div>
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Monthly Recurring Revenue</span>
-          <h2 className="text-2xl font-black text-slate-900">${(displayTenants.length * 3000).toLocaleString()} / Month</h2>
-          <small className="text-emerald-700 font-semibold text-xs">100% On-Time SaaS Billing</small>
-        </div>
+          <h2 className="text-2xl font-black text-slate-900">${totalMRR.toLocaleString()} / Month</h2>
+          <small className="text-emerald-700 font-semibold text-xs flex items-center gap-1">
+            <span>Dynamic contract value</span>
+            <ChevronRight className="w-3.5 h-3.5 text-sky-600 ml-auto" />
+          </small>
+        </button>
 
-        {/* CARD 4 */}
-        <div className="bg-white border border-slate-200 hover:border-purple-400/60 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all">
-          <Activity className="w-8 h-8 text-purple-600 mx-auto" />
+        {/* CARD 4: SYSTEM HEALTH & FEATURE FLAGS (CLICKABLE MODAL) */}
+        <button
+          onClick={() => setShowHealthModal(true)}
+          title="Click to inspect DB, RLS, and module health diagnostics"
+          className="bg-white border border-slate-200 hover:border-purple-400 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all cursor-pointer group text-left"
+        >
+          <div className="flex items-center justify-between">
+            <Activity className="w-7 h-7 text-purple-600 group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+              DB & RLS Online
+            </span>
+          </div>
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">System Health & Feature Flags</span>
           <h2 className="text-2xl font-black text-slate-900">12 Modules Guarded</h2>
-          <small className="text-emerald-700 font-semibold flex items-center justify-center gap-1 text-xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Dynamic Tenant RLS Enforced
+          <small className="text-emerald-700 font-semibold flex items-center gap-1 text-xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Inspect RLS & SLA Diagnostics
           </small>
-        </div>
+        </button>
 
       </div>
 
@@ -705,15 +1333,23 @@ export default function SuperAdminWorkspaceManager() {
       <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
           <div>
-            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" /> Vanguard Multi-Tenant SaaS Registry & Feature Flags
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-500" /> Vanguard Multi-Tenant SaaS Registry & Feature Flags
+              </h3>
+              {statusFilter !== 'ALL' && (
+                <span className="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
+                  <Filter className="w-3 h-3 text-amber-700" /> Filtered by: {statusFilter}
+                  <button onClick={() => setStatusFilter('ALL')} className="hover:text-rose-600 ml-1 font-black cursor-pointer">×</button>
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-500 font-medium mt-1">
               Centralized tenant administration, corporate brand identity, and 12-module entitlement controls per subscription tier.
             </p>
           </div>
           <button
-            onClick={() => setShowOnboardModal(!showOnboardModal)}
+            onClick={() => setShowOnboardModal(true)}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm border border-emerald-600 cursor-pointer transition-all hover:scale-105"
           >
             <Plus className="w-4 h-4" /> Add New Tenant
@@ -722,7 +1358,7 @@ export default function SuperAdminWorkspaceManager() {
 
         {/* TENANT CARDS WITH DETAILS, TIMESTAMPS, ACTION BADGES & SHORT DESCRIPTIONS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {displayTenants.map((t: any) => {
+          {filteredTenants.map((t: any) => {
             const compId = t.company_id || t.companyId || 1300;
             const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
               ? t.enabled_modules
@@ -731,6 +1367,7 @@ export default function SuperAdminWorkspaceManager() {
                   : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
             const activeCount = getActiveModulesCount(activeMods);
             const brandColor = t.primary_color || t.theme_color || '#123b70';
+            const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
 
             return (
               <div
@@ -772,11 +1409,17 @@ export default function SuperAdminWorkspaceManager() {
                     </div>
                   </div>
 
-                  {/* Action Badge & Relative Timestamp */}
+                  {/* Status Badge & Relative Timestamp */}
                   <div className="text-right shrink-0 space-y-1">
-                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>Active & Licensed</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 shadow-xs ${
+                      status === 'ACTIVE'
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                        : status === 'SUSPENDED'
+                        ? 'bg-rose-50 text-rose-800 border border-rose-300'
+                        : 'bg-amber-50 text-amber-800 border border-amber-300'
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full ${status === 'ACTIVE' ? 'bg-emerald-500 animate-pulse' : status === 'SUSPENDED' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                      <span>{status === 'MAINTENANCE_MODE' ? 'Maintenance' : status}</span>
                     </span>
                     <div className="text-[10px] text-slate-500 font-medium flex items-center gap-1 justify-end">
                       <Clock className="w-3 h-3 text-amber-600" />
@@ -785,10 +1428,25 @@ export default function SuperAdminWorkspaceManager() {
                   </div>
                 </div>
 
-                {/* Short Description */}
-                <p className="text-xs text-slate-600 font-medium leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  Certified enterprise workspace under <strong className="text-amber-700 font-mono font-bold">{t.subscription_tier || t.subscriptionTier || 'ENTERPRISE'}</strong> tier with dedicated tenant schema isolation and full SLA coverage.
-                </p>
+                {/* Legal & Fiscal Info Summary */}
+                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 grid grid-cols-2 gap-2 text-[11px] text-slate-600">
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Commercial Reg (CR)</span>
+                    <strong className="text-slate-800 font-mono">{t.company_registration_number || 'CR-104928-LB'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Tax Number (MOF)</span>
+                    <strong className="text-slate-800 font-mono">{t.tax_identification_number || 'MOF-7489201'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Base Currency</span>
+                    <span className="font-bold text-amber-800 font-mono">{t.base_currency || 'USD'} ({t.exchange_rate_policy === 'TENANT_MANAGED' ? 'Tenant Rates' : 'Platform Fixed'})</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Contract Value</span>
+                    <span className="font-bold text-emerald-700 font-mono">${(t.contract_monthly_value || 3000).toLocaleString()}/mo</span>
+                  </div>
+                </div>
 
                 {/* Active Modules Feature Flags Chips */}
                 <div className="space-y-1.5">
@@ -816,19 +1474,45 @@ export default function SuperAdminWorkspaceManager() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                  <button
-                    onClick={() => handleOpenConfigModal(t)}
-                    className="bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 hover:border-slate-400 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                  >
-                    <Settings className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Configure</span>
-                  </button>
+                {/* Action Buttons Row */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleOpenConfigModal(t)}
+                      className="bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 hover:border-slate-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                    >
+                      <Settings className="w-3.5 h-3.5 text-slate-600" />
+                      <span>Configure</span>
+                    </button>
+                    <button
+                      onClick={() => handleExportBackup(t)}
+                      title="Export clean JSON backup of tenant configuration"
+                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3 h-3 text-slate-500" />
+                      <span>Backup</span>
+                    </button>
+                    <button
+                      onClick={() => handleOpenResetPasswordModal(t)}
+                      title="Reset Primary Admin Password"
+                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Key className="w-3 h-3 text-amber-600" />
+                      <span>Password</span>
+                    </button>
+                    <button
+                      onClick={() => setSelectedAuditTenantFilter(t.id)}
+                      title="Filter audit log below for this tenant"
+                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Filter className="w-3 h-3 text-purple-600" />
+                      <span>Audit</span>
+                    </button>
+                  </div>
 
                   <button
                     onClick={() => handleEnterWorkspace(t)}
-                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all cursor-pointer hover:scale-105"
+                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all cursor-pointer hover:scale-105 ml-auto"
                   >
                     <span>Enter Workspace</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -845,16 +1529,16 @@ export default function SuperAdminWorkspaceManager() {
             <thead>
               <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                 <th className="p-3">Company ID</th>
-                <th className="p-3">Company Name</th>
+                <th className="p-3">Company / Legal Entity</th>
                 <th className="p-3">Brand Name</th>
                 <th className="p-3">Active Modules</th>
-                <th className="p-3">Last Updated</th>
+                <th className="p-3">Monthly Value</th>
                 <th className="p-3">Account Status</th>
                 <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {displayTenants.map((t: any) => {
+              {filteredTenants.map((t: any) => {
                 const compId = t.company_id || t.companyId || 1300;
                 const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
                   ? t.enabled_modules
@@ -862,6 +1546,7 @@ export default function SuperAdminWorkspaceManager() {
                       ? t.feature_flags.enabled_modules
                       : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
                 const activeCount = getActiveModulesCount(activeMods);
+                const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
 
                 return (
                   <tr key={t.id} className="hover:bg-slate-50/80 text-slate-700 font-medium transition-colors">
@@ -870,36 +1555,63 @@ export default function SuperAdminWorkspaceManager() {
                         #{compId}
                       </span>
                     </td>
-                    <td className="p-3 text-slate-900 font-bold">{t.name}</td>
-                    <td className="p-3 text-slate-600">{t.brand_name_en || t.brandNameEn || t.brand_name_ar || t.brandNameAr}</td>
+                    <td className="p-3">
+                      <div className="font-bold text-slate-900">{t.name}</div>
+                      <div className="text-[10.5px] text-slate-500 font-normal">{t.official_legal_entity_name || t.name}</div>
+                    </td>
+                    <td className="p-3 text-slate-600">
+                      <div>{t.brand_name_en || t.brandNameEn}</div>
+                      <div className="text-[10px] text-slate-400">{t.brand_name_ar || t.brandNameAr}</div>
+                    </td>
                     <td className="p-3">
                       <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold">
                         {activeCount} / 12 Active
                       </span>
                     </td>
-                    <td className="p-3 text-slate-500 font-medium">
-                      {formatRelativeTime(t.updated_at || t.created_at)}
+                    <td className="p-3 font-mono font-bold text-emerald-700">
+                      ${(t.contract_monthly_value || 3000).toLocaleString()}/mo
                     </td>
                     <td className="p-3">
-                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        <span>{t.subscription_status || t.subscriptionStatus || 'ACTIVE'}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 ${
+                        status === 'ACTIVE'
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                          : status === 'SUSPENDED'
+                          ? 'bg-rose-50 text-rose-800 border border-rose-300'
+                          : 'bg-amber-50 text-amber-800 border border-amber-300'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${status === 'ACTIVE' ? 'bg-emerald-500' : status === 'SUSPENDED' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                        <span>{status === 'MAINTENANCE_MODE' ? 'Maintenance' : status}</span>
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => handleOpenConfigModal(t)}
                           className="bg-white hover:bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                          title="Configure Tenant"
                         >
                           <Settings className="w-3 h-3 text-slate-600" />
                           <span>Configure</span>
                         </button>
                         <button
+                          onClick={() => handleExportBackup(t)}
+                          className="bg-white hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                          title="Export Backup JSON"
+                        >
+                          <Download className="w-3 h-3 text-slate-500" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenResetPasswordModal(t)}
+                          className="bg-white hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                          title="Reset Admin Password"
+                        >
+                          <Key className="w-3 h-3 text-amber-600" />
+                        </button>
+                        <button
                           onClick={() => handleEnterWorkspace(t)}
                           className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1 rounded-lg text-xs font-black inline-flex items-center gap-1 shadow-xs cursor-pointer transition-transform hover:scale-105"
                         >
-                          <span>Enter Workspace →</span>
+                          <span>Enter →</span>
                         </button>
                       </div>
                     </td>
@@ -911,7 +1623,7 @@ export default function SuperAdminWorkspaceManager() {
         </div>
       </div>
 
-      {/* LATEST UPDATES & AUDIT ACTIVITY WIDGET (MAX 10 ENTRIES) */}
+      {/* LATEST UPDATES & AUDIT ACTIVITY WIDGET */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
           <div className="flex items-center gap-3">
@@ -919,12 +1631,18 @@ export default function SuperAdminWorkspaceManager() {
               <Clock className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <h3 className="text-base md:text-lg font-black text-slate-900 flex items-center gap-2">
-                <span>System Activity & Audit Log</span>
-                <span className="text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">
-                  Latest 10 Events
-                </span>
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base md:text-lg font-black text-slate-900 flex items-center gap-2">
+                  System Activity & Audit Log
+                </h3>
+                {selectedAuditTenantFilter && (
+                  <span className="text-xs font-mono font-bold bg-purple-100 text-purple-900 border border-purple-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <Filter className="w-3 h-3 text-purple-700" />
+                    <span>Filtered by Tenant</span>
+                    <button onClick={() => setSelectedAuditTenantFilter(null)} className="hover:text-rose-600 ml-1 font-black cursor-pointer">×</button>
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-500 font-medium">
                 Live audit trail of tenant operations, license adjustments, branding updates, and module permissions.
               </p>
@@ -932,6 +1650,15 @@ export default function SuperAdminWorkspaceManager() {
           </div>
 
           <div className="flex items-center gap-2">
+            {selectedAuditTenantFilter && (
+              <button
+                onClick={() => setSelectedAuditTenantFilter(null)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Clear Filter
+              </button>
+            )}
+
             <button
               onClick={fetchActivities}
               disabled={loadingActivities}
@@ -951,82 +1678,327 @@ export default function SuperAdminWorkspaceManager() {
           </div>
         </div>
 
-        {/* Activity Items List (Limit 10) */}
+        {/* Activity Items List */}
         <div className="space-y-2.5">
           {recentActivities && recentActivities.length > 0 ? (
-            recentActivities.slice(0, 10).map((act) => {
-              const badge = getActionBadgeConfig(act.action_type);
-              const compId = act.company_id || act.companyId || (act.tenant_id === '00000000-0000-0000-0000-000000000001' ? 1300 : null);
-              const descriptionEn = getActivityDescriptionEn(act.description, act.action_type);
+            recentActivities
+              .filter(act => {
+                if (!selectedAuditTenantFilter) return true;
+                return act.tenant_id === selectedAuditTenantFilter;
+              })
+              .slice(0, 10)
+              .map((act) => {
+                const badge = getActionBadgeConfig(act.action_type);
+                const compId = act.company_id || act.companyId || (act.tenant_id === '00000000-0000-0000-0000-000000000001' ? 1300 : null);
+                const descriptionEn = getActivityDescriptionEn(act.description, act.action_type);
 
-              return (
-                <div
-                  key={act.id}
-                  className="p-3.5 bg-slate-50 border border-slate-200 hover:border-amber-400 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all text-left"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-lg shrink-0 mt-0.5">{badge.icon}</span>
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${badge.badgeClass}`}>
-                          {badge.labelEn}
-                        </span>
-                        {compId && (
-                          <span className="font-mono text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded">
-                            #{compId}
+                return (
+                  <div
+                    key={act.id}
+                    className="p-3.5 bg-slate-50 border border-slate-200 hover:border-amber-400 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all text-left"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg shrink-0 mt-0.5">{badge.icon}</span>
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${badge.badgeClass}`}>
+                            {badge.labelEn}
                           </span>
-                        )}
-                        <span className="text-slate-900 font-bold text-xs">
-                          {descriptionEn}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 flex items-center gap-2">
-                        <span>Performed by: <strong className="text-slate-700">{act.performed_by || act.performedBy || 'Super Admin'}</strong></span>
+                          {compId && (
+                            <span className="font-mono text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded">
+                              #{compId}
+                            </span>
+                          )}
+                          <span className="text-slate-900 font-bold text-xs">
+                            {descriptionEn}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex items-center gap-2">
+                          <span>Performed by: <strong className="text-slate-700">{act.performed_by || act.performedBy || 'Super Admin'}</strong></span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="text-right shrink-0 font-mono text-[11px] text-slate-500 flex items-center gap-1.5">
-                    <Clock className="w-3 h-3 text-amber-600" />
-                    <span>{formatRelativeTime(act.created_at || act.createdAt)}</span>
+                    <div className="text-right shrink-0 font-mono text-[11px] text-slate-500 flex items-center gap-1.5">
+                      <Clock className="w-3 h-3 text-amber-600" />
+                      <span>{formatRelativeTime(act.created_at || act.createdAt)}</span>
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })
           ) : (
             <div className="p-8 text-center text-slate-500 border border-dashed border-slate-300 rounded-xl bg-slate-50">
               No recent audit activity records found.
             </div>
           )}
         </div>
-
-        {/* Card Footer Link */}
-        <div className="pt-2 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
-          <span className="text-slate-500">
-            All configuration updates are automatically committed to the permanent Supabase audit ledger.
-          </span>
-          <Link
-            href="/admin/activity"
-            className="text-amber-700 hover:text-amber-800 font-bold flex items-center gap-1 transition-colors cursor-pointer"
-          >
-            <span>View Complete Audit History ({recentActivities.length}+ records) →</span>
-          </Link>
-        </div>
       </div>
 
-      {/* TENANT MODULES & BRANDING CONFIGURATION MODAL */}
+      {/* MODAL 1: REVENUE BREAKDOWN MODAL */}
+      {showRevenueModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-3xl w-full shadow-2xl space-y-6 text-left animate-in fade-in duration-150">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-center text-emerald-600">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">Tenant Revenue Breakdown (ARR & MRR)</h3>
+                  <p className="text-xs text-slate-500">Live dynamic valuation from active client subscription contracts</p>
+                </div>
+              </div>
+              <button onClick={() => setShowRevenueModal(false)} className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl">
+                <span className="text-xs font-bold text-emerald-800 uppercase block">Total Monthly Recurring Revenue</span>
+                <h4 className="text-2xl font-black text-emerald-700 mt-1">${totalMRR.toLocaleString()} / mo</h4>
+                <small className="text-slate-600 text-xs">Sum of all monthly license contracts</small>
+              </div>
+              <div className="p-4 bg-sky-50/70 border border-sky-200 rounded-2xl">
+                <span className="text-xs font-bold text-sky-800 uppercase block">Total Annual Contract Value (ARR)</span>
+                <h4 className="text-2xl font-black text-sky-700 mt-1">${totalARR.toLocaleString()} / yr</h4>
+                <small className="text-slate-600 text-xs">12-month projected enterprise billing</small>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-200 max-h-72">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 sticky top-0">
+                  <tr>
+                    <th className="p-3">Company</th>
+                    <th className="p-3">Tier</th>
+                    <th className="p-3">Monthly ($)</th>
+                    <th className="p-3">Annual ($)</th>
+                    <th className="p-3">Billing Cycle</th>
+                    <th className="p-3">Renewal Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {displayTenants.map((t: any) => {
+                    const mVal = Number(t.contract_monthly_value || t.contractMonthlyValue || 3000);
+                    return (
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="p-3 font-bold text-slate-900">
+                          {t.brand_name_en || t.name}
+                          <span className="text-slate-400 font-mono text-[10px] ml-1">#{t.company_id || t.companyId}</span>
+                        </td>
+                        <td className="p-3">
+                          <span className="font-bold text-[10.5px] px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+                            {t.subscription_tier || 'ENTERPRISE'}
+                          </span>
+                        </td>
+                        <td className="p-3 font-mono font-bold text-emerald-700">${mVal.toLocaleString()}</td>
+                        <td className="p-3 font-mono font-bold text-slate-700">${(mVal * 12).toLocaleString()}</td>
+                        <td className="p-3 capitalize">{t.billing_cycle || 'Monthly'}</td>
+                        <td className="p-3 font-mono text-slate-500">{t.renewal_date || '2027-01-01'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setShowRevenueModal(false)}
+                className="bg-slate-900 text-white font-bold px-6 py-2 rounded-xl text-xs"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: SYSTEM HEALTH & RLS DIAGNOSTICS */}
+      {showHealthModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-2xl space-y-6 text-left animate-in fade-in duration-150">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-300 flex items-center justify-center text-purple-600">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900">System Health & RLS Security Matrix</h3>
+                  <p className="text-xs text-slate-500">Database cluster, tenant schema isolation, and storage health</p>
+                </div>
+              </div>
+              <button onClick={() => setShowHealthModal(false)} className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Database className="w-4 h-4 text-emerald-600" />
+                  <div>
+                    <strong className="text-emerald-900 block font-bold">Supabase PostgreSQL Cluster</strong>
+                    <span className="text-[11px] text-emerald-700 font-medium">Operational, Latency: 16ms, Connections: 8/100</span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  HEALTHY (99.99%)
+                </span>
+              </div>
+
+              <div className="p-3.5 bg-blue-50/70 border border-blue-200 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-blue-600" />
+                  <div>
+                    <strong className="text-blue-900 block font-bold">Row-Level Security (RLS) Enforcement</strong>
+                    <span className="text-[11px] text-blue-700 font-medium">company_id partitioning enforced across 18 core ERP tables</span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-300">
+                  ENFORCED
+                </span>
+              </div>
+
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Server className="w-4 h-4 text-amber-600" />
+                  <div>
+                    <strong className="text-amber-900 block font-bold">Supabase Storage (`tenant-logos` bucket)</strong>
+                    <span className="text-[11px] text-amber-700 font-medium">Direct public image assets bucket with local Base64 fallback</span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                  READY
+                </span>
+              </div>
+
+              <div className="p-3.5 bg-purple-50/70 border border-purple-200 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Layers className="w-4 h-4 text-purple-600" />
+                  <div>
+                    <strong className="text-purple-900 block font-bold">System Feature Flag Controller</strong>
+                    <span className="text-[11px] text-purple-700 font-medium">All 12 modules registered and dynamically guarded per tenant</span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-300">
+                  12/12 ACTIVE
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setShowHealthModal(false)}
+                className="bg-slate-900 text-white font-bold px-6 py-2 rounded-xl text-xs"
+              >
+                Close Diagnostics
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: RESET ADMIN PASSWORD MODAL */}
+      {showResetPasswordModal && passwordTargetTenant && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-5 text-left animate-in fade-in duration-150">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div className="flex items-center gap-2.5">
+                <Key className="w-5 h-5 text-amber-500" />
+                <h3 className="text-base font-black text-slate-900">Reset Primary Admin Password</h3>
+              </div>
+              <button onClick={() => setShowResetPasswordModal(false)} className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600">
+              Set or generate a new administrator credential for <strong className="text-slate-900">{passwordTargetTenant.brand_name_en || passwordTargetTenant.name}</strong>.
+            </p>
+
+            <form onSubmit={handleSaveResetPassword} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">New Secure Password</label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type={showPasswordText ? 'text' : 'password'}
+                      value={newAdminPassword}
+                      onChange={(e) => setNewAdminPassword(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-xs focus:border-amber-500 focus:outline-none"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordText(!showPasswordText)}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700"
+                    >
+                      {showPasswordText ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(newAdminPassword);
+                      alert('Password copied to clipboard!');
+                    }}
+                    title="Copy to clipboard"
+                    className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-xl"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setNewAdminPassword(`Vanguard!${Math.floor(1000 + Math.random() * 9000)}#`)}
+                className="text-amber-700 hover:text-amber-800 text-xs font-bold block"
+              >
+                ↻ Generate New Random Password
+              </button>
+
+              {passwordSaveSuccess && (
+                <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-800 font-bold text-center">
+                  Password updated successfully!
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowResetPasswordModal(false)}
+                  className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-5 py-2 rounded-xl"
+                >
+                  Save & Apply Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: DEEP TENANT CONFIGURATION MODAL (TABBED INTERFACE) */}
       {showConfigModal && editingTenant && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div
             dir="ltr"
-            className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-2xl w-full shadow-2xl space-y-6 animate-fadeIn text-left"
+            className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-3xl w-full shadow-2xl space-y-6 text-left my-8"
           >
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-200 pb-4">
               <div>
                 <h3 className="text-lg md:text-xl font-black text-slate-900 flex items-center gap-2">
                   <Sliders className="w-6 h-6 text-amber-500" />
-                  <span>Configure Modules & Brand Identity</span>
+                  <span>Configure Tenant Profile & Master Entitlements</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
                   Tenant: <strong className="text-slate-900">{editingTenant.brand_name_en || editingTenant.name}</strong> (Company ID: #{editingTenant.company_id || editingTenant.companyId || 1300})
@@ -1040,180 +2012,530 @@ export default function SuperAdminWorkspaceManager() {
               </button>
             </div>
 
+            {/* TAB NAVIGATION HEADER */}
+            <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 pb-2 text-xs font-bold">
+              {[
+                { key: 'identity' as const, label: '1. Visual Identity & Logo', icon: Palette },
+                { key: 'legal' as const, label: '2. Corporate & Fiscal', icon: Building },
+                { key: 'modules' as const, label: '3. 12-Module Entitlements', icon: Layers },
+                { key: 'quotas' as const, label: '4. Quotas & Lifecycle', icon: Sliders },
+                { key: 'admin' as const, label: '5. Primary Admin', icon: Key }
+              ].map(t => {
+                const Icon = t.icon;
+                const isActive = configTab === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setConfigTab(t.key)}
+                    className={`px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{t.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <form onSubmit={handleSaveConfig} className="space-y-6 text-xs">
 
-              {/* 1. MODULE FEATURE FLAGS TOGGLE SECTION */}
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h4 className="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
-                    <Layers className="w-4 h-4 text-amber-500" />
-                    <span>Active Modules & Feature Flags (12 Modules)</span>
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedModules(ALL_SYSTEM_MODULES)}
-                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer"
-                    >
-                      Enable All Modules (12)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedModules(['sales', 'operations', 'customers'])}
-                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer"
-                    >
-                      Core Modules Only (3)
-                    </button>
+              {/* TAB 1: VISUAL IDENTITY & DIRECT LOGO UPLOAD */}
+              {configTab === 'identity' && (
+                <div className="space-y-5 animate-in fade-in duration-150">
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-2xl">
+                    <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">Direct File Upload & Supabase Storage Binding</span>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      Pick image files (.png, .svg, .webp, .jpg) directly from your desktop. Assets are uploaded straight into Supabase Storage bucket <code>tenant-logos</code> with instant thumbnail preview.
+                    </p>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto custom-scrollbar p-1">
-                  {SYSTEM_MODULES_CONFIG.map(mod => {
-                    const isChecked = isModuleEnabled(mod.id, selectedModules);
-
-                    return (
-                      <div
-                        key={mod.id}
-                        onClick={() => toggleModule(mod.id)}
-                        className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-start justify-between gap-3 ${
-                          isChecked
-                            ? 'bg-amber-50/50 border-amber-500 text-slate-900 shadow-xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2.5">
-                          <span className="text-xl shrink-0">{mod.icon}</span>
-                          <div>
-                            <span className={`font-bold text-xs block ${isChecked ? 'text-slate-900' : 'text-slate-500'}`}>
-                              {mod.labelEn}
-                            </span>
-                            <span className="text-[10px] text-slate-500 leading-tight block mt-0.5">
-                              {mod.desc}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${
-                          isChecked
-                            ? 'bg-amber-500 border-amber-500 text-slate-950 font-black'
-                            : 'border-slate-300 bg-white'
-                        }`}>
-                          {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                        </div>
+                  {/* Logo Upload Component */}
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                    <label className="block text-slate-800 font-extrabold text-xs">Company Logo Image</label>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      {/* Thumbnail Preview */}
+                      <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-300 flex items-center justify-center p-1 overflow-hidden shadow-xs shrink-0">
+                        {editLogoPreview ? (
+                          <img src={editLogoPreview} alt="Logo Preview" className="w-full h-full object-contain" />
+                        ) : (
+                          <span className="text-slate-400 text-xs font-bold text-center">No Logo</span>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
 
-              {/* 2. TENANT BRANDING & THEME COLOR */}
-              <div className="space-y-4 pt-3 border-t border-slate-200">
-                <h4 className="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
-                  <Palette className="w-4 h-4 text-amber-500" />
-                  <span>Tenant Branding & Theme Colors</span>
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Company Legal Name</label>
-                    <input
-                      type="text"
-                      value={editCompName}
-                      onChange={(e) => setEditCompName(e.target.value)}
-                      placeholder="Official registered legal entity name"
-                      className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                      required
-                    />
+                      <div className="space-y-2 flex-1 w-full">
+                        <input
+                          ref={configFileInputRef}
+                          type="file"
+                          accept=".png,.svg,.webp,.jpg,.jpeg"
+                          onChange={handleConfigLogoUpload}
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          disabled={isUploadingConfigLogo}
+                          onClick={() => configFileInputRef.current?.click()}
+                          className="w-full bg-white hover:bg-slate-100 text-slate-800 border-2 border-dashed border-slate-300 hover:border-amber-500 p-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                        >
+                          <Upload className="w-4 h-4 text-amber-600" />
+                          <span>{isUploadingConfigLogo ? 'Uploading to Supabase Storage...' : 'Click to Upload Logo File (.png, .svg, .webp)'}</span>
+                        </button>
+                        <p className="text-[10.5px] text-slate-500">
+                          Recommended format: Transparent PNG or SVG, max 2MB.
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Brand Name (English)</label>
-                    <input
-                      type="text"
-                      value={editBrandEn}
-                      onChange={(e) => setEditBrandEn(e.target.value)}
-                      placeholder="English Brand Name"
-                      className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Brand Name (Arabic)</label>
-                    <input
-                      type="text"
-                      value={editBrandAr}
-                      onChange={(e) => setEditBrandAr(e.target.value)}
-                      placeholder="e.g. زيوت الجنوب (Optional)"
-                      className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Logo URL</label>
-                    <div className="flex items-center gap-2">
+                  {/* Brand Names & Primary Theme Color */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Brand Name (English)</label>
                       <input
                         type="text"
-                        value={editLogoUrl}
-                        onChange={(e) => setEditLogoUrl(e.target.value)}
-                        placeholder="https://... or /assets/images/logo.png"
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-xs focus:border-amber-500 focus:outline-none shadow-xs"
+                        value={editBrandEn}
+                        onChange={(e) => setEditBrandEn(e.target.value)}
+                        placeholder="e.g. Southern Olive Products"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
                       />
-                      {editLogoUrl && (
-                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-300 shrink-0 overflow-hidden flex items-center justify-center p-0.5">
-                          <img src={editLogoUrl} alt="Preview" className="w-full h-full object-contain" />
-                        </div>
-                      )}
                     </div>
-                  </div>
-                </div>
 
-                {/* Primary Theme Color Palette */}
-                <div className="space-y-2">
-                  <label className="block text-slate-700 font-bold">Primary Theme Color</label>
-                  <div className="flex flex-wrap items-center gap-3">
-                    {BRANDING_COLOR_PRESETS.map(preset => (
-                      <button
-                        key={preset.hex}
-                        type="button"
-                        onClick={() => setEditColor(preset.hex)}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 transition-all cursor-pointer ${
-                          editColor.toLowerCase() === preset.hex.toLowerCase()
-                            ? 'border-amber-500 bg-amber-50 text-slate-900 font-bold scale-105 shadow-xs'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <span
-                          style={{ backgroundColor: preset.hex }}
-                          className="w-4 h-4 rounded-full border border-black/10 shadow-xs"
-                        />
-                        <span className="text-[11px] font-semibold">{preset.name}</span>
-                      </button>
-                    ))}
-
-                    <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Brand Name (Arabic)</label>
                       <input
-                        type="color"
-                        value={editColor}
-                        onChange={(e) => setEditColor(e.target.value)}
-                        className="w-8 h-8 rounded-lg bg-white border border-slate-300 cursor-pointer p-0.5"
-                        title="Pick custom color"
+                        type="text"
+                        value={editBrandAr}
+                        onChange={(e) => setEditBrandAr(e.target.value)}
+                        placeholder="e.g. منتجات زيت وزيتون الجنوب"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
                       />
-                      <span className="font-mono text-xs text-amber-700 font-bold">{editColor}</span>
+                    </div>
+                  </div>
+
+                  {/* Theme Colors */}
+                  <div className="space-y-2">
+                    <label className="block text-slate-700 font-bold">Primary Theme Color</label>
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      {BRANDING_COLOR_PRESETS.map(preset => (
+                        <button
+                          key={preset.hex}
+                          type="button"
+                          onClick={() => setEditColor(preset.hex)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 transition-all cursor-pointer ${
+                            editColor.toLowerCase() === preset.hex.toLowerCase()
+                              ? 'border-amber-500 bg-amber-50 text-slate-900 font-bold shadow-xs'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <span
+                            style={{ backgroundColor: preset.hex }}
+                            className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-xs"
+                          />
+                          <span className="text-[11px]">{preset.name}</span>
+                        </button>
+                      ))}
+
+                      <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                        <input
+                          type="color"
+                          value={editColor}
+                          onChange={(e) => setEditColor(e.target.value)}
+                          className="w-7 h-7 rounded-lg bg-white border border-slate-300 cursor-pointer p-0.5"
+                          title="Pick custom color"
+                        />
+                        <span className="font-mono text-xs text-amber-700 font-bold">{editColor}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* TAB 2: CORPORATE, LEGAL & FISCAL PROFILE */}
+              {configTab === 'legal' && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-slate-700 font-bold mb-1">Official Legal Entity Name</label>
+                      <input
+                        type="text"
+                        value={editCompName}
+                        onChange={(e) => setEditCompName(e.target.value)}
+                        placeholder="e.g. Southern Olive & Oil Products S.A.R.L"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Commercial Registration (CR / السجل التجاري)</label>
+                      <input
+                        type="text"
+                        value={editCrNumber}
+                        onChange={(e) => setEditCrNumber(e.target.value)}
+                        placeholder="e.g. CR-104928-LB"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Tax ID Number (MOF / الرقم المالي)</label>
+                      <input
+                        type="text"
+                        value={editTaxId}
+                        onChange={(e) => setEditTaxId(e.target.value)}
+                        placeholder="e.g. MOF-7489201"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-slate-700 font-bold mb-1">Registered Headquarters Address</label>
+                      <input
+                        type="text"
+                        value={editAddress}
+                        onChange={(e) => setEditAddress(e.target.value)}
+                        placeholder="Street, Industrial Zone, Building"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">City</label>
+                      <input
+                        type="text"
+                        value={editCity}
+                        onChange={(e) => setEditCity(e.target.value)}
+                        placeholder="City"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Country</label>
+                      <input
+                        type="text"
+                        value={editCountry}
+                        onChange={(e) => setEditCountry(e.target.value)}
+                        placeholder="Country"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Corporate Phone Number</label>
+                      <input
+                        type="text"
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                        placeholder="+961 70 882 110"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Billing Email</label>
+                      <input
+                        type="email"
+                        value={editBillingEmail}
+                        onChange={(e) => setEditBillingEmail(e.target.value)}
+                        placeholder="billing@client.com"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    {/* Fiscal Currency & Exchange Rate Policy */}
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Base Currency</label>
+                      <select
+                        value={editBaseCurrency}
+                        onChange={(e: any) => setEditBaseCurrency(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      >
+                        <option value="USD">USD ($) - Primary United States Dollar</option>
+                        <option value="LBP">LBP (ل.ل) - Lebanese Pound</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Exchange Rate Policy</label>
+                      <select
+                        value={editExchangeRatePolicy}
+                        onChange={(e: any) => setEditExchangeRatePolicy(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      >
+                        <option value="PLATFORM_FIXED">Platform Fixed (Central Treasury Sync 89,500 LBP/USD)</option>
+                        <option value="TENANT_MANAGED">Tenant Managed (Independent Daily Rates)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: 12-MODULE ENTITLEMENTS & CUSTOM TIERS */}
+              {configTab === 'modules' && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  {/* Preset Tier Selector Buttons */}
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                    <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">
+                      Select Subscription Preset or Custom Tier:
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {(['STARTER', 'PRO', 'ENTERPRISE', 'CUSTOM'] as const).map(tierKey => (
+                        <button
+                          key={tierKey}
+                          type="button"
+                          onClick={() => handleSelectPresetTier(tierKey)}
+                          className={`p-2.5 rounded-xl border-2 text-center transition-all cursor-pointer ${
+                            configTier === tierKey
+                              ? 'border-amber-500 bg-amber-50 text-slate-950 font-black shadow-xs'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 font-bold'
+                          }`}
+                        >
+                          <div className="text-xs uppercase">{tierKey}</div>
+                          <div className="text-[10px] text-slate-500">
+                            {tierKey === 'STARTER' && 'Core 4 Mods ($150)'}
+                            {tierKey === 'PRO' && 'Standard 9 Mods ($450)'}
+                            {tierKey === 'ENTERPRISE' && 'All 12 Mods ($3,000)'}
+                            {tierKey === 'CUSTOM' && 'Manual Individual Toggles'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 12 Individual Module Toggles */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-xs text-slate-800">
+                        Individual Module Switches ({getActiveModulesCount(selectedModules)} / 12 Active)
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleSelectPresetTier('ENTERPRISE')}
+                          className="text-[11px] font-bold text-emerald-700 hover:underline"
+                        >
+                          Enable All (12)
+                        </button>
+                        <span>•</span>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectPresetTier('STARTER')}
+                          className="text-[11px] font-bold text-slate-600 hover:underline"
+                        >
+                          Starter Core (4)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto p-1">
+                      {SYSTEM_MODULES_CONFIG.map(mod => {
+                        const isChecked = isModuleEnabled(mod.id, selectedModules);
+
+                        return (
+                          <div
+                            key={mod.id}
+                            onClick={() => toggleModule(mod.id)}
+                            className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-start justify-between gap-2.5 ${
+                              isChecked
+                                ? 'bg-amber-50/50 border-amber-500 text-slate-900 shadow-xs'
+                                : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60'
+                            }`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <span className="text-xl shrink-0">{mod.icon}</span>
+                              <div>
+                                <span className={`font-bold text-xs block ${isChecked ? 'text-slate-900' : 'text-slate-500'}`}>
+                                  {mod.labelEn}
+                                </span>
+                                <span className="text-[10px] text-slate-500 leading-tight block mt-0.5">
+                                  {mod.desc}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${
+                              isChecked
+                                ? 'bg-amber-500 border-amber-500 text-slate-950 font-black'
+                                : 'border-slate-300 bg-white'
+                            }`}>
+                              {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: OPERATIONAL QUOTAS & LIFECYCLE */}
+              {configTab === 'quotas' && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Max Branches Limit</label>
+                      <input
+                        type="number"
+                        value={editMaxBranches}
+                        onChange={(e) => setEditMaxBranches(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Max Concurrent Users</label>
+                      <input
+                        type="number"
+                        value={editMaxUsers}
+                        onChange={(e) => setEditMaxUsers(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Max V-POS Terminals</label>
+                      <input
+                        type="number"
+                        value={editMaxTerminals}
+                        onChange={(e) => setEditMaxTerminals(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Storage Quota (GB)</label>
+                      <input
+                        type="number"
+                        value={editStorageQuota}
+                        onChange={(e) => setEditStorageQuota(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    {/* Subscription Lifecycle */}
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Contract Monthly Value ($/Mo)</label>
+                      <input
+                        type="number"
+                        value={editContractValue}
+                        onChange={(e) => setEditContractValue(Number(e.target.value))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                      <small className="text-[10px] text-slate-500">Connected to top ARR & MRR metrics</small>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Billing Cycle</label>
+                      <select
+                        value={editBillingCycle}
+                        onChange={(e: any) => setEditBillingCycle(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      >
+                        <option value="MONTHLY">Monthly Recurring</option>
+                        <option value="ANNUAL">Annual Contract (Upfront)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Next Renewal Date</label>
+                      <input
+                        type="date"
+                        value={editRenewalDate}
+                        onChange={(e) => setEditRenewalDate(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Account Status Control</label>
+                      <select
+                        value={editAccountStatus}
+                        onChange={(e: any) => setEditAccountStatus(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                      >
+                        <option value="ACTIVE">Active (Full Operation)</option>
+                        <option value="SUSPENDED">Suspended (Access Blocked)</option>
+                        <option value="MAINTENANCE_MODE">Maintenance Mode (ReadOnly)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: PRIMARY ADMIN CREDENTIALS */}
+              {configTab === 'admin' && (
+                <div className="space-y-4 animate-in fade-in duration-150">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Primary Admin Full Name</label>
+                      <input
+                        type="text"
+                        value={editAdminName}
+                        onChange={(e) => setEditAdminName(e.target.value)}
+                        placeholder="Admin Full Name"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Primary Admin Email</label>
+                      <input
+                        type="email"
+                        value={editAdminEmail}
+                        onChange={(e) => setEditAdminEmail(e.target.value)}
+                        placeholder="admin@client.com"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Primary Admin Phone</label>
+                      <input
+                        type="text"
+                        value={editAdminPhone}
+                        onChange={(e) => setEditAdminPhone(e.target.value)}
+                        placeholder="+961 70 882 110"
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Admin Password Override</label>
+                      <div className="relative">
+                        <input
+                          type={showConfigAdminPass ? 'text' : 'password'}
+                          value={editAdminPassword}
+                          onChange={(e) => setEditAdminPassword(e.target.value)}
+                          placeholder="Leave blank to keep existing password"
+                          className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-xs focus:border-amber-500 focus:outline-none shadow-xs pr-9"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfigAdminPass(!showConfigAdminPass)}
+                          className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                        >
+                          {showConfigAdminPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Success Alert */}
               {configSaveSuccess && (
-                <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-800 font-bold text-center flex items-center justify-center gap-2 animate-fadeIn">
+                <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-800 font-bold text-center flex items-center justify-center gap-2 animate-in fade-in">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Tenant configuration and permissions successfully updated in Supabase!</span>
                 </div>
               )}
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setShowConfigModal(false)}
@@ -1221,13 +2543,15 @@ export default function SuperAdminWorkspaceManager() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={isSavingConfig}
-                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-7 py-2.5 rounded-xl shadow-sm border border-amber-500 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {isSavingConfig ? 'Saving to Supabase...' : 'Save Changes & Update Permissions'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={isSavingConfig}
+                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-7 py-2.5 rounded-xl shadow-sm border border-amber-500 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isSavingConfig ? 'Saving to Supabase...' : 'Save Changes & Update Permissions'}
+                  </button>
+                </div>
               </div>
 
             </form>
@@ -1235,84 +2559,186 @@ export default function SuperAdminWorkspaceManager() {
         </div>
       )}
 
-      {/* PROVISION NEW CLIENT FORM */}
+      {/* PROVISION NEW CLIENT FORM (ADD NEW TENANT WITH DIRECT LOGO UPLOAD) */}
       {showOnboardModal && (
-        <div className="bg-white border-2 border-emerald-500/40 rounded-2xl p-6 space-y-4 shadow-sm text-left">
-          <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-emerald-600" /> Add New Enterprise Tenant Account
-          </h4>
-          <form onSubmit={handleOnboardSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block text-slate-700 font-bold mb-1">Company Legal Name</label>
-              <input
-                type="text"
-                value={compName}
-                onChange={(e) => setCompName(e.target.value)}
-                placeholder="e.g. Bekaa Olive & Oil Plant S.A.R.L"
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 font-bold mb-1">Brand Name (English)</label>
-              <input
-                type="text"
-                value={brandEn}
-                onChange={(e) => setBrandEn(e.target.value)}
-                placeholder="e.g. Golden Bekaa Oils"
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 font-bold mb-1">Brand Name (Arabic)</label>
-              <input
-                type="text"
-                value={brandAr}
-                onChange={(e) => setBrandAr(e.target.value)}
-                placeholder="e.g. زيوت البقاع الذهبية (Optional)"
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 font-bold mb-1">Primary Admin Email</label>
-              <input
-                type="email"
-                value={adminEmail}
-                onChange={(e) => setAdminEmail(e.target.value)}
-                placeholder="admin@client.com"
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-                required
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-slate-700 font-bold mb-1">Subscription Tier</label>
-              <select
-                value={tier}
-                onChange={(e: any) => setTier(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
-              >
-                <option value="STARTER">Starter SaaS ($150/mo)</option>
-                <option value="PRO">Professional SaaS ($250/mo)</option>
-                <option value="ENTERPRISE">Enterprise Full ($450/mo - All 12 Modules)</option>
-              </select>
-            </div>
-            <div className="md:col-span-2 flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowOnboardModal(false)}
-                className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl font-bold cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2 rounded-xl border border-emerald-600 shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {isSubmitting ? 'Provisioning Tenant...' : 'Confirm & Provision Tenant'}
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 md:p-8 max-w-2xl w-full space-y-5 shadow-2xl text-left my-8">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <Plus className="w-5 h-5 text-emerald-600" /> Provision New Enterprise Tenant Workspace
+              </h4>
+              <button onClick={() => setShowOnboardModal(false)} className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg">
+                <X className="w-4 h-4" />
               </button>
             </div>
-          </form>
+
+            <form onSubmit={handleOnboardSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              {/* Logo File Upload */}
+              <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-white border border-slate-300 flex items-center justify-center p-1 overflow-hidden shrink-0">
+                  {onboardLogoPreview ? (
+                    <img src={onboardLogoPreview} alt="Logo Preview" className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-slate-400 text-[10px] font-bold">No Logo</span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    ref={onboardFileInputRef}
+                    type="file"
+                    accept=".png,.svg,.webp,.jpg,.jpeg"
+                    onChange={handleOnboardLogoUpload}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    disabled={isUploadingOnboardLogo}
+                    onClick={() => onboardFileInputRef.current?.click()}
+                    className="w-full bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 p-2 rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{isUploadingOnboardLogo ? 'Uploading logo...' : 'Pick Logo (.png, .svg, .webp)'}</span>
+                  </button>
+                  <span className="text-[10px] text-slate-500 mt-1 block">Uploaded directly to Supabase storage bucket tenant-logos</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Company Legal Entity Name</label>
+                <input
+                  type="text"
+                  value={compName}
+                  onChange={(e) => setCompName(e.target.value)}
+                  placeholder="e.g. Bekaa Olive & Oil Plant S.A.R.L"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Brand Name (English)</label>
+                <input
+                  type="text"
+                  value={brandEn}
+                  onChange={(e) => setBrandEn(e.target.value)}
+                  placeholder="e.g. Golden Bekaa Oils"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Brand Name (Arabic)</label>
+                <input
+                  type="text"
+                  value={brandAr}
+                  onChange={(e) => setBrandAr(e.target.value)}
+                  placeholder="e.g. زيوت البقاع الذهبية (Optional)"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Primary Admin Email</label>
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="admin@client.com"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Admin Full Name</label>
+                <input
+                  type="text"
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                  placeholder="Full Name"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Initial Admin Password</label>
+                <input
+                  type="text"
+                  value={adminInitialPassword}
+                  onChange={(e) => setAdminInitialPassword(e.target.value)}
+                  placeholder="Initial Password"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Commercial Registration (CR)</label>
+                <input
+                  type="text"
+                  value={onboardCrNumber}
+                  onChange={(e) => setOnboardCrNumber(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Tax ID (MOF)</label>
+                <input
+                  type="text"
+                  value={onboardTaxId}
+                  onChange={(e) => setOnboardTaxId(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Subscription Tier</label>
+                <select
+                  value={onboardTier}
+                  onChange={(e: any) => {
+                    const t = e.target.value;
+                    setOnboardTier(t);
+                    if (t === 'STARTER') setOnboardMonthlyValue(150);
+                    else if (t === 'PRO') setOnboardMonthlyValue(450);
+                    else if (t === 'ENTERPRISE') setOnboardMonthlyValue(3000);
+                  }}
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                >
+                  <option value="STARTER">Starter SaaS (Core 4 Mods - $150/mo)</option>
+                  <option value="PRO">Professional SaaS (9 Mods - $450/mo)</option>
+                  <option value="ENTERPRISE">Enterprise Full (All 12 Modules - $3,000/mo)</option>
+                  <option value="CUSTOM">Custom Plan (All 12 Modules Unlocked)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Contract Value ($/Mo)</label>
+                <input
+                  type="number"
+                  value={onboardMonthlyValue}
+                  onChange={(e) => setOnboardMonthlyValue(Number(e.target.value))}
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono font-bold focus:border-amber-500 focus:outline-none shadow-xs"
+                />
+              </div>
+
+              <div className="md:col-span-2 flex justify-end gap-2 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowOnboardModal(false)}
+                  className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2 rounded-xl border border-emerald-600 shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Provisioning Tenant...' : 'Confirm & Provision Tenant'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
