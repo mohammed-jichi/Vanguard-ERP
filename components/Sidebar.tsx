@@ -1218,7 +1218,7 @@ export default function Sidebar({
               <Scale className="w-4 h-4 text-emerald-600 shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>10. Pressing Mill</span>
+                  <span>{t('pressing_mill_nav', '10. Pressing Mill')}</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">MILL</span>
                 </span>
               )}
@@ -1228,15 +1228,15 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['pressing'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/pressing-mill/dashboard" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-semibold">Dashboard</Link>
-              <Link href="/pressing-mill/intake" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Weighbridge &amp; Intake</Link>
-              <Link href="/pressing-mill/batches" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Pressing Lines &amp; Batches</Link>
-              <Link href="/pressing-mill/tanks" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Tanks Matrix (1-50)</Link>
-              <Link href="/pressing-mill/settlements" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Settlements &amp; Milling Fees</Link>
-              <Link href="/pressing-mill/dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Oil Handover &amp; Dispatch</Link>
-              <Link href="/pressing-mill/pos" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-bold text-emerald-700 block">Direct Counter Sales &amp; POS</Link>
-              <Link href="/pressing-mill/directory" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Directory &amp; Ledgers</Link>
-              <Link href="/pressing-mill/setup" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Mill Settings</Link>
+              <Link href="/pressing-mill/dashboard" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-semibold">{t('pm_dashboard', 'Dashboard')}</Link>
+              <Link href="/pressing-mill/intake" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_intake', 'Weighbridge & Intake')}</Link>
+              <Link href="/pressing-mill/batches" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_batches', 'Pressing Lines & Batches')}</Link>
+              <Link href="/pressing-mill/tanks" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_tanks', 'Tanks Matrix (1-50)')}</Link>
+              <Link href="/pressing-mill/settlements" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_settlements', 'Settlements & Milling Fees')}</Link>
+              <Link href="/pressing-mill/dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_dispatch', 'Oil Handover & Dispatch')}</Link>
+              <Link href="/pressing-mill/pos" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-bold text-emerald-700 block">{t('pm_pos', 'Direct Counter Sales & POS')}</Link>
+              <Link href="/pressing-mill/directory" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_directory', 'Directory & Ledgers')}</Link>
+              <Link href="/pressing-mill/setup" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_setup', 'Mill Settings')}</Link>
             </div>
           )}
         </div>

@@ -130,7 +130,7 @@ export default function SettlementsEngineView() {
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              In-Kind Oil Retention (الردة)
+              In-Kind Oil Retention (Retention %)
             </button>
 
             <button

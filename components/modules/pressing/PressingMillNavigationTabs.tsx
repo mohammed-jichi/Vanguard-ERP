@@ -14,21 +14,23 @@ import {
   BookOpen,
   Settings
 } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export const PRESSING_MILL_TABS = [
-  { id: 'dashboard', label: 'Dashboard', path: '/pressing-mill/dashboard', icon: LayoutDashboard },
-  { id: 'intake', label: 'Weighbridge & Intake', path: '/pressing-mill/intake', icon: Scale },
-  { id: 'batches', label: 'Pressing Lines & Batches', path: '/pressing-mill/batches', icon: Layers },
-  { id: 'tanks', label: 'Tanks Matrix (1-50)', path: '/pressing-mill/tanks', icon: Landmark },
-  { id: 'settlements', label: 'Settlements & Milling Fees', path: '/pressing-mill/settlements', icon: DollarSign },
-  { id: 'dispatch', label: 'Oil Handover & Dispatch', path: '/pressing-mill/dispatch', icon: Truck },
-  { id: 'pos', label: 'Direct Counter Sales & POS', path: '/pressing-mill/pos', icon: ShoppingCart },
-  { id: 'directory', label: 'Directory & Ledgers', path: '/pressing-mill/directory', icon: BookOpen },
-  { id: 'setup', label: 'Mill Settings', path: '/pressing-mill/setup', icon: Settings },
+  { id: 'dashboard', key: 'pm_dashboard', label: 'Dashboard', path: '/pressing-mill/dashboard', icon: LayoutDashboard },
+  { id: 'intake', key: 'pm_intake', label: 'Weighbridge & Intake', path: '/pressing-mill/intake', icon: Scale },
+  { id: 'batches', key: 'pm_batches', label: 'Pressing Lines & Batches', path: '/pressing-mill/batches', icon: Layers },
+  { id: 'tanks', key: 'pm_tanks', label: 'Tanks Matrix (1-50)', path: '/pressing-mill/tanks', icon: Landmark },
+  { id: 'settlements', key: 'pm_settlements', label: 'Settlements & Milling Fees', path: '/pressing-mill/settlements', icon: DollarSign },
+  { id: 'dispatch', key: 'pm_dispatch', label: 'Oil Handover & Dispatch', path: '/pressing-mill/dispatch', icon: Truck },
+  { id: 'pos', key: 'pm_pos', label: 'Direct Counter Sales & POS', path: '/pressing-mill/pos', icon: ShoppingCart },
+  { id: 'directory', key: 'pm_directory', label: 'Directory & Ledgers', path: '/pressing-mill/directory', icon: BookOpen },
+  { id: 'setup', key: 'pm_setup', label: 'Mill Settings', path: '/pressing-mill/setup', icon: Settings },
 ];
 
 export default function PressingMillNavigationTabs() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center gap-1.5 border-b border-slate-200 pb-3 mb-5 overflow-x-auto text-xs font-sans">
@@ -47,7 +49,7 @@ export default function PressingMillNavigationTabs() {
             }`}
           >
             <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} />
-            <span>{tab.label}</span>
+            <span>{t(tab.key, tab.label)}</span>
           </Link>
         );
       })}
