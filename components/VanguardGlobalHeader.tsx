@@ -38,6 +38,7 @@ import {
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
+import { clearAuthSession } from '@/lib/authSession';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -576,10 +577,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 </a>
                 
                 <div className="border-t border-gray-100 pt-1">
-                  <a href="/login" className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold">
+                  <button
+                    type="button"
+                    onClick={() => clearAuthSession()}
+                    className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold cursor-pointer text-left"
+                  >
                     <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                     <span>Logout</span>
-                  </a>
+                  </button>
                 </div>
               </div>
             )}

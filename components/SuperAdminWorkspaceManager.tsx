@@ -189,8 +189,8 @@ export default function SuperAdminWorkspaceManager() {
         if (storedRole !== 'SUPER_ADMIN') {
           localStorage.setItem('vanguard_user_role', 'SUPER_ADMIN');
           localStorage.setItem('vanguard_is_super_admin', 'true');
-          document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; max-age=2592000; SameSite=Lax';
-          document.cookie = 'vanguard_is_super_admin=true; path=/; max-age=2592000; SameSite=Lax';
+          document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; SameSite=Lax';
+          document.cookie = 'vanguard_is_super_admin=true; path=/; SameSite=Lax';
         }
         return;
       }
@@ -249,8 +249,8 @@ export default function SuperAdminWorkspaceManager() {
           companyRegistrationNumber: fullTenantObj.companyRegistrationNumber,
           taxIdentificationNumber: fullTenantObj.taxIdentificationNumber
         }));
-        document.cookie = `vanguard_tenant_id=${encodeURIComponent(fullTenantObj.id)}; path=/; max-age=31536000; SameSite=Lax`;
-        document.cookie = `vanguard_active_tenant=${encodeURIComponent(JSON.stringify(fullTenantObj))}; path=/; max-age=31536000; SameSite=Lax`;
+        document.cookie = `vanguard_tenant_id=${encodeURIComponent(fullTenantObj.id)}; path=/; SameSite=Lax`;
+        document.cookie = `vanguard_active_tenant=${encodeURIComponent(JSON.stringify(fullTenantObj))}; path=/; SameSite=Lax`;
       }
 
       const routeIdentifier = effectiveCompanyId || fullTenantObj.id;

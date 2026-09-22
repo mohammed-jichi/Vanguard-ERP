@@ -7,6 +7,7 @@ import Sidebar from '@/components/Sidebar';
 import { TenantProvider, useTenant } from '@/lib/TenantContext';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { isModuleLicensed } from '@/lib/license';
+import { clearAuthSession } from '@/lib/authSession';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -255,9 +256,9 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 if (typeof window !== 'undefined') {
                   localStorage.setItem('vanguard_user_role', 'SUPER_ADMIN');
                   localStorage.setItem('vanguard_is_super_admin', 'true');
-                  document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; max-age=2592000; SameSite=Lax';
-                  document.cookie = 'vanguard_is_super_admin=true; path=/; max-age=2592000; SameSite=Lax';
-                  document.cookie = 'so_authenticated=true; path=/; max-age=2592000; SameSite=Lax';
+                  document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; SameSite=Lax';
+                  document.cookie = 'vanguard_is_super_admin=true; path=/; SameSite=Lax';
+                  document.cookie = 'so_authenticated=true; path=/; SameSite=Lax';
                 }
               }}
               className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-black shadow transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer"
@@ -460,7 +461,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 </div>
 
                 <div className="border-t border-slate-100 mt-1 pt-1">
-                  <button type="button" onClick={() => alert('Signed out successfully')} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors">
+                  <button type="button" onClick={() => clearAuthSession()} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors cursor-pointer">
                     <span className="text-sm">🚪</span> <span>Logout</span>
                   </button>
                 </div>

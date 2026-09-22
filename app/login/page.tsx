@@ -71,9 +71,8 @@ export default function LoginPage() {
           const { data } = await supabase.auth.signInWithPassword({ email, password });
           if (data?.session) {
             authUserId = data.session.user.id;
-            const maxAge = 60 * 60 * 24 * 30; // 30 days
-            document.cookie = `sb-${data.session.user.id}-auth-token=${data.session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-            document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            document.cookie = `sb-${data.session.user.id}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
+            document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
           }
         } catch (supaErr) {
           console.warn("Supabase auth fallback:", supaErr);

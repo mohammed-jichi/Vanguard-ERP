@@ -324,19 +324,29 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }));
         }
 
-        // Restore user role & identity from session
-        const savedRole = localStorage.getItem('vanguard_user_role') as any;
-        const savedEmail = localStorage.getItem('vanguard_user_email');
-        const savedName = localStorage.getItem('vanguard_user_name');
-        const savedUserId = localStorage.getItem('vanguard_user_id');
+        // Restore user role & identity ONLY if active session cookie is present
+        const hasSessionCookie = typeof document !== 'undefined' && document.cookie.split(';').some(c => {
+          const [n, v] = c.trim().split('=');
+          return (n === 'so_authenticated' && (v === 'true' || v === '1')) || (n === 'vanguard_auth_session' && Boolean(v));
+        });
 
-        if (savedRole || savedEmail) {
-          setCurrentUser({
-            id: savedUserId || 'usr-local',
-            email: savedEmail || 'user@vanguard-erp.com',
-            fullName: savedName || (savedRole === 'SUPER_ADMIN' ? 'Mohammed (Vanguard Super Admin)' : 'Authorized Operator'),
-            role: savedRole || 'COMPANY_ADMIN'
-          });
+        if (hasSessionCookie) {
+          const savedRole = (sessionStorage.getItem('vanguard_user_role') || localStorage.getItem('vanguard_user_role')) as any;
+          const savedEmail = sessionStorage.getItem('vanguard_user_email') || localStorage.getItem('vanguard_user_email');
+          const savedName = sessionStorage.getItem('vanguard_user_name') || localStorage.getItem('vanguard_user_name');
+          const savedUserId = sessionStorage.getItem('vanguard_user_id') || localStorage.getItem('vanguard_user_id');
+
+          if (savedRole || savedEmail) {
+            setCurrentUser({
+              id: savedUserId || 'usr-local',
+              email: savedEmail || 'user@vanguard-erp.com',
+              fullName: savedName || (savedRole === 'SUPER_ADMIN' ? 'Mohammed (Vanguard Super Admin)' : 'Authorized Operator'),
+              role: savedRole || 'COMPANY_ADMIN'
+            });
+          }
+        } else {
+          // Session closed or logged out: user must log in again
+          setCurrentUser(null);
         }
       } catch (e) {
         console.error('Error reading tenant branding from localStorage:', e);
@@ -358,7 +368,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           companyRegistrationNumber: company.companyRegistrationNumber,
           taxIdentificationNumber: company.taxIdentificationNumber
         }));
-        document.cookie = `vanguard_tenant_id=${encodeURIComponent(company.id)}; path=/; max-age=31536000; SameSite=Lax`;
+        document.cookie = `vanguard_tenant_id=${encodeURIComponent(company.id)}; path=/; SameSite=Lax`;
       } catch (e) {
         console.error('Error saving active tenant to storage:', e);
       }

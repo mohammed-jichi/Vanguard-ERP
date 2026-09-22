@@ -473,30 +473,28 @@ export async function resolveUserTenantAndRole(
 export function persistTenantSession(assignment: UserTenantAssignment) {
   if (typeof window === 'undefined') return;
 
-  const maxAge = 60 * 60 * 24 * 30; // 30 days
-
-  // 1. Cookies for server-side Next.js & middleware validation
-  document.cookie = `so_authenticated=true; path=/; max-age=${maxAge}; SameSite=Lax`;
-  document.cookie = `vanguard_tenant_id=${encodeURIComponent(assignment.tenantId)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-  document.cookie = `vanguard_user_role=${encodeURIComponent(assignment.role)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-  document.cookie = `vanguard_auth_session=${encodeURIComponent(assignment.email || 'user@vanguard-erp.com')}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  // 1. Strictly session-based cookies (NO max-age or expires): automatically cleared upon tab/window closure
+  document.cookie = `so_authenticated=true; path=/; SameSite=Lax`;
+  document.cookie = `vanguard_tenant_id=${encodeURIComponent(assignment.tenantId)}; path=/; SameSite=Lax`;
+  document.cookie = `vanguard_user_role=${encodeURIComponent(assignment.role)}; path=/; SameSite=Lax`;
+  document.cookie = `vanguard_auth_session=${encodeURIComponent(assignment.email || 'user@vanguard-erp.com')}; path=/; SameSite=Lax`;
   if (assignment.companyCode) {
-    document.cookie = `vanguard_company_code=${encodeURIComponent(assignment.companyCode)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `vanguard_company_code=${encodeURIComponent(assignment.companyCode)}; path=/; SameSite=Lax`;
   }
 
-  // 2. LocalStorage for client-side React contexts & UI state
-  localStorage.setItem('so_authenticated', 'true');
-  localStorage.setItem('vanguard_tenant_id', assignment.tenantId);
-  localStorage.setItem('vanguard_user_email', assignment.email);
-  localStorage.setItem('vanguard_user_role', assignment.role);
+  // 2. SessionStorage for client-side state (wiped automatically when tab/window is closed)
+  sessionStorage.setItem('so_authenticated', 'true');
+  sessionStorage.setItem('vanguard_tenant_id', assignment.tenantId);
+  sessionStorage.setItem('vanguard_user_email', assignment.email);
+  sessionStorage.setItem('vanguard_user_role', assignment.role);
   if (assignment.companyCode) {
-    localStorage.setItem('vanguard_company_code', assignment.companyCode);
+    sessionStorage.setItem('vanguard_company_code', assignment.companyCode);
   }
   if (assignment.userId) {
-    localStorage.setItem('vanguard_user_id', assignment.userId);
+    sessionStorage.setItem('vanguard_user_id', assignment.userId);
   }
   if (assignment.fullName) {
-    localStorage.setItem('vanguard_user_name', assignment.fullName);
+    sessionStorage.setItem('vanguard_user_name', assignment.fullName);
   }
 
   const tenantObj = {

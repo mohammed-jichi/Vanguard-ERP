@@ -34,43 +34,35 @@ export async function GET(request: NextRequest) {
         const redirectUrl = new URL(destination, request.url);
 
         const response = NextResponse.redirect(redirectUrl);
-        const maxAge = 60 * 60 * 24 * 30; // 30 days
 
         response.cookies.set('so_authenticated', 'true', {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
         response.cookies.set('vanguard_tenant_id', assignment.tenantId, {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
         if (assignment.companyCode) {
           response.cookies.set('vanguard_company_code', assignment.companyCode, {
             path: '/',
-            maxAge,
             sameSite: 'lax',
           });
         }
         response.cookies.set('vanguard_user_role', assignment.role, {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
         response.cookies.set('vanguard_auth_session', assignment.email, {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
         response.cookies.set('sb-access-token', data.session.access_token, {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
         response.cookies.set(`sb-${userId}-auth-token`, data.session.access_token, {
           path: '/',
-          maxAge,
           sameSite: 'lax',
         });
 
