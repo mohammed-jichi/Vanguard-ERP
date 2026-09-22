@@ -25,12 +25,13 @@ import OperationsProductRequestViews from './OperationsProductRequestViews';
 import OperationsEventsViews from './OperationsEventsViews';
 import OperationsSetupViews from './OperationsSetupViews';
 import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
+import PressingMillPage from '@/components/PressingMillConsole';
 
 const HANDLED_OPS_SECTIONS = new Set([
   'dashboard', 'reports', 'sales', 'quotations', 'delivery_goods', 'purchases',
   'purchase_orders', 'reorder_guide', 'lost_goods', 'item_assembly', 'transfers',
   'adjustments', 'product_request', 'manage_product_requests', 'product_req_prep',
-  'receiving_goods', 'product_req_reports', 'request_reject_reasons', 'events',
+  'receiving_goods', 'product_req_reports', 'request_reject_reasons', 'pressing', 'olive_pressing', 'events',
   'event_venues', 'event_resources', 'event_types', 'quick_setup', 'products_services',
   'groups', 'divisions', 'categories', 'units', 'locations', 'suppliers',
   'departments', 'lost_goods_reason', 'sizes_groups', 'sizes', 'colors',
@@ -54,6 +55,8 @@ export type OpsSectionKey =
   | 'lost_goods'
   | 'item_assembly'
   | 'adjustments'
+  | 'pressing'
+  | 'olive_pressing'
   // 4. Product Request Sections
   | 'product_request'
   | 'manage_product_requests'
@@ -114,7 +117,9 @@ function OperationsCenterComponent() {
     'product_req_prep',
     'receiving_goods',
     'product_req_reports',
-    'request_reject_reasons'
+    'request_reject_reasons',
+    'pressing',
+    'olive_pressing'
   ].includes(activeSection);
 
   return (
@@ -211,6 +216,13 @@ function OperationsCenterComponent() {
             VIEW 16: RECEIVING OF GOODS (100% AUTHENTIC OMEGA CLONE)
             ========================================================================= */}
         {activeSection === 'receiving_goods' && <ReceivingOfGoodsView />}
+
+        {/* =========================================================================
+            VIEW 17: PRESSING MILL CONSOLE (WEIGHBRIDGE, BATCHES, TANKS, SETTLEMENTS)
+            ========================================================================= */}
+        {(activeSection === 'pressing' || activeSection === 'olive_pressing') && (
+          <PressingMillPage />
+        )}
 
         {/* =========================================================================
             OTHER PRODUCT REQUEST SECTIONS (REPORTS, REJECT REASONS)
