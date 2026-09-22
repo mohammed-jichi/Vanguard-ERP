@@ -256,23 +256,23 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
                 ? t.feature_flags.enabled_modules
                 : ALL_SYSTEM_MODULES),
-          legalEntityName: t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
-          officialLegalEntityName: t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
-          companyRegistrationNumber: t.feature_flags?.corporate_profile?.cr_number || t.company_registration_number,
-          taxIdentificationNumber: t.feature_flags?.corporate_profile?.tax_id || t.tax_identification_number,
-          headquartersAddress: t.feature_flags?.corporate_profile?.headquarters_address,
-          city: t.feature_flags?.corporate_profile?.city,
-          country: t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon',
-          financialSeedTemplate: t.feature_flags?.corporate_profile?.financial_seed_template || t.financial_seed_template || ((t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
-          vatPercentage: t.feature_flags?.corporate_profile?.vat_percentage ?? (t.vat_percentage ?? 11),
-          taxIdLabel: t.feature_flags?.corporate_profile?.tax_id_label || t.tax_id_label,
-          crNumberLabel: t.feature_flags?.corporate_profile?.cr_label || t.cr_number_label,
-          phoneNumber: t.feature_flags?.corporate_profile?.phone_number || t.phone_number,
-          billingEmail: t.feature_flags?.corporate_profile?.billing_email || t.billing_email,
-          baseCurrency: t.feature_flags?.corporate_profile?.base_currency || t.base_currency || 'USD',
-          secondaryCurrency: t.feature_flags?.corporate_profile?.secondary_currency || t.secondary_currency || 'LBP',
-          isDualCurrencyEnabled: t.feature_flags?.corporate_profile?.is_dual_currency_enabled ?? t.is_dual_currency_enabled ?? ((t.feature_flags?.corporate_profile?.country || t.country || 'Lebanon').toLowerCase() === 'lebanon'),
-          exchangeRatePolicy: t.feature_flags?.corporate_profile?.exchange_rate_policy || t.exchange_rate_policy || 'PLATFORM_FIXED',
+          legalEntityName: t.official_legal_entity_name || t.feature_flags?.corporate_profile?.officialLegalName || t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
+          officialLegalEntityName: t.official_legal_entity_name || t.feature_flags?.corporate_profile?.officialLegalName || t.feature_flags?.corporate_profile?.legal_entity_name || t.name,
+          companyRegistrationNumber: t.cr_number || t.company_registration_number || t.feature_flags?.corporate_profile?.cr_number || t.feature_flags?.corporate_profile?.commercialRegistrationNumber || 'CR-104928-LB',
+          taxIdentificationNumber: t.tax_id || t.tax_identification_number || t.feature_flags?.corporate_profile?.tax_id || t.feature_flags?.corporate_profile?.taxIdentificationNumber || 'MOF-7489201',
+          headquartersAddress: t.address || t.headquarters_address || t.feature_flags?.corporate_profile?.address || t.feature_flags?.corporate_profile?.headquarters_address || t.feature_flags?.corporate_profile?.headquartersAddress || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4',
+          city: t.city || t.feature_flags?.corporate_profile?.city || 'Nabatieh',
+          country: t.country || t.feature_flags?.corporate_profile?.country || 'Lebanon',
+          financialSeedTemplate: t.financial_seed_template || t.feature_flags?.corporate_profile?.financial_seed_template || ((t.country || t.feature_flags?.corporate_profile?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+          vatPercentage: t.vat_percentage ?? t.feature_flags?.corporate_profile?.vat_percentage ?? ((t.country || t.feature_flags?.corporate_profile?.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
+          taxIdLabel: t.tax_id_label || t.feature_flags?.corporate_profile?.tax_id_label,
+          crNumberLabel: t.cr_label || t.feature_flags?.corporate_profile?.cr_label || t.cr_number_label,
+          phoneNumber: t.phone || t.phone_number || t.feature_flags?.corporate_profile?.phone || t.feature_flags?.corporate_profile?.phone_number || t.feature_flags?.corporate_profile?.phoneNumber || '+961 70 882 110',
+          billingEmail: t.billing_email || t.feature_flags?.corporate_profile?.billing_email || t.feature_flags?.corporate_profile?.billingEmail || 'accounts@southernolive.com',
+          baseCurrency: t.base_currency || t.feature_flags?.corporate_profile?.base_currency || t.feature_flags?.corporate_profile?.baseCurrency || 'USD',
+          secondaryCurrency: t.secondary_currency !== undefined ? t.secondary_currency : (t.feature_flags?.corporate_profile?.secondary_currency || t.feature_flags?.corporate_profile?.secondaryCurrency || 'LBP'),
+          isDualCurrencyEnabled: t.is_dual_currency_enabled ?? t.feature_flags?.corporate_profile?.is_dual_currency_enabled ?? t.feature_flags?.corporate_profile?.isDualCurrencyEnabled ?? ((t.country || t.feature_flags?.corporate_profile?.country || 'Lebanon').toLowerCase() === 'lebanon'),
+          exchangeRatePolicy: t.exchange_rate_policy || t.feature_flags?.corporate_profile?.exchange_rate_policy || t.feature_flags?.corporate_profile?.exchangeRatePolicy || 'PLATFORM_FIXED',
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,
@@ -462,21 +462,49 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }));
       }
 
-      // Update Supabase database if connected
-      const { error } = await supabase
+      // Update Supabase database with dedicated columns and schema fallback
+      const tenantSettingsPayload: any = {
+        name: updatedTenant.name,
+        brand_name_ar: updatedTenant.brandNameAr,
+        brand_name_en: updatedTenant.brandNameEn,
+        logo_url: updatedTenant.logoUrl,
+        cr_number: updatedTenant.companyRegistrationNumber,
+        company_registration_number: updatedTenant.companyRegistrationNumber,
+        tax_id: updatedTenant.taxIdentificationNumber,
+        tax_identification_number: updatedTenant.taxIdentificationNumber,
+        address: updatedTenant.headquartersAddress,
+        headquarters_address: updatedTenant.headquartersAddress,
+        city: updatedTenant.city,
+        country: updatedTenant.country,
+        phone: updatedTenant.phoneNumber,
+        phone_number: updatedTenant.phoneNumber,
+        billing_email: updatedTenant.billingEmail,
+        base_currency: updatedTenant.baseCurrency,
+        secondary_currency: updatedTenant.secondaryCurrency,
+        exchange_rate_policy: updatedTenant.exchangeRatePolicy,
+        updated_at: new Date().toISOString()
+      };
+
+      let { error: updateErr } = await supabase
         .from('tenants')
-        .update({
+        .update(tenantSettingsPayload)
+        .eq('id', updatedTenant.id);
+
+      if (updateErr && (updateErr.code === 'PGRST204' || updateErr.message?.includes('schema cache') || updateErr.message?.includes('column'))) {
+        console.warn('Dedicated columns pending migration in updateTenantSettings. Applying fallback update:', updateErr.message);
+        const fallbackSettings = {
           name: updatedTenant.name,
           brand_name_ar: updatedTenant.brandNameAr,
           brand_name_en: updatedTenant.brandNameEn,
           logo_url: updatedTenant.logoUrl,
-          company_registration_number: updatedTenant.companyRegistrationNumber,
-          tax_identification_number: updatedTenant.taxIdentificationNumber
-        })
-        .eq('id', updatedTenant.id);
+          updated_at: new Date().toISOString()
+        };
+        const res = await supabase.from('tenants').update(fallbackSettings).eq('id', updatedTenant.id);
+        updateErr = res.error;
+      }
 
-      if (error) {
-        console.warn('Supabase tenant update notice (fallback active):', error.message);
+      if (updateErr) {
+        console.warn('Supabase tenant update notice:', updateErr.message);
       }
 
       await logSystemActivity({
@@ -578,10 +606,54 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       dbUpdates.feature_flags = mergedFeatureFlags;
 
-      const { error } = await supabase
+      // Assign dedicated top-level columns on public.tenants
+      const corpProfile = mergedFeatureFlags.corporate_profile;
+      if (corpProfile.headquarters_address !== undefined) {
+        dbUpdates.address = corpProfile.headquarters_address;
+        dbUpdates.headquarters_address = corpProfile.headquarters_address;
+      }
+      if (corpProfile.city !== undefined) dbUpdates.city = corpProfile.city;
+      if (corpProfile.country !== undefined) dbUpdates.country = corpProfile.country;
+      if (corpProfile.phone_number !== undefined) {
+        dbUpdates.phone = corpProfile.phone_number;
+        dbUpdates.phone_number = corpProfile.phone_number;
+      }
+      if (corpProfile.billing_email !== undefined) dbUpdates.billing_email = corpProfile.billing_email;
+      if (corpProfile.cr_number !== undefined) dbUpdates.cr_number = corpProfile.cr_number;
+      if (corpProfile.tax_id !== undefined) dbUpdates.tax_id = corpProfile.tax_id;
+      if (corpProfile.base_currency !== undefined) dbUpdates.base_currency = corpProfile.base_currency;
+      if (corpProfile.secondary_currency !== undefined) dbUpdates.secondary_currency = corpProfile.secondary_currency;
+      if (corpProfile.exchange_rate_policy !== undefined) dbUpdates.exchange_rate_policy = corpProfile.exchange_rate_policy;
+
+      let { data: updatedData, error } = await supabase
         .from('tenants')
         .update(dbUpdates)
-        .eq('id', tenantId);
+        .eq('id', tenantId)
+        .select('*');
+
+      if (error && (error.code === 'PGRST204' || error.message?.includes('schema cache') || error.message?.includes('column'))) {
+        console.warn('Dedicated columns pending Supabase migration. Applying JSONB fallback in updateTenantModulesAndBranding:', error.message);
+        const fallbackDbUpdates: any = {
+          name: dbUpdates.name,
+          brand_name_ar: dbUpdates.brand_name_ar,
+          brand_name_en: dbUpdates.brand_name_en,
+          logo_url: dbUpdates.logo_url,
+          primary_color: dbUpdates.primary_color,
+          theme_color: dbUpdates.theme_color,
+          subscription_tier: dbUpdates.subscription_tier,
+          subscription_status: dbUpdates.subscription_status,
+          enabled_modules: dbUpdates.enabled_modules,
+          feature_flags: dbUpdates.feature_flags,
+          updated_at: dbUpdates.updated_at
+        };
+        const fallbackRes = await supabase
+          .from('tenants')
+          .update(fallbackDbUpdates)
+          .eq('id', tenantId)
+          .select('*');
+        error = fallbackRes.error;
+        updatedData = fallbackRes.data;
+      }
 
       if (error) {
         console.warn('Supabase tenant modules/branding update notice:', error.message);

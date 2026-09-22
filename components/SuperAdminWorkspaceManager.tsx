@@ -83,6 +83,7 @@ import {
   Search,
   LayoutGrid,
   ArrowRightLeft,
+  Info,
   Table as TableIcon
 } from 'lucide-react';
 
@@ -600,6 +601,29 @@ export default function SuperAdminWorkspaceManager() {
   const [isSavingConfig, setIsSavingConfig] = useState<boolean>(false);
   const [configSaveSuccess, setConfigSaveSuccess] = useState<boolean>(false);
 
+  // Visual Toast Notification System
+  interface ToastNotification {
+    id: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+    title: string;
+    message: string;
+    details?: string;
+    timestamp: number;
+  }
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
+
+  const addToast = (type: 'success' | 'error' | 'warning' | 'info', title: string, message: string, details?: string) => {
+    const id = 'toast_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    setToasts(prev => [...prev, { id, type, title, message, details, timestamp: Date.now() }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 7000);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
   // Recent Activities & Audit Log State
   const [recentActivities, setRecentActivities] = useState<SystemActivity[]>([]);
   const [loadingActivities, setLoadingActivities] = useState<boolean>(false);
@@ -685,6 +709,16 @@ export default function SuperAdminWorkspaceManager() {
           const quotas = ff.quotas || {};
           const lifecycle = ff.subscription_lifecycle || {};
           const admin = ff.primary_admin || {};
+          const resolvedAddress = t.address || t.headquarters_address || corp.address || corp.headquarters_address || corp.headquartersAddress || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4';
+          const resolvedCity = t.city || corp.city || 'Nabatieh';
+          const resolvedCountry = t.country || corp.country || 'Lebanon';
+          const resolvedPhone = t.phone || t.phone_number || corp.phone || corp.phoneNumber || '+961 70 882 110';
+          const resolvedBillingEmail = t.billing_email || corp.billingEmail || corp.billing_email || 'accounts@southernolive.com';
+          const resolvedCr = t.cr_number || corp.commercialRegistrationNumber || corp.cr_number || t.company_registration_number || 'CR-104928-LB';
+          const resolvedTaxId = t.tax_id || corp.taxIdentificationNumber || corp.tax_id || t.tax_identification_number || 'MOF-7489201';
+          const resolvedBaseCurrency = t.base_currency || corp.baseCurrency || corp.base_currency || 'USD';
+          const resolvedSecondaryCurrency = t.secondary_currency !== undefined ? (t.secondary_currency || '') : (corp.secondaryCurrency || corp.secondary_currency || 'LBP');
+          const resolvedExchangeRatePolicy = t.exchange_rate_policy || corp.exchangeRatePolicy || corp.exchange_rate_policy || 'PLATFORM_FIXED';
 
           return {
             ...t,
@@ -706,23 +740,27 @@ export default function SuperAdminWorkspaceManager() {
             logoUrl: t.logo_url || t.logoUrl || '/assets/images/logo.png',
             subscription_tier: t.subscription_tier || t.subscriptionTier || 'ENTERPRISE',
             subscription_status: lifecycle.status || t.subscription_status || t.subscriptionStatus || 'ACTIVE',
-            company_registration_number: corp.commercialRegistrationNumber || t.company_registration_number || 'CR-104928-LB',
-            taxIdentificationNumber: corp.taxIdentificationNumber || t.tax_identification_number || 'MOF-7489201',
-            tax_identification_number: corp.taxIdentificationNumber || t.tax_identification_number || 'MOF-7489201',
-            headquarters_address: corp.headquartersAddress || t.headquarters_address || 'Central Highway Blvd, Bldg 4',
-            city: corp.city || t.city || 'Nabatieh',
-            country: corp.country || t.country || 'Lebanon',
-            financial_seed_template: corp.financial_seed_template || t.financial_seed_template || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
-            financialSeedTemplate: corp.financial_seed_template || t.financial_seed_template || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
-            vat_percentage: corp.vat_percentage ?? ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 11 : 15),
-            tax_id_label: corp.tax_id_label || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
-            cr_label: corp.cr_label || ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
-            phone_number: corp.phoneNumber || t.phone_number || '+961 70 882 110',
-            billing_email: corp.billingEmail || t.billing_email || 'billing@southernolive.com',
-            base_currency: corp.baseCurrency || corp.base_currency || t.base_currency || 'USD',
-            secondary_currency: corp.secondaryCurrency || corp.secondary_currency || t.secondary_currency || 'LBP',
-            is_dual_currency_enabled: corp.isDualCurrencyEnabled ?? corp.is_dual_currency_enabled ?? t.is_dual_currency_enabled ?? ((corp.country || t.country || 'Lebanon').toLowerCase() === 'lebanon'),
-            exchange_rate_policy: corp.exchangeRatePolicy || corp.exchange_rate_policy || t.exchange_rate_policy || 'PLATFORM_FIXED',
+            company_registration_number: resolvedCr,
+            cr_number: resolvedCr,
+            taxIdentificationNumber: resolvedTaxId,
+            tax_identification_number: resolvedTaxId,
+            tax_id: resolvedTaxId,
+            headquarters_address: resolvedAddress,
+            address: resolvedAddress,
+            city: resolvedCity,
+            country: resolvedCountry,
+            financial_seed_template: corp.financial_seed_template || t.financial_seed_template || (resolvedCountry.toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+            financialSeedTemplate: corp.financial_seed_template || t.financial_seed_template || (resolvedCountry.toLowerCase() === 'lebanon' ? 'lebanese_pca' : 'international_ifrs'),
+            vat_percentage: corp.vat_percentage ?? (resolvedCountry.toLowerCase() === 'lebanon' ? 11 : 15),
+            tax_id_label: corp.tax_id_label || (resolvedCountry.toLowerCase() === 'lebanon' ? 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)' : 'Tax Identification Number (TIN / VAT ID)'),
+            cr_label: corp.cr_label || (resolvedCountry.toLowerCase() === 'lebanon' ? 'Commercial Registration (CR / السجل التجاري)' : 'Company Registration Number (CRN)'),
+            phone_number: resolvedPhone,
+            phone: resolvedPhone,
+            billing_email: resolvedBillingEmail,
+            base_currency: resolvedBaseCurrency,
+            secondary_currency: resolvedSecondaryCurrency,
+            is_dual_currency_enabled: corp.isDualCurrencyEnabled ?? corp.is_dual_currency_enabled ?? t.is_dual_currency_enabled ?? (resolvedCountry.toLowerCase() === 'lebanon'),
+            exchange_rate_policy: resolvedExchangeRatePolicy,
             max_branches: quotas.maxBranches ?? (t.max_branches ?? 5),
             max_concurrent_users: quotas.maxConcurrentUsers ?? (t.max_concurrent_users ?? 25),
             max_pos_terminals: quotas.maxPosTerminals ?? (t.max_pos_terminals ?? 10),
@@ -955,9 +993,9 @@ export default function SuperAdminWorkspaceManager() {
     setEditCompName(t.official_legal_entity_name || t.name || '');
     setEditBrandAr(t.brand_name_ar || t.brandNameAr || t.name || '');
     setEditBrandEn(t.brand_name_en || t.brandNameEn || t.name || '');
-    setEditCrNumber(t.company_registration_number || t.commercial_registration_number || 'CR-104928-LB');
-    setEditTaxId(t.tax_identification_number || 'MOF-7489201');
-    setEditAddress(t.headquarters_address || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4');
+    setEditCrNumber(t.cr_number || t.company_registration_number || t.commercial_registration_number || 'CR-104928-LB');
+    setEditTaxId(t.tax_id || t.tax_identification_number || 'MOF-7489201');
+    setEditAddress(t.address || t.headquarters_address || 'Nabatieh Industrial Zone, Main Blvd, Bldg 4');
     setEditCity(t.city || 'Nabatieh');
 
     // Country Jurisdiction & Fiscal Template Auto-Binding
@@ -971,10 +1009,10 @@ export default function SuperAdminWorkspaceManager() {
     setEditCrNumberLabel(t.cr_label || fiscalProfile.crNumberLabel);
     setCountryDropdownOpen(false);
     setCountryFilterText('');
-    setEditPhone(t.phone_number || '+961 70 882 110');
+    setEditPhone(t.phone || t.phone_number || '+961 70 882 110');
     setEditBillingEmail(t.billing_email || 'accounts@southernolive.com');
     setEditBaseCurrency(t.base_currency || t.baseCurrency || 'USD');
-    setEditSecondaryCurrency(t.secondary_currency || t.secondaryCurrency || 'LBP');
+    setEditSecondaryCurrency(t.secondary_currency !== undefined ? (t.secondary_currency || '') : (t.secondaryCurrency || 'LBP'));
     const isDual = t.is_dual_currency_enabled !== undefined
       ? Boolean(t.is_dual_currency_enabled)
       : (t.isDualCurrencyEnabled !== undefined
@@ -1086,28 +1124,53 @@ export default function SuperAdminWorkspaceManager() {
     e.preventDefault();
     if (!editingTenant) return;
     setIsSavingConfig(true);
+
     try {
+      // 1. Gather all active form states
+      const cleanAddress = editAddress.trim();
+      const cleanCity = editCity.trim();
+      const cleanCountry = editCountry.trim() || 'Lebanon';
+      const cleanPhone = editPhone.trim();
+      const cleanBillingEmail = editBillingEmail.trim();
+      const cleanCrNumber = editCrNumber.trim();
+      const cleanTaxId = editTaxId.trim();
+      const cleanBaseCurrency = editBaseCurrency.trim() || 'USD';
+      const cleanSecondaryCurrency = editIsDualCurrency ? (editSecondaryCurrency.trim() || 'LBP') : null;
+      const cleanExchangeRatePolicy = editExchangeRatePolicy.trim() || 'PLATFORM_FIXED';
+      const cleanLegalName = editCompName.trim() || editingTenant.name;
+      const cleanBrandAr = editBrandAr.trim() || editingTenant.brand_name_ar || editingTenant.name;
+      const cleanBrandEn = editBrandEn.trim() || editingTenant.brand_name_en || editingTenant.name;
+      const cleanLogo = editLogoUrl.trim() || editLogoPreview.trim();
+
       const corporateProfile = {
-        officialLegalName: editCompName.trim(),
-        commercialRegistrationNumber: editCrNumber.trim(),
-        taxIdentificationNumber: editTaxId.trim(),
-        headquartersAddress: editAddress.trim(),
-        city: editCity.trim(),
-        country: editCountry.trim(),
+        officialLegalName: cleanLegalName,
+        legalEntityName: cleanLegalName,
+        commercialRegistrationNumber: cleanCrNumber,
+        cr_number: cleanCrNumber,
+        taxIdentificationNumber: cleanTaxId,
+        tax_id: cleanTaxId,
+        headquartersAddress: cleanAddress,
+        headquarters_address: cleanAddress,
+        address: cleanAddress,
+        city: cleanCity,
+        country: cleanCountry,
         financial_seed_template: editFinancialTemplate,
         vat_percentage: Number(editVatPercentage),
         tax_id_label: editTaxIdLabel,
         cr_label: editCrNumberLabel,
-        phoneNumber: editPhone.trim(),
-        billingEmail: editBillingEmail.trim(),
-        baseCurrency: editBaseCurrency,
-        base_currency: editBaseCurrency,
-        secondaryCurrency: editIsDualCurrency ? editSecondaryCurrency : '',
-        secondary_currency: editIsDualCurrency ? editSecondaryCurrency : '',
+        phoneNumber: cleanPhone,
+        phone_number: cleanPhone,
+        phone: cleanPhone,
+        billingEmail: cleanBillingEmail,
+        billing_email: cleanBillingEmail,
+        baseCurrency: cleanBaseCurrency,
+        base_currency: cleanBaseCurrency,
+        secondaryCurrency: cleanSecondaryCurrency,
+        secondary_currency: cleanSecondaryCurrency,
         isDualCurrencyEnabled: editIsDualCurrency,
         is_dual_currency_enabled: editIsDualCurrency,
-        exchangeRatePolicy: editExchangeRatePolicy,
-        exchange_rate_policy: editExchangeRatePolicy
+        exchangeRatePolicy: cleanExchangeRatePolicy,
+        exchange_rate_policy: cleanExchangeRatePolicy
       };
 
       const quotas = {
@@ -1131,32 +1194,57 @@ export default function SuperAdminWorkspaceManager() {
         passwordSet: Boolean(editAdminPassword.trim())
       };
 
-      const updates = {
-        name: editCompName.trim() || editingTenant.name,
-        brandNameAr: editBrandAr.trim() || editingTenant.brand_name_ar || editingTenant.name,
-        brandNameEn: editBrandEn.trim() || editingTenant.brand_name_en || editingTenant.name,
-        logoUrl: editLogoUrl.trim() || editLogoPreview.trim(),
+      const updates: any = {
+        name: cleanLegalName,
+        brandNameAr: cleanBrandAr,
+        brand_name_ar: cleanBrandAr,
+        brandNameEn: cleanBrandEn,
+        brand_name_en: cleanBrandEn,
+        logoUrl: cleanLogo,
+        logo_url: cleanLogo,
         primaryColor: editColor,
         themeColor: editColor,
+        primary_color: editColor,
+        theme_color: editColor,
         enabledModules: selectedModules,
+        enabled_modules: selectedModules,
         subscriptionTier: configTier,
+        subscription_tier: configTier,
         subscriptionStatus: editAccountStatus,
-        companyRegistrationNumber: editCrNumber.trim(),
-        taxIdentificationNumber: editTaxId.trim(),
-        officialLegalEntityName: editCompName.trim(),
-        headquartersAddress: editAddress.trim(),
-        city: editCity.trim(),
-        country: editCountry.trim(),
+        subscription_status: editAccountStatus,
+        companyRegistrationNumber: cleanCrNumber,
+        crNumber: cleanCrNumber,
+        cr_number: cleanCrNumber,
+        taxIdentificationNumber: cleanTaxId,
+        taxId: cleanTaxId,
+        tax_id: cleanTaxId,
+        officialLegalEntityName: cleanLegalName,
+        legalEntityName: cleanLegalName,
+        headquartersAddress: cleanAddress,
+        address: cleanAddress,
+        city: cleanCity,
+        country: cleanCountry,
         financialSeedTemplate: editFinancialTemplate,
+        financial_seed_template: editFinancialTemplate,
         vatPercentage: Number(editVatPercentage),
+        vat_percentage: Number(editVatPercentage),
         taxIdLabel: editTaxIdLabel,
+        tax_id_label: editTaxIdLabel,
         crNumberLabel: editCrNumberLabel,
-        phoneNumber: editPhone.trim(),
-        billingEmail: editBillingEmail.trim(),
-        baseCurrency: editBaseCurrency,
-        secondaryCurrency: editIsDualCurrency ? editSecondaryCurrency : '',
+        cr_label: editCrNumberLabel,
+        phoneNumber: cleanPhone,
+        phone: cleanPhone,
+        phone_number: cleanPhone,
+        billingEmail: cleanBillingEmail,
+        billing_email: cleanBillingEmail,
+        baseCurrency: cleanBaseCurrency,
+        base_currency: cleanBaseCurrency,
+        secondaryCurrency: cleanSecondaryCurrency,
+        secondary_currency: cleanSecondaryCurrency,
         isDualCurrencyEnabled: editIsDualCurrency,
-        exchangeRatePolicy: editExchangeRatePolicy,
+        is_dual_currency_enabled: editIsDualCurrency,
+        exchangeRatePolicy: cleanExchangeRatePolicy,
+        exchange_rate_policy: cleanExchangeRatePolicy,
         maxBranches: Number(editMaxBranches),
         maxConcurrentUsers: Number(editMaxUsers),
         maxPosTerminals: Number(editMaxTerminals),
@@ -1170,49 +1258,162 @@ export default function SuperAdminWorkspaceManager() {
         adminPassword: editAdminPassword.trim()
       };
 
-      try {
-        await supabase
-          .from('tenants')
-          .update({
-            name: updates.name,
-            brand_name_ar: updates.brandNameAr,
-            brand_name_en: updates.brandNameEn,
-            logo_url: updates.logoUrl,
-            primary_color: updates.primaryColor,
-            theme_color: updates.themeColor,
+      // 2. Direct explicit Supabase update payload with dedicated columns
+      const directPayload: any = {
+        name: cleanLegalName,
+        brand_name_ar: cleanBrandAr,
+        brand_name_en: cleanBrandEn,
+        logo_url: cleanLogo,
+        primary_color: editColor,
+        theme_color: editColor,
+        subscription_tier: configTier,
+        subscription_status: editAccountStatus,
+        enabled_modules: selectedModules,
+        // 10 Dedicated Corporate & Fiscal Columns
+        address: cleanAddress,
+        headquarters_address: cleanAddress,
+        city: cleanCity,
+        country: cleanCountry,
+        phone: cleanPhone,
+        phone_number: cleanPhone,
+        billing_email: cleanBillingEmail,
+        cr_number: cleanCrNumber,
+        tax_id: cleanTaxId,
+        base_currency: cleanBaseCurrency,
+        secondary_currency: cleanSecondaryCurrency,
+        exchange_rate_policy: cleanExchangeRatePolicy,
+        feature_flags: {
+          ...(editingTenant.feature_flags || {}),
+          enabled_modules: selectedModules,
+          modules_count: selectedModules.length,
+          full_enterprise_unlocked: selectedModules.length >= 12,
+          corporate_profile: corporateProfile,
+          quotas: quotas,
+          subscription_lifecycle: subscriptionLifecycle,
+          primary_admin: primaryAdmin
+        },
+        updated_at: new Date().toISOString()
+      };
+
+      let mutationError: any = null;
+      let rowsAffected = 0;
+      let schemaFallbackActive = false;
+
+      // Execute explicit Supabase mutation
+      const { data: updatedRows, error: directErr } = await supabase
+        .from('tenants')
+        .update(directPayload)
+        .eq('id', editingTenant.id)
+        .select('*');
+
+      if (directErr) {
+        // If columns do not exist yet (PGRST204 / schema cache), fallback to JSONB feature_flags update
+        if (directErr.code === 'PGRST204' || directErr.message?.includes('schema cache') || directErr.message?.includes('column')) {
+          console.warn('Dedicated columns pending Supabase migration. Applying JSONB fallback update:', directErr.message);
+          schemaFallbackActive = true;
+          const fallbackPayload = {
+            name: cleanLegalName,
+            brand_name_ar: cleanBrandAr,
+            brand_name_en: cleanBrandEn,
+            logo_url: cleanLogo,
+            primary_color: editColor,
+            theme_color: editColor,
             subscription_tier: configTier,
             subscription_status: editAccountStatus,
-            feature_flags: {
-              ...(editingTenant.feature_flags || {}),
-              enabled_modules: selectedModules,
-              modules_count: selectedModules.length,
-              full_enterprise_unlocked: selectedModules.length >= 12,
-              corporate_profile: corporateProfile,
-              quotas: quotas,
-              subscription_lifecycle: subscriptionLifecycle,
-              primary_admin: primaryAdmin
-            }
-          })
-          .eq('id', editingTenant.id);
-      } catch (dbErr) {
-        console.warn('Direct Supabase update notice:', dbErr);
+            enabled_modules: selectedModules,
+            feature_flags: directPayload.feature_flags,
+            updated_at: directPayload.updated_at
+          };
+          const { data: fallbackRows, error: fallbackErr } = await supabase
+            .from('tenants')
+            .update(fallbackPayload)
+            .eq('id', editingTenant.id)
+            .select('*');
+
+          if (fallbackErr) {
+            mutationError = fallbackErr;
+          } else {
+            rowsAffected = fallbackRows?.length || 0;
+          }
+        } else {
+          mutationError = directErr;
+        }
+      } else {
+        rowsAffected = updatedRows?.length || 0;
       }
 
-      const res = await updateTenantModulesAndBranding(editingTenant.id, updates);
-      if (res.success) {
-        setConfigSaveSuccess(true);
-        await fetchAdminTenants();
-        await fetchActivities();
-        setTimeout(() => {
-          setShowConfigModal(false);
-          setConfigSaveSuccess(false);
-        }, 1200);
-      } else {
-        alert('Failed to save tenant configuration: ' + (res.error || 'Unknown error'));
+      // Check for errors
+      if (mutationError) {
+        console.error('Supabase update mutation error:', mutationError);
+        addToast(
+          'error',
+          'Supabase Mutation Failed',
+          mutationError.message || 'Failed to persist tenant changes to Supabase',
+          mutationError.details || mutationError.hint || `Code: ${mutationError.code || 'UNKNOWN'}`
+        );
+        return;
       }
+
+      // Check for RLS silent block (0 rows affected)
+      if (rowsAffected === 0 && !schemaFallbackActive) {
+        console.warn('Supabase returned 0 rows updated. Check Row Level Security (RLS) UPDATE policy.');
+        addToast(
+          'warning',
+          'RLS Update Policy Notice',
+          'Request reached Supabase but 0 rows were updated. Ensure the public UPDATE policy is enabled on public.tenants.',
+          'Execute lib/supabase/migration_tenant_corporate_fiscal_persistence.sql to grant full UPDATE permissions.'
+        );
+      }
+
+      // Sync via TenantContext provider (updates memory cache, registeredCompanies, localStorage)
+      const res = await updateTenantModulesAndBranding(editingTenant.id, updates);
+      if (!res.success) {
+        console.warn('TenantContext local update notice:', res.error);
+      }
+
+      // If updating the active tenant, synchronize active session immediately
+      if (currentTenant?.id === editingTenant.id) {
+        const mergedActiveTenant = {
+          ...currentTenant,
+          ...updates,
+          id: editingTenant.id
+        };
+        switchTenant(mergedActiveTenant);
+      }
+
+      // Invalidate and refetch all tenant caches
+      await fetchAdminTenants();
+      await refreshTenants();
+      await fetchActivities();
+
+      // Show Success or Notice Toast
+      if (schemaFallbackActive) {
+        addToast(
+          'warning',
+          'Profile Saved with Notice',
+          'Values saved to JSONB fallback. Execute lib/supabase/migration_tenant_corporate_fiscal_persistence.sql in Supabase SQL editor to enable dedicated columns.'
+        );
+      } else {
+        addToast(
+          'success',
+          'Tenant Profile Saved & Persisted',
+          `Corporate & fiscal settings for "${cleanBrandEn || cleanLegalName}" successfully saved to Supabase.`
+        );
+      }
+
+      setConfigSaveSuccess(true);
+      setTimeout(() => {
+        setShowConfigModal(false);
+        setConfigSaveSuccess(false);
+      }, 1000);
+
     } catch (err: any) {
-      console.error('Error saving tenant config:', err);
-      alert('An error occurred while saving: ' + (err.message || String(err)));
+      console.error('Exception in handleSaveConfig:', err);
+      addToast(
+        'error',
+        'Persistence Error',
+        err.message || 'An unexpected error occurred while saving tenant profile.'
+      );
     } finally {
       setIsSavingConfig(false);
     }
@@ -4011,6 +4212,69 @@ export default function SuperAdminWorkspaceManager() {
       <footer className="text-center text-xs text-slate-400 font-semibold border-t border-slate-200 pt-4">
         Vanguard SaaS Master Controller Engine © 2026 -- Secure Multi-Tenant Enterprise Platform
       </footer>
+
+      {/* VISUAL TOAST NOTIFICATION CONTAINER */}
+      <div className="fixed bottom-6 right-6 z-[99999] flex flex-col gap-3 max-w-md w-full pointer-events-none select-none">
+        {toasts.map(toast => {
+          const isSuccess = toast.type === 'success';
+          const isError = toast.type === 'error';
+          const isWarning = toast.type === 'warning';
+
+          return (
+            <div
+              key={toast.id}
+              className={`pointer-events-auto rounded-2xl p-4 shadow-2xl border-l-4 backdrop-blur-md transition-all duration-300 animate-in slide-in-from-bottom-5 fade-in ${
+                isSuccess
+                  ? 'bg-slate-900/95 text-white border-emerald-500 shadow-emerald-950/20'
+                  : isError
+                  ? 'bg-slate-900/95 text-white border-rose-500 shadow-rose-950/20'
+                  : isWarning
+                  ? 'bg-slate-900/95 text-white border-amber-500 shadow-amber-950/20'
+                  : 'bg-slate-900/95 text-white border-blue-500 shadow-blue-950/20'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 shrink-0">
+                    {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+                    {isError && <AlertCircle className="w-5 h-5 text-rose-400" />}
+                    {isWarning && <AlertCircle className="w-5 h-5 text-amber-400" />}
+                    {!isSuccess && !isError && !isWarning && <Info className="w-5 h-5 text-blue-400" />}
+                  </div>
+                  <div className="space-y-1">
+                    <h5 className="font-extrabold text-sm text-white flex items-center gap-2">
+                      <span>{toast.title}</span>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold uppercase ${
+                        isSuccess ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
+                        isError ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
+                        isWarning ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                        'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                      }`}>
+                        {toast.type}
+                      </span>
+                    </h5>
+                    <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                      {toast.message}
+                    </p>
+                    {toast.details && (
+                      <div className="mt-2 p-2 bg-black/40 rounded-xl border border-white/10 text-[11px] font-mono text-slate-300 break-all select-text">
+                        {toast.details}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeToast(toast.id)}
+                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
     </div>
   );
