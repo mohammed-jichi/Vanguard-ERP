@@ -5,11 +5,11 @@
  * Super Admin Workspace Manager & Multi-Tenant Subscription Hub
  * 
  * White Enterprise Theme & Full English Default Localization
- * Master Admin Architecture: Deep Tenant Provisioning, Visual Identity & Logo Upload,
- * Corporate Legal Profile, Flexible 12-Module Entitlements, Operational Quotas, and Interactive Action Modals.
+ * Master Admin Architecture: Scalable Tenant Registry (High-Density Compact Table & Mini-Card Grid),
+ * Live Search & Status Filters, 12-Module Deep Inspection, Quotas, and Direct Storage Logo Upload.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTenant, TenantCompany, ALL_SYSTEM_MODULES } from '../lib/TenantContext';
@@ -64,7 +64,12 @@ import {
   CreditCard,
   Calendar,
   ChevronRight,
-  Shield
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  Search,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 
 const DEFAULT_ADMIN_TENANT: TenantCompany = {
@@ -369,7 +374,14 @@ export default function SuperAdminWorkspaceManager() {
   } = useTenant();
 
   const [tenants, setTenants] = useState<any[]>([]);
+
+  // Scalable Registry Controls (Search, Filters, View Mode, Pagination, Inspection)
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE_MODE'>('ALL');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [expandedTenantModulesId, setExpandedTenantModulesId] = useState<string | null>(null);
 
   // Interactive Top Modals
   const [showRevenueModal, setShowRevenueModal] = useState<boolean>(false);
@@ -560,6 +572,7 @@ export default function SuperAdminWorkspaceManager() {
             subscription_tier: t.subscription_tier || t.subscriptionTier || 'ENTERPRISE',
             subscription_status: lifecycle.status || t.subscription_status || t.subscriptionStatus || 'ACTIVE',
             company_registration_number: corp.commercialRegistrationNumber || t.company_registration_number || 'CR-104928-LB',
+            taxIdentificationNumber: corp.taxIdentificationNumber || t.tax_identification_number || 'MOF-7489201',
             tax_identification_number: corp.taxIdentificationNumber || t.tax_identification_number || 'MOF-7489201',
             headquarters_address: corp.headquartersAddress || t.headquarters_address || 'Central Highway Blvd, Bldg 4',
             city: corp.city || t.city || 'Nabatieh',
@@ -630,12 +643,56 @@ export default function SuperAdminWorkspaceManager() {
   }, 0);
   const totalARR = totalMRR * 12;
 
-  // Filtered tenants by status
-  const filteredTenants = displayTenants.filter(t => {
-    if (statusFilter === 'ALL') return true;
-    const s = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
-    return s === statusFilter;
-  });
+  // Status Filter Counts for Registry Tabs
+  const countAll = displayTenants.length;
+  const countActive = displayTenants.filter(t => (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase() === 'ACTIVE').length;
+  const countSuspended = displayTenants.filter(t => (t.subscription_status || t.subscriptionStatus || '').toUpperCase() === 'SUSPENDED').length;
+  const countMaintenance = displayTenants.filter(t => {
+    const s = (t.subscription_status || t.subscriptionStatus || '').toUpperCase();
+    return s === 'MAINTENANCE_MODE' || s === 'MAINTENANCE';
+  }).length;
+
+  // Real-Time Search & Status Filtering
+  const filteredTenants = useMemo(() => {
+    return displayTenants.filter(t => {
+      const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
+      if (statusFilter !== 'ALL') {
+        if (statusFilter === 'MAINTENANCE_MODE' && status !== 'MAINTENANCE_MODE' && status !== 'MAINTENANCE') return false;
+        if (statusFilter !== 'MAINTENANCE_MODE' && status !== statusFilter) return false;
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const compId = String(t.company_id || t.companyId || '');
+        const name = (t.name || '').toLowerCase();
+        const legalName = (t.official_legal_entity_name || '').toLowerCase();
+        const brandEn = (t.brand_name_en || t.brandNameEn || '').toLowerCase();
+        const brandAr = (t.brand_name_ar || t.brandNameAr || '').toLowerCase();
+        const cr = (t.company_registration_number || t.commercial_registration_number || '').toLowerCase();
+        const mof = (t.tax_identification_number || '').toLowerCase();
+
+        const matches = compId.includes(q) ||
+          name.includes(q) ||
+          legalName.includes(q) ||
+          brandEn.includes(q) ||
+          brandAr.includes(q) ||
+          cr.includes(q) ||
+          mof.includes(q);
+
+        if (!matches) return false;
+      }
+
+      return true;
+    });
+  }, [displayTenants, statusFilter, searchQuery]);
+
+  // Clean Pagination Controls
+  const totalItems = filteredTenants.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const paginatedTenants = filteredTenants.slice(startIndex, endIndex);
 
   const handleEnterWorkspace = (t: any) => {
     try {
@@ -1329,216 +1386,339 @@ export default function SuperAdminWorkspaceManager() {
         </div>
       </div>
 
-      {/* VANGUARD MULTI-TENANT SAAS LICENSE REGISTRY & FEATURE FLAGS HUB */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+      {/* VANGUARD MULTI-TENANT SAAS LICENSE REGISTRY (SCALABLE ARCHITECTURE OPTIMIZED FOR 20+ TENANTS) */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+        
+        {/* HEADER BAR: TITLE & PRIMARY ACTIONS */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-500" /> Vanguard Multi-Tenant SaaS Registry & Feature Flags
-              </h3>
-              {statusFilter !== 'ALL' && (
-                <span className="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
-                  <Filter className="w-3 h-3 text-amber-700" /> Filtered by: {statusFilter}
-                  <button onClick={() => setStatusFilter('ALL')} className="hover:text-rose-600 ml-1 font-black cursor-pointer">×</button>
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-500 font-medium mt-1">
-              Centralized tenant administration, corporate brand identity, and 12-module entitlement controls per subscription tier.
+            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500" /> Vanguard Enterprise Tenant Registry
+            </h3>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
+              High-density multi-tenant registry supporting 20+ accounts with live search, status filtering, and module entitlements inspection.
             </p>
           </div>
-          <button
-            onClick={() => setShowOnboardModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm border border-emerald-600 cursor-pointer transition-all hover:scale-105"
-          >
-            <Plus className="w-4 h-4" /> Add New Tenant
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowOnboardModal(true)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm border border-emerald-600 cursor-pointer transition-all hover:scale-105"
+            >
+              <Plus className="w-4 h-4" /> Add New Tenant
+            </button>
+          </div>
         </div>
 
-        {/* TENANT CARDS WITH DETAILS, TIMESTAMPS, ACTION BADGES & SHORT DESCRIPTIONS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredTenants.map((t: any) => {
-            const compId = t.company_id || t.companyId || 1300;
-            const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
-              ? t.enabled_modules
-              : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
-                  ? t.feature_flags.enabled_modules
-                  : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
-            const activeCount = getActiveModulesCount(activeMods);
-            const brandColor = t.primary_color || t.theme_color || '#123b70';
-            const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
-
-            return (
-              <div
-                key={t.id}
-                className="p-5 border border-slate-200 hover:border-amber-400 bg-white rounded-2xl space-y-4 shadow-sm hover:shadow-md transition-all relative overflow-hidden text-left"
+        {/* REGISTRY CONTROLS TOOLBAR: LIVE SEARCH, STATUS PILLS, VIEW MODE TOGGLE, PAGE SIZE */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
+          
+          {/* SEARCH INPUT */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search by company name, ID (#1300), brand, CR or MOF..."
+              className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-900 font-semibold focus:border-amber-500 focus:outline-none transition-all shadow-2xs"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 p-0.5"
               >
-                {/* Brand Color Indicator Bar */}
-                <div
-                  style={{ backgroundColor: brandColor }}
-                  className="absolute top-0 right-0 left-0 h-1.5"
-                />
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-                {/* Header: Company Name, Company ID, Status Badge & Timestamp */}
-                <div className="flex items-start justify-between gap-2 pt-1">
-                  <div className="flex items-center gap-3">
-                    <div
-                      style={{ borderColor: brandColor }}
-                      className="w-12 h-12 rounded-xl bg-slate-50 border-2 flex items-center justify-center font-black text-slate-800 text-lg shrink-0 overflow-hidden shadow-xs"
-                    >
-                      {t.logo_url || t.logoUrl ? (
-                        <img src={t.logo_url || t.logoUrl} alt={t.name} className="w-full h-full object-contain p-1" />
-                      ) : (
-                        <span>{t.name ? t.name.charAt(0) : 'V'}</span>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-slate-900 font-extrabold text-base">
-                          {t.brand_name_en || t.brandNameEn || t.name}
-                        </h4>
-                        <span className="font-mono text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md flex items-center gap-0.5 shadow-xs">
-                          <Hash className="w-3 h-3 text-amber-700" />
-                          <span>{compId}</span>
-                        </span>
-                      </div>
-                      <span className="block text-xs text-slate-500 font-medium">
-                        {t.brand_name_ar || t.brandNameAr || t.name}
-                      </span>
-                    </div>
-                  </div>
+          {/* STATUS FILTER PILLS */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { key: 'ALL' as const, label: 'All', count: countAll, bgActive: 'bg-slate-900 text-white border-slate-900' },
+              { key: 'ACTIVE' as const, label: 'Active', count: countActive, bgActive: 'bg-emerald-600 text-white border-emerald-600' },
+              { key: 'SUSPENDED' as const, label: 'Suspended', count: countSuspended, bgActive: 'bg-rose-600 text-white border-rose-600' },
+              { key: 'MAINTENANCE_MODE' as const, label: 'Maintenance', count: countMaintenance, bgActive: 'bg-amber-600 text-white border-amber-600' }
+            ].map(f => {
+              const isSelected = statusFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => {
+                    setStatusFilter(f.key);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+                    isSelected
+                      ? `${f.bgActive} shadow-xs font-black`
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                  }`}
+                >
+                  <span>{f.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
+                    isSelected ? 'bg-white/25 text-white' : 'bg-slate-200/80 text-slate-700'
+                  }`}>
+                    {f.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-                  {/* Status Badge & Relative Timestamp */}
-                  <div className="text-right shrink-0 space-y-1">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 shadow-xs ${
-                      status === 'ACTIVE'
-                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
-                        : status === 'SUSPENDED'
-                        ? 'bg-rose-50 text-rose-800 border border-rose-300'
-                        : 'bg-amber-50 text-amber-800 border border-amber-300'
-                    }`}>
-                      <span className={`w-2 h-2 rounded-full ${status === 'ACTIVE' ? 'bg-emerald-500 animate-pulse' : status === 'SUSPENDED' ? 'bg-rose-500' : 'bg-amber-500'}`} />
-                      <span>{status === 'MAINTENANCE_MODE' ? 'Maintenance' : status}</span>
-                    </span>
-                    <div className="text-[10px] text-slate-500 font-medium flex items-center gap-1 justify-end">
-                      <Clock className="w-3 h-3 text-amber-600" />
-                      <span>{formatRelativeTime(t.updated_at || t.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
+          {/* VIEW MODE TOGGLE & PAGE SIZE DROPDOWN */}
+          <div className="flex items-center gap-2 self-end lg:self-auto">
+            {/* View Mode Switcher */}
+            <div className="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
+              <button
+                onClick={() => setViewMode('table')}
+                title="Compact Table View"
+                className={`p-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <TableIcon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Table</span>
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                title="Responsive Mini-Card Grid View"
+                className={`p-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Grid</span>
+              </button>
+            </div>
 
-                {/* Legal & Fiscal Info Summary */}
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 grid grid-cols-2 gap-2 text-[11px] text-slate-600">
-                  <div>
-                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Commercial Reg (CR)</span>
-                    <strong className="text-slate-800 font-mono">{t.company_registration_number || 'CR-104928-LB'}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Tax Number (MOF)</span>
-                    <strong className="text-slate-800 font-mono">{t.tax_identification_number || 'MOF-7489201'}</strong>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Base Currency</span>
-                    <span className="font-bold text-amber-800 font-mono">{t.base_currency || 'USD'} ({t.exchange_rate_policy === 'TENANT_MANAGED' ? 'Tenant Rates' : 'Platform Fixed'})</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold block text-[9.5px] uppercase">Contract Value</span>
-                    <span className="font-bold text-emerald-700 font-mono">${(t.contract_monthly_value || 3000).toLocaleString()}/mo</span>
-                  </div>
-                </div>
-
-                {/* Active Modules Feature Flags Chips */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
-                    <span>Licensed System Modules:</span>
-                    <span className="text-amber-700 font-mono font-black">{activeCount} / 12 Active Modules</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {SYSTEM_MODULES_CONFIG.map(mod => {
-                      const isEnabled = isModuleEnabled(mod.id, activeMods);
-                      return (
-                        <span
-                          key={mod.id}
-                          className={`text-[10.5px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 transition-all ${
-                            isEnabled
-                              ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                              : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60 line-through'
-                          }`}
-                        >
-                          <span>{mod.icon}</span>
-                          <span>{mod.shortLabel}</span>
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Action Buttons Row */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleOpenConfigModal(t)}
-                      className="bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 hover:border-slate-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                    >
-                      <Settings className="w-3.5 h-3.5 text-slate-600" />
-                      <span>Configure</span>
-                    </button>
-                    <button
-                      onClick={() => handleExportBackup(t)}
-                      title="Export clean JSON backup of tenant configuration"
-                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3 h-3 text-slate-500" />
-                      <span>Backup</span>
-                    </button>
-                    <button
-                      onClick={() => handleOpenResetPasswordModal(t)}
-                      title="Reset Primary Admin Password"
-                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <Key className="w-3 h-3 text-amber-600" />
-                      <span>Password</span>
-                    </button>
-                    <button
-                      onClick={() => setSelectedAuditTenantFilter(t.id)}
-                      title="Filter audit log below for this tenant"
-                      className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <Filter className="w-3 h-3 text-purple-600" />
-                      <span>Audit</span>
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={() => handleEnterWorkspace(t)}
-                    className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all cursor-pointer hover:scale-105 ml-auto"
-                  >
-                    <span>Enter Workspace</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+            {/* Page Size Selector */}
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-amber-500 cursor-pointer shadow-2xs"
+            >
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
+          </div>
         </div>
 
-        {/* DETAILED TENANTS REGISTRY TABLE */}
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                <th className="p-3">Company ID</th>
-                <th className="p-3">Company / Legal Entity</th>
-                <th className="p-3">Brand Name</th>
-                <th className="p-3">Active Modules</th>
-                <th className="p-3">Monthly Value</th>
-                <th className="p-3">Account Status</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredTenants.map((t: any) => {
+        {/* 1. HIGH-DENSITY COMPACT ROWS TABLE VIEW (PRIMARY VIEW) */}
+        {viewMode === 'table' && (
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                  <th className="py-2.5 px-3">Company ID</th>
+                  <th className="py-2.5 px-3">Tenant & Legal Entity</th>
+                  <th className="py-2.5 px-3">Brand Name (En / Ar)</th>
+                  <th className="py-2.5 px-3">Active Modules (12)</th>
+                  <th className="py-2.5 px-3">Contract Value</th>
+                  <th className="py-2.5 px-3">Account Status</th>
+                  <th className="py-2.5 px-3 text-right">Quick Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {paginatedTenants.length > 0 ? (
+                  paginatedTenants.map((t: any) => {
+                    const compId = t.company_id || t.companyId || 1300;
+                    const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+                      ? t.enabled_modules
+                      : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                          ? t.feature_flags.enabled_modules
+                          : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
+                    const activeCount = getActiveModulesCount(activeMods);
+                    const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
+                    const isExpanded = expandedTenantModulesId === t.id;
+
+                    return (
+                      <React.Fragment key={t.id}>
+                        <tr className="hover:bg-slate-50/80 text-slate-700 font-medium transition-colors">
+                          {/* Company ID */}
+                          <td className="py-2.5 px-3">
+                            <span className="font-mono text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded shadow-xs">
+                              #{compId}
+                            </span>
+                          </td>
+
+                          {/* Company & Legal Entity */}
+                          <td className="py-2.5 px-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-300 flex items-center justify-center overflow-hidden shrink-0">
+                                {t.logo_url || t.logoUrl ? (
+                                  <img src={t.logo_url || t.logoUrl} alt={t.name} className="w-full h-full object-contain p-0.5" />
+                                ) : (
+                                  <span className="text-[10px] font-black text-slate-700">{t.name ? t.name.charAt(0) : 'V'}</span>
+                                )}
+                              </div>
+                              <div>
+                                <span className="font-bold text-slate-900 block leading-tight">{t.name}</span>
+                                <span className="text-[10.5px] text-slate-400 font-normal leading-tight block">
+                                  {t.official_legal_entity_name || t.name}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Brand Name (En / Ar) */}
+                          <td className="py-2.5 px-3 text-slate-600">
+                            <span className="font-semibold text-slate-800 block leading-tight">{t.brand_name_en || t.brandNameEn}</span>
+                            <span className="text-[10px] text-slate-400 block leading-tight">{t.brand_name_ar || t.brandNameAr}</span>
+                          </td>
+
+                          {/* Active Modules Badge with Expand/Inspect button */}
+                          <td className="py-2.5 px-3">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedTenantModulesId(isExpanded ? null : t.id)}
+                              title="Click to inspect 12-module feature flags"
+                              className={`px-2.5 py-1 rounded-full font-mono text-[11px] font-bold inline-flex items-center gap-1.5 transition-all cursor-pointer border ${
+                                isExpanded
+                                  ? 'bg-amber-100 text-amber-950 border-amber-400 shadow-xs'
+                                  : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                              }`}
+                            >
+                              <span>{activeCount} / 12 Active</span>
+                              {isExpanded ? (
+                                <ChevronUp className="w-3 h-3 text-amber-800" />
+                              ) : (
+                                <ChevronDown className="w-3 h-3 text-emerald-700" />
+                              )}
+                            </button>
+                          </td>
+
+                          {/* Contract Monthly Value */}
+                          <td className="py-2.5 px-3 font-mono font-bold text-emerald-700">
+                            ${(t.contract_monthly_value || 3000).toLocaleString()}/mo
+                          </td>
+
+                          {/* Account Status Badge */}
+                          <td className="py-2.5 px-3">
+                            <span className={`px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 text-[11px] ${
+                              status === 'ACTIVE'
+                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                                : status === 'SUSPENDED'
+                                ? 'bg-rose-50 text-rose-800 border border-rose-300'
+                                : 'bg-amber-50 text-amber-800 border border-amber-300'
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${status === 'ACTIVE' ? 'bg-emerald-500' : status === 'SUSPENDED' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                              <span>{status === 'MAINTENANCE_MODE' ? 'Maintenance' : status}</span>
+                            </span>
+                          </td>
+
+                          {/* Compact Row Actions */}
+                          <td className="py-2.5 px-3 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                onClick={() => handleOpenConfigModal(t)}
+                                className="bg-white hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                                title="Configure Tenant Settings"
+                              >
+                                <Settings className="w-3 h-3 text-slate-600" />
+                                <span className="hidden xl:inline">Configure</span>
+                              </button>
+                              <button
+                                onClick={() => handleExportBackup(t)}
+                                className="bg-white hover:bg-slate-50 text-slate-700 p-1.5 rounded-lg text-xs font-bold inline-flex items-center transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                                title="Export Backup JSON"
+                              >
+                                <Download className="w-3 h-3 text-slate-500" />
+                              </button>
+                              <button
+                                onClick={() => handleOpenResetPasswordModal(t)}
+                                className="bg-white hover:bg-slate-50 text-slate-700 p-1.5 rounded-lg text-xs font-bold inline-flex items-center transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                                title="Reset Admin Password"
+                              >
+                                <Key className="w-3 h-3 text-amber-600" />
+                              </button>
+                              <button
+                                onClick={() => setSelectedAuditTenantFilter(t.id)}
+                                className="bg-white hover:bg-slate-50 text-slate-700 p-1.5 rounded-lg text-xs font-bold inline-flex items-center transition-colors cursor-pointer border border-slate-300 shadow-xs"
+                                title="Filter Audit Log for this Tenant"
+                              >
+                                <Filter className="w-3 h-3 text-purple-600" />
+                              </button>
+                              <button
+                                onClick={() => handleEnterWorkspace(t)}
+                                className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1 rounded-lg text-xs font-black inline-flex items-center gap-1 shadow-xs cursor-pointer transition-transform hover:scale-105"
+                                title="Enter Tenant Workspace"
+                              >
+                                <span>Enter</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* EXPANDABLE ROW: CLEAN 12-MODULE INSPECTION MATRIX */}
+                        {isExpanded && (
+                          <tr className="bg-amber-50/40 border-b border-amber-200">
+                            <td colSpan={7} className="p-3.5">
+                              <div className="space-y-2 bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs text-left">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                                  <span className="font-extrabold text-xs text-slate-800 flex items-center gap-1.5">
+                                    <Layers className="w-3.5 h-3.5 text-amber-500" />
+                                    <span>Detailed 12-Module Entitlements for {t.brand_name_en || t.name}:</span>
+                                  </span>
+                                  <span className="text-[11px] font-mono text-amber-800 font-black">
+                                    {activeCount} of 12 Unlocked
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 pt-1">
+                                  {SYSTEM_MODULES_CONFIG.map(mod => {
+                                    const isEnabled = isModuleEnabled(mod.id, activeMods);
+                                    return (
+                                      <div
+                                        key={mod.id}
+                                        className={`p-2 rounded-lg border flex items-center gap-2 text-[10.5px] font-bold transition-all ${
+                                          isEnabled
+                                            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 shadow-2xs'
+                                            : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60 line-through'
+                                        }`}
+                                      >
+                                        <span className="text-base shrink-0">{mod.icon}</span>
+                                        <div className="truncate">
+                                          <span className="block truncate">{mod.shortLabel}</span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-slate-500">
+                      No tenants found matching criteria.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* 2. OPTIONAL 3-COLUMN RESPONSIVE MINI-CARD GRID VIEW */}
+        {viewMode === 'grid' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
+            {paginatedTenants.length > 0 ? (
+              paginatedTenants.map((t: any) => {
                 const compId = t.company_id || t.companyId || 1300;
                 const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
                   ? t.enabled_modules
@@ -1546,33 +1726,45 @@ export default function SuperAdminWorkspaceManager() {
                       ? t.feature_flags.enabled_modules
                       : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
                 const activeCount = getActiveModulesCount(activeMods);
+                const brandColor = t.primary_color || t.theme_color || '#123b70';
                 const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
 
                 return (
-                  <tr key={t.id} className="hover:bg-slate-50/80 text-slate-700 font-medium transition-colors">
-                    <td className="p-3">
-                      <span className="font-mono text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded shadow-xs">
-                        #{compId}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <div className="font-bold text-slate-900">{t.name}</div>
-                      <div className="text-[10.5px] text-slate-500 font-normal">{t.official_legal_entity_name || t.name}</div>
-                    </td>
-                    <td className="p-3 text-slate-600">
-                      <div>{t.brand_name_en || t.brandNameEn}</div>
-                      <div className="text-[10px] text-slate-400">{t.brand_name_ar || t.brandNameAr}</div>
-                    </td>
-                    <td className="p-3">
-                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold">
-                        {activeCount} / 12 Active
-                      </span>
-                    </td>
-                    <td className="p-3 font-mono font-bold text-emerald-700">
-                      ${(t.contract_monthly_value || 3000).toLocaleString()}/mo
-                    </td>
-                    <td className="p-3">
-                      <span className={`px-2.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 ${
+                  <div
+                    key={t.id}
+                    className="p-4 border border-slate-200 hover:border-amber-400 bg-white rounded-2xl space-y-3 shadow-xs hover:shadow-md transition-all relative overflow-hidden text-left"
+                  >
+                    {/* Brand Bar */}
+                    <div style={{ backgroundColor: brandColor }} className="absolute top-0 right-0 left-0 h-1" />
+
+                    <div className="flex items-start justify-between gap-2 pt-1">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          style={{ borderColor: brandColor }}
+                          className="w-10 h-10 rounded-xl bg-slate-50 border-2 flex items-center justify-center font-black text-slate-800 text-base shrink-0 overflow-hidden shadow-xs"
+                        >
+                          {t.logo_url || t.logoUrl ? (
+                            <img src={t.logo_url || t.logoUrl} alt={t.name} className="w-full h-full object-contain p-0.5" />
+                          ) : (
+                            <span>{t.name ? t.name.charAt(0) : 'V'}</span>
+                          )}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="text-slate-900 font-extrabold text-sm truncate max-w-[140px]">
+                              {t.brand_name_en || t.name}
+                            </h4>
+                            <span className="font-mono text-[10px] font-black bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded border border-amber-300">
+                              #{compId}
+                            </span>
+                          </div>
+                          <span className="block text-[10.5px] text-slate-500 font-medium truncate max-w-[170px]">
+                            {t.official_legal_entity_name || t.name}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs ${
                         status === 'ACTIVE'
                           ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
                           : status === 'SUSPENDED'
@@ -1580,47 +1772,97 @@ export default function SuperAdminWorkspaceManager() {
                           : 'bg-amber-50 text-amber-800 border border-amber-300'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${status === 'ACTIVE' ? 'bg-emerald-500' : status === 'SUSPENDED' ? 'bg-rose-500' : 'bg-amber-500'}`} />
-                        <span>{status === 'MAINTENANCE_MODE' ? 'Maintenance' : status}</span>
+                        <span>{status === 'MAINTENANCE_MODE' ? 'Maint' : status}</span>
                       </span>
-                    </td>
-                    <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleOpenConfigModal(t)}
-                          className="bg-white hover:bg-slate-50 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
-                          title="Configure Tenant"
-                        >
-                          <Settings className="w-3 h-3 text-slate-600" />
-                          <span>Configure</span>
-                        </button>
-                        <button
-                          onClick={() => handleExportBackup(t)}
-                          className="bg-white hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
-                          title="Export Backup JSON"
-                        >
-                          <Download className="w-3 h-3 text-slate-500" />
-                        </button>
-                        <button
-                          onClick={() => handleOpenResetPasswordModal(t)}
-                          className="bg-white hover:bg-slate-50 text-slate-700 px-2 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 shadow-xs"
-                          title="Reset Admin Password"
-                        >
-                          <Key className="w-3 h-3 text-amber-600" />
-                        </button>
-                        <button
-                          onClick={() => handleEnterWorkspace(t)}
-                          className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1 rounded-lg text-xs font-black inline-flex items-center gap-1 shadow-xs cursor-pointer transition-transform hover:scale-105"
-                        >
-                          <span>Enter →</span>
-                        </button>
+                    </div>
+
+                    <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center justify-between text-[11px]">
+                      <div>
+                        <span className="text-slate-400 block text-[9px] uppercase font-bold">Monthly Fee</span>
+                        <span className="font-mono font-bold text-emerald-700">${(t.contract_monthly_value || 3000).toLocaleString()}</span>
                       </div>
-                    </td>
-                  </tr>
+                      <div className="text-right">
+                        <span className="text-slate-400 block text-[9px] uppercase font-bold">Modules</span>
+                        <span className="font-mono font-bold text-amber-800">{activeCount} / 12 Active</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-slate-100 text-xs">
+                      <button
+                        onClick={() => handleOpenConfigModal(t)}
+                        className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+                      >
+                        <Settings className="w-3 h-3 text-slate-600" />
+                        <span>Config</span>
+                      </button>
+                      <button
+                        onClick={() => handleExportBackup(t)}
+                        className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 p-1.5 rounded-lg shadow-xs cursor-pointer"
+                        title="Backup"
+                      >
+                        <Download className="w-3 h-3 text-slate-500" />
+                      </button>
+                      <button
+                        onClick={() => handleEnterWorkspace(t)}
+                        className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1 rounded-lg font-black flex items-center gap-1 shadow-xs cursor-pointer ml-auto"
+                      >
+                        <span>Enter</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
                 );
-              })}
-            </tbody>
-          </table>
+              })
+            ) : (
+              <div className="col-span-3 py-8 text-center text-slate-500">
+                No tenants found matching criteria.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* CLEAN PAGINATION BAR */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 text-xs text-slate-600">
+          <div>
+            Showing <strong className="text-slate-900">{totalItems === 0 ? 0 : startIndex + 1}</strong> to <strong className="text-slate-900">{endIndex}</strong> of <strong className="text-slate-900">{totalItems}</strong> tenants
+            {searchQuery && ` (filtered from ${displayTenants.length} total)`}
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={safeCurrentPage <= 1}
+              className="p-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`min-w-[28px] h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  safeCurrentPage === pageNum
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                    : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={safeCurrentPage >= totalPages}
+              className="p-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+
       </div>
 
       {/* LATEST UPDATES & AUDIT ACTIVITY WIDGET */}
@@ -2316,7 +2558,7 @@ export default function SuperAdminWorkspaceManager() {
                         <button
                           type="button"
                           onClick={() => handleSelectPresetTier('ENTERPRISE')}
-                          className="text-[11px] font-bold text-emerald-700 hover:underline"
+                          className="text-[11px] font-bold text-emerald-700 hover:underline cursor-pointer"
                         >
                           Enable All (12)
                         </button>
@@ -2324,7 +2566,7 @@ export default function SuperAdminWorkspaceManager() {
                         <button
                           type="button"
                           onClick={() => handleSelectPresetTier('STARTER')}
-                          className="text-[11px] font-bold text-slate-600 hover:underline"
+                          className="text-[11px] font-bold text-slate-600 hover:underline cursor-pointer"
                         >
                           Starter Core (4)
                         </button>
