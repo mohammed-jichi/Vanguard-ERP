@@ -4293,13 +4293,13 @@ export class DispatchController {
 
 // SUPABASE CLOUD DATABASE CONNECTION
 (function initSupabaseCloud() {
-  const SUPABASE_URL = window.NEXT_PUBLIC_SUPABASE_URL || 'https://southern-olive-erp.supabase.co';
-  const SUPABASE_ANON_KEY = window.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvdXRoZXJuLW9saXZlLWVycCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg2NjI2MDAwLCJleHAiOjIxMDIxNjIwMDB9.demo_anon_key_southern_olive';
+  const SUPABASE_URL = window.NEXT_PUBLIC_SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = window.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-  if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+  if (SUPABASE_URL && SUPABASE_ANON_KEY && typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
     try {
       window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('Supabase Cloud Database Client initialized successfully for Vanguard ERP.');
+      console.log('Supabase Database Client initialized successfully for Vanguard ERP.');
       setTimeout(function () {
         if (typeof window.fetchAndRenderSupabaseTenants === 'function') {
           window.fetchAndRenderSupabaseTenants();

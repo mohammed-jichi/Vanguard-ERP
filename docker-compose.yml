@@ -1,0 +1,70 @@
+version: '3.8'
+
+# ==============================================================================
+# VANGUARD ERP — DOCKER COMPOSE ORCHESTRATION
+# Complete Self-Hosted & On-Premise Stack (Next.js + PostgreSQL 16)
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # 1. DATABASE: PostgreSQL 16 Persistent Database Service
+  # ============================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: vanguard-erp-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vanguard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vanguard_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-vanguard_erp}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./lib/supabase_multitenant_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./lib/supabase_tenants_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vanguard} -d ${POSTGRES_DB:-vanguard_erp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - vanguard_network
+
+  # ============================================================================
+  # 2. WEB APPLICATION: Vanguard ERP Next.js (Standalone Multi-Stage)
+  # ============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vanguard-erp-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-vanguard}:${POSTGRES_PASSWORD:-vanguard_secure_password}@db:5432/${POSTGRES_DB:-vanguard_erp}?sslmode=disable
+      POSTGRES_URL: postgresql://${POSTGRES_USER:-vanguard}:${POSTGRES_PASSWORD:-vanguard_secure_password}@db:5432/${POSTGRES_DB:-vanguard_erp}?sslmode=disable
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      NEXT_PUBLIC_GEMINI_API_KEY: ${NEXT_PUBLIC_GEMINI_API_KEY:-}
+    networks:
+      - vanguard_network
+
+networks:
+  vanguard_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

@@ -117,15 +117,13 @@ window.SouthernOlivePWA = (function () {
 
 // Global Sub-App Sharing & Installation Helpers for Mobile & Tablets
 window.shareSubApp = function (appUrl, appTitle) {
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '::1';
-  const liveProductionOrigin = 'https://southern-olive-oil-products.vercel.app';
-  const baseOrigin = isLocalhost ? liveProductionOrigin : window.location.origin;
+  const baseOrigin = (window.__APP_URL__ || window.location.origin).replace(/\/$/, '');
   const cleanAppPath = appUrl.startsWith('/') ? appUrl : '/' + appUrl;
   const fullUrl = baseOrigin + cleanAppPath;
 
   if (navigator.share) {
     navigator.share({
-      title: appTitle + ' - Southern Olive Oil Products S.A.R.L',
+      title: appTitle + ' - Vanguard ERP',
       text: 'Open ' + appTitle + ' app:',
       url: fullUrl
     }).catch(err => console.log('Share canceled:', err));
@@ -143,9 +141,7 @@ window.shareSubApp = function (appUrl, appTitle) {
 };
 
 window.installSubApp = function (appUrl, appTitle) {
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '::1';
-  const liveProductionOrigin = 'https://southern-olive-oil-products.vercel.app';
-  const baseOrigin = isLocalhost ? liveProductionOrigin : window.location.origin;
+  const baseOrigin = (window.__APP_URL__ || window.location.origin).replace(/\/$/, '');
   const cleanAppPath = appUrl.startsWith('/') ? appUrl : '/' + appUrl;
   const fullUrl = baseOrigin + cleanAppPath;
 

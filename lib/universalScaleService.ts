@@ -395,7 +395,8 @@ export async function composeInvoiceCloseSMS(invoiceId: string): Promise<{
 
   let feedbackUrl: string | undefined;
   if (settings.send_feedback_link) {
-    const base = settings.feedback_url_base || 'https://vanguard-erp-lb.vercel.app/feedback/rate';
+    const appBase = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_APP_URL) ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '') : '';
+    const base = settings.feedback_url_base || (appBase ? `${appBase}/feedback/rate` : '/feedback/rate');
     feedbackUrl = `${base}?inv=${encodeURIComponent(invoice.invoice_ref)}&t=${Date.now()}`;
   }
 

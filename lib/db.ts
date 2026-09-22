@@ -543,7 +543,9 @@ class VanguardDatabaseContext {
       country_code: '+961',
       auto_send_on_invoice_close: true,
       send_feedback_link: true,
-      feedback_url_base: 'https://vanguard-erp-lb.vercel.app/feedback/rate',
+      feedback_url_base: (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_APP_URL)
+        ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/feedback/rate`
+        : '/feedback/rate',
       created_at: new Date().toISOString(),
     },
   ];
@@ -1544,7 +1546,9 @@ export class TransactionClient {
           country_code: '+961',
           auto_send_on_invoice_close: false,
           send_feedback_link: false,
-          feedback_url_base: 'https://vanguard-erp-lb.vercel.app/feedback/rate',
+          feedback_url_base: (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_APP_URL)
+            ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/feedback/rate`
+            : '/feedback/rate',
           created_at: new Date().toISOString(),
         });
       }

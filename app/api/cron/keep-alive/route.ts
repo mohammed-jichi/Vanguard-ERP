@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
     supabase: {
       connected: supabaseConnected,
       latencyMs: supabaseLatencyMs,
-      endpoint: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cmntrzsaqapybfhngmdv.supabase.co',
+      endpoint: process.env.NEXT_PUBLIC_SUPABASE_URL || 'self-hosted-local',
       activeTenantId: tenantInfo?.id || '00000000-0000-0000-0000-000000000001',
       tenantName: tenantInfo?.name || 'Vanguard Master Enterprise',
       error: supabaseError
