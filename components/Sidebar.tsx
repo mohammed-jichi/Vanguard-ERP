@@ -387,6 +387,13 @@ export default function Sidebar({
                     <Link href="/backoffice/operations?section=lost_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Lost Goods</Link>
                     <Link href="/backoffice/operations?section=item_assembly" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Item Assembly</Link>
                     <Link href="/backoffice/operations?section=adjustments" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Adjustments</Link>
+                    <Link href="/pressing-mill" className="flex items-center justify-between p-1 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-800">
+                      <span className="flex items-center gap-1.5">
+                        <Scale className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        Pressing Mill (المعصرة)
+                      </span>
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full">New</span>
+                    </Link>
 
                     {/* Product Request */}
                     <div className="pt-0.5">

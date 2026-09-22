@@ -65,12 +65,14 @@ import {
   CoinsIcon,
   HelpCircle,
   Share2,
-  Navigation
+  Navigation,
+  Scale
 } from 'lucide-react';
 
 export interface NavSubItem {
   title: string;
-  href: string;
+  href?: string;
+  path?: string;
   icon?: any;
   items?: NavSubItem[];
 }
@@ -79,6 +81,7 @@ export interface NavItem {
   title: string;
   icon: any;
   href?: string;
+  path?: string;
   items?: NavSubItem[];
 }
 
@@ -144,8 +147,9 @@ export const navigationConfig: NavItem[] = [
           { title: 'Reorder Guide', href: '/operations-center/actions/reorder-guide', icon: RotateCcw },
           { title: 'Transfers', href: '/operations-center/actions/transfers', icon: ArrowLeftRight },
           { title: 'Lost Goods', href: '/operations-center/actions/lost-goods', icon: PackageX },
-          { title: 'Item Assembly', href: '/operations-center/actions/item-assembly', icon: Layers },
-          { title: 'Adjustments', href: '/operations-center/actions/adjustments', icon: SlidersHorizontal },
+          { title: 'Item Assembly', href: '/operations-center/actions/item-assembly', path: '/operations-center/actions/item-assembly', icon: Layers },
+          { title: 'Adjustments', href: '/operations-center/actions/adjustments', path: '/operations-center/actions/adjustments', icon: SlidersHorizontal },
+          { title: 'Pressing Mill (المعصرة)', href: '/pressing-mill', path: '/pressing-mill', icon: Scale },
           {
             title: 'Product Request',
             href: '/operations-center/actions/product-request',
