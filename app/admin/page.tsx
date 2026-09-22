@@ -7,7 +7,7 @@ import SuperAdminWorkspaceManager from '@/components/SuperAdminWorkspaceManager'
 export default function AdminDashboardPage() {
   return (
     <TenantProvider>
-      <main className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
+      <main className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8">
         <SuperAdminWorkspaceManager />
       </main>
     </TenantProvider>

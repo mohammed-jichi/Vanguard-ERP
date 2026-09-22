@@ -38,7 +38,7 @@ const INITIAL_FALLBACK_ACTIVITIES: SystemActivity[] = [
     tenant_id: '00000000-0000-0000-0000-000000000001',
     company_id: 1300,
     action_type: 'WORKSPACE_PREVIEW',
-    description: 'دخول ومعاينة مساحة العمل لمؤسسة منتوجات زيت وزيتون الجنوب (#1300) والتحقق من سلامة توجيه الروابط بدون 404',
+    description: 'Impersonated workspace preview for Southern Olive Oil Products S.A.R.L (#1300) without route conflicts',
     performed_by: 'Super Admin (Mohammed Jichi)',
     metadata: { route: '/1300/dashboard' },
     created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString() // 15 mins ago
@@ -48,7 +48,7 @@ const INITIAL_FALLBACK_ACTIVITIES: SystemActivity[] = [
     tenant_id: '00000000-0000-0000-0000-000000000001',
     company_id: 1300,
     action_type: 'FEATURE_FLAGS_ENFORCED',
-    description: 'تطبيق وفحص حراسة المسارات (Route Guards) للوحدات المخصصة وحجب الوحدات المقيدة تلقائياً',
+    description: 'Enforced dynamic route guards and verified enterprise module entitlement matrix',
     performed_by: 'System Engine (Vanguard)',
     metadata: { guard: 'ACTIVE' },
     created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString() // 1.5 hours ago
@@ -58,7 +58,7 @@ const INITIAL_FALLBACK_ACTIVITIES: SystemActivity[] = [
     tenant_id: '00000000-0000-0000-0000-000000000001',
     company_id: 1300,
     action_type: 'BRANDING_UPDATED',
-    description: 'تحديث الهوية البصرية وتثبيت السمة الرسمية (#123b70 Vanguard Navy) مع شعار المؤسسة الرسمي',
+    description: 'Updated brand styling to Vanguard Navy (#123b70) with official corporate insignia',
     performed_by: 'Super Admin (Mohammed Jichi)',
     metadata: { color: '#123b70' },
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString() // 6 hours ago
@@ -68,9 +68,9 @@ const INITIAL_FALLBACK_ACTIVITIES: SystemActivity[] = [
     tenant_id: '00000000-0000-0000-0000-000000000001',
     company_id: 1300,
     action_type: 'MODULES_CONFIGURED',
-    description: 'تأكيد تفعيل كافة الوحدات التسع (المبيعات، العمليات، العملاء، الاستبيانات، الولاء، المحاسبة، الموارد البشرية، الأسطول، وخدمة العملاء)',
+    description: 'Confirmed entitlement for all 10 system modules (Sales, Operations, CRM, Feedback, Loyalty, Accounting, HR, Fleet, Social CRM, Pressing Mill)',
     performed_by: 'Super Admin (Mohammed Jichi)',
-    metadata: { modulesCount: 9 },
+    metadata: { modulesCount: 10 },
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() // 1 day ago
   },
   {
@@ -78,12 +78,37 @@ const INITIAL_FALLBACK_ACTIVITIES: SystemActivity[] = [
     tenant_id: '00000000-0000-0000-0000-000000000001',
     company_id: 1300,
     action_type: 'TENANT_INITIALIZED',
-    description: 'تأسيس مساحة العمل الرئيسية للمؤسسة المعتمدة برقم الترخيص 1300 وضبط تسلسل التراخيص التلقائي',
+    description: 'Initialized primary enterprise tenant workspace #1300 with dedicated database schema isolation',
     performed_by: 'Super Admin (System Owner)',
     metadata: { companyId: 1300, tier: 'ENTERPRISE' },
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString() // 2 days ago
   }
 ];
+
+export function getActivityDescriptionEn(description: string, actionType?: string): string {
+  if (!description) return 'System audit event recorded';
+  if (description.includes('دخول ومعاينة مساحة العمل')) {
+    return description.replace(/دخول ومعاينة مساحة العمل لمؤسسة/g, 'Previewed workspace for')
+      .replace(/بواسطة المالك العام/g, 'by System Owner')
+      .replace(/والتحقق من سلامة توجيه الروابط بدون 404/g, 'with verified clean routing');
+  }
+  if (description.includes('تطبيق وفحص حراسة المسارات')) {
+    return 'Enforced dynamic route guards and verified enterprise module entitlement matrix';
+  }
+  if (description.includes('تحديث الهوية البصرية')) {
+    return 'Updated brand styling to Vanguard Navy (#123b70) with official corporate insignia';
+  }
+  if (description.includes('تأكيد تفعيل كافة الوحدات')) {
+    return 'Confirmed entitlement for all 10 system modules including Pressing Mill & Oil Plant';
+  }
+  if (description.includes('تأسيس مساحة العمل')) {
+    return 'Initialized enterprise tenant workspace with dedicated database schema isolation';
+  }
+  if (description.includes('إنشاء وتأسيس مساحة عمل جديدة')) {
+    return description.replace(/إنشاء وتأسيس مساحة عمل جديدة لمؤسسة/g, 'Provisioned new enterprise tenant account for');
+  }
+  return description;
+}
 
 let memoryFallbackActivities: SystemActivity[] = [...INITIAL_FALLBACK_ACTIVITIES];
 
@@ -273,6 +298,7 @@ export async function getPaginatedSystemActivities(
  * Returns user-friendly styling badge tokens and Arabic labels for action types.
  */
 export function getActionBadgeConfig(actionType: string): {
+  labelEn: string;
   labelAr: string;
   badgeClass: string;
   icon: string;
@@ -283,40 +309,46 @@ export function getActionBadgeConfig(actionType: string): {
     case 'MODULES_UPDATED':
     case 'MODULES_CONFIGURED':
       return {
+        labelEn: 'Modules Configured',
         labelAr: 'تهيئة الوحدات',
-        badgeClass: 'bg-amber-950/80 text-amber-300 border-amber-500/60',
+        badgeClass: 'bg-amber-50 text-amber-800 border-amber-300',
         icon: '⚙️'
       };
     case 'BRANDING_UPDATED':
       return {
+        labelEn: 'Branding Updated',
         labelAr: 'تحديث الهوية',
-        badgeClass: 'bg-sky-950/80 text-sky-300 border-sky-500/60',
+        badgeClass: 'bg-sky-50 text-sky-800 border-sky-300',
         icon: '🎨'
       };
     case 'TENANT_CREATED':
     case 'TENANT_INITIALIZED':
       return {
+        labelEn: 'Tenant Initialized',
         labelAr: 'ترخيص جديد',
-        badgeClass: 'bg-emerald-950/80 text-emerald-300 border-emerald-500/60',
+        badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-300',
         icon: '✨'
       };
     case 'WORKSPACE_PREVIEW':
     case 'WORKSPACE_LAUNCH':
       return {
+        labelEn: 'Workspace Preview',
         labelAr: 'دخول مساحة العمل',
-        badgeClass: 'bg-purple-950/80 text-purple-300 border-purple-500/60',
+        badgeClass: 'bg-purple-50 text-purple-800 border-purple-300',
         icon: '🚀'
       };
     case 'FEATURE_FLAGS_ENFORCED':
       return {
+        labelEn: 'Permissions Enforced',
         labelAr: 'حراسة الصلاحيات',
-        badgeClass: 'bg-rose-950/80 text-rose-300 border-rose-500/60',
+        badgeClass: 'bg-rose-50 text-rose-800 border-rose-300',
         icon: '🛡️'
       };
     default:
       return {
+        labelEn: 'System Operation',
         labelAr: 'عملية نظام',
-        badgeClass: 'bg-slate-800 text-slate-300 border-slate-700',
+        badgeClass: 'bg-slate-100 text-slate-800 border-slate-300',
         icon: '📝'
       };
   }
