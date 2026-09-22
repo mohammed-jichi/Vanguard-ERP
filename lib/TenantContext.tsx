@@ -37,8 +37,15 @@ export const ALL_SYSTEM_MODULES = [
   'fleet',
   'social',
   'pressing-mill',
+  'v-driver',
+  'v-store',
+  // Backward compatibility aliases
   'pressing',
-  'MODULE_PRESSING_MILL'
+  'MODULE_PRESSING_MILL',
+  'connect',
+  'v-connect',
+  'driver',
+  'store'
 ];
 
 export interface TenantCompany {
@@ -205,10 +212,14 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           themeColor: t.theme_color || t.primary_color || '#123b70',
           enabledModules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
             ? t.enabled_modules
-            : ALL_SYSTEM_MODULES,
+            : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                ? t.feature_flags.enabled_modules
+                : ALL_SYSTEM_MODULES),
           enabled_modules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
             ? t.enabled_modules
-            : ALL_SYSTEM_MODULES,
+            : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                ? t.feature_flags.enabled_modules
+                : ALL_SYSTEM_MODULES),
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,

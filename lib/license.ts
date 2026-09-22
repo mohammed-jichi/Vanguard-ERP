@@ -33,13 +33,19 @@ export const ALL_CORE_MODULES = [
   'fleet',
   'social',
   'pressing-mill',
+  'v-driver',
+  'v-store',
   'pressing',
-  'MODULE_PRESSING_MILL'
+  'MODULE_PRESSING_MILL',
+  'connect',
+  'driver',
+  'store'
 ] as const;
 
 export const MODULE_ALIASES: Record<string, string[]> = {
-  sales: ['sales', 'pos', 'sales_control', 'sales-control'],
-  pos: ['sales', 'pos', 'sales_control', 'sales-control'],
+  sales: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
+  pos: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
+  'v-pos': ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
   operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
   op: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
   inventory: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
@@ -52,10 +58,16 @@ export const MODULE_ALIASES: Record<string, string[]> = {
   hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
   fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
   supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-  social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel'],
+  social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
+  connect: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
+  'v-connect': ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
   'pressing-mill': ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
   pressing: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
-  module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill']
+  module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
+  'v-driver': ['v-driver', 'driver', 'supersonic', 'fleet'],
+  driver: ['v-driver', 'driver', 'supersonic', 'fleet'],
+  'v-store': ['v-store', 'store', 'storefront', 'landing', 'orders'],
+  store: ['v-store', 'store', 'storefront', 'landing', 'orders']
 };
 
 /**

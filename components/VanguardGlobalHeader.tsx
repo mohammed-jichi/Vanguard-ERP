@@ -78,7 +78,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   const [activeSettingsSection, setActiveSettingsSection] = useState<'general' | 'sales' | 'inventory' | 'accounting' | 'interface'>('general');
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const [isQuickMenuOpen, setIsQuickMenuOpen] = useState<boolean>(false);
-  const [quickMenuTab, setQuickMenuTab] = useState<'updates' | 'alerts' | 'activities' | 'help' | 'theme'>('help');
+  const [quickMenuTab, setQuickMenuTab] = useState<'apps' | 'updates' | 'alerts' | 'activities' | 'help' | 'theme'>('apps');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [showMoreUpdates, setShowMoreUpdates] = useState<boolean>(false);
   const [showMoreActivities, setShowMoreActivities] = useState<boolean>(false);
@@ -622,6 +622,12 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 text-xs font-bold px-1">
               <div className="flex items-center overflow-x-auto">
                 <button
+                  onClick={() => setQuickMenuTab('apps')}
+                  className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'apps' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
+                >
+                  Apps Suite (4)
+                </button>
+                <button
                   onClick={() => setQuickMenuTab('updates')}
                   className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'updates' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
                 >
@@ -659,6 +665,82 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
 
             {/* TAB CONTENT */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs font-bold text-gray-800">
+
+              {/* STANDALONE APPS (V-SUITE) TAB */}
+              {quickMenuTab === 'apps' && (
+                <div className="space-y-3">
+                  <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
+                    <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">
+                      Vanguard Standalone Apps Suite
+                    </span>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
+                      Launch dedicated client-facing portals and driver PWAs in standalone external windows.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {[
+                      {
+                        name: 'V-Connect',
+                        tag: 'Social CRM, WhatsApp & Support',
+                        desc: 'Omnichannel inbox, WhatsApp automation & customer ticketing',
+                        href: '/connect',
+                        icon: '🌐',
+                        badge: 'OMNICHANNEL'
+                      },
+                      {
+                        name: 'V-Driver',
+                        tag: 'SuperSonic Driver & Fleet App',
+                        desc: 'Live trip manifests, driver GPS dispatch & e-signatures',
+                        href: '/v-driver',
+                        icon: '🚚',
+                        badge: 'MOBILE PWA'
+                      },
+                      {
+                        name: 'V-POS',
+                        tag: 'Fast Touch Counter Sales',
+                        desc: 'Rapid cashier POS terminal with dual-currency cash drawer',
+                        href: '/pos',
+                        icon: '🛒',
+                        badge: 'TOUCH POS'
+                      },
+                      {
+                        name: 'V-Store',
+                        tag: 'Storefront / B2B Web Portal',
+                        desc: 'Customer self-service portal, online catalog & wholesale orders',
+                        href: '/v-store',
+                        icon: '🏬',
+                        badge: 'WEB STORE'
+                      }
+                    ].map(app => (
+                      <a
+                        key={app.name}
+                        href={app.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 bg-slate-50 hover:bg-white border border-slate-200 hover:border-amber-400 rounded-xl flex items-start justify-between gap-3 transition-all group shadow-2xs hover:shadow-sm cursor-pointer"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <span className="text-xl p-1.5 bg-white border border-slate-200 rounded-lg shrink-0">{app.icon}</span>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h5 className="font-extrabold text-xs text-slate-900 group-hover:text-amber-600 transition-colors">
+                                {app.name}
+                              </h5>
+                              <span className="text-[9px] font-black text-amber-800 bg-amber-100/80 px-1.5 py-0.2 rounded border border-amber-200">
+                                {app.badge}
+                              </span>
+                            </div>
+                            <p className="text-[11px] font-bold text-slate-700 mt-0.5">{app.tag}</p>
+                            <p className="text-[10px] text-slate-500">{app.desc}</p>
+                          </div>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 shrink-0 mt-1 transition-colors" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               {/* LATEST UPDATES TAB (WITH SHOW MORE SCROLLABLE AREA) */}
               {quickMenuTab === 'updates' && (

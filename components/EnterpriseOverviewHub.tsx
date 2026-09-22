@@ -28,7 +28,11 @@ import {
   ChevronRight,
   ExternalLink,
   Sparkles,
-  Inbox
+  Inbox,
+  Factory,
+  Smartphone,
+  Store,
+  MessageSquare
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -42,7 +46,7 @@ export default function EnterpriseOverviewHub() {
     const modules = currentTenant?.enabledModules || (currentTenant as any)?.enabled_modules;
     if (!modules || !Array.isArray(modules) || modules.length === 0) return true;
     const aliases: Record<string, string[]> = {
-      sales: ['sales', 'pos', 'sales_control', 'sales-control'],
+      sales: ['sales', 'pos', 'v-pos', 'vpos', 'sales_control', 'sales-control'],
       operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
       customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
       feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys'],
@@ -50,7 +54,10 @@ export default function EnterpriseOverviewHub() {
       accounting: ['accounting', 'acc', 'finance', 'financials'],
       hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
       fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel']
+      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect', 'vconnect'],
+      'pressing-mill': ['pressing-mill', 'pressing_mill', 'mill', 'olive_mill', 'pressing'],
+      'v-driver': ['v-driver', 'v_driver', 'driver', 'driver_app', 'vdriver'],
+      'v-store': ['v-store', 'v_store', 'store', 'storefront', 'b2b_portal', 'vstore']
     };
     const targets = aliases[moduleId] || [moduleId];
     return modules.some((m: string) => targets.includes(m.toLowerCase()));
@@ -107,14 +114,14 @@ export default function EnterpriseOverviewHub() {
     loadDynamicData();
   }, []);
 
-  // 9 Enterprise Modules Configuration
+  // 12 Enterprise Modules Configuration
   const modulesList = [
     {
       id: 'sales',
       number: '01',
-      titleEn: 'Sales Control & POS',
-      titleAr: 'المبيعات ونقاط البيع (POS)',
-      descriptionEn: 'Cashier stations, retail & wholesale checkout, price modes, discounts, and daily Z-reports.',
+      titleEn: 'V-POS & Counter Sales',
+      titleAr: 'نقاط البيع والمبيعات (V-POS)',
+      descriptionEn: 'Cashier touchstations, retail & wholesale checkout, barcode scanning, price modes, and daily Z-reports.',
       descriptionAr: 'محطات الكاشير، فواتير التجزئة والجملة، أنماط الأسعار، الخصومات وتقارير الإغلاق اليومي.',
       icon: ShoppingCart,
       color: 'emerald',
@@ -125,23 +132,23 @@ export default function EnterpriseOverviewHub() {
         { labelEn: 'Online Orders', labelAr: 'الطلبات الإلكترونية', href: '/backoffice/online-orders' },
         { labelEn: 'End of Day (Z-Report)', labelAr: 'إغلاق اليوم', href: '/backoffice/end-of-day' },
       ],
-      badge: 'LIVE POS'
+      badge: 'V-POS'
     },
     {
       id: 'operations',
       number: '02',
-      titleEn: 'Operations Center & Pressing',
-      titleAr: 'مركز العمليات ومعاصر الزيتون',
-      descriptionEn: 'Olive pressing intake batches, tank inventory transfers, multi-decimal BOM, and procurement.',
-      descriptionAr: 'استلام ثمار الزيتون وعصره، تحويلات خزانات الزيت، التجميع والمشتريات التشغيلية.',
+      titleEn: 'Operations Center & Inventory',
+      titleAr: 'مركز العمليات والمستودعات',
+      descriptionEn: 'Warehouse logistics, multi-location stock, tank inventory transfers, multi-decimal BOM, and procurement.',
+      descriptionAr: 'إدارة المستودعات، أرصدة المخزون، تحويلات الخزانات، التجميع والتصنيع والمشتريات التشغيلية.',
       icon: Boxes,
       color: 'amber',
       primaryRoute: '/backoffice/operations',
       subLinks: [
         { labelEn: 'Operations Dashboard', labelAr: 'لوحة العمليات', href: '/backoffice/operations' },
         { labelEn: 'Products Master', labelAr: 'دليل المنتجات', href: '/backoffice/products' },
-        { labelEn: 'Olive Pressing Intake', labelAr: 'استلام المعصرة', href: '/backoffice/operations?tab=pressing' },
-        { labelEn: 'Tank Transfers', labelAr: 'تحويلات الخزانات', href: '/backoffice/operations?tab=transfers' },
+        { labelEn: 'Stock Adjustments', labelAr: 'تعديلات المخزون', href: '/adjustments' },
+        { labelEn: 'Goods Receipts', labelAr: 'استلام البضائع', href: '/receiving-of-goods' },
       ],
       badge: 'CORE'
     },
@@ -256,20 +263,74 @@ export default function EnterpriseOverviewHub() {
     {
       id: 'social',
       number: '09',
-      titleEn: 'Social CRM & Omnichannel',
-      titleAr: 'إدارة التواصل الاجتماعي والدعم',
-      descriptionEn: 'Unified multichannel inbox, order creation from chats, distributor directory, and ad analytics.',
-      descriptionAr: 'الصندوق الموحد لرسائل التواصل، توليد الطلبات، دليل الموزعين وحملات الإعلانات.',
+      titleEn: 'V-Connect (Social CRM & Support)',
+      titleAr: 'منظومة V-Connect (التواصل الاجتماعي وواتساب)',
+      descriptionEn: 'Unified multichannel inbox, WhatsApp & Meta customer conversations, chat orders, and ticket support.',
+      descriptionAr: 'الصندوق الموحد لرسائل واتساب وإنستغرام، محادثات العملاء، توليد الطلبات، وإدارة الدعم.',
       icon: Share2,
       color: 'cyan',
-      primaryRoute: '/backoffice/social-crm',
+      primaryRoute: '/connect',
       subLinks: [
+        { labelEn: 'V-Connect Hub', labelAr: 'بوابة V-Connect', href: '/connect' },
         { labelEn: 'Omnichannel Inbox', labelAr: 'صندوق المحادثات', href: '/backoffice/social-crm' },
         { labelEn: 'Platform Orders', labelAr: 'طلبات المنصات', href: '/backoffice/social-crm?tab=orders' },
-        { labelEn: 'Publishing Calendar', labelAr: 'رزنامة النشر', href: '/backoffice/social-crm?tab=calendar' },
         { labelEn: 'Distributor Directory', labelAr: 'دليل الموزعين', href: '/backoffice/social-crm?tab=distributors' },
       ],
-      badge: 'OMNICHANNEL'
+      badge: 'V-CONNECT'
+    },
+    {
+      id: 'pressing-mill',
+      number: '10',
+      titleEn: 'Pressing Mill & Oil Plant',
+      titleAr: 'معصرة الزيتون ومصنع الزيت',
+      descriptionEn: 'Olive intake weighbridge scale, pressing batches, 50-tank storage matrix, milling fees, and oil handover.',
+      descriptionAr: 'استلام ثمار الزيتون، قبان الوزن، خطوط العصر، مصفوفة الخزانات الـ 50، ومحاسبة الأجور والرد.',
+      icon: Factory,
+      color: 'amber',
+      primaryRoute: '/pressing-mill',
+      subLinks: [
+        { labelEn: 'Mill Dashboard', labelAr: 'لوحة المعصرة', href: '/pressing-mill/dashboard' },
+        { labelEn: 'Intake Weighbridge', labelAr: 'قبان الاستلام', href: '/pressing-mill/intake' },
+        { labelEn: 'Pressing Batches', labelAr: 'دفعات العصر', href: '/pressing-mill/batches' },
+        { labelEn: 'Tanks Matrix (1-50)', labelAr: 'مصفوفة الخزانات', href: '/pressing-mill/tanks' },
+      ],
+      badge: 'AGRI-MILL'
+    },
+    {
+      id: 'v-driver',
+      number: '11',
+      titleEn: 'V-Driver (Driver & Fleet App)',
+      titleAr: 'تطبيق السائقين الميداني (V-Driver)',
+      descriptionEn: 'Standalone mobile PWA for delivery drivers, turn-by-turn route corridors, proof of delivery, and offline sync.',
+      descriptionAr: 'تطبيق ويب تقدمي (PWA) للسائقين، توجيه المسارات والممرات، إثبات التسليم والمزامنة دون اتصال.',
+      icon: Smartphone,
+      color: 'blue',
+      primaryRoute: '/v-driver',
+      subLinks: [
+        { labelEn: 'Driver App Console', labelAr: 'شاشة السائق', href: '/v-driver' },
+        { labelEn: 'Corridors Dispatch', labelAr: 'تفويج الممرات', href: '/backoffice/fleet?tab=corridors' },
+        { labelEn: 'Live GPS Tracking', labelAr: 'تتبع السائقين', href: '/backoffice/fleet' },
+        { labelEn: 'Delivery Receipts', labelAr: 'إثباتات التسليم', href: '/delivery-of-goods' },
+      ],
+      badge: 'V-DRIVER'
+    },
+    {
+      id: 'v-store',
+      number: '12',
+      titleEn: 'V-Store (Storefront & B2B Portal)',
+      titleAr: 'المتجر الإلكتروني وبوابة B2B (V-Store)',
+      descriptionEn: 'High-conversion B2B wholesale portal and retail storefront, online order routing, and catalog showcase.',
+      descriptionAr: 'بوابة طلبات الجملة والتجزئة الإلكترونية، ربط الطلبات الفوري بالمخازن، وكتالوج المنتجات.',
+      icon: Store,
+      color: 'emerald',
+      primaryRoute: '/v-store',
+      subLinks: [
+        { labelEn: 'Storefront Portal', labelAr: 'واجهة المتجر', href: '/v-store' },
+        { labelEn: 'Online Orders', labelAr: 'طلبات الويب', href: '/backoffice/online-orders' },
+        { labelEn: 'Product Catalog', labelAr: 'كتالوج المنتجات', href: '/backoffice/products' },
+        { labelEn: 'Customer Pricing', labelAr: 'أسعار العملاء', href: '/backoffice/customers' },
+      ],
+      badge: 'V-STORE'
     }
   ];
 
@@ -559,15 +620,102 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
         </div>
+
+        {/* Standalone Apps Suite (V-Suite) External Quick Launch */}
+        <div className="mt-3 pt-3 border-t border-slate-200/80">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+              <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
+              <span>{isAr ? 'منظومة التطبيقات المستقلة (V-Suite — فتح في نافذة مستقلة)' : 'Standalone Apps Suite (V-Suite — Launch in New Tab)'}</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.2 rounded-full">
+              4 EXTERNAL APPS
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <a
+              href="/connect"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 bg-cyan-50/70 hover:bg-cyan-100/70 border border-cyan-200 rounded-xl flex items-center justify-between text-left group transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center shadow-xs">
+                  <Share2 className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-cyan-900 leading-tight">V-Connect</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Social CRM & WhatsApp</div>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-cyan-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="/v-driver"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200 rounded-xl flex items-center justify-between text-left group transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                  <Smartphone className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-blue-900 leading-tight">V-Driver</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Driver & Fleet PWA</div>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-blue-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="/pos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between text-left group transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-emerald-900 leading-tight">V-POS</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Touch Counter Sales</div>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="/v-store"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2.5 bg-amber-50/70 hover:bg-amber-100/70 border border-amber-200 rounded-xl flex items-center justify-between text-left group transition-all"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center shadow-xs">
+                  <Store className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-amber-900 leading-tight">V-Store</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Storefront / B2B Web</div>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+          </div>
+        </div>
       </div>
 
-      {/* 4. SEARCH & ALL 9 ENTERPRISE MODULES DIRECTORY */}
+      {/* 4. SEARCH & ALL 12 ENTERPRISE MODULES DIRECTORY */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-amber-600" />
-              <span>{isAr ? 'منظومة الوحدات المؤسسية (9 وحدات فعّالة)' : 'Enterprise Modules Portal (9 Active Modules)'}</span>
+              <span>{isAr ? 'منظومة الوحدات المؤسسية (12 وحدة فعّالة)' : 'Enterprise Modules Portal (12 Active Modules)'}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               {isAr ? 'اختر الوحدة المطلوبة للوصول إلى لوحات التحكم والشاشات التشغيلية' : 'Select a primary module to access dedicated operations and analytics'}

@@ -1150,8 +1150,8 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>9. Social CRM &amp; Support</span>
-                  <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">ENT</span>
+                  <span>9. V-Connect (Social CRM)</span>
+                  <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">CONNECT</span>
                 </span>
               )}
             </div>
@@ -1160,6 +1160,7 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['social'] && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/connect" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-bold text-cyan-700">V-Connect Hub</Link>
               <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Social CRM Dashboard</Link>
               <Link href="/backoffice/social-crm?tab=reports" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>Reports Hub</span>

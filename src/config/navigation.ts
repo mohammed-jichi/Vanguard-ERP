@@ -409,12 +409,13 @@ export const navigationConfig: NavItem[] = [
   },
 
   // ==========================================
-  // 9. SOCIAL CRM & SUPPORT (RETAINED)
+  // 9. V-CONNECT (SOCIAL CRM & SUPPORT)
   // ==========================================
   {
-    title: 'Social CRM & Support',
+    title: '9. V-Connect (Social CRM & Support)',
     icon: Share2,
     items: [
+      { title: 'V-Connect Hub', href: '/connect', icon: MessageSquare },
       { title: 'Social CRM Dashboard', href: '/social-crm/dashboard', icon: LayoutDashboard },
       { title: 'Sales Rep Mobile PWA', href: '/sales-rep', icon: Users },
       { title: 'Reports Hub', href: '/social-crm/reports', icon: FileBarChart },

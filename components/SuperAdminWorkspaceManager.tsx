@@ -5,7 +5,7 @@
  * Super Admin Workspace Manager & Multi-Tenant Subscription Hub
  * 
  * White Enterprise Theme & Full English Default Localization
- * Central tenant management, dynamic 10-module feature flags, branding, and workspace impersonation.
+ * Central tenant management, dynamic 12-module feature flags, branding, and standalone apps suite.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -45,7 +45,11 @@ import {
   AlertCircle,
   Hash,
   Eye,
-  RefreshCw
+  RefreshCw,
+  ShoppingBag,
+  Truck,
+  Smartphone,
+  Globe
 } from 'lucide-react';
 
 const DEFAULT_ADMIN_TENANT: TenantCompany = {
@@ -67,9 +71,9 @@ const DEFAULT_ADMIN_TENANT: TenantCompany = {
   aiUsageLimit: 1000
 };
 
-// System Module Definitions for Super Admin Feature Flag Matrix (Full 10 Modules)
+// System Module Definitions for Super Admin Feature Flag Matrix (Full 12 Modules / Entitlements)
 const SYSTEM_MODULES_CONFIG = [
-  { id: 'sales', num: 1, labelEn: '1. Sales & POS', shortLabel: 'Sales & POS', icon: '🛒', desc: 'Order processing, POS registers, invoicing, cash drawers & promo coupons' },
+  { id: 'sales', num: 1, labelEn: '1. V-POS & Sales (Counter POS)', shortLabel: 'V-POS / Sales', icon: '🛒', desc: 'Order processing, POS registers, invoicing, cash drawers & promo coupons' },
   { id: 'operations', num: 2, labelEn: '2. Operations & Inventory', shortLabel: 'Inventory', icon: '🏭', desc: 'Warehouse movements, procurements, batch production & logistics reports' },
   { id: 'customers', num: 3, labelEn: '3. Customer CRM & Receivables', shortLabel: 'CRM', icon: '👥', desc: 'Customer directory, aging analysis, payment receipts & credit management' },
   { id: 'feedback', num: 4, labelEn: '4. Feedback & Surveys', shortLabel: 'Feedback', icon: '💬', desc: 'Customer sentiment tracking, incident tickets & recurring quality surveys' },
@@ -77,8 +81,54 @@ const SYSTEM_MODULES_CONFIG = [
   { id: 'accounting', num: 6, labelEn: '6. Accounting & General Ledger', shortLabel: 'Accounting', icon: '📊', desc: 'Journal vouchers, chart of accounts, trial balance & cost centers' },
   { id: 'hr', num: 7, labelEn: '7. HR & Payroll', shortLabel: 'HR & Payroll', icon: '👔', desc: 'Personnel files, biometric attendance, leaves & automated salary sheets' },
   { id: 'fleet', num: 8, labelEn: '8. Fleet & Logistics (V-Track)', shortLabel: 'Fleet', icon: '🚚', desc: 'GPS vehicle tracking, route manifests, maintenance logs & driver dispatch' },
-  { id: 'social', num: 9, labelEn: '9. Social CRM & Omnichannel', shortLabel: 'Social CRM', icon: '🌐', desc: 'Unified inbox, auto-responders, multi-channel messaging & campaign ROI' },
-  { id: 'pressing-mill', num: 10, labelEn: '10. Pressing Mill & Oil Plant', shortLabel: 'Pressing Mill', icon: '⚖️', desc: 'Weighbridge intake, crushing batches, 50-tank matrix, milling fees & dispatch' }
+  { id: 'social', num: 9, labelEn: '9. V-Connect (Social CRM & WhatsApp)', shortLabel: 'V-Connect', icon: '🌐', desc: 'Omnichannel inbox, WhatsApp automation, customer tickets & campaign ROI' },
+  { id: 'pressing-mill', num: 10, labelEn: '10. Pressing Mill & Oil Plant', shortLabel: 'Pressing Mill', icon: '⚖️', desc: 'Weighbridge intake, crushing batches, 50-tank matrix, milling fees & dispatch' },
+  { id: 'v-driver', num: 11, labelEn: '11. V-Driver (SuperSonic Driver & Fleet)', shortLabel: 'V-Driver', icon: '📱', desc: 'Driver mobile PWA, trip dispatch, GPS routes & digital POD signature' },
+  { id: 'v-store', num: 12, labelEn: '12. V-Store (Storefront & B2B Web Portal)', shortLabel: 'V-Store', icon: '🏬', desc: 'Customer self-service portal, online ordering catalog & wholesale requests' }
+];
+
+// Standalone Apps Suite (External Launchpad Opening in New Tabs)
+const STANDALONE_APPS_SUITE = [
+  {
+    key: 'v-connect',
+    name: 'V-Connect',
+    tagline: 'Social CRM, WhatsApp & Support',
+    description: 'Omnichannel inbox, WhatsApp automation & customer ticketing desk',
+    href: '/connect',
+    icon: '🌐',
+    badge: 'OMNICHANNEL',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-300'
+  },
+  {
+    key: 'v-driver',
+    name: 'V-Driver',
+    tagline: 'SuperSonic Driver & Fleet App',
+    description: 'Driver mobile PWA, trip manifests, GPS tracking & e-signatures',
+    href: '/v-driver',
+    icon: '🚚',
+    badge: 'MOBILE PWA',
+    badgeClass: 'bg-amber-50 text-amber-800 border-amber-300'
+  },
+  {
+    key: 'v-pos',
+    name: 'V-POS',
+    tagline: 'Fast Touch Counter Sales',
+    description: 'Rapid cashier register with dual-currency cash drawer & thermal receipts',
+    href: '/pos',
+    icon: '🛒',
+    badge: 'TOUCH POS',
+    badgeClass: 'bg-sky-50 text-sky-800 border-sky-300'
+  },
+  {
+    key: 'v-store',
+    name: 'V-Store',
+    tagline: 'Storefront / B2B Web Portal',
+    description: 'Customer ordering web portal, digital catalog & self-checkout',
+    href: '/v-store',
+    icon: '🏬',
+    badge: 'WEB STORE',
+    badgeClass: 'bg-purple-50 text-purple-800 border-purple-300'
+  }
 ];
 
 const BRANDING_COLOR_PRESETS = [
@@ -96,9 +146,12 @@ function getActiveModulesCount(activeMods: string[] = []): number {
     activeMods.some(m => {
       const lower = (m || '').toLowerCase();
       if (lower === mod.id) return true;
-      if (mod.id === 'sales' && (lower === 'pos' || lower === 'sale')) return true;
+      if (mod.id === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return true;
       if (mod.id === 'operations' && (lower === 'op' || lower === 'inventory')) return true;
+      if (mod.id === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return true;
       if (mod.id === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return true;
+      if (mod.id === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return true;
+      if (mod.id === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return true;
       return false;
     })
   ).length;
@@ -109,9 +162,12 @@ function isModuleEnabled(modId: string, activeMods: string[] = []): boolean {
   return activeMods.some(m => {
     const lower = (m || '').toLowerCase();
     if (lower === modId) return true;
-    if (modId === 'sales' && (lower === 'pos' || lower === 'sale')) return true;
+    if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return true;
     if (modId === 'operations' && (lower === 'op' || lower === 'inventory')) return true;
+    if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return true;
     if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return true;
+    if (modId === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return true;
+    if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return true;
     return false;
   });
 }
@@ -238,7 +294,9 @@ export default function SuperAdminWorkspaceManager() {
 
       const activeModules = Array.isArray(t?.enabled_modules) && t.enabled_modules.length > 0
         ? t.enabled_modules
-        : (Array.isArray(t?.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES);
+        : (Array.isArray(t?.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+            ? t.feature_flags.enabled_modules
+            : (Array.isArray(t?.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
 
       const fullTenantObj: TenantCompany = {
         id: targetId,
@@ -305,7 +363,9 @@ export default function SuperAdminWorkspaceManager() {
     setEditingTenant(t);
     const existingModules = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
       ? t.enabled_modules
-      : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES);
+      : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+          ? t.feature_flags.enabled_modules
+          : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
     setSelectedModules([...existingModules]);
     setEditCompName(t.name || t.brand_name_ar || '');
     setEditBrandAr(t.brand_name_ar || t.brandNameAr || t.name || '');
@@ -318,8 +378,19 @@ export default function SuperAdminWorkspaceManager() {
 
   const toggleModule = (modId: string) => {
     setSelectedModules(prev => {
-      if (prev.includes(modId)) {
-        return prev.filter(m => m !== modId);
+      const isAlreadyActive = isModuleEnabled(modId, prev);
+      if (isAlreadyActive) {
+        return prev.filter(m => {
+          const lower = (m || '').toLowerCase();
+          if (lower === modId) return false;
+          if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return false;
+          if (modId === 'operations' && (lower === 'op' || lower === 'inventory')) return false;
+          if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm')) return false;
+          if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return false;
+          if (modId === 'v-driver' && (lower === 'driver' || lower === 'fleet-driver' || lower === 'supersonic')) return false;
+          if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return false;
+          return true;
+        });
       } else {
         return [...prev, modId];
       }
@@ -340,6 +411,23 @@ export default function SuperAdminWorkspaceManager() {
         primaryColor: editColor,
         themeColor: editColor
       };
+
+      // Also persist to Supabase feature_flags column if applicable
+      try {
+        await supabase
+          .from('tenants')
+          .update({
+            feature_flags: {
+              ...(editingTenant.feature_flags || {}),
+              enabled_modules: selectedModules,
+              modules_count: selectedModules.length,
+              full_enterprise_unlocked: selectedModules.length >= 12
+            }
+          })
+          .eq('id', editingTenant.id);
+      } catch (dbErr) {
+        console.warn('Feature flags Supabase update notice:', dbErr);
+      }
 
       const res = await updateTenantModulesAndBranding(editingTenant.id, updates);
       if (res.success) {
@@ -373,24 +461,32 @@ export default function SuperAdminWorkspaceManager() {
       }
 
       if (data && Array.isArray(data) && data.length > 0) {
-        const formatted = data.map((t: any, idx: number) => ({
-          ...t,
-          company_id: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-          companyId: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
-          brand_name_ar: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
-          brandNameAr: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
-          brand_name_en: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
-          brandNameEn: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
-          name: t.name || t.brand_name_ar || 'منتوجات زيت وزيتون الجنوب',
-          enabled_modules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0 ? t.enabled_modules : ALL_SYSTEM_MODULES,
-          enabledModules: Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0 ? t.enabled_modules : ALL_SYSTEM_MODULES,
-          primary_color: t.primary_color || t.theme_color || '#123b70',
-          theme_color: t.theme_color || t.primary_color || '#123b70',
-          primaryColor: t.primary_color || t.theme_color || '#123b70',
-          themeColor: t.theme_color || t.primary_color || '#123b70',
-          updated_at: t.updated_at || t.created_at || new Date().toISOString(),
-          created_at: t.created_at || new Date().toISOString()
-        }));
+        const formatted = data.map((t: any, idx: number) => {
+          const activeMods = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+            ? t.enabled_modules
+            : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                ? t.feature_flags.enabled_modules
+                : ALL_SYSTEM_MODULES);
+
+          return {
+            ...t,
+            company_id: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+            companyId: t.company_id || t.companyId || (t.id === '00000000-0000-0000-0000-000000000001' ? 1300 : 1300 + idx),
+            brand_name_ar: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
+            brandNameAr: t.brand_name_ar || t.brandNameAr || t.name || 'منتوجات زيت وزيتون الجنوب',
+            brand_name_en: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
+            brandNameEn: t.brand_name_en || t.brandNameEn || t.name || 'Southern Olive Oil Products S.A.R.L',
+            name: t.name || t.brand_name_ar || 'منتوجات زيت وزيتون الجنوب',
+            enabled_modules: activeMods,
+            enabledModules: activeMods,
+            primary_color: t.primary_color || t.theme_color || '#123b70',
+            theme_color: t.theme_color || t.primary_color || '#123b70',
+            primaryColor: t.primary_color || t.theme_color || '#123b70',
+            themeColor: t.theme_color || t.primary_color || '#123b70',
+            updated_at: t.updated_at || t.created_at || new Date().toISOString(),
+            created_at: t.created_at || new Date().toISOString()
+          };
+        });
         setTenants(formatted);
       } else {
         const fallbacks = (registeredCompanies && registeredCompanies.length > 0 ? registeredCompanies : [DEFAULT_ADMIN_TENANT]).map((t: any, idx: number) => ({
@@ -506,7 +602,7 @@ export default function SuperAdminWorkspaceManager() {
         </div>
       </header>
 
-      {/* MASTER METRICS CARDS ROW */}
+      {/* MASTER METRICS CARDS ROW (WITH 12 MODULES GUARDED) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 
         {/* CARD 1 */}
@@ -539,12 +635,70 @@ export default function SuperAdminWorkspaceManager() {
         <div className="bg-white border border-slate-200 hover:border-purple-400/60 rounded-2xl p-5 text-center shadow-sm space-y-2 transition-all">
           <Activity className="w-8 h-8 text-purple-600 mx-auto" />
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">System Health & Feature Flags</span>
-          <h2 className="text-2xl font-black text-slate-900">10 Modules Guarded</h2>
+          <h2 className="text-2xl font-black text-slate-900">12 Modules Guarded</h2>
           <small className="text-emerald-700 font-semibold flex items-center justify-center gap-1 text-xs">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Dynamic Tenant RLS Enforced
           </small>
         </div>
 
+      </div>
+
+      {/* STANDALONE APPS SUITE (V-SUITE) QUICK-LAUNCHPAD */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-center text-amber-600 font-black">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                Standalone Enterprise Apps Suite (V-Suite)
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Dedicated client-facing web portals and mobile PWAs. Launch directly in isolated tabs without cluttering ERP navigation.
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-full">
+            All 4 Standalone Portals Active & Licensed
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+          {STANDALONE_APPS_SUITE.map(app => (
+            <a
+              key={app.key}
+              href={app.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 bg-slate-50/70 hover:bg-white border border-slate-200 hover:border-amber-400 rounded-xl shadow-xs hover:shadow-md transition-all group flex flex-col justify-between gap-3 text-left cursor-pointer"
+            >
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl p-1 bg-white rounded-lg border border-slate-200 shadow-xs">{app.icon}</span>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border shadow-2xs ${app.badgeClass}`}>
+                    {app.badge}
+                  </span>
+                </div>
+                <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-amber-600 transition-colors flex items-center gap-1">
+                  <span>{app.name}</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-600 leading-tight">
+                  {app.tagline}
+                </p>
+                <p className="text-[10.5px] text-slate-500 leading-snug">
+                  {app.description}
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[11px] font-bold text-amber-700">
+                <span>Launch App</span>
+                <span className="font-mono text-xs group-hover:translate-x-1 transition-transform">↗</span>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
       {/* VANGUARD MULTI-TENANT SAAS LICENSE REGISTRY & FEATURE FLAGS HUB */}
@@ -555,7 +709,7 @@ export default function SuperAdminWorkspaceManager() {
               <Sparkles className="w-5 h-5 text-amber-500" /> Vanguard Multi-Tenant SaaS Registry & Feature Flags
             </h3>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              Centralized tenant administration, corporate brand identity, and 10-module entitlement controls per subscription tier.
+              Centralized tenant administration, corporate brand identity, and 12-module entitlement controls per subscription tier.
             </p>
           </div>
           <button
@@ -572,7 +726,9 @@ export default function SuperAdminWorkspaceManager() {
             const compId = t.company_id || t.companyId || 1300;
             const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
               ? t.enabled_modules
-              : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES);
+              : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                  ? t.feature_flags.enabled_modules
+                  : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
             const activeCount = getActiveModulesCount(activeMods);
             const brandColor = t.primary_color || t.theme_color || '#123b70';
 
@@ -638,7 +794,7 @@ export default function SuperAdminWorkspaceManager() {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
                     <span>Licensed System Modules:</span>
-                    <span className="text-amber-700 font-mono font-black">{activeCount} / 10 Active Modules</span>
+                    <span className="text-amber-700 font-mono font-black">{activeCount} / 12 Active Modules</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {SYSTEM_MODULES_CONFIG.map(mod => {
@@ -702,7 +858,9 @@ export default function SuperAdminWorkspaceManager() {
                 const compId = t.company_id || t.companyId || 1300;
                 const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
                   ? t.enabled_modules
-                  : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES);
+                  : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+                      ? t.feature_flags.enabled_modules
+                      : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
                 const activeCount = getActiveModulesCount(activeMods);
 
                 return (
@@ -716,7 +874,7 @@ export default function SuperAdminWorkspaceManager() {
                     <td className="p-3 text-slate-600">{t.brand_name_en || t.brandNameEn || t.brand_name_ar || t.brandNameAr}</td>
                     <td className="p-3">
                       <span className="bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold">
-                        {activeCount} / 10 Active
+                        {activeCount} / 12 Active
                       </span>
                     </td>
                     <td className="p-3 text-slate-500 font-medium">
@@ -889,7 +1047,7 @@ export default function SuperAdminWorkspaceManager() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h4 className="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
                     <Layers className="w-4 h-4 text-amber-500" />
-                    <span>Active Modules & Feature Flags (10 Modules)</span>
+                    <span>Active Modules & Feature Flags (12 Modules)</span>
                   </h4>
                   <div className="flex items-center gap-2">
                     <button
@@ -897,7 +1055,7 @@ export default function SuperAdminWorkspaceManager() {
                       onClick={() => setSelectedModules(ALL_SYSTEM_MODULES)}
                       className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer"
                     >
-                      Enable All Modules (10)
+                      Enable All Modules (12)
                     </button>
                     <button
                       type="button"
@@ -911,14 +1069,7 @@ export default function SuperAdminWorkspaceManager() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto custom-scrollbar p-1">
                   {SYSTEM_MODULES_CONFIG.map(mod => {
-                    const isChecked = selectedModules.some(m => {
-                      const lower = (m || '').toLowerCase();
-                      if (lower === mod.id) return true;
-                      if (mod.id === 'sales' && (lower === 'pos' || lower === 'sale')) return true;
-                      if (mod.id === 'operations' && (lower === 'op' || lower === 'inventory')) return true;
-                      if (mod.id === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return true;
-                      return false;
-                    });
+                    const isChecked = isModuleEnabled(mod.id, selectedModules);
 
                     return (
                       <div
@@ -1142,7 +1293,7 @@ export default function SuperAdminWorkspaceManager() {
               >
                 <option value="STARTER">Starter SaaS ($150/mo)</option>
                 <option value="PRO">Professional SaaS ($250/mo)</option>
-                <option value="ENTERPRISE">Enterprise Full ($450/mo - All 10 Modules)</option>
+                <option value="ENTERPRISE">Enterprise Full ($450/mo - All 12 Modules)</option>
               </select>
             </div>
             <div className="md:col-span-2 flex justify-end gap-2 pt-2">
