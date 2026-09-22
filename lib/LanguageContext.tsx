@@ -123,7 +123,7 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'pm_dispatch': 'Oil Handover & Dispatch',
     'pm_pos': 'Direct Counter Sales & POS',
     'pm_directory': 'Directory & Ledgers',
-    'pm_setup': 'Mill Settings',
+    'pm_setup': 'Mill Settings & Line Config',
     'in_kind_retention': 'In-Kind Retention',
     'cash_fee': 'Cash Fee',
     'mixed_settlement': 'Mixed Split',

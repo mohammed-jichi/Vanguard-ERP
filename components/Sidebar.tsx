@@ -152,6 +152,7 @@ export default function Sidebar({
     hr_payroll: false,
     supersonic: false,
     social: false,
+    'pressing-mill': false,
     pressing: false,
   });
 
@@ -167,6 +168,7 @@ export default function Sidebar({
     if (pathname && (pathname.includes('/pressing-mill') || pathname.includes('/pressing'))) {
       setExpandedGroups(prev => ({
         ...prev,
+        'pressing-mill': true,
         pressing: true,
       }));
     }
@@ -174,10 +176,15 @@ export default function Sidebar({
 
   const toggleGroup = (groupKey: string) => {
     React.startTransition(() => {
-      setExpandedGroups(prev => ({
-        ...prev,
-        [groupKey]: !prev[groupKey]
-      }));
+      setExpandedGroups(prev => {
+        const nextVal = !prev[groupKey];
+        const nextState = { ...prev, [groupKey]: nextVal };
+        if (groupKey === 'pressing-mill' || groupKey === 'pressing') {
+          nextState['pressing-mill'] = nextVal;
+          nextState['pressing'] = nextVal;
+        }
+        return nextState;
+      });
     });
   };
 
@@ -224,6 +231,7 @@ export default function Sidebar({
       fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
       supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack'],
       social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel'],
+      'pressing-mill': ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
       pressing: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
       module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill']
     };
@@ -399,7 +407,7 @@ export default function Sidebar({
                     <Link href="/pressing-mill" className="flex items-center justify-between p-1 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-800">
                       <span className="flex items-center gap-1.5">
                         <Scale className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        Pressing Mill (المعصرة)
+                        {t('pressing_mill', 'Pressing Mill')}
                       </span>
                       <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full">New</span>
                     </Link>
@@ -1208,10 +1216,10 @@ export default function Sidebar({
         {isModuleEnabled('MODULE_PRESSING_MILL') && (
         <div>
           <button
-            onClick={() => { ensureOpen(); toggleGroup('pressing'); }}
-            title='Pressing Mill'
+            onClick={() => { ensureOpen(); toggleGroup('pressing-mill'); }}
+            title={t('pressing_mill_nav', '10. Pressing Mill')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['pressing'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
+              (expandedGroups['pressing-mill'] || expandedGroups['pressing']) ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -1223,21 +1231,111 @@ export default function Sidebar({
                 </span>
               )}
             </div>
-            {isOpen && (expandedGroups['pressing'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
+            {isOpen && ((expandedGroups['pressing-mill'] || expandedGroups['pressing']) ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
-          {isOpen && expandedGroups['pressing'] && (
+          {isOpen && (expandedGroups['pressing-mill'] || expandedGroups['pressing']) && (
             <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/pressing-mill/dashboard" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-semibold">{t('pm_dashboard', 'Dashboard')}</Link>
-              <Link href="/pressing-mill/seasons" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-medium text-emerald-700">{t('pm_seasons', 'Season Management')}</Link>
-              <Link href="/pressing-mill/intake" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_intake', 'Weighbridge & Intake')}</Link>
-              <Link href="/pressing-mill/batches" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_batches', 'Pressing Lines & Batches')}</Link>
-              <Link href="/pressing-mill/tanks" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_tanks', 'Tanks Matrix (1-50)')}</Link>
-              <Link href="/pressing-mill/settlements" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_settlements', 'Settlements & Milling Fees')}</Link>
-              <Link href="/pressing-mill/dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_dispatch', 'Oil Handover & Dispatch')}</Link>
-              <Link href="/pressing-mill/pos" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-bold text-emerald-700 block">{t('pm_pos', 'Direct Counter Sales & POS')}</Link>
-              <Link href="/pressing-mill/directory" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_directory', 'Directory & Ledgers')}</Link>
-              <Link href="/pressing-mill/setup" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('pm_setup', 'Mill Settings & Line Config')}</Link>
+              <Link
+                href="/pressing-mill/dashboard"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/dashboard' || pathname === '/pressing-mill'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700 font-semibold'
+                }`}
+              >
+                {t('pm_dashboard', 'Dashboard')}
+              </Link>
+              <Link
+                href="/pressing-mill/seasons"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/seasons'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-emerald-700 font-medium'
+                }`}
+              >
+                {t('pm_seasons', 'Season Management')}
+              </Link>
+              <Link
+                href="/pressing-mill/intake"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/intake'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_intake', 'Weighbridge & Intake')}
+              </Link>
+              <Link
+                href="/pressing-mill/batches"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/batches'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_batches', 'Pressing Lines & Batches')}
+              </Link>
+              <Link
+                href="/pressing-mill/tanks"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/tanks'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_tanks', 'Tanks Matrix (1-50)')}
+              </Link>
+              <Link
+                href="/pressing-mill/settlements"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/settlements'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_settlements', 'Settlements & Milling Fees')}
+              </Link>
+              <Link
+                href="/pressing-mill/dispatch"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/dispatch'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_dispatch', 'Oil Handover & Dispatch')}
+              </Link>
+              <Link
+                href="/pressing-mill/pos"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/pos'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-emerald-700 font-bold'
+                }`}
+              >
+                {t('pm_pos', 'Direct Counter Sales & POS')}
+              </Link>
+              <Link
+                href="/pressing-mill/directory"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/directory'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_directory', 'Directory & Ledgers')}
+              </Link>
+              <Link
+                href="/pressing-mill/setup"
+                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                  pathname === '/pressing-mill/setup'
+                    ? 'bg-slate-100 text-primary font-bold'
+                    : 'hover:text-primary hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                {t('pm_setup', 'Mill Settings & Line Config')}
+              </Link>
             </div>
           )}
         </div>

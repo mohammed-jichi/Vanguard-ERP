@@ -149,7 +149,7 @@ export const navigationConfig: NavItem[] = [
           { title: 'Lost Goods', href: '/operations-center/actions/lost-goods', icon: PackageX },
           { title: 'Item Assembly', href: '/operations-center/actions/item-assembly', path: '/operations-center/actions/item-assembly', icon: Layers },
           { title: 'Adjustments', href: '/operations-center/actions/adjustments', path: '/operations-center/actions/adjustments', icon: SlidersHorizontal },
-          { title: 'Pressing Mill (المعصرة)', href: '/pressing-mill', path: '/pressing-mill', icon: Scale },
+          { title: 'Pressing Mill', href: '/pressing-mill', path: '/pressing-mill', icon: Scale },
           {
             title: 'Product Request',
             href: '/operations-center/actions/product-request',
