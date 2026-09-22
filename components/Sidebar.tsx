@@ -152,6 +152,7 @@ export default function Sidebar({
     hr_payroll: false,
     supersonic: false,
     social: false,
+    pressing: false,
   });
 
   useEffect(() => {
@@ -161,6 +162,12 @@ export default function Sidebar({
         acc: true,
         acc_actions: true,
         acc_setup: prev.acc_setup || pathname.includes('setup') || pathname.includes('currencies') || pathname.includes('rates') || pathname.includes('aux') || pathname.includes('classes') || pathname.includes('department'),
+      }));
+    }
+    if (pathname && (pathname.includes('/pressing-mill') || pathname.includes('/pressing'))) {
+      setExpandedGroups(prev => ({
+        ...prev,
+        pressing: true,
       }));
     }
   }, [pathname]);
@@ -216,7 +223,9 @@ export default function Sidebar({
       hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
       fleet: ['fleet', 'supersonic', 'logistics', 'vtrack'],
       supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack'],
-      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel']
+      social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel'],
+      pressing: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
+      module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill']
     };
 
     const targetList = aliases[lowerKey] || [lowerKey];
@@ -1188,6 +1197,46 @@ export default function Sidebar({
               <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Campaign Analytics</Link>
               <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Lead Pipeline</Link>
               <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Automation Bots</Link>
+            </div>
+          )}
+        </div>
+        )}
+
+        {/* ===================================================================
+            MODULE 10: PRESSING MILL (DEDICATED STANDALONE MODULE)
+            =================================================================== */}
+        {isModuleEnabled('MODULE_PRESSING_MILL') && (
+        <div>
+          <button
+            onClick={() => { ensureOpen(); toggleGroup('pressing'); }}
+            title='Pressing Mill'
+            className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
+              expandedGroups['pressing'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Scale className="w-4 h-4 text-emerald-600 shrink-0" />
+              {isOpen && (
+                <span className="truncate flex items-center gap-1 font-semibold">
+                  <span>10. Pressing Mill</span>
+                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">MILL</span>
+                </span>
+              )}
+            </div>
+            {isOpen && (expandedGroups['pressing'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
+          </button>
+
+          {isOpen && expandedGroups['pressing'] && (
+            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/pressing-mill/dashboard" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-semibold">Dashboard</Link>
+              <Link href="/pressing-mill/intake" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Weighbridge &amp; Intake</Link>
+              <Link href="/pressing-mill/batches" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Pressing Lines &amp; Batches</Link>
+              <Link href="/pressing-mill/tanks" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Tanks Matrix (1-50)</Link>
+              <Link href="/pressing-mill/settlements" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Settlements &amp; Milling Fees</Link>
+              <Link href="/pressing-mill/dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Oil Handover &amp; Dispatch</Link>
+              <Link href="/pressing-mill/pos" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-bold text-emerald-700 block">Direct Counter Sales &amp; POS</Link>
+              <Link href="/pressing-mill/directory" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Directory &amp; Ledgers</Link>
+              <Link href="/pressing-mill/setup" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Mill Settings</Link>
             </div>
           )}
         </div>

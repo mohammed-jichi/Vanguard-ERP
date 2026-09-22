@@ -1,11 +1,11 @@
 import React from 'react';
-import PressingMillPage from '@/components/PressingMillConsole';
+import PressingDashboardView from '@/components/modules/pressing/PressingDashboardView';
 
 export const metadata = {
-  title: 'Pressing Mill (المعصرة) - Vanguard ERP',
-  description: 'Olive intake weighbridge, active pressing lines, stainless storage tanks, and milling fee settlements',
+  title: 'Pressing Mill - Vanguard ERP',
+  description: 'Industrial Olive Pressing Plant & Silo Tank Farm Operations Console',
 };
 
-export default function PressingMillRoute() {
-  return <PressingMillPage />;
+export default function PressingMillIndexPage() {
+  return <PressingDashboardView />;
 }

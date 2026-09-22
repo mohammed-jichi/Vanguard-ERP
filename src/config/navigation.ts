@@ -424,5 +424,26 @@ export const navigationConfig: NavItem[] = [
       { title: 'Lead Pipeline', href: '/social-crm/leads', icon: Users },
       { title: 'Automation Bots', href: '/social-crm/automations', icon: Zap }
     ]
+  },
+
+  // ==========================================
+  // 10. PRESSING MILL (STANDALONE MODULE)
+  // ==========================================
+  {
+    title: '10. Pressing Mill',
+    icon: Scale,
+    href: '/pressing-mill/dashboard',
+    path: '/pressing-mill',
+    items: [
+      { title: 'Dashboard', href: '/pressing-mill/dashboard', path: '/pressing-mill/dashboard', icon: LayoutDashboard },
+      { title: 'Weighbridge & Intake', href: '/pressing-mill/intake', path: '/pressing-mill/intake', icon: Scale },
+      { title: 'Pressing Lines & Batches', href: '/pressing-mill/batches', path: '/pressing-mill/batches', icon: Layers },
+      { title: 'Tanks Matrix (1-50)', href: '/pressing-mill/tanks', path: '/pressing-mill/tanks', icon: Landmark },
+      { title: 'Settlements & Milling Fees', href: '/pressing-mill/settlements', path: '/pressing-mill/settlements', icon: DollarSign },
+      { title: 'Oil Handover & Dispatch', href: '/pressing-mill/dispatch', path: '/pressing-mill/dispatch', icon: Truck },
+      { title: 'Direct Counter Sales & POS', href: '/pressing-mill/pos', path: '/pressing-mill/pos', icon: ShoppingCart },
+      { title: 'Directory & Ledgers', href: '/pressing-mill/directory', path: '/pressing-mill/directory', icon: BookOpen },
+      { title: 'Mill Settings', href: '/pressing-mill/setup', path: '/pressing-mill/setup', icon: Settings }
+    ]
   }
 ];
