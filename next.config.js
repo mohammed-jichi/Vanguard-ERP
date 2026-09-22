@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
+// On Vercel, process.env.VERCEL is set. Enabling output: 'standalone' on Vercel
+// causes onBuildComplete to fail with ENOENT for .next/next-server.js.nft.json.
+// For Docker / self-hosted environments, standalone output is automatically enabled.
+const isVercel = process.env.VERCEL === '1' || Boolean(process.env.VERCEL);
+const outputMode = isVercel ? undefined : (process.env.NEXT_OUTPUT || 'standalone');
+
 const nextConfig = {
-  output: 'standalone',
+  ...(outputMode ? { output: outputMode } : {}),
   reactStrictMode: false,
   async rewrites() {
     return [
