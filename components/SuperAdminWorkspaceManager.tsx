@@ -371,6 +371,22 @@ export function getActiveModulesCount(activeMods: string[] = []): number {
   return SYSTEM_MODULES_CONFIG.filter(mod => isModuleEnabled(mod.id, activeMods)).length;
 }
 
+export function getPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+
+  if (current >= total - 3) {
+    return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  }
+
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
 function formatRelativeTime(dateString?: string): string {
   if (!dateString) return 'Just now';
   const date = new Date(dateString);
@@ -441,12 +457,30 @@ export default function SuperAdminWorkspaceManager() {
   const [tenants, setTenants] = useState<any[]>([]);
 
   // Scalable Registry Controls (Search, Filters, View Mode, Pagination, Inspection)
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED' | 'MAINTENANCE_MODE'>('ALL');
+  const [moduleFilter, setModuleFilter] = useState<string>('ALL');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [expandedTenantModulesId, setExpandedTenantModulesId] = useState<string | null>(null);
+
+  // 150ms Debounce for live search (zero-latency input responsiveness)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    setDebouncedSearchQuery('');
+    setCurrentPage(1);
+  };
 
   // Interactive Top Modals
   const [showRevenueModal, setShowRevenueModal] = useState<boolean>(false);
@@ -880,7 +914,7 @@ export default function SuperAdminWorkspaceManager() {
     return s === 'MAINTENANCE_MODE' || s === 'MAINTENANCE';
   }).length;
 
-  // Real-Time Search & Status Filtering
+  // Real-Time Multi-Field Search, Module & Status Filtering Matrix
   const filteredTenants = useMemo(() => {
     return displayTenants.filter(t => {
       const status = (t.subscription_status || t.subscriptionStatus || 'ACTIVE').toUpperCase();
@@ -889,38 +923,58 @@ export default function SuperAdminWorkspaceManager() {
         if (statusFilter !== 'MAINTENANCE_MODE' && status !== statusFilter) return false;
       }
 
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
+      if (moduleFilter !== 'ALL') {
+        const activeMods: string[] = Array.isArray(t.enabled_modules) && t.enabled_modules.length > 0
+          ? t.enabled_modules
+          : (Array.isArray(t.feature_flags?.enabled_modules) && t.feature_flags.enabled_modules.length > 0
+              ? t.feature_flags.enabled_modules
+              : (Array.isArray(t.enabledModules) && t.enabledModules.length > 0 ? t.enabledModules : ALL_SYSTEM_MODULES));
+        if (!isModuleEnabled(moduleFilter, activeMods)) {
+          return false;
+        }
+      }
+
+      if (debouncedSearchQuery.trim()) {
+        const q = debouncedSearchQuery.toLowerCase().trim();
         const compId = String(t.company_id || t.companyId || '');
+        const compIdWithHash = `#${compId}`;
         const name = (t.name || '').toLowerCase();
-        const legalName = (t.official_legal_entity_name || '').toLowerCase();
+        const legalName = (t.official_legal_entity_name || t.officialLegalEntityName || '').toLowerCase();
         const brandEn = (t.brand_name_en || t.brandNameEn || '').toLowerCase();
         const brandAr = (t.brand_name_ar || t.brandNameAr || '').toLowerCase();
-        const cr = (t.company_registration_number || t.commercial_registration_number || '').toLowerCase();
-        const mof = (t.tax_identification_number || '').toLowerCase();
+        const cr = (t.company_registration_number || t.commercial_registration_number || t.companyRegistrationNumber || '').toLowerCase();
+        const mof = (t.tax_identification_number || t.taxIdentificationNumber || '').toLowerCase();
+        const baseCurrency = (t.base_currency || t.baseCurrency || '').toLowerCase();
+        const secCurrency = (t.secondary_currency || t.secondaryCurrency || '').toLowerCase();
 
         const matches = compId.includes(q) ||
+          compIdWithHash.includes(q) ||
           name.includes(q) ||
           legalName.includes(q) ||
           brandEn.includes(q) ||
           brandAr.includes(q) ||
           cr.includes(q) ||
-          mof.includes(q);
+          mof.includes(q) ||
+          baseCurrency.includes(q) ||
+          secCurrency.includes(q);
 
         if (!matches) return false;
       }
 
       return true;
     });
-  }, [displayTenants, statusFilter, searchQuery]);
+  }, [displayTenants, statusFilter, moduleFilter, debouncedSearchQuery]);
 
-  // Clean Pagination Controls
+  // Strictly Dynamic Range Counter & Clean Pagination Math
   const totalItems = filteredTenants.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const startIndex = (safeCurrentPage - 1) * pageSize;
-  const endIndex = Math.min(startIndex + pageSize, totalItems);
-  const paginatedTenants = filteredTenants.slice(startIndex, endIndex);
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+  const startIndex = totalItems === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1;
+  const endIndex = Math.min(safeCurrentPage * pageSize, totalItems);
+  const paginatedTenants = filteredTenants.slice(
+    totalItems === 0 ? 0 : (safeCurrentPage - 1) * pageSize,
+    safeCurrentPage * pageSize
+  );
 
   const handleEnterWorkspace = (t: any) => {
     try {
@@ -1872,63 +1926,83 @@ export default function SuperAdminWorkspaceManager() {
           </div>
         </div>
 
-        {/* REGISTRY CONTROLS TOOLBAR: LIVE SEARCH, STATUS PILLS, VIEW MODE TOGGLE, PAGE SIZE */}
+        {/* REGISTRY CONTROLS TOOLBAR: LIVE SEARCH, STATUS PILLS, MODULE FILTER, VIEW MODE TOGGLE, PAGE SIZE */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
           
-          {/* SEARCH INPUT */}
+          {/* SEARCH INPUT (150ms DEBOUNCED MULTI-FIELD SEARCH ENGINE) */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search by company name, ID (#1300), brand, CR or MOF..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search by company name, ID (#1300), brand, CR, MOF or currency..."
               className="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-900 font-semibold focus:border-amber-500 focus:outline-none transition-all shadow-2xs"
             />
-            {searchQuery && (
+            {searchInput && (
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 p-0.5"
+                type="button"
+                onClick={handleClearSearch}
+                title="Clear search"
+                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* STATUS FILTER PILLS */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[
-              { key: 'ALL' as const, label: 'All', count: countAll, bgActive: 'bg-slate-900 text-white border-slate-900' },
-              { key: 'ACTIVE' as const, label: 'Active', count: countActive, bgActive: 'bg-emerald-600 text-white border-emerald-600' },
-              { key: 'SUSPENDED' as const, label: 'Suspended', count: countSuspended, bgActive: 'bg-rose-600 text-white border-rose-600' },
-              { key: 'MAINTENANCE_MODE' as const, label: 'Maintenance', count: countMaintenance, bgActive: 'bg-amber-600 text-white border-amber-600' }
-            ].map(f => {
-              const isSelected = statusFilter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  onClick={() => {
-                    setStatusFilter(f.key);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
-                    isSelected
-                      ? `${f.bgActive} shadow-xs font-black`
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
-                  }`}
-                >
-                  <span>{f.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
-                    isSelected ? 'bg-white/25 text-white' : 'bg-slate-200/80 text-slate-700'
-                  }`}>
-                    {f.count}
-                  </span>
-                </button>
-              );
-            })}
+          {/* STATUS FILTER PILLS & MODULE FILTER */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {[
+                { key: 'ALL' as const, label: 'All', count: countAll, bgActive: 'bg-slate-900 text-white border-slate-900' },
+                { key: 'ACTIVE' as const, label: 'Active', count: countActive, bgActive: 'bg-emerald-600 text-white border-emerald-600' },
+                { key: 'SUSPENDED' as const, label: 'Suspended', count: countSuspended, bgActive: 'bg-rose-600 text-white border-rose-600' },
+                { key: 'MAINTENANCE_MODE' as const, label: 'Maintenance', count: countMaintenance, bgActive: 'bg-amber-600 text-white border-amber-600' }
+              ].map(f => {
+                const isSelected = statusFilter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => {
+                      setStatusFilter(f.key);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? `${f.bgActive} shadow-xs font-black`
+                        : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    <span>{f.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
+                      isSelected ? 'bg-white/25 text-white' : 'bg-slate-200/80 text-slate-700'
+                    }`}>
+                      {f.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Module Filter Dropdown */}
+            <select
+              value={moduleFilter}
+              onChange={(e) => {
+                setModuleFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 font-bold focus:outline-none focus:border-amber-500 cursor-pointer shadow-2xs max-w-[190px] truncate"
+              title="Filter by Active Module in enabled_modules"
+            >
+              <option value="ALL">All Modules (12)</option>
+              {SYSTEM_MODULES_CONFIG.map(mod => (
+                <option key={mod.id} value={mod.id}>
+                  {mod.num}. {mod.shortLabel}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* VIEW MODE TOGGLE & PAGE SIZE DROPDOWN */}
@@ -1961,7 +2035,7 @@ export default function SuperAdminWorkspaceManager() {
               </button>
             </div>
 
-            {/* Page Size Selector */}
+            {/* Page Size Selector (10, 25, 50, 100) */}
             <select
               value={pageSize}
               onChange={(e) => {
@@ -1973,13 +2047,14 @@ export default function SuperAdminWorkspaceManager() {
               <option value={10}>10 / page</option>
               <option value={25}>25 / page</option>
               <option value={50}>50 / page</option>
+              <option value={100}>100 / page</option>
             </select>
           </div>
         </div>
 
         {/* 1. HIGH-DENSITY COMPACT ROWS TABLE VIEW (PRIMARY VIEW) */}
         {viewMode === 'table' && (
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <div className="overflow-x-auto rounded-xl border border-slate-200 min-h-[460px] bg-white">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
@@ -2212,8 +2287,30 @@ export default function SuperAdminWorkspaceManager() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-500">
-                      No tenants found matching criteria.
+                    <td colSpan={7} className="py-16 text-center text-slate-500">
+                      <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
+                          <Filter className="w-6 h-6" />
+                        </div>
+                        <p className="font-bold text-slate-700 text-sm">No tenants match the filter criteria</p>
+                        <p className="text-xs text-slate-400">
+                          Try broadening your search query or resetting active filters.
+                        </p>
+                        {(debouncedSearchQuery || statusFilter !== 'ALL' || moduleFilter !== 'ALL') && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleClearSearch();
+                              setStatusFilter('ALL');
+                              setModuleFilter('ALL');
+                              setCurrentPage(1);
+                            }}
+                            className="mt-2 px-3 py-1.5 bg-amber-50 border border-amber-300 text-amber-900 rounded-lg text-xs font-bold hover:bg-amber-100 transition-colors cursor-pointer"
+                          >
+                            Reset All Filters
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -2224,7 +2321,7 @@ export default function SuperAdminWorkspaceManager() {
 
         {/* 2. OPTIONAL 3-COLUMN RESPONSIVE MINI-CARD GRID VIEW */}
         {viewMode === 'grid' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1 min-h-[460px] content-start">
             {paginatedTenants.length > 0 ? (
               paginatedTenants.map((t: any) => {
                 const compId = t.company_id || t.companyId || 1300;
@@ -2322,18 +2419,40 @@ export default function SuperAdminWorkspaceManager() {
                 );
               })
             ) : (
-              <div className="col-span-3 py-8 text-center text-slate-500">
-                No tenants found matching criteria.
+              <div className="col-span-full py-16 text-center text-slate-500">
+                <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
+                    <Filter className="w-6 h-6" />
+                  </div>
+                  <p className="font-bold text-slate-700 text-sm">No tenants match the filter criteria</p>
+                  <p className="text-xs text-slate-400">
+                    Try broadening your search query or resetting active filters.
+                  </p>
+                  {(debouncedSearchQuery || statusFilter !== 'ALL' || moduleFilter !== 'ALL') && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleClearSearch();
+                        setStatusFilter('ALL');
+                        setModuleFilter('ALL');
+                        setCurrentPage(1);
+                      }}
+                      className="mt-2 px-3 py-1.5 bg-amber-50 border border-amber-300 text-amber-900 rounded-lg text-xs font-bold hover:bg-amber-100 transition-colors cursor-pointer"
+                    >
+                      Reset All Filters
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* CLEAN PAGINATION BAR */}
+        {/* CLEAN PAGINATION BAR WITH DYNAMIC MATH & ELLIPSIS */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200 text-xs text-slate-600">
           <div>
-            Showing <strong className="text-slate-900">{totalItems === 0 ? 0 : startIndex + 1}</strong> to <strong className="text-slate-900">{endIndex}</strong> of <strong className="text-slate-900">{totalItems}</strong> tenants
-            {searchQuery && ` (filtered from ${displayTenants.length} total)`}
+            Showing <strong className="text-slate-900">{startIndex}</strong> to <strong className="text-slate-900">{endIndex}</strong> of <strong className="text-slate-900">{totalItems}</strong> tenants
+            {(debouncedSearchQuery || statusFilter !== 'ALL' || moduleFilter !== 'ALL') && ` (filtered from ${displayTenants.length} total)`}
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -2346,19 +2465,28 @@ export default function SuperAdminWorkspaceManager() {
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`min-w-[28px] h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  safeCurrentPage === pageNum
-                    ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
-                    : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                {pageNum}
-              </button>
-            ))}
+            {getPageNumbers(safeCurrentPage, totalPages).map((pageNum, idx) => {
+              if (pageNum === '...') {
+                return (
+                  <span key={`ellipsis-${idx}`} className="px-1.5 py-1 text-xs text-slate-400 font-bold select-none">
+                    ...
+                  </span>
+                );
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`min-w-[28px] h-7 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    safeCurrentPage === pageNum
+                      ? 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                      : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
 
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
