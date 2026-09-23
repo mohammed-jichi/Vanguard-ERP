@@ -51,6 +51,28 @@ export const ALL_SYSTEM_MODULES = [
   'store'
 ];
 
+export function checkModuleEnabled(modId: string, activeMods: string[] = []): boolean {
+  if (!Array.isArray(activeMods) || activeMods.length === 0) return false;
+  const target = (modId || '').toLowerCase().trim();
+  return activeMods.some(m => {
+    const lower = (m || '').toLowerCase().trim();
+    if (lower === target) return true;
+    if (target === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos' || lower === 'counter')) return true;
+    if (target === 'operations' && (lower === 'op' || lower === 'inventory' || lower === 'stock' || lower === 'warehouse')) return true;
+    if (target === 'purchasing' && (lower === 'procurement' || lower === 'purchases' || lower === 'po')) return true;
+    if (target === 'customers' && (lower === 'crm' || lower === 'customer' || lower === 'clients')) return true;
+    if (target === 'feedback' && (lower === 'survey' || lower === 'csat' || lower === 'surveys' || lower === 'reviews')) return true;
+    if (target === 'loyalty' && (lower === 'rewards' || lower === 'merits' || lower === 'points')) return true;
+    if (target === 'accounting' && (lower === 'finance' || lower === 'gl' || lower === 'ledger' || lower === 'financials')) return true;
+    if (target === 'hr' && (lower === 'payroll' || lower === 'attendance' || lower === 'personnel')) return true;
+    if (target === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics' || lower === 'dispatch')) return true;
+    if (target === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp' || lower === 'omnichannel')) return true;
+    if (target === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill' || lower === 'olive')) return true;
+    if (target === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'ecommerce' || lower === 'orders')) return true;
+    return false;
+  });
+}
+
 export interface TenantCompany {
   id: string;
   companyId?: number | string;
@@ -169,6 +191,7 @@ interface TenantContextType {
   onboardNewTenant: (tenantData: Partial<TenantCompany>, adminEmail: string) => Promise<{ success: boolean; error?: string }>;
   refreshTenants: () => Promise<void>;
   registeredCompanies: TenantCompany[];
+  isModuleEnabled: (modId: string) => boolean;
 }
 
 const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
@@ -939,8 +962,13 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  const isModuleEnabled = (modId: string): boolean => {
+    const activeMods = currentTenant?.enabled_modules || currentTenant?.enabledModules || ALL_SYSTEM_MODULES;
+    return checkModuleEnabled(modId, activeMods);
+  };
+
   return (
-    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, updateTenantModulesAndBranding, onboardNewTenant, refreshTenants, registeredCompanies }}>
+    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, updateTenantModulesAndBranding, onboardNewTenant, refreshTenants, registeredCompanies, isModuleEnabled }}>
       {children}
     </TenantContext.Provider>
   );
@@ -963,7 +991,8 @@ export const useTenant = () => {
       updateTenantModulesAndBranding: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
       onboardNewTenant: async (): Promise<{ success: boolean; error?: string }> => ({ success: true }),
       refreshTenants: async () => {},
-      registeredCompanies: INITIAL_COMPANIES
+      registeredCompanies: INITIAL_COMPANIES,
+      isModuleEnabled: (_modId: string) => true
     };
   }
   return context;

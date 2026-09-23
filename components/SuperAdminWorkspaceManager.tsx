@@ -129,102 +129,150 @@ const DEFAULT_ADMIN_TENANT: TenantCompany = {
 };
 
 // Official 12-Module Entitlement Definitions for Super Admin Feature Flag Matrix
-export const SYSTEM_MODULES_CONFIG = [
+export interface SystemModuleConfig {
+  id: string;
+  num: number;
+  labelEn: string;
+  shortLabel: string;
+  domainCategory: string;
+  icon: string;
+  desc: string;
+  featureBadges: string[];
+  reports: string[];
+}
+
+export const SYSTEM_MODULES_CONFIG: SystemModuleConfig[] = [
   {
     id: 'sales',
     num: 1,
     labelEn: '1. V-POS (Fast Touch Counter Sales)',
-    shortLabel: 'V-POS',
+    shortLabel: 'V-POS Sales',
+    domainCategory: 'Point of Sale & Registers',
     icon: '🛒',
-    desc: 'Touch cashier register, fast barcode scan, multi-currency cash drawer & receipt printing'
+    desc: 'Autonomous point-of-sale terminal: touch cashier register, multi-currency drawer, barcode scanner, receipt printing & end-of-day shift balance.',
+    featureBadges: ['Touch Cashier Register', 'Dual Currency Drawer (USD/LBP)', 'Barcode Scanner & Scale', 'Shift Reconciliation & Z-Report', 'Offline Resilient Cache'],
+    reports: ['Daily Shift Cash Audit', 'Product Sales Velocity', 'Hourly Transaction Volume', 'Cash Drawer Settlement', 'Tax / VAT Collected Summary']
   },
   {
     id: 'operations',
     num: 2,
     labelEn: '2. Inventory & Warehouses',
-    shortLabel: 'Inventory',
+    shortLabel: 'Inventory & Stock',
+    domainCategory: 'Supply Chain & Storage',
     icon: '🏭',
-    desc: 'Multi-warehouse stock balances, bin locations, batch tracking & stock valuation'
+    desc: 'Self-contained warehousing suite: multi-location stock balances, bin locations, batch & lot expiration, stock adjustments and valuation.',
+    featureBadges: ['Multi-Warehouse Control', 'Batch & Expiry Date Tracking', 'FIFO / WAC Stock Valuation', 'Stock Adjustments & Write-Offs', 'Inter-Warehouse Transfers'],
+    reports: ['Stock Valuation & Costing Report', 'Low Stock & Reorder Alerts', 'Batch Expiry Ledger', 'Wastage & Shrinkage Report', 'Inventory Movement History']
   },
   {
     id: 'purchasing',
     num: 3,
     labelEn: '3. Purchasing & Procurement',
-    shortLabel: 'Purchasing',
+    shortLabel: 'Procurement & Bills',
+    domainCategory: 'Sourcing & Vendor AP',
     icon: '📦',
-    desc: 'Supplier purchase orders, goods receipt notes (GRN), vendor bills & landed costs'
+    desc: 'Autonomous supplier sourcing: purchase requisitions, PO approval workflows, Goods Receipt Notes (GRN), landed costs and AP billing.',
+    featureBadges: ['Vendor Purchase Orders', 'Goods Receipt Notes (GRN)', 'Landed Cost Capitalization', 'Supplier AP Invoicing', 'Price Discrepancy Matching'],
+    reports: ['Vendor Spend & Open PO Ledger', 'GRN vs Invoice Discrepancy', 'Supplier Price Fluctuations', 'Accounts Payable Aging Summary', 'Procurement Fulfillment Rates']
   },
   {
     id: 'customers',
     num: 4,
     labelEn: '4. CRM & Customer Registry',
-    shortLabel: 'CRM',
+    shortLabel: 'CRM & Receivables',
+    domainCategory: 'Customer Accounts & AR',
     icon: '👥',
-    desc: 'Customer directory, receivables aging, credit limit control & statement exports'
+    desc: 'Customer credit management: client directory, credit limits, account statements, receivables aging and payment history.',
+    featureBadges: ['Customer Directory & Profiling', 'Credit Limits & Payment Terms', 'Client Statement of Account', 'Receivables Aging Buckets', 'Tiered Pricing Profiles'],
+    reports: ['Customer Receivables Aging (AR)', 'Customer Lifetime Value (LTV)', 'Outstanding Balance Summary', 'Client Statement of Account', 'Credit Risk / Overlimit Audit']
   },
   {
     id: 'feedback',
     num: 5,
     labelEn: '5. Feedback & Surveys',
-    shortLabel: 'Feedback',
+    shortLabel: 'Feedback & CSAT',
+    domainCategory: 'Customer Satisfaction',
     icon: '💬',
-    desc: 'Customer CSAT/NPS surveys, incident ticketing & quality sentiment tracking'
+    desc: 'Autonomous satisfaction & quality engine: CSAT/NPS rating collection, incident ticketing, resolution SLAs and service sentiment analysis.',
+    featureBadges: ['CSAT & NPS Star Ratings', 'Digital QR Surveys', 'Customer Complaint Tickets', 'Resolution SLA Tracking', 'Quality Incident Logs'],
+    reports: ['Customer Satisfaction (CSAT) Trend', 'Net Promoter Score (NPS) Breakdown', 'Complaint Resolution SLA Metrics', 'Store Staff Service Quality Audit', 'Sentiment Analysis Summary']
   },
   {
     id: 'loyalty',
     num: 6,
     labelEn: '6. Loyalty Program',
-    shortLabel: 'Loyalty',
+    shortLabel: 'Loyalty & Rewards',
+    domainCategory: 'VIP Retention & Points',
     icon: '⭐',
-    desc: 'Reward points engine, tiered VIP memberships & targeted campaign promo vouchers'
+    desc: 'Reward points & retention system: points accumulation engine, tiered VIP memberships, discount coupons and campaign promo vouchers.',
+    featureBadges: ['Points Accumulation Engine', 'Tiered VIP Ranks (Gold/Silver)', 'Digital Member Passcards', 'Promotional Discount Codes', 'Redemption Tracking'],
+    reports: ['Points Accrual & Burn Liability', 'VIP Tier Migration Ledger', 'Reward Voucher Redemption Audit', 'Loyalty Member Revenue Contribution', 'Inactive Member Reactivation Log']
   },
   {
     id: 'accounting',
     num: 7,
     labelEn: '7. Accounting & General Ledger',
-    shortLabel: 'Accounting',
+    shortLabel: 'Financials & GL',
+    domainCategory: 'Corporate Finance & Fiscal',
     icon: '📊',
-    desc: 'Multi-currency journal vouchers (JV), chart of accounts, trial balance & cost centers'
+    desc: 'Autonomous financial ledger: multi-currency Journal Vouchers (JV), standard Chart of Accounts (PCA/IFRS), trial balance and fiscal tax reports.',
+    featureBadges: ['Multi-Currency Journal Vouchers', 'Standard Chart of Accounts (PCA/IFRS)', 'Dual-Currency Trial Balance', 'Profit & Loss (P&L)', 'Balance Sheet & Cash Flow'],
+    reports: ['Trial Balance (Balance de Vérification)', 'Income Statement (P&L / Compte de Résultat)', 'Balance Sheet (Bilan Fiscal)', 'General Ledger Detail Ledger', 'Lebanese MOF VAT Declaration (Form 1)']
   },
   {
     id: 'hr',
     num: 8,
     labelEn: '8. HR & Payroll',
     shortLabel: 'HR & Payroll',
+    domainCategory: 'Human Capital & Wages',
     icon: '👔',
-    desc: 'Employee personnel registry, biometric attendance logs, leave balances & monthly payroll'
+    desc: 'Autonomous workforce management: employee records, biometric attendance logs, leave balances and automated payroll slips with tax deductions.',
+    featureBadges: ['Employee Personnel Registry', 'Biometric Clocking In/Out', 'Leave & Absence Management', 'Salary & Deduction Slips', 'WPS Payroll Batches'],
+    reports: ['Monthly Payroll & Wage Sheet', 'Biometric Attendance & Overtime Log', 'Leave & Vacation Balance Report', 'Staff Performance & Retention', 'Social Security (NSSF / الضمان) Filings']
   },
   {
     id: 'fleet',
     num: 9,
     labelEn: '9. SuperSonic Fleet / V-Driver',
-    shortLabel: 'Fleet / V-Driver',
+    shortLabel: 'V-Driver & Fleet',
+    domainCategory: 'Logistics & Dispatch',
     icon: '🚚',
-    desc: 'GPS live fleet tracking, route manifests, vehicle maintenance & mobile driver app'
+    desc: 'End-to-end dispatch & logistics: GPS live vehicle tracking, delivery run sheets, route manifests, mobile driver app and driver COD cash settlements.',
+    featureBadges: ['GPS Real-Time Fleet Tracking', 'Route Manifest Optimization', 'Driver Mobile Android/iOS App', 'COD Cash Collection Audit', 'Van Vehicle Maintenance'],
+    reports: ['Driver Delivery Run Sheets', 'Driver Daily Cash Settlement (COD)', 'Trip Dispatch & Route Fulfillment', 'Fleet Fuel & Maintenance Ledger', 'On-Time Delivery Performance (SLA)']
   },
   {
     id: 'social',
     num: 10,
     labelEn: '10. V-Connect (Social CRM & WhatsApp)',
-    shortLabel: 'V-Connect',
+    shortLabel: 'V-Connect Omnichannel',
+    domainCategory: 'Social & Messaging',
     icon: '🌐',
-    desc: 'Omnichannel customer inbox, WhatsApp automation, ticket queues & campaign ROI'
+    desc: 'Unified omnichannel engagement: official WhatsApp Cloud API, customer messaging inbox, chatbot greetings and direct social order capture.',
+    featureBadges: ['Unified Multi-Agent Inbox', 'Official WhatsApp Cloud API', 'Automated Greeting Chatbots', 'Direct Social Order Capture', 'Campaign Broadcast Manager'],
+    reports: ['Omnichannel Conversation Volume', 'WhatsApp Delivery & Read Rates', 'Social Acquisition & Lead ROI', 'Direct Messaging Sales Conversion', 'Agent First-Response & Resolution Time']
   },
   {
     id: 'pressing-mill',
     num: 11,
     labelEn: '11. Pressing Mill Engine',
-    shortLabel: 'Pressing Mill',
+    shortLabel: 'Pressing Mill Facility',
+    domainCategory: 'Industrial Processing',
     icon: '⚖️',
-    desc: 'Weighbridge intake, crushing batches, 50-tank matrix, milling fees & oil dispatch'
+    desc: 'Agro-industrial production facility: digital weighbridge intake, crushing batches, 50-tank stainless matrix, barter milling fee calculation and oil drum release.',
+    featureBadges: ['Digital Weighbridge Intake', 'Washing & Crushing Runs', '50-Tank Stainless Matrix', 'Barter Milling Fee / Oil Share', 'Customer Oil Drum Release'],
+    reports: ['Daily Olive Receiving & Pressing Journal', 'Tank Storage & Oil Levels Matrix', 'Extraction Yield (Oil vs Olive %)', 'Milling Fee Revenue & Barter Oil Balance', 'Customer Drum Delivery Slips']
   },
   {
     id: 'v-store',
     num: 12,
     labelEn: '12. V-Store (Storefront Web Portal)',
-    shortLabel: 'V-Store',
+    shortLabel: 'V-Store B2B/B2C',
+    domainCategory: 'Digital Commerce',
     icon: '🏬',
-    desc: 'Client-facing B2B/B2C ecommerce catalog, customer online ordering & self-checkout'
+    desc: 'Autonomous digital storefront: live product catalog, B2B wholesale prices, customer self-checkout, click-and-collect and online orders ledger.',
+    featureBadges: ['Live Product Catalog & Stock Sync', 'B2B Wholesale Price Lists', 'Online Customer Cart & Checkout', 'Click & Collect / Delivery Choice', 'SEO & Mobile-Ready Responsive'],
+    reports: ['Online Web Orders Ledger', 'Abandoned Cart & Conversion Funnel', 'Storefront Visitor Traffic Analytics', 'Top Online Selling Items', 'Payment Gateway Transaction Log']
   }
 ];
 
@@ -1069,14 +1117,18 @@ export default function SuperAdminWorkspaceManager() {
         return prev.filter(m => {
           const lower = (m || '').toLowerCase();
           if (lower === modId) return false;
-          if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos')) return false;
-          if (modId === 'operations' && (lower === 'op' || lower === 'inventory')) return false;
+          if (modId === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos' || lower === 'counter')) return false;
+          if (modId === 'operations' && (lower === 'op' || lower === 'inventory' || lower === 'stock' || lower === 'warehouse')) return false;
           if (modId === 'purchasing' && (lower === 'procurement' || lower === 'purchases' || lower === 'po')) return false;
-          if (modId === 'customers' && (lower === 'crm' || lower === 'customer')) return false;
-          if (modId === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics')) return false;
-          if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp')) return false;
-          if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill')) return false;
-          if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders')) return false;
+          if (modId === 'customers' && (lower === 'crm' || lower === 'customer' || lower === 'clients')) return false;
+          if (modId === 'feedback' && (lower === 'feedback' || lower === 'survey' || lower === 'csat' || lower === 'surveys' || lower === 'reviews')) return false;
+          if (modId === 'loyalty' && (lower === 'loyalty' || lower === 'rewards' || lower === 'merits' || lower === 'points')) return false;
+          if (modId === 'accounting' && (lower === 'accounting' || lower === 'finance' || lower === 'gl' || lower === 'ledger' || lower === 'financials')) return false;
+          if (modId === 'hr' && (lower === 'hr' || lower === 'payroll' || lower === 'attendance' || lower === 'personnel')) return false;
+          if (modId === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics' || lower === 'dispatch')) return false;
+          if (modId === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp' || lower === 'omnichannel')) return false;
+          if (modId === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill' || lower === 'olive')) return false;
+          if (modId === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'orders' || lower === 'ecommerce')) return false;
           return true;
         });
       } else {
@@ -3534,11 +3586,34 @@ export default function SuperAdminWorkspaceManager() {
               {/* TAB 3: 12-MODULE ENTITLEMENTS & CUSTOM TIERS */}
               {configTab === 'modules' && (
                 <div className="space-y-4 animate-in fade-in duration-150">
+                  {/* Architecture & Cascading Logic Banner */}
+                  <div className="p-3.5 bg-gradient-to-r from-blue-900/10 via-indigo-900/10 to-slate-900/5 border border-blue-200/80 rounded-2xl flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <h4 className="text-xs font-black text-slate-900 flex items-center gap-2">
+                        <span>Strict Autonomous Module Architecture & Conditional Reporting Cascades</span>
+                        <span className="text-[10px] font-mono font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                          12 Autonomous Domains
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Each module operates autonomously with its own end-to-end operational dashboards, transaction ledgers, and reporting tools. When a module (e.g. SuperSonic Fleet / V-Driver or V-Connect) is disabled, its sub-reports and analytical cards are immediately suppressed from Master Sales and central rollups to ensure zero layout fragmentation and zero null states.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Preset Tier Selector Buttons */}
                   <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                    <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">
-                      Select Subscription Preset or Custom Tier:
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">
+                        Select Subscription Preset or Custom Tier:
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-700">
+                        Current: <strong className="text-amber-700 font-mono">{configTier}</strong>
+                      </span>
+                    </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {(['STARTER', 'PRO', 'ENTERPRISE', 'CUSTOM'] as const).map(tierKey => (
                         <button
@@ -3563,63 +3638,179 @@ export default function SuperAdminWorkspaceManager() {
                     </div>
                   </div>
 
-                  {/* 12 Individual Module Toggles */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xs text-slate-800">
-                        Individual Module Switches ({getActiveModulesCount(selectedModules)} / 12 Active)
-                      </span>
-                      <div className="flex items-center gap-1.5">
+                  {/* 12 Individual Module Toggles Header & KPI */}
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-slate-100/70 border border-slate-200 rounded-xl">
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-xs text-slate-900">
+                          Individual Module Entitlements ({getActiveModulesCount(selectedModules)} / 12 Active)
+                        </span>
+                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                          getActiveModulesCount(selectedModules) === 12
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {getActiveModulesCount(selectedModules) * 5} Operational Reports Live
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleSelectPresetTier('ENTERPRISE')}
-                          className="text-[11px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                          className="text-[11px] font-bold text-emerald-700 hover:underline cursor-pointer bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
                         >
                           Enable All (12)
                         </button>
-                        <span>•</span>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectPresetTier('PRO')}
+                          className="text-[11px] font-bold text-blue-700 hover:underline cursor-pointer bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+                        >
+                          Standard (9)
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleSelectPresetTier('STARTER')}
-                          className="text-[11px] font-bold text-slate-600 hover:underline cursor-pointer"
+                          className="text-[11px] font-bold text-slate-700 hover:underline cursor-pointer bg-slate-200 px-2 py-0.5 rounded"
                         >
-                          Starter Core (4)
+                          Core (4)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfigTier('CUSTOM');
+                            setSelectedModules([]);
+                          }}
+                          className="text-[11px] font-bold text-rose-700 hover:underline cursor-pointer bg-rose-50 px-2 py-0.5 rounded border border-rose-200"
+                        >
+                          Deactivate All
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto p-1">
+                    {/* 12 Rich Module Entitlement Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto p-1 pr-1.5 custom-scrollbar">
                       {SYSTEM_MODULES_CONFIG.map(mod => {
                         const isChecked = isModuleEnabled(mod.id, selectedModules);
 
                         return (
                           <div
                             key={mod.id}
-                            onClick={() => toggleModule(mod.id)}
-                            className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-start justify-between gap-2.5 ${
+                            className={`p-3.5 rounded-2xl border-2 transition-all flex flex-col justify-between ${
                               isChecked
-                                ? 'bg-amber-50/50 border-amber-500 text-slate-900 shadow-xs'
-                                : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60'
+                                ? 'bg-white border-emerald-400 shadow-sm ring-1 ring-emerald-400/20'
+                                : 'bg-slate-50/70 border-slate-200 opacity-75'
                             }`}
                           >
-                            <div className="flex items-start gap-2">
-                              <span className="text-xl shrink-0">{mod.icon}</span>
+                            <div>
+                              {/* Top Bar: Icon, Name, Category & Interactive Switch */}
+                              <div className="flex items-start justify-between gap-3 mb-2">
+                                <div className="flex items-start gap-2.5">
+                                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-xl shrink-0 border ${
+                                    isChecked ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-100 border-slate-200'
+                                  }`}>
+                                    {mod.icon}
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className={`font-black text-xs ${isChecked ? 'text-slate-900' : 'text-slate-600'}`}>
+                                        {mod.labelEn}
+                                      </span>
+                                      <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                        {mod.domainCategory}
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] text-slate-500 font-mono block mt-0.5">
+                                      ID: {mod.id}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Custom Accessible Toggle Switch */}
+                                <div className="flex flex-col items-end gap-1 shrink-0">
+                                  <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={isChecked}
+                                    onClick={() => toggleModule(mod.id)}
+                                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-xs ${
+                                      isChecked ? 'bg-emerald-600' : 'bg-slate-300'
+                                    }`}
+                                  >
+                                    <span
+                                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                                        isChecked ? 'translate-x-5' : 'translate-x-0'
+                                      }`}
+                                    />
+                                  </button>
+                                  <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                    isChecked ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                                  }`}>
+                                    {isChecked ? 'ACTIVE' : 'DISABLED'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Module Domain Description */}
+                              <p className="text-[11px] text-slate-600 leading-relaxed mb-2.5">
+                                {mod.desc}
+                              </p>
+
+                              {/* Dependent Feature Badges */}
+                              <div className="mb-2">
+                                <div className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                  <Sliders className="w-3 h-3 text-slate-400" /> Included Autonomous Features:
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {mod.featureBadges.map(fb => (
+                                    <span
+                                      key={fb}
+                                      className={`px-1.5 py-0.5 rounded text-[9.5px] font-medium border ${
+                                        isChecked
+                                          ? 'bg-slate-100 border-slate-200 text-slate-800'
+                                          : 'bg-slate-100/50 border-slate-200/60 text-slate-400'
+                                      }`}
+                                    >
+                                      {fb}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Bundled Domain Operational Reports */}
                               <div>
-                                <span className={`font-bold text-xs block ${isChecked ? 'text-slate-900' : 'text-slate-500'}`}>
-                                  {mod.labelEn}
-                                </span>
-                                <span className="text-[10px] text-slate-500 leading-tight block mt-0.5">
-                                  {mod.desc}
-                                </span>
+                                <div className="text-[9.5px] font-bold text-amber-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                  <FileText className="w-3 h-3 text-amber-600" /> Domain Operational Reports:
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {mod.reports.map(rep => (
+                                    <span
+                                      key={rep}
+                                      className={`px-1.5 py-0.5 rounded text-[9.5px] font-semibold border flex items-center gap-1 ${
+                                        isChecked
+                                          ? 'bg-amber-50 border-amber-200 text-amber-900'
+                                          : 'bg-slate-100/50 border-slate-200/60 text-slate-400'
+                                      }`}
+                                    >
+                                      <span>•</span> {rep}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
                             </div>
 
-                            <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${
+                            {/* Cascading Logic Status Indicator */}
+                            <div className={`mt-3 pt-2 border-t flex items-center justify-between text-[10px] ${
                               isChecked
-                                ? 'bg-amber-500 border-amber-500 text-slate-950 font-black'
-                                : 'border-slate-300 bg-white'
+                                ? 'border-emerald-100 text-emerald-700 font-semibold'
+                                : 'border-slate-200 text-slate-400 font-medium'
                             }`}>
-                              {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              <span>
+                                {isChecked ? '✅ Operational pipelines active' : '⚠️ Sub-reports suppressed'}
+                              </span>
+                              <span className="font-mono">
+                                {isChecked ? 'Rolls up to Master Views' : 'Zero layout nulls'}
+                              </span>
                             </div>
                           </div>
                         );

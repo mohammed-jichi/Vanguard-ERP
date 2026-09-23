@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
 import {
   resolveDateRangeFromPreset,
   getDefaultInitialDateRange,
@@ -81,7 +82,7 @@ type ReportMenuItemNested = {
 
 type ReportMenuItem = ReportMenuItemFlat | ReportMenuItemNested;
 
-const reportMenuData: ReportMenuItem[] = [
+const STATIC_REPORT_MENU_DATA: ReportMenuItem[] = [
   {
     category: "Recently Viewed",
     type: "flat",
@@ -253,7 +254,139 @@ interface ReportsMasterDetailProps {
 }
 
 export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps) {
+  const { currentTenant, isModuleEnabled } = useTenant();
+  const isFleetEnabled = isModuleEnabled('fleet');
+  const isSocialEnabled = isModuleEnabled('social');
+  const isHrEnabled = isModuleEnabled('hr');
+
   const [selectedReport, setSelectedReport] = useState<string | null>('Transactions by Date');
+
+  // Dynamic conditional menu based on module entitlements
+  const reportMenuData = React.useMemo(() => {
+    return STATIC_REPORT_MENU_DATA.map(section => {
+      if (section.category === 'Time & Attendance' && !isHrEnabled) {
+        return null;
+      }
+      if (section.type === 'flat') {
+        let items = section.items;
+        if (!isFleetEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('delivery') && !i.toLowerCase().includes('driver'));
+        }
+        if (!isSocialEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('omnichannel'));
+        }
+        if (!isHrEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('attendance') && !i.toLowerCase().includes('labor cost'));
+        }
+        return { ...section, items };
+      }
+
+      // section.type === 'nested'
+      const filteredGroups = section.groups.map(group => {
+        let items = group.items;
+        if (!isFleetEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('delivery') && !i.toLowerCase().includes('driver'));
+        }
+        if (!isSocialEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('omnichannel'));
+        }
+        if (!isHrEnabled) {
+          items = items.filter(i => !i.toLowerCase().includes('attendance') && !i.toLowerCase().includes('labor cost'));
+        }
+        if (items.length === 0) return null;
+        return { ...group, items };
+      }).filter(Boolean) as { name: string; items: string[] }[];
+
+      let flatItems = section.items;
+      if (flatItems) {
+        if (!isFleetEnabled) {
+          flatItems = flatItems.filter(i => !i.toLowerCase().includes('delivery') && !i.toLowerCase().includes('driver'));
+        }
+        if (!isSocialEnabled) {
+          flatItems = flatItems.filter(i => !i.toLowerCase().includes('omnichannel'));
+        }
+        if (!isHrEnabled) {
+          flatItems = flatItems.filter(i => !i.toLowerCase().includes('attendance') && !i.toLowerCase().includes('labor cost'));
+        }
+      }
+
+      if (filteredGroups.length === 0 && (!flatItems || flatItems.length === 0)) {
+        return null;
+      }
+
+      return {
+        ...section,
+        items: flatItems,
+        groups: filteredGroups
+      };
+    }).filter(Boolean) as ReportMenuItem[];
+  }, [isFleetEnabled, isSocialEnabled, isHrEnabled]);
+
+  const isSelectedReportEntitled = React.useMemo(() => {
+    if (!selectedReport) return true;
+    const lower = selectedReport.toLowerCase();
+    if ((lower.includes('delivery') || lower.includes('driver')) && !isFleetEnabled) return false;
+    if (lower.includes('omnichannel') && !isSocialEnabled) return false;
+    if ((lower.includes('attendance') || lower.includes('labor cost')) && !isHrEnabled) return false;
+    return true;
+  }, [selectedReport, isFleetEnabled, isSocialEnabled, isHrEnabled]);
+
+  const renderEntitlementGuard = () => {
+    let requiredModule = 'Module Entitlement';
+    let moduleIcon = '🔒';
+    let moduleDesc = 'This report requires additional subscription entitlements.';
+
+    const lower = (selectedReport || '').toLowerCase();
+    if (lower.includes('delivery') || lower.includes('driver')) {
+      requiredModule = 'SuperSonic Fleet / V-Driver';
+      moduleIcon = '🚚';
+      moduleDesc = 'Under strict domain isolation, delivery run sheets, driver route histories, and COD settlements are packaged autonomously within the V-Driver module.';
+    } else if (lower.includes('omnichannel')) {
+      requiredModule = 'V-Connect (Social CRM & WhatsApp)';
+      moduleIcon = '🌐';
+      moduleDesc = 'Social acquisition channels, WhatsApp conversations, and omnichannel payment attribution are isolated within the V-Connect module.';
+    } else if (lower.includes('attendance') || lower.includes('labor cost')) {
+      requiredModule = 'HR & Payroll';
+      moduleIcon = '👔';
+      moduleDesc = 'Biometric attendance logs, employee clocking sheets, and labor costing are self-contained within the HR & Payroll module.';
+    }
+
+    return (
+      <div className="bg-white border border-amber-200 rounded-2xl p-10 text-center space-y-4 shadow-sm max-w-xl mx-auto my-16">
+        <div className="w-16 h-16 bg-amber-50 rounded-2xl border border-amber-200 flex items-center justify-center text-3xl mx-auto shadow-xs">
+          {moduleIcon}
+        </div>
+        <div className="space-y-1">
+          <span className="text-[10px] font-mono font-black text-amber-700 uppercase tracking-widest bg-amber-100/70 px-2.5 py-1 rounded-full border border-amber-300">
+            Module Entitlement Required
+          </span>
+          <h3 className="text-base font-extrabold text-slate-900 mt-2">
+            {selectedReport} — Sub-report Suppressed
+          </h3>
+          <p className="text-xs text-slate-600 leading-relaxed max-w-md mx-auto">
+            {moduleDesc}
+          </p>
+          <div className="pt-2 text-[11px] text-slate-500 font-medium">
+            Tenant: <strong>{currentTenant?.brandNameEn || currentTenant?.name}</strong> • Status: <span className="text-rose-600 font-bold">Module Deactivated</span>
+          </div>
+        </div>
+        <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-xs">
+          <button
+            onClick={() => setSelectedReport('Sales Summary')}
+            className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer"
+          >
+            Return to Master Sales Summary
+          </button>
+          <a
+            href="/admin"
+            className="w-full sm:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-xs transition"
+          >
+            Configure 12-Module Entitlements
+          </a>
+        </div>
+      </div>
+    );
+  };
 
   useEffect(() => {
     (window as any).setSelectedReport = (reportName: string) => {
@@ -1505,7 +1638,9 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   className="report-wrapper transition-transform duration-200 origin-top bg-white p-6 sm:p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 min-w-[794px] max-w-full overflow-auto inline-block" 
                   style={{ transform: `scale(${zoomLevel})` }}
                 >
-                  {selectedReport === 'Transactions by Date' ? (
+                  {!isSelectedReportEntitled ? (
+                    renderEntitlementGuard()
+                  ) : selectedReport === 'Transactions by Date' ? (
                     <TransactionsByDateMasterDocument
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}

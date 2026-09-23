@@ -34,11 +34,18 @@ import {
   Phone,
   Mail,
   ArrowRight,
-  Filter
+  Filter,
+  Store,
+  Lock
 } from 'lucide-react';
 import { getBranchData, getAllBranchesList, BranchInfo } from '@/lib/branchData';
+import { useTenant } from '@/lib/TenantContext';
 
 export default function AuthenticVanguardSalesDashboard() {
+  const { currentTenant, isModuleEnabled } = useTenant();
+  const isFleetEnabled = isModuleEnabled('fleet');
+  const isSocialEnabled = isModuleEnabled('social');
+
   // Filters
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<'LBP' | 'USD'>('LBP');
@@ -64,6 +71,46 @@ export default function AuthenticVanguardSalesDashboard() {
   const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics' | 'vtrack'>('summary');
   const [customerTopN, setCustomerTopN] = useState<number>(10);
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('All Groups');
+
+  // Auto-redirect if fleet module is disabled and user was on a fleet-dependent tab
+  useEffect(() => {
+    if (!isFleetEnabled && (activeTab === 'geographics' || activeTab === 'vtrack')) {
+      setActiveTab('summary');
+    }
+  }, [isFleetEnabled, activeTab]);
+
+  const renderFleetEntitlementNotice = (featureName: string) => (
+    <div className="bg-white border border-amber-200 rounded-2xl p-8 text-center space-y-4 shadow-sm max-w-xl mx-auto my-8">
+      <div className="w-16 h-16 bg-amber-50 rounded-2xl border border-amber-200 flex items-center justify-center text-3xl mx-auto shadow-xs">
+        🚚
+      </div>
+      <div className="space-y-1">
+        <span className="text-[10px] font-mono font-black text-amber-700 uppercase tracking-widest bg-amber-100/70 px-2.5 py-1 rounded-full border border-amber-300">
+          Module Entitlement Required
+        </span>
+        <h3 className="text-base font-extrabold text-slate-900 mt-2">
+          {featureName} is Deactivated
+        </h3>
+        <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+          Under strict domain isolation, spatial fleet telemetry, GPS vehicle tracking, and delivery run sheets belong to the <strong>SuperSonic Fleet / V-Driver</strong> module. When disabled for <strong>{currentTenant?.brandNameEn || currentTenant?.name}</strong>, its operational views and central aggregations are automatically suppressed.
+        </p>
+      </div>
+      <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2 text-xs">
+        <button
+          onClick={() => setActiveTab('summary')}
+          className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer"
+        >
+          Return to Master Sales Summary
+        </button>
+        <Link
+          href="/admin"
+          className="w-full sm:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-xs transition"
+        >
+          Configure 12-Module Entitlements
+        </Link>
+      </div>
+    </div>
+  );
 
   // Enlarge state
   const [enlargedWidget, setEnlargedWidget] = useState<string | null>(null);
@@ -1055,15 +1102,17 @@ export default function AuthenticVanguardSalesDashboard() {
             <Users className="w-4 h-4" /> Sales Team Performance
           </Link>
 
-          {/* VTrack opens in new tab */}
-          <Link 
-            href="/vtrack"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="vanguard-pill-btn"
-          >
-            <Truck className="w-4 h-4" /> VTrack
-          </Link>
+          {/* VTrack opens in new tab (Guarded by Fleet Module Entitlement) */}
+          {isFleetEnabled && (
+            <Link 
+              href="/vtrack"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="vanguard-pill-btn"
+            >
+              <Truck className="w-4 h-4" /> VTrack
+            </Link>
+          )}
 
           <button 
             type="button"
@@ -1081,13 +1130,16 @@ export default function AuthenticVanguardSalesDashboard() {
             <Calendar className="w-4 h-4" /> Today
           </button>
 
-          <button 
-            type="button"
-            onClick={() => setActiveTab('geographics')}
-            className={`vanguard-pill-btn ${activeTab === 'geographics' ? 'active' : ''}`}
-          >
-            <Globe className="w-4 h-4" /> Geographics
-          </button>
+          {/* Geographics (Guarded by Fleet Module Entitlement) */}
+          {isFleetEnabled && (
+            <button 
+              type="button"
+              onClick={() => setActiveTab('geographics')}
+              className={`vanguard-pill-btn ${activeTab === 'geographics' ? 'active' : ''}`}
+            >
+              <Globe className="w-4 h-4" /> Geographics
+            </button>
+          )}
 
           <div className="flex-1"></div>
 
@@ -3031,26 +3083,53 @@ export default function AuthenticVanguardSalesDashboard() {
                   </div>
                 </div>
 
-                {/* Lower Card: Delivery Orders */}
-                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-                  <div className="vanguard-panel-header flex justify-between items-center text-xs">
-                    <span>Delivery Orders</span>
+                {/* Lower Card: Delivery Orders (Guarded) or Direct Counter Walk-Ins */}
+                {isFleetEnabled ? (
+                  <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                    <div className="vanguard-panel-header flex justify-between items-center text-xs">
+                      <span>Delivery Orders</span>
+                    </div>
+                    <div className="p-3 text-xs space-y-2">
+                      <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                        <span className="text-slate-600">Total Number of Delivery Orders:</span>
+                        <span className="font-bold text-slate-800">0</span>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                        <span className="text-slate-600">Delivery Orders Value:</span>
+                        <span className="font-bold text-slate-800">{formatVal(0)}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-slate-600">Average Delivery Value:</span>
+                        <span className="font-bold text-slate-800">{formatVal(0)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-3 text-xs space-y-2">
-                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                      <span className="text-slate-600">Total Number of Delivery Orders:</span>
-                      <span className="font-bold text-slate-800">0</span>
+                ) : (
+                  <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                    <div className="vanguard-panel-header flex justify-between items-center text-xs">
+                      <span className="flex items-center gap-1.5">
+                        <Store className="w-3.5 h-3.5 text-blue-600" /> Direct Counter Walk-Ins
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                        100% In-Store POS
+                      </span>
                     </div>
-                    <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                      <span className="text-slate-600">Delivery Orders Value:</span>
-                      <span className="font-bold text-slate-800">{formatVal(0)}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1">
-                      <span className="text-slate-600">Average Delivery Value:</span>
-                      <span className="font-bold text-slate-800">{formatVal(0)}</span>
+                    <div className="p-3 text-xs space-y-2">
+                      <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                        <span className="text-slate-600">Total Walk-In Transactions:</span>
+                        <span className="font-bold text-slate-800">33</span>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                        <span className="text-slate-600">Direct Register Turnover:</span>
+                        <span className="font-bold text-slate-800">{formatVal(132460000)}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-slate-600">Average Counter Ticket:</span>
+                        <span className="font-bold text-slate-800">{formatVal(4013939)}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Middle Column: Top Customers */}
@@ -3182,33 +3261,46 @@ export default function AuthenticVanguardSalesDashboard() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-sm text-white">V-Track Live Operations Sync: ACTIVE</h3>
+                    <h3 className="font-extrabold text-sm text-white">
+                      {isFleetEnabled ? 'V-Track Live Operations Sync: ACTIVE' : 'V-POS Live Real-time Operations: ACTIVE'}
+                    </h3>
                     <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
                       LIVE STREAM ON
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-300 mt-0.5">
-                    Live operational data from Vanguard POS (Today) is streaming directly into V-Track Geographics for spatial mapping and fleet dispatch.
+                    {isFleetEnabled
+                      ? 'Live operational data from Vanguard POS (Today) is streaming directly into V-Track Geographics for spatial mapping and fleet dispatch.'
+                      : 'Live operational counter sales from Vanguard POS (Today) are recorded and audited in real-time across active cashier drawers.'}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => setActiveTab('geographics')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded shadow transition"
-                >
-                  <Map className="w-3.5 h-3.5" />
-                  <span>View in Geographics</span>
-                </button>
-                <Link 
-                  href="/vtrack" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold rounded shadow transition"
-                >
-                  <Truck className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Open VTrack App</span>
-                </Link>
+                {isFleetEnabled ? (
+                  <>
+                    <button
+                      onClick={() => setActiveTab('geographics')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded shadow transition cursor-pointer"
+                    >
+                      <Map className="w-3.5 h-3.5" />
+                      <span>View in Geographics</span>
+                    </button>
+                    <Link 
+                      href="/vtrack" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold rounded shadow transition"
+                    >
+                      <Truck className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Open VTrack App</span>
+                    </Link>
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 text-emerald-300 border border-emerald-400/30 text-xs font-bold rounded shadow-xs">
+                    <Store className="w-3.5 h-3.5" />
+                    <span>POS Direct Registers</span>
+                  </span>
+                )}
               </div>
             </div>
 
@@ -3230,7 +3322,7 @@ export default function AuthenticVanguardSalesDashboard() {
                   14 <span className="text-xs font-semibold text-slate-500">Orders</span>
                 </div>
                 <span className="text-[10px] text-slate-600 font-medium block mt-1">
-                  11 Counter POS / 3 Delivery
+                  {isFleetEnabled ? '11 Counter POS / 3 Delivery' : '14 Direct Counter POS Orders'}
                 </span>
               </div>
 
@@ -3310,24 +3402,28 @@ export default function AuthenticVanguardSalesDashboard() {
                 </div>
               </div>
 
-              {/* Real-time Today Orders Feeding Geographics */}
+              {/* Real-time Today Orders Feed */}
               <div className="lg:col-span-7 bg-white border border-slate-200 rounded-lg shadow-sm p-4 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <div>
                     <span className="font-bold text-xs text-slate-800 flex items-center gap-1.5">
                       <Navigation className="w-3.5 h-3.5 text-blue-600" />
-                      Today Real-time Orders & Geographics Feed
+                      {isFleetEnabled ? 'Today Real-time Orders & Geographics Feed' : 'Today Real-time Orders & Counter Feed'}
                     </span>
                     <span className="text-[10px] text-slate-500 font-medium block">
-                      Live dispatch queue automatically mirrored on V-Track map
+                      {isFleetEnabled 
+                        ? 'Live dispatch queue automatically mirrored on V-Track map'
+                        : 'Live POS register transactions recorded and audited in real-time'}
                     </span>
                   </div>
-                  <button 
-                    onClick={() => setActiveTab('geographics')} 
-                    className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1"
-                  >
-                    <span>View Map</span> &rarr;
-                  </button>
+                  {isFleetEnabled && (
+                    <button 
+                      onClick={() => setActiveTab('geographics')} 
+                      className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>View Map</span> &rarr;
+                    </button>
+                  )}
                 </div>
 
                 <div className="overflow-x-auto">
@@ -3337,7 +3433,7 @@ export default function AuthenticVanguardSalesDashboard() {
                         <th className="text-left">Order #</th>
                         <th className="text-left">Customer & Destination</th>
                         <th className="text-right">Total</th>
-                        <th className="text-center">Assigned Fleet</th>
+                        <th className="text-center">{isFleetEnabled ? 'Assigned Fleet' : 'Fulfillment Channel'}</th>
                         <th className="text-center">Status</th>
                       </tr>
                     </thead>
@@ -3350,13 +3446,21 @@ export default function AuthenticVanguardSalesDashboard() {
                         </td>
                         <td className="text-right font-mono font-bold">{formatVal(15200000)}</td>
                         <td className="text-center">
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                            <Truck className="w-3 h-3 text-blue-600" /> Van #02 (Ziad)
-                          </span>
+                          {isFleetEnabled ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                              <Truck className="w-3 h-3 text-blue-600" /> Van #02 (Ziad)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <Store className="w-3 h-3 text-emerald-600" /> Direct POS Counter
+                            </span>
+                          )}
                         </td>
                         <td className="text-center">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800">
-                            Out for Delivery
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                            isFleetEnabled ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            {isFleetEnabled ? 'Out for Delivery' : 'Completed'}
                           </span>
                         </td>
                       </tr>
@@ -3368,13 +3472,19 @@ export default function AuthenticVanguardSalesDashboard() {
                         </td>
                         <td className="text-right font-mono font-bold">{formatVal(16557500)}</td>
                         <td className="text-center">
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                            <Truck className="w-3 h-3 text-blue-600" /> Van #01 (Tarek)
-                          </span>
+                          {isFleetEnabled ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                              <Truck className="w-3 h-3 text-blue-600" /> Van #01 (Tarek)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <Store className="w-3 h-3 text-emerald-600" /> Walk-In Register
+                            </span>
+                          )}
                         </td>
                         <td className="text-center">
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
-                            Delivered
+                            {isFleetEnabled ? 'Delivered' : 'Completed'}
                           </span>
                         </td>
                       </tr>
@@ -3386,13 +3496,21 @@ export default function AuthenticVanguardSalesDashboard() {
                         </td>
                         <td className="text-right font-mono font-bold">{formatVal(8502500)}</td>
                         <td className="text-center">
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                            <Truck className="w-3 h-3 text-blue-600" /> Van #04 (Ali)
-                          </span>
+                          {isFleetEnabled ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                              <Truck className="w-3 h-3 text-blue-600" /> Van #04 (Ali)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                              <Store className="w-3 h-3 text-blue-600" /> Customer Store Pickup
+                            </span>
+                          )}
                         </td>
                         <td className="text-center">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800">
-                            In Transit
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                            isFleetEnabled ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {isFleetEnabled ? 'In Transit' : 'Ready for Pickup'}
                           </span>
                         </td>
                       </tr>
@@ -3404,13 +3522,21 @@ export default function AuthenticVanguardSalesDashboard() {
                         </td>
                         <td className="text-right font-mono font-bold">{formatVal(22375000)}</td>
                         <td className="text-center">
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                            <Truck className="w-3 h-3 text-blue-600" /> SuperSonic Hub
-                          </span>
+                          {isFleetEnabled ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                              <Truck className="w-3 h-3 text-blue-600" /> SuperSonic Hub
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <Store className="w-3 h-3 text-emerald-600" /> Express Checkout
+                            </span>
+                          )}
                         </td>
                         <td className="text-center">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800">
-                            Dispatched
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                            isFleetEnabled ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            {isFleetEnabled ? 'Dispatched' : 'Completed'}
                           </span>
                         </td>
                       </tr>
@@ -3422,8 +3548,9 @@ export default function AuthenticVanguardSalesDashboard() {
           </div>
         )}
 
-        {/* TAB: VTRACK CLOUD - UNLOCKED & ACTIVE */}
+        {/* TAB: VTRACK CLOUD - UNLOCKED & ACTIVE (Guarded) */}
         {activeTab === 'vtrack' && (
+          !isFleetEnabled ? renderFleetEntitlementNotice('VTrack Cloud Telemetry') : (
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="bg-card border border-border rounded-xl p-5 text-foreground shadow-xs">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -3514,10 +3641,12 @@ export default function AuthenticVanguardSalesDashboard() {
               </div>
             </div>
           </div>
+          )
         )}
 
-        {/* TAB: GEOGRAPHICS - INTERACTIVE SPATIAL MAPPING (Linked with Today) */}
+        {/* TAB: GEOGRAPHICS - INTERACTIVE SPATIAL MAPPING (Guarded) */}
         {activeTab === 'geographics' && (
+          !isFleetEnabled ? renderFleetEntitlementNotice('V-Track Geographics') : (
           <div className="space-y-4 animate-in fade-in duration-200">
             {/* Header info explaining the Today -> Geographics link */}
             <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
@@ -3672,6 +3801,7 @@ export default function AuthenticVanguardSalesDashboard() {
               </div>
             </div>
           </div>
+          )
         )}
 
         {/* Footer exactly as requested */}
