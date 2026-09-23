@@ -51,25 +51,120 @@ export const ALL_SYSTEM_MODULES = [
   'store'
 ];
 
+export const CANONICAL_MODULE_MAP: Record<string, string> = {
+  // 1. Sales Control & POS
+  sales: 'sales',
+  pos: 'sales',
+  sale: 'sales',
+  'v-pos': 'sales',
+  counter: 'sales',
+  sales_control: 'sales',
+  'sales-control': 'sales',
+
+  // 2. Inventory & Warehouses (Operations Center)
+  operations: 'operations',
+  op: 'operations',
+  inventory: 'operations',
+  stock: 'operations',
+  warehouse: 'operations',
+  warehousing: 'operations',
+  operations_center: 'operations',
+  'operations-center': 'operations',
+
+  // 3. Purchasing & Procurement
+  purchasing: 'purchasing',
+  procurement: 'purchasing',
+  purchases: 'purchasing',
+  purchase: 'purchasing',
+  po: 'purchasing',
+
+  // 4. Customer Management (CRM)
+  customers: 'customers',
+  crm: 'customers',
+  customer: 'customers',
+  clients: 'customers',
+  cust: 'customers',
+  customer_management: 'customers',
+  'customer-management': 'customers',
+
+  // 5. Feedback & Surveys
+  feedback: 'feedback',
+  survey: 'feedback',
+  surveys: 'feedback',
+  csat: 'feedback',
+  reviews: 'feedback',
+  feedback_surveys: 'feedback',
+  'feedback-surveys': 'feedback',
+
+  // 6. Loyalty Program
+  loyalty: 'loyalty',
+  rewards: 'loyalty',
+  merits: 'loyalty',
+  points: 'loyalty',
+  loyalty_management: 'loyalty',
+  'loyalty-management': 'loyalty',
+
+  // 7. Accounting & General Ledger
+  accounting: 'accounting',
+  finance: 'accounting',
+  gl: 'accounting',
+  ledger: 'accounting',
+  financials: 'accounting',
+  acc: 'accounting',
+
+  // 8. HR & Payroll
+  hr: 'hr',
+  payroll: 'hr',
+  attendance: 'hr',
+  personnel: 'hr',
+  human_resources: 'hr',
+  'human-resources': 'hr',
+
+  // 9. SuperSonic Fleet / V-Driver
+  fleet: 'fleet',
+  'v-driver': 'fleet',
+  driver: 'fleet',
+  supersonic: 'fleet',
+  logistics: 'fleet',
+  dispatch: 'fleet',
+  vtrack: 'fleet',
+
+  // 10. V-Connect (Social CRM & WhatsApp)
+  social: 'social',
+  connect: 'social',
+  'v-connect': 'social',
+  'social-crm': 'social',
+  social_crm: 'social',
+  whatsapp: 'social',
+  omnichannel: 'social',
+
+  // 11. Pressing Mill Engine
+  'pressing-mill': 'pressing-mill',
+  pressing: 'pressing-mill',
+  pressing_mill: 'pressing-mill',
+  module_pressing_mill: 'pressing-mill',
+  mill: 'pressing-mill',
+  olive: 'pressing-mill',
+
+  // 12. V-Store (Storefront & Online Orders)
+  'v-store': 'v-store',
+  store: 'v-store',
+  storefront: 'v-store',
+  landing: 'v-store',
+  ecommerce: 'v-store',
+  orders: 'v-store',
+  'online-orders': 'v-store'
+};
+
 export function checkModuleEnabled(modId: string, activeMods: string[] = []): boolean {
   if (!Array.isArray(activeMods) || activeMods.length === 0) return false;
-  const target = (modId || '').toLowerCase().trim();
+  const rawTarget = (modId || '').toLowerCase().trim();
+  const canonicalTarget = CANONICAL_MODULE_MAP[rawTarget] || rawTarget;
   return activeMods.some(m => {
-    const lower = (m || '').toLowerCase().trim();
-    if (lower === target) return true;
-    if (target === 'sales' && (lower === 'pos' || lower === 'sale' || lower === 'v-pos' || lower === 'counter')) return true;
-    if (target === 'operations' && (lower === 'op' || lower === 'inventory' || lower === 'stock' || lower === 'warehouse')) return true;
-    if (target === 'purchasing' && (lower === 'procurement' || lower === 'purchases' || lower === 'po')) return true;
-    if (target === 'customers' && (lower === 'crm' || lower === 'customer' || lower === 'clients')) return true;
-    if (target === 'feedback' && (lower === 'survey' || lower === 'csat' || lower === 'surveys' || lower === 'reviews')) return true;
-    if (target === 'loyalty' && (lower === 'rewards' || lower === 'merits' || lower === 'points')) return true;
-    if (target === 'accounting' && (lower === 'finance' || lower === 'gl' || lower === 'ledger' || lower === 'financials')) return true;
-    if (target === 'hr' && (lower === 'payroll' || lower === 'attendance' || lower === 'personnel')) return true;
-    if (target === 'fleet' && (lower === 'v-driver' || lower === 'driver' || lower === 'supersonic' || lower === 'logistics' || lower === 'dispatch')) return true;
-    if (target === 'social' && (lower === 'connect' || lower === 'v-connect' || lower === 'social-crm' || lower === 'whatsapp' || lower === 'omnichannel')) return true;
-    if (target === 'pressing-mill' && (lower === 'pressing' || lower === 'module_pressing_mill' || lower === 'mill' || lower === 'olive')) return true;
-    if (target === 'v-store' && (lower === 'store' || lower === 'storefront' || lower === 'landing' || lower === 'ecommerce' || lower === 'orders')) return true;
-    return false;
+    const rawItem = (m || '').toLowerCase().trim();
+    if (rawItem === rawTarget) return true;
+    const canonicalItem = CANONICAL_MODULE_MAP[rawItem] || rawItem;
+    return canonicalItem === canonicalTarget;
   });
 }
 
@@ -316,6 +411,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 const matched = fetchedCompanies.find(c => c.id === saved.id);
                 if (matched) {
                   setCurrentTenant(matched);
+                  localStorage.setItem('vanguard_active_tenant', JSON.stringify(matched));
                   return;
                 }
               } catch (e) {}
@@ -323,7 +419,11 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }
           setCurrentTenant(prev => {
             const matched = fetchedCompanies.find(c => c.id === prev.id);
-            return matched || fetchedCompanies[0];
+            const chosen = matched || fetchedCompanies[0];
+            if (typeof window !== 'undefined' && chosen) {
+              localStorage.setItem('vanguard_active_tenant', JSON.stringify(chosen));
+            }
+            return chosen;
           });
         }
 

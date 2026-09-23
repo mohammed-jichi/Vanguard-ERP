@@ -647,11 +647,11 @@ export default function SocialMediaManagementHub({
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-primary"></span>
               <h1 className="text-[20px] font-bold text-foreground tracking-tight">
-                9. Social CRM &amp; Support Management Hub
+                10. V-Connect (Social CRM &amp; Support Management Hub)
               </h1>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 font-medium">
-              Southern Olive Oil Products S.A.R.L - Unified conversations, platform orders, publishing calendar, campaigns & CPL
+              Southern Olive Oil Products S.A.R.L - Unified conversations, platform orders, publishing calendar, lead pipeline &amp; CPL analytics
             </p>
           </div>
         </div>
@@ -662,7 +662,7 @@ export default function SocialMediaManagementHub({
             { id: 'inbox', label: '1. Unified Inbox' },
             { id: 'orders', label: '2. Platform Orders' },
             { id: 'calendar', label: '3. Publishing & WhatsApp Calendar' },
-            { id: 'cpl', label: '4. Campaigns & CPL Analytics' },
+            { id: 'cpl', label: '4. Lead Pipeline & CPL Campaigns' },
             { id: 'agents', label: '5. Support Agents' },
             { id: 'distributors', label: '6. Distributors' },
             { id: 'reports', label: '7. Reports Hub' },

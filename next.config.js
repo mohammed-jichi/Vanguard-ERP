@@ -105,13 +105,13 @@ const nextConfig = {
       { source: '/customer-management/aged', destination: '/backoffice/customers?section=aged' },
       { source: '/customer-management/insights', destination: '/customer-insights' },
       { source: '/customer-management/tasks', destination: '/schedule' },
-      { source: '/customer-management/leads', destination: '/backoffice/customers?section=leads' },
+      { source: '/customer-management/leads', destination: '/backoffice/social-crm?tab=cpl' },
       { source: '/customer-management/performance', destination: '/sales-manager-dashboard' },
       { source: '/customer-management/settings', destination: '/backoffice/customers?section=groups' },
       { source: '/customer-management/settings/groups', destination: '/backoffice/customers?section=groups' },
       { source: '/customer-management/settings/categories', destination: '/backoffice/customers?section=categories' },
       { source: '/customer-management/settings/tags', destination: '/backoffice/customers?section=tags' },
-      { source: '/customer-management/settings/leads', destination: '/backoffice/customers?section=leads_settings' },
+      { source: '/customer-management/settings/leads', destination: '/backoffice/social-crm?tab=cpl' },
 
       // ==========================================
       // 4. FEEDBACK & SURVEYS

@@ -4,6 +4,8 @@
  * and evaluates module access across tenants.
  */
 
+import { checkModuleEnabled } from './TenantContext';
+
 export interface TenantLicenseDetails {
   licenseKey: string;
   licenseNumber: string;
@@ -44,34 +46,35 @@ export const ALL_CORE_MODULES = [
 ] as const;
 
 export const MODULE_ALIASES: Record<string, string[]> = {
-  sales: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
-  pos: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
-  'v-pos': ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos'],
-  operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-  op: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
-  inventory: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center'],
+  sales: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos', 'sale', 'counter'],
+  pos: ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos', 'sale', 'counter'],
+  'v-pos': ['sales', 'pos', 'sales_control', 'sales-control', 'v-pos', 'sale', 'counter'],
+  operations: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center', 'stock'],
+  op: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center', 'stock'],
+  inventory: ['operations', 'op', 'inventory', 'warehouse', 'operations_center', 'operations-center', 'stock'],
   purchasing: ['purchasing', 'procurement', 'purchases', 'purchase', 'po'],
   procurement: ['purchasing', 'procurement', 'purchases', 'purchase', 'po'],
   purchases: ['purchasing', 'procurement', 'purchases', 'purchase', 'po'],
-  customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
-  cust: ['customers', 'cust', 'crm', 'customer_management', 'customer-management'],
-  feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys'],
-  loyalty: ['loyalty', 'loyalty_management', 'loyalty-management', 'rewards'],
-  accounting: ['accounting', 'acc', 'finance', 'financials'],
-  acc: ['accounting', 'acc', 'finance', 'financials'],
-  hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel'],
-  fleet: ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver'],
-  supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver'],
-  social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
-  connect: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
-  'v-connect': ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect'],
+  customers: ['customers', 'cust', 'crm', 'customer_management', 'customer-management', 'clients'],
+  cust: ['customers', 'cust', 'crm', 'customer_management', 'customer-management', 'clients'],
+  crm: ['customers', 'cust', 'crm', 'customer_management', 'customer-management', 'clients'],
+  feedback: ['feedback', 'surveys', 'feedback_surveys', 'feedback-surveys', 'csat', 'survey', 'reviews'],
+  loyalty: ['loyalty', 'loyalty_management', 'loyalty-management', 'rewards', 'merits', 'points'],
+  accounting: ['accounting', 'acc', 'finance', 'financials', 'gl', 'ledger'],
+  acc: ['accounting', 'acc', 'finance', 'financials', 'gl', 'ledger'],
+  hr: ['hr', 'human_resources', 'human-resources', 'payroll', 'personnel', 'attendance'],
+  fleet: ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver', 'driver', 'dispatch'],
+  supersonic: ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver', 'driver', 'dispatch'],
+  'v-driver': ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver', 'driver', 'dispatch'],
+  driver: ['fleet', 'supersonic', 'logistics', 'vtrack', 'v-driver', 'driver', 'dispatch'],
+  social: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect', 'whatsapp'],
+  connect: ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect', 'whatsapp'],
+  'v-connect': ['social', 'social_crm', 'social-crm', 'support', 'omnichannel', 'connect', 'v-connect', 'whatsapp'],
   'pressing-mill': ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
   pressing: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
   module_pressing_mill: ['pressing', 'pressing_mill', 'pressing-mill', 'module_pressing_mill', 'olive_press', 'mill'],
-  'v-driver': ['v-driver', 'driver', 'supersonic', 'fleet'],
-  driver: ['v-driver', 'driver', 'supersonic', 'fleet'],
-  'v-store': ['v-store', 'store', 'storefront', 'landing', 'orders'],
-  store: ['v-store', 'store', 'storefront', 'landing', 'orders']
+  'v-store': ['v-store', 'store', 'storefront', 'landing', 'orders', 'ecommerce', 'online-orders'],
+  store: ['v-store', 'store', 'storefront', 'landing', 'orders', 'ecommerce', 'online-orders']
 };
 
 /**
@@ -96,27 +99,25 @@ export function isCompany1300(tenant?: any): boolean {
 
 /**
  * Verifies if a specific module is licensed and enabled for the given tenant.
- * Company #1300 has unconditional full enterprise entitlement where ALL modules return true.
+ * Evaluates active enabled_modules array if configured, with enterprise fallbacks.
  */
 export function isModuleLicensed(tenant: any, moduleKey: string): boolean {
-  // 1. Company #1300 auto-grant: unconditional full enterprise entitlement
+  // 1. If explicit enabled modules are configured, enforce strict entitlement guard
+  const modules = tenant?.enabled_modules || tenant?.enabledModules;
+  if (Array.isArray(modules) && modules.length > 0) {
+    return checkModuleEnabled(moduleKey, modules);
+  }
+
+  // 2. Company #1300 default enterprise entitlement fallback
   if (isCompany1300(tenant)) {
     return true;
   }
 
-  // 2. Enterprise subscription tier auto-grant
+  // 3. Enterprise subscription tier default fallback
   if (tenant?.subscriptionTier === 'ENTERPRISE') {
     return true;
   }
 
-  // 3. Fallback to full access if no restrictions configured
-  const modules = tenant?.enabledModules || tenant?.enabled_modules;
-  if (!modules || !Array.isArray(modules) || modules.length === 0) {
-    return true;
-  }
-
-  // 4. Match against alias map
-  const lowerKey = moduleKey.toLowerCase();
-  const targetList = MODULE_ALIASES[lowerKey] || [lowerKey];
-  return modules.some((m: string) => targetList.includes(m.toLowerCase()));
+  // 4. Default fallback
+  return true;
 }

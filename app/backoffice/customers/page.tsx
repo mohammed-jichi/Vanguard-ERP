@@ -52,7 +52,7 @@ function CustomersPageContent() {
     <div className="p-4 md:p-6 space-y-4 font-sans bg-background min-h-screen text-foreground">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-3 gap-3 print:hidden">
         <div>
-          <h1 className="text-xl font-bold text-foreground">3. Customer Management &amp; AR (Accounts Receivable)</h1>
+          <h1 className="text-xl font-bold text-foreground">4. Customer Management &amp; AR (Accounts Receivable)</h1>
           <p className="text-xs text-muted-foreground font-medium">Master customers directory, enterprise KYC onboarding, and accounts receivable reconciliation</p>
         </div>
 

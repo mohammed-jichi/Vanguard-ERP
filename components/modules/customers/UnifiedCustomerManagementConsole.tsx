@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Users,
@@ -577,52 +578,36 @@ export default function UnifiedCustomerManagementConsole() {
         </div>
       )}
 
-      {/* Leads & Contacts */}
-      {activeSection === 'leads' && (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-4"># ID</th>
-                    <th className="py-3 px-4">Lead Name</th>
-                    <th className="py-3 px-4">Company</th>
-                    <th className="py-3 px-4">Source</th>
-                    <th className="py-3 px-4 text-center">Status</th>
-                    <th className="py-3 px-4">Pipeline Stage</th>
-                    <th className="py-3 px-4">Sales Owner</th>
-                    <th className="py-3 px-4">Phone</th>
-                    <th className="py-3 px-4">Created Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {INITIAL_LEADS.map(lead => (
-                    <tr key={lead.id} className="hover:bg-slate-50 transition">
-                      <td className="py-3 px-4 font-mono font-bold text-primary">{lead.id}</td>
-                      <td className="py-3 px-4 font-bold text-slate-900">{lead.firstName} {lead.lastName}</td>
-                      <td className="py-3 px-4 text-slate-700">{lead.company}</td>
-                      <td className="py-3 px-4 text-slate-600">{lead.source}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                          {lead.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{lead.stage}</td>
-                      <td className="py-3 px-4 text-slate-600">{lead.salesOwner}</td>
-                      <td className="py-3 px-4 font-mono text-slate-600">{lead.phone}</td>
-                      <td className="py-3 px-4 text-slate-500">{lead.dateCreated}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      {/* Leads & Contacts Redirection to Module 10 V-Connect */}
+      {(activeSection === 'leads' || activeSection === 'leads_settings') && (
+        <div className="bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200 rounded-2xl p-8 text-center space-y-4 shadow-sm max-w-3xl mx-auto my-6">
+          <div className="w-16 h-16 bg-white border border-cyan-200 rounded-2xl mx-auto flex items-center justify-center text-cyan-600 shadow-sm text-2xl">
+            🎯
+          </div>
+          <div className="space-y-1">
+            <span className="text-[11px] font-black uppercase tracking-wider bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full">
+              Unified Structural Coupling &bull; Module 10
+            </span>
+            <h2 className="text-xl font-extrabold text-slate-900">
+              Lead Pipeline &amp; Acquisition is Managed in Module 10: V-Connect (Social CRM)
+            </h2>
+            <p className="text-xs text-slate-600 max-w-lg mx-auto">
+              Per architectural governance, all lead capture forms, lead conversion stages, multichannel social inquiries, and contact synchronization are managed within the V-Connect workspace.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/backoffice/social-crm?tab=cpl"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all"
+            >
+              <span>Open Lead Pipeline in V-Connect (Social CRM) &rarr;</span>
+            </Link>
           </div>
         </div>
       )}
 
       {/* Customers Groups / Categories / Tags Settings */}
-      {(activeSection === 'groups' || activeSection === 'categories' || activeSection === 'tags' || activeSection === 'leads_settings') && (
+      {(activeSection === 'groups' || activeSection === 'categories' || activeSection === 'tags') && (
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h2 className="font-bold text-slate-900 text-sm">

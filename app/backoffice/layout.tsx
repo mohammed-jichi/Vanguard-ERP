@@ -8,12 +8,13 @@ import { TenantProvider, useTenant } from '@/lib/TenantContext';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { isModuleLicensed } from '@/lib/license';
 import { clearAuthSession } from '@/lib/authSession';
+import ModuleNotLicensedScreen, { ALL_CANONICAL_MODULES } from '@/components/ModuleNotLicensedScreen';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentOpsSection = searchParams.get('section') || 'dashboard';
-  const { currentTenant, switchTenant, registeredCompanies } = useTenant();
+  const { currentTenant, switchTenant, registeredCompanies, isModuleEnabled } = useTenant();
 
   // Sync tenant from URL searchParams if provided
   useEffect(() => {
@@ -171,20 +172,73 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     }
   }, [isSuperAdmin]);
 
-  // Determine if the current route belongs to a specific module
-  const getRouteModuleKey = (path: string): string | null => {
+  // Determine if the current route belongs to a specific module (out of 12 canonical modules)
+  const getRouteModuleKey = (path: string, section?: string | null): string | null => {
     if (!path) return null;
-    if (path.startsWith('/backoffice/operations')) return 'operations';
-    if (path.startsWith('/backoffice/customers') || path.startsWith('/customer-insights')) return 'customers';
-    if (path.startsWith('/backoffice/feedback')) return 'feedback';
-    if (path.startsWith('/backoffice/loyalty')) return 'loyalty';
-    if (path.startsWith('/backoffice/accounting') || path.startsWith('/accounting')) return 'accounting';
-    if (path.startsWith('/backoffice/hr')) return 'hr';
-    if (path.startsWith('/backoffice/fleet') || path.startsWith('/vtrack')) return 'fleet';
-    if (path.startsWith('/backoffice/social-crm')) return 'social';
-    if (path.startsWith('/pressing-mill') || path.startsWith('/pressing')) return 'pressing';
+
+    // 3. Purchasing & Procurement
     if (
-      path.startsWith('/backoffice/online-orders') ||
+      path.startsWith('/purchases') ||
+      path.startsWith('/purchase-orders') ||
+      path.startsWith('/receiving-of-goods') ||
+      path.startsWith('/PurchaseOrder') ||
+      (path.startsWith('/backoffice/operations') && (section === 'reorder_guide' || section === 'suppliers'))
+    ) {
+      return 'purchasing';
+    }
+
+    // 12. V-Store (Online Storefront & Orders)
+    if (path.startsWith('/backoffice/online-orders') || path.startsWith('/v-store')) {
+      return 'v-store';
+    }
+
+    // 11. Pressing Mill Engine
+    if (path.startsWith('/pressing-mill') || path.startsWith('/pressing')) {
+      return 'pressing-mill';
+    }
+
+    // 10. V-Connect (Social CRM & Lead Pipeline)
+    if (path.startsWith('/backoffice/social-crm') || path.startsWith('/connect')) {
+      return 'social';
+    }
+
+    // 9. Supersonic Fleet / V-Driver
+    if (path.startsWith('/backoffice/fleet') || path.startsWith('/vtrack')) {
+      return 'fleet';
+    }
+
+    // 8. Human Resources & Payroll
+    if (path.startsWith('/backoffice/hr')) {
+      return 'hr';
+    }
+
+    // 7. Accounting & Financials
+    if (path.startsWith('/backoffice/accounting') || path.startsWith('/accounting')) {
+      return 'accounting';
+    }
+
+    // 6. Loyalty Management
+    if (path.startsWith('/backoffice/loyalty')) {
+      return 'loyalty';
+    }
+
+    // 5. Feedback & Surveys
+    if (path.startsWith('/backoffice/feedback')) {
+      return 'feedback';
+    }
+
+    // 4. Customer Management (CRM)
+    if (path.startsWith('/backoffice/customers') || path.startsWith('/customer-insights')) {
+      return 'customers';
+    }
+
+    // 2. Operations Center (Inventory & Warehouse)
+    if (path.startsWith('/backoffice/operations')) {
+      return 'operations';
+    }
+
+    // 1. Sales Control & POS
+    if (
       path.startsWith('/backoffice/end-of-day') ||
       path.startsWith('/backoffice/screens') ||
       path.startsWith('/backoffice/payment-types') ||
@@ -198,32 +252,37 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
       path.startsWith('/backoffice/zone-setup') ||
       path.startsWith('/backoffice/currency-setup') ||
       path.startsWith('/backoffice/dashboard/sales') ||
-      path.startsWith('/backoffice/sales')
+      path.startsWith('/backoffice/sales') ||
+      path.startsWith('/dashboard/sales')
     ) {
       return 'sales';
     }
+
     return null; // Core pages like /backoffice, /backoffice/dashboard, /backoffice/license, /backoffice/inbox are unrestricted
   };
 
-  const currentModuleKey = getRouteModuleKey(pathname);
+  const currentModuleKey = getRouteModuleKey(pathname, currentOpsSection);
 
-  // Check if current module is enabled for currentTenant (unconditionally true for Company #1300)
+  // Check if current module is enabled for currentTenant
   const isCurrentModuleEnabled = (): boolean => {
     if (!currentModuleKey) return true;
-    return isModuleLicensed(currentTenant, currentModuleKey);
+    return isModuleEnabled(currentModuleKey);
   };
 
   const moduleNamesMap: Record<string, { ar: string; en: string; num: number }> = {
-    sales: { ar: 'Sales Control & POS', en: 'Sales Control & POS', num: 1 },
-    operations: { ar: 'Operations Center & Inventory', en: 'Operations Center & Inventory', num: 2 },
-    customers: { ar: 'Customer Management (CRM)', en: 'Customer Management (CRM)', num: 3 },
-    feedback: { ar: 'Feedback & Customer Surveys', en: 'Feedback & Customer Surveys', num: 4 },
-    loyalty: { ar: 'Loyalty & Rewards Program', en: 'Loyalty & Rewards Program', num: 5 },
-    accounting: { ar: 'Accounting & Financials', en: 'Accounting & Financials', num: 6 },
-    hr: { ar: 'Human Resources & Payroll', en: 'Human Resources & Payroll', num: 7 },
-    fleet: { ar: 'Supersonic Fleet Logistics', en: 'Supersonic Fleet Logistics', num: 8 },
-    social: { ar: 'Social CRM & Support', en: 'Social CRM & Support', num: 9 },
-    pressing: { ar: '10. Pressing Mill', en: '10. Pressing Mill', num: 10 }
+    sales: { ar: 'التحكم بالمبيعات ونقاط البيع', en: 'Sales Control & POS', num: 1 },
+    operations: { ar: 'مركز العمليات والمخزون', en: 'Operations Center & Inventory', num: 2 },
+    purchasing: { ar: 'المشتريات والتوريد', en: 'Purchasing & Procurement', num: 3 },
+    customers: { ar: 'إدارة العملاء والعلاقات (CRM)', en: 'Customer Management (CRM)', num: 4 },
+    feedback: { ar: 'الملاحظات واستطلاعات الرأي', en: 'Feedback & Customer Surveys', num: 5 },
+    loyalty: { ar: 'برنامج الولاء والمكافآت', en: 'Loyalty & Rewards Program', num: 6 },
+    accounting: { ar: 'المحاسبة والمالية المتكاملة', en: 'Accounting & Financials', num: 7 },
+    hr: { ar: 'الموارد البشرية وكشوف الرواتب', en: 'Human Resources & Payroll', num: 8 },
+    fleet: { ar: 'إدارة أسطول النقل السوبرسونيك', en: 'Supersonic Fleet Logistics', num: 9 },
+    social: { ar: 'إدارة التواصل ومسار العملاء المحتملين', en: 'V-Connect (Social CRM & Lead Pipeline)', num: 10 },
+    'pressing-mill': { ar: 'محرك معاصر الزيتون والتصنيع', en: 'Pressing Mill Engine', num: 11 },
+    pressing: { ar: 'محرك معاصر الزيتون والتصنيع', en: 'Pressing Mill Engine', num: 11 },
+    'v-store': { ar: 'المتجر الإلكتروني والطلبات أونلاين', en: 'V-Store & Online Storefront', num: 12 }
   };
 
   return (
@@ -246,7 +305,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               Plan: {currentTenant?.subscriptionTier || 'PRO'}
             </span>
             <span className="bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded-full text-[10px] font-mono">
-              {currentTenant?.enabledModules ? currentTenant.enabledModules.length : 9} / 9 Modules Active
+              {ALL_CANONICAL_MODULES.filter(m => isModuleEnabled(m.key)).length} / 12 Modules Active
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -500,52 +559,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           {isCurrentModuleEnabled() ? (
             children
           ) : (
-            <div dir="rtl" className="max-w-3xl mx-auto my-12 bg-white border-2 border-amber-500/40 rounded-3xl p-8 md:p-12 shadow-2xl text-center space-y-6 animate-fadeIn">
-              <div className="w-20 h-20 bg-amber-50 border-2 border-amber-400 rounded-3xl mx-auto flex items-center justify-center shadow-lg text-amber-600 text-3xl">
-                🔒
-              </div>
-              <div className="space-y-2">
-                <span className="inline-block bg-amber-100 text-amber-800 border border-amber-300 text-xs font-black px-3.5 py-1 rounded-full">
-                  Module Restricted by Subscription Plan
-                </span>
-                <h2 className="text-2xl font-black text-slate-900">
-                  {currentModuleKey && moduleNamesMap[currentModuleKey]?.en} Not Active
-                </h2>
-                <p className="text-sm text-slate-600 font-medium max-w-lg mx-auto">
-                  This module is currently not enabled in the workspace permissions for: <strong className="text-slate-900">{currentTenant?.name}</strong> (Company ID: #{currentTenant?.companyId || '1300'}).
-                </p>
-              </div>
-
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 flex flex-wrap items-center justify-around gap-3">
-                <div>
-                  <span className="block text-slate-400 font-bold">Current Subscription Tier</span>
-                  <span className="font-extrabold text-amber-700 font-mono text-sm">{currentTenant?.subscriptionTier || 'PRO'}</span>
-                </div>
-                <div>
-                  <span className="block text-slate-400 font-bold">Enabled Modules</span>
-                  <span className="font-extrabold text-emerald-700 font-mono text-sm">{currentTenant?.enabledModules ? currentTenant.enabledModules.length : 0} / 9</span>
-                </div>
-                <div>
-                  <span className="block text-slate-400 font-bold">Requested Module #</span>
-                  <span className="font-extrabold text-slate-800 font-mono text-sm">Module #{currentModuleKey && moduleNamesMap[currentModuleKey]?.num}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <Link
-                  href="/backoffice"
-                  className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2"
-                >
-                  <span>← Return to Enterprise Main Hub</span>
-                </Link>
-                <Link
-                  href="/admin"
-                  className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-black text-xs shadow-md transition-all flex items-center gap-2"
-                >
-                  <span>⚙️ Upgrade Plan & Enable Module in Admin Console (/admin)</span>
-                </Link>
-              </div>
-            </div>
+            <ModuleNotLicensedScreen moduleKey={currentModuleKey} />
           )}
         </main>
 
