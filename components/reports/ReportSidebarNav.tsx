@@ -27,6 +27,23 @@ export interface ReportSidebarNavProps {
  * - Cross-module programmatic link support (e.g. Sales Reports -> /sales-control/reports).
  * - Real-time search filter and collapsible accordion parent/child categories.
  */
+const REPORT_CATEGORY_KEYS: Record<string, string> = {
+  'Recommended': 'recommended',
+  'Wastage Report': 'wastage_report',
+  'Inventory report': 'inventory_report',
+  'Inventory Report': 'inventory_report',
+  'Stock Transaction History': 'stock_transaction_history',
+  'Overstock Report': 'overstock_report',
+  'Inventory': 'inventory',
+  'Purchases': 'purchases',
+  'Stock Transactions': 'stock_transactions',
+  'Wastage': 'wastage',
+  'Production & Assembly': 'production_assembly',
+  'Pressing Operations': 'pressing_operations',
+  'Tank Farm & Bulk Storage': 'tank_farm_bulk_storage',
+  'Dispatch & Fleet Logistics': 'dispatch_fleet_logistics',
+};
+
 export default function ReportSidebarNav({
   moduleKey = 'general',
   storageKeyOverride,
@@ -38,6 +55,20 @@ export default function ReportSidebarNav({
 }: ReportSidebarNavProps) {
   const router = useRouter();
   const { t, dir } = useLanguage();
+
+  const translateReportItem = (titleOrName: string): string => {
+    if (!titleOrName) return '';
+    const trimmed = titleOrName.trim();
+    const mappedKey = REPORT_CATEGORY_KEYS[trimmed];
+    if (mappedKey) {
+      const res = t(mappedKey, trimmed);
+      if (res && res !== mappedKey) return res;
+    }
+    const snakeKey = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    const snakeRes = t(snakeKey, trimmed);
+    if (snakeRes && snakeRes !== snakeKey) return snakeRes;
+    return t(trimmed, trimmed);
+  };
 
   // Determine localStorage key (vanguard_recent_reports_sales for Sales, vanguard_recent_reports_inventory for Operations/Inventory)
   const storageKey =
@@ -206,7 +237,7 @@ export default function ReportSidebarNav({
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                       >
-                        <span className="truncate">{t(name, name)}</span>
+                        <span className="truncate">{translateReportItem(name)}</span>
                         {isSelected && (
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                         )}
@@ -266,7 +297,7 @@ export default function ReportSidebarNav({
                   ) : (
                     <Folder className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 transition-colors" />
                   )}
-                  <span>{t(group.title, group.title)}</span>
+                  <span>{translateReportItem(group.title)}</span>
                 </div>
                 <ChevronDown
                   className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
@@ -306,7 +337,7 @@ export default function ReportSidebarNav({
                           className="w-full text-left text-xs rounded-lg px-3 py-1.5 underline font-medium text-slate-700 hover:text-blue-600 cursor-pointer flex items-center justify-between group transition-colors"
                         >
                           <span className="truncate flex items-center gap-1.5">
-                            {t(name, name)}
+                            {translateReportItem(name)}
                             <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
                           </span>
                         </button>
@@ -324,7 +355,7 @@ export default function ReportSidebarNav({
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                       >
-                        <span className="truncate">{t(name, name)}</span>
+                        <span className="truncate">{translateReportItem(name)}</span>
                         {isSelected && (
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                         )}
@@ -357,7 +388,7 @@ export default function ReportSidebarNav({
                           }
                           className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-semibold text-slate-700 hover:text-blue-700 transition-colors cursor-pointer"
                         >
-                          <span className="truncate">{t(sub.title, sub.title)}</span>
+                          <span className="truncate">{translateReportItem(sub.title)}</span>
                           <ChevronDown
                             className={`w-3 h-3 text-slate-400 transition-transform duration-150 ${
                               isSubCollapsed ? '-rotate-90' : ''
@@ -395,7 +426,7 @@ export default function ReportSidebarNav({
                                     className="w-full text-left text-xs rounded-lg px-3 py-1.5 underline font-medium text-slate-700 hover:text-blue-600 cursor-pointer flex items-center justify-between group transition-colors"
                                   >
                                     <span className="truncate flex items-center gap-1.5">
-                                      {t(name, name)}
+                                      {translateReportItem(name)}
                                       <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
                                     </span>
                                   </button>
@@ -413,7 +444,7 @@ export default function ReportSidebarNav({
                                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                   }`}
                                 >
-                                  <span className="truncate">{t(name, name)}</span>
+                                  <span className="truncate">{translateReportItem(name)}</span>
                                   {isSelected && (
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                                   )}

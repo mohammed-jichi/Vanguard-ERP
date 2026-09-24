@@ -1064,7 +1064,7 @@ function OperationsDashboardContent() {
                     className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-semibold cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Sync Inventory Sales</span>
+                    <span>{t('sync_inventory_sales', 'Sync Inventory Sales')}</span>
                   </button>
 
                   <button
@@ -1076,7 +1076,7 @@ function OperationsDashboardContent() {
                     className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-semibold cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Reorder Suggestions</span>
+                    <span>{t('reorder_suggestions', 'Reorder Suggestions')}</span>
                   </button>
 
                   <button
@@ -1088,7 +1088,7 @@ function OperationsDashboardContent() {
                     className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-semibold cursor-pointer"
                   >
                     <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Stock Deduction Checklist</span>
+                    <span>{t('stock_deduction_checklist', 'Stock Deduction Checklist')}</span>
                   </button>
 
                   <button
@@ -1100,7 +1100,7 @@ function OperationsDashboardContent() {
                     className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-semibold cursor-pointer border-t border-slate-100"
                   >
                     <Calendar className="w-3.5 h-3.5 text-rose-600" />
-                    <span>End of Month Closing</span>
+                    <span>{t('end_of_month_closing', 'End of Month Closing')}</span>
                   </button>
                 </div>
               )}
@@ -1410,7 +1410,7 @@ function OperationsDashboardContent() {
               className="inventory-cost-action self-start md:self-auto"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${recalculating ? 'animate-spin' : ''}`} />
-              <span>Recalculate Cost</span>
+              <span>{t('recalculate_cost', 'Recalculate Cost')}</span>
             </button>
           )}
         </div>
@@ -1637,7 +1637,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleAccordion('production')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Production by Division</span>
+                <span>{t('production_by_division', 'Production by Division')}</span>
                 {openAccordion['production'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -1646,11 +1646,11 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th>Division Name</th>
-                        <th className="text-right">Consolidated (All Branches)</th>
+                        <th>{t('division_name', 'Division Name')}</th>
+                        <th className="text-right">{t('consolidated_all_branches', 'Consolidated (All Branches)')}</th>
                         {selectedBranch === 'ALL' && allBranchesList.length > 1 ? (
                           <>
-                            <th className="text-right">Main Branch (00001)</th>
+                            <th className="text-right">{t('main_branch_00001', 'Main Branch (00001)')}</th>
                           </>
                         ) : (
                           <th className="text-right bg-blue-900 text-white font-black">{currentBranchData.name} ({currentBranchData.code})</th>
@@ -1683,7 +1683,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleAccordion('adjustment')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Stock Adjustments by Category</span>
+                <span>{t('stock_adjustments_by_category', 'Stock Adjustments by Category')}</span>
                 {openAccordion['adjustment'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -1692,8 +1692,8 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th>Category</th>
-                        <th className="text-right">Total Net Adjustment</th>
+                        <th>{t('category', 'Category')}</th>
+                        <th className="text-right">{t('total_net_adjustment', 'Total Net Adjustment')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1727,8 +1727,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Current Stock Value by Branch & Categories (Sales Comparative Matrix)</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Real-time valuation across all sites</span>
+                  <span>{t('current_stock_value_matrix', 'Current Stock Value by Branch & Categories (Sales Comparative Matrix)')}</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('real_time_valuation_subtitle', 'Real-time valuation across all sites')}</span>
                 </div>
                 {openComparativeAccordion['salesCat'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
               </div>
@@ -1738,17 +1738,17 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th className="min-w-[240px]">Branch</th>
+                        <th className="min-w-[240px]">{t('branch', 'Branch')}</th>
                         {comparativeCategories.map(cat => (
                           <th key={cat} className="text-right">{cat}</th>
                         ))}
-                        <th className="text-right font-black bg-primary/90">Total</th>
+                        <th className="text-right font-black bg-primary/90">{t('total', 'Total')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {/* Top All Branches Row matching authentic Vanguard & Omega */}
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
-                        <td className="font-bold text-slate-900">All Branches</td>
+                        <td className="font-bold text-slate-900">{t('all_branches', 'All Branches')}</td>
                         {comparativeTotals.map((tot, i) => {
                           const pct = Math.round((tot / comparativeGrandTotal) * 100);
                           return (
@@ -1794,8 +1794,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Purchases by Branch & Categories (Purchases Comparative Matrix)</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Fiscal Invoicing Breakdown</span>
+                  <span>{t('purchases_comparative_matrix', 'Purchases by Branch & Categories (Purchases Comparative Matrix)')}</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('fiscal_invoicing_breakdown', 'Fiscal Invoicing Breakdown')}</span>
                 </div>
                 {openComparativeAccordion['purchaseCat'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
               </div>
@@ -1805,16 +1805,16 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th className="min-w-[240px]">Branch</th>
+                        <th className="min-w-[240px]">{t('branch', 'Branch')}</th>
                         {comparativeCategories.map(cat => (
                           <th key={cat} className="text-right">{cat}</th>
                         ))}
-                        <th className="text-right font-black bg-primary/90">Total</th>
+                        <th className="text-right font-black bg-primary/90">{t('total', 'Total')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
-                        <td className="font-bold text-slate-900">All Branches</td>
+                        <td className="font-bold text-slate-900">{t('all_branches', 'All Branches')}</td>
                         {purchaseComparativeTotals.map((tot, i) => {
                           const pct = Math.round((tot / purchaseComparativeGrandTotal) * 100);
                           return (
@@ -1859,8 +1859,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Purchases by Month ({selectedYear} Fiscal Year)</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Monthly Procurement Trend</span>
+                  <span>{t('purchases_by_month', 'Purchases by Month')} ({selectedYear} {t('fiscal_year', 'Fiscal Year')})</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('monthly_procurement_trend', 'Monthly Procurement Trend')}</span>
                 </div>
                 {openComparativeAccordion['purchaseMonth'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
               </div>
@@ -1870,16 +1870,16 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th className="min-w-[240px]">Branch</th>
+                        <th className="min-w-[240px]">{t('branch', 'Branch')}</th>
                         {activeMonthsList.map(month => (
                           <th key={month} className="text-right">{month}</th>
                         ))}
-                        <th className="text-right font-black bg-primary/90">Total</th>
+                        <th className="text-right font-black bg-primary/90">{t('total', 'Total')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
-                        <td className="font-bold text-slate-900">All Branches</td>
+                        <td className="font-bold text-slate-900">{t('all_branches', 'All Branches')}</td>
                         {activeMonthsList.map((_, mIdx) => {
                           const realIdx = selectedMonth === '0' ? mIdx : parseInt(selectedMonth, 10) - 1;
                           const monthTot = purchaseMonthRows.reduce((sum, r) => sum + r.vals[realIdx], 0);
@@ -1932,8 +1932,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Lost Goods by Month ({selectedYear} Fiscal Year)</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Monthly Wastage & Shrinkage Trend</span>
+                  <span>{t('lost_goods_by_month', 'Lost Goods by Month')} ({selectedYear} {t('fiscal_year', 'Fiscal Year')})</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('monthly_wastage_trend', 'Monthly Wastage & Shrinkage Trend')}</span>
                 </div>
                 {openComparativeAccordion['wastageMonth'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
               </div>
@@ -1943,16 +1943,16 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th className="min-w-[240px]">Branch</th>
+                        <th className="min-w-[240px]">{t('branch', 'Branch')}</th>
                         {activeMonthsList.map(month => (
                           <th key={month} className="text-right">{month}</th>
                         ))}
-                        <th className="text-right font-black bg-primary/90">Total</th>
+                        <th className="text-right font-black bg-primary/90">{t('total', 'Total')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
-                        <td className="font-bold text-slate-900">All Branches</td>
+                        <td className="font-bold text-slate-900">{t('all_branches', 'All Branches')}</td>
                         {activeMonthsList.map((_, mIdx) => {
                           const realIdx = selectedMonth === '0' ? mIdx : parseInt(selectedMonth, 10) - 1;
                           const monthTot = wastageMonthRows.reduce((sum, r) => sum + r.vals[realIdx], 0);
@@ -2014,8 +2014,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Real Cost Of Goods Matrix</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Period: Year {selectedYear} {selectedMonth !== '0' ? `- Month ${selectedMonth}` : ''}</span>
+                  <span>{t('real_cost_of_goods_matrix', 'Real Cost Of Goods Matrix')}</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('period', 'Period')}: {t('year', 'Year')} {selectedYear} {selectedMonth !== '0' ? `- ${t('month', 'Month')} ${selectedMonth}` : ''}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -2027,7 +2027,7 @@ function OperationsDashboardContent() {
                     className="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${recalculating ? 'animate-spin' : ''}`} />
-                    <span>Recalculate Cost</span>
+                    <span>{t('recalculate_cost', 'Recalculate Cost')}</span>
                   </button>
                   {openCostAccordion['realCost'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
                 </div>
@@ -2038,28 +2038,28 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th>Category</th>
+                        <th>{t('category', 'Category')}</th>
                         <th className="text-right">
-                          Beginning Stock <span title="Value of stock at beginning of period"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('beginning_stock', 'Beginning Stock')} <span title="Value of stock at beginning of period"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
-                          Purchases <span title="Total purchases within this period"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('purchases', 'Purchases')} <span title="Total purchases within this period"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
-                          Ending Stock <span title="Value of stock at end of period based on last cost"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('ending_stock', 'Ending Stock')} <span title="Value of stock at end of period based on last cost"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right bg-primary/90">
-                          Consumption / COGS <span title="Consumption / COGS = Beginning Stock + Purchases - Ending Stock"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('consumption_cogs', 'Consumption / COGS')} <span title="Consumption / COGS = Beginning Stock + Purchases - Ending Stock"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
-                          Cost% <span title="Cost% = (Consumption / COGS) * 100 / Net Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('cost_pct', 'Cost%')} <span title="Cost% = (Consumption / COGS) * 100 / Net Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
-                        <th className="text-right">Net Sales</th>
+                        <th className="text-right">{t('net_sales', 'Net Sales')}</th>
                         <th className="text-right">
-                          Gross Profit <span title="Gross Profit = Net Sales - Consumption / COGS"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('gross_profit', 'Gross Profit')} <span title="Gross Profit = Net Sales - Consumption / COGS"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
-                          Gross Profit% <span title="Gross Profit% = (Gross Profit * 100) / Net Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('gross_profit_pct', 'Gross Profit%')} <span title="Gross Profit% = (Gross Profit * 100) / Net Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                       </tr>
                     </thead>
@@ -2086,7 +2086,7 @@ function OperationsDashboardContent() {
                         );
                       })}
                       <tr className="bg-slate-200/90 font-black border-t-2 border-slate-300">
-                        <td className="text-slate-900">Total Consolidated COGS</td>
+                        <td className="text-slate-900">{t('total_consolidated_cogs', 'Total Consolidated COGS')}</td>
                         <td className="font-mono text-right text-slate-900">
                           {formatCurrency(cogsData.reduce((a, b) => a + b.beginning, 0))}
                         </td>
@@ -2125,8 +2125,8 @@ function OperationsDashboardContent() {
                 className="p-3.5 bg-primary text-primary-foreground font-bold text-xs flex items-center justify-between cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2">
-                  <span>Ideal Profit by Category</span>
-                  <span className="text-[11px] text-slate-300 font-mono">Theoretical Margin Analysis</span>
+                  <span>{t('ideal_profit_by_category', 'Ideal Profit by Category')}</span>
+                  <span className="text-[11px] text-slate-300 font-mono">{t('theoretical_margin_analysis', 'Theoretical Margin Analysis')}</span>
                 </div>
                 {openCostAccordion['idealProfit'] ? <ChevronUp className="w-4 h-4 text-slate-300" /> : <ChevronDown className="w-4 h-4 text-slate-300" />}
               </div>
@@ -2136,20 +2136,20 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th>Category</th>
-                        <th className="text-right">Sales</th>
-                        <th className="text-right">Cost</th>
+                        <th>{t('category', 'Category')}</th>
+                        <th className="text-right">{t('sales', 'Sales')}</th>
+                        <th className="text-right">{t('cost', 'Cost')}</th>
                         <th className="text-right">
-                          Profit% <span title="Profit% = (Sales - Cost) * 100 / Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('profit_pct', 'Profit%')} <span title="Profit% = (Sales - Cost) * 100 / Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                         <th className="text-right">
-                          Cost% <span title="Cost% = Cost * 100 / Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
+                          {t('cost_pct', 'Cost%')} <span title="Cost% = Cost * 100 / Sales"><Info className="w-3 h-3 inline text-amber-400 ml-1 cursor-pointer" /></span>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
-                        <td className="text-slate-900">Total Theoretical</td>
+                        <td className="text-slate-900">{t('total_theoretical', 'Total Theoretical')}</td>
                         <td className="font-mono text-right text-slate-900">{formatCurrency(totalIdealSales)}</td>
                         <td className="font-mono text-right text-slate-900">{formatCurrency(totalIdealCost)}</td>
                         <td className="font-mono text-right text-emerald-800">
@@ -2198,7 +2198,7 @@ function OperationsDashboardContent() {
               >
                 <div className="flex items-center gap-2">
                   <Bell className="w-4 h-4 text-red-700" />
-                  <span>Expired Items</span>
+                  <span>{t('expired_items', 'Expired Items')}</span>
                 </div>
                 {openStockAccordion['expired'] ? <ChevronUp className="w-4 h-4 text-red-800" /> : <ChevronDown className="w-4 h-4 text-red-800" />}
               </div>
@@ -2208,11 +2208,11 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        {selectedBranch === 'ALL' && <th>Branch</th>}
-                        <th>Location</th>
-                        <th>Product</th>
-                        <th className="text-right">Qty on Hand</th>
-                        <th>Expiry Date</th>
+                        {selectedBranch === 'ALL' && <th>{t('branch', 'Branch')}</th>}
+                        <th>{t('location', 'Location')}</th>
+                        <th>{t('product', 'Product')}</th>
+                        <th className="text-right">{t('qty_on_hand', 'Qty on Hand')}</th>
+                        <th>{t('expiry_date', 'Expiry Date')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2237,7 +2237,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleStockAccordion('outofstock')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Out of Stock</span>
+                <span>{t('out_of_stock', 'Out of Stock')}</span>
                 {openStockAccordion['outofstock'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -2246,14 +2246,14 @@ function OperationsDashboardContent() {
                   {/* Branch filter for out of stock when All Branches is active */}
                   {selectedBranch === 'ALL' && (
                     <div className="flex items-center gap-2 text-xs">
-                      <label htmlFor="outOfStockFilter" className="font-bold text-slate-700">Filter Branch:</label>
+                      <label htmlFor="outOfStockFilter" className="font-bold text-slate-700">{t('filter_branch', 'Filter Branch')}:</label>
                       <select
                         id="outOfStockFilter"
                         value={outOfStockBranchFilter}
                         onChange={(e) => setOutOfStockBranchFilter(e.target.value)}
                         className="border border-slate-300 rounded px-2.5 py-1 text-xs font-semibold text-slate-800"
                       >
-                        {allBranchesList.length > 1 && <option value="0">All Branches</option>}
+                        {allBranchesList.length > 1 && <option value="0">{t('all_branches', 'All Branches')}</option>}
                         {allBranchesList.map(b => (
                           <option key={b.code} value={b.code}>{b.code} - {b.name}</option>
                         ))}
@@ -2276,7 +2276,7 @@ function OperationsDashboardContent() {
                             >
                               <span>{branch.branchName}</span>
                               <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[11px] font-mono">{branch.items.length} Items</span>
+                                <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[11px] font-mono">{branch.items.length} {t('items', 'Items')}</span>
                                 {isExpanded ? <ChevronUp className="w-3.5 h-3.5 text-slate-600" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-600" />}
                               </div>
                             </button>
@@ -2284,8 +2284,8 @@ function OperationsDashboardContent() {
                               <table className="w-full vanguard-table">
                                 <thead>
                                   <tr>
-                                    <th>Product Description</th>
-                                    <th className="text-right">Qty on Hand</th>
+                                    <th>{t('product_description', 'Product Description')}</th>
+                                    <th className="text-right">{t('qty_on_hand', 'Qty on Hand')}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -2312,7 +2312,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleStockAccordion('belowmin')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Items Below Min. Stock Level</span>
+                <span>{t('items_below_min_stock', 'Items Below Min. Stock Level')}</span>
                 {openStockAccordion['belowmin'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -2321,11 +2321,11 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        {selectedBranch === 'ALL' && <th>Branch</th>}
-                        <th>Location</th>
-                        <th>Product</th>
-                        <th className="text-right">Min Qty</th>
-                        <th className="text-right">Qty on Hand</th>
+                        {selectedBranch === 'ALL' && <th>{t('branch', 'Branch')}</th>}
+                        <th>{t('location', 'Location')}</th>
+                        <th>{t('product', 'Product')}</th>
+                        <th className="text-right">{t('min_qty', 'Min Qty')}</th>
+                        <th className="text-right">{t('qty_on_hand', 'Qty on Hand')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2350,7 +2350,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleStockAccordion('categoryStock')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Stock on Hand Breakdown by Product Family</span>
+                <span>{t('stock_on_hand_breakdown_by_product_family', 'Stock on Hand Breakdown by Product Family')}</span>
                 {openStockAccordion['categoryStock'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -2364,7 +2364,7 @@ function OperationsDashboardContent() {
                         onChange={(e) => setShowNegatives(e.target.checked)}
                         className="rounded text-blue-600 focus:ring-0"
                       />
-                      <span>Show Negative Values</span>
+                      <span>{t('show_negative_values', 'Show Negative Values')}</span>
                     </label>
                     <span className="text-xs text-slate-500 font-mono">6 Categories Audited</span>
                   </div>
@@ -2373,9 +2373,9 @@ function OperationsDashboardContent() {
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Category</th>
-                          <th className="text-right">Available Qty</th>
-                          <th className="text-right">Valuation Amount ({selectedCurrency})</th>
+                          <th>{t('category', 'Category')}</th>
+                          <th className="text-right">{t('available_qty', 'Available Qty')}</th>
+                          <th className="text-right">{t('valuation_amount', 'Valuation Amount')} ({selectedCurrency})</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2445,7 +2445,7 @@ function OperationsDashboardContent() {
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-emerald-600" />
                 <h3 className="font-bold text-base text-slate-900">
-                  Sales <small className="text-slate-500 font-normal">({filteredSalesList.length} Transactions)</small>
+                  {t('sales', 'Sales')} <small className="text-slate-500 font-normal">({filteredSalesList.length} {t('transactions', 'Transactions')})</small>
                 </h3>
                 <span className="ml-2 text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
                   {currentBranchData.name}
@@ -2461,11 +2461,11 @@ function OperationsDashboardContent() {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Customer</th>
-                    <th>Company</th>
-                    <th className="text-right">Total</th>
-                    <th>Date</th>
-                    <th>Branch Name</th>
+                    <th>{t('customer', 'Customer')}</th>
+                    <th>{t('company', 'Company')}</th>
+                    <th className="text-right">{t('total', 'Total')}</th>
+                    <th>{t('date', 'Date')}</th>
+                    <th>{t('branch_name', 'Branch Name')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2489,7 +2489,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2504,7 +2504,7 @@ function OperationsDashboardContent() {
               <div className="flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-base text-slate-900">
-                  Purchase <small className="text-slate-500 font-normal">({filteredPurchaseList.length} Transactions)</small>
+                  {t('purchase', 'Purchase')} <small className="text-slate-500 font-normal">({filteredPurchaseList.length} {t('transactions', 'Transactions')})</small>
                 </h3>
                 <span className="ml-2 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
                   {currentBranchData.name}
@@ -2519,11 +2519,11 @@ function OperationsDashboardContent() {
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Invoice #</th>
-                    <th>Supplier Name</th>
-                    <th className="text-right">Total</th>
-                    <th>Date</th>
-                    <th>Branch Name</th>
+                    <th>{t('invoice_hash', 'Invoice #')}</th>
+                    <th>{t('supplier_name', 'Supplier Name')}</th>
+                    <th className="text-right">{t('total', 'Total')}</th>
+                    <th>{t('date', 'Date')}</th>
+                    <th>{t('branch_name', 'Branch Name')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2546,7 +2546,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2561,7 +2561,7 @@ function OperationsDashboardContent() {
               <div className="flex items-center gap-2">
                 <Trash2 className="w-5 h-5 text-red-600" />
                 <h3 className="font-bold text-base text-slate-900">
-                  Lost Goods / Wastage <small className="text-slate-500 font-normal">({filteredWastageList.length} Transactions)</small>
+                  {t('lost_goods_wastage', 'Lost Goods / Wastage')} <small className="text-slate-500 font-normal">({filteredWastageList.length} {t('transactions', 'Transactions')})</small>
                 </h3>
                 <span className="ml-2 text-xs font-semibold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
                   {currentBranchData.name}
@@ -2576,11 +2576,11 @@ function OperationsDashboardContent() {
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Wastage #</th>
-                    <th className="text-right">Cost</th>
-                    <th>Reason</th>
-                    <th>Date</th>
-                    <th>Branch Name</th>
+                    <th>{t('wastage_hash', 'Wastage #')}</th>
+                    <th className="text-right">{t('cost', 'Cost')}</th>
+                    <th>{t('reason', 'Reason')}</th>
+                    <th>{t('date', 'Date')}</th>
+                    <th>{t('branch_name', 'Branch Name')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2603,7 +2603,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2618,7 +2618,7 @@ function OperationsDashboardContent() {
               <div className="flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-base text-slate-900">
-                  Variance Adjustments <small className="text-slate-500 font-normal">({filteredVarianceList.length} Transactions)</small>
+                  {t('variance_adjustments', 'Variance Adjustments')} <small className="text-slate-500 font-normal">({filteredVarianceList.length} {t('transactions', 'Transactions')})</small>
                 </h3>
                 <span className="ml-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                   {currentBranchData.name}
@@ -2634,11 +2634,11 @@ function OperationsDashboardContent() {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Item Description</th>
-                    <th className="text-right">Variance Units</th>
-                    <th>Warehouse Location</th>
-                    <th>Date</th>
-                    <th>Branch Name</th>
+                    <th>{t('item_description', 'Item Description')}</th>
+                    <th className="text-right">{t('variance_units', 'Variance Units')}</th>
+                    <th>{t('warehouse_location', 'Warehouse Location')}</th>
+                    <th>{t('date', 'Date')}</th>
+                    <th>{t('branch_name', 'Branch Name')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2664,7 +2664,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2678,7 +2678,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Archive className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-bold text-base text-slate-900">Stock Valuation by Category</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('stock_valuation_by_category', 'Stock Valuation by Category')}</h3>
               </div>
               <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -2693,7 +2693,7 @@ function OperationsDashboardContent() {
                   onChange={(e) => setShowNegatives(e.target.checked)}
                   className="rounded text-blue-600 focus:ring-0"
                 />
-                <span>Show Negative Values</span>
+                <span>{t('show_negative_values', 'Show Negative Values')}</span>
               </label>
               <span className="text-slate-500 font-mono">Total Categories: {stockCategories.length}</span>
             </div>
@@ -2702,9 +2702,9 @@ function OperationsDashboardContent() {
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Category</th>
-                    <th className="text-right">Available Qty</th>
-                    <th className="text-right">Total Amount</th>
+                    <th>{t('category', 'Category')}</th>
+                    <th className="text-right">{t('available_qty', 'Available Qty')}</th>
+                    <th className="text-right">{t('total_amount', 'Total Amount')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2716,7 +2716,7 @@ function OperationsDashboardContent() {
                     </tr>
                   ))}
                   <tr className="bg-emerald-50 font-black border-t-2 border-emerald-300">
-                    <td className="text-emerald-950 font-bold">Consolidated Stock Value</td>
+                    <td className="text-emerald-950 font-bold">{t('consolidated_stock_value', 'Consolidated Stock Value')}</td>
                     <td className="font-mono text-right text-emerald-950">
                       {stockCategories.reduce((a, b) => a + b.QTY, 0).toLocaleString()}
                     </td>
@@ -2734,7 +2734,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2748,7 +2748,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Bell className="w-5 h-5 text-red-600" />
-                <h3 className="font-bold text-base text-slate-900">Expired & Expiring Items Audit</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('expired_audit', 'Expired & Expiring Items Audit')}</h3>
               </div>
               <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -2759,11 +2759,11 @@ function OperationsDashboardContent() {
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Branch</th>
-                    <th>Storage Location</th>
-                    <th>Product</th>
-                    <th className="text-right">Qty on Hand</th>
-                    <th>Expiry Date</th>
+                    <th>{t('branch', 'Branch')}</th>
+                    <th>{t('storage_location', 'Storage Location')}</th>
+                    <th>{t('product', 'Product')}</th>
+                    <th className="text-right">{t('qty_on_hand', 'Qty on Hand')}</th>
+                    <th>{t('expiry_date', 'Expiry Date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2786,7 +2786,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2803,7 +2803,7 @@ function OperationsDashboardContent() {
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-base text-slate-900">
-                  Quantity Not Received <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-mono font-bold">{totalQtyNotReceivedCount} Pending</span>
+                  {t('quantity_not_received', 'Quantity Not Received')} <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-mono font-bold">{totalQtyNotReceivedCount} {t('pending', 'Pending')}</span>
                 </h3>
               </div>
               <button onClick={() => setShowQtyNotReceived(false)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
@@ -2818,14 +2818,14 @@ function OperationsDashboardContent() {
                 onClick={() => setQtyNotReceivedTab('requests')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${qtyNotReceivedTab === 'requests' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
               >
-                Product Requests ({pendingProductRequests.length})
+                {t('product_requests', 'Product Requests')} ({pendingProductRequests.length})
               </button>
               <button
                 type="button"
                 onClick={() => setQtyNotReceivedTab('transfers')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${qtyNotReceivedTab === 'transfers' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
               >
-                Transfers / Requisitions ({pendingTransfers.length})
+                {t('transfers_requisitions', 'Transfers / Requisitions')} ({pendingTransfers.length})
               </button>
             </div>
 
@@ -2834,11 +2834,11 @@ function OperationsDashboardContent() {
                 <table className="w-full vanguard-table">
                   <thead>
                     <tr>
-                      <th>Req. #</th>
-                      <th>Request Date</th>
-                      <th>Requesting Branch</th>
-                      <th>Item Description</th>
-                      <th className="text-right">Qty</th>
+                      <th>{t('req_hash', 'Req. #')}</th>
+                      <th>{t('request_date', 'Request Date')}</th>
+                      <th>{t('requesting_branch', 'Requesting Branch')}</th>
+                      <th>{t('item_description', 'Item Description')}</th>
+                      <th className="text-right">{t('qty', 'Qty')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2857,12 +2857,12 @@ function OperationsDashboardContent() {
                 <table className="w-full vanguard-table">
                   <thead>
                     <tr>
-                      <th>Transfer #</th>
-                      <th>Date</th>
-                      <th>From Branch</th>
-                      <th>To Branch</th>
-                      <th>Item Description</th>
-                      <th className="text-right">Qty</th>
+                      <th>{t('transfer_hash', 'Transfer #')}</th>
+                      <th>{t('date', 'Date')}</th>
+                      <th>{t('from_branch', 'From Branch')}</th>
+                      <th>{t('to_branch', 'To Branch')}</th>
+                      <th>{t('item_description', 'Item Description')}</th>
+                      <th className="text-right">{t('qty', 'Qty')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2887,7 +2887,7 @@ function OperationsDashboardContent() {
                 onClick={() => setShowQtyNotReceived(false)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2905,7 +2905,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-base text-slate-900">Sync Inventory Sales</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('sync_inventory_sales', 'Sync Inventory Sales')}</h3>
               </div>
               <button onClick={() => setActiveActionModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -2913,16 +2913,16 @@ function OperationsDashboardContent() {
             </div>
             <div className="my-4 space-y-3 text-xs">
               <p className="text-slate-600">
-                Synchronize POS cash register transactions and sales receipts with inventory cost ledger for selected branch:
+                {t('sync_inventory_sales_desc', 'Synchronize POS cash register transactions and sales receipts with inventory cost ledger for selected branch:')}
               </p>
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Target Branch:</label>
+                <label className="font-bold text-slate-700 block mb-1">{t('target_branch', 'Target Branch')}:</label>
                 <select
                   value={syncBranch}
                   onChange={(e) => setSyncBranch(e.target.value)}
                   className="w-full border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-800"
                 >
-                  <option value="ALL">All Branches (Consolidated)</option>
+                  <option value="ALL">{t('all_branches_consolidated', 'All Branches (Consolidated)')}</option>
                   {allBranchesList.map(b => (
                     <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                   ))}
@@ -2935,7 +2935,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveActionModal(null)}
                 className="px-3.5 py-1.5 rounded bg-slate-200 hover:bg-slate-300 text-xs font-bold text-slate-700 transition cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2944,7 +2944,7 @@ function OperationsDashboardContent() {
                 className="px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
+                <span>{isSyncing ? t('syncing', 'Syncing...') : t('sync_now', 'Sync Now')}</span>
               </button>
             </div>
           </div>
@@ -2958,7 +2958,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Printer className="w-5 h-5 text-amber-600" />
-                <h3 className="font-bold text-base text-slate-900">Reorder Suggestions Report</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('reorder_suggestions_report', 'Reorder Suggestions Report')}</h3>
               </div>
               <button onClick={() => setActiveActionModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -2968,10 +2968,10 @@ function OperationsDashboardContent() {
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Item Description</th>
-                    <th>Current Qty</th>
-                    <th>Reorder Point</th>
-                    <th>Suggested Reorder</th>
+                    <th>{t('item_description', 'Item Description')}</th>
+                    <th>{t('current_qty', 'Current Qty')}</th>
+                    <th>{t('reorder_point', 'Reorder Point')}</th>
+                    <th>{t('suggested_reorder', 'Suggested Reorder')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -3002,7 +3002,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveActionModal(null)}
                 className="px-3.5 py-1.5 rounded bg-slate-200 hover:bg-slate-300 text-xs font-bold text-slate-700 transition cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 type="button"
@@ -3010,7 +3010,7 @@ function OperationsDashboardContent() {
                 className="px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Suggestions</span>
+                <span>{t('print_suggestions', 'Print Suggestions')}</span>
               </button>
             </div>
           </div>
@@ -3024,7 +3024,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <CheckSquare className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-bold text-base text-slate-900">Stock Deduction Checklist</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('stock_deduction_checklist', 'Stock Deduction Checklist')}</h3>
               </div>
               <button onClick={() => setActiveActionModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -3032,20 +3032,20 @@ function OperationsDashboardContent() {
             </div>
             <div className="my-4 space-y-2 text-xs">
               <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-900 font-semibold">
-                <span>Bill of Materials (BOM) Production Recipes</span>
-                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ Verified</span>
+                <span>{t('bom_recipes', 'Bill of Materials (BOM) Production Recipes')}</span>
+                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ {t('verified', 'Verified')}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-900 font-semibold">
-                <span>Daily Sales Invoices Posting Status</span>
-                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ Complete</span>
+                <span>{t('daily_sales_invoices_posting_status', 'Daily Sales Invoices Posting Status')}</span>
+                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ {t('complete', 'Complete')}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-between text-blue-900 font-semibold">
-                <span>Inter-branch In-Transit Requisitions</span>
-                <span className="text-xs bg-blue-200 px-2 py-0.5 rounded-full font-bold">2 In-Transit</span>
+                <span>{t('inter_branch_transit_requisitions', 'Inter-branch In-Transit Requisitions')}</span>
+                <span className="text-xs bg-blue-200 px-2 py-0.5 rounded-full font-bold">2 {t('in_transit', 'In-Transit')}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between text-slate-800 font-semibold">
-                <span>Physical Variance Adjustments Signoff</span>
-                <span className="text-xs bg-slate-200 px-2 py-0.5 rounded-full font-bold">0 Pending</span>
+                <span>{t('physical_variance_adjustments_signoff', 'Physical Variance Adjustments Signoff')}</span>
+                <span className="text-xs bg-slate-200 px-2 py-0.5 rounded-full font-bold">0 {t('pending', 'Pending')}</span>
               </div>
             </div>
             <div className="pt-3 border-t border-slate-200 flex justify-end">
@@ -3054,7 +3054,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveActionModal(null)}
                 className="px-4 py-1.5 rounded bg-primary hover:bg-primary/90 text-xs font-bold text-primary-foreground transition cursor-pointer shadow-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -3068,7 +3068,7 @@ function OperationsDashboardContent() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-rose-600" />
-                <h3 className="font-bold text-base text-slate-900">End Of Month Closing Routine</h3>
+                <h3 className="font-bold text-base text-slate-900">{t('end_of_month_closing_routine', 'End Of Month Closing Routine')}</h3>
               </div>
               <button onClick={() => setActiveActionModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -3077,27 +3077,27 @@ function OperationsDashboardContent() {
 
             <div className="my-4 text-xs space-y-3">
               <p className="text-slate-600">
-                Ensure all operational vouchers for Month <strong>{selectedMonth} ({selectedYear})</strong> are fully posted before final lock:
+                {t('ensure_operational_vouchers', 'Ensure all operational vouchers for Month')} <strong>{selectedMonth} ({selectedYear})</strong> {t('are_fully_posted_before_final_lock', 'are fully posted before final lock:')}
               </p>
 
               <table className="w-full vanguard-table">
                 <thead>
                   <tr>
-                    <th>Module</th>
-                    <th className="text-right">Unposted Transactions</th>
+                    <th>{t('module', 'Module')}</th>
+                    <th className="text-right">{t('unposted_transactions', 'Unposted Transactions')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="font-bold text-slate-800">Purchases Ledger</td>
+                    <td className="font-bold text-slate-800">{t('purchases_ledger', 'Purchases Ledger')}</td>
                     <td className="font-mono text-right font-bold text-emerald-700">0</td>
                   </tr>
                   <tr>
-                    <td className="font-bold text-slate-800">Sales Invoices</td>
+                    <td className="font-bold text-slate-800">{t('sales_invoices', 'Sales Invoices')}</td>
                     <td className="font-mono text-right font-bold text-emerald-700">0</td>
                   </tr>
                   <tr>
-                    <td className="font-bold text-slate-800">Product Requests</td>
+                    <td className="font-bold text-slate-800">{t('product_requests', 'Product Requests')}</td>
                     <td className="font-mono text-right font-bold text-emerald-700">0</td>
                   </tr>
                 </tbody>
@@ -3109,12 +3109,12 @@ function OperationsDashboardContent() {
                 type="button"
                 onClick={() => {
                   setActiveActionModal(null);
-                  setRecalcToast('Fiscal month reopened for corrections.');
+                  setRecalcToast(t('fiscal_month_reopened', 'Fiscal month reopened for corrections.'));
                   setTimeout(() => setRecalcToast(null), 3000);
                 }}
                 className="px-3 py-1.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-xs transition cursor-pointer"
               >
-                Reopen Month
+                {t('reopen_month', 'Reopen Month')}
               </button>
               <div className="flex items-center gap-2">
                 <button
@@ -3122,7 +3122,7 @@ function OperationsDashboardContent() {
                   onClick={() => setActiveActionModal(null)}
                   className="px-3.5 py-1.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
@@ -3131,7 +3131,7 @@ function OperationsDashboardContent() {
                   className="px-4 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{isEndingMonth ? 'Processing...' : 'End Of Month'}</span>
+                  <span>{isEndingMonth ? t('processing', 'Processing...') : t('end_of_month', 'End Of Month')}</span>
                 </button>
               </div>
             </div>

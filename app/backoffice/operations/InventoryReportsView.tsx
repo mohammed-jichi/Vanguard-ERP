@@ -1465,7 +1465,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Warehouse className="w-4 h-4" />
-              <span>{t('tank_farm_throughput', 'Tank Farm Throughput')}</span>
+              <span>{t('tank_farm_throughput', 'Tank Farm & Bulk Silo Inventory Throughput')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_003'
@@ -1800,7 +1800,7 @@ export default function AuthenticVanguardInventoryReports() {
                                 : 'text-slate-600 font-bold tracking-wide uppercase text-xs'
                             }
                           >
-                            {tank.nitrogenBlanket}
+                            {t(tank.nitrogenBlanket.toLowerCase(), tank.nitrogenBlanket)}
                           </span>
                         </td>
                         <td className="py-2 px-3 text-center">
