@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { resolveEffectiveTenantId } from '@/lib/authTenantResolver';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 interface WorkspaceCustomersProps {
   params: Promise<{ workspaceId: string }>;
@@ -10,8 +10,8 @@ export default async function WorkspaceCustomersPage({ params, searchParams }: W
   const { workspaceId } = await params;
   const extra = await searchParams;
   const qs = new URLSearchParams();
-  const effectiveId = resolveEffectiveTenantId(workspaceId);
-  qs.set('tenantId', effectiveId);
+  const routeCode = resolveTenantRouteCode(workspaceId);
+  qs.set('tenantId', routeCode);
   if (extra) {
     Object.entries(extra).forEach(([k, v]) => {
       if (v && k !== 'tenantId') qs.set(k, v);

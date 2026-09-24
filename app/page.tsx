@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 /**
  * Vanguard ERP — Root Entry Route (/)
@@ -39,8 +40,9 @@ export default async function RootEntryPage() {
     if (isSuperAdmin) {
       redirect('/admin');
     } else {
-      const tenantId = cookieStore.get('vanguard_tenant_id')?.value || '00000000-0000-0000-0000-000000000001';
-      redirect(`/${tenantId}/dashboard`);
+      const tenantCookie = cookieStore.get('vanguard_tenant_id')?.value;
+      const tenantRoute = resolveTenantRouteCode(tenantCookie);
+      redirect(`/${tenantRoute}/dashboard`);
     }
   } else {
     redirect('/login');

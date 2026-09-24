@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { resolveEffectiveTenantId } from '@/lib/authTenantResolver';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 interface WorkspacePageProps {
   params: Promise<{ workspaceId: string }>;
@@ -14,8 +14,8 @@ export default async function WorkspaceByIdPage({ params, searchParams }: Worksp
   const { workspaceId } = await params;
   const extraParams = await searchParams;
   const queryString = new URLSearchParams();
-  const effectiveId = resolveEffectiveTenantId(workspaceId);
-  queryString.set('tenantId', effectiveId);
+  const routeCode = resolveTenantRouteCode(workspaceId);
+  queryString.set('tenantId', routeCode);
   if (extraParams) {
     Object.entries(extraParams).forEach(([key, val]) => {
       if (val && key !== 'tenantId') queryString.set(key, val);

@@ -50,6 +50,26 @@ export function resolveEffectiveTenantId(rawId?: string | null): string {
   return trimmed;
 }
 
+/**
+ * Normalizes an internal tenant UUID, code, or slug into a clean public URL route identifier.
+ * For the master primary tenant ('00000000-0000-0000-0000-000000000001'), this returns '1300'.
+ */
+export function resolveTenantRouteCode(rawId?: string | null): string {
+  if (!rawId) return '1300';
+  const trimmed = rawId.trim();
+  const upper = trimmed.toUpperCase();
+  if (
+    trimmed === DEFAULT_MASTER_TENANT.id ||
+    trimmed === '1300' ||
+    upper === 'SO-OLIVE' ||
+    upper === 'SOUTHERN-OLIVE' ||
+    upper === 'SOUTHERN_OLIVE'
+  ) {
+    return '1300';
+  }
+  return trimmed;
+}
+
 export const SUPER_ADMIN_EMAILS = [
   'mohammed@vanguard-erp.com',
   'admin@vanguard.com',
@@ -530,17 +550,19 @@ export function getPostLoginDestination(
   assignment: UserTenantAssignment,
   requestedRedirect?: string | null
 ): string {
+  const routeTenant = resolveTenantRouteCode(assignment.companyCode || assignment.tenantSlug || assignment.tenantId);
+
   // If user is a regular tenant user and attempted to navigate to /admin,
   // enforce reservation of /admin for super admins and route them to their workspace.
   if (!assignment.isSuperAdmin && requestedRedirect && (requestedRedirect === '/admin' || requestedRedirect.startsWith('/admin/'))) {
-    return `/${assignment.tenantId}/dashboard`;
+    return `/${routeTenant}/dashboard`;
   }
 
   // If a valid requested redirect was passed (e.g. from bookmark or deep link)
   if (requestedRedirect && requestedRedirect.startsWith('/') && requestedRedirect !== '/login') {
     if (requestedRedirect.startsWith('/backoffice') && !requestedRedirect.includes('tenantId=')) {
       const sep = requestedRedirect.includes('?') ? '&' : '?';
-      return `${requestedRedirect}${sep}tenantId=${encodeURIComponent(assignment.tenantId)}`;
+      return `${requestedRedirect}${sep}tenantId=${encodeURIComponent(routeTenant)}`;
     }
     return requestedRedirect;
   }
@@ -550,6 +572,6 @@ export function getPostLoginDestination(
     return '/admin';
   }
 
-  // Regular tenant users go directly to their tenant workspace dashboard route
-  return `/${assignment.tenantId}/dashboard`;
+  // Regular tenant users go directly to their tenant workspace dashboard route (e.g. /1300/dashboard)
+  return `/${routeTenant}/dashboard`;
 }

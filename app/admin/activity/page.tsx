@@ -12,6 +12,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TenantProvider, useTenant } from '@/lib/TenantContext';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import {
   SystemActivity,
   getPaginatedSystemActivities,
@@ -86,8 +87,9 @@ function ActivityConsoleContent() {
     if (typeof window !== 'undefined') {
       const storedRole = localStorage.getItem('vanguard_user_role');
       if (storedRole && storedRole !== 'SUPER_ADMIN') {
-        const tenantId = localStorage.getItem('vanguard_tenant_id') || currentTenant?.id || '00000000-0000-0000-0000-000000000001';
-        router.replace(`/${tenantId}/dashboard`);
+        const rawTenantId = localStorage.getItem('vanguard_tenant_id') || currentTenant?.id || '00000000-0000-0000-0000-000000000001';
+        const routeCode = resolveTenantRouteCode(rawTenantId);
+        router.replace(`/${routeCode}/dashboard`);
       }
     }
   }, [currentTenant, router]);

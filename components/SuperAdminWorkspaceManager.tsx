@@ -13,6 +13,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTenant, TenantCompany, ALL_SYSTEM_MODULES } from '../lib/TenantContext';
+import { resolveTenantRouteCode } from '../lib/authTenantResolver';
 import { supabase } from '../lib/supabaseClient';
 import {
   COUNTRY_FISCAL_PROFILES,
@@ -761,8 +762,9 @@ export default function SuperAdminWorkspaceManager() {
       }
 
       if (storedRole === 'STAFF' || storedRole === 'DRIVER' || storedRole === 'VIEWER') {
-        const tenantId = localStorage.getItem('vanguard_tenant_id') || currentTenant?.id || '00000000-0000-0000-0000-000000000001';
-        router.replace(`/${tenantId}/dashboard`);
+        const rawTenantId = localStorage.getItem('vanguard_tenant_id') || currentTenant?.id || '00000000-0000-0000-0000-000000000001';
+        const routeCode = resolveTenantRouteCode(rawTenantId);
+        router.replace(`/${routeCode}/dashboard`);
       }
     }
   }, [currentTenant, router]);
@@ -1061,7 +1063,7 @@ export default function SuperAdminWorkspaceManager() {
         document.cookie = `vanguard_active_tenant=${encodeURIComponent(JSON.stringify(fullTenantObj))}; path=/; SameSite=Lax`;
       }
 
-      const routeIdentifier = effectiveCompanyId || fullTenantObj.id;
+      const routeIdentifier = resolveTenantRouteCode(effectiveCompanyId || fullTenantObj.id);
       const targetName = fullTenantObj.brandNameEn || fullTenantObj.name || 'Vanguard Enterprise Client';
       logSystemActivity({
         tenantId: fullTenantObj.id,
@@ -1077,7 +1079,8 @@ export default function SuperAdminWorkspaceManager() {
     } catch (err) {
       console.error('Error in handleEnterWorkspace:', err);
       const finalTargetId = t?.id || '00000000-0000-0000-0000-000000000001';
-      router.push(`/backoffice?tenantId=${encodeURIComponent(finalTargetId)}`);
+      const finalRouteCode = resolveTenantRouteCode(finalTargetId);
+      router.push(`/backoffice?tenantId=${encodeURIComponent(finalRouteCode)}`);
     }
   };
 

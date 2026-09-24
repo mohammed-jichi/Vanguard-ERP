@@ -56,12 +56,68 @@ function hasActiveAuthSession(request: NextRequest): boolean {
   });
 }
 
+const DEFAULT_MASTER_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+
+function resolveEffectiveTenantId(rawId?: string | null): string {
+  if (!rawId) return DEFAULT_MASTER_TENANT_ID;
+  const trimmed = rawId.trim();
+  const upper = trimmed.toUpperCase();
+  if (
+    trimmed === '1300' ||
+    upper === 'SO-OLIVE' ||
+    upper === 'SOUTHERN-OLIVE' ||
+    upper === 'SOUTHERN_OLIVE' ||
+    trimmed === DEFAULT_MASTER_TENANT_ID
+  ) {
+    return DEFAULT_MASTER_TENANT_ID;
+  }
+  return trimmed;
+}
+
+function resolveTenantRouteCode(rawId?: string | null): string {
+  if (!rawId) return '1300';
+  const trimmed = rawId.trim();
+  const upper = trimmed.toUpperCase();
+  if (
+    trimmed === DEFAULT_MASTER_TENANT_ID ||
+    trimmed === '1300' ||
+    upper === 'SO-OLIVE' ||
+    upper === 'SOUTHERN-OLIVE' ||
+    upper === 'SOUTHERN_OLIVE'
+  ) {
+    return '1300';
+  }
+  return trimmed;
+}
+
+const NON_TENANT_PREFIXES = new Set([
+  'admin', 'api', 'backoffice', 'dashboard', 'login', 'landing', 'workspace',
+  'request-demo', 'forgot-password', 'setup', 'settings', 'contacts',
+  'customersrecview', 'quotationsview', 'purchaseorder', 'editevent',
+  'accounting', 'adjustments', 'connect', 'customer-insights',
+  'delivery-of-goods', 'erp', 'inventory', 'journal-voucher', 'ledger',
+  'loyalty', 'manage-product-requests', 'my-sales', 'operations-center',
+  'pos', 'pressing', 'pressing-mill', 'product-insights',
+  'product-req-preparation', 'product-request', 'product-request-reports',
+  'purchase', 'purchase-orders', 'purchases', 'quotations', 'receipt',
+  'receiving-of-goods', 'request-reject-reasons', 'sales', 'sales-control',
+  'sales-manager-dashboard', 'sales-rep', 'schedule', 'social-crm',
+  'southernolive-lb', 'supersonic', 'v-driver', 'v-store', 'vanguard-hub',
+  'vtrack', '_next', 'favicon.ico'
+]);
+
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // 1. Skip auth callback APIs immediately
   if (EXCLUDED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
     return NextResponse.next();
+  }
+
+  // Smoothly redirect any zero-filled UUID in route to short tenant code 1300
+  if (pathname.startsWith('/00000000-0000-0000-0000-000000000001')) {
+    const newPath = pathname.replace('/00000000-0000-0000-0000-000000000001', '/1300');
+    return NextResponse.redirect(new URL(newPath + search, request.url));
   }
 
   const isAuthenticated = hasActiveAuthSession(request);
@@ -99,7 +155,8 @@ export function middleware(request: NextRequest) {
     userRoleRaw === 'ADMIN' ||
     userRoleRaw === 'OWNER';
 
-  const tenantId = request.cookies.get('vanguard_tenant_id')?.value || '00000000-0000-0000-0000-000000000001';
+  const rawTenantCookie = request.cookies.get('vanguard_tenant_id')?.value;
+  const tenantRouteCode = resolveTenantRouteCode(rawTenantCookie);
 
   // 2. Root route handling (/)
   if (pathname === '/') {
@@ -107,7 +164,7 @@ export function middleware(request: NextRequest) {
       if (isExplicitSuperAdmin) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
-      return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
+      return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
     }
     // Unauthenticated users are redirected directly to /login
     return NextResponse.redirect(new URL('/login', request.url));
@@ -121,7 +178,7 @@ export function middleware(request: NextRequest) {
       if (redirectTo && redirectTo.startsWith('/') && redirectTo !== '/login') {
         // Enforce: regular non-admin tenant users cannot access /admin
         if (!isAuthorizedForAdmin && (redirectTo === '/admin' || redirectTo.startsWith('/admin/'))) {
-          return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
+          return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
         }
         return NextResponse.redirect(new URL(redirectTo, request.url));
       }
@@ -129,7 +186,7 @@ export function middleware(request: NextRequest) {
       if (isExplicitSuperAdmin) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
-      return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
+      return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
     }
     return NextResponse.next();
   }
@@ -143,7 +200,7 @@ export function middleware(request: NextRequest) {
     }
     if (!isAuthorizedForAdmin) {
       // Forbid access to /admin for non-admins and direct them to their tenant workspace
-      return NextResponse.redirect(new URL(`/${tenantId}/dashboard`, request.url));
+      return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
     }
     return NextResponse.next();
   }
@@ -161,23 +218,47 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Synchronize candidate tenant ID if request URL contains a dynamic tenant segment
+  // 7. Dynamic tenant workspace routing & slug resolution
   const pathSegments = pathname.split('/').filter(Boolean);
-  const response = NextResponse.next();
+  const candidateTenant = pathSegments[0];
 
-  if (pathSegments.length >= 2 && (pathSegments[1] === 'dashboard' || pathSegments[1] === 'customers' || pathSegments[1] === 'feedback' || pathSegments[1] === 'loyalty')) {
-    const candidateTenant = pathSegments[0];
-    if (candidateTenant && candidateTenant !== request.cookies.get('vanguard_tenant_id')?.value) {
-      response.cookies.set('vanguard_tenant_id', candidateTenant, {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 30,
-        sameSite: 'lax',
-      });
+  if (candidateTenant && !NON_TENANT_PREFIXES.has(candidateTenant.toLowerCase())) {
+    const routeCode = resolveTenantRouteCode(candidateTenant);
+    const effectiveUuid = resolveEffectiveTenantId(candidateTenant);
+
+    // If user accesses just /1300 or /southern-olive, redirect to /1300/dashboard
+    if (pathSegments.length === 1) {
+      return NextResponse.redirect(new URL(`/${routeCode}/dashboard${search}`, request.url));
     }
+
+    const subpath = pathSegments.slice(1).join('/');
+
+    // Smoothly rewrite tenant workspace routes (e.g. /1300/dashboard, /1300/customers) to /backoffice
+    // while keeping /1300/dashboard cleanly in the browser URL
+    const targetBackofficePath = subpath === 'dashboard' ? '/backoffice' : `/backoffice/${subpath}`;
+    const rewriteUrl = new URL(targetBackofficePath, request.url);
+    rewriteUrl.searchParams.set('tenantId', routeCode);
+    request.nextUrl.searchParams.forEach((val, key) => {
+      if (key !== 'tenantId') rewriteUrl.searchParams.set(key, val);
+    });
+
+    const rewriteResponse = NextResponse.rewrite(rewriteUrl);
+    // Ensure the effective tenant UUID is persisted in background context/cookie
+    rewriteResponse.cookies.set('vanguard_tenant_id', effectiveUuid, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+    rewriteResponse.cookies.set('vanguard_company_code', routeCode, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+    });
+
+    return rewriteResponse;
   }
 
-  // Authenticated user accessing protected route
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

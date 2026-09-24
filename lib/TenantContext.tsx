@@ -408,7 +408,12 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (savedRaw) {
               try {
                 const saved = JSON.parse(savedRaw);
-                const matched = fetchedCompanies.find(c => c.id === saved.id);
+                const matched = fetchedCompanies.find(c => 
+                  c.id === saved.id || 
+                  c.slug === saved.slug || 
+                  (saved.id === '1300' && c.id === DEFAULT_SUPERADMIN_TENANT.id) ||
+                  (c.id === DEFAULT_SUPERADMIN_TENANT.id && (saved.companyId === 1300 || saved.company_id === 1300))
+                );
                 if (matched) {
                   setCurrentTenant(matched);
                   localStorage.setItem('vanguard_active_tenant', JSON.stringify(matched));
@@ -488,6 +493,17 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const savedActiveTenant = localStorage.getItem('vanguard_active_tenant');
         if (savedActiveTenant) {
           const parsed = JSON.parse(savedActiveTenant);
+          if (
+            parsed.id === '1300' ||
+            parsed.id === DEFAULT_SUPERADMIN_TENANT.id ||
+            parsed.companyId === 1300 ||
+            parsed.company_id === 1300 ||
+            parsed.slug === 'southern-olive'
+          ) {
+            parsed.id = DEFAULT_SUPERADMIN_TENANT.id;
+            parsed.companyId = 1300;
+            parsed.company_id = 1300;
+          }
           setCurrentTenant({
             ...DEFAULT_SUPERADMIN_TENANT,
             ...parsed,
@@ -542,20 +558,25 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   const switchTenant = (company: TenantCompany) => {
-    setCurrentTenant(company);
+    const effectiveId = (company.id === '1300' || company.slug === 'southern-olive') ? DEFAULT_SUPERADMIN_TENANT.id : company.id;
+    const companyCode = (company.id === DEFAULT_SUPERADMIN_TENANT.id || company.id === '1300') ? '1300' : (company.companyId || company.slug || company.id);
+    const normalizedCompany = { ...company, id: effectiveId };
+
+    setCurrentTenant(normalizedCompany);
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem('vanguard_active_tenant', JSON.stringify(company));
-        localStorage.setItem('vanguard_tenant_id', company.id);
+        localStorage.setItem('vanguard_active_tenant', JSON.stringify(normalizedCompany));
+        localStorage.setItem('vanguard_tenant_id', effectiveId);
         localStorage.setItem('vanguard_tenant_branding', JSON.stringify({
-          name: company.name,
-          brandNameAr: company.brandNameAr,
-          brandNameEn: company.brandNameEn,
-          logoUrl: company.logoUrl,
-          companyRegistrationNumber: company.companyRegistrationNumber,
-          taxIdentificationNumber: company.taxIdentificationNumber
+          name: normalizedCompany.name,
+          brandNameAr: normalizedCompany.brandNameAr,
+          brandNameEn: normalizedCompany.brandNameEn,
+          logoUrl: normalizedCompany.logoUrl,
+          companyRegistrationNumber: normalizedCompany.companyRegistrationNumber,
+          taxIdentificationNumber: normalizedCompany.taxIdentificationNumber
         }));
-        document.cookie = `vanguard_tenant_id=${encodeURIComponent(company.id)}; path=/; SameSite=Lax`;
+        document.cookie = `vanguard_tenant_id=${encodeURIComponent(effectiveId)}; path=/; SameSite=Lax`;
+        document.cookie = `vanguard_company_code=${encodeURIComponent(companyCode)}; path=/; SameSite=Lax`;
       } catch (e) {
         console.error('Error saving active tenant to storage:', e);
       }

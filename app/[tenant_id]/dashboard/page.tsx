@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { resolveEffectiveTenantId } from '@/lib/authTenantResolver';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 interface TenantDashboardProps {
   params: Promise<{ tenant_id: string }>;
@@ -14,8 +14,8 @@ export default async function TenantDashboardPage({ params, searchParams }: Tena
   const { tenant_id } = await params;
   const extra = await searchParams;
   const qs = new URLSearchParams();
-  const effectiveId = resolveEffectiveTenantId(tenant_id);
-  qs.set('tenantId', effectiveId);
+  const routeCode = resolveTenantRouteCode(tenant_id);
+  qs.set('tenantId', routeCode);
   if (extra) {
     Object.entries(extra).forEach(([k, v]) => {
       if (v && k !== 'tenantId') qs.set(k, v);

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { resolveEffectiveTenantId } from '@/lib/authTenantResolver';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 interface TenantSectionProps {
   params: Promise<{ tenant_id: string; section: string[] }>;
@@ -15,8 +15,8 @@ export default async function TenantCatchAllSectionPage({ params, searchParams }
   const { tenant_id, section } = await params;
   const extra = await searchParams;
   const qs = new URLSearchParams();
-  const effectiveId = resolveEffectiveTenantId(tenant_id);
-  qs.set('tenantId', effectiveId);
+  const routeCode = resolveTenantRouteCode(tenant_id);
+  qs.set('tenantId', routeCode);
 
   if (extra) {
     Object.entries(extra).forEach(([k, v]) => {

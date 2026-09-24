@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { DEFAULT_MASTER_TENANT } from '@/lib/authTenantResolver';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 
 interface WorkspacePageProps {
   searchParams: Promise<{ tenantId?: string; [key: string]: string | undefined }>;
@@ -12,8 +12,8 @@ interface WorkspacePageProps {
 export default async function WorkspacePage({ searchParams }: WorkspacePageProps) {
   const params = await searchParams;
   const queryString = new URLSearchParams();
-  const effectiveId = params?.tenantId || DEFAULT_MASTER_TENANT.id;
-  queryString.set('tenantId', effectiveId);
+  const routeCode = resolveTenantRouteCode(params?.tenantId);
+  queryString.set('tenantId', routeCode);
 
   if (params) {
     Object.entries(params).forEach(([key, val]) => {
