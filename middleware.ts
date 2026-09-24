@@ -158,36 +158,22 @@ export function middleware(request: NextRequest) {
   const rawTenantCookie = request.cookies.get('vanguard_tenant_id')?.value;
   const tenantRouteCode = resolveTenantRouteCode(rawTenantCookie);
 
-  // 2. Root route handling (/)
-  if (pathname === '/') {
-    if (isAuthenticated) {
-      if (isExplicitSuperAdmin) {
-        return NextResponse.redirect(new URL('/admin', request.url));
-      }
-      return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
+  // 2. Root route & Login handling for authenticated users
+  if (isAuthenticated && (pathname === '/' || pathname === '/login')) {
+    const redirectTo = request.nextUrl.searchParams.get('redirect');
+    if (redirectTo && redirectTo.startsWith('/') && redirectTo !== '/login' && redirectTo !== '/') {
+      return NextResponse.redirect(new URL(redirectTo, request.url));
     }
-    // Unauthenticated users are redirected directly to /login
+    return NextResponse.redirect(new URL('/1300/dashboard', request.url));
+  }
+
+  // Unauthenticated users on root are redirected to /login
+  if (pathname === '/') {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 3. Login page handling (/login)
+  // Unauthenticated users on /login proceed to login page
   if (pathname === '/login') {
-    if (isAuthenticated) {
-      // Check if there was a target redirect parameter
-      const redirectTo = request.nextUrl.searchParams.get('redirect');
-      if (redirectTo && redirectTo.startsWith('/') && redirectTo !== '/login') {
-        // Enforce: regular non-admin tenant users cannot access /admin
-        if (!isAuthorizedForAdmin && (redirectTo === '/admin' || redirectTo.startsWith('/admin/'))) {
-          return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
-        }
-        return NextResponse.redirect(new URL(redirectTo, request.url));
-      }
-
-      if (isExplicitSuperAdmin) {
-        return NextResponse.redirect(new URL('/admin', request.url));
-      }
-      return NextResponse.redirect(new URL(`/${tenantRouteCode}/dashboard`, request.url));
-    }
     return NextResponse.next();
   }
 
