@@ -2896,11 +2896,11 @@ export default function SuperAdminWorkspaceManager() {
             {/* TAB NAVIGATION HEADER */}
             <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 pb-2 text-xs font-bold">
               {[
-                { key: 'identity' as const, label: '1. Visual Identity & Logo', icon: Palette },
-                { key: 'legal' as const, label: '2. Corporate & Fiscal', icon: Building },
-                { key: 'modules' as const, label: '3. 12-Module Entitlements', icon: Layers },
-                { key: 'quotas' as const, label: '4. Quotas & Lifecycle', icon: Sliders },
-                { key: 'admin' as const, label: '5. Primary Admin', icon: Key }
+                { key: 'identity' as const, num: '1', label: 'Visual Identity & Logo', icon: Palette },
+                { key: 'legal' as const, num: '2', label: 'Corporate & Fiscal', icon: Building },
+                { key: 'modules' as const, num: '3', label: '12-Module Entitlements', icon: Layers },
+                { key: 'quotas' as const, num: '4', label: 'Quotas & Lifecycle', icon: Sliders },
+                { key: 'admin' as const, num: '5', label: 'Primary Admin', icon: Key }
               ].map(t => {
                 const Icon = t.icon;
                 const isActive = configTab === t.key;
@@ -2916,7 +2916,8 @@ export default function SuperAdminWorkspaceManager() {
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
-                    <span>{t.label}</span>
+                    <span className="font-mono text-[11px] opacity-75 font-semibold" dir="ltr">{t.num}.</span>
+                    <span dir="auto">{t.label}</span>
                   </button>
                 );
               })}

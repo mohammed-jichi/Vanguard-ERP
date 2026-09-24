@@ -522,23 +522,24 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           {/* Aux Sub-Tabs */}
           <div className="flex items-center gap-2 border-b border-border pb-2 text-xs font-medium">
             {[
-              { id: 'CLASSES', label: '1. Primary Classes (1-7)' },
-              { id: 'H1', label: '2. Header Level 1' },
-              { id: 'H2', label: '3. Header Level 2' },
-              { id: 'H3', label: '4. Header Level 3' },
-              { id: 'H4', label: '5. Sub-Groups (Level 4)' }
+              { id: 'CLASSES', num: '1', label: 'Primary Classes (1-7)' },
+              { id: 'H1', num: '2', label: 'Header Level 1' },
+              { id: 'H2', num: '3', label: 'Header Level 2' },
+              { id: 'H3', num: '4', label: 'Header Level 3' },
+              { id: 'H4', num: '5', label: 'Sub-Groups (Level 4)' }
             ].map(sub => (
               <button
                 key={sub.id}
                 type="button"
                 onClick={() => setAuxSubTab(sub.id as any)}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   auxSubTab === sub.id
                     ? 'bg-primary text-primary-foreground font-semibold shadow-2xs'
                     : 'bg-muted text-muted-foreground hover:text-foreground border border-border'
                 }`}
               >
-                {sub.label}
+                <span className="font-mono text-[11px] opacity-75 font-semibold" dir="ltr">{sub.num}.</span>
+                <span dir="auto">{sub.label}</span>
               </button>
             ))}
           </div>

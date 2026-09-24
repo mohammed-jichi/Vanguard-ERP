@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import SocialCrmReportsHub from '@/app/backoffice/social-crm/reports/page';
 import { FleetSocialIntegrationService } from '@/lib/fleetSocialIntegrationService';
 import {
@@ -109,6 +110,7 @@ export default function SocialMediaManagementHub({
   initialTab = 'distributors',
   onBack,
 }: SocialMediaManagementHubProps = {}) {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const urlTab = searchParams?.get('tab') as any;
 
@@ -659,25 +661,26 @@ export default function SocialMediaManagementHub({
         {/* STRICT 1 TO 7 SEQUENTIAL TABS */}
         <div className="flex flex-wrap items-center bg-muted p-1 rounded-xl gap-1">
           {[
-            { id: 'inbox', label: '1. Unified Inbox' },
-            { id: 'orders', label: '2. Platform Orders' },
-            { id: 'calendar', label: '3. Publishing & WhatsApp Calendar' },
-            { id: 'cpl', label: '4. Lead Pipeline & CPL Campaigns' },
-            { id: 'agents', label: '5. Support Agents' },
-            { id: 'distributors', label: '6. Distributors' },
-            { id: 'reports', label: '7. Reports Hub' },
+            { id: 'inbox', num: '1', key: 'm10_unified_inbox', fallback: 'Unified Inbox' },
+            { id: 'orders', num: '2', key: 'm10_platform_orders', fallback: 'Platform Orders' },
+            { id: 'calendar', num: '3', key: 'm10_publishing_calendar', fallback: 'Publishing & WhatsApp Calendar' },
+            { id: 'cpl', num: '4', key: 'm10_lead_pipeline', fallback: 'Lead Pipeline & CPL Campaigns' },
+            { id: 'agents', num: '5', key: 'm10_support_agents', fallback: 'Support Agents' },
+            { id: 'distributors', num: '6', key: 'm10_distributors', fallback: 'Distributors' },
+            { id: 'reports', num: '7', key: 'm10_reports', fallback: 'Reports Hub' },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === tab.id
                   ? 'bg-card text-foreground shadow-xs font-bold'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {tab.label}
+              <span className="font-mono text-[11px] opacity-75 font-semibold" dir="ltr">{tab.num}.</span>
+              <span dir="auto">{t(tab.key, tab.fallback)}</span>
             </button>
           ))}
         </div>
