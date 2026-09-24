@@ -13,6 +13,8 @@ import { clearAuthSession } from '@/lib/authSession';
 import ModuleNotLicensedScreen, { ALL_CANONICAL_MODULES } from '@/components/ModuleNotLicensedScreen';
 import SupportCenterModal from '@/components/SupportCenterModal';
 import FeedbackModal from '@/components/FeedbackModal';
+import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
+import { PINNED_LANGUAGES } from '@/lib/LanguageContext';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,6 +70,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const [isSuperAdminImpersonating, setIsSuperAdminImpersonating] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isLangModalOpen, setIsLangModalOpen] = useState(false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   const { language, dir, setLanguage, t } = useLanguage();
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
@@ -460,22 +464,87 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               </svg>
             </button>
 
-            {/* 5. Language Switcher Toggle */}
-            <button
-              type="button"
-              onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 flex items-center gap-1.5 text-xs font-bold"
-              title={language === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'}
-            >
-              <span className="text-xs">🌐</span>
-              <span className="font-mono text-[11px] uppercase font-bold">{language === 'ar' ? 'العربية' : 'EN'}</span>
-            </button>
+            {/* 5. Language Switcher (Primary 5 + Extended "More" Selector) */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+                className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 flex items-center gap-1.5 text-xs font-bold shadow-2xs cursor-pointer"
+                title={t('language', 'Language')}
+              >
+                <span className="text-xs">
+                  {PINNED_LANGUAGES.find(l => l.code === language)?.flag || '🌐'}
+                </span>
+                <span className="font-mono text-[11px] uppercase font-bold">
+                  {language}
+                </span>
+                <span className="text-[10px] text-slate-400">▾</span>
+              </button>
+
+              {isLangDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsLangDropdownOpen(false)}
+                  />
+                  <div className="absolute end-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
+                    <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      <span>{t('language', 'Language')}</span>
+                      <span className="font-mono text-[9px] text-primary">{dir.toUpperCase()}</span>
+                    </div>
+
+                    <div className="py-1 space-y-0.5 px-1.5">
+                      {PINNED_LANGUAGES.map((item) => (
+                        <button
+                          key={item.code}
+                          type="button"
+                          onClick={() => {
+                            setLanguage(item.code);
+                            setIsLangDropdownOpen(false);
+                          }}
+                          className={`w-full px-2.5 py-1.5 rounded-xl flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
+                            language === item.code
+                              ? 'bg-primary text-white shadow-2xs'
+                              : 'hover:bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>{item.flag}</span>
+                            <span>{item.nativeName}</span>
+                          </span>
+                          <span className="text-[10px] font-mono opacity-80 uppercase">
+                            {item.code}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="pt-1 mt-1 border-t border-slate-100 px-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsLangDropdownOpen(false);
+                          setIsLangModalOpen(true);
+                        }}
+                        className="w-full px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-amber-50 hover:text-amber-900 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <span>🌐</span>
+                          <span>{language === 'ar' ? 'المزيد من اللغات...' : 'More Languages...'}</span>
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">20+</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* 6. QUICK MENU GRID BUTTON */}
             <button
               type="button"
               onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
-              className="p-2 rounded-xl bg-primary hover:bg-primary/90 text-white transition-colors shadow-2xs"
+              className="p-2 rounded-xl bg-primary hover:bg-primary/90 text-white transition-colors shadow-2xs cursor-pointer"
               title="Open Quick Menu Drawer"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -489,7 +558,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             <button
               type="button"
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors shadow-2xs"
+              className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors shadow-2xs cursor-pointer"
             >
               <div className="w-6 h-6 rounded-full bg-primary text-white font-bold flex items-center justify-center text-[11px] shadow-xs">
                 M
@@ -505,7 +574,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   className="fixed inset-0 z-40"
                   onClick={() => setUserDropdownOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
+                <div className="absolute end-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
                   <div className="px-4 py-2.5 border-b border-slate-100 bg-card">
                     <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
                     <div className="text-[10.5px] text-primary font-mono font-semibold">General Operations Manager</div>
@@ -518,7 +587,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <Link
                       href={`/${orgId}/settings/organization`}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
                       <span className="text-sm">🏢</span> <span>{t('organization', 'Organization')}</span>
                     </Link>
@@ -526,7 +595,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <button
                       type="button"
                       onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                     >
                       <span className="text-sm">🔔</span> <span>{t('alerts', 'Alerts')}</span>
                     </button>
@@ -534,51 +603,68 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <Link
                       href="/backoffice/inbox"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
                       <span className="text-sm">💬</span> <span>{t('notifications_inbox', 'Notifications & Inbox')}</span>
                     </Link>
 
-                    {/* Dynamic Language Toggle */}
-                    <div className="px-4 py-2 border-y border-slate-100 bg-slate-50/60 my-1 space-y-1.5">
+                    {/* Dynamic Multi-Language Switcher (Top 5 + More) */}
+                    <div className="px-3 py-2 border-y border-slate-100 bg-slate-50/60 my-1 space-y-1.5">
                       <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
                         <span className="flex items-center gap-1.5">
                           <span>🌐</span> <span>{t('language', 'Language')}</span>
                         </span>
                         <span className="font-mono text-[10px] text-primary font-bold">
-                          {language === 'ar' ? 'RTL' : 'LTR'}
+                          {dir.toUpperCase()}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => { setLanguage('en'); setUserDropdownOpen(false); }}
-                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                            language === 'en'
-                              ? 'bg-primary text-white shadow-2xs font-extrabold'
-                              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
-                          }`}
-                        >
-                          <span>🇺🇸</span> <span>English</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setLanguage('ar'); setUserDropdownOpen(false); }}
-                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                            language === 'ar'
-                              ? 'bg-primary text-white shadow-2xs font-extrabold'
-                            : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
-                          }`}
-                        >
-                          <span>🇱🇧</span> <span>العربية</span>
-                        </button>
+
+                      <div className="space-y-1">
+                        {PINNED_LANGUAGES.map((item) => (
+                          <button
+                            key={item.code}
+                            type="button"
+                            onClick={() => {
+                              setLanguage(item.code);
+                              setUserDropdownOpen(false);
+                            }}
+                            className={`w-full px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                              language === item.code
+                                ? 'bg-primary text-white shadow-2xs font-extrabold'
+                                : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>{item.flag}</span>
+                              <span>{item.nativeName}</span>
+                            </span>
+                            <span className="text-[10px] font-mono uppercase opacity-75">
+                              {item.code}
+                            </span>
+                          </button>
+                        ))}
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          setIsLangModalOpen(true);
+                        }}
+                        className="w-full py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <span>🌍</span>
+                          <span>{language === 'ar' ? 'المزيد من اللغات العالمية...' : 'More Languages...'}</span>
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">20+</span>
+                      </button>
                     </div>
 
                     <Link
                       href={`/${orgId}/settings/account`}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
                       <span className="text-sm">👤</span> <span>{t('my_account', 'My Account')}</span>
                     </Link>
@@ -586,7 +672,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <Link
                       href={`/${orgId}/settings/roles`}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
                       <span className="text-sm">🔑</span> <span>{t('roles', 'Roles & Permissions')}</span>
                     </Link>
@@ -594,7 +680,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <Link
                       href={`/${orgId}/settings/users`}
                       onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
                       <span className="text-sm">👥</span> <span>{t('users', 'Users')}</span>
                     </Link>
@@ -602,7 +688,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <button
                       type="button"
                       onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                     >
                       <span className="text-sm">📰</span> <span>{t('latest_updates', 'Latest Updates')}</span>
                     </button>
@@ -610,7 +696,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <button
                       type="button"
                       onClick={() => { setIsSupportModalOpen(true); setUserDropdownOpen(false); }}
-                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                     >
                       <span className="text-sm">❓</span> <span>{t('support_center', 'Support Center')}</span>
                     </button>
@@ -620,7 +706,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <button
                       type="button"
                       onClick={() => clearAuthSession()}
-                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors cursor-pointer"
+                      className="w-full text-start px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors cursor-pointer"
                     >
                       <span className="text-sm">🚪</span> <span>{t('logout', 'Logout')}</span>
                     </button>
@@ -975,7 +1061,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           </aside>
         )}
 
-        {/* Support Center & Feedback Modals */}
+        {/* Support Center, Feedback, and Language Switcher Modals */}
         <SupportCenterModal
           isOpen={isSupportModalOpen}
           onClose={() => setIsSupportModalOpen(false)}
@@ -983,6 +1069,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
         <FeedbackModal
           isOpen={isFeedbackModalOpen}
           onClose={() => setIsFeedbackModalOpen(false)}
+        />
+        <LanguageSwitcherModal
+          isOpen={isLangModalOpen}
+          onClose={() => setIsLangModalOpen(false)}
         />
 
       </div>

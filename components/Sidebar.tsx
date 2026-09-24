@@ -245,7 +245,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 shadow-2xs transition-all duration-300 flex flex-col shrink-0 z-30 font-sans select-none ${
+      className={`bg-white border-e border-gray-200 shadow-2xs transition-all duration-300 flex flex-col shrink-0 z-30 font-sans select-none ${
         isOpen ? 'w-64' : 'w-16'
       } ${className || 'min-h-[calc(100vh-96px)] h-full'}`}
       dir={dir}
@@ -305,13 +305,13 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <ShoppingCart className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">1. Sales Control</span>}
+              {isOpen && <span className="truncate font-semibold">{t('sales_control', '1. Sales Control')}</span>}
             </div>
             {isOpen && (expandedGroups['sales'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['sales'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/dashboard/sales" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
               <Link href="/backoffice/reportview" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Reports</Link>
               {isModuleEnabled('v-store') && (
@@ -329,7 +329,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['sc_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['sc_setup'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/screens" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Screens</Link>
                     <Link href="/backoffice/payment-types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payment Types</Link>
                     <Link href="/backoffice/coupons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Coupons &amp; Gift Certificates</Link>
@@ -347,7 +347,7 @@ export default function Sidebar({
                         <span className="text-[9px] text-primary">{expandedGroups['sc_moresetup'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['sc_moresetup'] && (
-                        <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                           <Link href="/backoffice/void-reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Void Reasons</Link>
                           <Link href="/backoffice/vat-exemptions" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Vat Exemption Reason</Link>
                           <Link href="/backoffice/invoice-messages" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Message On Invoice</Link>
@@ -378,15 +378,15 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <Factory className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">2. Operations Center</span>}
+              {isOpen && <span className="truncate font-semibold">{t('operations_center', '2. Operations Center')}</span>}
             </div>
             {isOpen && (expandedGroups['op'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['op'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/operations?section=dashboard" className="block w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Dashboard</Link>
-              <Link href="/backoffice/operations?section=reports" className="block w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Reports</Link>
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/backoffice/operations?section=dashboard" className="block w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Dashboard</Link>
+              <Link href="/backoffice/operations?section=reports" className="block w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-semibold">Reports</Link>
 
               {/* Actions */}
               <div className="pt-0.5">
@@ -398,7 +398,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['op_actions'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['op_actions'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/operations?section=sales" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Sales</Link>
                     <Link href="/backoffice/operations?section=quotations" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Quotations</Link>
                     <Link href="/backoffice/operations?section=delivery_goods" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Delivery of Goods</Link>
@@ -424,7 +424,7 @@ export default function Sidebar({
                         <span className="text-[9px]">{expandedGroups['op_prodreq'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_prodreq'] && (
-                        <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                           <Link href="/backoffice/operations?section=product_request" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Product Request</Link>
                           <Link href="/backoffice/operations?section=manage_product_requests" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Manage Product Requests</Link>
                           <Link href="/backoffice/operations?section=product_req_prep" className="block p-1 hover:text-primary hover:bg-slate-50 rounded font-bold text-teal-700">Product Req. Preparation</Link>
@@ -447,7 +447,7 @@ export default function Sidebar({
                         <span className="text-[9px]">{expandedGroups['op_events'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_events'] && (
-                        <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                           <Link href="/backoffice/operations?section=events" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Events</Link>
                           <Link href="/backoffice/operations?section=event_venues" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Event Venues</Link>
                           <Link href="/backoffice/operations?section=event_resources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Event Resources</Link>
@@ -469,7 +469,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['op_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['op_setup'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/operations?section=quick_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                       <Sliders className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                       <span>Quick Setup</span>
@@ -517,7 +517,7 @@ export default function Sidebar({
                         <span className="text-[9px] text-primary">{expandedGroups['op_more'] ? '▲' : '▼'}</span>
                       </button>
                       {expandedGroups['op_more'] && (
-                        <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                           <Link href="/backoffice/operations?section=lost_goods_reason" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
                             <Search className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                             <span>Lost Goods Reason</span>
@@ -581,7 +581,7 @@ export default function Sidebar({
               <Package className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>3. Purchasing &amp; Procurement</span>
+                  <span>{t('purchases', '3. Purchasing & Procurement')}</span>
                   <span className="bg-amber-100 text-amber-800 text-[9px] px-1 py-0.2 rounded font-bold">PO</span>
                 </span>
               )}
@@ -590,7 +590,7 @@ export default function Sidebar({
           </button>
 
           {isOpen && expandedGroups['purchasing'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/purchases" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold">Purchases &amp; AP Bills</Link>
               <Link href="/purchase-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Purchase Orders</Link>
               <Link href="/backoffice/operations?section=reorder_guide" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Reorder Guide</Link>
@@ -616,17 +616,17 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <Users className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">4. Customer Management (CRM)</span>}
+              {isOpen && <span className="truncate font-semibold">{t('crm_debtors', '4. Customer Management (CRM)')}</span>}
             </div>
             {isOpen && (expandedGroups['cust'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['cust'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/customers" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold">Customers Directory</Link>
               <Link href="/backoffice/customers?section=receipts" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Customer Receipts</Link>
               <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Customer Aged Receivables</Link>
-              <Link href="/customer-insights" className="w-full text-left p-1.5 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between block">
+              <Link href="/customer-insights" className="w-full text-start p-1.5 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between block">
                 <span>Customer Insights</span>
                 <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">AI CRM</span>
               </Link>
@@ -643,7 +643,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['cm_settings'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['cm_settings'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Groups</Link>
                     <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Categories</Link>
                     <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Customers Tags</Link>
@@ -669,13 +669,13 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <MessageSquare className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">5. Feedback &amp; Surveys</span>}
+              {isOpen && <span className="truncate font-semibold">{t('complaints_dashboard', '5. Feedback & Surveys')}</span>}
             </div>
             {isOpen && (expandedGroups['feedback'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['feedback'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/feedback?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
               <Link href="/backoffice/feedback?section=manage_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Manage Complaints</Link>
               <Link href="/backoffice/feedback?section=add_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Add Complaints</Link>
@@ -692,7 +692,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['fb_setup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['fb_setup'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/feedback?section=complaint_sources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Sources</Link>
                     <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Categories</Link>
                     <Link href="/backoffice/feedback?section=complaint_action_types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Complaint Action Types</Link>
@@ -720,13 +720,13 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <Award className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">6. Loyalty Management</span>}
+              {isOpen && <span className="truncate font-semibold">{t('loyalty_program', '6. Loyalty Management')}</span>}
             </div>
             {isOpen && (expandedGroups['loyalty'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['loyalty'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/loyalty?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Dashboard</Link>
               <Link href="/backoffice/loyalty?section=reports" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Reports</Link>
               <Link href="/backoffice/loyalty?section=members" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Members</Link>
@@ -753,7 +753,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <FileSpreadsheet className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">7. Accounting &amp; Financials</span>}
+              {isOpen && <span className="truncate font-semibold">{t('accounting_finance', '7. Accounting & Financials')}</span>}
             </div>
             {isOpen && (expandedGroups['acc'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
@@ -1092,13 +1092,13 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <UserCheck className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">8. Human Resources &amp; Payroll</span>}
+              {isOpen && <span className="truncate font-semibold">{t('hr_payroll', '8. Human Resources & Payroll')}</span>}
             </div>
             {isOpen && (expandedGroups['hr'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
 
           {isOpen && expandedGroups['hr'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/hr?section=schedule_overview" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Schedule Overview</Link>
               <Link href="/backoffice/hr?section=personnel" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Personnel</Link>
               <Link href="/backoffice/hr?section=schedules" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">Schedules</Link>
@@ -1113,7 +1113,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['hr_orgsetup'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_orgsetup'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/hr?section=internal_departments" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Internal Departments</Link>
                     <Link href="/backoffice/hr?section=designations" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Designations</Link>
                     <Link href="/backoffice/hr?section=pos_employee_roles" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">POS Employee Roles</Link>
@@ -1131,7 +1131,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['hr_attendance'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_attendance'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/hr?section=time_off_requests" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Time Off Requests</Link>
                     <Link href="/backoffice/hr?section=schedule_templates" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Schedule Templates</Link>
                     <Link href="/backoffice/hr?section=time_off_reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Time Off Reasons</Link>
@@ -1151,7 +1151,7 @@ export default function Sidebar({
                   <span className="text-[9px]">{expandedGroups['hr_payroll'] ? '▲' : '▼'}</span>
                 </button>
                 {expandedGroups['hr_payroll'] && (
-                  <div className="ml-2 pl-2 border-l border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
                     <Link href="/backoffice/hr?section=payroll_dashboard" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payroll Dashboard</Link>
                     <Link href="/backoffice/hr?section=salary_processing" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Salary Processing</Link>
                     <Link href="/backoffice/hr?section=payment_settings" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">Payment Settings</Link>
@@ -1180,7 +1180,7 @@ export default function Sidebar({
               <Truck className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>9. Supersonic Fleet / V-Driver</span>
+                  <span>{t('supersonic_fleet', '9. Supersonic Fleet / V-Driver')}</span>
                   <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
                 </span>
               )}
@@ -1189,18 +1189,18 @@ export default function Sidebar({
           </button>
 
           {isOpen && (expandedGroups['supersonic'] || expandedGroups['fleet']) && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/fleet" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Fleet Dashboard</Link>
-              <Link href="/backoffice/fleet?tab=reports" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/backoffice/fleet" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Fleet Dashboard</Link>
+              <Link href="/backoffice/fleet?tab=reports" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>Fleet Reports</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=dispatch" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Active Dispatches</Link>
-              <Link href="/backoffice/fleet?tab=vendors" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Management</Link>
-              <Link href="/backoffice/fleet?tab=path-cards" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Route Optimization</Link>
-              <Link href="/backoffice/fleet?tab=vehicles" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Vehicle Maintenance</Link>
-              <Link href="/backoffice/fleet?tab=accounting" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Settlements</Link>
-              <Link href="/vtrack" className="w-full text-left p-1.5 text-blue-700 bg-blue-50/70 hover:bg-blue-100 rounded flex items-center justify-between font-bold transition-colors mt-1 block">
+              <Link href="/backoffice/fleet?tab=dispatch" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Active Dispatches</Link>
+              <Link href="/backoffice/fleet?tab=vendors" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Management</Link>
+              <Link href="/backoffice/fleet?tab=path-cards" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Route Optimization</Link>
+              <Link href="/backoffice/fleet?tab=vehicles" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Vehicle Maintenance</Link>
+              <Link href="/backoffice/fleet?tab=accounting" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Driver Settlements</Link>
+              <Link href="/vtrack" className="w-full text-start p-1.5 text-blue-700 bg-blue-50/70 hover:bg-blue-100 rounded flex items-center justify-between font-bold transition-colors mt-1 block">
                 <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-600" /> V-Track Geographics</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">ACTIVE</span>
               </Link>
@@ -1225,7 +1225,7 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>10. V-Connect (Social CRM)</span>
+                  <span>{t('social_crm', '10. V-Connect (Social CRM)')}</span>
                   <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">CONNECT</span>
                 </span>
               )}
@@ -1234,23 +1234,23 @@ export default function Sidebar({
           </button>
 
           {isOpen && expandedGroups['social'] && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/connect" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-bold text-cyan-700">V-Connect Hub</Link>
-              <Link href="/backoffice/social-crm" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Social CRM Dashboard</Link>
-              <Link href="/backoffice/social-crm?tab=cpl" className="w-full text-left p-1.5 hover:text-cyan-800 hover:bg-cyan-50/80 rounded transition-colors font-semibold text-cyan-900 flex items-center justify-between block">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/connect" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block font-bold text-cyan-700">V-Connect Hub</Link>
+              <Link href="/backoffice/social-crm" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Social CRM Dashboard</Link>
+              <Link href="/backoffice/social-crm?tab=cpl" className="w-full text-start p-1.5 hover:text-cyan-800 hover:bg-cyan-50/80 rounded transition-colors font-semibold text-cyan-900 flex items-center justify-between block">
                 <span className="flex items-center gap-1.5">
                   <Target className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
                   <span>Lead Pipeline &amp; Acquisition</span>
                 </span>
                 <span className="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">LEADS</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=reports" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
+              <Link href="/backoffice/social-crm?tab=reports" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>Reports Hub</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=inbox" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Omnichannel Inbox</Link>
-              <Link href="/backoffice/social-crm?tab=campaigns" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Campaign Analytics</Link>
-              <Link href="/backoffice/social-crm?tab=bots" className="w-full text-left p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Automation Bots</Link>
+              <Link href="/backoffice/social-crm?tab=inbox" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Omnichannel Inbox</Link>
+              <Link href="/backoffice/social-crm?tab=campaigns" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Campaign Analytics</Link>
+              <Link href="/backoffice/social-crm?tab=bots" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">Automation Bots</Link>
             </div>
           )}
         </div>
@@ -1281,10 +1281,10 @@ export default function Sidebar({
           </button>
 
           {isOpen && (expandedGroups['pressing-mill'] || expandedGroups['pressing']) && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link
                 href="/pressing-mill/dashboard"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/dashboard' || pathname === '/pressing-mill'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700 font-semibold'
@@ -1294,7 +1294,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/seasons"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/seasons'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-emerald-700 font-medium'
@@ -1304,7 +1304,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/intake"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/intake'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1314,7 +1314,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/batches"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/batches'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1324,7 +1324,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/tanks"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/tanks'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1334,7 +1334,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/settlements"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/settlements'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1344,7 +1344,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/dispatch"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/dispatch'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1354,7 +1354,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/pos"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/pos'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-emerald-700 font-bold'
@@ -1364,7 +1364,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/directory"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/directory'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1374,7 +1374,7 @@ export default function Sidebar({
               </Link>
               <Link
                 href="/pressing-mill/setup"
-                className={`w-full text-left p-1.5 rounded transition-colors block ${
+                className={`w-full text-start p-1.5 rounded transition-colors block ${
                   pathname === '/pressing-mill/setup'
                     ? 'bg-slate-100 text-primary font-bold'
                     : 'hover:text-primary hover:bg-slate-50 text-slate-700'
@@ -1403,7 +1403,7 @@ export default function Sidebar({
               <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>12. V-Store (Online Storefront)</span>
+                  <span>{t('online_orders', '12. V-Store (Online Storefront)')}</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">WEB</span>
                 </span>
               )}
@@ -1412,7 +1412,7 @@ export default function Sidebar({
           </button>
 
           {isOpen && (expandedGroups['v-store'] || expandedGroups['store']) && (
-            <div className="ml-3 pl-2 border-l border-slate-200 space-y-0.5 mt-1 text-xs">
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/online-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-700 flex items-center justify-between">
                 <span>Online Orders</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">LIVE</span>

@@ -2,17 +2,68 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type LanguageCode = 'en' | 'ar' | 'fr' | 'es' | 'fa';
+export type LanguageCode =
+  | 'en' | 'ar' | 'fr' | 'es' | 'fa'
+  | 'de' | 'tr' | 'it' | 'pt' | 'ru'
+  | 'zh' | 'ja' | 'hi' | 'ur' | 'he'
+  | 'el' | 'nl' | 'id' | 'sv' | 'pl';
+
+export interface LanguageMeta {
+  code: LanguageCode;
+  name: string;
+  nativeName: string;
+  flag: string;
+  dir: 'ltr' | 'rtl';
+  isPinned?: boolean;
+}
+
+export const RTL_LANGUAGES: LanguageCode[] = ['ar', 'fa', 'ur', 'he'];
+
+export function isRTL(lang: LanguageCode): boolean {
+  return RTL_LANGUAGES.includes(lang);
+}
+
+export const PINNED_LANGUAGES: LanguageMeta[] = [
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇱🇧', dir: 'rtl', isPinned: true },
+  { code: 'en', name: 'English', nativeName: 'English (US)', flag: '🇺🇸', dir: 'ltr', isPinned: true },
+  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', dir: 'ltr', isPinned: true },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', dir: 'ltr', isPinned: true },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷', dir: 'rtl', isPinned: true },
+];
+
+export const EXTENDED_LANGUAGES: LanguageMeta[] = [
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷', dir: 'ltr' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', dir: 'ltr' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', dir: 'ltr' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文 (简体)', flag: '🇨🇳', dir: 'ltr' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵', dir: 'ltr' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', dir: 'ltr' },
+  { code: 'ur', name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰', dir: 'rtl' },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', dir: 'rtl' },
+  { code: 'el', name: 'Greek', nativeName: 'Ελληνικά', flag: '🇬🇷', dir: 'ltr' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱', dir: 'ltr' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩', dir: 'ltr' },
+  { code: 'sv', name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪', dir: 'ltr' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱', dir: 'ltr' },
+];
+
+export const ALL_LANGUAGES: LanguageMeta[] = [...PINNED_LANGUAGES, ...EXTENDED_LANGUAGES];
 
 export interface LanguageContextType {
   language: LanguageCode;
   dir: 'ltr' | 'rtl';
   direction?: 'ltr' | 'rtl';
+  isRtl: boolean;
   setLanguage: (lang: LanguageCode) => void;
   t: (key: string, fallbackEn?: string) => string;
+  languages: LanguageMeta[];
+  pinnedLanguages: LanguageMeta[];
+  extendedLanguages: LanguageMeta[];
 }
 
-const translations: Record<LanguageCode, Record<string, string>> = {
+const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   en: {
     'workspace': 'Workspace',
     'sales_control': 'Sales Control',
@@ -394,7 +445,17 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'tare_weight': 'Tare',
     'net_weight': 'Poids Net',
     'acidity_pct': 'Acidité %',
-    'yield_pct': 'Rendement %'
+    'yield_pct': 'Rendement %',
+    'organization': 'Organisation & Entreprise',
+    'users': 'Utilisateurs',
+    'roles': 'Rôles & Permissions',
+    'my_account': 'Mon Compte',
+    'language': 'Langue',
+    'support_center': 'Centre d\'Assistance',
+    'feedback': 'Commentaires & Suggestions',
+    'logout': 'Déconnexion',
+    'latest_updates': 'Dernières Mises à Jour',
+    'notifications_inbox': 'Notifications & Boîte'
   },
   es: {
     'workspace': 'Espacio de Trabajo',
@@ -515,7 +576,17 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'tare_weight': 'Tara',
     'net_weight': 'Peso Neto',
     'acidity_pct': 'Acidez %',
-    'yield_pct': 'Rendimiento %'
+    'yield_pct': 'Rendimiento %',
+    'organization': 'Organización y Empresa',
+    'users': 'Usuarios',
+    'roles': 'Roles y Permisos',
+    'my_account': 'Mi Cuenta',
+    'language': 'Idioma',
+    'support_center': 'Centro de Soporte',
+    'feedback': 'Comentarios y Sugerencias',
+    'logout': 'Cerrar Sesión',
+    'latest_updates': 'Últimas Actualizaciones',
+    'notifications_inbox': 'Notificaciones y Bandeja'
   },
   fa: {
     'workspace': 'فضای کاری',
@@ -636,7 +707,17 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'tare_weight': 'وزن خالی (تار)',
     'net_weight': 'وزن خالص زیتون',
     'acidity_pct': 'درصد اسیدیته',
-    'yield_pct': 'درصد بازدهی'
+    'yield_pct': 'درصد بازدهی',
+    'organization': 'مشخصات سازمان و شرکت',
+    'users': 'مدیریت کاربران',
+    'roles': 'نقش‌ها و دسترسی‌ها',
+    'my_account': 'حساب کاربری من',
+    'language': 'زبان',
+    'support_center': 'مرکز پشتیبانی و راهنما',
+    'feedback': 'نظرات و پیشنهادات',
+    'logout': 'خروج از سیستم',
+    'latest_updates': 'آخرین بروزرسانی‌ها',
+    'notifications_inbox': 'اعلان‌ها و صندوق پیام'
   }
 };
 
@@ -655,9 +736,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('vanguard_language') as LanguageCode;
-        if (saved && ['en', 'ar', 'fr', 'es', 'fa'].includes(saved)) {
+        if (saved && ALL_LANGUAGES.some(l => l.code === saved)) {
           setLanguageState(saved);
-          const newDir = (saved === 'ar' || saved === 'fa') ? 'rtl' : 'ltr';
+          const newDir = isRTL(saved) ? 'rtl' : 'ltr';
           setDir(newDir);
           document.documentElement.dir = newDir;
           document.documentElement.lang = saved;
@@ -670,7 +751,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
-    const newDir = (lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr';
+    const newDir = isRTL(lang) ? 'rtl' : 'ltr';
     setDir(newDir);
 
     if (typeof window !== 'undefined') {
@@ -693,11 +774,23 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const t = (key: string, fallbackEn?: string): string => {
     const langMap = translations[language] || translations['en'];
-    return langMap[key] || translations['en'][key] || fallbackEn || key;
+    return langMap?.[key] || translations['en']?.[key] || fallbackEn || key;
+  };
+
+  const contextValue: LanguageContextType = {
+    language,
+    dir,
+    direction: dir,
+    isRtl: dir === 'rtl',
+    setLanguage,
+    t,
+    languages: ALL_LANGUAGES,
+    pinnedLanguages: PINNED_LANGUAGES,
+    extendedLanguages: EXTENDED_LANGUAGES,
   };
 
   return (
-    <LanguageContext.Provider value={{ language, dir, direction: dir, setLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       <div dir={dir} className="w-full min-h-screen">
         {children}
       </div>
@@ -711,8 +804,13 @@ export const useLanguage = (): LanguageContextType => {
     return {
       language: 'en',
       dir: 'ltr',
+      direction: 'ltr',
+      isRtl: false,
       setLanguage: () => {},
-      t: (key: string, fallbackEn?: string) => fallbackEn || key
+      t: (key: string, fallbackEn?: string) => fallbackEn || key,
+      languages: ALL_LANGUAGES,
+      pinnedLanguages: PINNED_LANGUAGES,
+      extendedLanguages: EXTENDED_LANGUAGES,
     };
   }
   return context;

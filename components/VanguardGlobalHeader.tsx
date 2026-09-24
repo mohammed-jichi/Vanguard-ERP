@@ -41,6 +41,7 @@ import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { clearAuthSession } from '@/lib/authSession';
+import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -59,6 +60,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
 
   // Language Switcher Dropdown State
   const [isLangMenuOpen, setIsLangMenuOpen] = useState<boolean>(false);
+  const [isLangModalOpen, setIsLangModalOpen] = useState<boolean>(false);
 
   // Sub-header dynamic action button state
   const [hasPendingEndOfMonth, setHasPendingEndOfMonth] = useState<boolean>(true);
@@ -541,6 +543,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">Active</span>}
                     </button>
                   ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setIsLangModalOpen(true);
+                    }}
+                    className="w-full py-1.5 px-2.5 rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer mt-1"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span>🌍</span>
+                      <span>{language === 'ar' ? 'المزيد من اللغات العالمية...' : 'More Languages...'}</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">20+</span>
+                  </button>
                 </div>
                 <div className="p-2 border-b border-gray-100 bg-emerald-50/70 rounded-xl mb-1 text-left">
                   <div className="flex items-center justify-between">
@@ -1279,6 +1295,12 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           </div>
         </div>
       )}
+
+      {/* MODAL 4: WORLD LANGUAGE SWITCHER */}
+      <LanguageSwitcherModal
+        isOpen={isLangModalOpen}
+        onClose={() => setIsLangModalOpen(false)}
+      />
 
     </div>
   );
