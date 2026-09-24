@@ -9,6 +9,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   TrendingUp,
   DollarSign,
@@ -57,6 +58,7 @@ import AccountingSetupPage from './setup/page';
 import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
 
 export function AccountingDashboardContent() {
+  const { t } = useLanguage();
   // Top Header Filter States
   const [period, setPeriod] = useState<string>('THIS_MONTH');
   const [currency, setCurrency] = useState<'USD' | 'LBP'>('USD');
@@ -257,7 +259,7 @@ export function AccountingDashboardContent() {
             title="Refresh Ledger Figures"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-primary' : 'text-muted-foreground'}`} />
-            <span>Refresh</span>
+            <span>{t('refresh', 'Refresh')}</span>
           </button>
 
           {/* Export */}
@@ -268,7 +270,7 @@ export function AccountingDashboardContent() {
             title="Export Data to Spreadsheet"
           >
             <Download className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Export</span>
+            <span>{t('export_csv_excel', 'Export')}</span>
           </button>
 
           {/* Print */}
@@ -279,7 +281,7 @@ export function AccountingDashboardContent() {
             title="Print Dashboard Report"
           >
             <Printer className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Print</span>
+            <span>{t('print_report_pdf', 'Print')}</span>
           </button>
 
           {/* New Voucher Action */}
@@ -288,7 +290,7 @@ export function AccountingDashboardContent() {
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New Voucher</span>
+            <span>{t('new_voucher', 'New Voucher')}</span>
           </Link>
         </div>
 
@@ -300,7 +302,7 @@ export function AccountingDashboardContent() {
         {/* Total Revenues */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-2 hover:border-border/80 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Total Revenues</span>
+            <span className="text-xs font-medium text-muted-foreground">{t('total_revenues', 'Total Revenues')}</span>
             <span className="p-2 rounded-lg bg-muted text-foreground border border-border">
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </span>
@@ -315,7 +317,7 @@ export function AccountingDashboardContent() {
         {/* Operating Expenses */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-2 hover:border-border/80 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Operating Expenses</span>
+            <span className="text-xs font-medium text-muted-foreground">{t('operating_expenses', 'Operating Expenses')}</span>
             <span className="p-2 rounded-lg bg-muted text-foreground border border-border">
               <ArrowDownRight className="w-4 h-4 text-destructive" />
             </span>
@@ -329,7 +331,7 @@ export function AccountingDashboardContent() {
         {/* Net Profit & Margin */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-2 hover:border-border/80 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Net Operating Profit</span>
+            <span className="text-xs font-medium text-muted-foreground">{t('net_operating_profit', 'Net Operating Profit')}</span>
             <span className="p-2 rounded-lg bg-muted text-foreground border border-border">
               <DollarSign className="w-4 h-4 text-primary" />
             </span>
@@ -344,7 +346,7 @@ export function AccountingDashboardContent() {
         {/* Total Liquid Cash & Bank */}
         <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-2 hover:border-border/80 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Liquid Funds (Cash &amp; Bank)</span>
+            <span className="text-xs font-medium text-muted-foreground">{t('total_liquid_cash', 'Liquid Funds (Cash & Bank)')}</span>
             <span className="p-2 rounded-lg bg-muted text-foreground border border-border">
               <Landmark className="w-4 h-4 text-primary" />
             </span>

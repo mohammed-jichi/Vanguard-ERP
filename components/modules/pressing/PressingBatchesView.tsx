@@ -299,12 +299,12 @@ export default function PressingBatchesView() {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px] tracking-wider">
                 <th className="py-2.5 px-3">Queue #</th>
-                <th className="py-2.5 px-3">Ticket Ref</th>
-                <th className="py-2.5 px-3">Farmer / Grower</th>
-                <th className="py-2.5 px-3">Variety</th>
-                <th className="py-2.5 px-3 text-right">Net Olive Weight</th>
-                <th className="py-2.5 px-3">Target Tank</th>
-                <th className="py-2.5 px-3">Target Line</th>
+                <th className="py-2.5 px-3">{t('ticket_num', 'Ticket Ref')}</th>
+                <th className="py-2.5 px-3">{t('farmer_grower', 'Farmer / Grower')}</th>
+                <th className="py-2.5 px-3">{t('variety', 'Variety')}</th>
+                <th className="py-2.5 px-3 text-right">{t('net_olive_weight', 'Net Olive Weight')}</th>
+                <th className="py-2.5 px-3">{t('target_silo', 'Target Tank')}</th>
+                <th className="py-2.5 px-3">{t('assigned_line', 'Target Line')}</th>
                 <th className="py-2.5 px-3 text-right">Action</th>
               </tr>
             </thead>

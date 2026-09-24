@@ -68,14 +68,14 @@ export default function PressingDashboardView() {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded transition"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Season Lifecycle</span>
+            <span>{t('season_lifecycle', 'Season Lifecycle')}</span>
           </Link>
           <Link
             href="/pressing-mill/intake"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded shadow-xs transition"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New Weighbridge Intake</span>
+            <span>{t('new_weighbridge_intake', 'New Weighbridge Intake')}</span>
           </Link>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function PressingDashboardView() {
         {/* Metric 1 */}
         <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
-            <span>Daily Olive Intake</span>
+            <span>{t('daily_olive_intake', 'Daily Olive Intake')}</span>
             <Scale className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="mt-2">
@@ -99,7 +99,7 @@ export default function PressingDashboardView() {
         {/* Metric 2 */}
         <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
-            <span>Crushing Throughput</span>
+            <span>{t('crushing_throughput', 'Crushing Throughput')}</span>
             <Activity className="w-4 h-4 text-sky-600" />
           </div>
           <div className="mt-2">
@@ -115,7 +115,7 @@ export default function PressingDashboardView() {
         {/* Metric 3 */}
         <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
-            <span>Stainless Tanks Level (1-50)</span>
+            <span>{t('stainless_tanks_level', 'Stainless Tanks Level')} (1-50)</span>
             <Landmark className="w-4 h-4 text-indigo-600" />
           </div>
           <div className="mt-2">
@@ -129,7 +129,7 @@ export default function PressingDashboardView() {
         {/* Metric 4 */}
         <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold">
-            <span>Dispatch &amp; Release Summary</span>
+            <span>{t('dispatch_release_summary', 'Dispatch & Release Summary')}</span>
             <Truck className="w-4 h-4 text-amber-600" />
           </div>
           <div className="mt-2">
@@ -146,13 +146,13 @@ export default function PressingDashboardView() {
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-emerald-600" />
-            <h2 className="text-sm font-bold text-slate-900">Dynamic Continuous Pressing Lines Telemetry</h2>
+            <h2 className="text-sm font-bold text-slate-900">{t('dynamic_lines_telemetry', 'Dynamic Continuous Pressing Lines Telemetry')}</h2>
           </div>
           <Link
             href="/pressing-mill/batches"
             className="text-xs text-sky-700 hover:text-sky-900 font-semibold flex items-center gap-1"
           >
-            <span>Manage Batches &amp; Queues</span>
+            <span>{t('manage_batches_queues', 'Manage Batches & Queues')}</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -217,7 +217,7 @@ export default function PressingDashboardView() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-slate-700" />
-            <h2 className="text-sm font-bold text-slate-900">Recent Weighbridge Scale Tickets</h2>
+            <h2 className="text-sm font-bold text-slate-900">{t('recent_weighbridge_tickets', 'Recent Weighbridge Scale Tickets')}</h2>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -225,7 +225,7 @@ export default function PressingDashboardView() {
               className="flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>New Intake Scale</span>
+              <span>{t('new_intake_scale', 'New Intake Scale')}</span>
             </Link>
           </div>
         </div>
@@ -234,15 +234,15 @@ export default function PressingDashboardView() {
           <table className="w-full text-left text-xs text-slate-700 border-collapse">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold text-slate-600 uppercase">
-                <th className="py-2.5 px-3">Ticket #</th>
-                <th className="py-2.5 px-3">Campaign Season</th>
-                <th className="py-2.5 px-3">Assigned Line</th>
-                <th className="py-2.5 px-3">Farmer / Grower</th>
-                <th className="py-2.5 px-3">Variety</th>
-                <th className="py-2.5 px-3 text-right">Net Olive Weight</th>
-                <th className="py-2.5 px-3">Target Silo</th>
-                <th className="py-2.5 px-3">Settlement</th>
-                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">{t('ticket_num', 'Ticket #')}</th>
+                <th className="py-2.5 px-3">{t('campaign_season', 'Campaign Season')}</th>
+                <th className="py-2.5 px-3">{t('assigned_line', 'Assigned Line')}</th>
+                <th className="py-2.5 px-3">{t('farmer_grower', 'Farmer / Grower')}</th>
+                <th className="py-2.5 px-3">{t('variety', 'Variety')}</th>
+                <th className="py-2.5 px-3 text-right">{t('net_olive_weight', 'Net Olive Weight')}</th>
+                <th className="py-2.5 px-3">{t('target_silo', 'Target Silo')}</th>
+                <th className="py-2.5 px-3">{t('settlement', 'Settlement')}</th>
+                <th className="py-2.5 px-3">{t('status', 'Status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

@@ -21,6 +21,7 @@
 import React, { useState, useMemo, useEffect, Suspense, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   FileText,
   Printer,
@@ -149,6 +150,7 @@ export interface AccountingReportsPageProps {
 }
 
 function AccountingReportsContent({ initialReport }: AccountingReportsPageProps) {
+  const { t, isRtl } = useLanguage();
   const searchParams = useSearchParams();
   const reportParam = searchParams.get('report') || searchParams.get('report_id') || searchParams.get('code');
 
@@ -293,7 +295,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
             }`}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-primary' : 'text-muted-foreground'}`} />
-            <span>Refresh</span>
+            <span>{t('refresh', 'Refresh')}</span>
           </button>
 
           <button
@@ -302,7 +304,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-card hover:bg-muted text-foreground border border-border shadow-2xs transition-all cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Print Report (PDF)</span>
+            <span>{t('print_report_pdf', 'Print Report (PDF)')}</span>
           </button>
 
           <button
@@ -311,7 +313,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs transition-all cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export CSV / Excel</span>
+            <span>{t('export_csv_excel', 'Export CSV / Excel')}</span>
           </button>
         </div>
       </div>
@@ -322,7 +324,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border border-border text-xs">
             <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground font-medium">Fiscal Period:</span>
+            <span className="text-muted-foreground font-medium">{t('fiscal_period', 'Fiscal Period')}:</span>
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
@@ -337,7 +339,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
 
           <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border border-border text-xs">
             <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground font-medium">Cost Center:</span>
+            <span className="text-muted-foreground font-medium">{t('cost_center', 'Cost Center')}:</span>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
@@ -382,14 +384,14 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
       <div className="bg-card border border-border rounded-xl p-3 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-border mb-3 px-1">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground font-medium">Category:</span>
+            <span className="text-muted-foreground font-medium">{t('category', 'Category')}:</span>
             <div className="flex items-center gap-1">
               {[
-                { id: 'ALL', label: 'All Reports' },
-                { id: 'FINANCIAL', label: 'Financial Statements' },
-                { id: 'AGING', label: 'Aging Schedules' },
-                { id: 'OPERATIONAL', label: 'Operational Audits' },
-                { id: 'DIRECTORY', label: 'Directory' }
+                { id: 'ALL', label: t('all_reports', 'All Reports') },
+                { id: 'FINANCIAL', label: t('financial_statements', 'Financial Statements') },
+                { id: 'AGING', label: t('aging_schedules', 'Aging Schedules') },
+                { id: 'OPERATIONAL', label: t('operational_audits', 'Operational Audits') },
+                { id: 'DIRECTORY', label: t('directory', 'Directory') }
               ].map((cat) => (
                 <button
                   key={cat.id}
@@ -413,7 +415,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search reports by title or code..."
+              placeholder={t('search_reports_placeholder', 'Search reports by title or code...')}
               className="w-full bg-card text-foreground pl-9 pr-3 py-1.5 rounded-lg border border-input text-xs focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
@@ -475,11 +477,11 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
           </div>
 
           <div className="text-right bg-card px-4 py-2.5 rounded-lg border border-border text-xs shadow-2xs">
-            <div className="text-muted-foreground font-medium">Issue &amp; Audit Date</div>
+            <div className="text-muted-foreground font-medium">{t('issue_audit_date', 'Issue & Audit Date')}</div>
             <div className="text-foreground font-semibold mt-0.5">
               {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
-            <div className="text-primary font-mono font-bold mt-0.5">Active Currency: {currency}</div>
+            <div className="text-primary font-mono font-bold mt-0.5">{t('active_currency', 'Active Currency')}: {currency}</div>
           </div>
         </div>
 
@@ -493,7 +495,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
               {/* Summary Metric Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-muted p-4 rounded-xl border border-border">
-                  <div className="text-xs text-muted-foreground font-medium">Total Revenues</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('total_revenues', 'Total Revenues')}</div>
                   <div className="text-xl font-bold text-foreground mt-1">{formatAmount(485000)}</div>
                   <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1 mt-1">
                     <TrendingUp className="w-3.5 h-3.5" />
@@ -502,19 +504,19 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                 </div>
 
                 <div className="bg-muted p-4 rounded-xl border border-border">
-                  <div className="text-xs text-muted-foreground font-medium">Cost of Goods Sold (COGS)</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('cogs', 'Cost of Goods Sold (COGS)')}</div>
                   <div className="text-xl font-bold text-destructive mt-1">{formatAmount(215000)}</div>
                   <div className="text-xs text-muted-foreground mt-1 font-medium">44.3% of total sales</div>
                 </div>
 
                 <div className="bg-muted p-4 rounded-xl border border-border">
-                  <div className="text-xs text-muted-foreground font-medium">Gross Operating Margin</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('gross_operating_margin', 'Gross Operating Margin')}</div>
                   <div className="text-xl font-bold text-foreground mt-1">{formatAmount(270000)}</div>
                   <div className="text-xs text-emerald-700 font-semibold mt-1">Gross Margin: 55.7%</div>
                 </div>
 
                 <div className="bg-muted p-4 rounded-xl border border-border">
-                  <div className="text-xs text-muted-foreground font-medium">Net Profit (Post-Tax)</div>
+                  <div className="text-xs text-muted-foreground font-medium">{t('net_profit_post_tax', 'Net Profit (Post-Tax)')}</div>
                   <div className="text-xl font-bold text-emerald-700 mt-1">{formatAmount(155459)}</div>
                   <div className="text-xs text-emerald-700 font-semibold mt-1">Net Margin: 32.1%</div>
                 </div>
@@ -525,11 +527,11 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                 <table className="w-full text-left text-xs">
                   <thead className="bg-muted text-foreground font-semibold border-b border-border">
                     <tr>
-                      <th className="p-3">Account #</th>
-                      <th className="p-3">Statement Line Item</th>
-                      <th className="p-3 text-right">Subtotal ({currencySymbol})</th>
-                      <th className="p-3 text-right">Total ({currencySymbol})</th>
-                      <th className="p-3 text-right">% of Rev</th>
+                      <th className="p-3">{t('account_num', 'Account #')}</th>
+                      <th className="p-3">{t('statement_line_item', 'Statement Line Item')}</th>
+                      <th className="p-3 text-right">{t('subtotal', 'Subtotal')} ({currencySymbol})</th>
+                      <th className="p-3 text-right">{t('total', 'Total')} ({currencySymbol})</th>
+                      <th className="p-3 text-right">{t('pct_of_rev', '% of Rev')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border font-medium">

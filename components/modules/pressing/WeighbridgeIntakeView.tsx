@@ -633,15 +633,15 @@ export default function WeighbridgeIntakeView() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px] tracking-wider">
-                <th className="py-2.5 px-3">Ticket #</th>
+                <th className="py-2.5 px-3">{t('ticket_num', 'Ticket #')}</th>
                 <th className="py-2.5 px-3">Date &amp; Time</th>
-                <th className="py-2.5 px-3">Campaign Season</th>
-                <th className="py-2.5 px-3">Assigned Line</th>
-                <th className="py-2.5 px-3">Farmer / Grower</th>
-                <th className="py-2.5 px-3 text-right">Net KG</th>
+                <th className="py-2.5 px-3">{t('campaign_season', 'Campaign Season')}</th>
+                <th className="py-2.5 px-3">{t('assigned_line', 'Assigned Line')}</th>
+                <th className="py-2.5 px-3">{t('farmer_grower', 'Farmer / Grower')}</th>
+                <th className="py-2.5 px-3 text-right">{t('net_olive_weight', 'Net KG')}</th>
                 <th className="py-2.5 px-3 text-right">Acidity</th>
-                <th className="py-2.5 px-3">Target Tank</th>
-                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">{t('target_silo', 'Target Tank')}</th>
+                <th className="py-2.5 px-3">{t('status', 'Status')}</th>
                 <th className="py-2.5 px-3 text-right">Action</th>
               </tr>
             </thead>
