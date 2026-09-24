@@ -35,8 +35,10 @@ import {
   ShieldCheck,
   Award
 } from 'lucide-react';
+import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { clearAuthSession } from '@/lib/authSession';
 
@@ -53,6 +55,7 @@ interface VisitedItem {
 export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: VanguardGlobalHeaderProps) {
   const { currentTenant, currentUser } = useTenant();
   const { language, dir, setLanguage, t } = useLanguage();
+  const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
 
   // Language Switcher Dropdown State
   const [isLangMenuOpen, setIsLangMenuOpen] = useState<boolean>(false);
@@ -336,7 +339,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                           </span>
                         </a>
                         <button
-                          onClick={() => { alert('Email Templates Configuration'); setIsSettingsOpen(false); }}
+                          onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors flex items-center justify-between"
                         >
                           <span>Email Templates</span>
@@ -357,7 +360,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                           Company Configuration
                         </button>
                         <button
-                          onClick={() => { alert('Accounts Balances Recalculated Successfully!'); setIsSettingsOpen(false); }}
+                          onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
                           Recalculate Accounts Balances
@@ -414,13 +417,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       </h4>
                       <div className="space-y-0.5">
                         <button
-                          onClick={() => { alert('Opening Accounting Link Setup'); setIsSettingsOpen(false); }}
+                          onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
                           Accounting Link
                         </button>
                         <button
-                          onClick={() => { alert('Transferring entries to General Ledger'); setIsSettingsOpen(false); }}
+                          onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
                           Transfer to Accounting
@@ -443,7 +446,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                           General Configuration
                         </button>
                         <button
-                          onClick={() => { alert('Inventory Stock Balances Recalculated!'); setIsSettingsOpen(false); }}
+                          onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
                           Recalculate
@@ -495,10 +498,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   </p>
                 </div>
 
-                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                <Link
+                  href={`/${orgId}/settings/organization`}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2"
+                >
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Organization</span>
-                </button>
+                </Link>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Alerts & Notifications</span>
@@ -554,18 +561,30 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   </div>
                   <span className="text-[9.5px] font-mono text-emerald-600 font-black">LIVE</span>
                 </a>
-                <button onClick={() => { onSelectScreen('settings'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                <Link
+                  href={`/${orgId}/settings/account`}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
+                >
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>My Account</span>
-                </button>
-                <button onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                </Link>
+                <Link
+                  href={`/${orgId}/settings/roles`}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
+                >
                   <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Roles</span>
-                </button>
-                <button onClick={() => { onSelectScreen('hr-dir'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
+                </Link>
+                <Link
+                  href={`/${orgId}/settings/users`}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
+                >
                   <UsersIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Users</span>
-                </button>
+                </Link>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>Latest Updates</span>
@@ -987,14 +1006,22 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       Quick Tips & Downloads
                     </h4>
                     <div className="space-y-1.5 pt-1 text-[11px]">
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard POS Desktop v4.2'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
+                      <button
+                        type="button"
+                        onClick={() => {}}
+                        className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
+                      >
                         <span>Vanguard POS Desktop Terminal v4.2</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
-                      </a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); alert('Download Vanguard Thermal Print Server'); }} className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600">
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {}}
+                        className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
+                      >
                         <span>Vanguard Thermal Invoice Print Agent</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1035,9 +1062,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <span>All</span>
                 </label>
                 <button
-                  onClick={() => alert('Inbox refreshed!')}
+                  type="button"
+                  onClick={() => {}}
                   title="Refresh Inbox"
-                  className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-200/60 rounded-lg transition-colors border border-slate-200 bg-white shadow-2xs"
+                  className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-200/60 rounded-lg transition-colors border border-slate-200 bg-white shadow-2xs cursor-pointer"
                 >
                   <RefreshCw className="w-4 h-4" />
                 </button>

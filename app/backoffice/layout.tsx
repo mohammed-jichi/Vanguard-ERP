@@ -5,10 +5,14 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { TenantProvider, useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
+import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { isModuleLicensed } from '@/lib/license';
 import { clearAuthSession } from '@/lib/authSession';
 import ModuleNotLicensedScreen, { ALL_CANONICAL_MODULES } from '@/components/ModuleNotLicensedScreen';
+import SupportCenterModal from '@/components/SupportCenterModal';
+import FeedbackModal from '@/components/FeedbackModal';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -62,6 +66,11 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const [quickDrawerOpen, setQuickDrawerOpen] = useState(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'UPDATES' | 'ALERTS' | 'ACTIVITIES' | 'HELP' | 'DARK'>('UPDATES');
   const [isSuperAdminImpersonating, setIsSuperAdminImpersonating] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+
+  const { language, dir, setLanguage, t } = useLanguage();
+  const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
 
   // Dynamic system notifications & operations feed state
   const [notificationsData, setNotificationsData] = useState<{
@@ -451,7 +460,18 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               </svg>
             </button>
 
-            {/* 5. QUICK MENU GRID BUTTON */}
+            {/* 5. Language Switcher Toggle */}
+            <button
+              type="button"
+              onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 flex items-center gap-1.5 text-xs font-bold"
+              title={language === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'}
+            >
+              <span className="text-xs">🌐</span>
+              <span className="font-mono text-[11px] uppercase font-bold">{language === 'ar' ? 'العربية' : 'EN'}</span>
+            </button>
+
+            {/* 6. QUICK MENU GRID BUTTON */}
             <button
               type="button"
               onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
@@ -464,7 +484,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </button>
           </div>
 
-          {/* 6. JICHI MOHAMMED PROFILE */}
+          {/* 7. JICHI MOHAMMED PROFILE */}
           <div className="relative">
             <button
               type="button"
@@ -480,52 +500,134 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
 
             {/* 10-Item Authentic Dropdown Menu */}
             {userDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
-                <div className="px-4 py-2.5 border-b border-slate-100 bg-card">
-                  <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
-                  <div className="text-[10.5px] text-primary font-mono font-semibold">General Operations Manager</div>
-                  <div className="text-[9.5px] text-slate-400 font-mono truncate mt-0.5">
-                    Southern Olive Oil Products S.A.R.L
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setUserDropdownOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
+                  <div className="px-4 py-2.5 border-b border-slate-100 bg-card">
+                    <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
+                    <div className="text-[10.5px] text-primary font-mono font-semibold">General Operations Manager</div>
+                    <div className="text-[9.5px] text-slate-400 font-mono truncate mt-0.5">
+                      Southern Olive Oil Products S.A.R.L
+                    </div>
                   </div>
-                </div>
 
-                <div className="py-1">
-                  <button type="button" onClick={() => { alert('Organization Settings'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">🏢</span> <span>Organization</span>
-                  </button>
-                  <button type="button" onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">🔔</span> <span>Alerts</span>
-                  </button>
-                  <Link href="/backoffice/inbox" onClick={() => setUserDropdownOpen(false)} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">💬</span> <span>Notifications & Inbox</span>
-                  </Link>
-                  <button type="button" onClick={() => { alert('Language: English (Default)'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">🌐</span> <span>Language</span>
-                  </button>
-                  <button type="button" onClick={() => { alert('My Account Settings'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">👤</span> <span>My Account</span>
-                  </button>
-                  <button type="button" onClick={() => { alert('Roles & Permissions'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">🔑</span> <span>Roles</span>
-                  </button>
-                  <button type="button" onClick={() => { alert('Users Management'); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">👥</span> <span>Users</span>
-                  </button>
-                  <button type="button" onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">📰</span> <span>Latest Updates</span>
-                  </button>
-                  <button type="button" onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                    <span className="text-sm">❓</span> <span>Support Center</span>
-                  </button>
-                </div>
+                  <div className="py-1">
+                    <Link
+                      href={`/${orgId}/settings/organization`}
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">🏢</span> <span>{t('organization', 'Organization')}</span>
+                    </Link>
 
-                <div className="border-t border-slate-100 mt-1 pt-1">
-                  <button type="button" onClick={() => clearAuthSession()} className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors cursor-pointer">
-                    <span className="text-sm">🚪</span> <span>Logout</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">🔔</span> <span>{t('alerts', 'Alerts')}</span>
+                    </button>
 
-              </div>
+                    <Link
+                      href="/backoffice/inbox"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">💬</span> <span>{t('notifications_inbox', 'Notifications & Inbox')}</span>
+                    </Link>
+
+                    {/* Dynamic Language Toggle */}
+                    <div className="px-4 py-2 border-y border-slate-100 bg-slate-50/60 my-1 space-y-1.5">
+                      <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5">
+                          <span>🌐</span> <span>{t('language', 'Language')}</span>
+                        </span>
+                        <span className="font-mono text-[10px] text-primary font-bold">
+                          {language === 'ar' ? 'RTL' : 'LTR'}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => { setLanguage('en'); setUserDropdownOpen(false); }}
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            language === 'en'
+                              ? 'bg-primary text-white shadow-2xs font-extrabold'
+                              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                          }`}
+                        >
+                          <span>🇺🇸</span> <span>English</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setLanguage('ar'); setUserDropdownOpen(false); }}
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            language === 'ar'
+                              ? 'bg-primary text-white shadow-2xs font-extrabold'
+                            : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                          }`}
+                        >
+                          <span>🇱🇧</span> <span>العربية</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <Link
+                      href={`/${orgId}/settings/account`}
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">👤</span> <span>{t('my_account', 'My Account')}</span>
+                    </Link>
+
+                    <Link
+                      href={`/${orgId}/settings/roles`}
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">🔑</span> <span>{t('roles', 'Roles & Permissions')}</span>
+                    </Link>
+
+                    <Link
+                      href={`/${orgId}/settings/users`}
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">👥</span> <span>{t('users', 'Users')}</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => { setActiveDrawerTab('UPDATES'); setQuickDrawerOpen(true); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">📰</span> <span>{t('latest_updates', 'Latest Updates')}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setIsSupportModalOpen(true); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
+                    >
+                      <span className="text-sm">❓</span> <span>{t('support_center', 'Support Center')}</span>
+                    </button>
+                  </div>
+
+                  <div className="border-t border-slate-100 mt-1 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => clearAuthSession()}
+                      className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 transition-colors cursor-pointer"
+                    >
+                      <span className="text-sm">🚪</span> <span>{t('logout', 'Logout')}</span>
+                    </button>
+                  </div>
+
+                </div>
+              </>
             )}
           </div>
 
@@ -806,7 +908,11 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                         <p className="text-[10.5px] text-slate-500">Open the main support page for guides and videos.</p>
                       </div>
                     </div>
-                    <button type="button" onClick={() => alert('Support Center Opened')} className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setIsSupportModalOpen(true)}
+                      className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800 transition-colors cursor-pointer"
+                    >
                       Open Support
                     </button>
                   </div>
@@ -819,7 +925,11 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                         <p className="text-[10.5px] text-slate-500">Open the feedback form and send your direct comments.</p>
                       </div>
                     </div>
-                    <button type="button" onClick={() => alert('Feedback Form Opened')} className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setIsFeedbackModalOpen(true)}
+                      className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800 transition-colors cursor-pointer"
+                    >
                       Open Feedback
                     </button>
                   </div>
@@ -864,6 +974,16 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </div>
           </aside>
         )}
+
+        {/* Support Center & Feedback Modals */}
+        <SupportCenterModal
+          isOpen={isSupportModalOpen}
+          onClose={() => setIsSupportModalOpen(false)}
+        />
+        <FeedbackModal
+          isOpen={isFeedbackModalOpen}
+          onClose={() => setIsFeedbackModalOpen(false)}
+        />
 
       </div>
 

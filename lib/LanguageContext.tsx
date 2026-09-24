@@ -7,6 +7,7 @@ export type LanguageCode = 'en' | 'ar' | 'fr' | 'es' | 'fa';
 export interface LanguageContextType {
   language: LanguageCode;
   dir: 'ltr' | 'rtl';
+  direction?: 'ltr' | 'rtl';
   setLanguage: (lang: LanguageCode) => void;
   t: (key: string, fallbackEn?: string) => string;
 }
@@ -131,7 +132,17 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'tare_weight': 'Tare Weight',
     'net_weight': 'Net Weight',
     'acidity_pct': 'Acidity %',
-    'yield_pct': 'Yield %'
+    'yield_pct': 'Yield %',
+    'organization': 'Organization',
+    'users': 'Users',
+    'roles': 'Roles & Permissions',
+    'my_account': 'My Account',
+    'language': 'Language',
+    'support_center': 'Support Center',
+    'feedback': 'Feedback',
+    'logout': 'Logout',
+    'latest_updates': 'Latest Updates',
+    'notifications_inbox': 'Notifications & Inbox'
   },
   ar: {
     'workspace': 'مساحة العمل',
@@ -252,7 +263,17 @@ const translations: Record<LanguageCode, Record<string, string>> = {
     'tare_weight': 'وزن الشاحنة الفارغة (الطار)',
     'net_weight': 'الوزن الصافي للزيتون',
     'acidity_pct': 'نسبة الأسيد (الحموضة)',
-    'yield_pct': 'نسبة الاستخراج (السيالة)'
+    'yield_pct': 'نسبة الاستخراج (السيالة)',
+    'organization': 'بيانات المنشأة والمؤسسة',
+    'users': 'إدارة المستخدمين',
+    'roles': 'الأدوار ومصفوفة الصلاحيات',
+    'my_account': 'حسابي الشخصي',
+    'language': 'اللغة',
+    'support_center': 'مركز المساعدة والدعم',
+    'feedback': 'الملاحظات والاقتراحات',
+    'logout': 'تسجيل الخروج',
+    'latest_updates': 'آخر التحديثات',
+    'notifications_inbox': 'الإشعارات وصندوق الوارد'
   },
   fr: {
     'workspace': 'Espace de Travail',
@@ -629,12 +650,35 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [language, setLanguageState] = useState<LanguageCode>('en');
   const [dir, setDir] = useState<'ltr' | 'rtl'>('ltr');
 
+  // Initialize language from localStorage on client mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_language') as LanguageCode;
+        if (saved && ['en', 'ar', 'fr', 'es', 'fa'].includes(saved)) {
+          setLanguageState(saved);
+          const newDir = (saved === 'ar' || saved === 'fa') ? 'rtl' : 'ltr';
+          setDir(newDir);
+          document.documentElement.dir = newDir;
+          document.documentElement.lang = saved;
+        }
+      } catch (e) {
+        console.warn('Failed to load language preference:', e);
+      }
+    }
+  }, []);
+
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
     const newDir = (lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr';
     setDir(newDir);
 
-    if (typeof document !== 'undefined') {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('vanguard_language', lang);
+      } catch (e) {
+        console.warn('Failed to persist language preference:', e);
+      }
       document.documentElement.dir = newDir;
       document.documentElement.lang = lang;
     }
@@ -653,7 +697,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   return (
-    <LanguageContext.Provider value={{ language, dir, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, dir, direction: dir, setLanguage, t }}>
       <div dir={dir} className="w-full min-h-screen">
         {children}
       </div>
