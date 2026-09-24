@@ -3425,9 +3425,9 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         </div>
       )}
 
-      {/* Authentic Footer Matching Screenshots 1, 2, 3 */}
+      {/* Footer */}
       <footer className="mt-16 text-center text-xs text-muted-foreground border-t border-border pt-4">
-        © 2026 Omega Software All rights reserved. &nbsp;|&nbsp;
+        © 2026 Vanguard ERP. All rights reserved. &nbsp;|&nbsp;
         <span className="hover:underline cursor-pointer"> Privacy Policy</span> &nbsp;|&nbsp;
         <span className="hover:underline cursor-pointer"> Terms and Conditions</span> &nbsp;|&nbsp;
         <span className="hover:underline cursor-pointer"> Support</span> &nbsp;|&nbsp;

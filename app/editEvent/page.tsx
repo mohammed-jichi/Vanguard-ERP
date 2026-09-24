@@ -34,7 +34,7 @@ import {
   Indent,
   Outdent
 } from 'lucide-react';
-import VanguardGlobalHeader from '@/components/VanguardGlobalHeader';
+import MasterBackofficeLayout from '@/app/backoffice/layout';
 import {
   OmegaEventRecord,
   OmegaEventCustomer,
@@ -232,7 +232,6 @@ Event Name: ${found.event_name}`
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-800 font-sans">
-      <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
       {/* Global Toast */}
       {toastMessage && (
@@ -760,9 +759,9 @@ Event Name: ${found.event_name}`
           )}
         </div>
 
-        {/* Footer matching Omega ERP */}
+        {/* Footer */}
         <div className="text-center text-[11px] text-slate-400 py-6 border-t border-slate-200">
-          © 2026 Omega Software All rights reserved. | Privacy Policy | Terms and Conditions | Support | Feedback
+          © 2026 Vanguard ERP. All rights reserved. | Privacy Policy | Terms and Conditions | Support | Feedback
         </div>
       </main>
 
@@ -1173,8 +1172,10 @@ Event Name: ${found.event_name}`
 
 export default function EditEventPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Loading Edit Event...</div>}>
-      <EditEventContent />
-    </Suspense>
+    <MasterBackofficeLayout>
+      <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Loading Edit Event...</div>}>
+        <EditEventContent />
+      </Suspense>
+    </MasterBackofficeLayout>
   );
 }

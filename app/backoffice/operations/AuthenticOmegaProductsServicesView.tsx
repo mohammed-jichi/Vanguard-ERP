@@ -10923,10 +10923,10 @@ export default function AuthenticOmegaProductsServicesView() {
 
                   <div className="flex items-center justify-between text-[10px] text-slate-800">
                     <span className="font-mono font-bold">REP_I_0041</span>
-                    <span className="text-blue-700 font-medium">
-                      Copyright © 2026 Omega Software, Inc. All Rights Reserved.
+                    <span className="text-slate-700 font-medium">
+                      Copyright © 2026 Vanguard ERP. All Rights Reserved.
                     </span>
-                    <span className="text-blue-700 font-mono">&quot;www.omegapos.com&quot;</span>
+                    <span className="text-slate-700 font-mono">&quot;vanguard-erp-lb.vercel.app&quot;</span>
                   </div>
                 </div>
               </div>

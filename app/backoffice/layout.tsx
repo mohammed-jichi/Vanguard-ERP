@@ -193,6 +193,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     if (
       path.startsWith('/purchases') ||
       path.startsWith('/purchase-orders') ||
+      path.startsWith('/purchase-order') ||
       path.startsWith('/receiving-of-goods') ||
       path.startsWith('/PurchaseOrder') ||
       (path.startsWith('/backoffice/operations') && (section === 'reorder_guide' || section === 'suppliers'))

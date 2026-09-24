@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Info,
   Search,
@@ -486,6 +487,7 @@ const INITIAL_SAVED_REORDERS: SavedReorder[] = [
 ];
 
 export default function ReorderGuideView() {
+  const { t, dir } = useLanguage();
   // Top Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSupplierId, setSelectedSupplierId] = useState<number>(0);
@@ -2282,7 +2284,11 @@ export default function ReorderGuideView() {
           13. FOOTER (Matching Omega ERP)
           ========================================================================= */}
       <footer className="mt-12 text-center text-xs text-slate-400 py-4 border-t border-slate-200">
-        © 2026 Omega Software All rights reserved. | Privacy Policy | Terms and Conditions | Support | Feedback
+        <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span> | 
+        <a href="#privacy" className="hover:underline ml-1 mr-1">{t('privacy_policy', 'Privacy Policy')}</a> | 
+        <a href="#terms" className="hover:underline ml-1 mr-1">{t('terms_conditions', 'Terms and Conditions')}</a> | 
+        <a href="#support" className="hover:underline ml-1 mr-1">{t('support', 'Support')}</a> | 
+        <a href="#feedback" className="hover:underline ml-1 mr-1">{t('feedback', 'Feedback')}</a>
       </footer>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Search,
   Plus,
@@ -44,6 +45,7 @@ import {
 import { getDefaultInitialDateRange } from '@/lib/dateRangeEngine';
 
 export default function AdjustmentsView() {
+  const { t, dir } = useLanguage();
   // --------------------------------------------------------------------------
   // STATE MANAGEMENT
   // --------------------------------------------------------------------------
@@ -1298,7 +1300,11 @@ export default function AdjustmentsView() {
           COPYRIGHT FOOTER
           ========================================================================= */}
       <footer className="text-center text-[11px] text-slate-400 py-6 border-t border-slate-200">
-        © 2026 Omega Software All rights reserved. &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms and Conditions &nbsp;|&nbsp; Support &nbsp;|&nbsp; Feedback
+        <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span> &nbsp;|&nbsp; 
+        <a href="#privacy" className="hover:underline">{t('privacy_policy', 'Privacy Policy')}</a> &nbsp;|&nbsp; 
+        <a href="#terms" className="hover:underline">{t('terms_conditions', 'Terms and Conditions')}</a> &nbsp;|&nbsp; 
+        <a href="#support" className="hover:underline">{t('support', 'Support')}</a> &nbsp;|&nbsp; 
+        <a href="#feedback" className="hover:underline">{t('feedback', 'Feedback')}</a>
       </footer>
 
       {/* =========================================================================

@@ -1,20 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import MasterBackofficeLayout from '@/app/backoffice/layout';
 import ReceivingOfGoodsView from '@/components/ReceivingOfGoodsView';
-import { useTenant } from '@/lib/TenantContext';
-import ModuleNotLicensedScreen from '@/components/ModuleNotLicensedScreen';
 
 export default function ReceivingOfGoodsStandalonePage() {
-  const { isModuleEnabled } = useTenant();
-
-  if (!isModuleEnabled('purchasing')) {
-    return (
-      <div className="min-h-screen bg-slate-50 py-8">
-        <ModuleNotLicensedScreen moduleKey="purchasing" />
-      </div>
-    );
-  }
-
-  return <ReceivingOfGoodsView />;
+  return (
+    <MasterBackofficeLayout>
+      <Suspense fallback={<div className="p-8 text-center text-slate-500 font-sans">Loading Goods Receiving...</div>}>
+        <ReceivingOfGoodsView />
+      </Suspense>
+    </MasterBackofficeLayout>
+  );
 }

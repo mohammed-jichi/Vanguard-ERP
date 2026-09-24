@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 // Interfaces for Purchase Order
 export interface PurchaseOrderItem {
@@ -279,6 +280,7 @@ const ITEMS_CATALOG = [
 ];
 
 export default function PurchaseOrderView() {
+  const { t, dir } = useLanguage();
   // Mode: true = Preview Table (Picture 1), false = New/Edit Form
   const [showPreviewList, setShowPreviewList] = useState<boolean>(true);
 
@@ -905,17 +907,17 @@ export default function PurchaseOrderView() {
             </div>
           </div>
 
-          {/* OMEGA AUTHENTIC FOOTER (MATCHING PICTURE 1) */}
+          {/* VANGUARD ENTERPRISE FOOTER */}
           <footer className="mt-16 text-center text-[11px] text-muted-foreground">
-            <span>&copy; 2026 Omega Software All rights reserved.</span>
+            <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span>
             <span className="mx-2">|</span>
-            <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Privacy Policy</a>
+            <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('privacy_policy', 'Privacy Policy')}</a>
             <span className="mx-2">|</span>
-            <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Terms and Conditions</a>
+            <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('terms_conditions', 'Terms and Conditions')}</a>
             <span className="mx-2">|</span>
-            <a href="#support" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Support</a>
+            <a href="#support" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('support', 'Support')}</a>
             <span className="mx-2">|</span>
-            <a href="#feedback" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">Feedback</a>
+            <a href="#feedback" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('feedback', 'Feedback')}</a>
           </footer>
         </div>
       ) : (
@@ -1641,6 +1643,19 @@ export default function PurchaseOrderView() {
               </div>
             )}
           </div>
+
+          {/* VANGUARD ENTERPRISE FOOTER */}
+          <footer className="mt-16 text-center text-[11px] text-muted-foreground pb-4">
+            <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span>
+            <span className="mx-2">|</span>
+            <a href="#privacy" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('privacy_policy', 'Privacy Policy')}</a>
+            <span className="mx-2">|</span>
+            <a href="#terms" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('terms_conditions', 'Terms and Conditions')}</a>
+            <span className="mx-2">|</span>
+            <a href="#support" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('support', 'Support')}</a>
+            <span className="mx-2">|</span>
+            <a href="#feedback" onClick={(e) => e.preventDefault()} className="hover:underline text-muted-foreground">{t('feedback', 'Feedback')}</a>
+          </footer>
         </div>
       )}
 

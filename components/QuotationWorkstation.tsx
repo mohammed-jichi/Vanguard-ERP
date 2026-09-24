@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Search,
   Plus,
@@ -859,6 +860,7 @@ interface QuotationWorkstationProps {
 }
 
 export default function QuotationWorkstation({ withOmegaSidebar = false }: QuotationWorkstationProps) {
+  const { t, dir } = useLanguage();
   // Quotation header state
   const [quotationNo, setQuotationNo] = useState('QT-2026-0043');
   const [customerType, setCustomerType] = useState<'Contact' | 'Customer'>('Customer');
@@ -5228,9 +5230,13 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             </div>
           </div>
 
-          {/* Bottom Footer (Matching Omega footer in screenshot 4) */}
+          {/* Bottom Footer */}
           <div className="bg-background border-t border-slate-300 py-1 px-4 text-center text-[10px] text-slate-500 font-sans">
-            © 2026 Omega Software All rights reserved. &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms and Conditions &nbsp;|&nbsp; Support &nbsp;|&nbsp; Feedback
+            <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span> &nbsp;|&nbsp; 
+            <a href="#privacy" className="hover:underline">{t('privacy_policy', 'Privacy Policy')}</a> &nbsp;|&nbsp; 
+            <a href="#terms" className="hover:underline">{t('terms_conditions', 'Terms and Conditions')}</a> &nbsp;|&nbsp; 
+            <a href="#support" className="hover:underline">{t('support', 'Support')}</a> &nbsp;|&nbsp; 
+            <a href="#feedback" className="hover:underline">{t('feedback', 'Feedback')}</a>
           </div>
         </div>
       )}

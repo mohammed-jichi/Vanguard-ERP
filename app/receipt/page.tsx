@@ -13,7 +13,7 @@ import {
   FileText,
   X
 } from 'lucide-react';
-import VanguardGlobalHeader from '@/components/VanguardGlobalHeader';
+import MasterBackofficeLayout from '@/app/backoffice/layout';
 import { SEED_CUSTOMERS } from '@/lib/eventsData';
 
 function ReceiptPageContent() {
@@ -84,7 +84,6 @@ function ReceiptPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-800 font-sans">
-      <VanguardGlobalHeader activeScreen={activeScreen} onSelectScreen={setActiveScreen} />
 
       {/* Global Toast */}
       {toastMessage && (
@@ -305,8 +304,10 @@ function ReceiptPageContent() {
 
 export default function ReceiptPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Loading Receipt...</div>}>
-      <ReceiptPageContent />
-    </Suspense>
+    <MasterBackofficeLayout>
+      <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Loading Receipt...</div>}>
+        <ReceiptPageContent />
+      </Suspense>
+    </MasterBackofficeLayout>
   );
 }

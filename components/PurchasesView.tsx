@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Search,
   ChevronDown,
@@ -106,6 +107,7 @@ const PREDEFINED_CATALOG_ITEMS = [
 ];
 
 export default function PurchasesView() {
+  const { t, dir } = useLanguage();
   // Current screen mode: 'list' (Screenshot 1) or 'form' (Screenshot 2)
   const [viewMode, setViewMode] = useState<'list' | 'form'>('list');
 
@@ -1714,17 +1716,17 @@ export default function PurchasesView() {
         </div>
       )}
 
-      {/* Footer matching Screenshot 1 & 2 */}
+      {/* Footer */}
       <footer className="mt-12 py-4 text-center text-xs text-slate-500 border-t border-slate-100">
-        <span>© 2026 Omega Software All rights reserved.</span>
+        <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span>
         <span className="mx-2 text-slate-300">|</span>
-        <a href="#privacy" className="hover:text-slate-700">Privacy Policy</a>
+        <a href="#privacy" className="hover:text-slate-700">{t('privacy_policy', 'Privacy Policy')}</a>
         <span className="mx-2 text-slate-300">|</span>
-        <a href="#terms" className="hover:text-slate-700">Terms and Conditions</a>
+        <a href="#terms" className="hover:text-slate-700">{t('terms_conditions', 'Terms and Conditions')}</a>
         <span className="mx-2 text-slate-300">|</span>
-        <a href="#support" className="hover:text-slate-700">Support</a>
+        <a href="#support" className="hover:text-slate-700">{t('support', 'Support')}</a>
         <span className="mx-2 text-slate-300">|</span>
-        <a href="#feedback" className="hover:text-slate-700">Feedback</a>
+        <a href="#feedback" className="hover:text-slate-700">{t('feedback', 'Feedback')}</a>
       </footer>
     </div>
   );

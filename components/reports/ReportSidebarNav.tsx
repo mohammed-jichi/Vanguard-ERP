@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Clock, Sparkles, ChevronDown, ChevronRight, Folder, ArrowUpRight } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 import { ReportCategoryGroup, ReportCategoryItem, ReportCategorySubGroup } from './ReportPageLayout';
 
 export interface ReportSidebarNavProps {
@@ -36,6 +37,7 @@ export default function ReportSidebarNav({
   searchPlaceholder = 'Search reports...',
 }: ReportSidebarNavProps) {
   const router = useRouter();
+  const { t, dir } = useLanguage();
 
   // Determine localStorage key (vanguard_recent_reports_sales for Sales, vanguard_recent_reports_inventory for Operations/Inventory)
   const storageKey =
@@ -129,16 +131,17 @@ export default function ReportSidebarNav({
 
   return (
     <aside
+      dir={dir}
       className={`w-72 shrink-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3 print:hidden select-none ${className}`}
     >
       {/* Top Search Reports Card Header */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <span className="text-[11px] font-bold text-slate-800 uppercase tracking-wider">
-          Search Reports
+          {t('search_reports', 'Search Reports')}
         </span>
         {isMounted && recentReports.length > 0 && (
           <span className="text-[10px] text-slate-400 font-mono">
-            {recentReports.length} recent
+            {recentReports.length} {t('recent', 'recent')}
           </span>
         )}
       </div>
@@ -147,7 +150,7 @@ export default function ReportSidebarNav({
       <div className="relative">
         <input
           type="text"
-          placeholder={searchPlaceholder}
+          placeholder={t('search_reports', searchPlaceholder || 'Search reports...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 rounded-md py-1.5 px-3 pl-8 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white transition-all shadow-2xs"
@@ -169,7 +172,7 @@ export default function ReportSidebarNav({
             >
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-600 group-hover:scale-105 transition-transform" />
-                <span>Recently Viewed</span>
+                <span>{t('recently_viewed', 'Recently Viewed')}</span>
               </div>
               <ChevronDown
                 className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
@@ -183,11 +186,11 @@ export default function ReportSidebarNav({
                 {/* SSR Guard / Empty State */}
                 {!isMounted || recentReports.length === 0 ? (
                   <div className="px-3 py-1.5 text-xs italic text-slate-400 select-none bg-slate-50/50 rounded-lg">
-                    No recent reports
+                    {t('no_recent_reports', 'No recent reports')}
                   </div>
                 ) : filteredRecentItems.length === 0 && searchQuery ? (
                   <div className="px-3 py-1.5 text-[11px] italic text-slate-400 select-none">
-                    No matching recent reports
+                    {t('no_matching_recent_reports', 'No matching recent reports')}
                   </div>
                 ) : (
                   filteredRecentItems.map((name) => {
@@ -203,7 +206,7 @@ export default function ReportSidebarNav({
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                       >
-                        <span className="truncate">{name}</span>
+                        <span className="truncate">{t(name, name)}</span>
                         {isSelected && (
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                         )}
@@ -263,7 +266,7 @@ export default function ReportSidebarNav({
                   ) : (
                     <Folder className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 transition-colors" />
                   )}
-                  <span>{group.title}</span>
+                  <span>{t(group.title, group.title)}</span>
                 </div>
                 <ChevronDown
                   className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
@@ -303,7 +306,7 @@ export default function ReportSidebarNav({
                           className="w-full text-left text-xs rounded-lg px-3 py-1.5 underline font-medium text-slate-700 hover:text-blue-600 cursor-pointer flex items-center justify-between group transition-colors"
                         >
                           <span className="truncate flex items-center gap-1.5">
-                            {name}
+                            {t(name, name)}
                             <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
                           </span>
                         </button>
@@ -321,7 +324,7 @@ export default function ReportSidebarNav({
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                       >
-                        <span className="truncate">{name}</span>
+                        <span className="truncate">{t(name, name)}</span>
                         {isSelected && (
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                         )}
@@ -354,7 +357,7 @@ export default function ReportSidebarNav({
                           }
                           className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-semibold text-slate-700 hover:text-blue-700 transition-colors cursor-pointer"
                         >
-                          <span className="truncate">{sub.title}</span>
+                          <span className="truncate">{t(sub.title, sub.title)}</span>
                           <ChevronDown
                             className={`w-3 h-3 text-slate-400 transition-transform duration-150 ${
                               isSubCollapsed ? '-rotate-90' : ''
@@ -392,7 +395,7 @@ export default function ReportSidebarNav({
                                     className="w-full text-left text-xs rounded-lg px-3 py-1.5 underline font-medium text-slate-700 hover:text-blue-600 cursor-pointer flex items-center justify-between group transition-colors"
                                   >
                                     <span className="truncate flex items-center gap-1.5">
-                                      {name}
+                                      {t(name, name)}
                                       <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
                                     </span>
                                   </button>
@@ -410,7 +413,7 @@ export default function ReportSidebarNav({
                                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                   }`}
                                 >
-                                  <span className="truncate">{name}</span>
+                                  <span className="truncate">{t(name, name)}</span>
                                   {isSelected && (
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 ml-1.5" />
                                   )}

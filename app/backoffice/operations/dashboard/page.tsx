@@ -53,6 +53,7 @@ import SalesDashboard from '@/components/SalesDashboard';
 import SalesTeamPerformanceView from '@/components/SalesTeamPerformanceView';
 import CustomerInsightsView from '@/components/CustomerInsightsView';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import { getBranchData, getAllBranchesList, ALL_BRANCHES_CONSOLIDATED, BranchInfo } from '@/lib/branchData';
 
 // Types for Dialog Records
@@ -101,6 +102,7 @@ interface StockRecord {
 
 function OperationsDashboardContent() {
   const { currentTenant } = useTenant();
+  const { t, language, dir } = useLanguage();
   const searchParams = useSearchParams();
   const tabQuery = searchParams.get('tab');
 
@@ -930,7 +932,7 @@ function OperationsDashboardContent() {
         {/* Title & Mobile Actions */}
         <div className="inventory-dashboard-topbar-title">
           <div className="inventory-dashboard-title-row">
-            <h1 className="page-title">Operation Overview</h1>
+            <h1 className="page-title">{t('operation_overview', 'Operation Overview')}</h1>
             <div className="flex items-center gap-1.5 lg:hidden">
               <Link
                 href="/dashboard/sales"
@@ -968,7 +970,7 @@ function OperationsDashboardContent() {
                 title="Branch Filter"
               >
                 {allBranchesList.length > 1 && (
-                  <option value="ALL">All Branches (Consolidated Fleet)</option>
+                  <option value="ALL">{t('all_branches_fleet', 'All Branches (Consolidated Fleet)')}</option>
                 )}
                 {allBranchesList.map((b) => (
                   <option key={b.id} value={b.id}>
@@ -1010,19 +1012,19 @@ function OperationsDashboardContent() {
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 title="Month Filter"
               >
-                <option value="0">All Months</option>
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
+                <option value="0">{t('all_months', 'All Months')}</option>
+                <option value="1">{t('january', 'January')}</option>
+                <option value="2">{t('february', 'February')}</option>
+                <option value="3">{t('march', 'March')}</option>
+                <option value="4">{t('april', 'April')}</option>
+                <option value="5">{t('may', 'May')}</option>
+                <option value="6">{t('june', 'June')}</option>
+                <option value="7">{t('july', 'July')}</option>
+                <option value="8">{t('august', 'August')}</option>
+                <option value="9">{t('september', 'September')}</option>
+                <option value="10">{t('october', 'October')}</option>
+                <option value="11">{t('november', 'November')}</option>
+                <option value="12">{t('december', 'December')}</option>
               </select>
             </div>
           </div>
@@ -1111,7 +1113,7 @@ function OperationsDashboardContent() {
               disabled={exportingPdf}
               className="btn inventory-dashboard-export-pdf-btn cursor-pointer"
             >
-              <span>{exportingPdf ? 'Preparing PDF...' : 'Export PDF'}</span>
+              <span>{exportingPdf ? t('preparing_pdf', 'Preparing PDF...') : t('export_pdf', 'Export PDF')}</span>
             </button>
 
             {/* Refresh Button */}
@@ -1190,7 +1192,7 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Sales</div>
+                <div className="title inventory-metric-title">{t('sales', 'Sales')}</div>
                 <div className="body">{formatCurrency(currentBranchData.operations.sales)}</div>
               </div>
             </div>
@@ -1212,7 +1214,7 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Purchase</div>
+                <div className="title inventory-metric-title">{t('purchase', 'Purchase')}</div>
                 <div className="body">{formatCurrency(currentBranchData.operations.purchase)}</div>
               </div>
             </div>
@@ -1234,7 +1236,7 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Lost Goods</div>
+                <div className="title inventory-metric-title">{t('lost_goods', 'Lost Goods')}</div>
                 <div className="body">{formatCurrency(currentBranchData.operations.lostGoods)}</div>
               </div>
             </div>
@@ -1256,7 +1258,7 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Variance</div>
+                <div className="title inventory-metric-title">{t('variance', 'Variance')}</div>
                 <div className="body">{formatCurrency(currentBranchData.operations.variance)}</div>
               </div>
             </div>
@@ -1278,7 +1280,7 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Current Stock Value</div>
+                <div className="title inventory-metric-title">{t('current_stock_value', 'Current Stock Value')}</div>
                 <div className="body">{formatCurrency(currentBranchData.operations.stockValue)}</div>
               </div>
             </div>
@@ -1300,8 +1302,8 @@ function OperationsDashboardContent() {
                 <Info className="w-4 h-4" />
               </button>
               <div className="inventory-metric-main">
-                <div className="title inventory-metric-title">Fleet Branches</div>
-                <div className="body">{allBranchesList.length} Sites</div>
+                <div className="title inventory-metric-title">{t('fleet_branches', 'Fleet Branches')}</div>
+                <div className="body">{allBranchesList.length} {t('sites', 'Sites')}</div>
               </div>
             </div>
           </div>
@@ -1323,7 +1325,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'general' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><Layers className="w-3 h-3" /></span>
-              <span>Stock Movements</span>
+              <span>{t('stock_movements', 'Stock Movements')}</span>
             </button>
 
             <button
@@ -1332,7 +1334,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'comparative' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><BarChart3 className="w-3 h-3" /></span>
-              <span>Comparative</span>
+              <span>{t('comparative', 'Comparative')}</span>
             </button>
 
             <button
@@ -1341,7 +1343,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'cost' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><DollarSign className="w-3 h-3" /></span>
-              <span>Cost</span>
+              <span>{t('cost', 'Cost')}</span>
             </button>
 
             <button
@@ -1350,7 +1352,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'stock' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><Archive className="w-3 h-3" /></span>
-              <span>Stock</span>
+              <span>{t('stock', 'Stock')}</span>
             </button>
 
             <button
@@ -1359,7 +1361,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'product_insights' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><Package className="w-3 h-3" /></span>
-              <span>Product Insights</span>
+              <span>{t('product_insights', 'Product Insights')}</span>
             </button>
 
             <button
@@ -1368,7 +1370,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'purchases_dash' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><ShoppingCart className="w-3 h-3" /></span>
-              <span>Purchase Dashboard</span>
+              <span>{t('purchase_dashboard', 'Purchase Dashboard')}</span>
             </button>
 
             <button
@@ -1377,7 +1379,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'sales_dash' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><TrendingUp className="w-3 h-3" /></span>
-              <span>Sales Dashboard</span>
+              <span>{t('sales_dashboard', 'Sales Dashboard')}</span>
             </button>
 
             <button
@@ -1386,7 +1388,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'sales_team' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><Users className="w-3 h-3" /></span>
-              <span>Sales Team Performance</span>
+              <span>{t('sales_team_performance', 'Sales Team Performance')}</span>
             </button>
 
             <button
@@ -1395,7 +1397,7 @@ function OperationsDashboardContent() {
               className={`inventory-tab-pill ${activeTab === 'customer_insights' ? 'active' : ''}`}
             >
               <span className="inventory-tab-icon"><UserCheck className="w-3 h-3" /></span>
-              <span>Customer Insight</span>
+              <span>{t('customer_insights', 'Customer Insight')}</span>
             </button>
           </div>
 
@@ -1431,7 +1433,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleAccordion('transactions')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Stock Movements</span>
+                <span>{t('stock_movements', 'Stock Movements')}</span>
                 {openAccordion['transactions'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -1440,11 +1442,11 @@ function OperationsDashboardContent() {
                   <table className="w-full vanguard-table">
                     <thead>
                       <tr>
-                        <th>Inventory Category</th>
-                        <th className="text-right">Sales</th>
-                        <th className="text-right">Purchase</th>
-                        <th className="text-right">Lost Goods</th>
-                        <th className="text-right">Variance</th>
+                        <th>{t('inventory_category', 'Inventory Category')}</th>
+                        <th className="text-right">{t('sales', 'Sales')}</th>
+                        <th className="text-right">{t('purchase', 'Purchase')}</th>
+                        <th className="text-right">{t('lost_goods', 'Lost Goods')}</th>
+                        <th className="text-right">{t('variance', 'Variance')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1460,7 +1462,7 @@ function OperationsDashboardContent() {
                         </tr>
                       ))}
                       <tr className="bg-slate-100 font-bold border-t-2 border-slate-300">
-                        <td className="text-slate-900">Total Movement Matrix</td>
+                        <td className="text-slate-900">{t('total_movement_matrix', 'Total Movement Matrix')}</td>
                         <td className="font-mono text-right text-emerald-800">
                           {formatCurrency(transactionsCategoryData.reduce((a, b) => a + b.sales, 0))}
                         </td>
@@ -1486,7 +1488,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleAccordion('purchase')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Purchase by Category & Supplier</span>
+                <span>{t('purchase_by_category_supplier', 'Purchase by Category & Supplier')}</span>
                 {openAccordion['purchase'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -1494,12 +1496,12 @@ function OperationsDashboardContent() {
                 <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {/* Category Breakdown Table with Dynamic Headers */}
                   <div className="overflow-x-auto">
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Purchase by Category</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{t('purchase_by_category', 'Purchase by Category')}</h4>
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Category</th>
-                          <th className="text-right">All Branches</th>
+                          <th>{t('category', 'Category')}</th>
+                          <th className="text-right">{t('all_branches', 'All Branches')}</th>
                           {selectedBranch === 'ALL' && allBranchesList.length > 1 ? (
                             <>
                               <th className="text-right">Main Branch (00001)</th>
@@ -1529,12 +1531,12 @@ function OperationsDashboardContent() {
 
                   {/* Supplier Breakdown Table */}
                   <div className="overflow-x-auto">
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Purchase by Supplier</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{t('purchase_by_supplier', 'Purchase by Supplier')}</h4>
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Supplier Name</th>
-                          <th className="text-right">Total Invoiced Amount</th>
+                          <th>{t('supplier_name', 'Supplier Name')}</th>
+                          <th className="text-right">{t('total_invoiced_amount', 'Total Invoiced Amount')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1557,7 +1559,7 @@ function OperationsDashboardContent() {
                 onClick={() => toggleAccordion('wastage')}
                 className="inventory-dashboard-card-header flex items-center justify-between cursor-pointer select-none"
               >
-                <span>Lost Goods by Category, Supplier & Type</span>
+                <span>{t('lost_goods_breakdown', 'Lost Goods by Category, Supplier & Type')}</span>
                 {openAccordion['wastage'] ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
               </div>
 
@@ -1565,12 +1567,12 @@ function OperationsDashboardContent() {
                 <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Wastage by Category */}
                   <div className="overflow-x-auto">
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">By Category</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{t('by_category', 'By Category')}</h4>
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Category</th>
-                          <th className="text-right">Amount</th>
+                          <th>{t('category', 'Category')}</th>
+                          <th className="text-right">{t('amount', 'Amount')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1586,12 +1588,12 @@ function OperationsDashboardContent() {
 
                   {/* Wastage by Supplier */}
                   <div className="overflow-x-auto">
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">By Supplier</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{t('by_supplier', 'By Supplier')}</h4>
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Supplier</th>
-                          <th className="text-right">Amount</th>
+                          <th>{t('supplier', 'Supplier')}</th>
+                          <th className="text-right">{t('amount', 'Amount')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1607,12 +1609,12 @@ function OperationsDashboardContent() {
 
                   {/* Wastage by Type */}
                   <div className="overflow-x-auto">
-                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">By Wastage Type</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{t('by_wastage_type', 'By Wastage Type')}</h4>
                     <table className="w-full vanguard-table">
                       <thead>
                         <tr>
-                          <th>Wastage Type</th>
-                          <th className="text-right">Amount</th>
+                          <th>{t('wastage_type', 'Wastage Type')}</th>
+                          <th className="text-right">{t('amount', 'Amount')}</th>
                         </tr>
                       </thead>
                       <tbody>

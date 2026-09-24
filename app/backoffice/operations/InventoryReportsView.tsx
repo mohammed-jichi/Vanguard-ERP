@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/LanguageContext';
 import ReportPageLayout, {
   ReportHeader,
   ExportButtons,
@@ -709,6 +710,7 @@ const STATUS_OPTIONS: FilterOption[] = [
 // ============================================================================
 
 export default function AuthenticVanguardInventoryReports() {
+  const { t, dir } = useLanguage();
   // Active Sheet Tab & Selected Report Name
   const [activeSheet, setActiveSheet] = useState<OperationalReportSheetId>('REP_OPS_003');
   const [selectedReportName, setSelectedReportName] = useState<string>('Inventory report');
@@ -1031,50 +1033,50 @@ export default function AuthenticVanguardInventoryReports() {
     return [
       {
         id: 'daily_output',
-        title: 'Daily Output',
+        title: t('daily_output', 'Daily Output'),
         value: `${totalDailyExtractedL.toLocaleString()} L`,
         change: {
           value: '+14.2% vs target',
           trend: 'up',
         },
-        subtext: `${totalDailyUnitsFinished.toLocaleString()} packaged units completed today`,
+        subtext: `${totalDailyUnitsFinished.toLocaleString()} ${t('packaged_units_completed_today', 'packaged units completed today')}`,
         icon: <Droplets className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
       },
       {
         id: 'active_work_orders',
-        title: 'Active Work Orders',
-        value: `${pendingOrdersCount} Active Orders`,
+        title: t('active_work_orders', 'Active Work Orders'),
+        value: `${pendingOrdersCount} ${t('active_orders', 'Active Orders')}`,
         change: {
-          value: `${WORK_ORDERS_DATA.filter((w) => w.status === 'IN_PROGRESS').length} in progress, ${WORK_ORDERS_DATA.filter((w) => w.status === 'SCHEDULED').length} scheduled`,
+          value: `${WORK_ORDERS_DATA.filter((w) => w.status === 'IN_PROGRESS').length} ${t('in_progress', 'in progress')}, ${WORK_ORDERS_DATA.filter((w) => w.status === 'SCHEDULED').length} ${t('scheduled', 'scheduled')}`,
           trend: 'neutral',
         },
-        subtext: 'Scheduled on lines A & B',
+        subtext: t('scheduled_on_lines_ab', 'Scheduled on lines A & B'),
         icon: <ClipboardCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />,
       },
       {
         id: 'batch_status',
-        title: 'Batch Status',
-        value: `${activeBatchesCount} Active / ${PRODUCTION_LOGS_DATA.filter((b) => b.status === 'COMPLETED').length} Done`,
+        title: t('batch_status', 'Batch Status'),
+        value: `${activeBatchesCount} ${t('active', 'Active')} / ${PRODUCTION_LOGS_DATA.filter((b) => b.status === 'COMPLETED').length} ${t('done', 'Done')}`,
         change: {
-          value: '4 processing, 1 quality hold',
+          value: t('processing_quality_hold', '4 processing, 1 quality hold'),
           trend: 'neutral',
         },
-        subtext: 'Avg extraction cycle time: 48 mins',
+        subtext: t('avg_extraction_cycle_time', 'Avg extraction cycle time: 48 mins'),
         icon: <Layers className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
       },
       {
         id: 'efficiency_rate',
-        title: 'Efficiency Rate',
+        title: t('efficiency_rate', 'Efficiency Rate'),
         value: `${avgYield}%`,
         change: {
-          value: `Acidity: ${avgAcidity}% (EVOO Standard)`,
+          value: `${t('acidity', 'Acidity')}: ${avgAcidity}% (${t('evoo_standard', 'EVOO Standard')})`,
           trend: 'up',
         },
-        subtext: 'Total olives milled: 107.2 Tonnes',
+        subtext: t('total_olives_milled', 'Total olives milled: 107.2 Tonnes'),
         icon: <Gauge className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
       },
     ];
-  }, []);
+  }, [t]);
 
   // ==========================================================================
   // EXPORT & PRINT ACTIONS
@@ -1269,26 +1271,27 @@ export default function AuthenticVanguardInventoryReports() {
 
   // Status Text Helper (Zero badges/pills, pure bold semantic text)
   const renderStatusBadge = (status: string) => {
+    const label = t(status.toLowerCase(), status.replace(/_/g, ' '));
     switch (status) {
       case 'COMPLETED':
       case 'OPTIMAL':
       case 'DELIVERED':
         return (
           <span className="text-emerald-700 font-bold tracking-wide uppercase text-xs">
-            {status}
+            {label}
           </span>
         );
       case 'IN_PROGRESS':
       case 'REFILL_IN_PROGRESS':
         return (
           <span className="text-blue-700 font-bold tracking-wide uppercase text-xs">
-            {status.replace(/_/g, ' ')}
+            {label}
           </span>
         );
       case 'DISPATCHED':
         return (
           <span className="text-blue-700 font-bold tracking-wide uppercase text-xs">
-            DISPATCHED
+            {label}
           </span>
         );
       case 'QUALITY_HOLD':
@@ -1296,7 +1299,7 @@ export default function AuthenticVanguardInventoryReports() {
       case 'HOLD':
         return (
           <span className="text-amber-700 font-bold tracking-wide uppercase text-xs">
-            {status.replace(/_/g, ' ')}
+            {label}
           </span>
         );
       case 'SCHEDULED':
@@ -1304,13 +1307,13 @@ export default function AuthenticVanguardInventoryReports() {
       case 'DRAINING':
         return (
           <span className="text-amber-700 font-bold tracking-wide uppercase text-xs">
-            {status.replace(/_/g, ' ')}
+            {label}
           </span>
         );
       default:
         return (
           <span className="text-slate-700 font-bold tracking-wide uppercase text-xs">
-            {status}
+            {label}
           </span>
         );
     }
@@ -1318,23 +1321,24 @@ export default function AuthenticVanguardInventoryReports() {
 
   // Priority Text Helper (Pure bold semantic text)
   const renderPriorityBadge = (priority: string) => {
+    const label = t(priority.toLowerCase(), priority);
     switch (priority) {
       case 'URGENT':
         return (
           <span className="text-rose-700 font-bold tracking-wide uppercase text-xs">
-            URGENT
+            {label}
           </span>
         );
       case 'HIGH':
         return (
           <span className="text-amber-700 font-bold tracking-wide uppercase text-xs">
-            HIGH
+            {label}
           </span>
         );
       default:
         return (
           <span className="text-slate-700 font-bold tracking-wide uppercase text-xs">
-            NORMAL
+            {label}
           </span>
         );
     }
@@ -1342,7 +1346,7 @@ export default function AuthenticVanguardInventoryReports() {
 
   return (
     <ReportPageLayout
-      moduleTitle="Operations Center"
+      moduleTitle={t('operations_center', 'Operations Center')}
       moduleKey="operations"
       storageKeyOverride="vanguard_recent_reports_inventory"
       categories={INVENTORY_CONTROL_OMEGA_TREE}
@@ -1351,17 +1355,17 @@ export default function AuthenticVanguardInventoryReports() {
       // 1. STANDARDIZED HEADER
       header={
         <ReportHeader
-          title={activeMeta.name}
-          subtitle={`Operations Center & Inventory module audit trails, stock throughput, and balance ledger for ${period.replace('_', ' ')}.`}
+          title={t(activeMeta.name, activeMeta.name)}
+          subtitle={`${t('operations_center_audit_subtitle', 'Operations Center & Inventory module audit trails, stock throughput, and balance ledger for')} ${period.replace('_', ' ')}.`}
           breadcrumbs={[
-            { label: 'Home', href: '/backoffice' },
-            { label: '2. Operations Center', href: '/operations-center/reports' },
-            { label: activeMeta.category },
-            ...(activeMeta.subGroup ? [{ label: activeMeta.subGroup }] : []),
-            { label: activeMeta.name },
+            { label: t('home', 'Home'), href: '/backoffice' },
+            { label: t('operations_center', 'Operations Center'), href: '/operations-center/reports' },
+            { label: t(activeMeta.category, activeMeta.category) },
+            ...(activeMeta.subGroup ? [{ label: t(activeMeta.subGroup, activeMeta.subGroup) }] : []),
+            { label: t(activeMeta.name, activeMeta.name) },
           ]}
           reportCode={activeMeta.code}
-          badgeText="LIVE MONITORING"
+          badgeText={t('live_monitoring', 'LIVE MONITORING')}
           badgeVariant="success"
           actions={
             <ExportButtons
@@ -1419,7 +1423,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Factory className="w-4 h-4" />
-              <span>Production & Extraction Logs</span>
+              <span>{t('production_extraction_logs', 'Production & Extraction Logs')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_001'
@@ -1440,7 +1444,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Activity className="w-4 h-4" />
-              <span>Pressing Cycles</span>
+              <span>{t('pressing_cycles', 'Pressing Cycles')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_002'
@@ -1461,7 +1465,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Warehouse className="w-4 h-4" />
-              <span>Tank Farm Throughput</span>
+              <span>{t('tank_farm_throughput', 'Tank Farm Throughput')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_003'
@@ -1482,7 +1486,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Package className="w-4 h-4" />
-              <span>Packaging Work Orders</span>
+              <span>{t('packaging_work_orders', 'Packaging Work Orders')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_004'
@@ -1503,7 +1507,7 @@ export default function AuthenticVanguardInventoryReports() {
               }`}
             >
               <Truck className="w-4 h-4" />
-              <span>Dispatch Logistics</span>
+              <span>{t('dispatch_logistics', 'Dispatch Logistics')}</span>
               <span
                 className={`ml-1.5 px-2 py-0.5 text-xs rounded-full ${
                   activeSheet === 'REP_OPS_005'
@@ -1519,8 +1523,8 @@ export default function AuthenticVanguardInventoryReports() {
           {/* TABLE SHEET 1: PRODUCTION & EXTRACTION LOGS */}
           {activeSheet === 'REP_OPS_001' && (
             <ReportTableWrapper
-              title="Daily Extraction & Pressing Production Logs"
-              subtitle="Olive intake, cold pressing oil volume, acidity % laboratory results, and storage tank assignment"
+              title={t('daily_extraction_production_logs', 'Daily Extraction & Pressing Production Logs')}
+              subtitle={t('daily_extraction_logs_subtitle', 'Olive intake, cold pressing oil volume, acidity % laboratory results, and storage tank assignment')}
               totalRecordsCount={filteredProductionLogs.length}
               pagination={{
                 currentPage,
@@ -1538,17 +1542,17 @@ export default function AuthenticVanguardInventoryReports() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Batch Number</th>
-                      <th className="py-2 px-3">Date & Shift</th>
-                      <th className="py-2 px-3">Pressing Line</th>
-                      <th className="py-2 px-3">Grower / Source</th>
-                      <th className="py-2 px-3 text-right">Intake (KG)</th>
-                      <th className="py-2 px-3 text-right">Extracted (L)</th>
-                      <th className="py-2 px-3 text-right">Yield %</th>
-                      <th className="py-2 px-3 text-right">Acidity %</th>
-                      <th className="py-2 px-3">Destination Tank</th>
-                      <th className="py-2 px-3">Operator</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="py-2 px-3">{t('batch_number', 'Batch Number')}</th>
+                      <th className="py-2 px-3">{t('date_shift', 'Date & Shift')}</th>
+                      <th className="py-2 px-3">{t('pressing_line', 'Pressing Line')}</th>
+                      <th className="py-2 px-3">{t('grower_source', 'Grower / Source')}</th>
+                      <th className="py-2 px-3 text-right">{t('intake_kg', 'Intake (KG)')}</th>
+                      <th className="py-2 px-3 text-right">{t('extracted_l', 'Extracted (L)')}</th>
+                      <th className="py-2 px-3 text-right">{t('yield_percent', 'Yield %')}</th>
+                      <th className="py-2 px-3 text-right">{t('acidity_percent', 'Acidity %')}</th>
+                      <th className="py-2 px-3">{t('destination_tank', 'Destination Tank')}</th>
+                      <th className="py-2 px-3">{t('operator', 'Operator')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1619,7 +1623,7 @@ export default function AuthenticVanguardInventoryReports() {
                     {paginatedProductionLogs.length === 0 && (
                       <tr>
                         <td colSpan={11} className="py-6 px-3 text-center text-slate-600 font-medium">
-                          No production logs match the selected operational filters.
+                          {t('no_production_logs_match', 'No production logs match the selected operational filters.')}
                         </td>
                       </tr>
                     )}
@@ -1632,8 +1636,8 @@ export default function AuthenticVanguardInventoryReports() {
           {/* TABLE SHEET 2: PRESSING CYCLES */}
           {activeSheet === 'REP_OPS_002' && (
             <ReportTableWrapper
-              title="Pressing & Processing Operational Cycles"
-              subtitle="Malaxation temperatures, decanter speeds, cycle throughput rates, and technician telemetry"
+              title={t('pressing_processing_cycles', 'Pressing & Processing Operational Cycles')}
+              subtitle={t('pressing_cycles_subtitle', 'Malaxation temperatures, decanter speeds, cycle throughput rates, and technician telemetry')}
               totalRecordsCount={filteredPressingCycles.length}
               pagination={{
                 currentPage,
@@ -1651,16 +1655,16 @@ export default function AuthenticVanguardInventoryReports() {
                 <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300 border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Cycle Code</th>
-                      <th className="py-2 px-3">Processing Line</th>
-                      <th className="py-2 px-3">Date / Start Time</th>
-                      <th className="py-2 px-3">Olive Variety</th>
-                      <th className="py-2 px-3 text-right">Malaxation Temp</th>
-                      <th className="py-2 px-3 text-right">Duration (Min)</th>
-                      <th className="py-2 px-3 text-right">Decanter RPM</th>
-                      <th className="py-2 px-3 text-right">Throughput (KG/H)</th>
-                      <th className="py-2 px-3">Operator</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="py-2 px-3">{t('cycle_code', 'Cycle Code')}</th>
+                      <th className="py-2 px-3">{t('processing_line', 'Processing Line')}</th>
+                      <th className="py-2 px-3">{t('date_start_time', 'Date / Start Time')}</th>
+                      <th className="py-2 px-3">{t('olive_variety', 'Olive Variety')}</th>
+                      <th className="py-2 px-3 text-right">{t('malaxation_temp', 'Malaxation Temp')}</th>
+                      <th className="py-2 px-3 text-right">{t('duration_min', 'Duration (Min)')}</th>
+                      <th className="py-2 px-3 text-right">{t('decanter_rpm', 'Decanter RPM')}</th>
+                      <th className="py-2 px-3 text-right">{t('throughput_kgh', 'Throughput (KG/H)')}</th>
+                      <th className="py-2 px-3">{t('operator', 'Operator')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1710,7 +1714,7 @@ export default function AuthenticVanguardInventoryReports() {
                     {paginatedPressingCycles.length === 0 && (
                       <tr>
                         <td colSpan={10} className="py-6 px-3 text-center text-slate-600 font-medium">
-                          No pressing cycles match the selected operational filters.
+                          {t('no_pressing_cycles_match', 'No pressing cycles match the selected operational filters.')}
                         </td>
                       </tr>
                     )}
@@ -1723,8 +1727,8 @@ export default function AuthenticVanguardInventoryReports() {
           {/* TABLE SHEET 3: TANK FARM THROUGHPUT */}
           {activeSheet === 'REP_OPS_003' && (
             <ReportTableWrapper
-              title="Tank Farm & Bulk Silo Inventory Throughput"
-              subtitle="Stainless steel tank capacities, inflows, outflows, current bulk balance, and nitrogen blanketing status"
+              title={t('tank_farm_throughput', 'Tank Farm & Bulk Silo Inventory Throughput')}
+              subtitle={t('tank_farm_subtitle', 'Stainless steel tank capacities, inflows, outflows, current bulk balance, and nitrogen blanketing status')}
               totalRecordsCount={filteredTankThroughput.length}
               pagination={{
                 currentPage,
@@ -1742,17 +1746,17 @@ export default function AuthenticVanguardInventoryReports() {
                 <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300 border-collapse">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50/80 dark:bg-slate-800/80 dark:border-slate-700 font-semibold text-slate-900 dark:text-slate-100">
-                      <th className="px-4 py-3">Tank ID</th>
-                      <th className="px-4 py-3">Tank Name & Location</th>
-                      <th className="py-2 px-3">Oil Classification</th>
-                      <th className="py-2 px-3 text-right">Capacity (L)</th>
-                      <th className="py-2 px-3 text-right">Inflow (L)</th>
-                      <th className="py-2 px-3 text-right">Outflow (L)</th>
-                      <th className="py-2 px-3 text-right">Balance (L)</th>
-                      <th className="py-2 px-3 text-center">Fill Gauge</th>
-                      <th className="py-2 px-3 text-right">Temp (°C)</th>
-                      <th className="py-2 px-3 text-center">Nitrogen Gas</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="px-4 py-3">{t('tank_id', 'Tank ID')}</th>
+                      <th className="px-4 py-3">{t('tank_name_location', 'Tank Name & Location')}</th>
+                      <th className="py-2 px-3">{t('oil_classification', 'Oil Classification')}</th>
+                      <th className="py-2 px-3 text-right">{t('capacity_l', 'Capacity (L)')}</th>
+                      <th className="py-2 px-3 text-right">{t('inflow_l', 'Inflow (L)')}</th>
+                      <th className="py-2 px-3 text-right">{t('outflow_l', 'Outflow (L)')}</th>
+                      <th className="py-2 px-3 text-right">{t('balance_l', 'Balance (L)')}</th>
+                      <th className="py-2 px-3 text-center">{t('fill_gauge', 'Fill Gauge')}</th>
+                      <th className="py-2 px-3 text-right">{t('temp_c', 'Temp (°C)')}</th>
+                      <th className="py-2 px-3 text-center">{t('nitrogen_gas', 'Nitrogen Gas')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1807,7 +1811,7 @@ export default function AuthenticVanguardInventoryReports() {
                     {paginatedTankThroughput.length === 0 && (
                       <tr>
                         <td colSpan={11} className="py-6 px-3 text-center text-slate-600 font-medium">
-                          No tanks match the selected operational filters.
+                          {t('no_tanks_match', 'No tanks match the selected operational filters.')}
                         </td>
                       </tr>
                     )}
@@ -1820,8 +1824,8 @@ export default function AuthenticVanguardInventoryReports() {
           {/* TABLE SHEET 4: WORK ORDERS & PACKAGING ASSEMBLY */}
           {activeSheet === 'REP_OPS_004' && (
             <ReportTableWrapper
-              title="Packaging Work Orders & Product Assembly Logs"
-              subtitle="Manufacturing work orders, scheduled retail packaging lines, completed units, and scrap loss metrics"
+              title={t('packaging_work_orders_logs', 'Packaging Work Orders & Product Assembly Logs')}
+              subtitle={t('packaging_work_orders_subtitle', 'Manufacturing work orders, scheduled retail packaging lines, completed units, and scrap loss metrics')}
               totalRecordsCount={filteredWorkOrders.length}
               pagination={{
                 currentPage,
@@ -1839,16 +1843,16 @@ export default function AuthenticVanguardInventoryReports() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Work Order #</th>
-                      <th className="py-2 px-3">SKU & Item Description</th>
-                      <th className="py-2 px-3">Assembly Line</th>
-                      <th className="py-2 px-3 text-right">Target Units</th>
-                      <th className="py-2 px-3 text-right">Finished Units</th>
-                      <th className="py-2 px-3 text-right">Scrap Rate %</th>
-                      <th className="py-2 px-3">Target Date</th>
-                      <th className="py-2 px-3">Supervisor</th>
-                      <th className="py-2 px-3 text-center">Priority</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="py-2 px-3">{t('work_order_num', 'Work Order #')}</th>
+                      <th className="py-2 px-3">{t('sku_item_description', 'SKU & Item Description')}</th>
+                      <th className="py-2 px-3">{t('assembly_line', 'Assembly Line')}</th>
+                      <th className="py-2 px-3 text-right">{t('target_units', 'Target Units')}</th>
+                      <th className="py-2 px-3 text-right">{t('finished_units', 'Finished Units')}</th>
+                      <th className="py-2 px-3 text-right">{t('scrap_rate_percent', 'Scrap Rate %')}</th>
+                      <th className="py-2 px-3">{t('target_date', 'Target Date')}</th>
+                      <th className="py-2 px-3">{t('supervisor', 'Supervisor')}</th>
+                      <th className="py-2 px-3 text-center">{t('priority', 'Priority')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1901,7 +1905,7 @@ export default function AuthenticVanguardInventoryReports() {
                     {paginatedWorkOrders.length === 0 && (
                       <tr>
                         <td colSpan={10} className="py-6 px-3 text-center text-slate-600 font-medium">
-                          No packaging work orders match the selected operational filters.
+                          {t('no_packaging_orders_match', 'No packaging work orders match the selected operational filters.')}
                         </td>
                       </tr>
                     )}
@@ -1914,8 +1918,8 @@ export default function AuthenticVanguardInventoryReports() {
           {/* TABLE SHEET 5: DISPATCH OPERATIONS */}
           {activeSheet === 'REP_OPS_005' && (
             <ReportTableWrapper
-              title="Dispatch Operations & Logistics Handover"
-              subtitle="Outbound finished goods manifests, driver vehicle dispatch, QA stamps, and destination depot verification"
+              title={t('dispatch_operations_logistics', 'Dispatch Operations & Logistics Handover')}
+              subtitle={t('dispatch_operations_subtitle', 'Outbound finished goods manifests, driver vehicle dispatch, QA stamps, and destination depot verification')}
               totalRecordsCount={filteredDispatchRuns.length}
               pagination={{
                 currentPage,
@@ -1933,16 +1937,16 @@ export default function AuthenticVanguardInventoryReports() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Run Code</th>
-                      <th className="py-2 px-3">Departure Time</th>
-                      <th className="py-2 px-3">Destination Depot</th>
-                      <th className="py-2 px-3">Assigned Fleet Carrier</th>
-                      <th className="py-2 px-3 text-right">Packages / Tins</th>
-                      <th className="py-2 px-3 text-right">Net Volume (L)</th>
-                      <th className="py-2 px-3">Invoice Ref</th>
-                      <th className="py-2 px-3">QA Release Stamp</th>
-                      <th className="py-2 px-3">Dispatcher</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="py-2 px-3">{t('run_code', 'Run Code')}</th>
+                      <th className="py-2 px-3">{t('departure_time', 'Departure Time')}</th>
+                      <th className="py-2 px-3">{t('destination_depot', 'Destination Depot')}</th>
+                      <th className="py-2 px-3">{t('assigned_fleet_carrier', 'Assigned Fleet Carrier')}</th>
+                      <th className="py-2 px-3 text-right">{t('packages_tins', 'Packages / Tins')}</th>
+                      <th className="py-2 px-3 text-right">{t('net_volume_l', 'Net Volume (L)')}</th>
+                      <th className="py-2 px-3">{t('invoice_ref', 'Invoice Ref')}</th>
+                      <th className="py-2 px-3">{t('qa_release_stamp', 'QA Release Stamp')}</th>
+                      <th className="py-2 px-3">{t('dispatcher', 'Dispatcher')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1988,7 +1992,7 @@ export default function AuthenticVanguardInventoryReports() {
                     {paginatedDispatchRuns.length === 0 && (
                       <tr>
                         <td colSpan={10} className="py-6 px-3 text-center text-slate-600 font-medium">
-                          No dispatch operations match the selected operational filters.
+                          {t('no_dispatch_ops_match', 'No dispatch operations match the selected operational filters.')}
                         </td>
                       </tr>
                     )}
