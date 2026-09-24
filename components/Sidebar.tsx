@@ -256,7 +256,7 @@ export default function Sidebar({
           {/* HAMBURGER TOGGLE ICON (☰) */}
           <button
             onClick={handleToggle}
-            title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+            title={isOpen ? t('collapse_sidebar', 'Collapse Sidebar') : t('expand_sidebar', 'Expand Sidebar')}
             className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-700 transition-colors cursor-pointer"
           >
             <Menu className="w-5 h-5 text-gray-700" />
@@ -266,7 +266,7 @@ export default function Sidebar({
           <Link
             href="/backoffice"
             onClick={() => handleNav('grid-dash')}
-            title="Enterprise Main Hub"
+            title={t('enterprise_main_hub', 'Enterprise Main Hub')}
             className="p-1.5 hover:bg-amber-50 rounded-lg text-amber-600 transition-colors cursor-pointer"
           >
             <Home className="w-5 h-5" />
@@ -1436,7 +1436,7 @@ export default function Sidebar({
             {isOpen && (
               <div className="flex items-center justify-between w-full">
                 <span>{t('identity_settings', 'Identity & Settings')}</span>
-                <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-full uppercase">Active</span>
+                <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded-full uppercase">{t('active', 'Active')}</span>
               </div>
             )}
           </button>
@@ -1449,7 +1449,7 @@ export default function Sidebar({
             {isOpen && (
               <div className="flex items-center justify-between w-full">
                 <span className="font-bold">{t('license_certificate', 'License Certificate')}</span>
-                <span className="text-[9px] font-black bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded-full uppercase">Unlocked</span>
+                <span className="text-[9px] font-black bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded-full uppercase">{t('unlocked', 'Unlocked')}</span>
               </div>
             )}
           </Link>

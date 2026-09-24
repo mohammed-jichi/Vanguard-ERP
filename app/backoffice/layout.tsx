@@ -351,7 +351,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             type="button"
             onClick={() => setSidebarVisible(!sidebarVisible)}
             className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-300 shadow-2xs"
-            title="Toggle Sidebar"
+            title={t('toggle_sidebar', 'Toggle Sidebar')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
@@ -380,7 +380,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 Vanguard ERP
               </span>
               <span className="text-[10px] font-mono text-muted-foreground -mt-0.5 tracking-wider uppercase font-semibold">
-                Enterprise Operations System
+                {t('enterprise_operations_system', 'Enterprise Operations System')}
               </span>
             </div>
           </Link>
@@ -390,7 +390,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
         <div className="flex-1 flex justify-center items-center px-4">
           <Link
             href="/admin"
-            title="Switch Workspace / Admin Hub"
+            title={t('switch_workspace_admin', 'Switch Workspace / Admin Hub')}
             className="flex items-center px-5 py-2 rounded-full bg-muted hover:bg-muted/80 border border-border shadow-xs hover:border-primary transition-all group"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-primary mr-3 shadow-xs animate-pulse"></span>
@@ -401,7 +401,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               #{currentTenant?.companyId || '1300'}
             </span>
             <span className="text-[11px] font-semibold text-slate-500 mr-1 group-hover:text-emerald-800 transition-colors">
-              (Switch)
+              {t('switch', '(Switch)')}
             </span>
           </Link>
         </div>
@@ -414,7 +414,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             <Link
               href="/backoffice"
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
-              title="Enterprise Main Hub"
+              title={t('enterprise_main_hub', 'Enterprise Main Hub')}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -425,7 +425,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             <Link
               href="/backoffice/inbox"
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
-              title="Operations & Approvals Inbox"
+              title={t('operations_inbox', 'Operations & Approvals Inbox')}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -443,7 +443,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               type="button"
               onClick={() => { setActiveDrawerTab('ALERTS'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
-              title="Alerts & Notifications"
+              title={t('alerts_notifications', 'Alerts & Notifications')}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
@@ -458,7 +458,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               type="button"
               onClick={() => { setActiveDrawerTab('HELP'); setQuickDrawerOpen(true); }}
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
-              title="Help & Support"
+              title={t('help_support', 'Help & Support')}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -531,7 +531,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       >
                         <span className="flex items-center gap-1.5">
                           <span>🌐</span>
-                          <span>{language === 'ar' ? 'المزيد من اللغات...' : 'More Languages...'}</span>
+                          <span>{t('more_languages', 'More Languages...')}</span>
                         </span>
                         <span className="text-[10px] text-slate-400 font-mono">20+</span>
                       </button>
@@ -546,7 +546,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               type="button"
               onClick={() => setQuickDrawerOpen(!quickDrawerOpen)}
               className="p-2 rounded-xl bg-primary hover:bg-primary/90 text-white transition-colors shadow-2xs cursor-pointer"
-              title="Open Quick Menu Drawer"
+              title={t('open_quick_drawer', 'Open Quick Menu Drawer')}
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -578,7 +578,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 <div className="absolute end-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
                   <div className="px-4 py-2.5 border-b border-slate-100 bg-card">
                     <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
-                    <div className="text-[10.5px] text-primary font-mono font-semibold">General Operations Manager</div>
+                    <div className="text-[10.5px] text-primary font-mono font-semibold">{t('general_operations_manager', 'General Operations Manager')}</div>
                     <div className="text-[9.5px] text-slate-400 font-mono truncate mt-0.5">
                       Southern Olive Oil Products S.A.R.L
                     </div>
@@ -656,7 +656,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       >
                         <span className="flex items-center gap-1.5">
                           <span>🌍</span>
-                          <span>{language === 'ar' ? 'المزيد من اللغات العالمية...' : 'More Languages...'}</span>
+                          <span>{t('more_languages', 'More Languages...')}</span>
                         </span>
                         <span className="text-[10px] font-mono text-slate-400">20+</span>
                       </button>
@@ -764,7 +764,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   }`}
               >
                 <span className="text-base">📰</span>
-                <span className="text-[10px] leading-tight">Latest<br />Updates</span>
+                <span className="text-[10px] leading-tight">{t('latest_updates', 'Latest Updates')}</span>
               </button>
 
               <button
@@ -774,7 +774,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   }`}
               >
                 <span className="text-base">🔔</span>
-                <span className="text-[10px] leading-tight">Alerts</span>
+                <span className="text-[10px] leading-tight">{t('alerts', 'Alerts')}</span>
               </button>
 
               <button
@@ -784,7 +784,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   }`}
               >
                 <span className="text-base">🕒</span>
-                <span className="text-[10px] leading-tight">Last<br />Activities</span>
+                <span className="text-[10px] leading-tight">{t('last_activities', 'Last Activities')}</span>
               </button>
 
               <button
@@ -794,7 +794,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   }`}
               >
                 <span className="text-base">❓</span>
-                <span className="text-[10px] leading-tight">Help</span>
+                <span className="text-[10px] leading-tight">{t('help', 'Help')}</span>
               </button>
 
               <button
@@ -804,7 +804,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   }`}
               >
                 <span className="text-base">🌙</span>
-                <span className="text-[10px] leading-tight">Theme</span>
+                <span className="text-[10px] leading-tight">{t('theme', 'Theme')}</span>
               </button>
             </div>
 
@@ -812,27 +812,27 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               {activeDrawerTab === 'UPDATES' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900 text-sm">Latest Updates</h3>
+                    <h3 className="font-bold text-slate-900 text-sm">{t('latest_updates', 'Latest Updates')}</h3>
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
                   </div>
 
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">Sales Control</span>
+                      <span className="font-bold text-slate-900">{t('sales_control', 'Sales Control')}</span>
                       <span className="text-[10px] text-slate-400 font-mono">31 Aug 2026</span>
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed">
-                      High-contrast matrix reporting engine with multi-format exports (PDF, Excel, CSV) now live for Southern Olive Oil Products S.A.R.L.
+                      {t('update_sales_matrix_desc', 'High-contrast matrix reporting engine with multi-format exports (PDF, Excel, CSV) now live for Southern Olive Oil Products S.A.R.L.')}
                     </p>
                   </div>
 
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">Operations Center</span>
+                      <span className="font-bold text-slate-900">{t('operations_center', 'Operations Center')}</span>
                       <span className="text-[10px] text-slate-400 font-mono">26 Aug 2026</span>
                     </div>
                     <p className="text-[11px] text-slate-600 leading-relaxed">
-                      A new role access has been configured under Operations Center: Purchase Order - Hide Cost option.
+                      {t('update_ops_role_desc', 'A new role access has been configured under Operations Center: Purchase Order - Hide Cost option.')}
                     </p>
                   </div>
                 </div>
@@ -842,9 +842,9 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-900 text-sm">System Alerts</h3>
+                      <h3 className="font-bold text-slate-900 text-sm">{t('system_alerts', 'System Alerts')}</h3>
                       <span className="px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-slate-600">
-                        {notificationsData.alerts.length} Active
+                        {notificationsData.alerts.length} {t('active', 'Active')}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -854,7 +854,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                           onClick={handleMarkAllRead}
                           className="text-[10px] font-bold text-blue-600 hover:text-blue-800 underline transition-colors"
                         >
-                          Mark all read
+                          {t('mark_all_read', 'Mark all read')}
                         </button>
                       )}
                       <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
@@ -864,7 +864,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   {notificationsData.alerts.length === 0 ? (
                     <div className="p-8 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-medium space-y-2">
                       <span className="text-2xl block">🔔</span>
-                      <span>No active alerts right now. System nominal.</span>
+                      <span>{t('no_active_alerts', 'No active alerts right now. System nominal.')}</span>
                     </div>
                   ) : (
                     <div className="space-y-2.5">
@@ -894,7 +894,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                               <button
                                 type="button"
                                 onClick={() => handleDismissAlert(alt.id)}
-                                title="Dismiss alert"
+                                title={t('dismiss_alert', 'Dismiss alert')}
                                 className="text-slate-400 hover:text-slate-700 text-xs px-1 rounded hover:bg-black/5 transition-colors"
                               >
                                 ✕
@@ -902,8 +902,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                             </div>
                           </div>
 
-                          <h4 className="font-bold text-xs leading-snug">{alt.title}</h4>
-                          <p className="text-[11px] leading-relaxed opacity-85">{alt.message}</p>
+                          <h4 className="font-bold text-xs leading-snug">{t(alt.title, alt.title)}</h4>
+                          <p className="text-[11px] leading-relaxed opacity-85">{t(alt.message, alt.message)}</p>
 
                           <div className="pt-1 flex items-center justify-between">
                             <button
@@ -911,7 +911,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                               onClick={() => handleDismissAlert(alt.id)}
                               className="text-[10px] font-medium text-slate-500 hover:text-slate-800 transition-colors"
                             >
-                              Dismiss
+                              {t('dismiss', 'Dismiss')}
                             </button>
                             {alt.actionLink && (
                               <Link
@@ -919,7 +919,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                                 onClick={() => setQuickDrawerOpen(false)}
                                 className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-800 text-[10.5px] font-bold rounded-lg border border-slate-300 shadow-2xs flex items-center gap-1 transition-colors"
                               >
-                                <span>{alt.actionLabel || 'Action'}</span>
+                                <span>{alt.actionLabel ? t(alt.actionLabel, alt.actionLabel) : t('action', 'Action')}</span>
                                 <span>↗</span>
                               </Link>
                             )}
@@ -935,10 +935,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-900 text-sm">Operations Feed</h3>
+                      <h3 className="font-bold text-slate-900 text-sm">{t('operations_feed', 'Operations Feed')}</h3>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-200 text-[10px] font-mono font-bold text-emerald-800 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
-                        LIVE
+                        {t('live', 'LIVE')}
                       </span>
                     </div>
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
@@ -947,7 +947,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   {notificationsData.activities.length === 0 ? (
                     <div className="p-8 border-2 border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-medium space-y-2">
                       <span className="text-2xl block">🕒</span>
-                      <span>No activities recorded yet.</span>
+                      <span>{t('no_activities_recorded', 'No activities recorded yet.')}</span>
                     </div>
                   ) : (
                     <div className="space-y-2.5">
@@ -958,7 +958,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                         >
                           <div className="flex items-center justify-between">
                             <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-800 text-[9.5px] font-mono font-bold border border-slate-300">
-                              {act.action_type}
+                              {t(act.action_type, act.action_type)}
                             </span>
                             <span className="text-[10px] text-slate-400 font-mono">
                               {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -966,11 +966,11 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                           </div>
 
                           <p className="text-[11.5px] text-slate-800 font-medium leading-snug">
-                            {act.description}
+                            {t(act.description, act.description)}
                           </p>
 
                           <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-slate-500 font-mono">
-                            <span>By: <strong className="text-slate-700">{act.performed_by}</strong></span>
+                            <span>{t('by', 'By')}: <strong className="text-slate-700">{act.performed_by}</strong></span>
                             <span>{new Date(act.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
                           </div>
                         </div>
@@ -983,7 +983,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               {activeDrawerTab === 'HELP' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900 text-sm">Help & Support</h3>
+                    <h3 className="font-bold text-slate-900 text-sm">{t('help_support', 'Help & Support')}</h3>
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
                   </div>
 
@@ -991,8 +991,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <div className="flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">?</span>
                       <div>
-                        <h4 className="font-bold text-slate-900">Support Center</h4>
-                        <p className="text-[10.5px] text-slate-500">Open the main support page for guides and videos.</p>
+                        <h4 className="font-bold text-slate-900">{t('support_center', 'Support Center')}</h4>
+                        <p className="text-[10.5px] text-slate-500">{t('support_center_desc', 'Open the main support page for guides and videos.')}</p>
                       </div>
                     </div>
                     <button
@@ -1000,7 +1000,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       onClick={() => setIsSupportModalOpen(true)}
                       className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800 transition-colors cursor-pointer"
                     >
-                      Open Support
+                      {t('open_support', 'Open Support')}
                     </button>
                   </div>
 
@@ -1008,8 +1008,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     <div className="flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">💬</span>
                       <div>
-                        <h4 className="font-bold text-slate-900">Feedback</h4>
-                        <p className="text-[10.5px] text-slate-500">Open the feedback form and send your direct comments.</p>
+                        <h4 className="font-bold text-slate-900">{t('feedback', 'Feedback')}</h4>
+                        <p className="text-[10.5px] text-slate-500">{t('feedback_desc', 'Open the feedback form and send your direct comments.')}</p>
                       </div>
                     </div>
                     <button
@@ -1017,26 +1017,26 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       onClick={() => setIsFeedbackModalOpen(true)}
                       className="px-3 py-1 bg-slate-200 hover:bg-slate-300 rounded font-bold text-xs text-slate-800 transition-colors cursor-pointer"
                     >
-                      Open Feedback
+                      {t('open_feedback', 'Open Feedback')}
                     </button>
                   </div>
 
                   <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900 text-xs">ℹ️ Quick Tips</span>
+                      <span className="font-bold text-slate-900 text-xs">ℹ️ {t('quick_tips', 'Quick Tips')}</span>
                     </div>
                     <div className="space-y-1.5 text-[11px] text-slate-600">
                       <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
                         <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">1</span>
-                        <span>Use the left catalog to swap between all 93 reports.</span>
+                        <span>{t('tip_1', 'Use the left catalog to swap between all 93 reports.')}</span>
                       </div>
                       <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
                         <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">2</span>
-                        <span>Use the ribbon toolbar to filter by live rolling EOD dates.</span>
+                        <span>{t('tip_2', 'Use the ribbon toolbar to filter by live rolling EOD dates.')}</span>
                       </div>
                       <div className="p-2 bg-white rounded border border-slate-200 flex gap-2">
                         <span className="w-4 h-4 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-[9px] shrink-0">3</span>
-                        <span>Export directly to PDF, Excel, and CSV with Arabic UTF-8.</span>
+                        <span>{t('tip_3', 'Export directly to PDF, Excel, and CSV with Arabic UTF-8.')}</span>
                       </div>
                     </div>
                   </div>
@@ -1046,14 +1046,14 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               {activeDrawerTab === 'DARK' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900 text-sm">Theme Settings</h3>
+                    <h3 className="font-bold text-slate-900 text-sm">{t('theme_settings', 'Theme Settings')}</h3>
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
                   </div>
 
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-2">
                     <span className="text-2xl block">☀️</span>
-                    <span className="font-bold text-slate-800 block">Active Mode: Warm Light Mode</span>
-                    <p className="text-[11px] text-slate-500">High-Contrast Light Theme is active and locked for optimal eye comfort.</p>
+                    <span className="font-bold text-slate-800 block">{t('active_mode_light', 'Active Mode: Warm Light Mode')}</span>
+                    <p className="text-[11px] text-slate-500">{t('active_mode_desc', 'High-Contrast Light Theme is active and locked for optimal eye comfort.')}</p>
                   </div>
                 </div>
               )}

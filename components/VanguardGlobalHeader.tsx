@@ -467,7 +467,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             href="/support"
             target="_blank"
             rel="noreferrer"
-            title="Help & Support"
+            title={t('help_support', 'Help & Support')}
             className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors"
           >
             <HelpCircle className="w-4.5 h-4.5 text-amber-400" />
@@ -506,16 +506,16 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2"
                 >
                   <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Organization</span>
+                  <span>{t('organization', 'Organization')}</span>
                 </Link>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('alerts'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Alerts & Notifications</span>
+                  <span>{t('alerts_notifications', 'Alerts & Notifications')}</span>
                 </button>
                 {/* 5-LANGUAGE SELECTOR SYSTEM */}
                 <div className="p-2 border-t border-b border-gray-100 my-1 space-y-1">
                   <span className="text-[10px] uppercase font-bold text-gray-400 block px-1 mb-1">
-                    Select Language
+                    {t('language', 'Language')}
                   </span>
                   {[
                     { code: 'en' as LanguageCode, label: 'English (US)', flag: '🇺🇸' },
@@ -540,7 +540,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         <span>{item.flag}</span>
                         <span>{item.label}</span>
                       </span>
-                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">Active</span>}
+                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">{t('active', 'Active')}</span>}
                     </button>
                   ))}
                   <button
@@ -553,7 +553,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   >
                     <span className="flex items-center gap-1.5">
                       <span>🌍</span>
-                      <span>{language === 'ar' ? 'المزيد من اللغات العالمية...' : 'More Languages...'}</span>
+                      <span>{t('more_languages', 'More Languages...')}</span>
                     </span>
                     <span className="text-[10px] font-mono text-slate-400">20+</span>
                   </button>
@@ -565,17 +565,17 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       V-Track Cloud
                     </span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
-                      ACTIVE
+                      {t('active', 'ACTIVE')}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-600 font-medium mt-0.5">Real-time mobile & geographics tracking active</p>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5">{t('vtrack_status_desc', 'Real-time mobile & geographics tracking active')}</p>
                 </div>
                 <a href="/vtrack" target="_blank" rel="noopener noreferrer" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between text-xs font-bold text-slate-700">
                   <div className="flex items-center gap-2">
                     <Map className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <span>V-Track Geographics</span>
+                    <span>{t('vtrack_geographics', 'V-Track Geographics')}</span>
                   </div>
-                  <span className="text-[9.5px] font-mono text-emerald-600 font-black">LIVE</span>
+                  <span className="text-[9.5px] font-mono text-emerald-600 font-black">{t('live', 'LIVE')}</span>
                 </a>
                 <Link
                   href={`/${orgId}/settings/account`}
@@ -583,7 +583,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
                 >
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>My Account</span>
+                  <span>{t('my_account', 'My Account')}</span>
                 </Link>
                 <Link
                   href={`/${orgId}/settings/roles`}
@@ -591,7 +591,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
                 >
                   <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Roles</span>
+                  <span>{t('roles', 'Roles & Permissions')}</span>
                 </Link>
                 <Link
                   href={`/${orgId}/settings/users`}
@@ -599,15 +599,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
                 >
                   <UsersIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Users</span>
+                  <span>{t('users', 'Users')}</span>
                 </Link>
                 <button onClick={() => { setIsQuickMenuOpen(true); setQuickMenuTab('updates'); setIsProfileOpen(false); }} className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Latest Updates</span>
+                  <span>{t('latest_updates', 'Latest Updates')}</span>
                 </button>
                 <a href="/support" target="_blank" rel="noreferrer" className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2">
                   <HelpCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Support Center</span>
+                  <span>{t('support_center', 'Support Center')}</span>
                 </a>
                 
                 <div className="border-t border-gray-100 pt-1">
@@ -617,7 +617,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     className="w-full p-2 hover:bg-rose-50 text-rose-700 rounded-xl flex items-center gap-2 font-bold cursor-pointer text-left"
                   >
                     <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                    <span>Logout</span>
+                    <span>{t('logout', 'Logout')}</span>
                   </button>
                 </div>
               </div>
@@ -627,7 +627,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           {/* QUICK MENU TOGGLE ICON (9-CUBES - GOLD THEME) */}
           <button
             onClick={() => setIsQuickMenuOpen(true)}
-            title="Quick Menu"
+            title={t('open_quick_drawer', 'Quick Menu')}
             className="p-2 bg-amber-500/20 hover:bg-amber-500 text-amber-400 hover:text-slate-950 border border-amber-500/40 rounded-xl transition-colors shadow-2xs ml-1"
           >
             <LayoutGrid className="w-4.5 h-4.5 text-amber-400 hover:text-slate-950" />

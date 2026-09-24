@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/LanguageContext';
 import ProductInsightsView from './ProductInsightsView';
 import {
   FileText,
@@ -67,6 +68,8 @@ interface SalesDashboardProps {
 }
 
 export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) {
+  const { t: tr } = useLanguage();
+
   // Filter States
   const [selectedBranch, setSelectedBranch] = useState<string>('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('LBP');
@@ -299,13 +302,13 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Sub-Navigation Tabs Config
   const tabs = [
-    { id: 'summary', label: 'Summary', icon: LayoutDashboard },
-    { id: 'comparative', label: 'Comparative', icon: GitCompare },
-    { id: 'product-insights', label: 'Product Insights', icon: Package },
-    { id: 'customer-insights', label: 'Customer Insights', icon: UserCheck },
-    { id: 'customers', label: 'Customers', icon: Users },
-    { id: 'today', label: 'Today', icon: Calendar },
-    { id: 'geographics', label: 'Geographics', icon: Globe }
+    { id: 'summary', label: tr('summary', 'Summary'), icon: LayoutDashboard },
+    { id: 'comparative', label: tr('comparative', 'Comparative'), icon: GitCompare },
+    { id: 'product-insights', label: tr('product_insights', 'Product Insights'), icon: Package },
+    { id: 'customer-insights', label: tr('customer_insights', 'Customer Insights'), icon: UserCheck },
+    { id: 'customers', label: tr('customers', 'Customers'), icon: Users },
+    { id: 'today', label: tr('today', 'Today'), icon: Calendar },
+    { id: 'geographics', label: tr('geographics', 'Geographics'), icon: Globe }
   ];
 
   const usdRate = 89500;
@@ -1057,7 +1060,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               }}
               className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition flex items-center gap-1.5 cursor-pointer"
             >
-              <span>View All Branches Fleet</span>
+              <span>{tr('view_all_branches_fleet', 'View All Branches Fleet')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -1079,7 +1082,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-gray-100 hover:text-gray-900 border border-gray-200 shadow-sm"
               >
-                Product Insights ↗
+                {tr('product_insights', 'Product Insights')} ↗
               </a>
             );
           }
@@ -1093,7 +1096,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-gray-100 hover:text-gray-900 border border-gray-200 shadow-sm"
               >
-                Customer Insights ↗
+                {tr('customer_insights', 'Customer Insights')} ↗
               </a>
             );
           }
@@ -1122,7 +1125,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           
           {/* SECTION TITLE: PERFORMANCE HIGHLIGHTS */}
           <h2 className="text-center font-bold text-lg text-slate-800 tracking-tight pt-2">
-            Performance Highlights
+            {tr('performance_highlights', 'Performance Highlights')}
           </h2>
 
           {/* 6 PERFORMANCE HIGHLIGHTS CARDS WITH INTERACTIVE TOOLTIPS */}
@@ -1130,11 +1133,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             {/* Highlight 1: Revenue YoY */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-emerald-500 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Revenue YoY</span>
+                <span>{tr('revenue_yoy', 'Revenue YoY')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Completed-month YoY: Net Sales from 2026 Jan-Jul vs 2025 Jan-Jul. Current month is excluded until it is complete.
+                    {tr('revenue_yoy_tooltip', 'Completed-month YoY: Net Sales from 2026 Jan-Jul vs 2025 Jan-Jul. Current month is excluded until it is complete.')}
                   </div>
                 </div>
               </div>
@@ -1147,76 +1150,76 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             {/* Highlight 2: Best Month */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-blue-500 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Best Month</span>
+                <span>{tr('best_month', 'Best Month')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Highest month revenue
+                    {tr('highest_month_revenue', 'Highest month revenue')}
                   </div>
                 </div>
               </div>
               <p className="text-lg font-bold text-black mt-2">Aug 2026</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">202.3 M LL | Peak Month</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">202.3 M LL | {tr('peak_month', 'Peak Month')}</p>
             </div>
 
             {/* Highlight 3: Softest Month */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-amber-500 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Softest Month</span>
+                <span>{tr('softest_month', 'Softest Month')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Lowest month revenue
+                    {tr('lowest_month_revenue', 'Lowest month revenue')}
                   </div>
                 </div>
               </div>
               <p className="text-lg font-bold text-black mt-2">Feb 2026</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">135.0 M LL | Softest Month</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">135.0 M LL | {tr('softest_month', 'Softest Month')}</p>
             </div>
 
             {/* Highlight 4: Top YoY Month */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-teal-500 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Top YoY Month</span>
+                <span>{tr('top_yoy_month', 'Top YoY Month')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Highest month YoY change
+                    {tr('highest_month_yoy_change', 'Highest month YoY change')}
                   </div>
                 </div>
               </div>
               <p className="text-lg font-bold text-black mt-2">July</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">+32.5% YoY Growth</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">+32.5% {tr('yoy_growth', 'YoY Growth')}</p>
             </div>
 
             {/* Highlight 5: Best Category */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-purple-500 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Best Category</span>
+                <span>{tr('best_category', 'Best Category')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-48 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Highest category revenue
+                    {tr('highest_category_revenue', 'Highest category revenue')}
                   </div>
                 </div>
               </div>
               <p className="text-lg font-bold text-black mt-2">مفرق</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">45.0% Share | Top Cat</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">45.0% {tr('share', 'Share')} | {tr('top_cat', 'Top Cat')}</p>
             </div>
 
             {/* Highlight 6: Peak Hour */}
             <div className="bg-white border border-slate-200 border-t-4 border-t-slate-600 rounded-xl p-4 shadow-2xs relative group">
               <div className="flex items-center justify-between text-sm text-slate-700 font-medium">
-                <span>Peak Hour</span>
+                <span>{tr('peak_hour', 'Peak Hour')}</span>
                 <div className="relative group/tooltip">
                   <Info className="w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-700" />
                   <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 w-52 p-2.5 bg-slate-900 border border-slate-700 !text-white text-white rounded-xl shadow-xl text-[11px] font-medium z-30 hidden group-hover/tooltip:block pointer-events-none" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
-                    Highest average hourly sales
+                    {tr('highest_average_hourly_sales', 'Highest average hourly sales')}
                   </div>
                 </div>
               </div>
               <p className="text-lg font-bold text-black mt-2">13:00 - 14:00</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">18.5 M LL Avg | Peak Hour</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">18.5 M LL Avg | {tr('peak_hour', 'Peak Hour')}</p>
             </div>
           </div>
 

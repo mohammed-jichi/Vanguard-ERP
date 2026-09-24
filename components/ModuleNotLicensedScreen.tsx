@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   ShieldAlert,
   ArrowRight,
@@ -148,10 +149,11 @@ export default function ModuleNotLicensedScreen({
   moduleNum
 }: ModuleNotLicensedScreenProps) {
   const { currentTenant, isModuleEnabled } = useTenant();
+  const { t, language } = useLanguage();
 
   // Find target module info if key provided
   const targetModule = ALL_CANONICAL_MODULES.find(m => m.key === moduleKey);
-  const displayName = moduleName || targetModule?.en || 'Requested Module';
+  const displayName = moduleName ? t(moduleName, moduleName) : (targetModule ? (language === 'ar' ? targetModule.ar : t(targetModule.en, targetModule.en)) : t('requested_module', 'Requested Module'));
   const displayNum = moduleNum || targetModule?.num;
 
   // Determine enabled and disabled modules for current workspace
@@ -168,11 +170,11 @@ export default function ModuleNotLicensedScreen({
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-white animate-pulse" />
             <span className="uppercase tracking-widest text-[11px] font-black">
-              Enterprise Access Control &bull; Module Entitlement Guard
+              {t('enterprise_access_control', 'Enterprise Access Control')} &bull; {t('module_entitlement_guard', 'Module Entitlement Guard')}
             </span>
           </div>
           <span className="bg-black/20 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold">
-            HTTP 403 &bull; Not Licensed
+            {t('http_403_not_licensed', 'HTTP 403 • Not Licensed')}
           </span>
         </div>
 
@@ -190,23 +192,23 @@ export default function ModuleNotLicensedScreen({
           <div className="space-y-2 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-800 border border-rose-200 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider">
               <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-              <span>Module Not Active In Current Subscription</span>
+              <span>{t('module_not_active_in_subscription', 'Module Not Active In Current Subscription')}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {displayNum ? `Module ${displayNum}: ` : ''}{displayName}
+              {displayNum ? `${t('module', 'Module')} ${displayNum}: ` : ''}{displayName}
             </h1>
 
             <p className="text-sm text-slate-600 font-medium leading-relaxed">
-              This module is currently toggled <span className="font-bold text-rose-600">OFF</span> or not licensed for the workspace{' '}
-              <strong className="text-slate-900 font-bold">{currentTenant?.name || 'Current Workspace'}</strong> (Company ID: <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-slate-800">#{currentTenant?.companyId || '1300'}</code>).
+              {t('module_disabled_desc_1', 'This module is currently toggled')} <span className="font-bold text-rose-600">{t('off_state', 'OFF')}</span> {t('module_disabled_desc_2', 'or not licensed for the workspace')}{' '}
+              <strong className="text-slate-900 font-bold">{currentTenant?.name || t('current_workspace', 'Current Workspace')}</strong> ({t('company_id', 'Company ID')}: <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-slate-800">#{currentTenant?.companyId || '1300'}</code>).
             </p>
           </div>
 
           {/* WORKSPACE SNAPSHOT PILL BOX */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl max-w-3xl mx-auto text-left text-xs">
             <div className="p-3 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">Active Workspace</span>
+              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">{t('active_workspace', 'Active Workspace')}</span>
               <div className="flex items-center gap-1.5">
                 <Building2 className="w-4 h-4 text-primary shrink-0" />
                 <span className="font-bold text-slate-900 truncate">
@@ -216,7 +218,7 @@ export default function ModuleNotLicensedScreen({
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">Subscription Tier</span>
+              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">{t('subscription_tier', 'Subscription Tier')}</span>
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
                 <span className="font-extrabold text-amber-700 font-mono text-sm uppercase">
@@ -226,11 +228,11 @@ export default function ModuleNotLicensedScreen({
             </div>
 
             <div className="p-3 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
-              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">Licensed Modules</span>
+              <span className="block text-[11px] text-slate-500 font-semibold mb-0.5">{t('licensed_modules', 'Licensed Modules')}</span>
               <div className="flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span className="font-extrabold text-emerald-700 font-mono text-sm">
-                  {activeCount} / {totalCount} Active
+                  {activeCount} / {totalCount} {t('active', 'Active')}
                 </span>
               </div>
             </div>
@@ -241,10 +243,10 @@ export default function ModuleNotLicensedScreen({
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Active Modules in Your Workspace (Click to Open):</span>
+                <span>{t('active_modules_in_workspace', 'Active Modules in Your Workspace (Click to Open):')}</span>
               </h3>
               <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                {activeCount} Available
+                {activeCount} {t('available', 'Available')}
               </span>
             </div>
 
@@ -261,9 +263,9 @@ export default function ModuleNotLicensedScreen({
                     </span>
                     <div className="truncate">
                       <p className="font-bold text-slate-800 group-hover:text-primary truncate">
-                        {mod.num}. {mod.en}
+                        {mod.num}. {language === 'ar' ? mod.ar : t(mod.en, mod.en)}
                       </p>
-                      <p className="text-[10px] text-slate-400 truncate">{mod.ar}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{language === 'ar' ? mod.en : mod.ar}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
@@ -278,7 +280,7 @@ export default function ModuleNotLicensedScreen({
               href="/admin"
               className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span>⚙️ Manage Workspace Modules in Admin Console (Tab 3)</span>
+              <span>⚙️ {t('manage_workspace_modules_admin', 'Manage Workspace Modules in Admin Console (Tab 3)')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
 
@@ -286,7 +288,7 @@ export default function ModuleNotLicensedScreen({
               href="/backoffice"
               className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span>← Return to Enterprise Main Hub</span>
+              <span>{t('return_to_main_hub', '← Return to Enterprise Main Hub')}</span>
             </Link>
           </div>
         </div>

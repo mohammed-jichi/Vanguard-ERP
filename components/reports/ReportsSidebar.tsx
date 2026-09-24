@@ -1,23 +1,26 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export const VANGUARD_CATEGORIES = [
-  { id: 'recently-viewed', title: 'Recently Viewed' },
-  { id: 'internal-control', title: 'Internal Control' },
-  { id: 'financial', title: 'Financial' },
-  { id: 'product-sales', title: 'Product Sales' },
-  { id: 'customer-sales', title: 'Customer Sales' },
-  { id: 'todays-history', title: "Today's & History" },
-  { id: 'time-attendance', title: 'Time & Attendance' },
-  { id: 'lists', title: 'Lists' },
+  { id: 'recently-viewed', title: 'Recently Viewed', key: 'recently_viewed' },
+  { id: 'internal-control', title: 'Internal Control', key: 'internal_control' },
+  { id: 'financial', title: 'Financial', key: 'financial' },
+  { id: 'product-sales', title: 'Product Sales', key: 'product_sales' },
+  { id: 'customer-sales', title: 'Customer Sales', key: 'customer_sales' },
+  { id: 'todays-history', title: "Today's & History", key: 'todays_history' },
+  { id: 'time-attendance', title: 'Time & Attendance', key: 'time_attendance' },
+  { id: 'lists', title: 'Lists', key: 'lists' },
 ];
 
 export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?: (id: string) => void }) {
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('recently-viewed');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredCategories = VANGUARD_CATEGORIES.filter((cat) =>
+    t(cat.key, cat.title).toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
     cat.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
   );
 
@@ -32,11 +35,11 @@ export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?
     <div className="w-full max-w-[280px] select-none p-2">
       {/* 1. Page Header */}
       <div className="mb-4">
-        <h1 className="text-[22px] font-bold text-foreground leading-tight">Sales Reports</h1>
+        <h1 className="text-[22px] font-bold text-foreground leading-tight">{t('sales_reports', 'Sales Reports')}</h1>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 font-medium">
-          <span>Home</span>
+          <span>{t('home', 'Home')}</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-foreground">Sales Reports</span>
+          <span className="text-foreground">{t('sales_reports', 'Sales Reports')}</span>
         </div>
       </div>
 
@@ -50,7 +53,7 @@ export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </div>
-          <h2 className="text-[15px] font-bold text-foreground tracking-tight">Search Reports</h2>
+          <h2 className="text-[15px] font-bold text-foreground tracking-tight">{t('search_reports', 'Search Reports')}</h2>
         </div>
 
         {/* Search Box */}
@@ -67,7 +70,7 @@ export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search..."
+            placeholder={t('search_placeholder', 'Search...')}
             className="w-full pl-8 pr-3 py-1.5 bg-card border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
           />
         </div>
@@ -87,7 +90,7 @@ export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground hover:pl-3'
                   }`}
                 >
-                  {cat.title}
+                  {t(cat.key, cat.title)}
                 </button>
               </li>
             );

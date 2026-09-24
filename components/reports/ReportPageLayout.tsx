@@ -31,6 +31,7 @@ import {
   formatISODate,
   isCustomDatePreset,
 } from '@/lib/dateRangeEngine';
+import { useLanguage } from '@/lib/LanguageContext';
 
 // ============================================================================
 // 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC OMEGA ARCHITECTURE)
@@ -241,6 +242,7 @@ export function ReportHeader({
   badgeVariant = 'primary',
   actions,
 }: ReportHeaderProps) {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 select-none print:hidden">
       <div>
@@ -254,10 +256,10 @@ export function ReportHeader({
                     href={crumb.href}
                     className="hover:text-slate-800 transition-colors"
                   >
-                    {crumb.label}
+                    {t(crumb.label, crumb.label)}
                   </Link>
                 ) : (
-                  <span className="text-slate-700 font-semibold">{crumb.label}</span>
+                  <span className="text-slate-700 font-semibold">{t(crumb.label, crumb.label)}</span>
                 )}
               </React.Fragment>
             ))}
@@ -265,7 +267,7 @@ export function ReportHeader({
         )}
         <div className="flex items-center gap-2.5 flex-wrap">
           <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
-            {title}
+            {t(title, title)}
           </h1>
           {reportCode && (
             <span className="px-2 py-0.5 text-xs font-mono font-bold tracking-wide rounded-md border bg-slate-100 text-slate-700 border-slate-300">
@@ -274,13 +276,13 @@ export function ReportHeader({
           )}
           {badgeText && (
             <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              {badgeText}
+              {t(badgeText, badgeText)}
             </span>
           )}
         </div>
         {subtitle && (
           <p className="mt-0.5 text-xs text-slate-500 font-medium">
-            {subtitle}
+            {t(subtitle, subtitle)}
           </p>
         )}
       </div>
@@ -295,29 +297,29 @@ export function ReportHeader({
               type="button"
               className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
-              Sales
+              {t('sales', 'Sales')}
             </button>
             <button
               type="button"
               className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
-              Input Forms
+              {t('input_forms', 'Input Forms')}
             </button>
             <button
               type="button"
               className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
-              Lists
+              {t('lists', 'Lists')}
             </button>
             <button
               type="button"
               className="bg-muted hover:bg-slate-200 text-foreground border border-border text-xs rounded-lg px-3 py-1.5 font-medium transition-colors cursor-pointer"
             >
-              Reports Builder
+              {t('reports_builder', 'Reports Builder')}
             </button>
             <button
               type="button"
-              title="Report Settings"
+              title={t('report_settings', 'Report Settings')}
               className="p-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-md transition-colors cursor-pointer"
             >
               <Settings className="w-4 h-4" />
@@ -346,6 +348,7 @@ export function ExportButtons({
   orientation: propOrientation,
   onOrientationChange: propOnOrientationChange,
 }: ExportButtonsProps) {
+  const { t } = useLanguage();
   const context = React.useContext(ReportPaperSizeContext);
   const paperSize = propPaperSize || context.paperSize || 'A4';
   const onPaperSizeChange = propOnPaperSizeChange || context.setPaperSize;
@@ -377,14 +380,14 @@ export function ExportButtons({
       {/* Zoom / Auxiliary Buttons */}
       <button
         type="button"
-        title="Zoom In"
+        title={t('zoom_in', 'Zoom In')}
         className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
       >
         <ZoomIn className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
-        title="Zoom Out"
+        title={t('zoom_out', 'Zoom Out')}
         className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
       >
         <ZoomOut className="w-3.5 h-3.5" />
@@ -395,10 +398,10 @@ export function ExportButtons({
         type="button"
         onClick={handlePrint}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer"
-        title="Print Report"
+        title={t('print_report', 'Print Report')}
       >
         <Printer className="w-3.5 h-3.5" />
-        <span>Print Report</span>
+        <span>{t('print_report', 'Print Report')}</span>
       </button>
 
       {/* Export Report Button */}
@@ -407,10 +410,10 @@ export function ExportButtons({
         onClick={handleExport}
         disabled={isLoadingPdf || isLoadingExcel}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-        title="Export Report"
+        title={t('export_report', 'Export Report')}
       >
         <FileDown className="w-3.5 h-3.5" />
-        <span>Export Report</span>
+        <span>{t('export_report', 'Export Report')}</span>
       </button>
 
       {customActions}
@@ -482,6 +485,7 @@ export function ReportFilters({
   children,
   extraControls,
 }: ReportFiltersProps) {
+  const { t } = useLanguage();
   const [groupByDate, setGroupByDate] = useState(false);
   const [showUnposted, setShowUnposted] = useState(false);
   const [removeGrouping, setRemoveGrouping] = useState(false);
@@ -508,7 +512,7 @@ export function ReportFilters({
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
           <Filter className="w-3.5 h-3.5 text-slate-500" />
-          Filters
+          {t('filters', 'Filters')}
         </span>
       </div>
 
@@ -520,9 +524,9 @@ export function ReportFilters({
           {onPeriodChange && (
             <ReportSelectFilter
               id="report-period"
-              label="Period"
+              label={t('period', 'Period')}
               value={period}
-              options={periodOptions}
+              options={periodOptions.map(opt => ({ ...opt, label: t(opt.label, opt.label) }))}
               onChange={handlePeriodChange}
               placeholder=""
             />
@@ -532,11 +536,11 @@ export function ReportFilters({
           {!isCustom ? (
             <div className="flex flex-col gap-1 text-left min-w-0 sm:col-span-2">
               <label className="text-[11px] font-medium text-slate-500 truncate">
-                Active Period
+                {t('active_period', 'Active Period')}
               </label>
               <div className="flex items-center gap-2 h-[34px] px-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-700 shadow-2xs">
                 <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span className="font-semibold text-slate-800 shrink-0">{period}:</span>
+                <span className="font-semibold text-slate-800 shrink-0">{t(period, period)}:</span>
                 <span className="font-mono text-slate-600 truncate">{resolvedPeriod.displayPeriod}</span>
                 {resolvedPeriod.warning && (
                   <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-auto shrink-0">
@@ -550,7 +554,7 @@ export function ReportFilters({
               {/* Editable From Date - ONLY WHEN CUSTOM */}
               <div className="flex flex-col gap-1 text-left min-w-0">
                 <label className="text-[11px] font-medium text-slate-600 truncate">
-                  From Date
+                  {t('from_date', 'From Date')}
                 </label>
                 <div className="relative min-w-0">
                   <input
@@ -565,7 +569,7 @@ export function ReportFilters({
               {/* Editable To Date - ONLY WHEN CUSTOM */}
               {onDateRangeChange && (
                 <div className="flex flex-col gap-1 text-left min-w-0">
-                  <label className="text-[11px] font-medium text-slate-600 truncate">To Date</label>
+                  <label className="text-[11px] font-medium text-slate-600 truncate">{t('to_date', 'To Date')}</label>
                   <div className="relative min-w-0">
                     <input
                       type="date"
@@ -582,11 +586,11 @@ export function ReportFilters({
           {/* Search Autocomplete */}
           {onSearchChange && (
             <div className="flex flex-col gap-1 text-left min-w-0">
-              <label className="text-[11px] font-medium text-slate-600 truncate">Item Search / Keyword</label>
+              <label className="text-[11px] font-medium text-slate-600 truncate">{t('item_search_keyword', 'Item Search / Keyword')}</label>
               <div className="relative min-w-0">
                 <input
                   type="text"
-                  placeholder={searchPlaceholder}
+                  placeholder={searchPlaceholder ? t(searchPlaceholder, searchPlaceholder) : t('search_placeholder', 'Search filter...')}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 pl-7 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500 transition-all shadow-2xs truncate"
@@ -609,7 +613,7 @@ export function ReportFilters({
             className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
-            <span>Filter Report</span>
+            <span>{t('filter_report', 'Filter Report')}</span>
           </button>
 
           {/* Reset Filters Button */}
@@ -619,7 +623,7 @@ export function ReportFilters({
             className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-muted hover:bg-slate-200 text-foreground border border-border text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-            <span>Reset Filters</span>
+            <span>{t('reset_filters', 'Reset Filters')}</span>
           </button>
         </div>
       </div>
@@ -633,7 +637,7 @@ export function ReportFilters({
             onChange={(e) => setGroupByDate(e.target.checked)}
             className="rounded border-slate-300 text-slate-700 focus:ring-slate-500 cursor-pointer"
           />
-          <span className="text-[11.5px] font-medium text-slate-600">Group by date</span>
+          <span className="text-[11.5px] font-medium text-slate-600">{t('group_by_date', 'Group by date')}</span>
         </label>
         <label className="flex items-center gap-1.5 cursor-pointer">
           <input
@@ -642,7 +646,7 @@ export function ReportFilters({
             onChange={(e) => setShowUnposted(e.target.checked)}
             className="rounded border-slate-300 text-slate-700 focus:ring-slate-500 cursor-pointer"
           />
-          <span className="text-[11.5px] font-medium text-slate-600">Show unposted</span>
+          <span className="text-[11.5px] font-medium text-slate-600">{t('show_unposted', 'Show unposted')}</span>
         </label>
         <label className="flex items-center gap-1.5 cursor-pointer">
           <input
@@ -651,7 +655,7 @@ export function ReportFilters({
             onChange={(e) => setRemoveGrouping(e.target.checked)}
             className="rounded border-slate-300 text-slate-700 focus:ring-slate-500 cursor-pointer"
           />
-          <span className="text-[11.5px] font-medium text-slate-600">Remove Grouping</span>
+          <span className="text-[11.5px] font-medium text-slate-600">{t('remove_grouping', 'Remove Grouping')}</span>
         </label>
         <label className="flex items-center gap-1.5 cursor-pointer">
           <input
@@ -660,7 +664,7 @@ export function ReportFilters({
             onChange={(e) => setShowTaxes(e.target.checked)}
             className="rounded border-slate-300 text-slate-700 focus:ring-slate-500 cursor-pointer"
           />
-          <span className="text-[11.5px] font-medium text-slate-600">Show Taxes</span>
+          <span className="text-[11.5px] font-medium text-slate-600">{t('show_taxes', 'Show Taxes')}</span>
         </label>
       </div>
     </div>
@@ -689,6 +693,7 @@ export function ReportPagination({
   onPageSizeChange,
   pageSizeOptions = [10, 25, 50, 100],
 }: ReportPaginationProps) {
+  const { t } = useLanguage();
   const startRecord = Math.min((currentPage - 1) * pageSize + 1, totalRecords);
   const endRecord = Math.min(currentPage * pageSize, totalRecords);
 
@@ -696,13 +701,13 @@ export function ReportPagination({
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-600 select-none print:hidden">
       <div className="flex items-center gap-2">
         <span>
-          Showing <strong className="text-slate-800">{totalRecords > 0 ? startRecord : 0}</strong> to{' '}
-          <strong className="text-slate-800">{endRecord}</strong> of{' '}
-          <strong className="text-slate-800">{totalRecords}</strong> entries
+          {t('showing', 'Showing')} <strong className="text-slate-800">{totalRecords > 0 ? startRecord : 0}</strong> {t('to', 'to')}{' '}
+          <strong className="text-slate-800">{endRecord}</strong> {t('of', 'of')}{' '}
+          <strong className="text-slate-800">{totalRecords}</strong> {t('entries', 'entries')}
         </span>
         {onPageSizeChange && (
           <div className="flex items-center gap-1.5 ml-4">
-            <span>Rows:</span>
+            <span>{t('rows', 'Rows:')}</span>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -724,12 +729,13 @@ export function ReportPagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
           className="p-1 rounded border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          title={t('previous_page', 'Previous Page')}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
 
         <span className="px-2 py-0.5 text-slate-700 font-medium">
-          Page {currentPage} of {Math.max(totalPages, 1)}
+          {t('page', 'Page')} {currentPage} {t('of', 'of')} {Math.max(totalPages, 1)}
         </span>
 
         <button
@@ -737,6 +743,7 @@ export function ReportPagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
           className="p-1 rounded border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          title={t('next_page', 'Next Page')}
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -766,6 +773,7 @@ export function ReportTableWrapper({
   orientation: propOrientation,
   actions,
 }: ReportTableWrapperProps) {
+  const { t } = useLanguage();
   const context = React.useContext(ReportPaperSizeContext);
   const activePaperSize = propPaperSize || context.paperSize || 'A4';
   const activeOrientation = propOrientation || context.orientation || 'portrait';
@@ -810,10 +818,10 @@ export function ReportTableWrapper({
           {/* ================================================================= */}
           <div className="text-center">
             <h1 className="font-bold text-report-company text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-              Zeit w zaytoun ljanoub
+              {t('company_name_brand', 'Zeit w zaytoun ljanoub')}
             </h1>
             <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-              Southern Olive Oil Products S.A.R.L
+              {t('company_legal_name', 'Southern Olive Oil Products S.A.R.L')}
             </div>
           </div>
 
@@ -822,7 +830,7 @@ export function ReportTableWrapper({
           {/* ================================================================= */}
           {title && (
             <div className="text-center font-extrabold text-report-title text-slate-900 text-[13.5px] mt-2.5 mb-1 font-sans">
-              {title}
+              {t(title, title)}
             </div>
           )}
 
@@ -832,7 +840,7 @@ export function ReportTableWrapper({
           <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
             <span className="font-medium">{displayDate}</span>
             <span className="font-bold text-center flex-1">
-              {periodText || subtitle || 'Current Active Period'}
+              {periodText || subtitle || t('current_active_period', 'Current Active Period')}
             </span>
             <span className="font-medium">{pageInfo}</span>
           </div>
@@ -846,7 +854,7 @@ export function ReportTableWrapper({
           {branchInfo && (
             <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
               <span>{branchInfo}</span>
-              <span className="font-mono text-slate-500">System Source: Vanguard ERP Live Ledger</span>
+              <span className="font-mono text-slate-500">{t('system_source_ledger', 'System Source: Vanguard ERP Live Ledger')}</span>
             </div>
           )}
 
@@ -860,7 +868,7 @@ export function ReportTableWrapper({
             {isLoading && (
               <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center">
                 <span className="text-xs font-semibold text-slate-700 animate-pulse">
-                  Loading report sheet...
+                  {t('loading_report_sheet', 'Loading report sheet...')}
                 </span>
               </div>
             )}
@@ -891,7 +899,7 @@ export function ReportTableWrapper({
           <div className="flex items-center justify-between text-[10px] text-slate-800 font-sans">
             <span className="font-mono font-bold tracking-wider text-slate-900">{reportCode}</span>
             <span className="text-slate-700 font-medium text-center flex-1">
-              Copyright © 2026 Vanguard ERP. All Rights Reserved.
+              {t('copyright_vanguard', 'Copyright © 2026 Vanguard ERP. All Rights Reserved.')}
             </span>
             <div className="text-right">
               <a
@@ -976,6 +984,7 @@ export default function ReportPageLayout({
   onSelectReport,
   sidebar,
 }: ReportPageLayoutProps) {
+  const { t } = useLanguage();
   const [paperSize, setPaperSize] = useState<PaperSize>('A4');
   const [orientation, setOrientation] = useState<ReportOrientation>('portrait');
   const [internalSelectedReport, setInternalSelectedReport] = useState(
@@ -1031,7 +1040,7 @@ export default function ReportPageLayout({
               <ReportHeader
                 title={activeReport}
                 breadcrumbs={[
-                  { label: 'Home', href: '/backoffice' },
+                  { label: t('home', 'Home'), href: '/backoffice' },
                   { label: moduleTitle },
                   { label: activeReport },
                 ]}

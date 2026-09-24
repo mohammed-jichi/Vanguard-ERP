@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import MasterReportDocument from '@/components/reports/MasterReportDocument';
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
 import {
@@ -55,6 +56,8 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
   hideToolbar = false,
   className = '',
 }) => {
+  const { t } = useLanguage();
+
   // 1. Resolve Schema and Raw Data Rows
   const { schema, rows: rawRows, domain, isExplicitSchema } = useMemo(() => {
     return resolveSchemaForReport(reportName, reportCode, moduleContext, data, filterValues);
@@ -112,38 +115,38 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
   const meta: ReportMetadata = useMemo(() => {
     const filterSummaryParts: string[] = [];
     if (filterValues.branch && filterValues.branch !== 'ALL') {
-      filterSummaryParts.push(`Branch: ${filterValues.branch}`);
+      filterSummaryParts.push(`${t('branch', 'Branch')}: ${filterValues.branch}`);
     }
     if (filterValues.workstation && filterValues.workstation !== 'ALL') {
-      filterSummaryParts.push(`POS: ${filterValues.workstation}`);
+      filterSummaryParts.push(`${t('pos', 'POS')}: ${filterValues.workstation}`);
     }
     if (filterValues.shift && filterValues.shift !== 'ALL') {
-      filterSummaryParts.push(`Shift: ${filterValues.shift}`);
+      filterSummaryParts.push(`${t('shift', 'Shift')}: ${filterValues.shift}`);
     }
     if (filterValues.paymentMode && filterValues.paymentMode !== 'ALL') {
-      filterSummaryParts.push(`Payment: ${filterValues.paymentMode}`);
+      filterSummaryParts.push(`${t('payment', 'Payment')}: ${filterValues.paymentMode}`);
     }
 
     return {
       companyName: 'Zeit w zaytoun ljanoub',
-      subtitle: 'Southern Olive Oil Products S.A.R.L - Universal Master Enterprise Ledger',
-      reportTitle: schema.title || reportName,
+      subtitle: t('report_subtitle_default', 'Southern Olive Oil Products S.A.R.L - Universal Master Enterprise Ledger'),
+      reportTitle: t(schema.title || reportName, schema.title || reportName),
       code: schema.id || reportCode || 'REP_UNIVERSAL',
       dateRange: cleanPeriod,
       generatedDate: executionDate,
-      branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+      branch: branch.startsWith('Branch:') ? `${t('branch', 'Branch')}: ${branch.replace(/^Branch:\s*/i, '')}` : `${t('branch', 'Branch')}: ${branch}`,
       filterSummary: filterSummaryParts.length > 0 ? filterSummaryParts.join(' • ') : undefined,
       systemSource: `Vanguard ERP Universal Engine [${domain.toUpperCase()}_SCHEMA${isExplicitSchema ? '_REGISTRY' : '_INFERRED'}]`,
       pageNumber: 1,
       totalPages: 1,
     };
-  }, [schema, reportName, reportCode, cleanPeriod, executionDate, branch, filterValues, domain, isExplicitSchema]);
+  }, [schema, reportName, reportCode, cleanPeriod, executionDate, branch, filterValues, domain, isExplicitSchema, t]);
 
   // 5. Construct Document Table Columns
   const columns: ReportColumn<any>[] = useMemo(() => {
     return schema.columns.map((col) => ({
       key: col.key,
-      label: col.headerLabel,
+      label: t(col.headerLabel, col.headerLabel),
       align: col.align || 'left',
       width: col.width,
       isMonospace: col.isMonospace,
@@ -154,7 +157,7 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
         return formatCellValue(row[col.key], row, col.formatType, activeCurrency);
       },
     }));
-  }, [schema.columns, activeCurrency]);
+  }, [schema.columns, activeCurrency, t]);
 
   // 6. Construct Sections (Grouped Rows with Subtotals) or Flat Rows
   const sections: ReportSection<any>[] | undefined = useMemo(() => {
@@ -174,7 +177,7 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
     return Array.from(groupMap.entries()).map(([groupVal, rows]) => {
       const title = schema.grouping?.groupHeaderLabel
         ? schema.grouping.groupHeaderLabel(groupVal, rows)
-        : `${humanizeKey(groupKey)}: ${groupVal} (${rows.length} records)`;
+        : `${humanizeKey(groupKey)}: ${groupVal} (${rows.length} ${t('records', 'records')})`;
 
       let subtotal: { label: string; value: string | number; isNegative?: boolean } | undefined = undefined;
 
@@ -182,7 +185,7 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
         const subKey = schema.grouping.subtotalKeys[0];
         const sum = rows.reduce((acc, r) => acc + (Number(r[subKey]) || 0), 0);
         subtotal = {
-          label: `Subtotal (${groupVal}):`,
+          label: `${t('subtotal', 'Subtotal')} (${groupVal}):`,
           value: formatCurrencyAmount(sum, activeCurrency, true),
         };
       }
@@ -194,7 +197,7 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
         subtotal,
       };
     });
-  }, [schema.grouping, filteredRows, activeCurrency]);
+  }, [schema.grouping, filteredRows, activeCurrency, t]);
 
   // 7. Calculate Grand Total Footer
   const grandTotal: GrandTotal | undefined = useMemo(() => {
@@ -211,21 +214,21 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
       const convertedVal = convertCurrency(totalVal, activeCurrency, secondaryCurr);
 
       return {
-        label: `Consolidated Master Total (${filteredRows.length} Reconciled Records):`,
+        label: `${t('consolidated_master_total', 'Consolidated Master Total')} (${filteredRows.length} ${t('reconciled_records', 'Reconciled Records')}):`,
         value: formatCurrencyAmount(totalVal, activeCurrency, true),
         targetCurrency: activeCurrency,
         breakdownText: `${activeCurrency}: ${formatCurrencyAmount(totalVal, activeCurrency, true)}  |  ${secondaryCurr}: ${formatCurrencyAmount(convertedVal, secondaryCurr, true)}`,
-        convertedSubtext: `Verified against Vanguard ${domain.toUpperCase()} Ledger Standard`,
+        convertedSubtext: `${t('verified_against', 'Verified against')} Vanguard ${domain.toUpperCase()} ${t('ledger_standard', 'Ledger Standard')}`,
       };
     }
 
     // Default Count Total for Non-Financial Ledgers (e.g. No Sale pops, User logs)
     return {
-      label: `Total Audited Entries (${filteredRows.length} Records):`,
-      value: `${filteredRows.length} Events`,
-      breakdownText: `Domain: ${domain.toUpperCase()} • Zero unlogged anomalies`,
+      label: `${t('total_audited_entries', 'Total Audited Entries')} (${filteredRows.length} ${t('records', 'Records')}):`,
+      value: `${filteredRows.length} ${t('events', 'Events')}`,
+      breakdownText: `${t('domain', 'Domain')}: ${domain.toUpperCase()} • ${t('zero_unlogged_anomalies', 'Zero unlogged anomalies')}`,
     };
-  }, [schema.columns, filteredRows, activeCurrency, domain]);
+  }, [schema.columns, filteredRows, activeCurrency, domain, t]);
 
   const documentContent = (
     <MasterReportDocument

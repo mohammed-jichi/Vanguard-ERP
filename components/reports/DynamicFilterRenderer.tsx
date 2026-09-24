@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Filter, RotateCcw, Check, ChevronDown } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 // ============================================================================
 // 1. DYNAMIC FILTER SCHEMA DEFINITIONS & TYPES
@@ -359,6 +360,8 @@ export default function DynamicFilterRenderer({
   customExtraControls,
   className = '',
 }: DynamicFilterRendererProps) {
+  const { t } = useLanguage();
+
   // Find matching schema based on reportName pattern
   const activeSchema = React.useMemo(() => {
     const found = REPORT_FILTER_SCHEMAS.find((s) =>
@@ -395,12 +398,12 @@ export default function DynamicFilterRenderer({
           </div>
           <div>
             <h4 className="text-xs font-bold text-foreground tracking-tight">
-              Report Parameters: <span className="text-primary font-semibold">{reportName}</span>
+              {t('report_parameters', 'Report Parameters')}: <span className="text-primary font-semibold">{t(reportName, reportName)}</span>
             </h4>
             <p className="text-[11px] text-muted-foreground">
               {visibleFields.length > 0
-                ? `${visibleFields.length} contextual filters active for this report sheet.`
-                : 'Standard filter controls active for this view.'}
+                ? `${visibleFields.length} ${t('contextual_filters_active', 'contextual filters active for this report sheet.')}`
+                : t('standard_filter_controls_active', 'Standard filter controls active for this view.')}
             </p>
           </div>
         </div>
@@ -414,7 +417,7 @@ export default function DynamicFilterRenderer({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted hover:bg-slate-200 text-foreground transition-colors border border-border shadow-xs cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span>{t('reset', 'Reset')}</span>
             </button>
           )}
 
@@ -425,7 +428,7 @@ export default function DynamicFilterRenderer({
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-slate-800 text-primary-foreground transition-colors shadow-xs cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Filter Report</span>
+              <span>{t('filter_report', 'Filter Report')}</span>
             </button>
           )}
         </div>
@@ -446,7 +449,7 @@ export default function DynamicFilterRenderer({
                   htmlFor={field.id}
                   className="text-[10.5px] font-bold text-slate-600 uppercase tracking-wider"
                 >
-                  {field.label}
+                  {t(field.label, field.label)}
                 </label>
                 <div className="relative">
                   <select
@@ -457,7 +460,7 @@ export default function DynamicFilterRenderer({
                   >
                     {(field.options || []).map((opt) => (
                       <option key={opt.value} value={opt.value}>
-                        {opt.label}
+                        {t(opt.label, opt.label)}
                       </option>
                     ))}
                   </select>
@@ -485,7 +488,7 @@ export default function DynamicFilterRenderer({
                   htmlFor={field.id}
                   className="text-xs font-medium text-slate-700 cursor-pointer"
                 >
-                  {field.label}
+                  {t(field.label, field.label)}
                 </label>
               </div>
             );
@@ -498,13 +501,13 @@ export default function DynamicFilterRenderer({
                   htmlFor={field.id}
                   className="text-[10.5px] font-bold text-slate-600 uppercase tracking-wider"
                 >
-                  {field.label}
+                  {t(field.label, field.label)}
                 </label>
                 <input
                   type="text"
                   id={field.id}
                   value={currentValue ?? ''}
-                  placeholder={field.placeholder || ''}
+                  placeholder={field.placeholder ? t(field.placeholder, field.placeholder) : ''}
                   onChange={(e) => onFilterChange(field.id, e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all shadow-2xs"
                 />
