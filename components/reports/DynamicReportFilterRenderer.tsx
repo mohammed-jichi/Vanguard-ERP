@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Filter, RotateCcw, ChevronDown, Search, Calendar, SlidersHorizontal, Check } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   getReportConfig,
   ReportConfig,
@@ -51,6 +52,8 @@ export default function DynamicReportFilterRenderer({
   className = '',
   showTitleBar = true,
 }: DynamicReportFilterRendererProps) {
+  const { t, dir } = useLanguage();
+
   // 1. Resolve configuration from the centralized registry
   const reportConfig = useMemo(
     () => getReportConfig(activeReportKey, module),
@@ -264,10 +267,10 @@ export default function DynamicReportFilterRenderer({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-              Dynamic Report Filters
+              {t('Dynamic Report Filters', 'Dynamic Report Filters')}
             </span>
             <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-              {reportConfig.reportTitle || activeReportKey}
+              {t(reportConfig.reportTitle || activeReportKey, reportConfig.reportTitle || activeReportKey)}
             </span>
             {reportConfig.code && (
               <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">
@@ -276,7 +279,7 @@ export default function DynamicReportFilterRenderer({
             )}
           </div>
           <span className="text-[11px] text-slate-400 font-medium">
-            {visibleFields.length} active filter{visibleFields.length === 1 ? '' : 's'}
+            {visibleFields.length} {t('active filters', 'active filters')}
           </span>
         </div>
       )}
@@ -301,9 +304,9 @@ export default function DynamicReportFilterRenderer({
                     <label
                       htmlFor={`filter-${field.id}`}
                       className="text-[11px] font-medium text-slate-600 truncate"
-                      title={field.label}
+                      title={t(field.label, field.label)}
                     >
-                      {field.label}
+                      {t(field.label, field.label)}
                     </label>
                     <div className="relative min-w-0">
                       <select
@@ -320,7 +323,7 @@ export default function DynamicReportFilterRenderer({
                             title={opt.tooltip}
                             className={opt.disabled ? 'text-slate-400 bg-slate-100 italic' : ''}
                           >
-                            {opt.label}
+                            {t(opt.label, opt.label)}
                           </option>
                         ))}
                       </select>
@@ -332,11 +335,11 @@ export default function DynamicReportFilterRenderer({
                   {!isCustom ? (
                     <div className="flex flex-col gap-1 text-left min-w-0 sm:col-span-2">
                       <label className="text-[11px] font-medium text-slate-500 truncate">
-                        Active Period
+                        {t('Active Period', 'Active Period')}
                       </label>
                       <div className="flex items-center gap-2 h-[34px] px-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-700 shadow-2xs">
                         <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                        <span className="font-semibold text-slate-800 shrink-0">{currentPeriod}:</span>
+                        <span className="font-semibold text-slate-800 shrink-0">{t(currentPeriod, currentPeriod)}:</span>
                         <span className="font-mono text-slate-600 truncate">{resolved.displayPeriod}</span>
                         {resolved.warning && (
                           <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-auto shrink-0">
@@ -350,7 +353,7 @@ export default function DynamicReportFilterRenderer({
                       {/* From Date - ONLY WHEN CUSTOM */}
                       <div className="flex flex-col gap-1 text-left min-w-0">
                         <label className="text-[11px] font-medium text-slate-600 truncate">
-                          From Date
+                          {t('From Date', 'From Date')}
                         </label>
                         <div className="relative min-w-0">
                           <input
@@ -365,7 +368,7 @@ export default function DynamicReportFilterRenderer({
                       {/* To Date - ONLY WHEN CUSTOM */}
                       <div className="flex flex-col gap-1 text-left min-w-0">
                         <label className="text-[11px] font-medium text-slate-600 truncate">
-                          To Date
+                          {t('To Date', 'To Date')}
                         </label>
                         <div className="relative min-w-0">
                           <input
@@ -386,8 +389,8 @@ export default function DynamicReportFilterRenderer({
             if (field.type === 'date') {
               return (
                 <div key={field.id} className="flex flex-col gap-1 text-left min-w-0">
-                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={field.label}>
-                    {field.label}
+                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={t(field.label, field.label)}>
+                    {t(field.label, field.label)}
                   </label>
                   <input
                     id={`filter-${field.id}`}
@@ -405,8 +408,8 @@ export default function DynamicReportFilterRenderer({
               const isPrimaryMode = field.id === 'primaryMode';
               return (
                 <div key={field.id} className={`flex flex-col gap-1 text-left min-w-0 ${isPrimaryMode ? 'sm:col-span-2' : (field.className || 'w-full')}`}>
-                  <label htmlFor={`filter-${field.id}`} className={`text-[11px] font-medium truncate ${isPrimaryMode ? '!text-blue-900 !font-bold' : 'text-slate-600'}`} title={field.label}>
-                    {isPrimaryMode ? 'Primary Mode Selector Dropdown' : field.label}
+                  <label htmlFor={`filter-${field.id}`} className={`text-[11px] font-medium truncate ${isPrimaryMode ? '!text-blue-900 !font-bold' : 'text-slate-600'}`} title={isPrimaryMode ? t('Primary Mode Selector Dropdown', 'Primary Mode Selector Dropdown') : t(field.label, field.label)}>
+                    {isPrimaryMode ? t('Primary Mode Selector Dropdown', 'Primary Mode Selector Dropdown') : t(field.label, field.label)}
                   </label>
                   <div className="relative min-w-0">
                     <select
@@ -419,7 +422,7 @@ export default function DynamicReportFilterRenderer({
                     >
                       {(field.options || []).map((opt) => (
                         <option key={opt.value} value={opt.value}>
-                          {opt.label}
+                          {t(opt.label, opt.label)}
                         </option>
                       ))}
                     </select>
@@ -433,14 +436,14 @@ export default function DynamicReportFilterRenderer({
             if (field.type === 'text') {
               return (
                 <div key={field.id} className={`flex flex-col gap-1 text-left min-w-0 ${field.className || 'w-full'}`}>
-                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={field.label}>
-                    {field.label}
+                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={t(field.label, field.label)}>
+                    {t(field.label, field.label)}
                   </label>
                   <div className="relative min-w-0">
                     <input
                       id={`filter-${field.id}`}
                       type="text"
-                      placeholder={field.placeholder || 'Type keyword...'}
+                      placeholder={field.placeholder ? t(field.placeholder, field.placeholder) : t('Type keyword...', 'Type keyword...')}
                       value={val ?? ''}
                       onChange={(e) => handleFieldChange(field.id, e.target.value)}
                       className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 pl-7 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500 transition-all shadow-2xs truncate"
@@ -455,14 +458,14 @@ export default function DynamicReportFilterRenderer({
             if (field.type === 'number') {
               return (
                 <div key={field.id} className="flex flex-col gap-1 text-left min-w-0">
-                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={field.label}>
-                    {field.label}
+                  <label htmlFor={`filter-${field.id}`} className="text-[11px] font-medium text-slate-600 truncate" title={t(field.label, field.label)}>
+                    {t(field.label, field.label)}
                   </label>
                   <input
                     id={`filter-${field.id}`}
                     type="number"
                     value={val ?? 0}
-                    placeholder={field.placeholder || '0'}
+                    placeholder={field.placeholder ? t(field.placeholder, field.placeholder) : '0'}
                     onChange={(e) => handleFieldChange(field.id, parseFloat(e.target.value) || 0)}
                     className="w-full min-w-0 bg-white border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-500 transition-all shadow-2xs"
                   />
@@ -484,9 +487,9 @@ export default function DynamicReportFilterRenderer({
                   <label
                     htmlFor={`filter-${field.id}`}
                     className="text-[11.5px] font-medium text-slate-700 cursor-pointer truncate"
-                    title={field.label}
+                    title={t(field.label, field.label)}
                   >
-                    {field.label}
+                    {t(field.label, field.label)}
                   </label>
                 </div>
               );
@@ -506,10 +509,10 @@ export default function DynamicReportFilterRenderer({
             type="button"
             onClick={handleApply}
             className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
-            title="Filter Report"
+            title={t('Filter Report', 'Filter Report')}
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
-            <span>Filter Report</span>
+            <span>{t('Filter Report', 'Filter Report')}</span>
           </button>
 
           {/* Reset Filters Button: Standard Secondary/Outline */}
@@ -517,10 +520,10 @@ export default function DynamicReportFilterRenderer({
             type="button"
             onClick={handleReset}
             className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-muted hover:bg-slate-200 text-foreground text-xs px-3 py-2 rounded-lg font-medium border border-border shadow-xs transition-colors cursor-pointer whitespace-nowrap active:scale-[0.98]"
-            title="Reset Filters"
+            title={t('Reset Filters', 'Reset Filters')}
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-            <span>Reset Filters</span>
+            <span>{t('Reset Filters', 'Reset Filters')}</span>
           </button>
         </div>
       </div>

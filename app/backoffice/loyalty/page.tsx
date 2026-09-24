@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Award,
   Crown,
@@ -111,6 +112,7 @@ import {
 import { SharedReportViewer, isSharedReport } from '@/components/reports/registry';
 
 function LoyaltyManagementContent() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const activeSection = searchParams.get('section') || 'reports';
 
@@ -140,7 +142,7 @@ function LoyaltyManagementContent() {
   const metrics = [
     {
       id: 'ly-members-count',
-      title: 'Active Loyalty Members',
+      title: t('active_loyalty_members', 'Active Loyalty Members'),
       value: '1,420 Clients',
       change: { value: '+12.8% this quarter', trend: 'up' as const },
       subtext: '348 VIP & Platinum tier accounts',
@@ -148,7 +150,7 @@ function LoyaltyManagementContent() {
     },
     {
       id: 'ly-points-issued',
-      title: 'Total Points Issued',
+      title: t('total_points_issued', 'Total Points Issued'),
       value: '2.84M Pts',
       change: { value: '88% redemption rate', trend: 'up' as const },
       subtext: 'Olive harvest reward program active',
@@ -156,7 +158,7 @@ function LoyaltyManagementContent() {
     },
     {
       id: 'ly-tiers',
-      title: 'Loyalty Tiers',
+      title: t('loyalty_tiers', 'Loyalty Tiers'),
       value: '4 Levels',
       change: { value: 'Bronze, Silver, Gold, Platinum', trend: 'neutral' as const },
       subtext: 'Tier qualification review every 90 days',
@@ -164,7 +166,7 @@ function LoyaltyManagementContent() {
     },
     {
       id: 'ly-retention',
-      title: 'Repeat Purchase Rate',
+      title: t('repeat_purchase_rate', 'Repeat Purchase Rate'),
       value: '78.4%',
       change: { value: '+5.1% program lift', trend: 'up' as const },
       subtext: 'Average member basket: $340',
@@ -289,14 +291,14 @@ function LoyaltyManagementContent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Transaction ID</th>
-                      <th className="py-2 px-3">Member ID</th>
-                      <th className="py-2 px-3">Member Account</th>
-                      <th className="py-2 px-3">Event Type</th>
-                      <th className="py-2 px-3 text-right">Points (+/-)</th>
-                      <th className="py-2 px-3 text-right">USD Liability Equiv.</th>
-                      <th className="py-2 px-3">Date</th>
-                      <th className="py-2 px-3 text-right">Balance After</th>
+                      <th className="py-2 px-3">{t('transaction_id', 'Transaction ID')}</th>
+                      <th className="py-2 px-3">{t('member_id', 'Member ID')}</th>
+                      <th className="py-2 px-3">{t('member_account', 'Member Account')}</th>
+                      <th className="py-2 px-3">{t('event_type', 'Event Type')}</th>
+                      <th className="py-2 px-3 text-right">{t('points_delta', 'Points (+/-)')}</th>
+                      <th className="py-2 px-3 text-right">{t('usd_liability_equiv', 'USD Liability Equiv.')}</th>
+                      <th className="py-2 px-3">{t('date', 'Date')}</th>
+                      <th className="py-2 px-3 text-right">{t('balance_after', 'Balance After')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-sans">
@@ -379,14 +381,14 @@ function LoyaltyManagementContent() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Member ID</th>
-                      <th className="py-2 px-3">Account / Client Name</th>
-                      <th className="py-2 px-3 text-center">Loyalty Level</th>
-                      <th className="py-2 px-3 text-right">Points Balance</th>
-                      <th className="py-2 px-3 text-right">Lifetime Spend</th>
-                      <th className="py-2 px-3">Enrollment Date</th>
-                      <th className="py-2 px-3">Last Activity</th>
-                      <th className="py-2 px-3 text-center">Status</th>
+                      <th className="py-2 px-3">{t('member_id', 'Member ID')}</th>
+                      <th className="py-2 px-3">{t('account_client_name', 'Account / Client Name')}</th>
+                      <th className="py-2 px-3 text-center">{t('loyalty_level', 'Loyalty Level')}</th>
+                      <th className="py-2 px-3 text-right">{t('points_balance', 'Points Balance')}</th>
+                      <th className="py-2 px-3 text-right">{t('lifetime_spend', 'Lifetime Spend')}</th>
+                      <th className="py-2 px-3">{t('enrollment_date', 'Enrollment Date')}</th>
+                      <th className="py-2 px-3">{t('last_activity', 'Last Activity')}</th>
+                      <th className="py-2 px-3 text-center">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-sans">

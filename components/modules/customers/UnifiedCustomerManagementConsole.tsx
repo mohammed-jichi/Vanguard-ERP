@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Users,
   Receipt,
@@ -228,6 +229,7 @@ const INITIAL_LEADS: LeadRow[] = [
 ];
 
 export default function UnifiedCustomerManagementConsole() {
+  const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
   const rawSection = searchParams.get('section') || 'customers';
 
@@ -301,30 +303,30 @@ export default function UnifiedCustomerManagementConsole() {
   }, [searchQuery, groupFilter]);
 
   return (
-    <div className="space-y-4 font-sans text-slate-800">
+    <div dir={dir} className="space-y-4 font-sans text-slate-800">
       {/* 1. SECTION TITLE & ACTIONS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-slate-200 gap-3">
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary text-primary-foreground">
-              MODULE 3 • CRM &amp; AR
+              {t('module_crm_ar', 'MODULE 3 • CRM & AR')}
             </span>
             <span className="text-xs font-mono text-slate-500 font-bold">
-              SECTION: {activeSection.toUpperCase().replace('_', ' ')}
+              {t('section_colon', 'SECTION:')} {t(activeSection, activeSection.toUpperCase().replace('_', ' '))}
             </span>
           </div>
           <h1 className="text-xl font-extrabold text-slate-900 mt-1">
-            {activeSection === 'customers' && 'Master Customers & Accounts Receivable'}
-            {activeSection === 'receipts' && 'Customer Receipts & Collection Vouchers'}
-            {activeSection === 'aged' && 'Customer Aged Debtors Analysis'}
-            {activeSection === 'insights' && 'AI Customer Insights & Lifetime Value'}
-            {activeSection === 'tasks' && 'Tasks and Appointments Schedule'}
-            {activeSection === 'leads' && 'Leads & Commercial Contacts Roster'}
-            {activeSection === 'performance' && 'Sales Team Performance & Conversion'}
-            {activeSection === 'groups' && 'Customers Groups Configuration'}
-            {activeSection === 'categories' && 'Customers Categories Configuration'}
-            {activeSection === 'tags' && 'Customers Tags Configuration'}
-            {activeSection === 'leads_settings' && 'Leads Pipeline Settings & Stages'}
+            {activeSection === 'customers' && t('master_customers_ar', 'Master Customers & Accounts Receivable')}
+            {activeSection === 'receipts' && t('customer_receipts_vouchers', 'Customer Receipts & Collection Vouchers')}
+            {activeSection === 'aged' && t('customer_aged_debtors', 'Customer Aged Debtors Analysis')}
+            {activeSection === 'insights' && t('ai_customer_insights', 'AI Customer Insights & Lifetime Value')}
+            {activeSection === 'tasks' && t('tasks_appointments_schedule', 'Tasks and Appointments Schedule')}
+            {activeSection === 'leads' && t('leads_contacts_roster', 'Leads & Commercial Contacts Roster')}
+            {activeSection === 'performance' && t('sales_team_performance', 'Sales Team Performance & Conversion')}
+            {activeSection === 'groups' && t('customers_groups_config', 'Customers Groups Configuration')}
+            {activeSection === 'categories' && t('customers_categories_config', 'Customers Categories Configuration')}
+            {activeSection === 'tags' && t('customers_tags_config', 'Customers Tags Configuration')}
+            {activeSection === 'leads_settings' && t('leads_pipeline_settings', 'Leads Pipeline Settings & Stages')}
           </h1>
         </div>
 
@@ -335,7 +337,7 @@ export default function UnifiedCustomerManagementConsole() {
               className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-xs font-bold shadow-xs transition"
             >
               <Plus className="w-4 h-4" />
-              <span>New Customer</span>
+              <span>{t('new_customer', 'New Customer')}</span>
             </button>
           )}
 
@@ -345,7 +347,7 @@ export default function UnifiedCustomerManagementConsole() {
               className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs transition"
             >
               <Plus className="w-4 h-4" />
-              <span>New Receipt Voucher</span>
+              <span>{t('new_receipt_voucher', 'New Receipt Voucher')}</span>
             </button>
           )}
 
@@ -355,7 +357,7 @@ export default function UnifiedCustomerManagementConsole() {
               className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-xs font-bold shadow-xs transition"
             >
               <Plus className="w-4 h-4" />
-              <span>New Lead</span>
+              <span>{t('new_lead', 'New Lead')}</span>
             </button>
           )}
 
@@ -376,13 +378,13 @@ export default function UnifiedCustomerManagementConsole() {
           <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-1 min-w-[280px]">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className={`w-4 h-4 absolute top-1/2 -translate-y-1/2 text-slate-400 ${dir === 'rtl' ? 'right-3' : 'left-3'}`} />
                 <input
                   type="text"
-                  placeholder="Quick lookups (exact match) or general search (name, company, code, phone)..."
+                  placeholder={t('search_customers_placeholder', 'Quick lookups (exact match) or general search (name, company, code, phone)...')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className={`w-full ${dir === 'rtl' ? 'pr-9 pl-4' : 'pl-9 pr-4'} py-1.5 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary`}
                 />
               </div>
             </div>
@@ -393,17 +395,17 @@ export default function UnifiedCustomerManagementConsole() {
                 onChange={(e) => setGroupFilter(e.target.value)}
                 className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white text-slate-700"
               >
-                <option value="ALL">All Customer Groups</option>
-                <option value="Wholesales / Clients">Wholesales / Clients</option>
-                <option value="Key Commercial Accounts">Key Commercial Accounts</option>
-                <option value="Retail Outlets">Retail Outlets</option>
+                <option value="ALL">{t('all_customer_groups', 'All Customer Groups')}</option>
+                <option value="Wholesales / Clients">{t('wholesales_clients', 'Wholesales / Clients')}</option>
+                <option value="Key Commercial Accounts">{t('key_commercial_accounts', 'Key Commercial Accounts')}</option>
+                <option value="Retail Outlets">{t('retail_outlets', 'Retail Outlets')}</option>
               </select>
 
               <button
                 onClick={() => { setSearchQuery(''); setGroupFilter('ALL'); }}
                 className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50"
               >
-                Reset
+                {t('reset', 'Reset')}
               </button>
             </div>
           </div>
@@ -411,18 +413,18 @@ export default function UnifiedCustomerManagementConsole() {
           {/* Table */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left rtl:text-right text-xs">
                 <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-3.5">Cust. ID</th>
-                    <th className="py-3 px-3.5">Company Account</th>
-                    <th className="py-3 px-3.5">Contact Person</th>
-                    <th className="py-3 px-3.5">Phone Number</th>
-                    <th className="py-3 px-3.5">City - Country</th>
-                    <th className="py-3 px-3.5">Group</th>
-                    <th className="py-3 px-3.5 text-right">Balance (USD)</th>
-                    <th className="py-3 px-3.5 text-right">Balance (LBP)</th>
-                    <th className="py-3 px-3.5 text-center">Actions</th>
+                    <th className="py-3 px-3.5">{t('cust_id', 'Cust. ID')}</th>
+                    <th className="py-3 px-3.5">{t('company_account', 'Company Account')}</th>
+                    <th className="py-3 px-3.5">{t('contact_person', 'Contact Person')}</th>
+                    <th className="py-3 px-3.5">{t('phone_number', 'Phone Number')}</th>
+                    <th className="py-3 px-3.5">{t('city_country', 'City - Country')}</th>
+                    <th className="py-3 px-3.5">{t('group', 'Group')}</th>
+                    <th className="py-3 px-3.5 text-right rtl:text-left">{t('balance_usd', 'Balance (USD)')}</th>
+                    <th className="py-3 px-3.5 text-right rtl:text-left">{t('balance_lbp', 'Balance (LBP)')}</th>
+                    <th className="py-3 px-3.5 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

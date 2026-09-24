@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Award,
   Crown,
@@ -158,6 +159,7 @@ const INITIAL_PROGRAMS: LoyaltyProgramItem[] = [
 ];
 
 export default function UnifiedLoyaltyManagementConsole() {
+  const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
   const rawSection = searchParams.get('section') || 'dashboard';
 
@@ -194,26 +196,26 @@ export default function UnifiedLoyaltyManagementConsole() {
   }, [searchQuery, tierFilter]);
 
   return (
-    <div className="space-y-4 font-sans text-slate-800">
+    <div dir={dir} className="space-y-4 font-sans text-slate-800">
       {/* 1. TOP HEADER BAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-slate-200 gap-3">
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary text-primary-foreground">
-              MODULE 5 • LOYALTY MANAGEMENT
+              {t('module_loyalty_management', 'MODULE 5 • LOYALTY MANAGEMENT')}
             </span>
             <span className="text-xs font-mono text-slate-500 font-bold">
-              SECTION: {activeSection.toUpperCase().replace(/_/g, ' ')}
+              {t('section_colon', 'SECTION:')} {t(activeSection, activeSection.toUpperCase().replace(/_/g, ' '))}
             </span>
           </div>
           <h1 className="text-xl font-extrabold text-slate-900 mt-1">
-            {activeSection === 'dashboard' && 'Loyalty Program Overview & Member Retention'}
-            {activeSection === 'reports' && 'Merits Loyalty Financial & Points Reports'}
-            {activeSection === 'members' && 'Loyalty Program Enrolled Members Roster'}
-            {activeSection === 'loyalty_levels' && 'Loyalty Tier Levels & Privilege Rules'}
-            {activeSection === 'loyalty_programs' && 'Promotional Loyalty Programs & Cashback'}
-            {activeSection === 'send_messages' && 'Member Broadcast Dispatcher (SMS / WhatsApp)'}
-            {activeSection === 'company_info' && 'Brand Loyalty Setup & Currency Parity'}
+            {activeSection === 'dashboard' && t('loyalty_program_overview', 'Loyalty Program Overview & Member Retention')}
+            {activeSection === 'reports' && t('loyalty_financial_points_reports', 'Merits Loyalty Financial & Points Reports')}
+            {activeSection === 'members' && t('loyalty_enrolled_members_roster', 'Loyalty Program Enrolled Members Roster')}
+            {activeSection === 'loyalty_levels' && t('loyalty_tier_levels_rules', 'Loyalty Tier Levels & Privilege Rules')}
+            {activeSection === 'loyalty_programs' && t('promotional_loyalty_cashback', 'Promotional Loyalty Programs & Cashback')}
+            {activeSection === 'send_messages' && t('member_broadcast_dispatcher', 'Member Broadcast Dispatcher (SMS / WhatsApp)')}
+            {activeSection === 'company_info' && t('brand_loyalty_setup', 'Brand Loyalty Setup & Currency Parity')}
           </h1>
         </div>
 
@@ -234,62 +236,62 @@ export default function UnifiedLoyaltyManagementConsole() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Members</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('active_members', 'Active Members')}</span>
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
               <span className="text-2xl font-black text-slate-900 mt-2 block">1,248</span>
-              <span className="text-xs text-emerald-600 font-semibold mt-0.5 block">+18 new this week</span>
+              <span className="text-xs text-emerald-600 font-semibold mt-0.5 block">{t('active_engagement_subtext', '+18 new this week')}</span>
             </div>
 
             <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Points Issued (MTD)</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('points_issued_mtd', 'Points Issued (MTD)')}</span>
                 <Sparkles className="w-5 h-5 text-amber-500" />
               </div>
               <span className="text-2xl font-black text-slate-900 mt-2 block">348,200</span>
-              <span className="text-xs text-slate-500 font-semibold mt-0.5 block">10 Points / $1 spent</span>
+              <span className="text-xs text-slate-500 font-semibold mt-0.5 block">{t('points_per_dollar_spent', '10 Points / $1 spent')}</span>
             </div>
 
             <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cashback Reserve</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('cashback_reserve', 'Cashback Reserve')}</span>
                 <Coins className="w-5 h-5 text-emerald-600" />
               </div>
               <span className="text-2xl font-black text-emerald-700 mt-2 block">$3,482.00</span>
-              <span className="text-xs text-slate-500 font-semibold mt-0.5 block">Total redeemable liability</span>
+              <span className="text-xs text-slate-500 font-semibold mt-0.5 block">{t('total_redeemable_liability', 'Total redeemable liability')}</span>
             </div>
 
             <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Top Tier (Platinum)</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t('top_tier_platinum', 'Top Tier (Platinum)')}</span>
                 <Crown className="w-5 h-5 text-indigo-600" />
               </div>
               <span className="text-2xl font-black text-slate-900 mt-2 block">84 VIPs</span>
-              <span className="text-xs text-indigo-600 font-semibold mt-0.5 block">Generate 68% of volume</span>
+              <span className="text-xs text-indigo-600 font-semibold mt-0.5 block">{t('generate_68_volume', 'Generate 68% of volume')}</span>
             </div>
           </div>
 
           {/* Tier Overview Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div className="p-4 bg-white rounded-xl border-l-4 border-l-amber-600 border border-slate-200 shadow-xs">
-              <span className="font-bold text-xs text-amber-700 uppercase">Bronze Tier</span>
-              <span className="text-xl font-bold text-slate-900 block mt-1">720 Members</span>
-              <span className="text-[11px] text-slate-500 mt-1 block">Threshold: 0 - 2,500 Pts</span>
+              <span className="font-bold text-xs text-amber-700 uppercase">{t('bronze_tier', 'Bronze Tier')}</span>
+              <span className="text-xl font-bold text-slate-900 block mt-1">720 {t('members', 'Members')}</span>
+              <span className="text-[11px] text-slate-500 mt-1 block">{t('threshold', 'Threshold')}: 0 - 2,500 Pts</span>
             </div>
             <div className="p-4 bg-white rounded-xl border-l-4 border-l-slate-400 border border-slate-200 shadow-xs">
-              <span className="font-bold text-xs text-slate-600 uppercase">Silver Tier</span>
-              <span className="text-xl font-bold text-slate-900 block mt-1">320 Members</span>
-              <span className="text-[11px] text-slate-500 mt-1 block">Threshold: 2,501 - 5,000 Pts</span>
+              <span className="font-bold text-xs text-slate-600 uppercase">{t('silver_tier', 'Silver Tier')}</span>
+              <span className="text-xl font-bold text-slate-900 block mt-1">320 {t('members', 'Members')}</span>
+              <span className="text-[11px] text-slate-500 mt-1 block">{t('threshold', 'Threshold')}: 2,501 - 5,000 Pts</span>
             </div>
             <div className="p-4 bg-white rounded-xl border-l-4 border-l-amber-400 border border-slate-200 shadow-xs">
-              <span className="font-bold text-xs text-amber-600 uppercase">Gold Tier</span>
-              <span className="text-xl font-bold text-slate-900 block mt-1">124 Members</span>
-              <span className="text-[11px] text-slate-500 mt-1 block">Threshold: 5,001 - 10,000 Pts</span>
+              <span className="font-bold text-xs text-amber-600 uppercase">{t('gold_tier', 'Gold Tier')}</span>
+              <span className="text-xl font-bold text-slate-900 block mt-1">124 {t('members', 'Members')}</span>
+              <span className="text-[11px] text-slate-500 mt-1 block">{t('threshold', 'Threshold')}: 5,001 - 10,000 Pts</span>
             </div>
             <div className="p-4 bg-white rounded-xl border-l-4 border-l-indigo-600 border border-slate-200 shadow-xs">
-              <span className="font-bold text-xs text-indigo-700 uppercase">Platinum Tier</span>
-              <span className="text-xl font-bold text-slate-900 block mt-1">84 Members</span>
-              <span className="text-[11px] text-slate-500 mt-1 block">Threshold: &gt;10,000 Pts</span>
+              <span className="font-bold text-xs text-indigo-700 uppercase">{t('platinum_tier', 'Platinum Tier')}</span>
+              <span className="text-xl font-bold text-slate-900 block mt-1">84 {t('members', 'Members')}</span>
+              <span className="text-[11px] text-slate-500 mt-1 block">{t('threshold', 'Threshold')}: &gt;10,000 Pts</span>
             </div>
           </div>
         </div>
@@ -301,13 +303,13 @@ export default function UnifiedLoyaltyManagementConsole() {
           <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-1 min-w-[280px]">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className={`w-4 h-4 absolute top-1/2 -translate-y-1/2 text-slate-400 ${dir === 'rtl' ? 'right-3' : 'left-3'}`} />
                 <input
                   type="text"
-                  placeholder="Search loyalty members by name, phone, card #, or email..."
+                  placeholder={t('search_loyalty_members_placeholder', 'Search loyalty members by name, phone, card #, or email...')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className={`w-full ${dir === 'rtl' ? 'pr-9 pl-4' : 'pl-9 pr-4'} py-1.5 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary`}
                 />
               </div>
             </div>
@@ -318,36 +320,36 @@ export default function UnifiedLoyaltyManagementConsole() {
                 onChange={(e) => setTierFilter(e.target.value)}
                 className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white text-slate-700"
               >
-                <option value="ALL">All Loyalty Tiers</option>
-                <option value="BRONZE">Bronze Tier</option>
-                <option value="SILVER">Silver Tier</option>
-                <option value="GOLD">Gold Tier</option>
-                <option value="PLATINUM">Platinum Tier</option>
+                <option value="ALL">{t('all_loyalty_tiers', 'All Loyalty Tiers')}</option>
+                <option value="BRONZE">{t('bronze_tier', 'Bronze Tier')}</option>
+                <option value="SILVER">{t('silver_tier', 'Silver Tier')}</option>
+                <option value="GOLD">{t('gold_tier', 'Gold Tier')}</option>
+                <option value="PLATINUM">{t('platinum_tier', 'Platinum Tier')}</option>
               </select>
 
               <button
                 onClick={() => { setSearchQuery(''); setTierFilter('ALL'); }}
                 className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50"
               >
-                Reset
+                {t('reset', 'Reset')}
               </button>
             </div>
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left rtl:text-right text-xs">
                 <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-3.5">Card #</th>
-                    <th className="py-3 px-3.5">Member Name</th>
-                    <th className="py-3 px-3.5">Phone Number</th>
-                    <th className="py-3 px-3.5">Group</th>
-                    <th className="py-3 px-3.5 text-center">Tier</th>
-                    <th className="py-3 px-3.5 text-right">Points Balance</th>
-                    <th className="py-3 px-3.5 text-right">Cashback ($)</th>
-                    <th className="py-3 px-3.5">Joined Date</th>
-                    <th className="py-3 px-3.5 text-center">Actions</th>
+                    <th className="py-3 px-3.5">{t('card_#', 'Card #')}</th>
+                    <th className="py-3 px-3.5">{t('member_name', 'Member Name')}</th>
+                    <th className="py-3 px-3.5">{t('phone_number', 'Phone Number')}</th>
+                    <th className="py-3 px-3.5">{t('group', 'Group')}</th>
+                    <th className="py-3 px-3.5 text-center">{t('tier', 'Tier')}</th>
+                    <th className="py-3 px-3.5 text-right rtl:text-left">{t('points_balance', 'Points Balance')}</th>
+                    <th className="py-3 px-3.5 text-right rtl:text-left">{t('cashback_$', 'Cashback ($)')}</th>
+                    <th className="py-3 px-3.5">{t('joined_date', 'Joined Date')}</th>
+                    <th className="py-3 px-3.5 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -404,20 +406,20 @@ export default function UnifiedLoyaltyManagementConsole() {
       {activeSection === 'loyalty_levels' && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-            <span className="font-bold text-xs text-slate-700">Loyalty Tier Progression &amp; Thresholds</span>
+            <span className="font-bold text-xs text-slate-700">{t('loyalty_tier_progression_thresholds', 'Loyalty Tier Progression & Thresholds')}</span>
             <button className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-xs font-bold transition">
-              + Add Tier Level
+              + {t('add_tier_level', 'Add Tier Level')}
             </button>
           </div>
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left rtl:text-right text-xs">
             <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[11px] border-b border-slate-200">
               <tr>
-                <th className="py-3 px-4">Level</th>
-                <th className="py-3 px-4">Tier Name</th>
-                <th className="py-3 px-4 text-right">Points Threshold</th>
-                <th className="py-3 px-4 text-right">Points / $1 Spend</th>
-                <th className="py-3 px-4 text-right">Expiry Duration</th>
-                <th className="py-3 px-4">Key Privileges</th>
+                <th className="py-3 px-4">{t('level', 'Level')}</th>
+                <th className="py-3 px-4">{t('tier_name', 'Tier Name')}</th>
+                <th className="py-3 px-4 text-right rtl:text-left">{t('points_threshold', 'Points Threshold')}</th>
+                <th className="py-3 px-4 text-right rtl:text-left">{t('points_per_usd', 'Points / $1 Spend')}</th>
+                <th className="py-3 px-4 text-right rtl:text-left">{t('expiry_duration', 'Expiry Duration')}</th>
+                <th className="py-3 px-4">{t('key_privileges', 'Key Privileges')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-mono">

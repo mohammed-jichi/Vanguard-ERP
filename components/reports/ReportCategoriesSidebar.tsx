@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Interface definition for Report Categories and Child Reports
@@ -198,6 +199,7 @@ export default function ReportCategoriesSidebar({
   onSelectReport,
   activeReportId = null,
 }: ReportCategoriesSidebarProps) {
+  const { t, dir } = useLanguage();
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
   const [openSubFolderIds, setOpenSubFolderIds] = useState<Record<string, boolean>>({
     'ic-transactions': true,
@@ -215,8 +217,13 @@ export default function ReportCategoriesSidebar({
     }));
   };
 
-  const matchesSearch = (str: string) =>
-    str.toLowerCase().includes(searchQuery.toLowerCase().trim());
+  const matchesSearch = (str: string) => {
+    const translated = t(str, str);
+    return (
+      str.toLowerCase().includes(searchQuery.toLowerCase().trim()) ||
+      translated.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    );
+  };
 
   const filteredCategories = categories.filter((cat) => {
     if (!searchQuery) return true;
@@ -235,7 +242,7 @@ export default function ReportCategoriesSidebar({
   });
 
   return (
-    <aside className="w-full max-w-[280px] bg-card rounded-xl border border-border shadow-xs p-4 font-sans select-none">
+    <aside dir={dir} className="w-full max-w-[280px] bg-card rounded-xl border border-border shadow-xs p-4 font-sans select-none">
       
       {/* 1. Card Header */}
       <div className="flex items-center gap-3 mb-3.5">
@@ -245,14 +252,14 @@ export default function ReportCategoriesSidebar({
           </svg>
         </div>
         <h2 className="text-[15px] font-bold tracking-tight text-foreground">
-          Search Reports
+          {t('search_reports', 'Search Reports')}
         </h2>
       </div>
 
       {/* 2. Search Input */}
       <div className="relative mb-3">
         <svg
-          className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-muted-foreground"
+          className={`w-3.5 h-3.5 absolute top-2.5 text-muted-foreground ${dir === 'rtl' ? 'right-2.5' : 'left-2.5'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -263,8 +270,8 @@ export default function ReportCategoriesSidebar({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search reports..."
-          className="w-full pl-8 pr-3 py-1.5 bg-card border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          placeholder={t('search_reports_placeholder', 'Search reports...')}
+          className={`w-full ${dir === 'rtl' ? 'pr-8 pl-3' : 'pl-8 pr-3'} py-1.5 bg-card border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all`}
         />
       </div>
 
@@ -291,7 +298,7 @@ export default function ReportCategoriesSidebar({
                 className="report-category-header text-foreground font-semibold text-sm px-4 py-3 border-b border-border/60 bg-card hover:bg-muted/50 flex justify-between items-center cursor-pointer select-none sticky top-0 z-10 transition-colors"
               >
                 <span className="text-foreground">
-                  {category.name || 'Recently Viewed'}
+                  {t(category.name, category.name || 'Recently Viewed')}
                 </span>
 
                 <svg 
@@ -321,13 +328,13 @@ export default function ReportCategoriesSidebar({
                         key={report.id}
                         type="button"
                         onClick={() => onSelectReport && onSelectReport(report)}
-                        className={`w-full text-left py-1.5 px-2 rounded-lg text-xs transition-colors ${
+                        className={`w-full text-left rtl:text-right py-1.5 px-2 rounded-lg text-xs transition-colors ${
                           isSelected
                             ? 'bg-primary text-primary-foreground font-medium shadow-2xs'
                             : 'text-muted-foreground hover:text-foreground hover:bg-card'
                         }`}
                       >
-                        {report.title}
+                        {t(report.title, report.title)}
                       </button>
                     );
                   })}
@@ -347,11 +354,11 @@ export default function ReportCategoriesSidebar({
                         <button
                           type="button"
                           onClick={() => toggleSubFolder(subFolder.id)}
-                          className="w-full flex items-center justify-between text-left py-1 px-2 text-[11.5px] font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
+                          className="w-full flex items-center justify-between text-left rtl:text-right py-1 px-2 text-[11.5px] font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
                         >
                           <span className="flex items-center gap-1.5">
                             <span>📁</span>
-                            <span>{subFolder.name}</span>
+                            <span>{t(subFolder.name, subFolder.name)}</span>
                             <span className="text-[10px] text-muted-foreground font-normal">
                               ({subFolder.reports.length})
                             </span>
@@ -362,7 +369,7 @@ export default function ReportCategoriesSidebar({
                         </button>
 
                         {isSubOpen && (
-                          <div className="pl-3 pr-1 pt-1 space-y-0.5 border-l-2 border-border ml-1.5 mt-0.5">
+                          <div className="pl-3 pr-1 rtl:pr-3 rtl:pl-1 pt-1 space-y-0.5 border-l-2 rtl:border-l-0 rtl:border-r-2 border-border ml-1.5 rtl:ml-0 rtl:mr-1.5 mt-0.5">
                             {subFolder.reports.map((report) => {
                               const isSelected = activeReportId === report.id;
                               return (
@@ -370,13 +377,13 @@ export default function ReportCategoriesSidebar({
                                   key={report.id}
                                   type="button"
                                   onClick={() => onSelectReport && onSelectReport(report)}
-                                  className={`w-full text-left py-1.5 px-2 rounded-lg text-[11.5px] transition-colors ${
+                                  className={`w-full text-left rtl:text-right py-1.5 px-2 rounded-lg text-[11.5px] transition-colors ${
                                     isSelected
                                       ? 'bg-primary text-primary-foreground font-medium shadow-2xs'
                                       : 'text-muted-foreground hover:text-foreground hover:bg-card'
                                   }`}
                                 >
-                                  {report.title}
+                                  {t(report.title, report.title)}
                                 </button>
                               );
                             })}

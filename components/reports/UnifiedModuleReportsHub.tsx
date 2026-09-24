@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Menu,
   Search,
@@ -80,6 +81,7 @@ export default function UnifiedModuleReportsHub({
   setBranch,
   branchOptions = ['Main Branch', 'Choueifat Main Facility', 'Beirut Gourmet Depot', 'Sidon Hub']
 }: UnifiedModuleReportsHubProps) {
+  const { t, dir } = useLanguage();
   const [isReportListOpen, setIsReportListOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [zoomLevel, setZoomLevel] = useState(100);
@@ -102,11 +104,12 @@ export default function UnifiedModuleReportsHub({
   };
 
   const handleExport = () => {
-    alert(`Exporting ${selectedReport} to CSV / Excel...`);
+    // Non-blocking export trigger
+    console.log(`[Export] ${selectedReport}`);
   };
 
   return (
-    <div className="w-full space-y-4 font-sans dir-ltr">
+    <div dir={dir} className="w-full space-y-4 font-sans">
       {/* Global CSS for Print Optimization and Standardized Form Controls */}
       <style>{`
         @media print {
@@ -177,12 +180,12 @@ export default function UnifiedModuleReportsHub({
           <button
             type="button"
             onClick={() => setIsReportListOpen(!isReportListOpen)}
-            title={isReportListOpen ? 'Hide Report Categories' : 'Show Report Categories'}
+            title={isReportListOpen ? t('Hide Report Categories', 'Hide Report Categories') : t('Show Report Categories', 'Show Report Categories')}
             className="p-2 hover:bg-slate-100 rounded-lg text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0 flex items-center gap-2 text-xs font-bold"
           >
             <Menu className="w-4 h-4 text-slate-700" />
             <span className="hidden sm:inline">
-              {isReportListOpen ? 'Hide Report Categories' : 'Show Report Categories'}
+              {isReportListOpen ? t('Hide Report Categories', 'Hide Report Categories') : t('Show Report Categories', 'Show Report Categories')}
             </span>
           </button>
 
@@ -190,10 +193,10 @@ export default function UnifiedModuleReportsHub({
 
           <div className="flex items-center gap-2">
             <span className="text-slate-500 font-medium text-xs hidden md:inline">
-              Active Report:
+              {t('Active Report', 'Active Report')}:
             </span>
             <span className="bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2.5 py-1 rounded-md font-semibold tracking-wide">
-              {selectedReport}
+              {t(selectedReport, selectedReport)}
             </span>
           </div>
         </div>
@@ -206,17 +209,17 @@ export default function UnifiedModuleReportsHub({
               className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-all cursor-pointer border border-slate-300 shadow-2xs shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
-              <span>Return to Hub</span>
+              <span>{t('Return to Hub', 'Return to Hub')}</span>
             </button>
           )}
 
           <button
             type="button"
-            onClick={() => alert(`Opening Reports Builder for ${moduleTitle}...`)}
+            onClick={() => {}}
             className="px-3.5 py-2 rounded-lg text-xs font-medium flex items-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground transition-all cursor-pointer shadow-xs shrink-0"
           >
             <BarChart3 size={14} />
-            <span className="hidden sm:inline">Reports Builder</span>
+            <span className="hidden sm:inline">{t('Reports Builder', 'Reports Builder')}</span>
           </button>
         </div>
       </div>
@@ -231,7 +234,7 @@ export default function UnifiedModuleReportsHub({
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search reports..."
+                placeholder={t('Search reports...', 'Search reports...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-md pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-slate-400 focus:bg-white text-slate-800 placeholder-slate-400 font-medium transition-colors"
@@ -258,7 +261,7 @@ export default function UnifiedModuleReportsHub({
                         onClick={() => toggleCategory(section.category)}
                         className="text-slate-800 font-bold text-xs px-4 py-2.5 bg-white flex justify-between items-center cursor-pointer select-none border-b border-slate-50 hover:bg-slate-50 transition-colors"
                       >
-                        <span>{section.category}</span>
+                        <span>{t(section.category, section.category)}</span>
                         <ChevronDown
                           size={14}
                           className={`text-slate-400 transition-transform duration-200 ${
@@ -281,7 +284,7 @@ export default function UnifiedModuleReportsHub({
                                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                                 }`}
                               >
-                                {item}
+                                {t(item, item)}
                               </div>
                             );
                           })}
@@ -311,7 +314,7 @@ export default function UnifiedModuleReportsHub({
                       onClick={() => toggleCategory(section.category)}
                       className="text-slate-800 font-bold text-xs px-4 py-2.5 bg-white flex justify-between items-center cursor-pointer select-none border-b border-slate-50 hover:bg-slate-50 transition-colors"
                     >
-                      <span>{section.category}</span>
+                      <span>{t(section.category, section.category)}</span>
                       <ChevronDown
                         size={14}
                         className={`text-slate-400 transition-transform duration-200 ${
@@ -337,7 +340,7 @@ export default function UnifiedModuleReportsHub({
                                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                                   }`}
                                 >
-                                  {item}
+                                  {t(item, item)}
                                 </div>
                               );
                             })}
@@ -346,7 +349,7 @@ export default function UnifiedModuleReportsHub({
                         {filteredGroups.map((group, gIdx) => (
                           <div key={`${section.category}__${group.name}__${gIdx}`} className="py-0.5">
                             <div className="px-3 py-1 text-[11px] font-bold text-slate-700">
-                              {group.name}
+                              {t(group.name, group.name)}
                             </div>
                             <div className="space-y-0.5">
                               {group.items.map((item, iIdx) => {
@@ -361,7 +364,7 @@ export default function UnifiedModuleReportsHub({
                                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                                     }`}
                                   >
-                                    {item}
+                                    {t(item, item)}
                                   </div>
                                 );
                               })}
@@ -402,19 +405,19 @@ export default function UnifiedModuleReportsHub({
                     }}
                     className="border border-slate-400 rounded p-1.5 text-[13px] w-44 !text-black !font-bold !bg-white focus:outline-none focus:border-blue-600 shadow-xs cursor-pointer"
                   >
-                    <option value="Today">Today</option>
-                    <option value="Yesterday">Yesterday</option>
-                    <option value="This Week">This Week</option>
-                    <option value="This Month">This Month</option>
-                    <option value="Last Month">Last Month</option>
-                    <option value="First Quarter">First Quarter (Q1)</option>
-                    <option value="Second Quarter">Second Quarter (Q2)</option>
-                    <option value="Third Quarter">Third Quarter (Q3)</option>
+                    <option value="Today">{t('Today', 'Today')}</option>
+                    <option value="Yesterday">{t('Yesterday', 'Yesterday')}</option>
+                    <option value="This Week">{t('This Week', 'This Week')}</option>
+                    <option value="This Month">{t('This Month', 'This Month')}</option>
+                    <option value="Last Month">{t('Last Month', 'Last Month')}</option>
+                    <option value="First Quarter">{t('First Quarter (Q1)', 'First Quarter (Q1)')}</option>
+                    <option value="Second Quarter">{t('Second Quarter (Q2)', 'Second Quarter (Q2)')}</option>
+                    <option value="Third Quarter">{t('Third Quarter (Q3)', 'Third Quarter (Q3)')}</option>
                     <option value="Fourth Quarter" disabled={!isQuarterAvailable(4)}>
-                      {isQuarterAvailable(4) ? 'Fourth Quarter (Q4)' : 'Fourth Quarter (Q4 - Unentered)'}
+                      {isQuarterAvailable(4) ? t('Fourth Quarter (Q4)', 'Fourth Quarter (Q4)') : t('Fourth Quarter (Q4 - Unentered)', 'Fourth Quarter (Q4 - Unentered)')}
                     </option>
-                    <option value="This Year">This Year</option>
-                    <option value="Date Range">Date Range</option>
+                    <option value="This Year">{t('This Year', 'This Year')}</option>
+                    <option value="Date Range">{t('Date Range', 'Date Range')}</option>
                   </select>
 
                   {setFromDate && setToDate && period === 'Date Range' ? (
@@ -450,7 +453,7 @@ export default function UnifiedModuleReportsHub({
                 >
                   {branchOptions.map((b) => (
                     <option key={b} value={b}>
-                      {b}
+                      {t(b, b)}
                     </option>
                   ))}
                 </select>
@@ -479,7 +482,7 @@ export default function UnifiedModuleReportsHub({
                 className="bg-primary hover:bg-slate-800 text-primary-foreground px-4 py-2 rounded-lg text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <Filter size={14} />
-                <span>Filter Report</span>
+                <span>{t('Filter Report', 'Filter Report')}</span>
               </button>
 
               {/* Standard Vanguard Secondary "Reset Filters" Button */}
@@ -489,7 +492,7 @@ export default function UnifiedModuleReportsHub({
                 className="bg-muted hover:bg-slate-200 text-foreground border border-border px-4 py-2 rounded-lg text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <RotateCcw size={14} />
-                <span>Reset Filters</span>
+                <span>{t('Reset Filters', 'Reset Filters')}</span>
               </button>
             </div>
           </div>
@@ -497,7 +500,7 @@ export default function UnifiedModuleReportsHub({
           {/* 4. UPPER ACTION BAR: TITLE & ZOOM / PRINT / EXPORT BUTTONS */}
           <div className="bg-card border border-border rounded-xl px-4 py-3 shadow-xs flex items-center justify-between gap-4 print:hidden">
             <h2 className="text-xs font-bold text-foreground uppercase tracking-wide">
-              {selectedReport}
+              {t(selectedReport, selectedReport)}
             </h2>
 
             <div className="flex items-center gap-2">
@@ -505,7 +508,7 @@ export default function UnifiedModuleReportsHub({
                 type="button"
                 onClick={() => setZoomLevel((z) => Math.min(z + 10, 150))}
                 className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg shadow-xs transition-colors cursor-pointer"
-                title="Zoom In"
+                title={t('Zoom In', 'Zoom In')}
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
@@ -513,7 +516,7 @@ export default function UnifiedModuleReportsHub({
                 type="button"
                 onClick={() => setZoomLevel((z) => Math.max(z - 10, 70))}
                 className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg shadow-xs transition-colors cursor-pointer"
-                title="Zoom Out"
+                title={t('Zoom Out', 'Zoom Out')}
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
@@ -523,7 +526,7 @@ export default function UnifiedModuleReportsHub({
                 className="bg-primary hover:bg-slate-800 text-primary-foreground font-medium text-xs py-2 px-4 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Report</span>
+                <span>{t('Print Report', 'Print Report')}</span>
               </button>
               <button
                 type="button"
@@ -531,7 +534,7 @@ export default function UnifiedModuleReportsHub({
                 className="bg-primary hover:bg-slate-800 text-primary-foreground font-medium text-xs py-2 px-4 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Export Report</span>
+                <span>{t('Export Report', 'Export Report')}</span>
               </button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import { Printer, Download, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 
 export type PaperSize = 'A4' | 'A3' | 'A5' | 'POS' | 'Barcode' | 'Auto';
@@ -108,6 +109,7 @@ export default function UnifiedPrintableReportSheet({
   children,
   className = '',
 }: UnifiedPrintableReportSheetProps) {
+  const { t, dir } = useLanguage();
   const [internalOrientation, setInternalOrientation] = React.useState<'portrait' | 'landscape'>(
     propOrientation || 'portrait'
   );
@@ -139,7 +141,7 @@ export default function UnifiedPrintableReportSheet({
   };
 
   return (
-    <div className={`w-full font-sans text-foreground text-left select-none bg-background ${className}`}>
+    <div dir={dir} className={`w-full font-sans text-foreground text-left select-none bg-background ${className}`}>
       {/* Dynamic Print Styles for fully fluid print sizing */}
       <style>{`
         @media print {
@@ -163,7 +165,7 @@ export default function UnifiedPrintableReportSheet({
       {!hideToolbar && (
         <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border rounded-xl p-3 mb-4 shadow-xs print:hidden">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-foreground uppercase tracking-wider">Report Action:</span>
+            <span className="text-xs font-bold text-foreground uppercase tracking-wider">{t('Report Action', 'Report Action')}:</span>
             <span className="font-mono font-bold text-xs text-primary bg-muted px-2.5 py-1 rounded border border-border">
               {reportCode}
             </span>
@@ -177,7 +179,7 @@ export default function UnifiedPrintableReportSheet({
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.4))}
                   className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
-                  title="Zoom in"
+                  title={t('Zoom In', 'Zoom In')}
                 >
                   <ZoomIn size={14} />
                 </button>
@@ -185,7 +187,7 @@ export default function UnifiedPrintableReportSheet({
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.7))}
                   className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
-                  title="Zoom out"
+                  title={t('Zoom Out', 'Zoom Out')}
                 >
                   <ZoomOut size={14} />
                 </button>
@@ -197,10 +199,10 @@ export default function UnifiedPrintableReportSheet({
                 type="button"
                 onClick={onRefresh}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-slate-200 text-foreground rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-border shadow-xs"
-                title="Refresh Report Data"
+                title={t('Refresh', 'Refresh')}
               >
                 <RefreshCw size={13} />
-                <span>Refresh</span>
+                <span>{t('Refresh', 'Refresh')}</span>
               </button>
             )}
 
@@ -209,10 +211,10 @@ export default function UnifiedPrintableReportSheet({
                 type="button"
                 onClick={onExportCSV}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
-                title="Export Flat CSV"
+                title={t('Export CSV', 'Export CSV')}
               >
                 <Download size={13} />
-                <span>Export CSV</span>
+                <span>{t('Export CSV', 'Export CSV')}</span>
               </button>
             )}
 
@@ -220,10 +222,10 @@ export default function UnifiedPrintableReportSheet({
               type="button"
               onClick={handlePrint}
               className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
-              title="Print Document"
+              title={t('Print Report', 'Print Report')}
             >
               <Printer size={13} />
-              <span>Print Report</span>
+              <span>{t('Print Report', 'Print Report')}</span>
             </button>
           </div>
         </div>
@@ -240,11 +242,11 @@ export default function UnifiedPrintableReportSheet({
           {/* ================================================================= */}
           <div className="text-center">
             <h1 className="font-bold text-report-company text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-              {topperTitle}
+              {t(topperTitle, topperTitle)}
             </h1>
             {subtitle && (
               <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-                {subtitle}
+                {t(subtitle, subtitle)}
               </div>
             )}
           </div>
@@ -253,7 +255,7 @@ export default function UnifiedPrintableReportSheet({
           {/* B. REPORT TITLE (CENTERED BOLD)                                   */}
           {/* ================================================================= */}
           <div className="text-center font-extrabold text-report-title text-slate-900 text-[13.5px] mt-2.5 mb-1.5 font-sans">
-            {reportTitle}
+            {t(reportTitle, reportTitle)}
           </div>
 
           {/* ================================================================= */}
@@ -262,7 +264,7 @@ export default function UnifiedPrintableReportSheet({
           <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
             <span className="font-medium">{displayDate}</span>
             <span className="font-bold text-center flex-1">
-              {periodText || 'Current Active Period'}
+              {periodText ? t(periodText, periodText) : t('Current Active Period', 'Current Active Period')}
             </span>
             <span className="font-medium">{pageInfo}</span>
           </div>
@@ -276,7 +278,7 @@ export default function UnifiedPrintableReportSheet({
           {branchInfo && (
             <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
               <span>{branchInfo}</span>
-              <span className="font-mono text-slate-500">System Source: Vanguard ERP Live Ledger</span>
+              <span className="font-mono text-slate-500">{t('System Source', 'System Source')}: {t('Vanguard ERP Live Ledger', 'Vanguard ERP Live Ledger')}</span>
             </div>
           )}
 
@@ -298,7 +300,7 @@ export default function UnifiedPrintableReportSheet({
           <div className="flex items-center justify-between text-[10px] text-slate-800 font-sans">
             <span className="font-mono font-bold tracking-wider text-slate-900">{reportCode}</span>
             <span className="text-slate-700 font-medium text-center flex-1">
-              {copyrightNotice}
+              {t(copyrightNotice, copyrightNotice)}
             </span>
             <div className="text-right">
               <a

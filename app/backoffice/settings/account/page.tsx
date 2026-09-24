@@ -65,12 +65,12 @@ export default function AccountSettingsPage() {
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
         <Link href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
-          {language === 'ar' ? 'الرئيسية' : 'Workspace'}
+          {t('workspace', 'Workspace')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-400">{language === 'ar' ? 'الإعدادات العامة' : 'Settings'}</span>
+        <span className="text-slate-400">{t('settings', 'Settings')}</span>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-primary font-bold">{language === 'ar' ? 'حسابي الشخصي' : 'My Account'}</span>
+        <span className="text-primary font-bold">{t('my_account', 'My Account')}</span>
       </div>
 
       {/* Header Banner */}
@@ -89,9 +89,7 @@ export default function AccountSettingsPage() {
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {language === 'ar'
-                ? 'إدارة بيانات الحساب الشخصي، كلمة المرور، ولغة واجهة الاستخدام'
-                : 'Manage profile credentials, system language preference, and active sessions.'}
+              {t('account_settings_desc', 'Manage profile credentials, system language preference, and active sessions.')}
             </p>
           </div>
         </div>
@@ -103,21 +101,21 @@ export default function AccountSettingsPage() {
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'المنشأة' : 'Organization'}</span>
+            <span>{t('organization', 'Organization')}</span>
           </Link>
           <Link
             href={`/${orgId}/settings/users`}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Users className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'المستخدمين' : 'Users'}</span>
+            <span>{t('users', 'Users')}</span>
           </Link>
           <Link
             href={`/${orgId}/settings/roles`}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'الصلاحيات' : 'Roles'}</span>
+            <span>{t('roles', 'Roles')}</span>
           </Link>
         </div>
       </div>
@@ -136,13 +134,13 @@ export default function AccountSettingsPage() {
           <form onSubmit={handleSaveProfile} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-4">
             <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center gap-2">
               <User className="w-4 h-4 text-primary" />
-              <span>{language === 'ar' ? 'البيانات الشخصية وتفضيلات الحساب' : 'Personal Information & Language'}</span>
+              <span>{t('personal_info_language', 'Personal Information & Language')}</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {language === 'ar' ? 'الاسم الكامل' : 'Full Name *'}
+                  {t('full_name', 'Full Name *')}
                 </label>
                 <input
                   type="text"
@@ -155,7 +153,7 @@ export default function AccountSettingsPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {language === 'ar' ? 'المسمى الوظيفي' : 'Job Title'}
+                  {t('job_title', 'Job Title')}
                 </label>
                 <input
                   type="text"
@@ -169,7 +167,7 @@ export default function AccountSettingsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {language === 'ar' ? 'البريد الإلكتروني المهني' : 'Work Email *'}
+                  {t('work_email', 'Work Email *')}
                 </label>
                 <input
                   type="email"
@@ -182,7 +180,7 @@ export default function AccountSettingsPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {language === 'ar' ? 'رقم الهاتف / واتساب' : 'Phone Number'}
+                  {t('phone_number', 'Phone Number')}
                 </label>
                 <input
                   type="text"
@@ -197,7 +195,7 @@ export default function AccountSettingsPage() {
             <div className="pt-2">
               <label className="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
                 <Globe className="w-4 h-4 text-primary" />
-                <span>{language === 'ar' ? 'لغة واجهة النظام المفضلة' : 'Preferred System Language'}</span>
+                <span>{t('preferred_system_language', 'Preferred System Language')}</span>
               </label>
               <div className="grid grid-cols-2 gap-3 max-w-sm">
                 <button
@@ -234,7 +232,7 @@ export default function AccountSettingsPage() {
                 className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Save className="w-4 h-4" />
-                <span>{language === 'ar' ? 'حفظ البيانات الشخصية' : 'Save Profile Changes'}</span>
+                <span>{t('save_profile_changes', 'Save Profile Changes')}</span>
               </button>
             </div>
           </form>
@@ -243,7 +241,7 @@ export default function AccountSettingsPage() {
           <form onSubmit={handleUpdatePassword} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-4">
             <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center gap-2">
               <Lock className="w-4 h-4 text-amber-600" />
-              <span>{language === 'ar' ? 'تحديث كلمة المرور والأمان' : 'Security & Password Update'}</span>
+              <span>{t('security_password_update', 'Security & Password Update')}</span>
             </h2>
 
             {passwordToast && (
@@ -255,7 +253,7 @@ export default function AccountSettingsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Current Password
+                  {t('current_password', 'Current Password')}
                 </label>
                 <input
                   type="password"
@@ -267,7 +265,7 @@ export default function AccountSettingsPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  New Password
+                  {t('new_password', 'New Password')}
                 </label>
                 <input
                   type="password"
@@ -279,7 +277,7 @@ export default function AccountSettingsPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Confirm Password
+                  {t('confirm_password', 'Confirm Password')}
                 </label>
                 <input
                   type="password"
@@ -296,7 +294,7 @@ export default function AccountSettingsPage() {
                 className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-2 transition-all cursor-pointer"
               >
                 <KeyRound className="w-4 h-4 text-amber-400" />
-                <span>Update Credentials</span>
+                <span>{t('update_credentials', 'Update Credentials')}</span>
               </button>
             </div>
           </form>
@@ -307,7 +305,7 @@ export default function AccountSettingsPage() {
           <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-4">
             <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Active Authentication Sessions</span>
+              <span>{t('active_auth_sessions', 'Active Authentication Sessions')}</span>
             </h3>
 
             <div className="space-y-3 text-xs">
@@ -318,7 +316,7 @@ export default function AccountSettingsPage() {
                     <span>Chrome on Windows 11</span>
                   </span>
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    CURRENT
+                    {t('current', 'CURRENT')}
                   </span>
                 </div>
                 <p className="text-[10.5px] text-slate-500 font-mono">IP: 185.190.142.20 • Beirut, Lebanon</p>

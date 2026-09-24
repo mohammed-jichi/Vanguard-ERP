@@ -152,12 +152,12 @@ export default function UsersSettingsPage() {
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
         <Link href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
-          {language === 'ar' ? 'الرئيسية' : 'Workspace'}
+          {t('workspace', 'Workspace')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-400">{language === 'ar' ? 'الإعدادات العامة' : 'Settings'}</span>
+        <span className="text-slate-400">{t('settings', 'Settings')}</span>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-primary font-bold">{language === 'ar' ? 'المستخدمين' : 'Users'}</span>
+        <span className="text-primary font-bold">{t('users', 'Users')}</span>
       </div>
 
       {/* Header Banner */}
@@ -169,16 +169,14 @@ export default function UsersSettingsPage() {
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {language === 'ar' ? 'إدارة المستخدمين وحسابات العمل' : 'Enterprise Users & Access Directory'}
+                {t('enterprise_users_directory', 'Enterprise Users & Access Directory')}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-300 text-xs font-mono font-bold">
                 {users.length} Users
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {language === 'ar'
-                ? 'إدارة حسابات الموظفين، تعيين الفروع، وحالة الدخول والنشاط'
-                : 'Manage team directory, invite operators, assign branch workstations, and monitor sessions.'}
+              {t('users_settings_desc', 'Manage team directory, invite operators, assign branch workstations, and monitor sessions.')}
             </p>
           </div>
         </div>
@@ -190,14 +188,14 @@ export default function UsersSettingsPage() {
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'المنشأة' : 'Organization'}</span>
+            <span>{t('organization', 'Organization')}</span>
           </Link>
           <Link
             href={`/${orgId}/settings/roles`}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'الصلاحيات' : 'Roles'}</span>
+            <span>{t('roles', 'Roles')}</span>
           </Link>
           <button
             type="button"
@@ -205,7 +203,7 @@ export default function UsersSettingsPage() {
             className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
-            <span>{language === 'ar' ? 'إضافة مستخدم جديد' : 'Add New User'}</span>
+            <span>{t('add_new_user', 'Add New User')}</span>
           </button>
         </div>
       </div>
@@ -225,7 +223,7 @@ export default function UsersSettingsPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={language === 'ar' ? 'ابحث بالاسم، البريد، أو المسمى الوظيفي...' : 'Search by name, email, or role...'}
+            placeholder={t('search_users_placeholder', 'Search by name, email, or role...')}
             className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-primary outline-hidden text-slate-900"
           />
         </div>
@@ -251,12 +249,12 @@ export default function UsersSettingsPage() {
           <table className="w-full text-left text-xs text-slate-700">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10.5px] tracking-wider">
               <tr>
-                <th className="px-5 py-3.5">{language === 'ar' ? 'المستخدم' : 'User'}</th>
-                <th className="px-4 py-3.5">{language === 'ar' ? 'الدور الوظيفي' : 'Role'}</th>
-                <th className="px-4 py-3.5">{language === 'ar' ? 'الفرع / الموقع' : 'Branch / Facility'}</th>
-                <th className="px-4 py-3.5">{language === 'ar' ? 'الحالة' : 'Status'}</th>
-                <th className="px-4 py-3.5">{language === 'ar' ? 'آخر نشاط' : 'Last Login'}</th>
-                <th className="px-5 py-3.5 text-right">{language === 'ar' ? 'الإجراءات' : 'Actions'}</th>
+                <th className="px-5 py-3.5">{t('user', 'User')}</th>
+                <th className="px-4 py-3.5">{t('role', 'Role')}</th>
+                <th className="px-4 py-3.5">{t('branch_facility', 'Branch / Facility')}</th>
+                <th className="px-4 py-3.5">{t('status', 'Status')}</th>
+                <th className="px-4 py-3.5">{t('last_login', 'Last Login')}</th>
+                <th className="px-5 py-3.5 text-right rtl:text-left">{t('actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
@@ -334,7 +332,7 @@ export default function UsersSettingsPage() {
           <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-md p-6 z-10 animate-zoomIn space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-extrabold text-slate-900 text-sm">
-                {language === 'ar' ? 'إضافة مستخدم جديد' : 'Invite New Operator'}
+                {t('invite_new_operator', 'Invite New Operator')}
               </h3>
               <button
                 type="button"

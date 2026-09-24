@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import { ReportMetadata, ReportColumn, ReportSection, GrandTotal, PaperSize } from '@/types/reports';
 
 export interface MasterReportDocumentProps<T = any> {
@@ -22,6 +23,8 @@ export function MasterReportDocument<T = any>({
   paperSize = 'A4',
   className = '',
 }: MasterReportDocumentProps<T>) {
+  const { t, dir } = useLanguage();
+
   // Auto-detect landscape if 8 or more columns or explicitly requested
   const isLandscape = orientation === 'landscape' || (orientation === 'auto' && columns.length >= 8);
 
@@ -65,32 +68,32 @@ export function MasterReportDocument<T = any>({
       {/* 1. Header Section */}
       <div className="text-center mb-5">
         <h1 className="text-foreground text-base sm:text-lg font-bold tracking-wide uppercase">
-          {meta.companyName}
+          {t(meta.companyName, meta.companyName)}
         </h1>
         {meta.subtitle && (
-          <p className="text-slate-500 text-xs font-normal mt-0.5">{meta.subtitle}</p>
+          <p className="text-slate-500 text-xs font-normal mt-0.5">{t(meta.subtitle, meta.subtitle)}</p>
         )}
         <h2 className="text-foreground text-sm sm:text-base font-extrabold mt-2.5 tracking-tight">
-          {meta.reportTitle}
+          {t(meta.reportTitle, meta.reportTitle)}
         </h2>
       </div>
 
       {/* 2. Audit Meta Bar */}
       <div className="flex justify-between items-center text-slate-700 text-xs font-medium py-1 border-b border-slate-300 mb-1">
         <span>{meta.generatedDate}</span>
-        <span>Period: {meta.dateRange}</span>
-        <span>Page {meta.pageNumber || 1} of {meta.totalPages || 1}</span>
+        <span>{t('Period', 'Period')}: {meta.dateRange}</span>
+        <span>{t('Page', 'Page')} {meta.pageNumber || 1} {t('of', 'of')} {meta.totalPages || 1}</span>
       </div>
       <div className="flex flex-wrap justify-between items-center text-slate-500 text-[11px] pb-2.5 mb-3 gap-y-1">
         <span>
-          Branch: {meta.branch}
+          {t('Branch', 'Branch')}: {meta.branch}
           {meta.filterSummary && (
             <span className="ml-2 pl-2 border-l border-slate-300 text-slate-600 font-medium">
               {meta.filterSummary}
             </span>
           )}
         </span>
-        <span>System Source: {meta.systemSource}</span>
+        <span>{t('System Source', 'System Source')}: {t(meta.systemSource, meta.systemSource)}</span>
       </div>
 
       {/* 3. Document Table Canvas with Horizontal Overflow Protection */}
@@ -104,7 +107,7 @@ export function MasterReportDocument<T = any>({
                   style={col.width ? { width: col.width } : undefined}
                   className={`py-2 px-1.5 sm:px-2 font-bold text-slate-900 tracking-tight whitespace-nowrap ${getAlignClass(col.align)}`}
                 >
-                  {col.label}
+                  {t(col.label, col.label)}
                 </th>
               ))}
             </tr>
@@ -119,7 +122,7 @@ export function MasterReportDocument<T = any>({
                       colSpan={columns.length}
                       className={`pt-3.5 pb-1 px-1.5 sm:px-2 font-bold uppercase text-[10.5px] ${getSectionTitleColor(section.type)}`}
                     >
-                      {section.title}
+                      {t(section.title, section.title)}
                     </td>
                   </tr>
 
@@ -143,7 +146,7 @@ export function MasterReportDocument<T = any>({
                   {section.subtotal && (
                     <tr className="border-t border-slate-300 border-b border-slate-200 font-bold bg-slate-50/20">
                       <td colSpan={columns.length - 1} className="py-1.5 px-1.5 sm:px-2 text-slate-900">
-                        {section.subtotal.label}
+                        {t(section.subtotal.label, section.subtotal.label)}
                       </td>
                       <td
                         className={`py-1.5 px-1.5 sm:px-2 text-right font-mono tabular-nums ${
@@ -181,10 +184,10 @@ export function MasterReportDocument<T = any>({
                 >
                   <div className="flex flex-col items-center justify-center gap-1.5">
                     <span className="text-xs font-semibold text-slate-700">
-                      No matching records found for the applied filter criteria.
+                      {t('No matching records found for the applied filter criteria.', 'No matching records found for the applied filter criteria.')}
                     </span>
                     <span className="text-[11px] text-slate-400 font-normal">
-                      Try adjusting or clearing your active filter parameters.
+                      {t('Try adjusting or clearing your active filter parameters.', 'Try adjusting or clearing your active filter parameters.')}
                     </span>
                   </div>
                 </td>
@@ -200,12 +203,12 @@ export function MasterReportDocument<T = any>({
                 <td colSpan={columns.length - 1} className="py-2.5 px-1.5 sm:px-2 text-slate-900 text-xs sm:text-sm align-top">
                   <div className="flex flex-col gap-1">
                     <span className="font-bold text-slate-900 tracking-tight">
-                      {grandTotal.label}
+                      {t(grandTotal.label, grandTotal.label)}
                     </span>
                     {grandTotal.breakdownText && (
                       <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono font-medium text-slate-700">
                         <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded">
-                          Breakdown
+                          {t('Breakdown', 'Breakdown')}
                         </span>
                         <span>{grandTotal.breakdownText}</span>
                       </div>
@@ -227,7 +230,7 @@ export function MasterReportDocument<T = any>({
                   <div className="text-xs sm:text-sm font-bold">{grandTotal.value}</div>
                   {grandTotal.targetCurrency && (
                     <div className="text-[10px] font-sans font-semibold uppercase tracking-wider text-slate-500 mt-0.5">
-                      Consolidated ({grandTotal.targetCurrency})
+                      {t('Consolidated', 'Consolidated')} ({grandTotal.targetCurrency})
                     </div>
                   )}
                 </td>
@@ -240,7 +243,7 @@ export function MasterReportDocument<T = any>({
       {/* 5. Document Footer */}
       <div className="border-t border-slate-300 mt-6 pt-2.5 flex justify-between items-center text-[10px] text-slate-500 font-mono">
         <span>{meta.code}</span>
-        <span>Copyright © 2026 Vanguard ERP. All Rights Reserved.</span>
+        <span>{t('Copyright © 2026 Vanguard ERP. All Rights Reserved.', 'Copyright © 2026 Vanguard ERP. All Rights Reserved.')}</span>
       </div>
     </div>
   );

@@ -69,7 +69,7 @@ export default function OrganizationSettingsPage() {
       });
       setStatusMsg({
         type: 'success',
-        text: language === 'ar' ? 'تم حفظ بيانات المؤسسة والمنشأة بنجاح!' : 'Organization profile updated successfully!'
+        text: t('org_profile_updated', 'Organization profile updated successfully!')
       });
       setTimeout(() => setStatusMsg(null), 4000);
     } catch (err: any) {
@@ -93,12 +93,12 @@ export default function OrganizationSettingsPage() {
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
         <Link href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
-          {language === 'ar' ? 'الرئيسية' : 'Workspace'}
+          {t('workspace', 'Workspace')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-400">{language === 'ar' ? 'الإعدادات العامة' : 'Settings'}</span>
+        <span className="text-slate-400">{t('settings', 'Settings')}</span>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-primary font-bold">{language === 'ar' ? 'بيانات المنشأة' : 'Organization'}</span>
+        <span className="text-primary font-bold">{t('organization', 'Organization')}</span>
       </div>
 
       {/* Header Banner */}
@@ -110,16 +110,14 @@ export default function OrganizationSettingsPage() {
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {language === 'ar' ? 'إعدادات المؤسسة والمنشأة' : 'Organization & Enterprise Settings'}
+                {t('organization_enterprise_settings', 'Organization & Enterprise Settings')}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-mono font-bold">
                 #{orgId}
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {language === 'ar'
-                ? 'إدارة الهوية القانونية للمنشأة، التراخيص الدائمة، والبيانات الضريبية'
-                : 'Configure legal entity identity, tax parameters, headquarters & perpetual software licensing.'}
+              {t('org_settings_desc', 'Configure legal entity identity, tax parameters, headquarters & perpetual software licensing.')}
             </p>
           </div>
         </div>
@@ -131,21 +129,21 @@ export default function OrganizationSettingsPage() {
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Users className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'المستخدمين' : 'Users'}</span>
+            <span>{t('users', 'Users')}</span>
           </Link>
           <Link
             href={`/${orgId}/settings/roles`}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'الصلاحيات' : 'Roles'}</span>
+            <span>{t('roles', 'Roles')}</span>
           </Link>
           <Link
             href={`/${orgId}/settings/account`}
             className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
           >
             <User className="w-3.5 h-3.5" />
-            <span>{language === 'ar' ? 'حسابي' : 'Account'}</span>
+            <span>{t('account', 'Account')}</span>
           </Link>
         </div>
       </div>
@@ -170,13 +168,13 @@ export default function OrganizationSettingsPage() {
           <form onSubmit={handleSave} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-5">
             <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center gap-2">
               <Building2 className="w-4 h-4 text-primary" />
-              <span>{language === 'ar' ? 'الهوية القانونية والتجارية' : 'Corporate & Legal Profile'}</span>
+              <span>{t('corporate_legal_profile', 'Corporate & Legal Profile')}</span>
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  {language === 'ar' ? 'الاسم القانوني المسجل للشركة *' : 'Registered Legal Name *'}
+                  {t('registered_legal_name', 'Registered Legal Name *')}
                 </label>
                 <input
                   type="text"
@@ -190,7 +188,7 @@ export default function OrganizationSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {language === 'ar' ? 'الاسم التجاري بالعربية' : 'Arabic Brand Name'}
+                    {t('arabic_brand_name', 'Arabic Brand Name')}
                   </label>
                   <input
                     type="text"
@@ -202,7 +200,7 @@ export default function OrganizationSettingsPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {language === 'ar' ? 'الاسم التجاري بالإنجليزية' : 'English Brand Name'}
+                    {t('english_brand_name', 'English Brand Name')}
                   </label>
                   <input
                     type="text"
@@ -216,7 +214,7 @@ export default function OrganizationSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {language === 'ar' ? 'رقم السجل التجاري (CRN)' : 'Commercial Registration No (CRN)'}
+                    {t('crn', 'Commercial Registration No (CRN)')}
                   </label>
                   <input
                     type="text"
@@ -228,7 +226,7 @@ export default function OrganizationSettingsPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {language === 'ar' ? 'الرقم المالي والضريبي (TIN / VAT)' : 'Tax Identification Number (TIN)'}
+                    {t('tin', 'Tax Identification Number (TIN)')}
                   </label>
                   <input
                     type="text"
@@ -243,7 +241,7 @@ export default function OrganizationSettingsPage() {
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{language === 'ar' ? 'العنوان الرئيسي' : 'HQ Address'}</span>
+                    <span>{t('hq_address', 'HQ Address')}</span>
                   </label>
                   <input
                     type="text"
@@ -256,7 +254,7 @@ export default function OrganizationSettingsPage() {
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{language === 'ar' ? 'الهاتف' : 'Telephone'}</span>
+                    <span>{t('telephone', 'Telephone')}</span>
                   </label>
                   <input
                     type="text"
@@ -269,7 +267,7 @@ export default function OrganizationSettingsPage() {
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{language === 'ar' ? 'البريد الإلكتروني' : 'Official Email'}</span>
+                    <span>{t('official_email', 'Official Email')}</span>
                   </label>
                   <input
                     type="email"
@@ -288,7 +286,7 @@ export default function OrganizationSettingsPage() {
                 className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                <span>{isSaving ? (language === 'ar' ? 'جاري الحفظ...' : 'Saving Changes...') : (language === 'ar' ? 'حفظ التعديلات' : 'Save Organization Details')}</span>
+                <span>{isSaving ? t('saving_changes', 'Saving Changes...') : t('save_organization_details', 'Save Organization Details')}</span>
               </button>
             </div>
           </form>
@@ -338,7 +336,7 @@ export default function OrganizationSettingsPage() {
                 className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
                 <Award className="w-4 h-4 text-slate-950" />
-                <span>{language === 'ar' ? 'عرض شهادة الترخيص المعتمدة' : 'View Certificate of Authenticity'}</span>
+                <span>{t('view_certificate_authenticity', 'View Certificate of Authenticity')}</span>
               </button>
 
               <button
@@ -347,7 +345,7 @@ export default function OrganizationSettingsPage() {
                 className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
-                <span>{copiedKey ? 'Copied to Clipboard!' : 'Copy License Key'}</span>
+                <span>{copiedKey ? t('copied_clipboard', 'Copied to Clipboard!') : t('copy_license_key', 'Copy License Key')}</span>
               </button>
             </div>
           </div>
@@ -355,7 +353,7 @@ export default function OrganizationSettingsPage() {
           {/* Quick Operations Metrics Card */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-xs space-y-3">
             <h4 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-              {language === 'ar' ? 'فروع ونقاط التشغيل النشطة' : 'Active Branches & Facilities'}
+              {t('active_branches_facilities', 'Active Branches & Facilities')}
             </h4>
             <div className="space-y-2 text-xs">
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/UnifiedModuleReportsHub';
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
 import { EmployeeAttendanceTemplate } from '@/components/reports/sales/EmployeeAttendanceTemplate';
@@ -51,6 +52,7 @@ const hrReportMenuData: ReportCategory[] = [
 ];
 
 function HRPageContent() {
+  const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get('tab') === 'reports' || searchParams.get('tab') === 'labor') ? 'reports' : 'workspace';
   
@@ -103,13 +105,13 @@ function HRPageContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3 print:hidden">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900">7. HR &amp; Payroll Management</h1>
+            <h1 className="text-xl font-bold text-slate-900">{t('hr_payroll_title', '7. HR & Payroll Management')}</h1>
             <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono">
-              Live Biometrics
+              {t('Live Biometrics', 'Live Biometrics')}
             </span>
           </div>
           <p className="text-xs text-slate-600 font-medium mt-0.5">
-            Biometric ZKTeco punch terminals, shift tracking, and BLOM Bank automated payroll reconciliation
+            {t('hr_page_subtitle', 'Biometric ZKTeco punch terminals, shift tracking, and BLOM Bank automated payroll reconciliation')}
           </p>
         </div>
 
@@ -125,7 +127,7 @@ function HRPageContent() {
             }`}
           >
             <Users size={13} />
-            <span>Staff Directory</span>
+            <span>{t('Staff Directory', 'Staff Directory')}</span>
           </button>
 
           <button
@@ -141,7 +143,7 @@ function HRPageContent() {
             }`}
           >
             <Clock size={13} />
-            <span>HR Reports Hub</span>
+            <span>{t('HR Reports Hub', 'HR Reports Hub')}</span>
             <span className="text-[9.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-black">
               REP_HR_001
             </span>
@@ -157,7 +159,7 @@ function HRPageContent() {
             <div className="bg-emerald-50 border border-emerald-300 p-3.5 rounded-xl text-emerald-800 flex items-center justify-between text-xs font-medium shadow-xs">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>BLOM Bank Direct Salary Transfer File (BLOM_PAYROLL_AUG2026.TXT) generated successfully in ISO 20022 format.</span>
+                <span>{t('blom_export_banner', 'BLOM Bank Direct Salary Transfer File (BLOM_PAYROLL_AUG2026.TXT) generated successfully in ISO 20022 format.')}</span>
               </div>
               <button 
                 type="button" 
@@ -173,45 +175,45 @@ function HRPageContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Active Workforce</span>
+                <span className="text-xs font-semibold text-slate-500">{t('Active Workforce', 'Active Workforce')}</span>
                 <Users className="w-4 h-4 text-blue-600" />
               </div>
               <div className="mt-2 text-2xl font-bold text-slate-900">42</div>
-              <p className="text-[11px] text-emerald-700 font-medium mt-0.5">100% Biometrically Registered</p>
+              <p className="text-[11px] text-emerald-700 font-medium mt-0.5">{t('100% Biometrically Registered', '100% Biometrically Registered')}</p>
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">On-Shift Today</span>
+                <span className="text-xs font-semibold text-slate-500">{t('On-Shift Today', 'On-Shift Today')}</span>
                 <Activity className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="mt-2 text-2xl font-bold text-slate-900">38</div>
-              <p className="text-[11px] text-slate-500 font-medium mt-0.5">4 on scheduled rest / leave</p>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">{t('4 on scheduled rest / leave', '4 on scheduled rest / leave')}</p>
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">ZKTeco Terminals</span>
+                <span className="text-xs font-semibold text-slate-500">{t('ZKTeco Terminals', 'ZKTeco Terminals')}</span>
                 <Cpu className="w-4 h-4 text-purple-600" />
               </div>
-              <div className="mt-2 text-2xl font-bold text-slate-900">3 Online</div>
-              <p className="text-[11px] text-purple-700 font-medium mt-0.5">Choueifat (2) &bull; Nabatieh (1)</p>
+              <div className="mt-2 text-2xl font-bold text-slate-900">{t('3 Online', '3 Online')}</div>
+              <p className="text-[11px] text-purple-700 font-medium mt-0.5">{t('Choueifat (2) • Nabatieh (1)', 'Choueifat (2) • Nabatieh (1)')}</p>
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Estimated Gross Payroll</span>
+                <span className="text-xs font-semibold text-slate-500">{t('Estimated Gross Payroll', 'Estimated Gross Payroll')}</span>
                 <DollarSign className="w-4 h-4 text-emerald-600" />
               </div>
               <div className="mt-2 text-2xl font-bold text-slate-900">$28,450.00</div>
-              <p className="text-[11px] text-slate-500 font-medium mt-0.5">Current Month Cycle</p>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">{t('Current Month Cycle', 'Current Month Cycle')}</p>
             </div>
           </div>
 
           {/* Employee Directory Table */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-sm font-bold text-slate-900">Key Plant &amp; Office Staff Directory</h2>
+              <h2 className="text-sm font-bold text-slate-900">{t('Key Plant & Office Staff Directory', 'Key Plant & Office Staff Directory')}</h2>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -219,7 +221,7 @@ function HRPageContent() {
                   className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <FileSpreadsheet size={13} />
-                  <span>BLOM Bank Export</span>
+                  <span>{t('BLOM Bank Export', 'BLOM Bank Export')}</span>
                 </button>
                 <button
                   type="button"
@@ -229,7 +231,7 @@ function HRPageContent() {
                   }}
                   className="text-xs text-primary hover:underline font-bold"
                 >
-                  Full Print Sheet (REP_HR_001) &rarr;
+                  {t('Full Print Sheet (REP_HR_001)', 'Full Print Sheet (REP_HR_001)')} &rarr;
                 </button>
               </div>
             </div>
@@ -238,13 +240,13 @@ function HRPageContent() {
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[10.5px]">
-                    <th className="py-2.5 px-3">Emp ID</th>
-                    <th className="py-2.5 px-3">Employee Name</th>
-                    <th className="py-2.5 px-3">Department &amp; Role</th>
-                    <th className="py-2.5 px-3 text-center">Scheduled Shift</th>
-                    <th className="py-2.5 px-3">Assigned Terminal</th>
-                    <th className="py-2.5 px-3 text-right">Standard Rate</th>
-                    <th className="py-2.5 px-3 text-center">Status</th>
+                    <th className="py-2.5 px-3">{t('Emp ID', 'Emp ID')}</th>
+                    <th className="py-2.5 px-3">{t('Employee Name', 'Employee Name')}</th>
+                    <th className="py-2.5 px-3">{t('Department & Role', 'Department & Role')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('Scheduled Shift', 'Scheduled Shift')}</th>
+                    <th className="py-2.5 px-3">{t('Assigned Terminal', 'Assigned Terminal')}</th>
+                    <th className="py-2.5 px-3 text-right">{t('Standard Rate', 'Standard Rate')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('Status', 'Status')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
@@ -297,12 +299,12 @@ function HRPageContent() {
                   value={deptFilter}
                   onChange={(e) => setDeptFilter(e.target.value)}
                 >
-                  <option value="ALL">All Departments</option>
-                  <option value="Pressing">Pressing &amp; Plant Operations</option>
-                  <option value="Packaging">Packaging &amp; Bottling Line</option>
-                  <option value="Logistics">SuperSonic Fleet Logistics</option>
-                  <option value="Sales">Sales &amp; Commercial Wholesale</option>
-                  <option value="Accounting">Accounting &amp; Administration</option>
+                  <option value="ALL">{t('All Departments', 'All Departments')}</option>
+                  <option value="Pressing">{t('Pressing & Plant Operations', 'Pressing & Plant Operations')}</option>
+                  <option value="Packaging">{t('Packaging & Bottling Line', 'Packaging & Bottling Line')}</option>
+                  <option value="Logistics">{t('SuperSonic Fleet Logistics', 'SuperSonic Fleet Logistics')}</option>
+                  <option value="Sales">{t('Sales & Commercial Wholesale', 'Sales & Commercial Wholesale')}</option>
+                  <option value="Accounting">{t('Accounting & Administration', 'Accounting & Administration')}</option>
                 </select>
 
                 <select
@@ -310,10 +312,10 @@ function HRPageContent() {
                   value={terminalFilter}
                   onChange={(e) => setTerminalFilter(e.target.value)}
                 >
-                  <option value="ALL">All ZKTeco Terminals</option>
-                  <option value="Choueifat Bio-01">Choueifat Bio-01</option>
-                  <option value="Choueifat Bio-02">Choueifat Bio-02</option>
-                  <option value="Nabatieh Bio-01">Nabatieh Bio-01</option>
+                  <option value="ALL">{t('All ZKTeco Terminals', 'All ZKTeco Terminals')}</option>
+                  <option value="Choueifat Bio-01">{t('Choueifat Bio-01', 'Choueifat Bio-01')}</option>
+                  <option value="Choueifat Bio-02">{t('Choueifat Bio-02', 'Choueifat Bio-02')}</option>
+                  <option value="Nabatieh Bio-01">{t('Nabatieh Bio-01', 'Nabatieh Bio-01')}</option>
                 </select>
               </>
             }
