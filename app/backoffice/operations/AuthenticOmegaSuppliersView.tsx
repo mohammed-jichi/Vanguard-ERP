@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Search,
   Plus,
@@ -27,6 +28,7 @@ import {
 } from '@/lib/omegaSuppliersData';
 
 export default function AuthenticOmegaSuppliersView() {
+  const { t, dir } = useLanguage();
   // ---------------------------------------------------------------------------
   // Main State & Local Storage Sync
   // ---------------------------------------------------------------------------
@@ -663,7 +665,7 @@ export default function AuthenticOmegaSuppliersView() {
   // Render
   // ---------------------------------------------------------------------------
   return (
-    <div className="space-y-4 font-sans text-slate-800 animate-fade-in relative pb-12">
+    <div className="space-y-4 font-sans text-slate-800 animate-fade-in relative pb-12" dir={dir}>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-[99999] bg-primary text-white px-4 py-2.5 rounded shadow-lg text-xs font-semibold flex items-center gap-2 border border-slate-700 animate-fade-in">
@@ -676,11 +678,11 @@ export default function AuthenticOmegaSuppliersView() {
           ======================================================================= */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[26px] font-normal text-slate-800 tracking-tight">Suppliers</h1>
+          <h1 className="text-[26px] font-normal text-slate-800 tracking-tight">{t('suppliers', 'Suppliers')}</h1>
           <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-            <span className="text-primary hover:underline cursor-pointer">Home</span>
+            <span className="text-primary hover:underline cursor-pointer">{t('home', 'Home')}</span>
             <span className="text-slate-400">/</span>
-            <span className="text-slate-600">Suppliers</span>
+            <span className="text-slate-600">{t('suppliers', 'Suppliers')}</span>
           </div>
         </div>
       </div>
@@ -697,7 +699,7 @@ export default function AuthenticOmegaSuppliersView() {
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t('search_placeholder', 'Search...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 rounded-sm border border-slate-300 bg-white text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all"
@@ -710,7 +712,7 @@ export default function AuthenticOmegaSuppliersView() {
               onChange={(e) => setSelectedCountry(e.target.value)}
               className="px-3 py-1.5 rounded-sm border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 cursor-pointer min-w-[140px]"
             >
-              <option value="All">All Countries</option>
+              <option value="All">{t('all_countries', 'All Countries')}</option>
               {OMEGA_COUNTRIES.map((c) => (
                 <option key={c.ID} value={c.NAME}>
                   {c.NAME}
@@ -724,10 +726,10 @@ export default function AuthenticOmegaSuppliersView() {
               onChange={(e) => setSelectedGrade(e.target.value)}
               className="px-3 py-1.5 rounded-sm border border-slate-300 bg-white text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 cursor-pointer min-w-[120px]"
             >
-              <option value="All">All Grades</option>
+              <option value="All">{t('all_grades', 'All Grades')}</option>
               {OMEGA_GRADES.map((g) => (
                 <option key={g.value} value={g.value}>
-                  Grade {g.description}
+                  {t('grade', 'Grade')} {g.description}
                 </option>
               ))}
             </select>
@@ -742,7 +744,7 @@ export default function AuthenticOmegaSuppliersView() {
                 onClick={() => setIsActionsOpen(!isActionsOpen)}
                 className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
               >
-                <span>Actions</span>
+                <span>{t('actions', 'Actions')}</span>
                 <ChevronDown className="w-3 h-3" />
               </button>
 
@@ -759,7 +761,7 @@ export default function AuthenticOmegaSuppliersView() {
                     className="w-full text-left px-3 py-2 text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer transition"
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Merge Suppliers</span>
+                    <span>{t('merge_suppliers', 'Merge Suppliers')}</span>
                   </button>
                 </div>
               )}
@@ -772,7 +774,7 @@ export default function AuthenticOmegaSuppliersView() {
               className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer transition"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>New</span>
+              <span>{t('new', 'New')}</span>
             </button>
           </div>
         </div>
@@ -800,7 +802,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[160px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Name</span>
+                    <span>{t('name', 'Name')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -809,7 +811,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[140px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Contact Person</span>
+                    <span>{t('contact_person', 'Contact Person')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -818,7 +820,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[110px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Phone</span>
+                    <span>{t('phone', 'Phone')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -827,7 +829,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[70px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Grade</span>
+                    <span>{t('grade', 'Grade')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -836,7 +838,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[90px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Country</span>
+                    <span>{t('country', 'Country')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -845,7 +847,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[100px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Notes</span>
+                    <span>{t('notes', 'Notes')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -854,7 +856,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[100px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Created At</span>
+                    <span>{t('created_at', 'Created At')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -863,7 +865,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-3 py-2.5 cursor-pointer hover:bg-slate-100 select-none min-w-[100px]"
                 >
                   <div className="flex items-center gap-1">
-                    <span>Updated At</span>
+                    <span>{t('updated_at', 'Updated At')}</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
@@ -874,7 +876,7 @@ export default function AuthenticOmegaSuppliersView() {
               {filteredSuppliers.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-8 text-center text-slate-400">
-                    No suppliers found matching your criteria
+                    {t('no_suppliers_found', 'No suppliers found matching your criteria')}
                   </td>
                 </tr>
               ) : (
@@ -894,7 +896,7 @@ export default function AuthenticOmegaSuppliersView() {
                         <button
                           type="button"
                           onClick={() => openEditModal(row)}
-                          title="Edit Supplier"
+                          title={t('edit_supplier', 'Edit Supplier')}
                           className="p-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white cursor-pointer transition shadow-2xs"
                         >
                           <Edit2 className="w-3 h-3" />
@@ -902,7 +904,7 @@ export default function AuthenticOmegaSuppliersView() {
                         <button
                           type="button"
                           onClick={() => handleDeleteSupplier(row)}
-                          title="Delete Supplier"
+                          title={t('delete_supplier', 'Delete Supplier')}
                           className="p-1.5 rounded-sm bg-destructive hover:bg-destructive/90 text-white cursor-pointer transition shadow-2xs"
                         >
                           <Trash2 className="w-3 h-3" />
@@ -935,7 +937,7 @@ export default function AuthenticOmegaSuppliersView() {
             {/* Modal Header */}
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
               <h2 className="text-[17px] font-normal text-slate-800">
-                {isEditSupplierOpen ? 'Edit Supplier' : 'New Supplier'}
+                {isEditSupplierOpen ? t('edit_supplier', 'Edit Supplier') : t('new_supplier', 'New Supplier')}
               </h2>
               <button
                 type="button"
@@ -958,12 +960,12 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Card 1: General */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
                 <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
-                  General
+                  {t('general', 'General')}
                 </div>
                 <div className="p-4 space-y-3">
                   {/* Company Name with green search button */}
                   <div>
-                    <label className="block text-slate-700 font-medium mb-1">Company Name*</label>
+                    <label className="block text-slate-700 font-medium mb-1">{t('company_name_req', 'Company Name*')}</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
@@ -975,7 +977,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                       <button
                         type="button"
-                        title="Search in Omega Marketplace"
+                        title={t('search_in_omega_marketplace', 'Search in Omega Marketplace')}
                         className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm flex items-center justify-center cursor-pointer transition shadow-2xs"
                       >
                         <Search className="w-4 h-4" />
@@ -985,7 +987,7 @@ export default function AuthenticOmegaSuppliersView() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Contact Person</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('contact_person', 'Contact Person')}</label>
                       <input
                         type="text"
                         value={formContactName}
@@ -995,24 +997,24 @@ export default function AuthenticOmegaSuppliersView() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Contact Title</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('contact_title', 'Contact Title')}</label>
                       <div className="flex gap-2">
                         <select
                           value={formContactTitle}
                           onChange={(e) => setFormContactTitle(e.target.value)}
                           className="flex-1 px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
-                          <option value="">Select title</option>
-                          {custTitles.map((t) => (
-                            <option key={t.ID} value={t.ID}>
-                              {t.TITLEDESCRIPTION}
+                          <option value="">{t('select_title', 'Select title')}</option>
+                          {custTitles.map((titleItem) => (
+                            <option key={titleItem.ID} value={titleItem.ID}>
+                              {titleItem.TITLEDESCRIPTION}
                             </option>
                           ))}
                         </select>
                         <button
                           type="button"
                           onClick={() => setIsTitlesModalOpen(true)}
-                          title="Manage Titles"
+                          title={t('manage_titles', 'Manage Titles')}
                           className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -1030,7 +1032,7 @@ export default function AuthenticOmegaSuppliersView() {
                         onChange={(e) => setFormNotActive(e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                       />
-                      <span className="text-slate-700 font-medium">Not Active</span>
+                      <span className="text-slate-700 font-medium">{t('not_active', 'Not Active')}</span>
                     </label>
                   </div>
                 </div>
@@ -1039,12 +1041,12 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Card 2: Contact Information */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
                 <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
-                  Contact Information
+                  {t('contact_information', 'Contact Information')}
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Phone Number</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('phone_number', 'Phone Number')}</label>
                       <input
                         type="text"
                         value={formPhoneNumber}
@@ -1053,7 +1055,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Mobile</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('mobile', 'Mobile')}</label>
                       <input
                         type="text"
                         value={formMobile}
@@ -1062,7 +1064,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Fax Number</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('fax_number', 'Fax Number')}</label>
                       <input
                         type="text"
                         value={formFaxNumber}
@@ -1074,7 +1076,7 @@ export default function AuthenticOmegaSuppliersView() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Email Address</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('email_address', 'Email Address')}</label>
                       <input
                         type="email"
                         value={formEmailAddress}
@@ -1083,7 +1085,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Email CC</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('email_cc', 'Email CC')}</label>
                       <input
                         type="email"
                         value={formEmailCC}
@@ -1098,11 +1100,11 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Card 3: Address */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
                 <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
-                  Address
+                  {t('address', 'Address')}
                 </div>
                 <div className="p-4 space-y-3">
                   <div>
-                    <label className="block text-slate-700 font-medium mb-1">Street</label>
+                    <label className="block text-slate-700 font-medium mb-1">{t('street', 'Street')}</label>
                     <input
                       type="text"
                       value={formStreet}
@@ -1113,7 +1115,7 @@ export default function AuthenticOmegaSuppliersView() {
 
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <div className="md:col-span-4">
-                      <label className="block text-slate-700 font-medium mb-1">City</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('city', 'City')}</label>
                       <input
                         type="text"
                         value={formCity}
@@ -1122,7 +1124,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                     </div>
                     <div className="md:col-span-5">
-                      <label className="block text-slate-700 font-medium mb-1">Country</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('country', 'Country')}</label>
                       <select
                         value={formCountry}
                         onChange={(e) => setFormCountry(e.target.value)}
@@ -1136,7 +1138,7 @@ export default function AuthenticOmegaSuppliersView() {
                       </select>
                     </div>
                     <div className="md:col-span-3">
-                      <label className="block text-slate-700 font-medium mb-1">Postal Code</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('postal_code', 'Postal Code')}</label>
                       <input
                         type="text"
                         value={formPostalCode}
@@ -1151,12 +1153,12 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Card 4: Billing */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
                 <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
-                  Billing
+                  {t('billing', 'Billing')}
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Supplier Currency*</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('supplier_currency_req', 'Supplier Currency*')}</label>
                       <div className="flex">
                         <select
                           value={formCurrency}
@@ -1172,7 +1174,7 @@ export default function AuthenticOmegaSuppliersView() {
                         <button
                           type="button"
                           onClick={handleOpenNewCurrency}
-                          title="Add New Currency"
+                          title={t('add_new_currency', 'Add New Currency')}
                           className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-2xs border border-primary shrink-0 flex items-center justify-center"
                         >
                           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1181,14 +1183,14 @@ export default function AuthenticOmegaSuppliersView() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Payments Terms*</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('payments_terms_req', 'Payments Terms*')}</label>
                       <div className="flex">
                         <select
                           value={formPaymentTerms}
                           onChange={(e) => setFormPaymentTerms(e.target.value)}
                           className="flex-1 min-w-0 px-3 py-2 text-xs rounded-l-sm rounded-r-none border border-r-0 border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                         >
-                          <option value="0">Select Payment Terms</option>
+                          <option value="0">{t('select_payment_terms', 'Select Payment Terms')}</option>
                           {paymentTerms.map((pt) => (
                             <option key={pt.ID} value={pt.TERM_ID}>
                               {pt.PAYMENTTERM}
@@ -1198,7 +1200,7 @@ export default function AuthenticOmegaSuppliersView() {
                         <button
                           type="button"
                           onClick={handleOpenNewPaymentTerm}
-                          title="Add New Payment Term"
+                          title={t('add_new_payment_term', 'Add New Payment Term')}
                           className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-r-sm cursor-pointer shadow-2xs border border-primary shrink-0 flex items-center justify-center"
                         >
                           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1207,7 +1209,7 @@ export default function AuthenticOmegaSuppliersView() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Payments Types*</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('payments_types_req', 'Payments Types*')}</label>
                       <select
                         value={formPaymentType}
                         onChange={(e) => setFormPaymentType(e.target.value)}
@@ -1223,7 +1225,7 @@ export default function AuthenticOmegaSuppliersView() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 font-medium mb-1">Bank Information</label>
+                    <label className="block text-slate-700 font-medium mb-1">{t('bank_information', 'Bank Information')}</label>
                     <textarea
                       rows={2}
                       value={formBankInfo}
@@ -1240,12 +1242,12 @@ export default function AuthenticOmegaSuppliersView() {
                         onChange={(e) => setFormVatReg(e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
                       />
-                      <span className="text-slate-700 font-medium">V.A.T Reg</span>
+                      <span className="text-slate-700 font-medium">{t('vat_reg', 'V.A.T Reg')}</span>
                     </label>
 
                     {formVatReg && (
                       <div className="flex items-center gap-2">
-                        <label className="text-slate-700 font-medium">V.A.T NB</label>
+                        <label className="text-slate-700 font-medium">{t('vat_nb', 'V.A.T NB')}</label>
                         <input
                           type="text"
                           value={formVatNb}
@@ -1261,12 +1263,12 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Card 5: Additional Information */}
               <div className="border border-slate-200 rounded-sm overflow-hidden">
                 <div className="bg-background px-4 py-2.5 border-b border-slate-200 font-semibold text-slate-800">
-                  Additional Information
+                  {t('additional_information', 'Additional Information')}
                 </div>
                 <div className="p-4 space-y-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Account Number</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('account_number', 'Account Number')}</label>
                       <div className="flex gap-2">
                         <input
                           type="text"
@@ -1277,7 +1279,7 @@ export default function AuthenticOmegaSuppliersView() {
                         <button
                           type="button"
                           onClick={() => setIsAutogenAccountConfirmOpen(true)}
-                          title="Autogenerate Account Number"
+                          title={t('autogenerate_account_number', 'Autogenerate Account Number')}
                           className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-sm cursor-pointer shadow-2xs"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
@@ -1286,13 +1288,13 @@ export default function AuthenticOmegaSuppliersView() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-700 font-medium mb-1">Grade</label>
+                      <label className="block text-slate-700 font-medium mb-1">{t('grade', 'Grade')}</label>
                       <select
                         value={formGrade}
                         onChange={(e) => setFormGrade(e.target.value)}
                         className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                       >
-                        <option value="">Select grade</option>
+                        <option value="">{t('select_grade', 'Select grade')}</option>
                         {OMEGA_GRADES.map((g) => (
                           <option key={g.value} value={g.value}>
                             {g.description}
@@ -1303,7 +1305,7 @@ export default function AuthenticOmegaSuppliersView() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 font-medium mb-1">Website</label>
+                    <label className="block text-slate-700 font-medium mb-1">{t('website', 'Website')}</label>
                     <input
                       type="text"
                       value={formWebsite}
@@ -1314,7 +1316,7 @@ export default function AuthenticOmegaSuppliersView() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-700 font-medium mb-1">Internal Note</label>
+                    <label className="block text-slate-700 font-medium mb-1">{t('internal_note', 'Internal Note')}</label>
                     <input
                       type="text"
                       value={formNotes}
@@ -1332,7 +1334,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-5 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -1347,7 +1349,7 @@ export default function AuthenticOmegaSuppliersView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-2xs animate-fade-in">
           <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden">
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">Merge Suppliers</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('merge_suppliers', 'Merge Suppliers')}</h2>
               <button
                 type="button"
                 onClick={() => setIsMergeModalOpen(false)}
@@ -1360,13 +1362,13 @@ export default function AuthenticOmegaSuppliersView() {
             <div className="p-6 space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">From Supplier</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('from_supplier', 'From Supplier')}</label>
                   <select
                     value={fromSupplierId}
                     onChange={(e) => setFromSupplierId(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                   >
-                    <option value="">Select From Supplier</option>
+                    <option value="">{t('select_from_supplier', 'Select From Supplier')}</option>
                     {suppliers.map((s) => (
                       <option key={s.SUPPLIERID} value={s.SUPPLIERID}>
                         {s.SUPPLIERNAME}
@@ -1376,13 +1378,13 @@ export default function AuthenticOmegaSuppliersView() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">To Supplier</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('to_supplier', 'To Supplier')}</label>
                   <select
                     value={toSupplierId}
                     onChange={(e) => setToSupplierId(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-sm border border-slate-300 bg-white focus:outline-none focus:border-blue-500"
                   >
-                    <option value="">Select To Supplier</option>
+                    <option value="">{t('select_to_supplier', 'Select To Supplier')}</option>
                     {suppliers.map((s) => (
                       <option key={s.SUPPLIERID} value={s.SUPPLIERID}>
                         {s.SUPPLIERNAME}
@@ -1399,7 +1401,7 @@ export default function AuthenticOmegaSuppliersView() {
                   disabled={!fromSupplierId || !toSupplierId}
                   className="px-4 py-2 rounded-sm bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold text-xs shadow-xs cursor-pointer transition"
                 >
-                  Merge Suppliers
+                  {t('merge_suppliers', 'Merge Suppliers')}
                 </button>
               </div>
             </div>
@@ -1422,7 +1424,7 @@ export default function AuthenticOmegaSuppliersView() {
             {/* Dark Header */}
             <div className="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wide">
-                WARNING! THIS ACTION CANNOT BE RECOVERED ONCE EXECUTED.
+                {t('warning_merge_irreversible', 'WARNING! THIS ACTION CANNOT BE RECOVERED ONCE EXECUTED.')}
               </h3>
               <button
                 type="button"
@@ -1436,13 +1438,13 @@ export default function AuthenticOmegaSuppliersView() {
             {/* Warning Body */}
             <div className="p-5 space-y-3 text-xs text-slate-700 bg-white">
               <p className="leading-relaxed">
-                All transactions will be transferred to the destination supplier and the source supplier will be deleted.
+                {t('merge_suppliers_desc', 'All transactions will be transferred to the destination supplier and the source supplier will be deleted.')}
               </p>
               <p className="font-semibold text-slate-800">
-                Are you sure you like to merge these 2 suppliers?
+                {t('merge_suppliers_confirm_q', 'Are you sure you like to merge these 2 suppliers?')}
               </p>
               <p className="text-slate-800">
-                If yes please type: <span className="font-mono font-bold text-slate-900">MERGE SUPPLIERS</span>
+                {t('if_yes_type', 'If yes please type:')} <span className="font-mono font-bold text-slate-900">MERGE SUPPLIERS</span>
               </p>
 
               {/* Text Confirmation Input Box */}
@@ -1469,7 +1471,7 @@ export default function AuthenticOmegaSuppliersView() {
                   onClick={() => setIsMergeWarningOpen(false)}
                   className="px-3.5 py-1.5 rounded-sm bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
@@ -1481,7 +1483,7 @@ export default function AuthenticOmegaSuppliersView() {
                       : 'bg-slate-600 text-white opacity-40 cursor-not-allowed'
                   }`}
                 >
-                  OK
+                  {t('ok', 'OK')}
                 </button>
               </div>
             </div>
@@ -1503,7 +1505,7 @@ export default function AuthenticOmegaSuppliersView() {
           >
             {/* Header */}
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">Titles</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('titles', 'Titles')}</h2>
               <button
                 type="button"
                 onClick={() => setIsTitlesModalOpen(false)}
@@ -1523,37 +1525,37 @@ export default function AuthenticOmegaSuppliersView() {
                     className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded-sm text-xs font-semibold flex items-center gap-1 shadow-xs cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>New</span>
+                    <span>{t('new', 'New')}</span>
                   </button>
                 </div>
                 <table className="w-full text-left text-xs text-slate-700">
                   <thead>
                     <tr className="border-b border-border bg-white font-bold text-slate-800 text-[12px]">
                       <th className="py-2.5 px-3 w-12 font-semibold">#</th>
-                      <th className="py-2.5 px-3 font-semibold">Description</th>
+                      <th className="py-2.5 px-3 font-semibold">{t('description', 'Description')}</th>
                       <th className="py-2.5 px-3 w-20 text-end"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {custTitles.map((t, idx) => (
-                      <tr key={t.ID} className="hover:bg-slate-50 transition-colors">
+                    {custTitles.map((titleItem, idx) => (
+                      <tr key={titleItem.ID} className="hover:bg-slate-50 transition-colors">
                         <td className="py-2.5 px-3 font-normal text-slate-800">{idx + 1}</td>
-                        <td className="py-2.5 px-3 font-medium text-slate-800">{t.TITLEDESCRIPTION}</td>
+                        <td className="py-2.5 px-3 font-medium text-slate-800">{titleItem.TITLEDESCRIPTION}</td>
                         <td className="py-2.5 px-3 text-end">
                           <div className="flex items-center justify-end gap-1">
                             <button
                               type="button"
-                              onClick={() => handleOpenEditTitle(t)}
+                              onClick={() => handleOpenEditTitle(titleItem)}
                               className="bg-primary hover:bg-primary/90 text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
-                              title="Edit Title"
+                              title={t('edit_title', 'Edit Title')}
                             >
                               <Edit2 className="w-3 h-3" />
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleDeleteTitle(t)}
+                              onClick={() => handleDeleteTitle(titleItem)}
                               className="bg-destructive hover:bg-destructive/90 text-white p-1.5 rounded-xs cursor-pointer transition shadow-2xs"
-                              title="Delete Title"
+                              title={t('delete_title', 'Delete Title')}
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -1582,7 +1584,7 @@ export default function AuthenticOmegaSuppliersView() {
             style={{ zIndex: 75001 }}
           >
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">New Title</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('new_title', 'New Title')}</h2>
               <button
                 type="button"
                 onClick={() => setIsNewTitleModalOpen(false)}
@@ -1593,12 +1595,12 @@ export default function AuthenticOmegaSuppliersView() {
             </div>
             <form onSubmit={handleSaveNewTitle} className="p-5 space-y-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Title</label>
+                <label className="block text-slate-700 font-medium mb-1">{t('title', 'Title')}</label>
                 <input
                   type="text"
                   required
                   autoFocus
-                  placeholder="New title..."
+                  placeholder={t('new_title_placeholder', 'New title...')}
                   value={titleInput}
                   onChange={(e) => setTitleInput(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-sm border border-blue-400 bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
@@ -1610,7 +1612,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -1631,7 +1633,7 @@ export default function AuthenticOmegaSuppliersView() {
             style={{ zIndex: 75001 }}
           >
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">Edit Title</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('edit_title', 'Edit Title')}</h2>
               <button
                 type="button"
                 onClick={() => setIsEditTitleModalOpen(false)}
@@ -1642,7 +1644,7 @@ export default function AuthenticOmegaSuppliersView() {
             </div>
             <form onSubmit={handleSaveEditTitle} className="p-5 space-y-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-medium mb-1">Title</label>
+                <label className="block text-slate-700 font-medium mb-1">{t('title', 'Title')}</label>
                 <input
                   type="text"
                   required
@@ -1658,7 +1660,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -1679,7 +1681,7 @@ export default function AuthenticOmegaSuppliersView() {
             style={{ zIndex: 70001 }}
           >
             <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">New Currency</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('new_currency', 'New Currency')}</h2>
               <button
                 type="button"
                 onClick={() => setIsNewCurrencyModalOpen(false)}
@@ -1692,7 +1694,7 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Row 1: Description*, Symbol* */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">Description*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('description_req', 'Description*')}</label>
                   <input
                     type="text"
                     required
@@ -1703,7 +1705,7 @@ export default function AuthenticOmegaSuppliersView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">Symbol*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('symbol_req', 'Symbol*')}</label>
                   <input
                     type="text"
                     required
@@ -1717,7 +1719,7 @@ export default function AuthenticOmegaSuppliersView() {
               {/* Row 2: POS Rate*, BackOffice Rate*, Decimal Number* */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">POS Rate*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('pos_rate_req', 'POS Rate*')}</label>
                   <input
                     type="text"
                     required
@@ -1727,7 +1729,7 @@ export default function AuthenticOmegaSuppliersView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">BackOffice Rate*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('backoffice_rate_req', 'BackOffice Rate*')}</label>
                   <input
                     type="text"
                     required
@@ -1737,7 +1739,7 @@ export default function AuthenticOmegaSuppliersView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-medium mb-1">Decimal Number*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('decimal_number_req', 'Decimal Number*')}</label>
                   <input
                     type="text"
                     required
@@ -1755,7 +1757,7 @@ export default function AuthenticOmegaSuppliersView() {
                   className="px-4 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -1776,7 +1778,7 @@ export default function AuthenticOmegaSuppliersView() {
             style={{ zIndex: 70001 }}
           >
             <div className="px-6 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white">
-              <h2 className="text-[17px] font-normal text-slate-800">New Payment Term</h2>
+              <h2 className="text-[17px] font-normal text-slate-800">{t('new_payment_term', 'New Payment Term')}</h2>
               <button
                 type="button"
                 onClick={() => setIsNewPaymentTermModalOpen(false)}
@@ -1788,7 +1790,7 @@ export default function AuthenticOmegaSuppliersView() {
             <form onSubmit={handleSaveNewPaymentTerm} className="p-6 space-y-4 text-xs">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3.5">
                 <div className="flex-[6] min-w-0">
-                  <label className="block text-slate-700 font-medium mb-1">Description*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('description_req', 'Description*')}</label>
                   <input
                     type="text"
                     required
@@ -1799,7 +1801,7 @@ export default function AuthenticOmegaSuppliersView() {
                   />
                 </div>
                 <div className="flex-[4] min-w-0">
-                  <label className="block text-slate-700 font-medium mb-1">Nb. Of Days*</label>
+                  <label className="block text-slate-700 font-medium mb-1">{t('nb_of_days_req', 'Nb. Of Days*')}</label>
                   <input
                     type="number"
                     required
@@ -1814,7 +1816,7 @@ export default function AuthenticOmegaSuppliersView() {
                     className="px-5 py-2 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition h-[35px]"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save</span>
+                    <span>{t('save', 'Save')}</span>
                   </button>
                 </div>
               </div>
@@ -1837,7 +1839,7 @@ export default function AuthenticOmegaSuppliersView() {
           >
             <div className="p-6 space-y-4 text-xs text-slate-700 bg-white">
               <p className="leading-relaxed text-[13px] text-slate-800">
-                Are you sure you want to autogenerate accounting account for this supplier? Account will be created for companies linked with this brand after saving supplier
+                {t('autogen_account_confirm_msg', 'Are you sure you want to autogenerate accounting account for this supplier? Account will be created for companies linked with this brand after saving supplier')}
               </p>
               <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-200">
                 <button
@@ -1845,14 +1847,14 @@ export default function AuthenticOmegaSuppliersView() {
                   onClick={() => setIsAutogenAccountConfirmOpen(false)}
                   className="px-4 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmAutogenAccount}
                   className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-bold cursor-pointer transition shadow-xs"
                 >
-                  OK
+                  {t('ok', 'OK')}
                 </button>
               </div>
             </div>

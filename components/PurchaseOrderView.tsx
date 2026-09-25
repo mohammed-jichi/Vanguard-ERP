@@ -634,7 +634,7 @@ export default function PurchaseOrderView() {
   };
 
   return (
-    <div className="w-full bg-background text-foreground font-sans antialiased min-h-screen text-[13px] leading-normal pb-16 select-text">
+    <div className="w-full bg-background text-foreground font-sans antialiased min-h-screen text-[13px] leading-normal pb-16 select-text" dir={dir}>
       {/* GLOBAL NOTIFICATION TOAST */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-[9999] bg-emerald-700 text-white px-5 py-3 rounded shadow-xl flex items-center gap-3 animate-fade-in border border-emerald-700 text-sm font-medium">
@@ -654,18 +654,16 @@ export default function PurchaseOrderView() {
           {/* OMEGA AUTHENTIC HEADER */}
           <div className="header mb-4">
             <h1 className="text-[24px] font-normal text-primary m-0 mb-1 leading-tight tracking-tight">
-              Purchase Order
+              {t('purchase_order', 'Purchase Order')}
             </h1>
             <div className="text-[12px] text-muted-foreground">
               <a
                 href="#inventory"
                 onClick={(e) => { e.preventDefault(); setShowPreviewList(true); }}
                 className="text-primary hover:underline cursor-pointer"
-              >
-                Home
-              </a>
+              >{t('home', 'Home')}</a>
               <span className="mx-1 text-muted-foreground">/</span>
-              <span className="text-muted-foreground">Purchase Order</span>
+              <span className="text-muted-foreground">{t('purchase_order', 'Purchase Order')}</span>
             </div>
           </div>
 
@@ -680,8 +678,8 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFilterBranch(e.target.value)}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="All Branches">All Branches</option>
-                  <option value="Main Branch">Main Branch</option>
+                  <option value="All Branches">{t('all_branches', 'All Branches')}</option>
+                  <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                 </select>
               </div>
 
@@ -691,7 +689,7 @@ export default function PurchaseOrderView() {
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by Po #, Supplier, Item"
+                  placeholder={t('search_po_supplier_item', 'Search by Po #, Supplier, Item')}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground placeholder-[#999] focus:outline-none focus:border-primary"
                 />
               </div>
@@ -703,9 +701,9 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFilterSentStatus(e.target.value)}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="All Sent/NotSent">All Sent/NotSent</option>
-                  <option value="Sent">Sent</option>
-                  <option value="Not Sent">Not Sent</option>
+                  <option value="All Sent/NotSent">{t('all_sent_not_sent', 'All Sent/NotSent')}</option>
+                  <option value="Sent">{t('sent', 'Sent')}</option>
+                  <option value="Not Sent">{t('not_sent', 'Not Sent')}</option>
                 </select>
               </div>
 
@@ -716,11 +714,11 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFilterStatus(e.target.value)}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                  <option value="Converted">Converted</option>
-                  <option value="All">All Statuses</option>
+                  <option value="Pending">{t('pending', 'Pending')}</option>
+                  <option value="Approved">{t('approved', 'Approved')}</option>
+                  <option value="Rejected">{t('rejected', 'Rejected')}</option>
+                  <option value="Converted">{t('converted', 'Converted')}</option>
+                  <option value="All">{t('all_statuses', 'All Statuses')}</option>
                 </select>
               </div>
 
@@ -730,16 +728,14 @@ export default function PurchaseOrderView() {
                   type="button"
                   onClick={() => { setHasAppliedFilter(true); triggerToast('Filtered records'); }}
                   className="h-[34px] px-4 bg-primary hover:bg-primary text-white text-[13px] font-medium rounded transition shadow-xs cursor-pointer"
-                >
-                  Filter
-                </button>
+                >{t('filter', 'Filter')}</button>
                 <button
                   type="button"
                   onClick={handleNewBtnClick}
                   className="h-[34px] px-4 bg-primary hover:bg-primary text-white text-[13px] font-medium rounded transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-plus text-xs"></i>
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -753,7 +749,7 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFilterSupplier(e.target.value)}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="All Suppliers">All Suppliers</option>
+                  <option value="All Suppliers">{t('all_suppliers', 'All Suppliers')}</option>
                   {SUPPLIERS_CATALOG.map(s => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
@@ -767,14 +763,14 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFilterDateType(e.target.value)}
                   className="w-full h-[34px] px-3 py-1 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                 >
-                  <option value="Delivery Date">Delivery Date</option>
-                  <option value="Order Date">Order Date</option>
+                  <option value="Delivery Date">{t('delivery_date', 'Delivery Date')}</option>
+                  <option value="Order Date">{t('order_date', 'Order Date')}</option>
                 </select>
               </div>
 
               {/* From Date */}
               <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[38px]">From</label>
+                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[38px]">{t('from', 'From')}</label>
                 <div className="relative flex-1">
                   <input
                     type="text"
@@ -790,7 +786,7 @@ export default function PurchaseOrderView() {
 
               {/* To Date */}
               <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[20px]">To</label>
+                <label className="text-[13px] text-foreground whitespace-nowrap min-w-[20px]">{t('to', 'To')}</label>
                 <div className="relative flex-1">
                   <input
                     type="text"
@@ -812,14 +808,14 @@ export default function PurchaseOrderView() {
               <table className="w-full text-[13px] text-left border-collapse">
                 <thead>
                   <tr className="border-b border-border text-foreground bg-card">
-                    <th className="py-2.5 px-3 font-semibold text-left">Branch</th>
-                    <th className="py-2.5 px-3 font-semibold text-left">Delivery Date</th>
-                    <th className="py-2.5 px-3 font-semibold text-left">PO Number</th>
-                    <th className="py-2.5 px-3 font-semibold text-left">Supplier</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Amount (LL)</th>
-                    <th className="py-2.5 px-3 font-semibold text-left">Entered By</th>
-                    <th className="py-2.5 px-3 font-semibold text-left">Notes</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Status</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('branch', 'Branch')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('delivery_date', 'Delivery Date')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('po_number', 'PO Number')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('supplier', 'Supplier')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-right">{t('amount_ll', 'Amount (LL)')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('entered_by', 'Entered By')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-left">{t('notes', 'Notes')}</th>
+                    <th className="py-2.5 px-3 font-semibold text-right">{t('status', 'Status')}</th>
                     <th className="py-2.5 px-3 font-semibold text-center w-[50px]"></th>
                   </tr>
                 </thead>
@@ -928,18 +924,16 @@ export default function PurchaseOrderView() {
           {/* HEADER */}
           <div className="header mb-3">
             <h1 className="text-[24px] font-normal text-primary m-0 mb-1 leading-tight tracking-tight">
-              Purchase Order
+              {t('purchase_order', 'Purchase Order')}
             </h1>
             <div className="text-[12px] text-muted-foreground">
               <a
                 href="#inventory"
                 onClick={(e) => { e.preventDefault(); setShowPreviewList(true); }}
                 className="text-primary hover:underline cursor-pointer"
-              >
-                Home
-              </a>
+              >{t('home', 'Home')}</a>
               <span className="mx-1 text-muted-foreground">/</span>
-              <span className="text-muted-foreground">Purchase Order</span>
+              <span className="text-muted-foreground">{t('purchase_order', 'Purchase Order')}</span>
             </div>
           </div>
 
@@ -954,7 +948,7 @@ export default function PurchaseOrderView() {
                 className="h-[32px] px-3 bg-emerald-700 hover:bg-emerald-700 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-upload"></i>
-                <span className="hidden sm:inline">Supporting Document</span>
+                <span className="hidden sm:inline">{t('supporting_document', 'Supporting Document')}</span>
               </button>
 
               {/* Email PO */}
@@ -965,7 +959,7 @@ export default function PurchaseOrderView() {
                 className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-envelope"></i>
-                <span className="hidden sm:inline">Email PO</span>
+                <span className="hidden sm:inline">{t('email_po', 'Email PO')}</span>
               </button>
 
               {/* Preview Button (Takes user back to Picture 1 list) */}
@@ -975,7 +969,7 @@ export default function PurchaseOrderView() {
                 className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-search"></i>
-                <span>Preview</span>
+                <span>{t('preview', 'Preview')}</span>
               </button>
 
               {/* Actions Dropdown */}
@@ -985,7 +979,7 @@ export default function PurchaseOrderView() {
                   onClick={() => setActionsMenuOpen(!actionsMenuOpen)}
                   className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Actions</span>
+                  <span>{t('actions', 'Actions')}</span>
                   <i className="fa fa-caret-down"></i>
                 </button>
 
@@ -996,49 +990,49 @@ export default function PurchaseOrderView() {
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-repeat text-gray-500"></i>
-                      <span>Store Recurring</span>
+                      <span>{t('store_recurring', 'Store Recurring')}</span>
                     </button>
                     <button
                       onClick={() => { setShowRecallRecurringModal(true); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-history text-gray-500"></i>
-                      <span>Recall Recurring</span>
+                      <span>{t('recall_recurring', 'Recall Recurring')}</span>
                     </button>
                     <button
                       onClick={() => { triggerToast('Items selling price synchronized with retail index'); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-tags text-gray-500"></i>
-                      <span>Update Items Selling Price</span>
+                      <span>{t('update_items_sp', 'Update Items Selling Price')}</span>
                     </button>
                     <button
                       onClick={() => { window.print(); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-print text-gray-500"></i>
-                      <span>Print PO</span>
+                      <span>{t('print_po', 'Print PO')}</span>
                     </button>
                     <button
                       onClick={() => { triggerToast('Barcodes generated for print queue'); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-barcode text-gray-500"></i>
-                      <span>Print Barcodes</span>
+                      <span>{t('print_barcodes', 'Print Barcodes')}</span>
                     </button>
                     <button
                       onClick={() => { triggerToast('Purchase Order transferred to General Ledger'); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-exchange text-gray-500"></i>
-                      <span>Transfer To Accounting</span>
+                      <span>{t('transfer_to_accounting', 'Transfer To Accounting')}</span>
                     </button>
                     <button
                       onClick={() => { triggerToast('Items Pricing Matrix Loaded'); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-dollar text-gray-500"></i>
-                      <span>Items Pricing</span>
+                      <span>{t('items_pricing', 'Items Pricing')}</span>
                     </button>
                   </div>
                 )}
@@ -1051,7 +1045,7 @@ export default function PurchaseOrderView() {
                 className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-plus"></i>
-                <span>New</span>
+                <span>{t('new', 'New')}</span>
               </button>
             </div>
 
@@ -1062,7 +1056,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowPreviewList(true)}
                 className="h-[32px] px-3 bg-gray-100 hover:bg-gray-200 text-muted-foreground text-xs rounded border border-gray-300 transition cursor-pointer"
               >
-                <i className="fa fa-arrow-left me-1"></i> Back to Orders
+                <i className="fa fa-arrow-left me-1"></i> {t('back_to_orders', 'Back to Orders')}
               </button>
             </div>
           </div>
@@ -1072,20 +1066,20 @@ export default function PurchaseOrderView() {
             {/* LEFT CARD: SUPPLIER */}
             <div className="lg:col-span-5 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
               <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px] flex items-center justify-between">
-                <span>Supplier</span>
-                <span className="text-gray-400 text-xs">Purchased From</span>
+                <span>{t('supplier', 'Supplier')}</span>
+                <span className="text-gray-400 text-xs">{t('purchased_from', 'Purchased From')}</span>
               </div>
               <div className="p-3.5 min-h-[224px]">
                 <div className="flex items-center gap-2 mb-3">
                   <label className="text-[13px] font-bold text-foreground whitespace-nowrap min-w-[110px]">
-                    Purchased From*
+                    {t('purchased_from_req', 'Purchased From*')}
                   </label>
                   <div className="relative flex-1">
                     <input
                       type="text"
                       value={formSupplier.name}
                       readOnly
-                      placeholder="Search supplier ..."
+                      placeholder={t('search_supplier', 'Search supplier ...')}
                       className="w-full h-[34px] px-3 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none"
                     />
                   </div>
@@ -1103,19 +1097,19 @@ export default function PurchaseOrderView() {
                 {formSupplier && (
                   <div className="border-t border-dotted border-gray-300 pt-3 text-[12px] space-y-1.5 text-muted-foreground">
                     <div className="flex">
-                      <span className="font-semibold text-foreground w-28">Contact Name:</span>
+                      <span className="font-semibold text-foreground w-28">{t('contact_name', 'Contact Name:')}</span>
                       <span className="flex-1">{formSupplier.contact || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-foreground w-28">Address:</span>
+                      <span className="font-semibold text-foreground w-28">{t('address', 'Address:')}</span>
                       <span className="flex-1">{formSupplier.address || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-foreground w-28">Phone:</span>
+                      <span className="font-semibold text-foreground w-28">{t('phone', 'Phone:')}</span>
                       <span className="flex-1">{formSupplier.phone || 'N/A'}</span>
                     </div>
                     <div className="flex">
-                      <span className="font-semibold text-foreground w-28">Email:</span>
+                      <span className="font-semibold text-foreground w-28">{t('email', 'Email:')}</span>
                       <span className="flex-1 text-primary">{formSupplier.email || 'N/A'}</span>
                     </div>
                   </div>
@@ -1126,7 +1120,7 @@ export default function PurchaseOrderView() {
             {/* RIGHT CARD: TRANSACTION */}
             <div className="lg:col-span-7 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
               <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px] flex items-center justify-between">
-                <span>Transaction</span>
+                <span>{t('transaction', 'Transaction')}</span>
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs text-gray-500 font-normal">#</span>
                   <input
@@ -1141,25 +1135,25 @@ export default function PurchaseOrderView() {
                 {/* Branch and Location */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Branch*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('branch_colon', 'Branch*:')}</label>
                     <select
                       value={formBranch}
                       onChange={(e) => setFormBranch(e.target.value)}
                       className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
-                      <option value="Main Branch">Main Branch</option>
+                      <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                     </select>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Location*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('location_colon', 'Location*:')}</label>
                     <select
                       value={formLocation}
                       onChange={(e) => setFormLocation(e.target.value)}
                       className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
-                      <option value="All Locations">All Locations</option>
-                      <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+                      <option value="All Locations">{t('all_locations', 'All Locations')}</option>
+                      <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
                     </select>
                     <button
                       type="button"
@@ -1175,21 +1169,21 @@ export default function PurchaseOrderView() {
                 {/* Shipment and Order Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Shipment*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('shipment_colon', 'Shipment*:')}</label>
                     <select
                       value={formShipment}
                       onChange={(e) => setFormShipment(e.target.value)}
                       className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
-                      <option value="Local Delivery">Local Delivery</option>
-                      <option value="Land Transport">Land Transport</option>
-                      <option value="Maritime Cargo">Maritime Cargo</option>
-                      <option value="Air Freight">Air Freight</option>
+                      <option value="Local Delivery">{t('local_delivery', 'Local Delivery')}</option>
+                      <option value="Land Transport">{t('land_transport', 'Land Transport')}</option>
+                      <option value="Maritime Cargo">{t('maritime_cargo', 'Maritime Cargo')}</option>
+                      <option value="Air Freight">{t('air_freight', 'Air Freight')}</option>
                     </select>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Date*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('date_colon', 'Date*:')}</label>
                     <input
                       type="date"
                       value={formOrderDate}
@@ -1202,7 +1196,7 @@ export default function PurchaseOrderView() {
                 {/* Currency and Delivery Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex items-center gap-1.5">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Currency*:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('currency_colon', 'Currency*:')}</label>
                     <select
                       value={formCurrency}
                       onChange={(e) => {
@@ -1233,7 +1227,7 @@ export default function PurchaseOrderView() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Delivery:</label>
+                    <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('delivery_colon', 'Delivery:')}</label>
                     <input
                       type="date"
                       value={formDeliveryDate}
@@ -1245,12 +1239,12 @@ export default function PurchaseOrderView() {
 
                 {/* Note */}
                 <div className="flex items-center gap-2">
-                  <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">Note:</label>
+                  <label className="text-[13px] font-bold text-foreground w-20 whitespace-nowrap">{t('note_colon', 'Note:')}</label>
                   <input
                     type="text"
                     value={formNotes}
                     onChange={(e) => setFormNotes(e.target.value)}
-                    placeholder="General purchase order instructions, inspection terms, delivery gates..."
+                    placeholder={t('po_instructions_placeholder', 'General purchase order instructions, inspection terms, delivery gates...')}
                     className="flex-1 h-[32px] px-3 bg-white border border-border rounded text-[13px] text-foreground"
                   />
                 </div>
@@ -1273,7 +1267,7 @@ export default function PurchaseOrderView() {
                     type="search"
                     value={searchItemInput}
                     onChange={(e) => setSearchItemInput(e.target.value)}
-                    placeholder="Search items by code or name..."
+                    placeholder={t('search_items_placeholder', 'Search items by code or name...')}
                     className="w-full h-[32px] pl-3 pr-8 bg-white border border-border rounded text-[13px] text-foreground focus:outline-none focus:border-primary"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -1296,8 +1290,8 @@ export default function PurchaseOrderView() {
                   onChange={(e) => setFormDiscType(e.target.value as any)}
                   className="h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                 >
-                  <option value="percent">Discount (%)</option>
-                  <option value="amount">Discount ({formCurrency})</option>
+                  <option value="percent">{t('discount_pct', 'Discount (%)')}</option>
+                  <option value="amount">{t('discount_currency', 'Discount')} ({formCurrency})</option>
                 </select>
 
                 <input
@@ -1316,7 +1310,7 @@ export default function PurchaseOrderView() {
                     onChange={(e) => setEnableManualTax(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  <span>Manual tax calculation</span>
+                  <span>{t('manual_tax_calculation', 'Manual tax calculation')}</span>
                 </label>
 
                 {/* Enable Total Price Checkbox */}
@@ -1327,7 +1321,7 @@ export default function PurchaseOrderView() {
                     onChange={(e) => setEnableTotalPrice(e.target.checked)}
                     className="rounded border-gray-300"
                   />
-                  <span>Enable Total Price</span>
+                  <span>{t('enable_total_price', 'Enable Total Price')}</span>
                 </label>
               </div>
 
@@ -1339,7 +1333,7 @@ export default function PurchaseOrderView() {
                   className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-cubes"></i>
-                  <span>Supplier Items</span>
+                  <span>{t('supplier_items', 'Supplier Items')}</span>
                 </button>
                 <button
                   type="button"
@@ -1347,7 +1341,7 @@ export default function PurchaseOrderView() {
                   className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <i className="fa fa-plus"></i>
-                  <span>Add Line</span>
+                  <span>{t('add_line', 'Add Line')}</span>
                 </button>
               </div>
             </div>
@@ -1357,16 +1351,16 @@ export default function PurchaseOrderView() {
               <table className="w-full text-[13px] text-left border-collapse">
                 <thead>
                   <tr className="border-b border-border text-foreground bg-card">
-                    <th className="py-2 px-3 font-semibold w-[120px]">Code</th>
-                    <th className="py-2 px-3 font-semibold min-w-[240px]">Description</th>
-                    <th className="py-2 px-3 font-semibold w-[160px]">Branch</th>
-                    <th className="py-2 px-3 font-semibold text-right w-[90px]">Qty</th>
-                    <th className="py-2 px-3 font-semibold w-[70px]">Unit</th>
-                    <th className="py-2 px-3 font-semibold text-right w-[110px]">Price/Unit ({formCurrency})</th>
-                    <th className="py-2 px-3 font-semibold text-right w-[80px]">Disc.(%)</th>
-                    <th className="py-2 px-3 font-semibold text-right w-[80px]">Disc.</th>
-                    <th className="py-2 px-3 font-semibold text-right w-[110px]">Amount ({formCurrency})</th>
-                    <th className="py-2 px-3 font-semibold text-center w-[60px]">VAT</th>
+                    <th className="py-2 px-3 font-semibold w-[120px]">{t('code', 'Code')}</th>
+                    <th className="py-2 px-3 font-semibold min-w-[240px]">{t('description', 'Description')}</th>
+                    <th className="py-2 px-3 font-semibold w-[160px]">{t('branch', 'Branch')}</th>
+                    <th className="py-2 px-3 font-semibold text-right w-[90px]">{t('qty', 'Qty')}</th>
+                    <th className="py-2 px-3 font-semibold w-[70px]">{t('unit', 'Unit')}</th>
+                    <th className="py-2 px-3 font-semibold text-right w-[110px]">{t('price_unit', 'Price/Unit')} ({formCurrency})</th>
+                    <th className="py-2 px-3 font-semibold text-right w-[80px]">{t('disc_pct', 'Disc.(%)')}</th>
+                    <th className="py-2 px-3 font-semibold text-right w-[80px]">{t('disc', 'Disc.')}</th>
+                    <th className="py-2 px-3 font-semibold text-right w-[110px]">{t('amount', 'Amount')} ({formCurrency})</th>
+                    <th className="py-2 px-3 font-semibold text-center w-[60px]">{t('vat', 'VAT')}</th>
                     <th className="py-2 px-3 font-semibold text-center w-[50px]"></th>
                   </tr>
                 </thead>
@@ -1375,13 +1369,13 @@ export default function PurchaseOrderView() {
                     <tr>
                       <td colSpan={11} className="py-8 text-center text-gray-400 bg-white">
                         <i className="fa fa-shopping-basket text-2xl mb-2 text-gray-300"></i>
-                        <div>No items added to this purchase order yet.</div>
+                        <div>{t('no_po_items_yet', 'No items added to this purchase order yet.')}</div>
                         <button
                           type="button"
                           onClick={() => setShowItemModal(true)}
                           className="mt-2 text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
                         >
-                          <i className="fa fa-plus"></i> Click here to select items from catalog
+                          <i className="fa fa-plus"></i> {t('click_select_catalog', 'Click here to select items from catalog')}
                         </button>
                       </td>
                     </tr>
@@ -1472,14 +1466,14 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowOtherCosts(!showOtherCosts)}
                 className="w-full flex items-center justify-between font-semibold text-foreground text-[13px] cursor-pointer"
               >
-                <span>Other Direct Costs (Freight, Customs, Port)</span>
+                <span>{t('other_direct_costs', 'Other Direct Costs (Freight, Customs, Port)')}</span>
                 <i className={`fa fa-chevron-${showOtherCosts ? 'up' : 'down'} text-gray-400`}></i>
               </button>
 
               {showOtherCosts && (
                 <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-2.5">
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Freight ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('freight', 'Freight')} ({formCurrency})</label>
                     <input
                       type="number"
                       value={formFreight}
@@ -1488,7 +1482,7 @@ export default function PurchaseOrderView() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Customs ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('customs', 'Customs')} ({formCurrency})</label>
                     <input
                       type="number"
                       value={formCustoms}
@@ -1497,7 +1491,7 @@ export default function PurchaseOrderView() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Other Cost ({formCurrency})</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('other_cost', 'Other Cost')} ({formCurrency})</label>
                     <input
                       type="number"
                       value={formOtherCost}
@@ -1514,33 +1508,33 @@ export default function PurchaseOrderView() {
               <table className="w-full text-[13px] border-collapse">
                 <tbody>
                   <tr className="border-b border-border bg-muted">
-                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">Subtotal:</th>
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">{t('subtotal', 'Subtotal:')}</th>
                     <td className="py-1.5 px-3 text-right font-mono text-foreground">
                       {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
                   <tr className="border-b border-border">
-                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">Total Discount:</th>
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">{t('total_discount', 'Total Discount:')}</th>
                     <td className="py-1.5 px-3 text-right font-mono text-red-600">
                       -{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
                   {(formFreight > 0 || formCustoms > 0 || formOtherCost > 0) && (
                     <tr className="border-b border-border">
-                      <th className="py-1.5 px-3 font-semibold text-left text-foreground">Additional Logistics:</th>
+                      <th className="py-1.5 px-3 font-semibold text-left text-foreground">{t('additional_logistics', 'Additional Logistics:')}</th>
                       <td className="py-1.5 px-3 text-right font-mono text-foreground">
                         +{(formFreight + formCustoms + formOtherCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                       </td>
                     </tr>
                   )}
                   <tr className="border-b border-border">
-                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">VAT / Tax (11%):</th>
+                    <th className="py-1.5 px-3 font-semibold text-left text-foreground">{t('vat_tax_11', 'VAT / Tax (11%):')}</th>
                     <td className="py-1.5 px-3 text-right font-mono text-foreground">
                       {totalTax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
                   </tr>
                   <tr className="border-b border-border bg-muted">
-                    <th className="py-2 px-3 font-bold text-left text-primary text-sm">Grand Total:</th>
+                    <th className="py-2 px-3 font-bold text-left text-primary text-sm">{t('grand_total', 'Grand Total:')}</th>
                     <td className="py-2 px-3 text-right font-mono font-bold text-primary text-base">
                       {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {formCurrency}
                     </td>
@@ -1554,7 +1548,7 @@ export default function PurchaseOrderView() {
                     </tr>
                   )}
                   <tr className="bg-white">
-                    <th className="py-1.5 px-3 text-xs text-[#800000] text-left">Total Quantities:</th>
+                    <th className="py-1.5 px-3 text-xs text-[#800000] text-left">{t('total_quantities', 'Total Quantities:')}</th>
                     <td className="py-1.5 px-3 text-right font-mono text-xs text-[#800000] font-semibold">
                       {totalQuantities.toLocaleString()}
                     </td>
@@ -1574,7 +1568,7 @@ export default function PurchaseOrderView() {
                 className="h-[36px] px-5 bg-amber-600 hover:bg-amber-700 border border-amber-600 text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-save"></i>
-                <span>Save</span>
+                <span>{t('save', 'Save')}</span>
               </button>
 
               {/* Save & Post Button */}
@@ -1584,7 +1578,7 @@ export default function PurchaseOrderView() {
                 className="h-[36px] px-5 bg-emerald-700 hover:bg-emerald-700 text-white text-[13px] font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
               >
                 <i className="fa fa-check"></i>
-                <span>Save & Post</span>
+                <span>{t('save_and_post', 'Save & Post')}</span>
               </button>
 
               {/* Cancel Button */}
@@ -1608,7 +1602,7 @@ export default function PurchaseOrderView() {
                       className="h-[36px] px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <i className="fa fa-thumbs-up"></i>
-                      <span>Approve</span>
+                      <span>{t('approve', 'Approve')}</span>
                     </button>
                     <button
                       type="button"
@@ -1616,7 +1610,7 @@ export default function PurchaseOrderView() {
                       className="h-[36px] px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <i className="fa fa-ban"></i>
-                      <span>Reject</span>
+                      <span>{t('reject', 'Reject')}</span>
                     </button>
                   </>
                 )}
@@ -1628,7 +1622,7 @@ export default function PurchaseOrderView() {
                     className="h-[36px] px-4 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <i className="fa fa-exchange"></i>
-                    <span>Convert to Purchase Invoice</span>
+                    <span>{t('convert_to_purchase_invoice', 'Convert to Purchase Invoice')}</span>
                   </button>
                 )}
 
@@ -1638,7 +1632,7 @@ export default function PurchaseOrderView() {
                   className="h-[36px] px-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded transition flex items-center gap-1 cursor-pointer"
                 >
                   <i className="fa fa-trash"></i>
-                  <span>Delete</span>
+                  <span>{t('delete', 'Delete')}</span>
                 </button>
               </div>
             )}
@@ -1668,7 +1662,7 @@ export default function PurchaseOrderView() {
             <div className="bg-card border-b border-gray-200 px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
                 <i className="fa fa-building text-primary"></i>
-                <span>Select Supplier</span>
+                <span>{t('select_supplier', 'Select Supplier')}</span>
               </h3>
               <button onClick={() => setShowSupplierModal(false)} className="text-gray-400 hover:text-gray-600">
                 <i className="fa fa-times text-base"></i>
@@ -1690,7 +1684,7 @@ export default function PurchaseOrderView() {
                     <div className="text-xs text-gray-500">Contact: {s.contact} | {s.phone}</div>
                     <div className="text-[11px] text-gray-400">{s.address}</div>
                   </div>
-                  <button className="text-xs px-2.5 py-1 bg-primary text-white rounded">Select</button>
+                  <button className="text-xs px-2.5 py-1 bg-primary text-white rounded">{t('select', 'Select')}</button>
                 </div>
               ))}
             </div>
@@ -1716,7 +1710,7 @@ export default function PurchaseOrderView() {
             <div className="bg-card border-b border-gray-200 px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
                 <i className="fa fa-cubes text-primary"></i>
-                <span>Search Inventory Item Catalog</span>
+                <span>{t('search_inventory_catalog', 'Search Inventory Item Catalog')}</span>
               </h3>
               <button onClick={() => setShowItemModal(false)} className="text-gray-400 hover:text-gray-600">
                 <i className="fa fa-times text-base"></i>
@@ -1726,11 +1720,11 @@ export default function PurchaseOrderView() {
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50 text-gray-700">
-                    <th className="p-2">Code</th>
-                    <th className="p-2">Description</th>
-                    <th className="p-2">Unit</th>
-                    <th className="p-2 text-right">Unit Price</th>
-                    <th className="p-2 text-center w-20">Action</th>
+                    <th className="p-2">{t('code', 'Code')}</th>
+                    <th className="p-2">{t('description', 'Description')}</th>
+                    <th className="p-2">{t('unit', 'Unit')}</th>
+                    <th className="p-2 text-right">{t('unit_price', 'Unit Price')}</th>
+                    <th className="p-2 text-center w-20">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1787,7 +1781,7 @@ export default function PurchaseOrderView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <div>
-                <label className="font-bold text-gray-700 block mb-1">To Email*:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('to_email_req', 'To Email*:')}</label>
                 <input
                   type="email"
                   value={emailTo}
@@ -1796,7 +1790,7 @@ export default function PurchaseOrderView() {
                 />
               </div>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">CC Email:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('cc_email', 'CC Email:')}</label>
                 <input
                   type="email"
                   value={emailCc}
@@ -1805,7 +1799,7 @@ export default function PurchaseOrderView() {
                 />
               </div>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Subject*:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('subject_req', 'Subject*:')}</label>
                 <input
                   type="text"
                   value={emailSubject}
@@ -1814,7 +1808,7 @@ export default function PurchaseOrderView() {
                 />
               </div>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Message Body:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('message_body', 'Message Body:')}</label>
                 <textarea
                   rows={6}
                   value={emailBody}
@@ -1837,7 +1831,7 @@ export default function PurchaseOrderView() {
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5"
               >
                 <i className="fa fa-paper-plane"></i>
-                <span>Send PO</span>
+                <span>{t('send_po', 'Send PO')}</span>
               </button>
             </div>
           </div>
@@ -1853,7 +1847,7 @@ export default function PurchaseOrderView() {
             <div className="bg-emerald-700 text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-upload"></i>
-                <span>Attach Supporting Document</span>
+                <span>{t('attach_supporting_document', 'Attach Supporting Document')}</span>
               </h3>
               <button onClick={() => setShowDocModal(false)} className="text-white hover:opacity-75">
                 <i className="fa fa-times text-base"></i>
@@ -1861,7 +1855,7 @@ export default function PurchaseOrderView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Document Title / Reference:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('document_title_ref', 'Document Title / Reference:')}</label>
                 <input
                   type="text"
                   value={docNameInput}
@@ -1871,7 +1865,7 @@ export default function PurchaseOrderView() {
                 />
               </div>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Document URL or Cloud File Link:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('document_url_link', 'Document URL or Cloud File Link:')}</label>
                 <input
                   type="url"
                   value={docUrlInput}
@@ -1882,7 +1876,7 @@ export default function PurchaseOrderView() {
               </div>
               <div className="p-3 border border-dashed border-gray-300 rounded bg-gray-50 text-center text-gray-500">
                 <i className="fa fa-cloud-upload text-2xl text-gray-400 mb-1 block"></i>
-                <span>Drag & drop signed proforma PDF or delivery specifications here</span>
+                <span>{t('drag_drop_proforma', 'Drag & drop signed proforma PDF or delivery specifications here')}</span>
               </div>
             </div>
             <div className="bg-gray-50 border-t border-gray-200 px-4 py-3 flex items-center justify-end gap-2">
@@ -1917,7 +1911,7 @@ export default function PurchaseOrderView() {
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-repeat"></i>
-                <span>Store as Recurring Purchase Template</span>
+                <span>{t('store_recurring_template', 'Store as Recurring Purchase Template')}</span>
               </h3>
               <button onClick={() => setShowStoreRecurringModal(false)} className="text-white hover:opacity-75">
                 <i className="fa fa-times text-base"></i>
@@ -1928,7 +1922,7 @@ export default function PurchaseOrderView() {
                 Save the {formItems.length} lines in this order to recall them instantly in future purchase orders.
               </p>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Template Name*:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('template_name_req', 'Template Name*:')}</label>
                 <input
                   type="text"
                   value={recurringName}
@@ -1976,28 +1970,28 @@ export default function PurchaseOrderView() {
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-history"></i>
-                <span>Recall Recurring Template</span>
+                <span>{t('recall_recurring_template', 'Recall Recurring Template')}</span>
               </h3>
               <button onClick={() => setShowRecallRecurringModal(false)} className="text-white hover:opacity-75">
                 <i className="fa fa-times text-base"></i>
               </button>
             </div>
             <div className="p-4 max-h-[350px] overflow-y-auto space-y-2 text-xs">
-              {recurringTemplates.map((t, idx) => (
+              {recurringTemplates.map((tpl, idx) => (
                 <div
                   key={idx}
                   onClick={() => {
-                    setFormItems(JSON.parse(JSON.stringify(t.items)));
+                    setFormItems(JSON.parse(JSON.stringify(tpl.items)));
                     setShowRecallRecurringModal(false);
-                    triggerToast(`Recalled ${t.items.length} items from template "${t.name}"`);
+                    triggerToast(`Recalled ${tpl.items.length} items from template "${tpl.name}"`);
                   }}
                   className="p-3 border border-gray-200 rounded hover:border-primary hover:bg-blue-50/40 transition cursor-pointer flex items-center justify-between"
                 >
                   <div>
-                    <div className="font-bold text-foreground">{t.name}</div>
-                    <div className="text-gray-500 text-[11px]">{t.items.length} item lines defined</div>
+                    <div className="font-bold text-foreground">{tpl.name}</div>
+                    <div className="text-gray-500 text-[11px]">{tpl.items.length} item lines defined</div>
                   </div>
-                  <button className="px-2.5 py-1 bg-primary text-white rounded text-xs">Recall</button>
+                  <button className="px-2.5 py-1 bg-primary text-white rounded text-xs">{t('recall', 'Recall')}</button>
                 </div>
               ))}
             </div>
@@ -2023,7 +2017,7 @@ export default function PurchaseOrderView() {
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-map-marker"></i>
-                <span>Add Storage Location</span>
+                <span>{t('add_storage_location', 'Add Storage Location')}</span>
               </h3>
               <button onClick={() => setShowLocationModal(false)} className="text-white hover:opacity-75">
                 <i className="fa fa-times text-base"></i>
@@ -2031,7 +2025,7 @@ export default function PurchaseOrderView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Location Name*:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('location_name_req', 'Location Name*:')}</label>
                 <input
                   type="text"
                   placeholder="e.g. Silo C - Raw Oil Tank #4"
@@ -2076,7 +2070,7 @@ export default function PurchaseOrderView() {
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
               <h3 className="font-bold text-sm flex items-center gap-2">
                 <i className="fa fa-money"></i>
-                <span>Add Currency</span>
+                <span>{t('add_currency', 'Add Currency')}</span>
               </h3>
               <button onClick={() => setShowCurrencyModal(false)} className="text-white hover:opacity-75">
                 <i className="fa fa-times text-base"></i>
@@ -2084,7 +2078,7 @@ export default function PurchaseOrderView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Currency Symbol (e.g. GBP, AED):</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('currency_symbol_label', 'Currency Symbol (e.g. GBP, AED):')}</label>
                 <input
                   type="text"
                   placeholder="e.g. GBP"
@@ -2093,7 +2087,7 @@ export default function PurchaseOrderView() {
                 />
               </div>
               <div>
-                <label className="font-bold text-gray-700 block mb-1">Exchange Rate to LL:</label>
+                <label className="font-bold text-gray-700 block mb-1">{t('exchange_rate_ll', 'Exchange Rate to LL:')}</label>
                 <input
                   type="number"
                   placeholder="114000"
@@ -2168,7 +2162,7 @@ export default function PurchaseOrderView() {
                     className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded font-medium text-xs flex items-center gap-1"
                   >
                     <i className="fa fa-plus"></i>
-                    <span>Add to PO</span>
+                    <span>{t('add_to_po', 'Add to PO')}</span>
                   </button>
                 </div>
               ))}

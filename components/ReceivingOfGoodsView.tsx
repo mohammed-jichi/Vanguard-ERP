@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Truck,
   CheckCircle2,
@@ -26,6 +27,7 @@ import {
 } from '@/lib/productRequestData';
 
 export default function ReceivingOfGoodsView() {
+  const { t, dir } = useLanguage();
   // Top filter state
   const [filterBranchId, setFilterBranchId] = useState<number>(0);
   const [filterFromBranchId, setFilterFromBranchId] = useState<number>(0);
@@ -209,15 +211,15 @@ export default function ReceivingOfGoodsView() {
       <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-            <span>Operations Center</span>
+            <span>{t('operations_center', 'Operations Center')}</span>
             <span>/</span>
-            <span className="text-teal-600 font-bold">Receiving of Goods</span>
+            <span className="text-teal-600 font-bold">{t('receiving_of_goods', 'Receiving of Goods')}</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Receiving of goods</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{t('receiving_of_goods', 'Receiving of goods')}</h1>
             <span className="bg-teal-50 text-teal-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-teal-200 flex items-center gap-1.5">
               <Truck className="w-3.5 h-3.5" />
-              <span>Inbound Goods Verification</span>
+              <span>{t('inbound_goods_verification', 'Inbound Goods Verification')}</span>
             </span>
           </div>
         </div>
@@ -228,7 +230,7 @@ export default function ReceivingOfGoodsView() {
           className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold border border-slate-300 shadow-sm"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
-          <span>Refresh</span>
+          <span>{t('refresh', 'Refresh')}</span>
         </button>
       </div>
 
@@ -239,14 +241,14 @@ export default function ReceivingOfGoodsView() {
             {/* Receiving Branch */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                Receiving Branch
+                {t('receiving_branch', 'Receiving Branch')}
               </label>
               <select
                 value={filterBranchId}
                 onChange={e => setFilterBranchId(Number(e.target.value))}
                 className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
-                <option value={0}>All Branches</option>
+                <option value={0}>{t('all_branches', 'All Branches')}</option>
                 {OMEGA_PR_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
                     {b.BARANCHNAME}
@@ -258,14 +260,14 @@ export default function ReceivingOfGoodsView() {
             {/* Requested From Branch */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                Dispatched From
+                {t('dispatched_from', 'Dispatched From')}
               </label>
               <select
                 value={filterFromBranchId}
                 onChange={e => setFilterFromBranchId(Number(e.target.value))}
                 className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs font-semibold text-slate-700 focus:outline-none focus:border-teal-500"
               >
-                <option value={0}>All Branches</option>
+                <option value={0}>{t('all_branches', 'All Branches')}</option>
                 {OMEGA_PR_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
                     {b.BARANCHNAME}
@@ -277,7 +279,7 @@ export default function ReceivingOfGoodsView() {
             {/* Date From */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                From:
+                {t('from_date_label', 'From:')}
               </label>
               <input
                 type="date"
@@ -290,7 +292,7 @@ export default function ReceivingOfGoodsView() {
             {/* Date To */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                To:
+                {t('to_date_label', 'To:')}
               </label>
               <input
                 type="date"
@@ -303,12 +305,12 @@ export default function ReceivingOfGoodsView() {
             {/* Direct Search */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                Search PR #
+                {t('search_pr_num', 'Search PR #')}
               </label>
               <div className="relative flex gap-1">
                 <input
                   type="text"
-                  placeholder="PR-1001..."
+                  placeholder={t('search_pr_placeholder', 'PR-1001...')}
                   value={searchPrNb}
                   onChange={e => setSearchPrNb(e.target.value)}
                   className="w-full h-8 px-2.5 bg-white border border-border rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500"
@@ -332,16 +334,16 @@ export default function ReceivingOfGoodsView() {
             <table className="w-full text-left text-xs">
               <thead className="bg-card text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-border">
                 <tr>
-                  <th className="py-3 px-3 w-28">PR #</th>
-                  <th className="py-3 px-3 min-w-[150px]">Requested By Branch</th>
-                  <th className="py-3 px-3 min-w-[150px]">Requested From</th>
-                  <th className="py-3 px-3 w-24">Date</th>
-                  <th className="py-3 px-3 w-32">Delivery Date</th>
-                  <th className="py-3 px-3 w-28">Requested By</th>
-                  <th className="py-3 px-3 w-28">To Location</th>
-                  <th className="py-3 px-3 min-w-[120px]">Remark</th>
-                  <th className="py-3 px-3 w-28 text-center">Confirmed</th>
-                  <th className="py-3 px-3 w-28 text-center">Actions</th>
+                  <th className="py-3 px-3 w-28">{t('pr_number', 'PR #')}</th>
+                  <th className="py-3 px-3 min-w-[150px]">{t('requested_by_branch', 'Requested By Branch')}</th>
+                  <th className="py-3 px-3 min-w-[150px]">{t('requested_from', 'Requested From')}</th>
+                  <th className="py-3 px-3 w-24">{t('date', 'Date')}</th>
+                  <th className="py-3 px-3 w-32">{t('delivery_date', 'Delivery Date')}</th>
+                  <th className="py-3 px-3 w-28">{t('requested_by', 'Requested By')}</th>
+                  <th className="py-3 px-3 w-28">{t('to_location', 'To Location')}</th>
+                  <th className="py-3 px-3 min-w-[120px]">{t('remark', 'Remark')}</th>
+                  <th className="py-3 px-3 w-28 text-center">{t('confirmed', 'Confirmed')}</th>
+                  <th className="py-3 px-3 w-28 text-center">{t('actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -349,7 +351,7 @@ export default function ReceivingOfGoodsView() {
                   <tr>
                     <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
                       <Truck className="w-10 h-10 text-slate-300 mx-auto mb-2 opacity-50" />
-                      <span>No approved requests awaiting receipt found.</span>
+                      <span>{t('no_approved_requests_awaiting', 'No approved requests awaiting receipt found.')}</span>
                     </td>
                   </tr>
                 ) : (
@@ -376,7 +378,7 @@ export default function ReceivingOfGoodsView() {
                                 : 'bg-emerald-50 text-emerald-700 border-emerald-300'
                             }`}
                           >
-                            {isConfirmed ? 'Confirmed' : 'Approved'}
+                            {isConfirmed ? t('confirmed', 'Confirmed') : t('approved', 'Approved')}
                           </span>
                         </td>
                         <td className="py-3 px-3 text-center">
@@ -384,7 +386,7 @@ export default function ReceivingOfGoodsView() {
                             onClick={() => handleOpenInspection(pr)}
                             className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-[11px] font-bold shadow-sm"
                           >
-                            Open Details
+                            {t('open_details', 'Open Details')}
                           </button>
                         </td>
                       </tr>
@@ -406,7 +408,7 @@ export default function ReceivingOfGoodsView() {
               <div className="flex items-center gap-3">
                 <Truck className="w-5 h-5 text-teal-600" />
                 <h3 className="text-base font-bold text-slate-800">
-                  Confirm Receiving Of Goods &mdash;{' '}
+                  {t('confirm_receiving_of_goods', 'Confirm Receiving Of Goods')} &mdash;{' '}
                   <span className="font-mono text-teal-700">{activePr.REQUESTNB}</span>
                 </h3>
               </div>
@@ -421,19 +423,19 @@ export default function ReceivingOfGoodsView() {
             {/* Summary Information */}
             <div className="p-5 border-b border-slate-200 bg-white grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               <div>
-                <span className="text-slate-400 font-bold block uppercase text-[10px]">Receiving Branch:</span>
+                <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('receiving_branch_colon', 'Receiving Branch:')}</span>
                 <span className="font-bold text-slate-800">{activePr.TOBRANCH}</span>
               </div>
               <div>
-                <span className="text-slate-400 font-bold block uppercase text-[10px]">To Location:</span>
+                <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('to_location_colon', 'To Location:')}</span>
                 <span className="font-bold text-slate-800">{activePr.LOCATIONDESCRIPTION}</span>
               </div>
               <div>
-                <span className="text-slate-400 font-bold block uppercase text-[10px]">Dispatched From:</span>
+                <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('dispatched_from_colon', 'Dispatched From:')}</span>
                 <span className="font-bold text-slate-800">{activePr.FROMBRANCHNAME}</span>
               </div>
               <div>
-                <span className="text-slate-400 font-bold block uppercase text-[10px]">Delivery Target:</span>
+                <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('delivery_target_colon', 'Delivery Target:')}</span>
                 <span className="font-bold text-slate-800">{activePr.DELIVERYDATE}</span>
               </div>
             </div>
@@ -442,23 +444,23 @@ export default function ReceivingOfGoodsView() {
             <div className="flex-1 overflow-y-auto p-5">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                  Inspect & Record Inbound Quantities
+                  {t('inspect_record_inbound_qty', 'Inspect & Record Inbound Quantities')}
                 </span>
                 <span className="text-xs text-slate-400 font-medium italic">
-                  * Verify physical count and record actual Qty Rec (Received)
+                  {t('verify_physical_count_rec', '* Verify physical count and record actual Qty Rec (Received)')}
                 </span>
               </div>
 
               <table className="w-full text-left text-xs border border-slate-200 rounded-lg overflow-hidden">
                 <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
                   <tr>
-                    <th className="py-2.5 px-3">Code</th>
-                    <th className="py-2.5 px-3">Description</th>
-                    <th className="py-2.5 px-3 text-center">Unit</th>
-                    <th className="py-2.5 px-3 text-center">Qty Req</th>
-                    <th className="py-2.5 px-3 text-center">Qty Approved</th>
-                    <th className="py-2.5 px-3 text-center bg-cyan-50/70 text-cyan-800">Qty Rec</th>
-                    <th className="py-2.5 px-3">Damage / Discrepancy Note</th>
+                    <th className="py-2.5 px-3">{t('code', 'Code')}</th>
+                    <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('unit', 'Unit')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('qty_req', 'Qty Req')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('qty_approved', 'Qty Approved')}</th>
+                    <th className="py-2.5 px-3 text-center bg-cyan-50/70 text-cyan-800">{t('qty_rec', 'Qty Rec')}</th>
+                    <th className="py-2.5 px-3">{t('damage_discrepancy_note', 'Damage / Discrepancy Note')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -487,7 +489,7 @@ export default function ReceivingOfGoodsView() {
                           type="text"
                           value={it.REMARK || ''}
                           onChange={e => handleUpdateRemark(idx, e.target.value)}
-                          placeholder="Note discrepancies..."
+                          placeholder={t('note_discrepancies_ph', 'Note discrepancies...')}
                           className="w-full h-7 px-2 bg-transparent hover:bg-white border border-transparent hover:border-slate-200 focus:border-teal-500 focus:bg-white rounded text-xs text-slate-700"
                         />
                       </td>
@@ -498,13 +500,13 @@ export default function ReceivingOfGoodsView() {
 
               <div className="mt-4">
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Overall Receiving Notes:
+                  {t('overall_receiving_notes', 'Overall Receiving Notes:')}
                 </label>
                 <input
                   type="text"
                   value={activePr.REMARK || ''}
                   onChange={e => setActivePr({ ...activePr, REMARK: e.target.value })}
-                  placeholder="e.g. All crates received in good condition, seal verified"
+                  placeholder={t('receiving_notes_placeholder', 'e.g. All crates received in good condition, seal verified')}
                   className="w-full h-9 px-3 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 focus:outline-none focus:border-teal-500 focus:bg-white"
                 />
               </div>
@@ -518,7 +520,7 @@ export default function ReceivingOfGoodsView() {
                   className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 rounded text-xs font-semibold border border-slate-300 shadow-sm flex items-center gap-1.5"
                 >
                   <Printer className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Print Receipt</span>
+                  <span>{t('print_receipt', 'Print Receipt')}</span>
                 </button>
               </div>
 
@@ -527,14 +529,14 @@ export default function ReceivingOfGoodsView() {
                   onClick={() => setShowInspectionModal(false)}
                   className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded"
                 >
-                  Close
+                  {t('close', 'Close')}
                 </button>
 
                 <button
                   onClick={handleSaveDraft}
                   className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded text-xs font-bold shadow-sm"
                 >
-                  Save Draft
+                  {t('save_draft', 'Save Draft')}
                 </button>
 
                 {activePr.STATUS === 'Confirmed' ? (
@@ -543,7 +545,7 @@ export default function ReceivingOfGoodsView() {
                     className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1.5"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>UnConfirm</span>
+                    <span>{t('unconfirm', 'UnConfirm')}</span>
                   </button>
                 ) : (
                   <button
@@ -551,7 +553,7 @@ export default function ReceivingOfGoodsView() {
                     className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
-                    <span>Confirm Receiving</span>
+                    <span>{t('confirm_receiving', 'Confirm Receiving')}</span>
                   </button>
                 )}
               </div>
@@ -566,7 +568,7 @@ export default function ReceivingOfGoodsView() {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl my-8 overflow-hidden">
             <div className="bg-slate-800 text-white px-5 py-3 flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider">
-                Goods Receipt Slip &mdash; {activePr.REQUESTNB}
+                {t('goods_receipt_slip', 'Goods Receipt Slip')} &mdash; {activePr.REQUESTNB}
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -574,7 +576,7 @@ export default function ReceivingOfGoodsView() {
                   className="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-bold flex items-center gap-1"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print</span>
+                  <span>{t('print', 'Print')}</span>
                 </button>
                 <button
                   onClick={() => setShowPrintModal(false)}
@@ -588,22 +590,22 @@ export default function ReceivingOfGoodsView() {
             <div className="p-8 text-slate-800 font-mono text-xs space-y-5">
               <div className="flex justify-between items-start border-b pb-4">
                 <div>
-                  <h2 className="text-lg font-bold">GOODS RECEIPT NOTE (GRN)</h2>
-                  <p className="text-[11px] text-slate-500">Omega ERP Operations</p>
+                  <h2 className="text-lg font-bold">{t('goods_receipt_note_grn', 'GOODS RECEIPT NOTE (GRN)')}</h2>
+                  <p className="text-[11px] text-slate-500">{t('omega_erp_operations', 'Omega ERP Operations')}</p>
                 </div>
                 <div className="text-right">
                   <span className="text-base font-extrabold text-teal-700">{activePr.REQUESTNB}</span>
-                  <p className="text-slate-500 text-[10px]">Date: {new Date().toLocaleDateString()}</p>
+                  <p className="text-slate-500 text-[10px]">{t('date', 'Date')}: {new Date().toLocaleDateString()}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded">
                 <div>
-                  <span className="text-slate-400 block text-[9px]">RECEIVED BY BRANCH:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('received_by_branch_colon', 'RECEIVED BY BRANCH:')}</span>
                   <span className="font-bold">{activePr.TOBRANCH} ({activePr.LOCATIONDESCRIPTION})</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px]">DISPATCHED FROM:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('dispatched_from_upper_colon', 'DISPATCHED FROM:')}</span>
                   <span className="font-bold">{activePr.FROMBRANCHNAME}</span>
                 </div>
               </div>
@@ -612,10 +614,10 @@ export default function ReceivingOfGoodsView() {
                 <thead className="bg-slate-100 font-bold border-b">
                   <tr>
                     <th className="p-2 w-8">#</th>
-                    <th className="p-2">Item Description</th>
-                    <th className="p-2 w-20 text-center">Approved</th>
-                    <th className="p-2 w-20 text-center">Received</th>
-                    <th className="p-2 w-14 text-center">Unit</th>
+                    <th className="p-2">{t('item_description', 'Item Description')}</th>
+                    <th className="p-2 w-20 text-center">{t('approved', 'Approved')}</th>
+                    <th className="p-2 w-20 text-center">{t('received', 'Received')}</th>
+                    <th className="p-2 w-14 text-center">{t('unit', 'Unit')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -634,11 +636,11 @@ export default function ReceivingOfGoodsView() {
               <div className="grid grid-cols-2 gap-8 pt-6 border-t text-center text-[10px]">
                 <div>
                   <div className="h-8 border-b border-slate-300 mb-1"></div>
-                  <span className="text-slate-400">Delivered By Driver</span>
+                  <span className="text-slate-400">{t('delivered_by_driver', 'Delivered By Driver')}</span>
                 </div>
                 <div>
                   <div className="h-8 border-b border-slate-300 mb-1"></div>
-                  <span className="text-slate-400">Received By Store Clerk</span>
+                  <span className="text-slate-400">{t('received_by_store_clerk', 'Received By Store Clerk')}</span>
                 </div>
               </div>
             </div>
