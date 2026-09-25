@@ -112,7 +112,7 @@ import {
 import { SharedReportViewer, isSharedReport } from '@/components/reports/registry';
 
 function LoyaltyManagementContent() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
   const activeSection = searchParams.get('section') || 'reports';
 
@@ -215,36 +215,37 @@ function LoyaltyManagementContent() {
   }, [searchQuery]);
 
   return (
-    <ReportPageLayout
-      moduleTitle="Loyalty Management"
-      moduleKey="loyalty"
-      storageKeyOverride="vanguard_recent_reports_loyalty"
-      categories={LOYALTY_MANAGEMENT_OMEGA_TREE}
-      selectedReport={selectedReport}
-      onSelectReport={handleSelectReport}
-      header={
-        <ReportHeader
-          title={activeMeta.name}
-          subtitle="Customer loyalty points, membership rewards, cashback ledgers, and transaction auditing"
-          breadcrumbs={[
-            { label: 'Home', href: '/backoffice' },
-            { label: '3. Loyalty Management', href: '/loyalty/reports' },
-            { label: activeMeta.category },
-            { label: activeMeta.name }
-          ]}
-          reportCode={activeMeta.code}
-          badgeText="LOYALTY LEDGER"
-          badgeVariant="success"
-          actions={
-            <ExportButtons
-              onPrint={() => window.print()}
-              onExportPdf={() => window.print()}
-              onExportExcel={() => alert(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
-              onExportCsv={() => alert(`Exporting ${activeMeta.name} to CSV...`)}
-            />
-          }
-        />
-      }
+    <div dir={dir} className="w-full">
+      <ReportPageLayout
+        moduleTitle={t('loyalty_management_title', 'Loyalty Management')}
+        moduleKey="loyalty"
+        storageKeyOverride="vanguard_recent_reports_loyalty"
+        categories={LOYALTY_MANAGEMENT_OMEGA_TREE}
+        selectedReport={selectedReport}
+        onSelectReport={handleSelectReport}
+        header={
+          <ReportHeader
+            title={activeMeta.name}
+            subtitle={t('loyalty_page_subtitle', 'Customer loyalty points, membership rewards, cashback ledgers, and transaction auditing')}
+            breadcrumbs={[
+              { label: t('home', 'Home'), href: '/backoffice' },
+              { label: t('loyalty_management_breadcrumb', '3. Loyalty Management'), href: '/loyalty/reports' },
+              { label: activeMeta.category },
+              { label: activeMeta.name }
+            ]}
+            reportCode={activeMeta.code}
+            badgeText={t('loyalty_ledger_badge', 'LOYALTY LEDGER')}
+            badgeVariant="success"
+            actions={
+              <ExportButtons
+                onPrint={() => window.print()}
+                onExportPdf={() => window.print()}
+                onExportExcel={() => alert(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
+                onExportCsv={() => alert(`Exporting ${activeMeta.name} to CSV...`)}
+              />
+            }
+          />
+        }
       metrics={<ReportMetricCards metrics={metrics} />}
       // 3. Dynamic Filter Engine
       filters={
@@ -284,7 +285,7 @@ function LoyaltyManagementContent() {
           {!isSharedReport(selectedReport) && isPointsView && (
             <ReportTableWrapper
               title={`${selectedReport} Register`}
-              subtitle="Consolidated loyalty point accruals, redemptions, USD liability conversions, and expiration schedule"
+              subtitle={t('points_ledger_subtitle', 'Consolidated loyalty point accruals, redemptions, USD liability conversions, and expiration schedule')}
               totalRecordsCount={filteredPoints.length}
             >
               <div className="overflow-x-auto">
@@ -334,21 +335,21 @@ function LoyaltyManagementContent() {
           {!isSharedReport(selectedReport) && isCampaignsView && (
             <ReportTableWrapper
               title={`${selectedReport} Dashboard`}
-              subtitle="Promotional campaign efficacy, qualifying ticket volume, redemption lift, and financial return on investment"
+              subtitle={t('campaigns_dashboard_subtitle', 'Promotional campaign efficacy, qualifying ticket volume, redemption lift, and financial return on investment')}
               totalRecordsCount={filteredCampaigns.length}
             >
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-y-2 border-slate-900 bg-slate-50 font-bold text-slate-900 text-xs">
-                      <th className="py-2 px-3">Campaign Code</th>
-                      <th className="py-2 px-3">Campaign Program Name</th>
-                      <th className="py-2 px-3">Target Tier</th>
-                      <th className="py-2 px-3 text-right">Qualifying Orders</th>
-                      <th className="py-2 px-3 text-right">Conversion Rate</th>
-                      <th className="py-2 px-3 text-right">Redemption Lift</th>
-                      <th className="py-2 px-3 text-right">Incremental Revenue</th>
-                      <th className="py-2 px-3 text-right">Program ROI</th>
+                      <th className="py-2 px-3">{t('campaign_code', 'Campaign Code')}</th>
+                      <th className="py-2 px-3">{t('campaign_program_name', 'Campaign Program Name')}</th>
+                      <th className="py-2 px-3">{t('target_tier', 'Target Tier')}</th>
+                      <th className="py-2 px-3 text-right">{t('qualifying_orders', 'Qualifying Orders')}</th>
+                      <th className="py-2 px-3 text-right">{t('conversion_rate', 'Conversion Rate')}</th>
+                      <th className="py-2 px-3 text-right">{t('redemption_lift', 'Redemption Lift')}</th>
+                      <th className="py-2 px-3 text-right">{t('incremental_revenue', 'Incremental Revenue')}</th>
+                      <th className="py-2 px-3 text-right">{t('program_roi', 'Program ROI')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-sans">
@@ -374,7 +375,7 @@ function LoyaltyManagementContent() {
           {!isSharedReport(selectedReport) && !isPointsView && !isCampaignsView && (
             <ReportTableWrapper
               title={`${selectedReport} Register`}
-              subtitle="Active loyalty accounts, tier status, lifetime spend metrics, and engagement audit log"
+              subtitle={t('members_roster_subtitle', 'Active loyalty accounts, tier status, lifetime spend metrics, and engagement audit log')}
               totalRecordsCount={filteredMembers.length}
             >
               <div className="overflow-x-auto">
@@ -420,6 +421,7 @@ function LoyaltyManagementContent() {
         </>
       }
     />
+    </div>
   );
 }
 
@@ -432,9 +434,14 @@ function LoyaltyManagementPageRouter() {
   return <UnifiedLoyaltyManagementConsole />;
 }
 
+function LoyaltyLoadingFallback() {
+  const { t } = useLanguage();
+  return <div className="p-8 text-center text-slate-400">{t('loading_loyalty_management', 'Loading Loyalty Management...')}</div>;
+}
+
 export default function LoyaltyManagementPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading Loyalty Management...</div>}>
+    <Suspense fallback={<LoyaltyLoadingFallback />}>
       <LoyaltyManagementPageRouter />
     </Suspense>
   );

@@ -14,6 +14,7 @@ import {
   ArrowUpDown,
   Ticket
 } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   OmegaVoucher,
   OmegaVoucherCustomer,
@@ -32,6 +33,8 @@ interface ToastState {
 }
 
 export default function CouponsView() {
+  const { t, dir } = useLanguage();
+
   // Main data state
   const [vouchersList, setVouchersList] = useState<OmegaVoucher[]>(INITIAL_VOUCHERS);
 
@@ -190,7 +193,7 @@ export default function CouponsView() {
     const startId = Math.max(10, ...vouchersList.map(v => v.ID)) + 1;
     const prefix = newVoucherType === 0 ? 'CPN-22901-' : 'GC-22901-';
 
-    const emp = OMEGA_EMPLOYEES.find(e => e.EMPLOYEEID === newEmployeeId);
+    const emp = OMEGA_EMPLOYEES.find(empItem => empItem.EMPLOYEEID === newEmployeeId);
 
     for (let i = 0; i < qty; i++) {
       const codeSuffix = 1000 + startId + i;
@@ -303,8 +306,24 @@ export default function CouponsView() {
     }));
   };
 
+  const getStatusOptionLabel = (opt: { id: number; description: string }) => {
+    if (opt.id === 0) return t('select_status', 'Select status');
+    if (opt.id === 1) return t('status_valid', 'Valid');
+    if (opt.id === 2) return t('status_consumed', 'Consumed');
+    if (opt.id === 3) return t('status_expired', 'Expired');
+    if (opt.id === 4) return t('status_deactivated', 'Deactivated');
+    return opt.description;
+  };
+
+  const getTypeOptionLabel = (opt: { id: number; description: string }) => {
+    if (opt.id === -1) return t('select_type', 'Select type');
+    if (opt.id === 0) return t('coupon', 'Coupon');
+    if (opt.id === 1) return t('gift_certificate', 'Gift Certificate');
+    return opt.description;
+  };
+
   return (
-    <div className="wspaceCont font-sans text-slate-800 bg-background min-h-screen pb-12">
+    <div dir={dir} className="wspaceCont font-sans text-slate-800 bg-background min-h-screen pb-12">
       {/* Toast Popup */}
       {toast.show && (
         <div
@@ -328,16 +347,18 @@ export default function CouponsView() {
       <div className="content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {/* Header & Breadcrumb matching Omega ERP */}
         <div className="header mb-4 pb-2 border-b border-slate-200">
-          <h1 className="page-title text-2xl font-bold text-slate-800 tracking-tight">Coupons & Gift Certificates</h1>
+          <h1 className="page-title text-2xl font-bold text-slate-800 tracking-tight">
+            {t('coupons_and_gift_certificates', 'Coupons & Gift Certificates')}
+          </h1>
           <ul className="breadcrumb flex items-center gap-2 text-xs text-slate-500 mt-1">
             <li>
               <Link href="/backoffice" className="text-blue-600 hover:underline">
-                Home
+                {t('home', 'Home')}
               </Link>
             </li>
             <li>/</li>
             <li className="active text-slate-700 font-semibold" aria-current="page">
-              Coupons
+              {t('coupons', 'Coupons')}
             </li>
           </ul>
         </div>
@@ -349,7 +370,7 @@ export default function CouponsView() {
           {/* Card 1: Total */}
           <div className="rounded-lg overflow-hidden border border-slate-300 shadow-sm">
             <div className="bg-primary text-[#ebf1ff] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
-              Total:
+              {t('total_metric', 'Total:')}
             </div>
             <div className="bg-[#ebf1ff] text-foreground px-3.5 py-3 font-semibold text-sm">
               <span className="text-lg font-extrabold">{counts.total}</span>{' '}
@@ -360,7 +381,7 @@ export default function CouponsView() {
           {/* Card 2: Consumed */}
           <div className="rounded-lg overflow-hidden border border-emerald-300 shadow-sm">
             <div className="bg-emerald-700 text-[#d4fdd4] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
-              Consumed:
+              {t('consumed_metric', 'Consumed:')}
             </div>
             <div className="bg-[#d4fdd4] text-[#274e27] px-3.5 py-3 font-semibold text-sm">
               <span className="text-lg font-extrabold">{counts.consumed}</span>{' '}
@@ -371,7 +392,7 @@ export default function CouponsView() {
           {/* Card 3: Valid */}
           <div className="rounded-lg overflow-hidden border border-amber-300 shadow-sm">
             <div className="bg-amber-600 text-[#ffe5bc] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
-              Valid:
+              {t('valid_metric', 'Valid:')}
             </div>
             <div className="bg-[#ffe5bc] text-[#7a4800] px-3.5 py-3 font-semibold text-sm">
               <span className="text-lg font-extrabold">{counts.valid}</span>{' '}
@@ -382,7 +403,7 @@ export default function CouponsView() {
           {/* Card 4: Expired not used */}
           <div className="rounded-lg overflow-hidden border border-rose-300 shadow-sm">
             <div className="bg-destructive text-[#ffe1e1] px-3.5 py-2 font-bold text-xs uppercase tracking-wider">
-              Expired not used:
+              {t('expired_not_used_metric', 'Expired not used:')}
             </div>
             <div className="bg-[#ffe1e1] text-[#631e1d] px-3.5 py-3 font-semibold text-sm">
               <span className="text-lg font-extrabold">{counts.expiredNotConsumed}</span>{' '}
@@ -405,7 +426,7 @@ export default function CouponsView() {
                   value={searchVal}
                   onChange={e => setSearchVal(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="Search..."
+                  placeholder={t('search_ellipsis', 'Search...')}
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <Search className="w-4 h-4" />
@@ -418,11 +439,11 @@ export default function CouponsView() {
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(parseInt(e.target.value))}
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700"
+                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700 cursor-pointer"
               >
                 {VOUCHER_STATUS_OPTIONS.map(opt => (
                   <option key={opt.id} value={opt.id}>
-                    {opt.id === 0 ? 'Select status' : opt.description}
+                    {getStatusOptionLabel(opt)}
                   </option>
                 ))}
               </select>
@@ -433,11 +454,11 @@ export default function CouponsView() {
               <select
                 value={typeFilter}
                 onChange={e => setTypeFilter(parseInt(e.target.value))}
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700"
+                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700 cursor-pointer"
               >
                 {VOUCHER_TYPE_OPTIONS.map(opt => (
                   <option key={opt.id} value={opt.id}>
-                    {opt.id === -1 ? 'Select type' : opt.description}
+                    {getTypeOptionLabel(opt)}
                   </option>
                 ))}
               </select>
@@ -448,11 +469,11 @@ export default function CouponsView() {
               <select
                 value={dateFilter}
                 onChange={e => setDateFilter(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700"
+                className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 text-slate-700 cursor-pointer"
               >
                 {enteredDates.map(d => (
                   <option key={d} value={d}>
-                    {d === 'All' ? 'Select Date (All)' : d}
+                    {d === 'All' ? t('select_date_all', 'Select Date (All)') : d}
                   </option>
                 ))}
               </select>
@@ -463,9 +484,9 @@ export default function CouponsView() {
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="w-full sm:w-auto px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
               >
-                <Plus className="w-4 h-4 stroke-[2.2]" /> New
+                <Plus className="w-4 h-4 stroke-[2.2]" /> {t('new_coupon_btn', 'New')}
               </button>
             </div>
           </div>
@@ -481,34 +502,34 @@ export default function CouponsView() {
                 <tr>
                   <th onClick={() => toggleSort('COUPON_ID')} className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors">
                     <div className="flex items-center gap-1">
-                      ID
+                      {t('id', 'ID')}
                       <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sorting.field === 'COUPON_ID' ? 'text-blue-600' : ''}`} />
                     </div>
                   </th>
                   <th onClick={() => toggleSort('COUPON_EXPIRYDATE')} className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors">
                     <div className="flex items-center gap-1">
-                      Expiry Date
+                      {t('expiry_date', 'Expiry Date')}
                       <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sorting.field === 'COUPON_EXPIRYDATE' ? 'text-blue-600' : ''}`} />
                     </div>
                   </th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Value</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 hidden md:table-cell">Customer Assigned</th>
+                  <th className="px-4 py-3">{t('type', 'Type')}</th>
+                  <th className="px-4 py-3">{t('value', 'Value')}</th>
+                  <th className="px-4 py-3">{t('status', 'Status')}</th>
+                  <th className="px-4 py-3 hidden md:table-cell">{t('customer_assigned', 'Customer Assigned')}</th>
                   <th onClick={() => toggleSort('DATE_INSERT')} className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors hidden lg:table-cell">
                     <div className="flex items-center gap-1">
-                      Created At
+                      {t('created_at', 'Created At')}
                       <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sorting.field === 'DATE_INSERT' ? 'text-blue-600' : ''}`} />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-right w-28">Actions</th>
+                  <th className="px-4 py-3 text-right w-28">{t('actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {filteredVouchers.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-slate-400">
-                      No vouchers found.
+                      {t('no_vouchers_found', 'No vouchers found.')}
                     </td>
                   </tr>
                 ) : (
@@ -537,7 +558,7 @@ export default function CouponsView() {
                                 : 'bg-blue-50 text-blue-700 border border-blue-200'
                             }`}
                           >
-                            {row.VOUCHER_TYPE === 0 ? 'Coupon' : 'Gift Certificate'}
+                            {row.VOUCHER_TYPE === 0 ? t('coupon', 'Coupon') : t('gift_certificate', 'Gift Certificate')}
                           </span>
                         </td>
 
@@ -550,22 +571,22 @@ export default function CouponsView() {
                         <td className="px-4 py-3">
                           {isConsumed && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                              Consumed
+                              {t('status_consumed', 'Consumed')}
                             </span>
                           )}
                           {isExpired && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
-                              Expired
+                              {t('status_expired', 'Expired')}
                             </span>
                           )}
                           {isDeactivated && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
-                              Deactivated
+                              {t('status_deactivated', 'Deactivated')}
                             </span>
                           )}
                           {isValid && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
-                              Valid
+                              {t('status_valid', 'Valid')}
                             </span>
                           )}
                         </td>
@@ -573,9 +594,9 @@ export default function CouponsView() {
                         {/* Customer */}
                         <td className="px-4 py-3 hidden md:table-cell text-xs text-slate-600">
                           {row.ANYONE_CAN_USE === 1 ? (
-                            <span className="text-slate-400 italic">Anyone can use</span>
+                            <span className="text-slate-400 italic">{t('anyone_can_use', 'Anyone can use')}</span>
                           ) : (
-                            <span className="font-semibold text-slate-800">{row.customerAssigned?.NAME || 'Assigned'}</span>
+                            <span className="font-semibold text-slate-800">{row.customerAssigned?.NAME || t('assigned', 'Assigned')}</span>
                           )}
                         </td>
 
@@ -592,16 +613,16 @@ export default function CouponsView() {
                                 <button
                                   type="button"
                                   onClick={() => handleOpenEdit(row)}
-                                  className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600"
-                                  title="Edit Voucher"
+                                  className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600 cursor-pointer"
+                                  title={t('edit_voucher', 'Edit Voucher')}
                                 >
                                   <Pencil className="w-4 h-4 stroke-[2.2]" />
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDeactivate(row)}
-                                  className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600"
-                                  title="Deactivate Voucher"
+                                  className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600 cursor-pointer"
+                                  title={t('deactivate_voucher', 'Deactivate Voucher')}
                                 >
                                   <Ban className="w-4 h-4 stroke-[2.2]" />
                                 </button>
@@ -610,8 +631,8 @@ export default function CouponsView() {
                             <button
                               type="button"
                               onClick={() => handleOpenPrint(row)}
-                              className="w-8 h-8 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-300 hover:border-slate-700"
-                              title="Print / View Voucher"
+                              className="w-8 h-8 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-300 hover:border-slate-700 cursor-pointer"
+                              title={t('print_view_voucher', 'Print / View Voucher')}
                             >
                               <Printer className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -625,7 +646,7 @@ export default function CouponsView() {
               <tfoot className="bg-slate-50 border-t border-slate-200">
                 <tr>
                   <td colSpan={8} className="px-4 py-2.5 text-xs text-slate-500 text-center">
-                    Showing {filteredVouchers.length} of {vouchersList.length} Vouchers | Brand: Zeit w zaytoun ljanoub S.A.R.L
+                    {t('showing', 'Showing')} {filteredVouchers.length} {t('of', 'of')} {vouchersList.length} {t('vouchers', 'Vouchers')} | {t('brand', 'Brand')}: Zeit w zaytoun ljanoub S.A.R.L
                   </td>
                 </tr>
               </tfoot>
@@ -642,11 +663,11 @@ export default function CouponsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-800">Coupon & Gift Certificate</h3>
+              <h3 className="text-base font-bold text-slate-800">{t('coupon_and_gift_certificate_modal', 'Coupon & Gift Certificate')}</h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -663,7 +684,7 @@ export default function CouponsView() {
                     onChange={() => setNewVoucherType(0)}
                     className="w-4 h-4 text-blue-600"
                   />
-                  <span className="text-sm font-semibold text-slate-800">Coupon</span>
+                  <span className="text-sm font-semibold text-slate-800">{t('coupon', 'Coupon')}</span>
                 </label>
 
                 <label className="inline-flex items-center gap-2 cursor-pointer">
@@ -674,14 +695,14 @@ export default function CouponsView() {
                     onChange={() => setNewVoucherType(1)}
                     className="w-4 h-4 text-blue-600"
                   />
-                  <span className="text-sm font-semibold text-slate-800">Gift Certificate</span>
+                  <span className="text-sm font-semibold text-slate-800">{t('gift_certificate', 'Gift Certificate')}</span>
                 </label>
               </div>
 
               {/* Quantity, Value, Valid Till in 3 columns */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Quantity</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('quantity', 'Quantity')}</label>
                   <input
                     type="number"
                     min="1"
@@ -694,7 +715,7 @@ export default function CouponsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Value</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('value', 'Value')}</label>
                   <div className="flex">
                     <input
                       type="number"
@@ -711,7 +732,7 @@ export default function CouponsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Valid Till</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('valid_till', 'Valid Till')}</label>
                   <input
                     type="date"
                     required
@@ -726,11 +747,11 @@ export default function CouponsView() {
               {newVoucherType === 1 && (
                 <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-md space-y-3">
                   <div>
-                    <label className="block text-xs font-bold text-blue-900 uppercase mb-1">Payment Type *</label>
+                    <label className="block text-xs font-bold text-blue-900 uppercase mb-1">{t('payment_type_req', 'Payment Type *')}</label>
                     <select
                       value={newPaymentType}
                       onChange={e => setNewPaymentType(parseInt(e.target.value))}
-                      className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white"
+                      className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white cursor-pointer"
                     >
                       {INITIAL_PAYMENT_TYPES.map(pt => (
                         <option key={pt.PAYMENTID} value={pt.PAYMENTID}>
@@ -740,15 +761,15 @@ export default function CouponsView() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-blue-900 uppercase mb-1">By Employee *</label>
+                    <label className="block text-xs font-bold text-blue-900 uppercase mb-1">{t('by_employee_req', 'By Employee *')}</label>
                     <select
                       value={newEmployeeId}
                       onChange={e => setNewEmployeeId(parseInt(e.target.value))}
-                      className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white"
+                      className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white cursor-pointer"
                     >
-                      {OMEGA_EMPLOYEES.map(emp => (
-                        <option key={emp.EMPLOYEEID} value={emp.EMPLOYEEID}>
-                          {emp.NAME}
+                      {OMEGA_EMPLOYEES.map(empItem => (
+                        <option key={empItem.EMPLOYEEID} value={empItem.EMPLOYEEID}>
+                          {empItem.NAME}
                         </option>
                       ))}
                     </select>
@@ -765,14 +786,13 @@ export default function CouponsView() {
                     onChange={e => setNewAnyoneCanUse(e.target.checked ? 1 : 0)}
                     className="w-4 h-4 text-blue-600 rounded border-slate-300"
                   />
-                  <span>Anyone can use it</span>
+                  <span>{t('anyone_can_use_it', 'Anyone can use it')}</span>
                 </label>
               </div>
 
-              {/* Assign Customer if Anyone Can Use is unchecked */}
               {newAnyoneCanUse === 0 && (
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-700 uppercase">Assign a Customer</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase">{t('assign_a_customer', 'Assign a Customer')}</label>
                   <select
                     value={newSelectedCustomer?.ID || ''}
                     onChange={e => {
@@ -780,9 +800,9 @@ export default function CouponsView() {
                       const c = OMEGA_CUSTOMERS.find(cust => cust.ID === id) || null;
                       setNewSelectedCustomer(c);
                     }}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white cursor-pointer"
                   >
-                    <option value="">Select customer...</option>
+                    <option value="">{t('select_customer_ellipsis', 'Select customer...')}</option>
                     {OMEGA_CUSTOMERS.map(c => (
                       <option key={c.ID} value={c.ID}>
                         {c.NAME} ({c.PHONE})
@@ -797,15 +817,15 @@ export default function CouponsView() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                 >
-                  <Save className="w-4 h-4" /> Save
+                  <Save className="w-4 h-4" /> {t('save', 'Save')}
                 </button>
               </div>
             </form>
@@ -820,11 +840,11 @@ export default function CouponsView() {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-800">Edit Coupon & Gift Certificate</h3>
+              <h3 className="text-base font-bold text-slate-800">{t('edit_coupon_gift_certificate', 'Edit Coupon & Gift Certificate')}</h3>
               <button
                 type="button"
                 onClick={() => setShowEditModal(false)}
-                className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -833,7 +853,7 @@ export default function CouponsView() {
             <form onSubmit={handleSaveEdit} className="p-5 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">ID</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('id', 'ID')}</label>
                   <input
                     type="text"
                     readOnly
@@ -843,7 +863,7 @@ export default function CouponsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Value</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('value', 'Value')}</label>
                   <div className="flex">
                     <input
                       type="number"
@@ -862,31 +882,31 @@ export default function CouponsView() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Type</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('type', 'Type')}</label>
                   <div className="flex items-center gap-4 py-1.5">
-                    <label className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800">
+                    <label className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800 cursor-pointer">
                       <input
                         type="radio"
                         checked={editVoucherType === 0}
                         onChange={() => setEditVoucherType(0)}
                         className="w-3.5 h-3.5"
                       />
-                      <span>Coupon</span>
+                      <span>{t('coupon', 'Coupon')}</span>
                     </label>
-                    <label className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800">
+                    <label className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800 cursor-pointer">
                       <input
                         type="radio"
                         checked={editVoucherType === 1}
                         onChange={() => setEditVoucherType(1)}
                         className="w-3.5 h-3.5"
                       />
-                      <span>Gift Certificate</span>
+                      <span>{t('gift_certificate', 'Gift Certificate')}</span>
                     </label>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Valid Till</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('valid_till', 'Valid Till')}</label>
                   <input
                     type="date"
                     required
@@ -905,13 +925,13 @@ export default function CouponsView() {
                     onChange={e => setEditAnyoneCanUse(e.target.checked ? 1 : 0)}
                     className="w-4 h-4 text-blue-600 rounded border-slate-300"
                   />
-                  <span>Anyone can use it</span>
+                  <span>{t('anyone_can_use_it', 'Anyone can use it')}</span>
                 </label>
               </div>
 
               {editAnyoneCanUse === 0 && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Assign a Customer</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('assign_a_customer', 'Assign a Customer')}</label>
                   <select
                     value={editSelectedCustomer?.ID || ''}
                     onChange={e => {
@@ -919,9 +939,9 @@ export default function CouponsView() {
                       const c = OMEGA_CUSTOMERS.find(cust => cust.ID === id) || null;
                       setEditSelectedCustomer(c);
                     }}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white cursor-pointer"
                   >
-                    <option value="">Select customer...</option>
+                    <option value="">{t('select_customer_ellipsis', 'Select customer...')}</option>
                     {OMEGA_CUSTOMERS.map(c => (
                       <option key={c.ID} value={c.ID}>
                         {c.NAME} ({c.PHONE})
@@ -935,15 +955,15 @@ export default function CouponsView() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                 >
-                  <Save className="w-4 h-4" /> Save Changes
+                  <Save className="w-4 h-4" /> {t('save_changes', 'Save Changes')}
                 </button>
               </div>
             </form>
@@ -960,28 +980,28 @@ export default function CouponsView() {
             {/* Header with actions */}
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <Ticket className="w-5 h-5 text-blue-600" /> Voucher Print View
+                <Ticket className="w-5 h-5 text-blue-600" /> {t('voucher_print_view', 'Voucher Print View')}
               </h3>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => showToast(`Voucher ${printingVoucher.COUPON_ID} emailed to customer!`, 'success')}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
-                  title="Send via Email"
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                  title={t('send_email', 'Send Email')}
                 >
-                  <Mail className="w-3.5 h-3.5" /> Send Email
+                  <Mail className="w-3.5 h-3.5" /> {t('send_email', 'Send Email')}
                 </button>
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                 >
-                  <Printer className="w-3.5 h-3.5" /> Print
+                  <Printer className="w-3.5 h-3.5" /> {t('print', 'Print')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowPrintModal(false)}
-                  className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100"
+                  className="text-slate-400 hover:text-slate-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors hover:bg-slate-100 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -993,7 +1013,7 @@ export default function CouponsView() {
               <div className="w-full max-w-lg bg-white border-2 border-dashed border-slate-300 rounded-2xl p-6 shadow-md relative overflow-hidden">
                 {/* Decorative banner */}
                 <div className="absolute top-0 right-0 bg-blue-600 text-white px-8 py-1 transform rotate-45 translate-x-7 translate-y-3 shadow text-[10px] font-extrabold tracking-widest uppercase">
-                  {printingVoucher.VOUCHER_TYPE === 0 ? 'COUPON' : 'GIFT CERTIFICATE'}
+                  {printingVoucher.VOUCHER_TYPE === 0 ? t('coupon_upper', 'COUPON') : t('gift_certificate_upper', 'GIFT CERTIFICATE')}
                 </div>
 
                 {/* Company details */}
@@ -1001,19 +1021,19 @@ export default function CouponsView() {
                   <h4 className="font-extrabold text-lg text-slate-900">
                     Zeit w zaytoun ljanoub - Southern Olive Oil Products S.A.R.L
                   </h4>
-                  <p className="text-xs text-slate-500 mt-0.5">Old Saida Road, Kfarchima, Lebanon | Phone: 707673828</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{t('company_address_phone', 'Old Saida Road, Kfarchima, Lebanon | Phone: 707673828')}</p>
                 </div>
 
                 {/* Voucher ID & Value */}
                 <div className="py-6 text-center space-y-2">
                   <p className="font-mono text-xs font-bold tracking-widest text-slate-400 uppercase">
-                    VOUCHER NUMBER: {printingVoucher.COUPON_ID}
+                    {t('voucher_number', 'VOUCHER NUMBER')}: {printingVoucher.COUPON_ID}
                   </p>
                   <div className="text-4xl font-black text-blue-600 tracking-tight">
                     {printingVoucher.COUPON_CURRENCY || '$'} {printingVoucher.COUPON_VALUE.toLocaleString()}
                   </div>
                   <p className="text-xs text-slate-600 font-medium">
-                    Valid across all company branches & POS registers
+                    {t('valid_across_branches_pos', 'Valid across all company branches & POS registers')}
                   </p>
                 </div>
 
@@ -1036,15 +1056,15 @@ export default function CouponsView() {
                 {/* Details Footer */}
                 <div className="pt-4 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Beneficiary</span>
+                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">{t('beneficiary', 'Beneficiary')}</span>
                     <span className="font-bold text-slate-800">
                       {printingVoucher.ANYONE_CAN_USE === 1
-                        ? 'Bearer / Anyone'
-                        : printingVoucher.customerAssigned?.NAME || 'Assigned Client'}
+                        ? t('bearer_anyone', 'Bearer / Anyone')
+                        : printingVoucher.customerAssigned?.NAME || t('assigned_client', 'Assigned Client')}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">Expiry Date</span>
+                    <span className="text-slate-400 block font-semibold uppercase text-[10px]">{t('expiry_date', 'Expiry Date')}</span>
                     <span className="font-bold text-red-600">{printingVoucher.COUPON_EXPIRYDATE}</span>
                   </div>
                 </div>
