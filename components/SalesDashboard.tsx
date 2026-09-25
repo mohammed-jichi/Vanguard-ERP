@@ -68,7 +68,8 @@ interface SalesDashboardProps {
 }
 
 export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) {
-  const { t: tr } = useLanguage();
+  const { t: tr, dir } = useLanguage();
+  const t = tr;
 
   // Filter States
   const [selectedBranch, setSelectedBranch] = useState<string>('ALL');
@@ -482,9 +483,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     return (
       <div className="bg-slate-900 border border-slate-700 !text-white text-white p-3 rounded-xl shadow-xl text-xs space-y-1.5 font-sans min-w-[190px]" style={{ color: '#ffffff', backgroundColor: '#0f172a' }}>
         <p className="font-black !text-amber-300 text-amber-300 border-b border-slate-800 pb-1 text-sm" style={{ color: '#fde047' }}>{label} 2026</p>
-        <p className="text-[11px] font-bold !text-slate-200 text-slate-200" style={{ color: '#e2e8f0' }}>Branch: منتوجات زيت وزيتون الجنوب</p>
+        <p className="text-[11px] font-bold !text-slate-200 text-slate-200" style={{ color: '#e2e8f0' }}>{t('branch', 'Branch')}: {t('southern_olive_branch', 'منتوجات زيت وزيتون الجنوب')}</p>
         <div className="flex items-center justify-between text-xs font-semibold !text-emerald-400 text-emerald-400 pt-1" style={{ color: '#34d399' }}>
-          <span className="!text-white text-white" style={{ color: '#ffffff' }}>Net Revenue:</span>
+          <span className="!text-white text-white" style={{ color: '#ffffff' }}>{t('net_revenue', 'Net Revenue:')}</span>
           <span className="font-mono font-bold !text-emerald-400 text-emerald-400" style={{ color: '#34d399' }}>LBP {monthVal.value}M</span>
         </div>
       </div>
@@ -545,19 +546,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         </div>
         {amountVal && (
           <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
-            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Value / Net:</span>
+            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>{t('value_net', 'Value / Net:')}</span>
             <span className="font-mono font-bold !text-emerald-400 text-emerald-400" style={{ color: '#34d399' }}>{amountVal}</span>
           </div>
         )}
         {countVal !== null && (
           <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
-            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Count:</span>
+            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>{t('count', 'Count:')}</span>
             <span className="font-mono font-bold !text-amber-400 text-amber-400" style={{ color: '#fbbf24' }}>{countVal}</span>
           </div>
         )}
         {shareVal && (
           <div className="flex items-center justify-between text-[11px] font-semibold gap-3">
-            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>Share:</span>
+            <span className="!text-slate-300 text-slate-300" style={{ color: '#cbd5e1' }}>{t('share', 'Share:')}</span>
             <span className="font-mono font-bold !text-white text-white" style={{ color: '#ffffff' }}>{shareVal}</span>
           </div>
         )}
@@ -623,9 +624,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <table className="w-full text-left font-sans">
               <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">Name</th>
-                  <th className="py-3 px-4 text-right">Amount</th>
-                  <th className="py-3 px-4 text-right">Share</th>
+                  <th className="py-3 px-4">{t('name', 'Name')}</th>
+                  <th className="py-3 px-4 text-right">{t('amount', 'Amount')}</th>
+                  <th className="py-3 px-4 text-right">{t('share', 'Share')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
@@ -683,7 +684,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
             {allBranchesList.length > 1 && (
-              <option value="ALL" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Branches (جميع الفروع الموحدة)</option>
+              <option value="ALL" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('all_branches_consolidated', 'All Branches (جميع الفروع الموحدة)')}</option>
             )}
             {allBranchesList.map((b) => (
               <option key={b.id} value={b.id} style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>
@@ -699,9 +700,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="LBP" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>LBP</option>
-            <option value="USD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>USD</option>
-            <option value="EUR" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>EUR</option>
+            <option value="LBP" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('currency_lbp', 'LBP')}</option>
+            <option value="USD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('currency_usd', 'USD')}</option>
+            <option value="EUR" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('currency_eur', 'EUR')}</option>
           </select>
 
           {/* YEAR DROPDOWN */}
@@ -723,10 +724,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>August</option>
-            <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>July</option>
-            <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>June</option>
-            <option value="May" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>May</option>
+            <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('august', 'August')}</option>
+            <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('july', 'July')}</option>
+            <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('june', 'June')}</option>
+            <option value="May" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('may', 'May')}</option>
           </select>
 
           {/* DATE DROPDOWN */}
@@ -736,10 +737,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
             className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="All Days" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>All Days</option>
-            <option value="Today" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Today</option>
-            <option value="This Week" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>This Week</option>
-            <option value="MTD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>MTD</option>
+            <option value="All Days" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('all_days', 'All Days')}</option>
+            <option value="Today" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('today', 'Today')}</option>
+            <option value="This Week" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('this_week', 'This Week')}</option>
+            <option value="MTD" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('mtd', 'MTD')}</option>
           </select>
 
         </div>
@@ -754,7 +755,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 !text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition-colors"
           >
             <FileText className="w-4 h-4 text-emerald-400" />
-            <span style={{ color: '#ffffff' }} className="!text-white">Export PDF</span>
+            <span style={{ color: '#ffffff' }} className="!text-white">{t('export_pdf', 'Export PDF')}</span>
           </button>
 
           {/* THREE ICON BUTTONS */}
@@ -794,20 +795,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         {/* CARD 1: GREEN (bg-emerald-700) */}
         <div className="bg-emerald-700 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-[11px] uppercase tracking-wider font-extrabold text-emerald-200">Today's Net Sales</span>
+            <span className="text-[11px] uppercase tracking-wider font-extrabold text-emerald-200">{t('todays_net_sales', 'Today\'s Net Sales')}</span>
             <h2 className="text-2xl font-black text-white mt-1">{formatVal(currentBranchData.metrics.todaySales)}</h2>
           </div>
           <div className="border-t border-emerald-600/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-emerald-100">
             <div>
-              <p className="text-[10px] text-emerald-300 font-bold uppercase">Receipts</p>
+              <p className="text-[10px] text-emerald-300 font-bold uppercase">{t('receipts', 'Receipts')}</p>
               <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.todaySales, 'short')}</p>
             </div>
             <div>
-              <p className="text-[10px] text-emerald-300 font-bold uppercase">Discounts</p>
+              <p className="text-[10px] text-emerald-300 font-bold uppercase">{t('discounts', 'Discounts')}</p>
               <p className="font-extrabold text-white">0.00</p>
             </div>
             <div>
-              <p className="text-[10px] text-emerald-300 font-bold uppercase">Refunds</p>
+              <p className="text-[10px] text-emerald-300 font-bold uppercase">{t('refunds', 'Refunds')}</p>
               <p className="font-extrabold text-white">0.00</p>
             </div>
           </div>
@@ -816,23 +817,23 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         {/* CARD 2: BLUE (bg-blue-800) */}
         <div className="bg-blue-800 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-200">Net Sales Summary</span>
+            <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-200">{t('net_sales_summary', 'Net Sales Summary')}</span>
             <div className="mt-1">
-              <span className="text-[10px] text-blue-300 uppercase font-bold">Net Sales Total</span>
+              <span className="text-[10px] text-blue-300 uppercase font-bold">{t('net_sales_total', 'Net Sales Total')}</span>
               <h2 className="text-2xl font-black text-white">{formatVal(currentBranchData.metrics.netSalesSummary)}</h2>
             </div>
           </div>
           <div className="border-t border-blue-700/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-blue-100">
             <div>
-              <p className="text-[10px] text-blue-300 font-bold uppercase">Gross</p>
+              <p className="text-[10px] text-blue-300 font-bold uppercase">{t('gross', 'Gross')}</p>
               <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.netSalesSummary * 0.95, 'short')}</p>
             </div>
             <div>
-              <p className="text-[10px] text-blue-300 font-bold uppercase">Discount</p>
+              <p className="text-[10px] text-blue-300 font-bold uppercase">{t('discount', 'Discount')}</p>
               <p className="font-extrabold text-white">{formatVal(2500000, 'short')}</p>
             </div>
             <div>
-              <p className="text-[10px] text-blue-300 font-bold uppercase">Tax</p>
+              <p className="text-[10px] text-blue-300 font-bold uppercase">{t('tax', 'Tax')}</p>
               <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.netSalesSummary * 0.11, 'short')}</p>
             </div>
           </div>
@@ -841,16 +842,16 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         {/* CARD 3: GOLD (bg-amber-600) */}
         <div className="bg-amber-600 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">MTD / YTD Performance</span>
+            <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">{t('mtd_ytd_performance', 'MTD / YTD Performance')}</span>
             <h2 className="text-2xl font-black text-white mt-1">{formatVal(currentBranchData.metrics.mtdRevenue)}</h2>
           </div>
           <div className="border-t border-amber-500/60 pt-3 grid grid-cols-2 gap-2 text-[11px] text-amber-100">
             <div>
-              <p className="text-[10px] text-amber-200 font-bold uppercase">YTD Sales</p>
+              <p className="text-[10px] text-amber-200 font-bold uppercase">{t('ytd_sales', 'YTD Sales')}</p>
               <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.ytdRevenue, 'short')}</p>
             </div>
             <div>
-              <p className="text-[10px] text-amber-200 font-bold uppercase">Cust. Aged</p>
+              <p className="text-[10px] text-amber-200 font-bold uppercase">{t('cust_aged', 'Cust. Aged')}</p>
               <p className="font-extrabold text-white">14.2M</p>
             </div>
           </div>
@@ -859,20 +860,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         {/* CARD 4: BROWN (bg-[#8c4a32]) */}
         <div className="bg-[#8c4a32] rounded-2xl p-5 text-white shadow-md flex flex-col justify-between space-y-4">
           <div>
-            <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">Cashier Operations</span>
+            <span className="text-[11px] uppercase tracking-wider font-extrabold text-amber-200">{t('cashier_operations', 'Cashier Operations')}</span>
             <h2 className="text-2xl font-black text-white mt-1">{currentBranchData.metrics.invoicesCount} Invoices</h2>
           </div>
           <div className="border-t border-amber-800/60 pt-3 grid grid-cols-3 gap-1 text-[11px] text-amber-100">
             <div>
-              <p className="text-[10px] text-amber-200 font-bold uppercase">Paid In/Out</p>
+              <p className="text-[10px] text-amber-200 font-bold uppercase">{t('paid_in_out', 'Paid In/Out')}</p>
               <p className="font-extrabold text-white">5M / 1.2M</p>
             </div>
             <div>
-              <p className="text-[10px] text-amber-200 font-bold uppercase">Avg Invoice</p>
+              <p className="text-[10px] text-amber-200 font-bold uppercase">{t('avg_invoice', 'Avg Invoice')}</p>
               <p className="font-extrabold text-white">{formatVal(currentBranchData.metrics.avgTicket, 'short')}</p>
             </div>
             <div>
-              <p className="text-[10px] text-amber-200 font-bold uppercase">Voids/Ref</p>
+              <p className="text-[10px] text-amber-200 font-bold uppercase">{t('voids_ref', 'Voids/Ref')}</p>
               <p className="font-extrabold text-white">0 / 0</p>
             </div>
           </div>
@@ -923,14 +924,14 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <table className="w-full text-left font-sans text-xs">
               <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-2.5 px-3">شو (Facility & Purpose)</th>
-                  <th className="py-2.5 px-3">وين (Location & Governorate)</th>
-                  <th className="py-2.5 px-3">مين (Manager & Contact)</th>
-                  <th className="py-2.5 px-3 text-right">Net Sales</th>
-                  <th className="py-2.5 px-3 text-right">Invoices</th>
-                  <th className="py-2.5 px-3 text-right">Avg Ticket</th>
-                  <th className="py-2.5 px-3 text-right">Target</th>
-                  <th className="py-2.5 px-3 text-center">Action</th>
+                  <th className="py-2.5 px-3">{t('facility_and_purpose', 'شو (Facility & Purpose)')}</th>
+                  <th className="py-2.5 px-3">{t('location_and_governorate', 'وين (Location & Governorate)')}</th>
+                  <th className="py-2.5 px-3">{t('manager_and_contact', 'مين (Manager & Contact)')}</th>
+                  <th className="py-2.5 px-3 text-right">{t('net_sales', 'Net Sales')}</th>
+                  <th className="py-2.5 px-3 text-right">{t('invoices', 'Invoices')}</th>
+                  <th className="py-2.5 px-3 text-right">{t('avg_ticket', 'Avg Ticket')}</th>
+                  <th className="py-2.5 px-3 text-right">{t('target', 'Target')}</th>
+                  <th className="py-2.5 px-3 text-center">{t('action', 'Action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -1003,7 +1004,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                         className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1 mx-auto cursor-pointer shadow-2xs"
                         title="Filter Dashboard to This Branch"
                       >
-                        <span>Filter</span>
+                        <span>{t('filter', 'Filter')}</span>
                         <ArrowRight className="w-3 h-3" />
                       </button>
                     </td>
@@ -1188,7 +1189,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </div>
                 </div>
               </div>
-              <p className="text-lg font-bold text-black mt-2">July</p>
+              <p className="text-lg font-bold text-black mt-2">{t('july', 'July')}</p>
               <p className="text-xs text-slate-500 mt-1 font-medium">+32.5% {tr('yoy_growth', 'YoY Growth')}</p>
             </div>
 
@@ -1292,11 +1293,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
                       <tr>
-                        <th className="py-3 px-4">Discount Type</th>
-                        <th className="py-3 px-4 text-right">Raw Materials</th>
+                        <th className="py-3 px-4">{t('discount_type', 'Discount Type')}</th>
+                        <th className="py-3 px-4 text-right">{t('raw_materials', 'Raw Materials')}</th>
                         <th className="py-3 px-4 text-right">مفرق</th>
                         <th className="py-3 px-4 text-right">عروض</th>
-                        <th className="py-3 px-4 text-right">Total</th>
+                        <th className="py-3 px-4 text-right">{t('total', 'Total')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
@@ -1357,10 +1358,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-50/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200">
                       <tr>
-                        <th className="py-3 px-4">Reason</th>
-                        <th className="py-3 px-4 text-center">Count</th>
-                        <th className="py-3 px-4 text-right">Amount</th>
-                        <th className="py-3 px-4 text-right">Share %</th>
+                        <th className="py-3 px-4">{t('reason', 'Reason')}</th>
+                        <th className="py-3 px-4 text-center">{t('count', 'Count')}</th>
+                        <th className="py-3 px-4 text-right">{t('amount', 'Amount')}</th>
+                        <th className="py-3 px-4 text-right">{t('share_pct', 'Share %')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
@@ -1410,12 +1411,12 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               <table className="w-full text-left font-sans">
                 <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                   <tr>
-                    <th className="py-3.5 px-4">User Name</th>
-                    <th className="py-3.5 px-4 text-right">Raw Materials</th>
-                    <th className="py-3.5 px-4 text-right">جملة (Wholesale)</th>
-                    <th className="py-3.5 px-4 text-right">عروض (Promotions)</th>
-                    <th className="py-3.5 px-4 text-right">مفرق (Retail)</th>
-                    <th className="py-3.5 px-4 text-right bg-slate-800">Total Net Sales</th>
+                    <th className="py-3.5 px-4">{t('user_name', 'User Name')}</th>
+                    <th className="py-3.5 px-4 text-right">{t('raw_materials', 'Raw Materials')}</th>
+                    <th className="py-3.5 px-4 text-right">{t('wholesale_label', 'جملة (Wholesale)')}</th>
+                    <th className="py-3.5 px-4 text-right">{t('promotions_label', 'عروض (Promotions)')}</th>
+                    <th className="py-3.5 px-4 text-right">{t('retail_label', 'مفرق (Retail)')}</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-800">{t('total_net_sales', 'Total Net Sales')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1473,10 +1474,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <table className="w-full text-left font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide sticky top-0 bg-slate-100 z-10">
                     <tr>
-                      <th className="py-3.5 px-4">Date</th>
-                      <th className="py-3.5 px-4 text-right">Net Revenue</th>
-                      <th className="py-3.5 px-4 text-right">Orders Count</th>
-                      <th className="py-3.5 px-4 text-right">Average Ticket</th>
+                      <th className="py-3.5 px-4">{t('date', 'Date')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('net_revenue', 'Net Revenue')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('orders_count', 'Orders Count')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('average_ticket', 'Average Ticket')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1518,11 +1519,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <table className="w-full text-left font-sans">
                   <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4">Category Name</th>
-                      <th className="py-3.5 px-4 text-right">2026 Amount</th>
-                      <th className="py-3.5 px-4 text-right">2025 Amount</th>
-                      <th className="py-3.5 px-4 text-right">Difference Amount</th>
-                      <th className="py-3.5 px-4 text-right">Growth %</th>
+                      <th className="py-3.5 px-4">{t('category_name', 'Category Name')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('amount_2026', '2026 Amount')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('amount_2025', '2025 Amount')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('difference_amount', 'Difference Amount')}</th>
+                      <th className="py-3.5 px-4 text-right">{t('growth_pct', 'Growth %')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-800 font-normal text-base">
@@ -1571,9 +1572,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-3 px-4">Hour</th>
-                        <th className="py-3 px-4 text-right">Avg Sales</th>
-                        <th className="py-3 px-4 text-right">Avg Invoices</th>
+                        <th className="py-3 px-4">{t('hour', 'Hour')}</th>
+                        <th className="py-3 px-4 text-right">{t('avg_sales', 'Avg Sales')}</th>
+                        <th className="py-3 px-4 text-right">{t('avg_invoices', 'Avg Invoices')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1615,9 +1616,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                       <tr>
-                        <th className="py-3 px-4">Weekday</th>
-                        <th className="py-3 px-4 text-right">Total Revenue</th>
-                        <th className="py-3 px-4 text-right">Share %</th>
+                        <th className="py-3 px-4">{t('weekday', 'Weekday')}</th>
+                        <th className="py-3 px-4 text-right">{t('total_revenue', 'Total Revenue')}</th>
+                        <th className="py-3 px-4 text-right">{t('share_pct', 'Share %')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1668,20 +1669,20 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               <table className="w-full text-left font-sans">
                 <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                   <tr>
-                    <th className="py-3.5 px-4">Branch</th>
-                    <th className="py-3.5 px-3 text-right">January</th>
-                    <th className="py-3.5 px-3 text-right">February</th>
-                    <th className="py-3.5 px-3 text-right">March</th>
-                    <th className="py-3.5 px-3 text-right">April</th>
-                    <th className="py-3.5 px-3 text-right">May</th>
-                    <th className="py-3.5 px-3 text-right">June</th>
-                    <th className="py-3.5 px-3 text-right">July</th>
-                    <th className="py-3.5 px-3 text-right">August</th>
-                    <th className="py-3.5 px-3 text-right">September</th>
-                    <th className="py-3.5 px-3 text-right">October</th>
-                    <th className="py-3.5 px-3 text-right">November</th>
-                    <th className="py-3.5 px-3 text-right">December</th>
-                    <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
+                    <th className="py-3.5 px-4">{t('branch', 'Branch')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('january', 'January')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('february', 'February')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('march', 'March')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('april', 'April')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('may', 'May')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('june', 'June')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('july', 'July')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('august', 'August')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('september', 'September')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('october', 'October')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('november', 'November')}</th>
+                    <th className="py-3.5 px-3 text-right">{t('december', 'December')}</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-800">{t('total', 'Total')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1733,21 +1734,21 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <table className="w-full text-left font-sans">
                   <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4">Employee</th>
-                      <th className="py-3.5 px-3 text-right">Jan</th>
-                      <th className="py-3.5 px-3 text-right">Feb</th>
-                      <th className="py-3.5 px-3 text-right">Mar</th>
-                      <th className="py-3.5 px-3 text-right">Apr</th>
-                      <th className="py-3.5 px-3 text-right">May</th>
-                      <th className="py-3.5 px-3 text-right">Jun</th>
-                      <th className="py-3.5 px-3 text-right">Jul</th>
-                      <th className="py-3.5 px-3 text-right">Aug</th>
-                      <th className="py-3.5 px-3 text-right">Sep</th>
-                      <th className="py-3.5 px-3 text-right">Oct</th>
-                      <th className="py-3.5 px-3 text-right">Nov</th>
-                      <th className="py-3.5 px-3 text-right">Dec</th>
-                      <th className="py-3.5 px-4 text-right bg-slate-800">Total</th>
-                      <th className="py-3.5 px-4 text-right bg-slate-800">Monthly Avg</th>
+                      <th className="py-3.5 px-4">{t('employee', 'Employee')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('jan', 'Jan')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('feb', 'Feb')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('mar', 'Mar')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('apr', 'Apr')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('may', 'May')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('jun', 'Jun')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('jul', 'Jul')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('aug', 'Aug')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('sep', 'Sep')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('oct', 'Oct')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('nov', 'Nov')}</th>
+                      <th className="py-3.5 px-3 text-right">{t('dec', 'Dec')}</th>
+                      <th className="py-3.5 px-4 text-right bg-slate-800">{t('total', 'Total')}</th>
+                      <th className="py-3.5 px-4 text-right bg-slate-800">{t('monthly_avg', 'Monthly Avg')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -1807,34 +1808,34 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 {/* Table 1: Customers */}
                 <div className="border border-slate-200 rounded-lg overflow-hidden">
                   <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
-                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Customers</h3>
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">{t('customers', 'Customers')}</h3>
                   </div>
                   <div className="divide-y divide-slate-100 text-xs font-sans">
                     <div className="flex justify-between py-2 px-3 bg-white">
-                      <span className="text-slate-600 font-medium">Total Number of Customers</span>
+                      <span className="text-slate-600 font-medium">{t('total_number_of_customers', 'Total Number of Customers')}</span>
                       <span className="font-mono font-bold text-slate-900">33</span>
                     </div>
                     <div className="flex justify-between py-2 px-3 bg-slate-50/50">
-                      <span className="text-slate-600 font-medium">New Customers (August)</span>
+                      <span className="text-slate-600 font-medium">{t('new_customers_august', 'New Customers (August)')}</span>
                       <span className="font-mono font-bold text-slate-900">0</span>
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-slate-200 bg-white">
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">MTD</span>
+                        <span className="text-slate-500 font-medium">{t('mtd', 'MTD')}</span>
                         <span className="font-mono font-bold text-slate-900">0</span>
                       </div>
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">YTD</span>
+                        <span className="text-slate-500 font-medium">{t('ytd', 'YTD')}</span>
                         <span className="font-mono font-bold text-slate-900">31</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-slate-200 bg-slate-50/50">
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">LMTD</span>
+                        <span className="text-slate-500 font-medium">{t('lmtd', 'LMTD')}</span>
                         <span className="font-mono font-bold text-slate-900">1</span>
                       </div>
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">LYTD</span>
+                        <span className="text-slate-500 font-medium">{t('lytd', 'LYTD')}</span>
                         <span className="font-mono font-bold text-slate-900">33</span>
                       </div>
                     </div>
@@ -1849,11 +1850,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       </div>
                     </div>
                     <div className="flex justify-between py-2 px-3 bg-slate-50/50">
-                      <span className="text-slate-600 font-medium">Not Active Customers</span>
+                      <span className="text-slate-600 font-medium">{t('not_active_customers', 'Not Active Customers')}</span>
                       <span className="font-mono font-bold text-amber-600">2</span>
                     </div>
                     <div className="flex justify-between py-2 px-3 bg-white">
-                      <span className="text-slate-600 font-medium">Repeated Customers Rate</span>
+                      <span className="text-slate-600 font-medium">{t('repeated_customers_rate', 'Repeated Customers Rate')}</span>
                       <span className="font-mono font-bold text-emerald-600">100%</span>
                     </div>
                   </div>
@@ -1862,19 +1863,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 {/* Table 2: Delivery Orders */}
                 <div className="border border-slate-200 rounded-lg overflow-hidden">
                   <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
-                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Delivery Orders</h3>
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">{t('delivery_orders', 'Delivery Orders')}</h3>
                   </div>
                   <div className="divide-y divide-slate-100 text-xs font-sans">
                     <div className="flex justify-between py-2 px-3 bg-white">
-                      <span className="text-slate-600 font-medium">Total Number of Delivery Orders</span>
+                      <span className="text-slate-600 font-medium">{t('total_number_of_delivery_orders', 'Total Number of Delivery Orders')}</span>
                       <span className="font-mono font-bold text-slate-900">0</span>
                     </div>
                     <div className="flex justify-between py-2 px-3 bg-slate-50/50">
-                      <span className="text-slate-600 font-medium">Delivery Orders Value</span>
+                      <span className="text-slate-600 font-medium">{t('delivery_orders_value', 'Delivery Orders Value')}</span>
                       <span className="font-mono font-bold text-slate-900">0 LL</span>
                     </div>
                     <div className="flex justify-between py-2 px-3 bg-white">
-                      <span className="text-slate-600 font-medium">Average Delivery Value</span>
+                      <span className="text-slate-600 font-medium">{t('average_delivery_value', 'Average Delivery Value')}</span>
                       <span className="font-mono font-bold text-slate-900">0 LL</span>
                     </div>
                   </div>
@@ -1888,7 +1889,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   {/* Table Header Controls */}
                   <div className="bg-slate-50 border-b border-slate-200 p-2 flex items-center justify-between gap-2 flex-wrap text-xs">
                     <div className="flex items-center gap-1.5 text-slate-700 font-bold">
-                      <span>Customer</span>
+                      <span>{t('customer', 'Customer')}</span>
                       <button
                         onClick={() => {
                           setSortField('name');
@@ -1902,7 +1903,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="text-slate-600 font-medium">Top:</span>
+                      <span className="text-slate-600 font-medium">{t('top_colon', 'Top:')}</span>
                       <input
                         type="number"
                         min="1"
@@ -1929,9 +1930,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <table className="w-full text-left text-xs font-sans">
                       <thead className="bg-slate-100 text-slate-600 font-semibold uppercase text-[10px] tracking-wide border-b border-slate-200">
                         <tr>
-                          <th className="py-2 px-3">CUSTOMER</th>
-                          <th className="py-2 px-2 text-center">ORDERS</th>
-                          <th className="py-2 px-3 text-right">VALUE</th>
+                          <th className="py-2 px-3">{t('customer', 'CUSTOMER')}</th>
+                          <th className="py-2 px-2 text-center">{t('orders', 'ORDERS')}</th>
+                          <th className="py-2 px-3 text-right">{t('value', 'VALUE')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -1965,7 +1966,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md flex flex-col justify-between">
                 <div>
                   <div className="bg-slate-50 border-b border-slate-200 py-1.5 px-3">
-                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Demographics</h3>
+                    <h3 className="font-bold text-slate-700 text-xs uppercase tracking-wider">{t('demographics', 'Demographics')}</h3>
                   </div>
 
                   {/* Collapsible Group Header: Lebanon */}
@@ -1992,8 +1993,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       <table className="w-full text-left text-xs font-sans">
                         <thead className="bg-slate-50 text-slate-600 font-semibold uppercase text-[10px] tracking-wide border-b border-slate-200">
                           <tr>
-                            <th className="py-2 px-3">CITY</th>
-                            <th className="py-2 px-3 text-center">TOTAL</th>
+                            <th className="py-2 px-3">{t('city', 'CITY')}</th>
+                            <th className="py-2 px-3 text-center">{t('total', 'TOTAL')}</th>
                             <th className="py-2 px-3 text-right">%</th>
                           </tr>
                         </thead>
@@ -2093,7 +2094,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     ) : (
                       <ChevronRight className="w-4 h-4 text-slate-600" />
                     )}
-                    <span>All Groups</span>
+                    <span>{t('all_groups', 'All Groups')}</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-emerald-700 bg-white border border-slate-300 px-3 py-1 rounded-full">
                     Total Value: 248,400,000 LL
@@ -2183,7 +2184,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors flex items-center gap-1 text-xs font-bold"
             >
               <Minimize2 className="w-4 h-4" />
-              <span>Reduce View</span>
+              <span>{t('reduce_view', 'Reduce View')}</span>
             </button>
           </div>
 
@@ -2283,8 +2284,8 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <thead className="bg-slate-900 text-white font-semibold text-base uppercase tracking-wide">
                       <tr>
                         <th className="py-3.5 px-4">Name</th>
-                        <th className="py-3.5 px-4 text-right">Revenue Amount</th>
-                        <th className="py-3.5 px-4 text-right">Share %</th>
+                        <th className="py-3.5 px-4 text-right">{t('revenue_amount', 'Revenue Amount')}</th>
+                        <th className="py-3.5 px-4 text-right">{t('share_pct', 'Share %')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 text-slate-800 font-normal text-base">
@@ -2343,7 +2344,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
               >
                 <Clock className="w-4 h-4" />
-                <span>View Z-Report Status</span>
+                <span>{t('view_z_report_status', 'View Z-Report Status')}</span>
               </button>
             </div>
           </div>
@@ -2363,17 +2364,17 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <table className="w-full text-left font-sans">
                   <thead className="bg-slate-900 text-white font-bold uppercase text-[11px] tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Payment Method</th>
-                      <th className="py-3 px-4 text-center">Transactions</th>
-                      <th className="py-3 px-4 text-right">Amount (LL)</th>
-                      <th className="py-3 px-4 text-right">Share %</th>
+                      <th className="py-3 px-4">{t('payment_method', 'Payment Method')}</th>
+                      <th className="py-3 px-4 text-center">{t('transactions', 'Transactions')}</th>
+                      <th className="py-3 px-4 text-right">{t('amount_ll', 'Amount (LL)')}</th>
+                      <th className="py-3 px-4 text-right">{t('share_pct', 'Share %')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
                     <tr className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                        <span className="font-bold">Cash in Drawer</span>
+                        <span className="font-bold">{t('cash_in_drawer', 'Cash in Drawer')}</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">102</td>
                       <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">1,336,500,000 LL</td>
@@ -2382,7 +2383,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                        <span className="font-bold">Credit / Debit Card</span>
+                        <span className="font-bold">{t('credit_debit_card', 'Credit / Debit Card')}</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">31</td>
                       <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">388,800,000 LL</td>
@@ -2391,7 +2392,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                        <span className="font-bold">Customer Receivables (A/R)</span>
+                        <span className="font-bold">{t('customer_receivables_ar', 'Customer Receivables (A/R)')}</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">11</td>
                       <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">166,500,000 LL</td>
@@ -2400,7 +2401,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <tr className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                        <span className="font-bold">Mobile / Online Payment</span>
+                        <span className="font-bold">{t('mobile_online_payment', 'Mobile / Online Payment')}</span>
                       </td>
                       <td className="py-3 px-4 text-center font-mono font-bold">4</td>
                       <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">77,400,000 LL</td>
@@ -2409,7 +2410,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </tbody>
                   <tfoot className="bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900 text-xs">
                     <tr>
-                      <td className="py-3 px-4">Total Shift Receipts</td>
+                      <td className="py-3 px-4">{t('total_shift_receipts', 'Total Shift Receipts')}</td>
                       <td className="py-3 px-4 text-center font-mono">148</td>
                       <td className="py-3 px-4 text-right font-mono text-blue-700">1,969,200,000 LL</td>
                       <td className="py-3 px-4 text-right font-mono">100.0%</td>
@@ -2432,7 +2433,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
-                  <span className="text-slate-500 font-semibold block text-[11px]">Active Terminals</span>
+                  <span className="text-slate-500 font-semibold block text-[11px]">{t('active_terminals', 'Active Terminals')}</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">4 / 4 POS</span>
                   <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" /> All Online
@@ -2440,31 +2441,31 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
-                  <span className="text-slate-500 font-semibold block text-[11px]">Daily Order Volume</span>
-                  <span className="font-mono text-lg font-black text-slate-900 block">148 Orders</span>
+                  <span className="text-slate-500 font-semibold block text-[11px]">{t('daily_order_volume', 'Daily Order Volume')}</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">148 {t('orders', 'Orders')}</span>
                   <span className="text-[10px] text-blue-600 font-bold">Avg 13,305,405 LL / Order</span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
-                  <span className="text-slate-500 font-semibold block text-[11px]">Pending Fleet Deliveries</span>
-                  <span className="font-mono text-lg font-black text-slate-900 block">12 Shipments</span>
+                  <span className="text-slate-500 font-semibold block text-[11px]">{t('pending_fleet_deliveries', 'Pending Fleet Deliveries')}</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">12 {t('shipments', 'Shipments')}</span>
                   <span className="text-[10px] text-amber-600 font-bold">SuperSonic Active</span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
-                  <span className="text-slate-500 font-semibold block text-[11px]">Active Cashiers</span>
-                  <span className="font-mono text-lg font-black text-slate-900 block">3 Officers</span>
+                  <span className="text-slate-500 font-semibold block text-[11px]">{t('active_cashiers', 'Active Cashiers')}</span>
+                  <span className="font-mono text-lg font-black text-slate-900 block">3 {t('officers', 'Officers')}</span>
                   <span className="text-[10px] text-slate-600 font-medium">Cashier NK, Cashier R, Hiba</span>
                 </div>
               </div>
 
               <div className="p-3 bg-blue-50/60 border border-blue-200/80 rounded-xl flex items-center justify-between text-xs text-blue-900 font-bold">
-                <span>Shift opened at 08:00 AM by Cashier NK</span>
+                <span>{t('shift_opened_msg', 'Shift opened at 08:00 AM by Cashier NK')}</span>
                 <button
                   onClick={() => setIsEodModalOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer"
                 >
-                  View Z-Report Status
+                  {t('view_z_report_status', 'View Z-Report Status')}
                 </button>
               </div>
             </div>
@@ -2512,10 +2513,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <table className="w-full text-left font-sans">
                   <thead className="bg-slate-900 text-white font-bold uppercase text-[11px] tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Territory / Region</th>
-                      <th className="py-3 px-4 text-center">Accounts</th>
-                      <th className="py-3 px-4 text-right">Revenue (LL)</th>
-                      <th className="py-3 px-4 text-right">Share %</th>
+                      <th className="py-3 px-4">{t('territory_region', 'Territory / Region')}</th>
+                      <th className="py-3 px-4 text-center">{t('accounts', 'Accounts')}</th>
+                      <th className="py-3 px-4 text-right">{t('revenue_ll', 'Revenue (LL)')}</th>
+                      <th className="py-3 px-4 text-right">{t('share_pct', 'Share %')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
@@ -2540,7 +2541,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </tbody>
                   <tfoot className="bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900 text-xs">
                     <tr>
-                      <td className="py-3 px-4">Total Territorial Coverage</td>
+                      <td className="py-3 px-4">{t('total_territorial_coverage', 'Total Territorial Coverage')}</td>
                       <td className="py-3 px-4 text-center font-mono">148</td>
                       <td className="py-3 px-4 text-right font-mono text-blue-700">37,170,000,000 LL</td>
                       <td className="py-3 px-4 text-right font-mono">100.0%</td>
@@ -2556,7 +2557,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
                   <BarChart2 className="w-4 h-4 text-blue-600" /> Territorial Revenue Density (LL)
                 </h3>
-                <span className="text-xs text-slate-500 font-bold">Distribution</span>
+                <span className="text-xs text-slate-500 font-bold">{t('distribution', 'Distribution')}</span>
               </div>
 
               <div className="h-72 w-full pt-2">

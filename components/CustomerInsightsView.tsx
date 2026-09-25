@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   UserCheck,
   Award,
@@ -35,6 +36,7 @@ export interface CustomerInsightsViewProps {
 }
 
 export default function CustomerInsightsView({ hideBreadcrumbs = false }: CustomerInsightsViewProps) {
+  const { t, dir } = useLanguage();
   const [selectedBrand, setSelectedBrand] = useState<string>('All Brands');
   const [selectedGroup, setSelectedGroup] = useState<string>('All Groups');
 
@@ -44,7 +46,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
   // Panel Refresh Notification States
   const [refreshToast, setRefreshToast] = useState<string | null>(null);
   const triggerRefreshToast = (panelName: string) => {
-    setRefreshToast(`Refreshed ${panelName} panel successfully`);
+    setRefreshToast(t('panel_refreshed_toast', 'Refreshed {panel} panel successfully').replace('{panel}', panelName));
     setTimeout(() => setRefreshToast(null), 3000);
   };
 
@@ -142,7 +144,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative" dir={dir}>
       {/* REFRESH TOAST NOTIFICATION */}
       {refreshToast && (
         <div className="fixed top-20 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 text-xs font-bold flex items-center gap-2 animate-bounce">
@@ -157,16 +159,16 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
             {/* 1. BREADCRUMBS & TOP HEADER CARD */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-                <span className="hover:text-slate-600 cursor-pointer">Home</span>
+                <span className="hover:text-slate-600 cursor-pointer">{t('home', 'Home')}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
-                <span className="text-blue-600 font-extrabold">Customer Insights</span>
+                <span className="text-blue-600 font-extrabold">{t('customer_insights', 'Customer Insights')}</span>
               </div>
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                     <UserCheck className="w-6 h-6 text-blue-600" />
-                    <span>Customer Insights</span>
+                    <span>{t('customer_insights', 'Customer Insights')}</span>
                   </h1>
                   <p className="text-xs font-semibold text-slate-500 mt-1">
                     Your customers are your most valuable asset, know them well.
@@ -181,9 +183,9 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                       style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                       className="appearance-none bg-white border border-slate-300 pl-3 pr-8 py-2 rounded-xl text-xs font-black !text-slate-900 text-slate-900 !opacity-100 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Brands</option>
-                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Southern Olive SARL</option>
-                      <option value="Beirut Branch" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Beirut Branch</option>
+                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('all_brands', 'All Brands')}</option>
+                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('southern_olive_sarl', 'Southern Olive SARL')}</option>
+                      <option value="Beirut Branch" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('beirut_branch', 'Beirut Branch')}</option>
                     </select>
                     <ChevronDown className="w-4 h-4 text-slate-600 absolute right-2.5 top-2.5 pointer-events-none" />
                   </div>
@@ -193,7 +195,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     className="px-3 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Refresh KPIs</span>
+                    <span>{t('refresh_kpis', 'Refresh KPIs')}</span>
                   </button>
 
                   <button
@@ -201,7 +203,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     className="px-3 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Refresh Panels</span>
+                    <span>{t('refresh_panels', 'Refresh Panels')}</span>
                   </button>
 
                   <button
@@ -212,7 +214,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     className="px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Recommendations</span>
+                    <span>{t('recommendations', 'Recommendations')}</span>
                   </button>
 
                   <button
@@ -220,7 +222,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors cursor-pointer border border-blue-600"
                   >
                     <FileText className="w-4 h-4 text-white" />
-                    <span>Export PDF</span>
+                    <span>{t('export_pdf', 'Export PDF')}</span>
                   </button>
                 </div>
               </div>
@@ -231,20 +233,20 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-400">Total Customers</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-400">{t('total_customers', 'Total Customers')}</span>
                   <Users className="w-4 h-4 text-blue-600" />
                 </div>
                 <div className="flex items-baseline justify-between pt-1">
                   <div>
                     <span className="text-2xl font-black text-slate-900 font-mono block">31</span>
                     <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      Active Accounts
+                      {t('active_accounts', 'Active Accounts')}
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-lg font-bold text-slate-500 font-mono block">2</span>
                     <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      Inactive Accounts
+                      {t('inactive_accounts', 'Inactive Accounts')}
                     </span>
                   </div>
                 </div>
@@ -252,16 +254,16 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-400">Acquisition & Spend</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-400">{t('acquisition_spend', 'Acquisition & Spend')}</span>
                   <TrendingUp className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div className="space-y-1 pt-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-semibold">New T / W / M / Y:</span>
+                    <span className="text-slate-500 font-semibold">{t('new_t_w_m_y', 'New T / W / M / Y:')}</span>
                     <span className="font-mono font-black text-slate-900">0 / 0 / 0 / 31</span>
                   </div>
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-slate-500 font-semibold">Avg Annual Spend / Cust:</span>
+                    <span className="text-slate-500 font-semibold">{t('avg_annual_spend_cust', 'Avg Annual Spend / Cust:')}</span>
                     <span className="font-mono font-black text-slate-800">0 LL</span>
                   </div>
                 </div>
@@ -270,11 +272,11 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400">Lifetime Value (CLV)</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-400">{t('lifetime_value_clv', 'Lifetime Value (CLV)')}</span>
                     <div className="group relative inline-block">
                       <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-blue-600" />
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 rounded-xl bg-slate-900 p-3 text-[11px] font-normal leading-relaxed text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                        Lifetime Net Sales / Distinct Customers with Sales, using ST_Sales_Amount - Discount, excluding rows with null or 0 Customers and type R.
+                        {t('clv_tooltip', 'Lifetime Net Sales / Distinct Customers with Sales, using ST_Sales_Amount - Discount, excluding rows with null or 0 Customers and type R.')}
                       </div>
                     </div>
                   </div>
@@ -284,13 +286,13 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <div>
                     <span className="text-2xl font-black text-purple-700 font-mono block">LBP 985.4M</span>
                     <span className="text-[11px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      Avg Account CLV
+                      {t('avg_account_clv', 'Avg Account CLV')}
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-lg font-bold text-rose-600 font-mono block">2</span>
                     <span className="text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      At-Risk Accounts
+                      {t('at_risk_accounts', 'At-Risk Accounts')}
                     </span>
                   </div>
                 </div>
@@ -299,11 +301,11 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               <div className="border border-slate-200 rounded-xl bg-white p-5 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400">Growth & Churn</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-400">{t('growth_churn', 'Growth & Churn')}</span>
                     <div className="group relative inline-block">
                       <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-blue-600" />
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 rounded-xl bg-slate-900 p-3 text-[11px] font-normal leading-relaxed text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                        Customers who bought in the previous year but did not buy in the current year, / Customers who bought in the previous year * 100.
+                        {t('churn_tooltip', 'Customers who bought in the previous year but did not buy in the current year, / Customers who bought in the previous year * 100.')}
                       </div>
                     </div>
                   </div>
@@ -313,13 +315,13 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <div>
                     <span className="text-xl font-black text-slate-900 font-mono block">-100%</span>
                     <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      Growth Rate
+                      {t('growth_rate', 'Growth Rate')}
                     </span>
                   </div>
                   <div className="text-right">
                     <span className="text-xl font-black text-emerald-600 font-mono block">0%</span>
                     <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">
-                      Yearly Churn
+                      {t('yearly_churn', 'Yearly Churn')}
                     </span>
                   </div>
                 </div>
@@ -332,10 +334,10 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-extrabold text-blue-600 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-600" />
-                  <span>Recommendations</span>
+                  <span>{t('recommendations', 'Recommendations')}</span>
                 </h2>
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-lg">
-                  8 Strategic Actions
+                  {t('strategic_actions_count', '8 Strategic Actions')}
                 </span>
               </div>
 
@@ -352,14 +354,14 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                           <div className={`p-2 rounded-lg border ${rec.color} shrink-0`}>
                             <IconComp className="w-4 h-4" />
                           </div>
-                          <h3 className="text-xs font-black text-slate-900 leading-snug">{rec.title}</h3>
+                          <h3 className="text-xs font-black text-slate-900 leading-snug">{t('rec_title_' + idx, rec.title)}</h3>
                         </div>
                         <p className="text-xs text-slate-600 font-medium leading-relaxed">
                           {rec.desc}
                         </p>
                       </div>
                       <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-blue-600">
-                        <span>Execute Strategy</span>
+                        <span>{t('execute_strategy', 'Execute Strategy')}</span>
                         <ChevronRight className="w-3 h-3" />
                       </div>
                     </div>
@@ -376,7 +378,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    <span>Data Quality</span>
+                    <span>{t('data_quality', 'Data Quality')}</span>
                   </h3>
                   <button
                     onClick={() => triggerRefreshToast('Data Quality')}
@@ -389,28 +391,28 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Customers With No Tags:</span>
-                    <span className="font-mono font-bold text-amber-600">31 Accounts</span>
+                    <span className="text-slate-600 font-medium">{t('customers_no_tags', 'Customers With No Tags:')}</span>
+                    <span className="font-mono font-bold text-amber-600">31 {t('accounts', 'Accounts')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">No City:</span>
-                    <span className="font-mono font-bold text-amber-600">33 Accounts</span>
+                    <span className="text-slate-600 font-medium">{t('no_city', 'No City:')}</span>
+                    <span className="font-mono font-bold text-amber-600">33 {t('accounts', 'Accounts')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">No Phone:</span>
-                    <span className="font-mono font-bold text-slate-500">1 Account</span>
+                    <span className="text-slate-600 font-medium">{t('no_phone', 'No Phone:')}</span>
+                    <span className="font-mono font-bold text-slate-500">1 {t('account', 'Account')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">No Email:</span>
-                    <span className="font-mono font-bold text-amber-600">30 Accounts</span>
+                    <span className="text-slate-600 font-medium">{t('no_email', 'No Email:')}</span>
+                    <span className="font-mono font-bold text-amber-600">30 {t('accounts', 'Accounts')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Blacklisted:</span>
-                    <span className="font-mono font-bold text-emerald-600">0 Accounts</span>
+                    <span className="text-slate-600 font-medium">{t('blacklisted', 'Blacklisted:')}</span>
+                    <span className="font-mono font-bold text-emerald-600">0 {t('accounts', 'Accounts')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-600 font-medium">Loyalty Members:</span>
-                    <span className="font-mono font-bold text-slate-500">0 Accounts</span>
+                    <span className="text-slate-600 font-medium">{t('loyalty_members', 'Loyalty Members:')}</span>
+                    <span className="font-mono font-bold text-slate-500">0 {t('accounts', 'Accounts')}</span>
                   </div>
                 </div>
               </div>
@@ -420,7 +422,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-emerald-600" />
-                    <span>Financial Value</span>
+                    <span>{t('financial_value', 'Financial Value')}</span>
                   </h3>
                   <button
                     onClick={() => triggerRefreshToast('Financial Value')}
@@ -433,20 +435,20 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">With Balance:</span>
-                    <span className="font-mono font-bold text-slate-900">1 Account</span>
+                    <span className="text-slate-600 font-medium">{t('with_balance', 'With Balance:')}</span>
+                    <span className="font-mono font-bold text-slate-900">1 {t('account', 'Account')}</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Total Balance:</span>
+                    <span className="text-slate-600 font-medium">{t('total_balance', 'Total Balance:')}</span>
                     <span className="font-mono font-bold text-rose-600">-148,524,120.00 LL</span>
                   </div>
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">Average Order Value (AOV):</span>
+                      <span className="text-slate-600 font-medium">{t('average_order_value_aov', 'Average Order Value (AOV):')}</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-emerald-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Total net sales divided by total valid orders.
+                          {t('aov_tooltip', 'Total net sales divided by total valid orders.')}
                         </div>
                       </div>
                     </div>
@@ -454,18 +456,18 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   </div>
 
                   <div className="pt-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Purchase Patterns</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">{t('purchase_patterns', 'Purchase Patterns')}</span>
                     <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-600 font-medium">Repeat Customers:</span>
+                        <span className="text-slate-600 font-medium">{t('repeat_customers', 'Repeat Customers:')}</span>
                         <span className="font-mono font-bold text-slate-800">0</span>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-600 font-medium">One-Time Buyers:</span>
+                        <span className="text-slate-600 font-medium">{t('one_time_buyers', 'One-Time Buyers:')}</span>
                         <span className="font-mono font-bold text-slate-800">2</span>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-600 font-medium">No Transactions:</span>
+                        <span className="text-slate-600 font-medium">{t('no_transactions', 'No Transactions:')}</span>
                         <span className="font-mono font-bold text-slate-800">33</span>
                       </div>
                     </div>
@@ -478,7 +480,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-purple-600" />
-                    <span>Customer Voice</span>
+                    <span>{t('customer_voice', 'Customer Voice')}</span>
                   </h3>
                   <button
                     onClick={() => triggerRefreshToast('Customer Voice')}
@@ -492,11 +494,11 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">CSAT:</span>
+                      <span className="text-slate-600 font-medium">{t('csat_metric', 'CSAT:')}</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Satisfied feedback responses divided by satisfied plus not satisfied responses, multiplied by 100.
+                          {t('csat_tooltip', 'Satisfied feedback responses divided by satisfied plus not satisfied responses, multiplied by 100.')}
                         </div>
                       </div>
                     </div>
@@ -505,11 +507,11 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">Rating:</span>
+                      <span className="text-slate-600 font-medium">{t('rating_metric', 'Rating:')}</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Average rating score from customer feedback answers.
+                          {t('rating_tooltip', 'Average rating score from customer feedback answers.')}
                         </div>
                       </div>
                     </div>
@@ -517,17 +519,17 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   </div>
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Ratings:</span>
+                    <span className="text-slate-600 font-medium">{t('ratings_count', 'Ratings:')}</span>
                     <span className="font-mono font-bold text-slate-800">71841</span>
                   </div>
 
                   <div className="flex items-center justify-between py-1 border-b border-slate-100">
                     <div className="flex items-center gap-1">
-                      <span className="text-slate-600 font-medium">NPS:</span>
+                      <span className="text-slate-600 font-medium">{t('nps_metric', 'NPS:')}</span>
                       <div className="group relative inline-block">
                         <Info className="w-3 h-3 text-slate-400 cursor-pointer hover:text-purple-600" />
                         <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl bg-slate-900 p-2.5 text-[10px] text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                          Promoters minus detractors divided by total survey respondents.
+                          {t('nps_tooltip', 'Promoters minus detractors divided by total survey respondents.')}
                         </div>
                       </div>
                     </div>
@@ -535,7 +537,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   </div>
 
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-slate-600 font-medium">Complaints:</span>
+                    <span className="text-slate-600 font-medium">{t('complaints', 'Complaints:')}</span>
                     <span className="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
                       383
                     </span>
@@ -553,7 +555,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                     <Star className="w-4 h-4 text-amber-500" />
-                    <span>Top Buyers</span>
+                    <span>{t('top_buyers', 'Top Buyers')}</span>
                   </h3>
 
                   <div className="flex items-center gap-1">
@@ -568,7 +570,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                       onClick={() => setShowAllBuyers(!showAllBuyers)}
                       className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] transition-colors"
                     >
-                      {showAllBuyers ? 'Show Less' : 'Show More'}
+                      {showAllBuyers ? t('show_less', 'Show Less') : t('show_more', 'Show More')}
                     </button>
                   </div>
                 </div>
@@ -582,8 +584,8 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                       style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                       className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-black !text-slate-900 text-slate-900 !opacity-100 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
-                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Brands</option>
-                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Southern Olive SARL</option>
+                      <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('all_brands', 'All Brands')}</option>
+                      <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('southern_olive_sarl', 'Southern Olive SARL')}</option>
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-2 top-2 pointer-events-none" />
                   </div>
@@ -595,9 +597,9 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                       style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                       className="w-full appearance-none bg-white border border-slate-300 pl-2.5 pr-7 py-1.5 rounded-lg text-[11px] font-black !text-slate-900 text-slate-900 !opacity-100 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
-                      <option value="All Groups" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">All Groups</option>
-                      <option value="Wholesale" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Wholesale</option>
-                      <option value="Retail" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">Retail</option>
+                      <option value="All Groups" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('all_groups', 'All Groups')}</option>
+                      <option value="Wholesale" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('wholesale', 'Wholesale')}</option>
+                      <option value="Retail" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('retail', 'Retail')}</option>
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-600 absolute right-2 top-2 pointer-events-none" />
                   </div>
@@ -608,9 +610,9 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px] tracking-wide">
                       <tr>
-                        <th className="py-2.5 px-3">CUSTOMER</th>
-                        <th className="py-2.5 px-3">LTV</th>
-                        <th className="py-2.5 px-3">AVG TICKET</th>
+                        <th className="py-2.5 px-3">{t('customer', 'CUSTOMER')}</th>
+                        <th className="py-2.5 px-3">{t('ltv', 'LTV')}</th>
+                        <th className="py-2.5 px-3">{t('avg_ticket', 'AVG TICKET')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -631,7 +633,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                     <Globe className="w-4 h-4 text-indigo-600" />
-                    <span>Marketing Reach</span>
+                    <span>{t('marketing_reach', 'Marketing Reach')}</span>
                   </h3>
                   <button
                     onClick={() => triggerRefreshToast('Marketing Reach')}
@@ -644,32 +646,32 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">Contacts</span>
+                    <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">{t('contacts', 'Contacts')}</span>
                     <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1">
-                      <div className="flex justify-between"><span className="text-slate-600">SMS Opt-In:</span><span className="font-mono font-bold">28</span></div>
-                      <div className="flex justify-between"><span className="text-slate-600">Email Opt-In:</span><span className="font-mono font-bold">22</span></div>
-                      <div className="flex justify-between"><span className="text-slate-600">WhatsApp Verified:</span><span className="font-mono font-bold text-emerald-600">29</span></div>
+                      <div className="flex justify-between"><span className="text-slate-600">{t('sms_opt_in', 'SMS Opt-In:')}</span><span className="font-mono font-bold">28</span></div>
+                      <div className="flex justify-between"><span className="text-slate-600">{t('email_opt_in', 'Email Opt-In:')}</span><span className="font-mono font-bold">22</span></div>
+                      <div className="flex justify-between"><span className="text-slate-600">{t('whatsapp_verified', 'WhatsApp Verified:')}</span><span className="font-mono font-bold text-emerald-600">29</span></div>
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">Geography Coverage</span>
+                    <span className="text-[10px] font-black uppercase text-slate-400 block mb-1">{t('geography_coverage', 'Geography Coverage')}</span>
                     <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1">
-                      <div className="flex justify-between"><span className="text-slate-600">Regions Covered:</span><span className="font-mono font-bold">8</span></div>
-                      <div className="flex justify-between"><span className="text-slate-600">Key Cities:</span><span className="font-mono font-bold">14</span></div>
+                      <div className="flex justify-between"><span className="text-slate-600">{t('regions_covered', 'Regions Covered:')}</span><span className="font-mono font-bold">8</span></div>
+                      <div className="flex justify-between"><span className="text-slate-600">{t('key_cities', 'Key Cities:')}</span><span className="font-mono font-bold">14</span></div>
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-black uppercase text-blue-600 block mb-1">Loyalty</span>
+                    <span className="text-[10px] font-black uppercase text-blue-600 block mb-1">{t('loyalty', 'Loyalty')}</span>
                     <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 text-xs">
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Program Type :</span><span className="font-mono font-bold text-slate-900">Loyalty Levels</span></div>
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty Members :</span><span className="font-mono font-bold text-slate-900">0</span></div>
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Active Members This Month :</span><span className="font-mono font-bold text-slate-900">0</span></div>
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty Sales This Month :</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Loyalty AOV This Month :</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
-                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">Active Loyalty Rules :</span><span className="font-mono font-bold text-slate-900">0</span></div>
-                      <div className="flex justify-between py-0.5"><span className="text-slate-600">Loyalty Levels :</span><span className="font-mono font-bold text-slate-900">4</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('program_type', 'Program Type :')}</span><span className="font-mono font-bold text-slate-900">{t('loyalty_levels', 'Loyalty Levels')}</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('loyalty_members', 'Loyalty Members :')}</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('active_members_this_month', 'Active Members This Month :')}</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('loyalty_sales_this_month', 'Loyalty Sales This Month :')}</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('loyalty_aov_this_month', 'Loyalty AOV This Month :')}</span><span className="font-mono font-bold text-slate-900">0.00</span></div>
+                      <div className="flex justify-between py-0.5 border-b border-slate-200/60"><span className="text-slate-600">{t('active_loyalty_rules', 'Active Loyalty Rules :')}</span><span className="font-mono font-bold text-slate-900">0</span></div>
+                      <div className="flex justify-between py-0.5"><span className="text-slate-600">{t('loyalty_levels', 'Loyalty Levels :')}</span><span className="font-mono font-bold text-slate-900">4</span></div>
                     </div>
                   </div>
                 </div>
@@ -681,12 +683,12 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <div className="flex items-center gap-1.5">
                     <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-rose-600" />
-                      <span>At-Risk Customers</span>
+                      <span>{t('at_risk_customers', 'At-Risk Customers')}</span>
                     </h3>
                     <div className="group relative inline-block">
                       <Info className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-rose-600" />
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 rounded-xl bg-slate-900 p-3 text-[11px] font-normal leading-relaxed text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 z-50">
-                        Active customers only. This list includes customers whose last valid sale date is older than or equal to 1 year.
+                        {t('at_risk_tooltip', 'Active customers only. This list includes customers whose last valid sale date is older than or equal to 1 year.')}
                       </div>
                     </div>
                   </div>
@@ -705,7 +707,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                       title="Export At-Risk List as Excel CSV"
                     >
                       <Download className="w-3 h-3 text-white" />
-                      <span>Excel</span>
+                      <span>{t('excel', 'Excel')}</span>
                     </button>
                   </div>
                 </div>
@@ -714,10 +716,10 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px] tracking-wide">
                       <tr>
-                        <th className="py-2.5 px-3">Cust.ID</th>
-                        <th className="py-2.5 px-3">Customer</th>
-                        <th className="py-2.5 px-3 text-right">Balance</th>
-                        <th className="py-2.5 px-3 text-right">Last Transaction</th>
+                        <th className="py-2.5 px-3">{t('cust_id', 'Cust.ID')}</th>
+                        <th className="py-2.5 px-3">{t('customer', 'Customer')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('balance', 'Balance')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('last_transaction', 'Last Transaction')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -742,7 +744,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               {/* BOX 1: COUNTRY */}
               <div className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="text-xs font-black uppercase text-slate-900">By Country</span>
+                  <span className="text-xs font-black uppercase text-slate-900">{t('by_country', 'By Country')}</span>
                   <button onClick={() => triggerRefreshToast('By Country')} className="p-1 text-slate-400 hover:text-blue-600">
                     <RefreshCw className="w-3 h-3" />
                   </button>
@@ -750,7 +752,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="overflow-x-auto border border-slate-200 rounded-lg">
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px]">
-                      <tr><th className="py-2 px-2.5">COUNTRY</th><th className="py-2 px-2.5">COUNT</th></tr>
+                      <tr><th className="py-2 px-2.5">{t('country', 'COUNTRY')}</th><th className="py-2 px-2.5">{t('count', 'COUNT')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {customersByCountry.map((r, i) => (
@@ -764,7 +766,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               {/* BOX 2: REGION */}
               <div className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="text-xs font-black uppercase text-slate-900">By Region</span>
+                  <span className="text-xs font-black uppercase text-slate-900">{t('by_region', 'By Region')}</span>
                   <button onClick={() => triggerRefreshToast('By Region')} className="p-1 text-slate-400 hover:text-blue-600">
                     <RefreshCw className="w-3 h-3" />
                   </button>
@@ -772,7 +774,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="overflow-x-auto border border-slate-200 rounded-lg">
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px]">
-                      <tr><th className="py-2 px-2.5">REGION</th><th className="py-2 px-2.5">COUNT</th></tr>
+                      <tr><th className="py-2 px-2.5">{t('region', 'REGION')}</th><th className="py-2 px-2.5">{t('count', 'COUNT')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {customersByRegion.map((r, i) => (
@@ -786,7 +788,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               {/* BOX 3: CITY */}
               <div className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="text-xs font-black uppercase text-slate-900">By City</span>
+                  <span className="text-xs font-black uppercase text-slate-900">{t('by_city', 'By City')}</span>
                   <button onClick={() => triggerRefreshToast('By City')} className="p-1 text-slate-400 hover:text-blue-600">
                     <RefreshCw className="w-3 h-3" />
                   </button>
@@ -794,7 +796,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="overflow-x-auto border border-slate-200 rounded-lg">
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px]">
-                      <tr><th className="py-2 px-2.5">CITY</th><th className="py-2 px-2.5">COUNT</th></tr>
+                      <tr><th className="py-2 px-2.5">{t('city', 'CITY')}</th><th className="py-2 px-2.5">{t('count', 'COUNT')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {customersByCity.map((r, i) => (
@@ -808,7 +810,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               {/* BOX 4: GROUP */}
               <div className="border border-slate-200 rounded-xl bg-white p-4 shadow-sm space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <span className="text-xs font-black uppercase text-slate-900">By Group</span>
+                  <span className="text-xs font-black uppercase text-slate-900">{t('by_group', 'By Group')}</span>
                   <button onClick={() => triggerRefreshToast('By Group')} className="p-1 text-slate-400 hover:text-blue-600">
                     <RefreshCw className="w-3 h-3" />
                   </button>
@@ -816,7 +818,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <div className="overflow-x-auto border border-slate-200 rounded-lg">
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-[10px]">
-                      <tr><th className="py-2 px-2.5">GROUP</th><th className="py-2 px-2.5">COUNT</th></tr>
+                      <tr><th className="py-2 px-2.5">{t('group', 'GROUP')}</th><th className="py-2 px-2.5">{t('count', 'COUNT')}</th></tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {customersByGroup.map((r, i) => (
@@ -834,14 +836,14 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-blue-600" />
-                  <span>Customer Behavior Trends (12-Month Performance Engine)</span>
+                  <span>{t('customer_behavior_trends_engine', 'Customer Behavior Trends (12-Month Performance Engine)')}</span>
                 </h2>
                 <button
                   onClick={() => triggerRefreshToast('Customer Behavior Trends')}
                   className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Refresh Trends</span>
+                  <span>{t('refresh_trends', 'Refresh Trends')}</span>
                 </button>
               </div>
 
@@ -849,19 +851,19 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">MONTH</th>
-                      <th className="py-3.5 px-4 font-semibold">ACTIVE CUSTOMERS</th>
-                      <th className="py-3.5 px-4 font-semibold">NEW ACCOUNTS</th>
-                      <th className="py-3.5 px-4 font-semibold">AVG ORDER VALUE (AOV)</th>
-                      <th className="py-3.5 px-4 font-semibold">CHURN %</th>
-                      <th className="py-3.5 px-4 font-semibold">NET SALES</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('month', 'MONTH')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('active_customers', 'ACTIVE CUSTOMERS')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('new_accounts', 'NEW ACCOUNTS')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('avg_order_value_aov', 'AVG ORDER VALUE (AOV)')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('churn_pct', 'CHURN %')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('net_sales', 'NET SALES')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {behaviorTrends.map((row, idx) => (
                       <tr key={idx} className="even:bg-slate-50/50 hover:bg-slate-100 transition-colors duration-150 cursor-pointer">
                         <td className="py-3.5 px-4 font-semibold text-slate-900">{row.month}</td>
-                        <td className="py-3.5 px-4 font-mono font-medium text-slate-700">{row.active} Accounts</td>
+                        <td className="py-3.5 px-4 font-mono font-medium text-slate-700">{row.active} {t('accounts', 'Accounts')}</td>
                         <td className="py-3.5 px-4 font-mono font-medium text-emerald-600">+{row.newAcc}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-600 font-normal">{row.aov}</td>
                         <td className="py-3.5 px-4 font-mono font-semibold text-rose-600">{row.churn}</td>
@@ -877,19 +879,19 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
             <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4" dir="ltr">
               <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                 <Star className="w-5 h-5 text-amber-500" />
-                <span>Top 5 LTV VIP Customers</span>
+                <span>{t('top_5_ltv_vip_customers', 'Top 5 LTV VIP Customers')}</span>
               </h2>
 
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">Customer / Company Name</th>
-                      <th className="py-3.5 px-4 font-semibold">Customer Category</th>
-                      <th className="py-3.5 px-4 font-semibold">Lifetime Value (LTV)</th>
-                      <th className="py-3.5 px-4 font-semibold">Number of Orders</th>
-                      <th className="py-3.5 px-4 font-semibold">Average Invoice</th>
-                      <th className="py-3.5 px-4 font-semibold">Last Order Date</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('customer_company_name', 'Customer / Company Name')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('customer_category', 'Customer Category')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('lifetime_value_ltv', 'Lifetime Value (LTV)')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('number_of_orders', 'Number of Orders')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('average_invoice', 'Average Invoice')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('last_order_date', 'Last Order Date')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
@@ -902,7 +904,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                           </span>
                         </td>
                         <td className="py-3.5 px-4 font-mono font-medium text-emerald-600">{row.ltv}</td>
-                        <td className="py-3.5 px-4 font-mono font-normal">{row.ordersCount} Orders</td>
+                        <td className="py-3.5 px-4 font-mono font-normal">{row.ordersCount} {t('orders', 'Orders')}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-600 font-normal">{row.avgTicket}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-500 font-normal">2026-08-24</td>
                       </tr>

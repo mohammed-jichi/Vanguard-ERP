@@ -29,17 +29,18 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from 'recharts';
+import { useLanguage } from '@/lib/LanguageContext';
 
 // High-Contrast Sales Trend Line Chart Tooltip Component
-const SalesTrendTooltip = ({ active, payload, label }: any) => {
+const SalesTrendTooltip = ({ active, payload, label, t }: any) => {
   if (active && payload && payload.length) {
     const val = payload[0].value;
     return (
       <div className="bg-white border border-slate-300 p-3 rounded-xl shadow-xl space-y-1.5 text-xs font-sans z-50 min-w-[160px]">
         <p className="font-black text-slate-500 uppercase tracking-wider border-b border-slate-100 pb-1">{label}</p>
         <div className="flex items-center justify-between gap-3">
-          <span className="font-semibold text-slate-600">Daily Sales:</span>
-          <span className="font-mono text-blue-600 font-black text-sm">{val} Units</span>
+          <span className="font-semibold text-slate-600">{t ? t('daily_sales', 'Daily Sales') : 'Daily Sales'}:</span>
+          <span className="font-mono text-blue-600 font-black text-sm">{val} {t ? t('units', 'Units') : 'Units'}</span>
         </div>
       </div>
     );
@@ -48,6 +49,8 @@ const SalesTrendTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function ProductInsightsView() {
+  const { t, dir } = useLanguage();
+
   // 1. TOP FILTER STATES
   const [branch, setBranch] = useState<string>('Main Branch');
   const [currency, setCurrency] = useState<string>('LBP');
@@ -73,10 +76,6 @@ export default function ProductInsightsView() {
     'Promotions': true,
     'Wholesale': false
   });
-
-  // -------------------------------------------------------------
-  // DYNAMIC DATASETS & REACTIVE CALCULATIONS
-  // -------------------------------------------------------------
 
   // Currency multiplier factor (1 USD = 89,500 LBP for realistic Lebanese ERP math)
   const isUsd = currency === 'USD';
@@ -156,11 +155,11 @@ export default function ProductInsightsView() {
 
   // Category Performance Table Data matching Video V4
   const categoryPerformance = useMemo(() => [
-    { category: 'Retail', units: '60 Units', revenue: formatCurrency(57061800) },
-    { category: 'Promotions', units: '12 Units', revenue: formatCurrency(53550000) },
-    { category: 'Wholesale', units: '5 Units', revenue: formatCurrency(23940000) },
-    { category: 'Raw Materials', units: '0 Units', revenue: formatCurrency(0) }
-  ], [isUsd]);
+    { category: 'Retail', units: `60 ${t('units', 'Units')}`, revenue: formatCurrency(57061800) },
+    { category: 'Promotions', units: `12 ${t('units', 'Units')}`, revenue: formatCurrency(53550000) },
+    { category: 'Wholesale', units: `5 ${t('units', 'Units')}`, revenue: formatCurrency(23940000) },
+    { category: 'Raw Materials', units: `0 ${t('units', 'Units')}`, revenue: formatCurrency(0) }
+  ], [isUsd, t]);
 
   // Division Breakdown Data matching Video V4
   const divisionBreakdown = useMemo(() => [
@@ -184,14 +183,14 @@ export default function ProductInsightsView() {
 
   // Weekday Pattern Data matching V4
   const weekdayPattern = useMemo(() => [
-    { day: 'Monday', percent: 12, amount: formatCurrencyCompact(16146000) },
-    { day: 'Tuesday', percent: 18, amount: formatCurrencyCompact(24219000) },
-    { day: 'Wednesday', percent: 45, amount: formatCurrencyCompact(60548000) },
-    { day: 'Thursday', percent: 10, amount: formatCurrencyCompact(13455000) },
-    { day: 'Friday', percent: 8, amount: formatCurrencyCompact(10764000) },
-    { day: 'Saturday', percent: 7, amount: formatCurrencyCompact(9419800) },
-    { day: 'Sunday', percent: 0, amount: formatCurrencyCompact(0) }
-  ], [isUsd]);
+    { day: t('monday', 'Monday'), percent: 12, amount: formatCurrencyCompact(16146000) },
+    { day: t('tuesday', 'Tuesday'), percent: 18, amount: formatCurrencyCompact(24219000) },
+    { day: t('wednesday', 'Wednesday'), percent: 45, amount: formatCurrencyCompact(60548000) },
+    { day: t('thursday', 'Thursday'), percent: 10, amount: formatCurrencyCompact(13455000) },
+    { day: t('friday', 'Friday'), percent: 8, amount: formatCurrencyCompact(10764000) },
+    { day: t('saturday', 'Saturday'), percent: 7, amount: formatCurrencyCompact(9419800) },
+    { day: t('sunday', 'Sunday'), percent: 0, amount: formatCurrencyCompact(0) }
+  ], [isUsd, t]);
 
   // Dynamic Not Sold Items
   const notSoldItemsList = useMemo(() => {
@@ -211,34 +210,34 @@ export default function ProductInsightsView() {
   // Authentic Quick Insights Takeaways from Video V4
   const quickInsights = useMemo(() => {
     return [
-      { id: 1, title: 'Top branch', text: 'Southern Olive Oil Products S.A.R.L drives 98.0% of filtered revenue.', icon: Award, color: 'text-amber-600 bg-amber-50' },
-      { id: 2, title: 'Best category', text: 'Retail generated 60 units in this period.', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
-      { id: 3, title: 'Lead item', text: 'Virgin Olive Oil Tin 17.5L produced highest sales.', icon: Package, color: 'text-blue-600 bg-blue-50' },
-      { id: 4, title: 'Peak weekday', text: 'Wed is the strongest trading day.', icon: Calendar, color: 'text-purple-600 bg-purple-50' }
+      { id: 1, title: t('top_branch', 'Top branch'), text: t('top_branch_desc', 'Southern Olive Oil Products S.A.R.L drives 98.0% of filtered revenue.'), icon: Award, color: 'text-amber-600 bg-amber-50' },
+      { id: 2, title: t('best_category', 'Best category'), text: t('best_category_desc', 'Retail generated 60 units in this period.'), icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
+      { id: 3, title: t('lead_item', 'Lead item'), text: t('lead_item_desc', 'Virgin Olive Oil Tin 17.5L produced highest sales.'), icon: Package, color: 'text-blue-600 bg-blue-50' },
+      { id: 4, title: t('peak_weekday', 'Peak weekday'), text: t('peak_weekday_desc', 'Wed is the strongest trading day.'), icon: Calendar, color: 'text-purple-600 bg-purple-50' }
     ];
-  }, []);
+  }, [t]);
 
   const toggleAccordion = (catName: string) => {
     setOpenAccordion(prev => ({ ...prev, [catName]: !prev[catName] }));
   };
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen p-4 md:p-6 space-y-6 font-sans dir-ltr text-left">
+    <div dir={dir} className="w-full bg-slate-50 min-h-screen p-4 md:p-6 space-y-6 font-sans">
       
       {/* HEADER TITLE BAR (Authentic from Video V4) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-            Product Insights
+            {t('product_insights', 'Product Insights')}
           </h1>
           <p className="text-xs font-semibold text-slate-500 mt-0.5">
-            Product analysis with item drill down from category to product
+            {t('product_insights_subtitle', 'Product analysis with item drill down from category to product')}
           </p>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl px-5 py-2.5 shadow-2xs shrink-0 self-start md:self-auto text-right">
-          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">CURRENT SELECTION</span>
-          <span className="text-xs font-bold text-slate-800">Sep 1 - Sep 30, {year} / September {year} / All allowed locations</span>
+          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 block">{t('current_selection', 'CURRENT SELECTION')}</span>
+          <span className="text-xs font-bold text-slate-800">Sep 1 - Sep 30, {year} / {t(dateRange.toLowerCase(), dateRange)} {year} / {t('all_allowed_locations', 'All allowed locations')}</span>
         </div>
       </div>
 
@@ -247,19 +246,19 @@ export default function ProductInsightsView() {
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto text-xs">
           
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-extrabold text-slate-500 uppercase">Branch</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase">{t('branch', 'Branch')}</label>
             <select
               value={branch}
               onChange={(e) => setBranch(e.target.value)}
               style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
               className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
             >
-              <option value="Main Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Main Branch (الفرع الرئيسي)</option>
+              <option value="Main Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('main_branch', 'Main Branch')}</option>
             </select>
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-extrabold text-slate-500 uppercase">Currency</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase">{t('currency', 'Currency')}</label>
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
@@ -272,7 +271,7 @@ export default function ProductInsightsView() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-extrabold text-slate-500 uppercase">Year</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase">{t('year', 'Year')}</label>
             <select
               value={year}
               onChange={(e) => setYear(e.target.value)}
@@ -285,16 +284,17 @@ export default function ProductInsightsView() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-extrabold text-slate-500 uppercase">Date Range</label>
+            <label className="text-[10px] font-extrabold text-slate-500 uppercase">{t('date_range', 'Date Range')}</label>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
               style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
               className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
             >
-              <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>August</option>
-              <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>July</option>
-              <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>June</option>
+              <option value="September" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('september', 'September')}</option>
+              <option value="August" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('august', 'August')}</option>
+              <option value="July" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('july', 'July')}</option>
+              <option value="June" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('june', 'June')}</option>
             </select>
           </div>
 
@@ -304,10 +304,10 @@ export default function ProductInsightsView() {
           onClick={() => window.print()}
           style={{ color: '#ffffff', backgroundColor: '#1d4ed8' }}
           className="px-4 py-2 bg-blue-700 hover:bg-blue-800 !text-white font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors shrink-0 print:hidden cursor-pointer border border-blue-600"
-          title="Export Product Insights as PDF"
+          title={t('export_product_insights_pdf', 'Export Product Insights as PDF')}
         >
           <FileText className="w-4 h-4 !text-white text-white shrink-0" style={{ color: '#ffffff' }} />
-          <span style={{ color: '#ffffff' }} className="!text-white font-bold">Export PDF</span>
+          <span style={{ color: '#ffffff' }} className="!text-white font-bold">{t('export_pdf', 'Export PDF')}</span>
         </button>
       </div>
 
@@ -325,9 +325,9 @@ export default function ProductInsightsView() {
               <div>
                 <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-blue-600" />
-                  <span>Item Hierarchy</span>
+                  <span>{t('item_hierarchy', 'Item Hierarchy')}</span>
                 </h3>
-                <p className="text-[11px] text-slate-600 font-semibold mt-0.5">Drill down by category, division & product</p>
+                <p className="text-[11px] text-slate-600 font-semibold mt-0.5">{t('drill_down_subtitle', 'Drill down by category, division & product')}</p>
               </div>
               {isHierarchyOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
             </div>
@@ -336,66 +336,67 @@ export default function ProductInsightsView() {
               <div className="space-y-3.5 pt-1 text-xs">
                 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-black uppercase text-slate-500">CATEGORY</label>
+                  <label className="block text-[10px] font-black uppercase text-slate-500">{t('category', 'CATEGORY')}</label>
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Categories">All Categories</option>
-                    <option value="Raw Materials">Raw Materials</option>
-                    <option value="Wholesale">Wholesale</option>
-                    <option value="Promotions">Promotions</option>
-                    <option value="Retail">Retail</option>
+                    <option value="All Categories">{t('all_categories', 'All Categories')}</option>
+                    <option value="Raw Materials">{t('raw_materials', 'Raw Materials')}</option>
+                    <option value="Wholesale">{t('wholesale', 'Wholesale')}</option>
+                    <option value="Promotions">{t('promotions', 'Promotions')}</option>
+                    <option value="Retail">{t('retail', 'Retail')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-black uppercase text-slate-500">DIVISION</label>
+                  <label className="block text-[10px] font-black uppercase text-slate-500">{t('division', 'DIVISION')}</label>
                   <select
                     value={selectedDivision}
                     onChange={(e) => setSelectedDivision(e.target.value)}
                     style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Divisions">All Divisions</option>
-                    <option value="Plastic">Plastic</option>
-                    <option value="Promotions">Promotions</option>
-                    <option value="Kg Retail">Kg Retail</option>
-                    <option value="Jams Wholesale">Jams Wholesale</option>
-                    <option value="Jams Retail">Jams Retail</option>
-                    <option value="Jar">Jar</option>
-                    <option value="Local Mooneh Retail">Local Mooneh Retail</option>
+                    <option value="All Divisions">{t('all_divisions', 'All Divisions')}</option>
+                    <option value="Plastic">{t('plastic', 'Plastic')}</option>
+                    <option value="Promotions">{t('promotions', 'Promotions')}</option>
+                    <option value="Kg Retail">{t('kg_retail', 'Kg Retail')}</option>
+                    <option value="Jams Wholesale">{t('jams_wholesale', 'Jams Wholesale')}</option>
+                    <option value="Jams Retail">{t('jams_retail', 'Jams Retail')}</option>
+                    <option value="Jar">{t('jar', 'Jar')}</option>
+                    <option value="Local Mooneh Retail">{t('local_mooneh_retail', 'Local Mooneh Retail')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-black uppercase text-slate-500">GROUP</label>
+                  <label className="block text-[10px] font-black uppercase text-slate-500">{t('group', 'GROUP')}</label>
                   <select
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
                     style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-bold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="All Groups">All Groups</option>
-                    <option value="Jar 509">Jar 509</option>
-                    <option value="Khoudeir Olive Oil Retail">Khoudeir Olive Oil Retail</option>
-                    <option value="Virgin Olive Oil Retail">Virgin Olive Oil Retail</option>
-                    <option value="Bottles B">Bottles B</option>
-                    <option value="Jar 507">Jar 507</option>
+                    <option value="All Groups">{t('all_groups', 'All Groups')}</option>
+                    <option value="Jar 509">{t('jar_509', 'Jar 509')}</option>
+                    <option value="Khoudeir Olive Oil Retail">{t('khoudeir_olive_oil_retail', 'Khoudeir Olive Oil Retail')}</option>
+                    <option value="Virgin Olive Oil Retail">{t('virgin_olive_oil_retail', 'Virgin Olive Oil Retail')}</option>
+                    <option value="Bottles B">{t('bottles_b', 'Bottles B')}</option>
+                    <option value="Jar 507">{t('jar_507', 'Jar 507')}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-black uppercase text-slate-500">PRODUCT SEARCH</label>
+                  <label className="block text-[10px] font-black uppercase text-slate-500">{t('product_search', 'PRODUCT SEARCH')}</label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Search item code or name..."
+                      placeholder={t('search_item_code_or_name', 'Search item code or name...')}
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-500 placeholder-slate-400"
+                      style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
+                      className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 placeholder-slate-400 font-semibold focus:outline-none focus:border-blue-500"
                     />
                     <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                   </div>
@@ -413,45 +414,45 @@ export default function ProductInsightsView() {
           <div className="space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-blue-600" />
-              <span>Analysis Scope: All products currently in scope</span>
+              <span>{t('analysis_scope_all_products', 'Analysis Scope: All products currently in scope')}</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('revenue', 'Revenue')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{formatCurrency(totalScopeRevenueLbp)}</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Units Sold</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('units_sold', 'Units Sold')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">{totalScopeUnits.toLocaleString()}</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Avg Selling Price</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('avg_selling_price', 'Avg Selling Price')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">LL 1,747,425.94</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Revenue Mix</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('revenue_mix', 'Revenue Mix')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">100.0%</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Active Branches</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('active_branches', 'Active Branches')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">1</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
               <div className="border border-gray-200 rounded-xl bg-white p-5 shadow-sm space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">Products In Scope</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wide">{t('products_in_scope', 'Products In Scope')}</span>
                 <span className="text-xl md:text-2xl font-black text-slate-900 font-mono block truncate">45</span>
-                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% vs Sep {Number(year) - 1}</span>
+                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full inline-block">+0.0% {t('vs_sep', 'vs Sep')} {Number(year) - 1}</span>
               </div>
 
             </div>
@@ -463,12 +464,14 @@ export default function ProductInsightsView() {
               <div>
                 <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-emerald-600" />
-                  <span>Sales Trend</span>
+                  <span>{t('sales_trend', 'Sales Trend')}</span>
                 </h3>
-                <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Daily net sales distribution across selected month ({dateRange} {year})</p>
+                <p className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                  {t('daily_net_sales_distribution', 'Daily net sales distribution across selected month')} ({t(dateRange.toLowerCase(), dateRange)} {year})
+                </p>
               </div>
               <span className="text-xs font-mono font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
-                Peak: Day 25
+                {t('peak_day_25', 'Peak: Day 25')}
               </span>
             </div>
 
@@ -478,7 +481,7 @@ export default function ProductInsightsView() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<SalesTrendTooltip />} />
+                  <Tooltip content={<SalesTrendTooltip t={t} />} />
                   <Line type="monotone" dataKey="sales" stroke="#2563eb" strokeWidth={3} dot={{ r: 4, fill: '#2563eb' }} activeDot={{ r: 7 }} />
                 </LineChart>
               </ResponsiveContainer>
@@ -492,22 +495,22 @@ export default function ProductInsightsView() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-blue-600" />
-                <span>Category Performance</span>
+                <span>{t('category_performance', 'Category Performance')}</span>
               </h3>
 
               <div className="overflow-x-auto border border-slate-200 rounded-xl">
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
-                      <th className="py-3.5 px-4 font-semibold">UNITS</th>
-                      <th className="py-3.5 px-4 font-semibold">REVENUE</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('category', 'CATEGORY')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('units', 'UNITS')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('revenue', 'REVENUE')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {categoryPerformance.map((row, idx) => (
                       <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-4 font-medium text-slate-900">{row.category}</td>
+                        <td className="py-3.5 px-4 font-medium text-slate-900">{t(row.category.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.category)}</td>
                         <td className="py-3.5 px-4 font-mono font-normal text-slate-600">{row.units}</td>
                         <td className="py-3.5 px-4 font-mono font-medium text-emerald-600">{row.revenue}</td>
                       </tr>
@@ -521,14 +524,14 @@ export default function ProductInsightsView() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                 <Layers className="w-4 h-4 text-purple-600" />
-                <span>Division Breakdown</span>
+                <span>{t('division_breakdown', 'Division Breakdown')}</span>
               </h3>
 
               <div className="space-y-4 pt-1">
                 {divisionBreakdown.map((div, idx) => (
                   <div key={idx} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-slate-800 font-medium">{div.division}</span>
+                      <span className="text-slate-800 font-medium">{t(div.division.toLowerCase().replace(/[^a-z0-9]+/g, '_'), div.division)}</span>
                       <span className="font-mono text-slate-900 font-bold">{div.amount} ({div.share}%)</span>
                     </div>
                     <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
@@ -551,7 +554,7 @@ export default function ProductInsightsView() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                 <Package className="w-4 h-4 text-emerald-600" />
-                <span>Top Products</span>
+                <span>{t('top_products', 'Top Products')}</span>
               </h3>
 
               <div className="space-y-3 pt-1">
@@ -561,7 +564,7 @@ export default function ProductInsightsView() {
                       onClick={() => toggleAccordion(catKey)}
                       className="w-full bg-slate-50 p-2.5 text-xs font-extrabold text-slate-800 flex items-center justify-between hover:bg-slate-100 transition-colors"
                     >
-                      <span>{catKey}</span>
+                      <span>{t(catKey.toLowerCase().replace(/[^a-z0-9]+/g, '_'), catKey)}</span>
                       {openAccordion[catKey] ? <ChevronUp className="w-3.5 h-3.5 text-slate-500" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-500" />}
                     </button>
 
@@ -570,7 +573,7 @@ export default function ProductInsightsView() {
                         {allMasterProducts.filter(p => p.category === catKey || catKey.includes(p.category.split(' ')[0])).slice(0, 3).map((item, i) => (
                           <div key={i} className="flex items-center justify-between pb-2 border-b border-slate-100 last:border-none last:pb-0">
                             <div>
-                              <span className="font-semibold text-slate-900 block truncate max-w-[160px]">{item.name}</span>
+                              <span className="font-semibold text-slate-900 block truncate max-w-[160px]">{t(item.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), item.name)}</span>
                               <span className="text-[10px] text-slate-400 font-mono">{item.code}</span>
                             </div>
                             <span className="font-mono text-emerald-600 font-bold">{formatCurrencyCompact(item.priceLbp * item.soldUnits)}</span>
@@ -587,14 +590,14 @@ export default function ProductInsightsView() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-amber-600" />
-                <span>Menu Mix</span>
+                <span>{t('menu_mix', 'Menu Mix')}</span>
               </h3>
 
               <div className="space-y-4 pt-1">
                 {menuMixData.map((mix, idx) => (
                   <div key={idx} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-slate-800 font-medium">{mix.dept}</span>
+                      <span className="text-slate-800 font-medium">{t(mix.dept.toLowerCase().replace(/[^a-z0-9]+/g, '_'), mix.dept)}</span>
                       <span className="font-mono text-slate-900 font-bold">{mix.amount} ({mix.share}%)</span>
                     </div>
                     <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
@@ -612,7 +615,7 @@ export default function ProductInsightsView() {
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-blue-600" />
-                <span>Weekday Pattern</span>
+                <span>{t('weekday_pattern', 'Weekday Pattern')}</span>
               </h3>
 
               <div className="space-y-2.5 pt-1">
@@ -639,7 +642,7 @@ export default function ProductInsightsView() {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs space-y-4">
             <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
               <Info className="w-4 h-4 text-blue-600" />
-              <span>Quick Insights (Takeaways from current dataset)</span>
+              <span>{t('quick_insights_title', 'Quick Insights (Takeaways from current dataset)')}</span>
             </h3>
 
             <div className="flex flex-col gap-3">
@@ -659,7 +662,7 @@ export default function ProductInsightsView() {
                       </div>
                     </div>
                     <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider shrink-0 bg-white px-3 py-1 rounded-lg border border-slate-200 self-start sm:self-center">
-                      Verified
+                      {t('verified', 'Verified')}
                     </span>
                   </div>
                 );
@@ -672,7 +675,7 @@ export default function ProductInsightsView() {
             <div className="border-t border-slate-200 pt-4">
               <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Product Analysis: Moved from Backoffice and grouped here for deeper item-level review</span>
+                <span>{t('product_analysis_subtitle', 'Product Analysis: Moved from Backoffice and grouped here for deeper item-level review')}</span>
               </h2>
             </div>
 
@@ -680,10 +683,10 @@ export default function ProductInsightsView() {
               <div className="flex items-center justify-between">
                 <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-amber-600" />
-                  <span>Not Sold Items</span>
+                  <span>{t('not_sold_items', 'Not Sold Items')}</span>
                 </h3>
                 <span className="text-xs font-extrabold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-200">
-                  479 Items
+                  {notSoldItemsList.length} {t('items', 'Items')}
                 </span>
               </div>
 
@@ -691,17 +694,17 @@ export default function ProductInsightsView() {
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide sticky top-0">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
-                      <th className="py-3.5 px-4 font-semibold">ITEM CODE</th>
-                      <th className="py-3.5 px-4 font-semibold">ITEM NAME</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('category', 'CATEGORY')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('item_code', 'ITEM CODE')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('item_name', 'ITEM NAME')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {notSoldItemsList.map((item, idx) => (
                       <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-4 font-medium text-slate-600">{item.category}</td>
+                        <td className="py-3.5 px-4 font-medium text-slate-600">{t(item.category.toLowerCase().replace(/[^a-z0-9]+/g, '_'), item.category)}</td>
                         <td className="py-3.5 px-4 font-mono text-slate-500 font-normal">{item.code}</td>
-                        <td className="py-3.5 px-4 font-medium text-slate-900">{item.name}</td>
+                        <td className="py-3.5 px-4 font-medium text-slate-900">{t(item.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), item.name)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -718,11 +721,11 @@ export default function ProductInsightsView() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-emerald-600" />
-                  <span>Low Cost Items</span>
+                  <span>{t('low_cost_items', 'Low Cost Items')}</span>
                 </h3>
 
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="font-extrabold text-slate-600">COST &lt;= [%]:</span>
+                  <span className="font-extrabold text-slate-600">{t('cost_lte_pct', 'COST <= [%]:')}</span>
                   <input
                     type="number"
                     value={lowCostInput}
@@ -733,7 +736,7 @@ export default function ProductInsightsView() {
                     onClick={() => setAppliedLowCostThreshold(lowCostInput)}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer"
                   >
-                    Apply
+                    {t('apply', 'Apply')}
                   </button>
                 </div>
               </div>
@@ -742,24 +745,24 @@ export default function ProductInsightsView() {
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
-                      <th className="py-3.5 px-4 font-semibold">ITEM</th>
-                      <th className="py-3.5 px-4 font-semibold">COST %</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('category', 'CATEGORY')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('item', 'ITEM')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('cost_pct', 'COST %')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {filteredLowCostItems.length > 0 ? (
                       filteredLowCostItems.map((row, idx) => (
                         <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3.5 px-4 font-medium text-slate-600">{row.category}</td>
-                          <td className="py-3.5 px-4 font-medium text-slate-900">{row.name}</td>
+                          <td className="py-3.5 px-4 font-medium text-slate-600">{t(row.category.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.category)}</td>
+                          <td className="py-3.5 px-4 font-medium text-slate-900">{t(row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.name)}</td>
                           <td className="py-3.5 px-4 font-mono font-bold text-emerald-600">{row.costPercent}%</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
                         <td colSpan={3} className="py-6 text-center text-xs text-slate-400 font-semibold">
-                          No low cost items found for threshold &lt;= {appliedLowCostThreshold}%
+                          {t('no_low_cost_items_found', 'No low cost items found for threshold <=')} {appliedLowCostThreshold}%
                         </td>
                       </tr>
                     )}
@@ -773,11 +776,11 @@ export default function ProductInsightsView() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-600" />
-                  <span>High Cost Items</span>
+                  <span>{t('high_cost_items', 'High Cost Items')}</span>
                 </h3>
 
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="font-extrabold text-slate-600">COST &gt;= [%]:</span>
+                  <span className="font-extrabold text-slate-600">{t('cost_gte_pct', 'COST >= [%]:')}</span>
                   <input
                     type="number"
                     value={highCostInput}
@@ -788,7 +791,7 @@ export default function ProductInsightsView() {
                     onClick={() => setAppliedHighCostThreshold(highCostInput)}
                     className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition-colors cursor-pointer"
                   >
-                    Apply
+                    {t('apply', 'Apply')}
                   </button>
                 </div>
               </div>
@@ -797,24 +800,24 @@ export default function ProductInsightsView() {
                 <table className="w-full text-left text-base font-sans">
                   <thead className="bg-slate-100 text-slate-700 font-semibold uppercase text-base tracking-wide">
                     <tr>
-                      <th className="py-3.5 px-4 font-semibold">CATEGORY</th>
-                      <th className="py-3.5 px-4 font-semibold">ITEM</th>
-                      <th className="py-3.5 px-4 font-semibold">COST %</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('category', 'CATEGORY')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('item', 'ITEM')}</th>
+                      <th className="py-3.5 px-4 font-semibold">{t('cost_pct', 'COST %')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800 font-normal text-base">
                     {filteredHighCostItems.length > 0 ? (
                       filteredHighCostItems.map((row, idx) => (
                         <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3.5 px-4 font-medium text-slate-600">{row.category}</td>
-                          <td className="py-3.5 px-4 font-medium text-slate-900">{row.name}</td>
+                          <td className="py-3.5 px-4 font-medium text-slate-600">{t(row.category.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.category)}</td>
+                          <td className="py-3.5 px-4 font-medium text-slate-900">{t(row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.name)}</td>
                           <td className="py-3.5 px-4 font-mono font-bold text-rose-600">{row.costPercent}%</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
                         <td colSpan={3} className="py-6 text-center text-xs text-slate-400 font-semibold">
-                          No high cost items found for threshold &gt;= {appliedHighCostThreshold}%
+                          {t('no_high_cost_items_found', 'No high cost items found for threshold >=')} {appliedHighCostThreshold}%
                         </td>
                       </tr>
                     )}

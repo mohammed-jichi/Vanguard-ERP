@@ -656,11 +656,11 @@ export default function PurchasesView() {
         <div className="mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-slate-800">Purchases</h1>
+              <h1 className="text-xl font-bold text-slate-800">{t('purchases', 'Purchases')}</h1>
               <div className="text-xs text-blue-600 flex items-center gap-1 mt-0.5 font-medium">
-                <Link href="/" className="hover:underline">Home</Link>
+                <Link href="/" className="hover:underline">{t('home', 'Home')}</Link>
                 <span>/</span>
-                <span className="text-slate-600">Purchases</span>
+                <span className="text-slate-600">{t('purchases', 'Purchases')}</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -678,7 +678,7 @@ export default function PurchasesView() {
                   className="text-xs border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs font-semibold cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Purchases List</span>
+                  <span>{t('back_to_purchases_list', 'Back to Purchases List')}</span>
                 </button>
               )}
             </div>
@@ -701,8 +701,8 @@ export default function PurchasesView() {
                     onChange={(e) => setFilterBranch(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
-                    <option value="All Branches">All Branches</option>
-                    <option value="Main Branch">Main Branch</option>
+                    <option value="All Branches">{t('all_branches', 'All Branches')}</option>
+                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -725,9 +725,9 @@ export default function PurchasesView() {
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
-                    <option value="All Statuses">All Statuses</option>
-                    <option value="Unposted">Unposted</option>
-                    <option value="Posted">Posted</option>
+                    <option value="All Statuses">{t('all_statuses', 'All Statuses')}</option>
+                    <option value="Unposted">{t('unposted', 'Unposted')}</option>
+                    <option value="Posted">{t('posted', 'Posted')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -760,7 +760,7 @@ export default function PurchasesView() {
                     className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>New</span>
+                    <span>{t('new', 'New')}</span>
                   </button>
                 </div>
               </div>
@@ -774,7 +774,7 @@ export default function PurchasesView() {
                     onChange={(e) => setFilterSupplier(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
-                    <option value="All Suppliers">All Suppliers</option>
+                    <option value="All Suppliers">{t('all_suppliers', 'All Suppliers')}</option>
                     {DEFAULT_SUPPLIERS.map((s) => (
                       <option key={s.id} value={s.name}>{s.name}</option>
                     ))}
@@ -789,9 +789,9 @@ export default function PurchasesView() {
                     onChange={(e) => setFilterTransType(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
-                    <option value="Invoice">Invoice</option>
-                    <option value="Purchase with back order">Purchase with back order</option>
-                    <option value="Inter Brands invoice">Inter Brands invoice</option>
+                    <option value="Invoice">{t('invoice', 'Invoice')}</option>
+                    <option value="Purchase with back order">{t('purchase_back_order', 'Purchase with back order')}</option>
+                    <option value="Inter Brands invoice">{t('inter_brands_invoice', 'Inter Brands invoice')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -803,9 +803,9 @@ export default function PurchasesView() {
                     onChange={(e) => setFilterTransfer(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500 font-medium"
                   >
-                    <option value="All Trans. / Not Trans.">All Trans. / Not Trans.</option>
-                    <option value="Not Transferred">Not Transferred</option>
-                    <option value="Transferred">Transferred</option>
+                    <option value="All Trans. / Not Trans.">{t('all_trans_filter', 'All Trans. / Not Trans.')}</option>
+                    <option value="Not Transferred">{t('not_transferred', 'Not Transferred')}</option>
+                    <option value="Transferred">{t('transferred', 'Transferred')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -814,7 +814,7 @@ export default function PurchasesView() {
               {/* Row 3: From Date / To Date */}
               <div className="flex items-center gap-6 text-xs pt-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-700 font-medium">From</span>
+                  <span className="text-slate-700 font-medium">{t('from_date', 'From')}</span>
                   <DatePickerInput
                     value={fromDate}
                     onChange={setFromDate}
@@ -822,7 +822,7 @@ export default function PurchasesView() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-700 font-medium">To</span>
+                  <span className="text-slate-700 font-medium">{t('to_date', 'To')}</span>
                   <DatePickerInput
                     value={toDate}
                     onChange={setToDate}
@@ -837,19 +837,19 @@ export default function PurchasesView() {
               <table className="w-full text-left text-xs border-collapse min-w-[1150px]">
                 <thead className="bg-white text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
-                    <th className="py-2.5 px-3">Branch</th>
-                    <th className="py-2.5 px-3">Date</th>
-                    <th className="py-2.5 px-3">Invoice Number</th>
-                    <th className="py-2.5 px-3">Supplier</th>
-                    <th className="py-2.5 px-3 text-right">Amount (LL)</th>
-                    <th className="py-2.5 px-3">Entered By</th>
-                    <th className="py-2.5 px-3">Updated By</th>
-                    <th className="py-2.5 px-3">Updated At</th>
-                    <th className="py-2.5 px-3">Notes</th>
-                    <th className="py-2.5 px-3 text-center">Posted</th>
+                    <th className="py-2.5 px-3">{t('branch', 'Branch')}</th>
+                    <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                    <th className="py-2.5 px-3">{t('invoice_number', 'Invoice Number')}</th>
+                    <th className="py-2.5 px-3">{t('supplier', 'Supplier')}</th>
+                    <th className="py-2.5 px-3 text-right">{t('amount_ll', 'Amount (LL)')}</th>
+                    <th className="py-2.5 px-3">{t('entered_by', 'Entered By')}</th>
+                    <th className="py-2.5 px-3">{t('updated_by', 'Updated By')}</th>
+                    <th className="py-2.5 px-3">{t('updated_at', 'Updated At')}</th>
+                    <th className="py-2.5 px-3">{t('notes', 'Notes')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('posted', 'Posted')}</th>
                     <th className="py-2.5 px-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <span>Actions</span>
+                        <span>{t('actions', 'Actions')}</span>
                         <button
                           type="button"
                           onClick={handlePostAllPurchases}
@@ -973,7 +973,7 @@ export default function PurchasesView() {
                 className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>Preview</span>
+                <span>{t('preview', 'Preview')}</span>
               </button>
               <div className="relative inline-block">
                 <button
@@ -981,7 +981,7 @@ export default function PurchasesView() {
                   onClick={() => alert('Actions: Duplicate, Print Voucher, Cancel')}
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
                 >
-                  <span>Actions</span>
+                  <span>{t('actions', 'Actions')}</span>
                   <ChevronDown className="w-3 h-3" />
                 </button>
               </div>
@@ -991,7 +991,7 @@ export default function PurchasesView() {
                 className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1 shadow-2xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>New</span>
+                <span>{t('new', 'New')}</span>
               </button>
             </div>
 
@@ -1000,12 +1000,12 @@ export default function PurchasesView() {
               {/* Card 1: Supplier */}
               <div className="md:col-span-5 bg-white border border-slate-200 rounded p-4 shadow-2xs">
                 <div className="border-b border-slate-100 pb-2 mb-3">
-                  <h3 className="font-bold text-xs text-slate-800">Supplier</h3>
+                  <h3 className="font-bold text-xs text-slate-800">{t('supplier', 'Supplier')}</h3>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-xs">
-                    <label className="w-32 shrink-0 font-bold text-slate-700">Purchased From*</label>
+                    <label className="w-32 shrink-0 font-bold text-slate-700">{t('purchased_from', 'Purchased From*')}</label>
                     <div className="flex-1 relative">
                       <input
                         type="text"
@@ -1016,7 +1016,7 @@ export default function PurchasesView() {
                           setShowSupplierDropdown(true);
                         }}
                         onFocus={() => setShowSupplierDropdown(true)}
-                        placeholder="Search supplier ..."
+                        placeholder={t('search_supplier', 'Search supplier ...')}
                         className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-blue-500"
                       />
 
@@ -1048,19 +1048,19 @@ export default function PurchasesView() {
                   {currentSupplierRecord && (
                     <div className="border-t border-slate-100 pt-2 text-xs space-y-1 text-slate-600 bg-slate-50/60 p-2.5 rounded">
                       <div className="flex">
-                        <span className="w-24 font-semibold text-slate-700">Contact Name:</span>
+                        <span className="w-24 font-semibold text-slate-700">{t('contact_name', 'Contact Name:')}</span>
                         <span className="text-slate-800">{currentSupplierRecord.contact}</span>
                       </div>
                       <div className="flex">
-                        <span className="w-24 font-semibold text-slate-700">Address:</span>
+                        <span className="w-24 font-semibold text-slate-700">{t('address', 'Address:')}</span>
                         <span className="text-slate-800">{currentSupplierRecord.address}</span>
                       </div>
                       <div className="flex">
-                        <span className="w-24 font-semibold text-slate-700">Phone:</span>
+                        <span className="w-24 font-semibold text-slate-700">{t('phone', 'Phone:')}</span>
                         <span className="text-slate-800">{currentSupplierRecord.phone}</span>
                       </div>
                       <div className="flex">
-                        <span className="w-24 font-semibold text-slate-700">Email:</span>
+                        <span className="w-24 font-semibold text-slate-700">{t('email', 'Email:')}</span>
                         <span className="text-slate-800">{currentSupplierRecord.email}</span>
                       </div>
                     </div>
@@ -1071,20 +1071,20 @@ export default function PurchasesView() {
               {/* Card 2: Transaction */}
               <div className="md:col-span-7 bg-white border border-slate-200 rounded p-4 shadow-2xs">
                 <div className="border-b border-slate-100 pb-2 mb-3">
-                  <h3 className="font-bold text-xs text-slate-800">Transaction</h3>
+                  <h3 className="font-bold text-xs text-slate-800">{t('transaction', 'Transaction')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                   {/* Branch* */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Branch*:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('branch_colon', 'Branch*:')}</label>
                     <div className="flex-1 relative">
                       <select
                         value={formBranch}
                         onChange={(e) => setFormBranch(e.target.value)}
                         className="w-full border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 bg-white appearance-none pr-7 shadow-2xs focus:outline-none focus:border-blue-500"
                       >
-                        <option value="Main Branch">Main Branch</option>
+                        <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                       </select>
                       <ChevronDown className="w-3 h-3 text-slate-500 absolute right-2 top-2 pointer-events-none" />
                     </div>
@@ -1092,7 +1092,7 @@ export default function PurchasesView() {
 
                   {/* Location* + [+] button (opens Screenshot 3 modal!) */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Location*:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('location_colon', 'Location*:')}</label>
                     <div className="flex-1 flex items-center gap-1">
                       <div className="relative flex-1">
                         <select
@@ -1119,7 +1119,7 @@ export default function PurchasesView() {
 
                   {/* Date* */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Date*:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('date_colon', 'Date*:')}</label>
                     <div className="flex-1">
                       <DatePickerInput
                         value={formDate}
@@ -1131,7 +1131,7 @@ export default function PurchasesView() {
 
                   {/* Delivery Date */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Delivery Date:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('delivery_date', 'Delivery Date:')}</label>
                     <div className="flex-1">
                       <DatePickerInput
                         value={formDeliveryDate}
@@ -1143,7 +1143,7 @@ export default function PurchasesView() {
 
                   {/* Currency* + [+] button (opens Screenshot 4 modal!) */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Currency*:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('currency_colon', 'Currency*:')}</label>
                     <div className="flex-1 flex items-center gap-1">
                       <div className="relative flex-1">
                         <select
@@ -1181,7 +1181,7 @@ export default function PurchasesView() {
 
                   {/* Inv #* */}
                   <div className="flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Inv #*:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('inv_number_label', 'Inv #*:')}</label>
                     <div className="flex-1 flex items-center gap-1">
                       <input
                         type="text"
@@ -1202,7 +1202,7 @@ export default function PurchasesView() {
 
                   {/* Note */}
                   <div className="md:col-span-2 flex items-center gap-2">
-                    <label className="w-24 shrink-0 font-bold text-slate-700">Note:</label>
+                    <label className="w-24 shrink-0 font-bold text-slate-700">{t('note_colon', 'Note:')}</label>
                     <input
                       type="text"
                       value={formNote}
@@ -1218,7 +1218,7 @@ export default function PurchasesView() {
             {/* Section 3: Details (Items Table matching Screenshot 2) */}
             <div className="bg-white border border-slate-200 rounded p-4 shadow-2xs space-y-3">
               <div className="border-b border-slate-100 pb-2">
-                <h3 className="font-bold text-xs text-slate-800">Details</h3>
+                <h3 className="font-bold text-xs text-slate-800">{t('details', 'Details')}</h3>
               </div>
 
               {/* Items Filter Bar matching Screenshot 2 */}
@@ -1271,9 +1271,9 @@ export default function PurchasesView() {
                       onChange={(e) => setItemDiscountType(e.target.value as any)}
                       className="border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-700 bg-white appearance-none pr-7 shadow-2xs"
                     >
-                      <option value="No Discount">No Discount</option>
-                      <option value="Discount Amount">Discount Amount</option>
-                      <option value="Discount %">Discount %</option>
+                      <option value="No Discount">{t('no_discount', 'No Discount')}</option>
+                      <option value="Discount Amount">{t('discount_amount', 'Discount Amount')}</option>
+                      <option value="Discount %">{t('discount_pct', 'Discount %')}</option>
                     </select>
                     <ChevronDown className="w-3 h-3 text-slate-500 absolute right-2 top-2 pointer-events-none" />
                   </div>
@@ -1286,7 +1286,7 @@ export default function PurchasesView() {
                       onChange={(e) => setManualTaxCalc(e.target.checked)}
                       className="rounded text-blue-600 focus:ring-0"
                     />
-                    <span>Manual tax calculation</span>
+                    <span>{t('manual_tax_calculation', 'Manual tax calculation')}</span>
                   </label>
 
                   <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer select-none">
@@ -1296,7 +1296,7 @@ export default function PurchasesView() {
                       onChange={(e) => setEnableTotalPrice(e.target.checked)}
                       className="rounded text-blue-600 focus:ring-0"
                     />
-                    <span>Enable Total Price</span>
+                    <span>{t('enable_total_price', 'Enable Total Price')}</span>
                   </label>
 
                   {/* Supplier items & Import items buttons */}
@@ -1325,18 +1325,18 @@ export default function PurchasesView() {
                 <table className="w-full text-left text-xs border-collapse min-w-[1050px]">
                   <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="py-2 px-3">Barcode</th>
-                      <th className="py-2 px-3">Description</th>
-                      <th className="py-2 px-3 text-right">Qty</th>
-                      <th className="py-2 px-3">Unit</th>
-                      <th className="py-2 px-3 text-right">Price/Unit ({formCurrency})</th>
-                      <th className="py-2 px-3 text-right">Disc.(%)</th>
-                      <th className="py-2 px-3 text-right">Disc.</th>
-                      <th className="py-2 px-3 text-right font-bold text-blue-700">Amount ({formCurrency}) »</th>
+                      <th className="py-2 px-3">{t('barcode', 'Barcode')}</th>
+                      <th className="py-2 px-3">{t('description', 'Description')}</th>
+                      <th className="py-2 px-3 text-right">{t('qty', 'Qty')}</th>
+                      <th className="py-2 px-3">{t('unit', 'Unit')}</th>
+                      <th className="py-2 px-3 text-right">{t('price_unit', 'Price/Unit')} ({formCurrency})</th>
+                      <th className="py-2 px-3 text-right">{t('disc_pct', 'Disc.(%)')}</th>
+                      <th className="py-2 px-3 text-right">{t('disc', 'Disc.')}</th>
+                      <th className="py-2 px-3 text-right font-bold text-blue-700">{t('amount', 'Amount')} ({formCurrency}) »</th>
                       <th className="py-2 px-3 text-right">SP (LL)</th>
                       <th className="py-2 px-3 text-right">SP ($)</th>
-                      <th className="py-2 px-3 text-center">TAX 1 »</th>
-                      <th className="py-2 px-3">Expiry Date</th>
+                      <th className="py-2 px-3 text-center">{t('tax_1_header', 'TAX 1 »')}</th>
+                      <th className="py-2 px-3">{t('expiry_date', 'Expiry Date')}</th>
                       <th className="py-2 px-2 text-center"></th>
                     </tr>
                   </thead>
@@ -1428,14 +1428,14 @@ export default function PurchasesView() {
             {/* Section 4: Other Costs & Totals matching Screenshot 2 */}
             <div className="bg-white border border-slate-200 rounded p-4 shadow-2xs">
               <div className="border-b border-slate-100 pb-2 mb-3">
-                <h3 className="font-bold text-xs text-slate-800">Other Costs</h3>
+                <h3 className="font-bold text-xs text-slate-800">{t('other_costs', 'Other Costs')}</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                 {/* Left Side: Freight, Other Cost, Custom, Charges */}
                 <div className="space-y-2 border-r border-slate-100 pr-6">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Freight:</span>
+                    <span className="font-semibold text-slate-700">{t('total_freight', 'Total Freight:')}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -1448,7 +1448,7 @@ export default function PurchasesView() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Other Cost:</span>
+                    <span className="font-semibold text-slate-700">{t('total_other_cost', 'Total Other Cost:')}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -1461,7 +1461,7 @@ export default function PurchasesView() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Custom:</span>
+                    <span className="font-semibold text-slate-700">{t('total_custom', 'Total Custom:')}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -1474,7 +1474,7 @@ export default function PurchasesView() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Charges:</span>
+                    <span className="font-semibold text-slate-700">{t('total_charges', 'Total Charges:')}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -1491,31 +1491,31 @@ export default function PurchasesView() {
                 {/* Right Side: Totals Summary matching Screenshot 2 */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Subtotal:</span>
+                    <span className="font-semibold text-slate-700">{t('subtotal', 'Subtotal:')}</span>
                     <span className="font-mono font-bold text-slate-800">
                       {totals.subtotal.toLocaleString()} LL
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Tax:</span>
+                    <span className="font-semibold text-slate-700">{t('total_tax', 'Total Tax:')}</span>
                     <span className="font-mono font-bold text-slate-800">
                       {totals.totalTax.toLocaleString()} LL
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Discount:</span>
+                    <span className="font-semibold text-slate-700">{t('total_discount', 'Total Discount:')}</span>
                     <span className="font-mono font-bold text-slate-800">
                       {totals.totalDiscount.toLocaleString()} LL
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200">
-                    <span className="font-bold text-sm text-slate-900">Total:</span>
+                    <span className="font-bold text-sm text-slate-900">{t('total', 'Total:')}</span>
                     <span className="font-mono font-bold text-sm text-blue-700">
                       {totals.netTotal.toLocaleString()} LL
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-slate-500">
-                    <span>Total Quantities:</span>
+                    <span>{t('total_quantities', 'Total Quantities:')}</span>
                     <span className="font-mono font-semibold">{totals.totalQty.toFixed(2)}</span>
                   </div>
                 </div>
@@ -1532,7 +1532,7 @@ export default function PurchasesView() {
                 title="Save as Unposted Draft (Invoice saved in Purchases list, stock not yet committed)"
               >
                 <Save className="w-4 h-4" />
-                <span>Save</span>
+                <span>{t('save', 'Save')}</span>
               </button>
 
               {/* Save & Post (Green button #198754) */}
@@ -1543,7 +1543,7 @@ export default function PurchasesView() {
                 title="Save & Post (Immediately commits inventory to stock and posts to Accounts Payable)"
               >
                 <FileText className="w-4 h-4" />
-                <span>Save &amp; Post</span>
+                <span>{t('save_and_post', 'Save & Post')}</span>
               </button>
             </div>
           </div>
@@ -1558,7 +1558,7 @@ export default function PurchasesView() {
           <div className="bg-white rounded shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-scale-up">
             {/* Header */}
             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="font-bold text-sm text-slate-800">New Location</h3>
+              <h3 className="font-bold text-sm text-slate-800">{t('new_location', 'New Location')}</h3>
               <button
                 type="button"
                 onClick={() => setShowLocationModal(false)}
@@ -1607,7 +1607,7 @@ export default function PurchasesView() {
                 className="bg-primary hover:bg-primary text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Save</span>
+                <span>{t('save', 'Save')}</span>
               </button>
             </div>
           </div>
@@ -1622,7 +1622,7 @@ export default function PurchasesView() {
           <div className="bg-white rounded shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-scale-up">
             {/* Header */}
             <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="font-bold text-sm text-slate-800">New Currency</h3>
+              <h3 className="font-bold text-sm text-slate-800">{t('new_currency', 'New Currency')}</h3>
               <button
                 type="button"
                 onClick={() => setShowCurrencyModal(false)}
@@ -1709,7 +1709,7 @@ export default function PurchasesView() {
                 className="bg-primary hover:bg-primary text-white text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Save</span>
+                <span>{t('save', 'Save')}</span>
               </button>
             </div>
           </div>

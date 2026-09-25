@@ -938,7 +938,7 @@ function OperationsDashboardContent() {
                 href="/dashboard/sales"
                 target="_blank"
                 className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-xs"
-                title="Sales Dashboard"
+                title={t('sales_dashboard', 'Sales Dashboard')}
               >
                 <TrendingUp className="w-4 h-4" />
               </Link>
@@ -946,7 +946,7 @@ function OperationsDashboardContent() {
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-xs cursor-pointer"
-                title="Menu"
+                title={t('menu', 'Menu')}
               >
                 <Menu className="w-4 h-4" />
               </button>
@@ -963,11 +963,11 @@ function OperationsDashboardContent() {
                 value={selectedBranch}
                 onChange={(e) => {
                   setSelectedBranch(e.target.value);
-                  const bName = e.target.value === 'ALL' || e.target.value === '0' ? 'All Branches (Consolidated Fleet)' : getBranchData(e.target.value).name;
-                  setRecalcToast(`Switched view to ${bName}`);
+                  const bName = e.target.value === 'ALL' || e.target.value === '0' ? t('all_branches_fleet', 'All Branches (Consolidated Fleet)') : getBranchData(e.target.value).name;
+                  setRecalcToast(`${t('switched_view_to', 'Switched view to')} ${bName}`);
                   setTimeout(() => setRecalcToast(null), 2500);
                 }}
-                title="Branch Filter"
+                title={t('branch_filter', 'Branch Filter')}
               >
                 {allBranchesList.length > 1 && (
                   <option value="ALL">{t('all_branches_fleet', 'All Branches (Consolidated Fleet)')}</option>
@@ -985,7 +985,7 @@ function OperationsDashboardContent() {
               <select
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
-                title="Currency Filter"
+                title={t('currency_filter', 'Currency Filter')}
               >
                 <option value="USD">USD ($)</option>
                 <option value="LBP">LBP</option>
@@ -997,7 +997,7 @@ function OperationsDashboardContent() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                title="Year Filter"
+                title={t('year_filter', 'Year Filter')}
               >
                 <option value="2026">2026</option>
                 <option value="2025">2025</option>
@@ -1010,7 +1010,7 @@ function OperationsDashboardContent() {
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                title="Month Filter"
+                title={t('month_filter', 'Month Filter')}
               >
                 <option value="0">{t('all_months', 'All Months')}</option>
                 <option value="1">{t('january', 'January')}</option>
@@ -1036,7 +1036,7 @@ function OperationsDashboardContent() {
               type="button"
               onClick={() => setShowQtyNotReceived(true)}
               className="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-mono font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-              title="Quantity Not Received: Pending POs & Requests"
+              title={t('quantity_not_received_tooltip', 'Quantity Not Received: Pending POs & Requests')}
             >
               <Package className="w-3.5 h-3.5" />
               <span>{totalQtyNotReceivedCount}</span>
@@ -1048,7 +1048,7 @@ function OperationsDashboardContent() {
                 type="button"
                 onClick={() => setActionsDropdownOpen(!actionsDropdownOpen)}
                 className="btn inventoryDash_btn"
-                title="Dashboard Actions & Operations"
+                title={t('dashboard_actions_operations', 'Dashboard Actions & Operations')}
               >
                 <Menu className="w-4 h-4 text-slate-700" />
               </button>
@@ -1121,7 +1121,7 @@ function OperationsDashboardContent() {
               type="button"
               onClick={handleRefresh}
               className="btn inventoryDash_btn"
-              title="Refresh Inventory Dashboard Data"
+              title={t('refresh_inventory_dashboard_data', 'Refresh Inventory Dashboard Data')}
             >
               <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin text-blue-600' : ''}`} />
             </button>
@@ -1130,7 +1130,7 @@ function OperationsDashboardContent() {
             <Link
               href="/backoffice/operations?section=reports"
               className="btn inventory-action-icon-btn"
-              title="Inventory Reports"
+              title={t('inventory_reports', 'Inventory Reports')}
             >
               <BarChart3 className="w-4 h-4 text-white" />
             </Link>
@@ -1139,7 +1139,7 @@ function OperationsDashboardContent() {
             <Link
               href="/backoffice/reportview"
               className="btn inventory-action-icon-btn"
-              title="Sales Reports"
+              title={t('sales_reports', 'Sales Reports')}
             >
               <TrendingUp className="w-4 h-4 text-white" />
             </Link>
@@ -1149,7 +1149,7 @@ function OperationsDashboardContent() {
               href="/pos"
               target="_blank"
               className="btn inventory-action-icon-btn bg-emerald-700 hover:bg-emerald-800"
-              title="POS Touch Terminal"
+              title={t('pos_touch_terminal', 'POS Touch Terminal')}
             >
               <CreditCard className="w-4 h-4 text-white" />
             </Link>
@@ -1187,7 +1187,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('sales')}
                 className="metric-info-icon"
                 style={{ color: '#6f7d68' }}
-                title="View Sales Last 10 Transactions"
+                title={t('view_sales_last_10', 'View Sales Last 10 Transactions')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1209,7 +1209,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('purchase')}
                 className="metric-info-icon"
                 style={{ color: '#e49f4b' }}
-                title="View Purchases Last 10 Transactions"
+                title={t('view_purchases_last_10', 'View Purchases Last 10 Transactions')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1231,7 +1231,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('wastage')}
                 className="metric-info-icon"
                 style={{ color: '#d45214' }}
-                title="View Wastage Last 10 Transactions"
+                title={t('view_wastage_last_10', 'View Wastage Last 10 Transactions')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1253,7 +1253,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('variance')}
                 className="metric-info-icon"
                 style={{ color: '#cc8034' }}
-                title="View Variance Last 10 Transactions"
+                title={t('view_variance_last_10', 'View Variance Last 10 Transactions')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1275,7 +1275,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('stock')}
                 className="metric-info-icon"
                 style={{ color: '#82bd7a' }}
-                title="View Stock Category Breakdown"
+                title={t('view_stock_category_breakdown', 'View Stock Category Breakdown')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1297,7 +1297,7 @@ function OperationsDashboardContent() {
                 onClick={() => setActiveModal('expiry')}
                 className="metric-info-icon"
                 style={{ color: '#3b82f6' }}
-                title="Audit Alerts & Expiry Status"
+                title={t('audit_alerts_expiry_status', 'Audit Alerts & Expiry Status')}
               >
                 <Info className="w-4 h-4" />
               </button>
@@ -1504,7 +1504,7 @@ function OperationsDashboardContent() {
                           <th className="text-right">{t('all_branches', 'All Branches')}</th>
                           {selectedBranch === 'ALL' && allBranchesList.length > 1 ? (
                             <>
-                              <th className="text-right">Main Branch (00001)</th>
+                              <th className="text-right">{t('main_branch_00001', 'Main Branch (00001)')}</th>
                             </>
                           ) : (
                             <th className="text-right bg-blue-900 text-white font-black">{currentBranchData.name} ({currentBranchData.code})</th>
@@ -1701,7 +1701,7 @@ function OperationsDashboardContent() {
                         <tr key={row.category} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}>
                           <td className="font-medium text-slate-900">{row.category}</td>
                           <td className={`font-mono text-right font-bold ${row.amount < 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
-                            {row.amount > 0 ? `+${row.amount} Units` : `${row.amount} Units`}
+                            {row.amount > 0 ? `+${row.amount} ${t('units', 'Units')}` : `${row.amount} ${t('units', 'Units')}`}
                           </td>
                         </tr>
                       ))}
@@ -2366,7 +2366,7 @@ function OperationsDashboardContent() {
                       />
                       <span>{t('show_negative_values', 'Show Negative Values')}</span>
                     </label>
-                    <span className="text-xs text-slate-500 font-mono">6 Categories Audited</span>
+                    <span className="text-xs text-slate-500 font-mono">{stockCategories.length} {t('categories_audited', 'Categories Audited')}</span>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -2382,7 +2382,7 @@ function OperationsDashboardContent() {
                         {stockCategories.map((sc, idx) => (
                           <tr key={sc.CATEGORYNAME} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}>
                             <td className="font-semibold text-slate-900">{sc.CATEGORYNAME}</td>
-                            <td className="font-mono text-right text-slate-700">{sc.QTY.toLocaleString()} Units</td>
+                            <td className="font-mono text-right text-slate-700">{sc.QTY.toLocaleString()} {t('units', 'Units')}</td>
                             <td className="font-mono font-black text-right text-emerald-800">{formatCurrency(sc.AMOUNT)}</td>
                           </tr>
                         ))}
@@ -2695,7 +2695,7 @@ function OperationsDashboardContent() {
                 />
                 <span>{t('show_negative_values', 'Show Negative Values')}</span>
               </label>
-              <span className="text-slate-500 font-mono">Total Categories: {stockCategories.length}</span>
+              <span className="text-slate-500 font-mono">{t('total_categories', 'Total Categories')}: {stockCategories.length}</span>
             </div>
 
             <div className="mt-1 overflow-y-auto flex-1">
@@ -2976,22 +2976,22 @@ function OperationsDashboardContent() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="font-bold text-slate-900">Dark Green Marasca Glass Bottles 500ml</td>
+                    <td className="font-bold text-slate-900">{t('dark_green_marasca_bottles_500ml', 'Dark Green Marasca Glass Bottles 500ml')}</td>
                     <td className="font-mono text-red-700 font-bold">840</td>
                     <td className="font-mono text-slate-600">2,500</td>
-                    <td className="font-mono text-emerald-700 font-black">+2,000 Pcs</td>
+                    <td className="font-mono text-emerald-700 font-black">+2,000 {t('pcs', 'Pcs')}</td>
                   </tr>
                   <tr>
-                    <td className="font-bold text-slate-900">Extra Virgin Olive Oil 500ml Glass</td>
+                    <td className="font-bold text-slate-900">{t('evoo_500ml_glass', 'Extra Virgin Olive Oil 500ml Glass')}</td>
                     <td className="font-mono text-amber-700 font-bold">120</td>
                     <td className="font-mono text-slate-600">500</td>
-                    <td className="font-mono text-emerald-700 font-black">+400 Bottles</td>
+                    <td className="font-mono text-emerald-700 font-black">+400 {t('bottles', 'Bottles')}</td>
                   </tr>
                   <tr>
-                    <td className="font-bold text-slate-900">Pure Castile Soap Unscented 150g</td>
+                    <td className="font-bold text-slate-900">{t('castile_soap_unscented_150g', 'Pure Castile Soap Unscented 150g')}</td>
                     <td className="font-mono text-amber-700 font-bold">75</td>
                     <td className="font-mono text-slate-600">300</td>
-                    <td className="font-mono text-emerald-700 font-black">+250 Bars</td>
+                    <td className="font-mono text-emerald-700 font-black">+250 {t('bars', 'Bars')}</td>
                   </tr>
                 </tbody>
               </table>
@@ -3143,15 +3143,18 @@ function OperationsDashboardContent() {
   );
 }
 
+function DashboardFallback() {
+  const { t } = useLanguage();
+  return (
+    <div className="p-8 text-center text-xs text-slate-500 font-mono">
+      {t('loading_vanguard_operations_dashboard', 'Loading Vanguard Operations Dashboard...')}
+    </div>
+  );
+}
+
 export default function AuthenticVanguardOperationsDashboard() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-center text-xs text-slate-500 font-mono">
-          Loading Vanguard Operations Dashboard...
-        </div>
-      }
-    >
+    <Suspense fallback={<DashboardFallback />}>
       <OperationsDashboardContent />
     </Suspense>
   );

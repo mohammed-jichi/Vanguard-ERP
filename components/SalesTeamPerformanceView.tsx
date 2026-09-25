@@ -30,6 +30,7 @@ import {
   PieChart
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import { getAllBranchesList, getBranchData, BranchInfo } from '@/lib/branchData';
 
 interface RepPerformance {
@@ -73,6 +74,7 @@ interface NextAction {
 }
 
 export default function SalesTeamPerformanceView() {
+  const { t, dir } = useLanguage();
   const { currentTenant } = useTenant();
 
   // Active period filter matching authentic Vanguard CRM5
@@ -82,16 +84,16 @@ export default function SalesTeamPerformanceView() {
   const [refreshToast, setRefreshToast] = useState<string | null>(null);
 
   const periods = [
-    { value: 'today', label: 'Today' },
-    { value: 'yesterday', label: 'Yesterday' },
-    { value: 'week', label: 'This Week' },
-    { value: 'month', label: 'This Month' },
-    { value: 'quarter', label: 'This Quarter' },
-    { value: 'year', label: 'This Year' },
+    { value: 'today', label: t('today', 'Today') },
+    { value: 'yesterday', label: t('yesterday', 'Yesterday') },
+    { value: 'week', label: t('this_week', 'This Week') },
+    { value: 'month', label: t('this_month', 'This Month') },
+    { value: 'quarter', label: t('this_quarter', 'This Quarter') },
+    { value: 'year', label: t('this_year', 'This Year') },
   ];
 
   const triggerRefresh = (label: string) => {
-    setRefreshToast(`Refreshed ${label} metrics successfully`);
+    setRefreshToast(t('metrics_refreshed_toast', 'Refreshed {label} metrics successfully').replace('{label}', label));
     setTimeout(() => setRefreshToast(null), 3000);
   };
 
@@ -277,7 +279,7 @@ export default function SalesTeamPerformanceView() {
   }, [selectedBranch, filteredTeamPerformance]);
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6" dir={dir}>
       {/* REFRESH TOAST NOTIFICATION */}
       {refreshToast && (
         <div className="fixed top-20 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 text-xs font-bold flex items-center gap-2 animate-bounce">
@@ -298,14 +300,14 @@ export default function SalesTeamPerformanceView() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl md:text-2xl font-black tracking-tight text-white">
-                  Sales Manager Dashboard
+                  {t('sales_manager_dashboard', 'Sales Manager Dashboard')}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                  Sales Team Performance
+                  {t('sales_team_performance', 'Sales Team Performance')}
                 </span>
               </div>
               <p className="text-xs text-slate-300 mt-1 font-medium">
-                Live Field Reps, Quotations, Invoiced Wins & Target Attainment &middot; Southern Olive Oil Products S.A.R.L
+                {t('sales_team_performance_desc', 'Live Field Reps, Quotations, Invoiced Wins & Target Attainment · Southern Olive Oil Products S.A.R.L')}
               </p>
             </div>
           </div>
@@ -342,7 +344,7 @@ export default function SalesTeamPerformanceView() {
               className="bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold cursor-pointer focus:ring-2 focus:ring-blue-500"
             >
               {allBranchesList.length > 1 && (
-                <option value="0">All Branches (جميع الفروع)</option>
+                <option value="0">{t('all_branches_label', 'All Branches (جميع الفروع)')}</option>
               )}
               {allBranchesList.map((b) => (
                 <option key={b.id} value={b.id}>
@@ -357,15 +359,15 @@ export default function SalesTeamPerformanceView() {
               onChange={(e) => setSelectedCurrency(e.target.value as 'USD' | 'LBP')}
               className="bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold cursor-pointer focus:ring-2 focus:ring-blue-500"
             >
-              <option value="USD">USD ($)</option>
-              <option value="LBP">LBP (ل.ل)</option>
+              <option value="USD">{t('currency_usd', 'USD ($)')}</option>
+              <option value="LBP">{t('currency_lbp', 'LBP (ل.ل)')}</option>
             </select>
 
             <button
               type="button"
               onClick={() => triggerRefresh('Sales Pipeline')}
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition"
-              title="Refresh Data"
+              title={t('refresh_data', 'Refresh Data')}
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -376,7 +378,7 @@ export default function SalesTeamPerformanceView() {
               className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-600/30"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Export / Print</span>
+              <span>{t('export_print', 'Export / Print')}</span>
             </button>
           </div>
         </div>
@@ -389,43 +391,43 @@ export default function SalesTeamPerformanceView() {
         {/* KPI 1: New Leads */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>New Leads</span>
+            <span>{t('new_leads', 'New Leads')}</span>
             <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
               <Filter className="w-4 h-4" />
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{totalNewLeads}</div>
-          <div className="text-[11px] font-semibold text-slate-500 mt-1">{Math.round(totalNewLeads * 0.36)} open leads</div>
+          <div className="text-[11px] font-semibold text-slate-500 mt-1">{Math.round(totalNewLeads * 0.36)} {t('open_leads', 'open leads')}</div>
         </div>
 
         {/* KPI 2: Qualified New */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>Qualified New</span>
+            <span>{t('qualified_new', 'Qualified New')}</span>
             <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{totalQualified}</div>
-          <div className="text-[11px] font-bold text-emerald-600 mt-1">{totalQualityRate}% conversion</div>
+          <div className="text-[11px] font-bold text-emerald-600 mt-1">{totalQualityRate}% {t('conversion', 'conversion')}</div>
         </div>
 
         {/* KPI 3: Lost Qualified */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>Lost Qualified</span>
+            <span>{t('lost_qualified', 'Lost Qualified')}</span>
             <span className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <XCircle className="w-4 h-4" />
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{totalLostQualified}</div>
-          <div className="text-[11px] font-semibold text-rose-600 mt-1">{totalLostRate}% of qualified</div>
+          <div className="text-[11px] font-semibold text-rose-600 mt-1">{totalLostRate}% {t('of_qualified', 'of qualified')}</div>
         </div>
 
         {/* KPI 4: Won Invoices */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>Won Invoices</span>
+            <span>{t('won_invoices', 'Won Invoices')}</span>
             <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <Trophy className="w-4 h-4" />
             </span>
@@ -437,25 +439,25 @@ export default function SalesTeamPerformanceView() {
         {/* KPI 5: Quotations */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>Quotations</span>
+            <span>{t('quotations', 'Quotations')}</span>
             <span className="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-700 flex items-center justify-center">
               <FileText className="w-4 h-4" />
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{Math.round(totalWonInvoices * 0.63) || 8}</div>
-          <div className="text-[11px] font-semibold text-slate-600 mt-1">{formatCurrency(Math.round(totalWonAmount * 0.77))} val</div>
+          <div className="text-[11px] font-semibold text-slate-600 mt-1">{formatCurrency(Math.round(totalWonAmount * 0.77))} {t('val', 'val')}</div>
         </div>
 
         {/* KPI 6: Expected Pipeline */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
-            <span>Expected Pipeline</span>
+            <span>{t('expected_pipeline', 'Expected Pipeline')}</span>
             <span className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 font-mono">{formatCurrency(Math.round(totalTarget * 0.59))}</div>
-          <div className="text-[11px] font-semibold text-slate-500 mt-1">{Math.round(totalWonInvoices * 0.42) || 5} active quotes</div>
+          <div className="text-[11px] font-semibold text-slate-500 mt-1">{Math.round(totalWonInvoices * 0.42) || 5} {t('active_quotes', 'active quotes')}</div>
         </div>
       </div>
 
@@ -466,10 +468,10 @@ export default function SalesTeamPerformanceView() {
         <div className="flex items-center justify-between text-xs font-bold text-slate-900 mb-2.5">
           <div className="flex items-center gap-2">
             <Target className="w-4 h-4 text-emerald-600" />
-            <span className="text-sm font-black">Won Target Attainment (Period Goal)</span>
+            <span className="text-sm font-black">{t('won_target_attainment', 'Won Target Attainment (Period Goal)')}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-semibold">Attainment:</span>
+            <span className="text-xs text-slate-500 font-semibold">{t('attainment', 'Attainment:')}</span>
             <span className="text-emerald-700 font-mono font-black text-base">{targetAttainment}%</span>
           </div>
         </div>
@@ -482,8 +484,8 @@ export default function SalesTeamPerformanceView() {
         </div>
 
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500 mt-2.5">
-          <span>Current Invoiced Won: <b className="text-slate-900 font-mono text-sm">{formatCurrency(totalWonAmount)}</b></span>
-          <span>Target Monthly Quota: <b className="text-slate-900 font-mono text-sm">{formatCurrency(totalTarget)}</b></span>
+          <span>{t('current_invoiced_won', 'Current Invoiced Won:')} <b className="text-slate-900 font-mono text-sm">{formatCurrency(totalWonAmount)}</b></span>
+          <span>{t('target_monthly_quota', 'Target Monthly Quota:')} <b className="text-slate-900 font-mono text-sm">{formatCurrency(totalTarget)}</b></span>
         </div>
       </div>
 
@@ -502,12 +504,12 @@ export default function SalesTeamPerformanceView() {
                   <Trophy className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Sales Team Performance Leaderboard</h2>
-                  <p className="text-xs text-slate-500">Live individual rep quota progress & conversion velocity</p>
+                  <h2 className="text-sm font-black text-slate-900">{t('sales_team_leaderboard', 'Sales Team Performance Leaderboard')}</h2>
+                  <p className="text-xs text-slate-500">{t('sales_team_leaderboard_desc', 'Live individual rep quota progress & conversion velocity')}</p>
                 </div>
               </div>
               <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold font-mono">
-                {filteredTeamPerformance.length} Field Reps
+                {filteredTeamPerformance.length} {t('field_reps', 'Field Reps')}
               </span>
             </div>
 
@@ -515,14 +517,14 @@ export default function SalesTeamPerformanceView() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-black uppercase tracking-wider text-slate-600">
-                    <th className="py-3 px-3.5">Salesman</th>
-                    <th className="py-3 px-3 text-right">New Leads</th>
-                    <th className="py-3 px-3 text-right">Qualified</th>
-                    <th className="py-3 px-3 text-right">Qualified %</th>
-                    <th className="py-3 px-3 text-right">Lost</th>
-                    <th className="py-3 px-3 text-right">Lost %</th>
-                    <th className="py-3 px-3 text-right">Won Inv.</th>
-                    <th className="py-3 px-3.5 text-right">Won Amount</th>
+                    <th className="py-3 px-3.5">{t('salesman', 'Salesman')}</th>
+                    <th className="py-3 px-3 text-right">{t('new_leads', 'New Leads')}</th>
+                    <th className="py-3 px-3 text-right">{t('qualified', 'Qualified')}</th>
+                    <th className="py-3 px-3 text-right">{t('qualified_pct', 'Qualified %')}</th>
+                    <th className="py-3 px-3 text-right">{t('lost', 'Lost')}</th>
+                    <th className="py-3 px-3 text-right">{t('lost_pct', 'Lost %')}</th>
+                    <th className="py-3 px-3 text-right">{t('won_inv', 'Won Inv.')}</th>
+                    <th className="py-3 px-3.5 text-right">{t('won_amount', 'Won Amount')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs">
@@ -545,7 +547,7 @@ export default function SalesTeamPerformanceView() {
                   ))}
                   {/* Consolidated Totals Row */}
                   <tr className="bg-slate-100/90 font-black border-t-2 border-slate-300">
-                    <td className="py-3.5 px-3.5 font-black text-slate-900 text-sm">Total Team Output</td>
+                    <td className="py-3.5 px-3.5 font-black text-slate-900 text-sm">{t('total_team_output', 'Total Team Output')}</td>
                     <td className="py-3.5 px-3 text-right font-mono text-slate-900 text-sm">
                       {totalNewLeads}
                     </td>
@@ -577,20 +579,20 @@ export default function SalesTeamPerformanceView() {
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Active Deals Pipeline Funnel</h2>
-                  <p className="text-xs text-slate-500">Stage progression & deal value distribution</p>
+                  <h2 className="text-sm font-black text-slate-900">{t('active_deals_pipeline_funnel', 'Active Deals Pipeline Funnel')}</h2>
+                  <p className="text-xs text-slate-500">{t('stage_progression_distribution', 'Stage progression & deal value distribution')}</p>
                 </div>
               </div>
-              <span className="text-xs text-slate-500 font-mono font-bold">{totalNewLeads} Total Deals</span>
+              <span className="text-xs text-slate-500 font-mono font-bold">{totalNewLeads} {t('total_deals', 'Total Deals')}</span>
             </div>
 
             <div className="space-y-4 pt-1">
               {pipelineStages.map((ps) => (
                 <div key={ps.stage} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <span className="text-slate-800 font-bold">{ps.stage}</span>
+                    <span className="text-slate-800 font-bold">{t('pipeline_stage_' + ps.stage.substring(0, 1), ps.stage)}</span>
                     <div className="flex items-center gap-2 font-mono">
-                      <span className="text-slate-500">({ps.count} deals)</span>
+                      <span className="text-slate-500">({ps.count} {t('deals', 'deals')})</span>
                       <span className="font-black text-slate-900">{formatCurrency(ps.value)}</span>
                     </div>
                   </div>
@@ -618,12 +620,12 @@ export default function SalesTeamPerformanceView() {
                   <Filter className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Lead Sources Quality</h2>
-                  <p className="text-xs text-slate-500">Channel qualification conversion</p>
+                  <h2 className="text-sm font-black text-slate-900">{t('lead_sources_quality', 'Lead Sources Quality')}</h2>
+                  <p className="text-xs text-slate-500">{t('channel_qualification_conversion', 'Channel qualification conversion')}</p>
                 </div>
               </div>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Conversion
+                {t('conversion', 'Conversion')}
               </span>
             </div>
 
@@ -631,12 +633,12 @@ export default function SalesTeamPerformanceView() {
               {leadSources.map((ls) => (
                 <div key={ls.source} className="p-3 rounded-xl border border-slate-200 bg-slate-50/70">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-900">
-                    <span>{ls.source}</span>
+                    <span>{t('lead_source_' + ls.source.toLowerCase().replace(/[^a-z0-9]/g, '_'), ls.source)}</span>
                     <span className="font-mono font-black text-emerald-700">{ls.qualityRate}%</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-500 mt-1 font-medium">
-                    <span>{ls.leads} Inbound Leads</span>
-                    <span className="font-bold text-slate-700">{ls.wonDeals} Deals Won</span>
+                    <span>{ls.leads} {t('inbound_leads', 'Inbound Leads')}</span>
+                    <span className="font-bold text-slate-700">{ls.wonDeals} {t('deals_won', 'Deals Won')}</span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2 mt-2 overflow-hidden">
                     <div
@@ -657,12 +659,12 @@ export default function SalesTeamPerformanceView() {
                   <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Next Actions & Rep Follow-ups</h2>
-                  <p className="text-xs text-slate-500">Upcoming tasks & meetings</p>
+                  <h2 className="text-sm font-black text-slate-900">{t('next_actions_rep_followups', 'Next Actions & Rep Follow-ups')}</h2>
+                  <p className="text-xs text-slate-500">{t('upcoming_tasks_meetings', 'Upcoming tasks & meetings')}</p>
                 </div>
               </div>
               <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold font-mono">
-                {nextActions.length} Open
+                {nextActions.length} {t('open', 'Open')}
               </span>
             </div>
 
@@ -676,7 +678,7 @@ export default function SalesTeamPerformanceView() {
                     <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
                       act.priority === 'high' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'
                     }`}>
-                      {act.priority}
+                      {t(act.priority, act.priority)}
                     </span>
                   </div>
                   <div className="text-xs text-blue-700 font-bold mt-1">
