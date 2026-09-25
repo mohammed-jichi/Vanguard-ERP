@@ -29,6 +29,7 @@ import {
   ONLINE_ORDER_BRANCHES,
   ONLINE_ORDER_STATUSES
 } from '@/lib/omegaOnlineOrdersData';
+import { useLanguage } from '@/lib/LanguageContext';
 
 interface ToastState {
   show: boolean;
@@ -37,6 +38,7 @@ interface ToastState {
 }
 
 export default function OnlineOrdersView() {
+  const { t, dir } = useLanguage();
   const [orders, setOrders] = useState<OmegaOnlineOrder[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -249,21 +251,21 @@ export default function OnlineOrdersView() {
         <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-2">
           <div>
             <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
-              Online Orders Control Center
+              {t('Online Orders Control Center', 'Online Orders Control Center')}
             </h1>
             <p className="text-xs text-slate-500">
-              Monitor online orders and check whether they are fully, partially, or not yet received in POS.
+              {t('Monitor online orders and check whether they are fully, partially, or not yet received in POS.', 'Monitor online orders and check whether they are fully, partially, or not yet received in POS.')}
             </p>
           </div>
           <div className="text-end">
             <ul className="flex items-center gap-1.5 text-xs text-slate-500">
               <li>
                 <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-                  Home
+                  {t('Home', 'Home')}
                 </Link>
               </li>
               <li>/</li>
-              <li className="text-slate-800 font-medium">Online Orders</li>
+              <li className="text-slate-800 font-medium">{t('Online Orders', 'Online Orders')}</li>
             </ul>
           </div>
         </div>
@@ -281,7 +283,7 @@ export default function OnlineOrdersView() {
               <Receipt className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] font-semibold text-slate-500">Total Orders</div>
+              <div className="text-[11px] font-semibold text-slate-500">{t('Total Orders', 'Total Orders')}</div>
               <h3 className="text-lg font-bold text-slate-900 leading-tight">
                 {stats.total.toLocaleString()}
               </h3>
@@ -294,7 +296,7 @@ export default function OnlineOrdersView() {
               <CheckCircle className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] font-semibold text-slate-500">Fully Received</div>
+              <div className="text-[11px] font-semibold text-slate-500">{t('Fully Received', 'Fully Received')}</div>
               <h3 className="text-lg font-bold text-emerald-700 leading-tight">
                 {stats.fully.toLocaleString()}
               </h3>
@@ -307,7 +309,7 @@ export default function OnlineOrdersView() {
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] font-semibold text-slate-500">Partially Received</div>
+              <div className="text-[11px] font-semibold text-slate-500">{t('Partially Received', 'Partially Received')}</div>
               <h3 className="text-lg font-bold text-amber-700 leading-tight">
                 {stats.partial.toLocaleString()}
               </h3>
@@ -320,7 +322,7 @@ export default function OnlineOrdersView() {
               <XCircle className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-[11px] font-semibold text-slate-500">Not Received Yet</div>
+              <div className="text-[11px] font-semibold text-slate-500">{t('Not Received Yet', 'Not Received Yet')}</div>
               <h3 className="text-lg font-bold text-rose-700 leading-tight">
                 {stats.notReceived.toLocaleString()}
               </h3>
@@ -332,16 +334,16 @@ export default function OnlineOrdersView() {
             <div
               onClick={handleManualRefresh}
               className="w-11 h-11 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 cursor-pointer hover:bg-slate-200 transition-colors"
-              title="Click to sync now"
+              title={t('Click to sync now', 'Click to sync now')}
             >
               <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
             </div>
             <div className="text-[11px]">
-              <div className="font-semibold text-slate-500">Last Sync</div>
+              <div className="font-semibold text-slate-500">{t('Last Sync', 'Last Sync')}</div>
               <h4 className="text-xs font-bold text-slate-900 leading-tight">
-                {lastSyncSeconds === 0 ? 'Just now' : `${lastSyncSeconds}s ago`}
+                {lastSyncSeconds === 0 ? t('Just now', 'Just now') : `${lastSyncSeconds}${t('s_ago', 's ago')}`}
               </h4>
-              <div className="text-[10px] text-slate-400 mt-0.5">Auto reload every 2 min</div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{t('Auto reload every 2 min', 'Auto reload every 2 min')}</div>
             </div>
           </div>
         </div>
@@ -360,7 +362,7 @@ export default function OnlineOrdersView() {
               >
                 {ONLINE_ORDER_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
-                    {b.BARANCHNAME}
+                    {t(b.BARANCHNAME, b.BARANCHNAME)}
                   </option>
                 ))}
               </select>
@@ -375,7 +377,7 @@ export default function OnlineOrdersView() {
               >
                 {ONLINE_ORDER_STATUSES.map(s => (
                   <option key={s.id} value={s.id}>
-                    {s.description}
+                    {t(s.description, s.description)}
                   </option>
                 ))}
               </select>
@@ -385,7 +387,7 @@ export default function OnlineOrdersView() {
             <div className="col-span-12 md:col-span-3 relative">
               <input
                 type="search"
-                placeholder="Search order no, customer, zone..."
+                placeholder={t('Search order no, customer, zone...', 'Search order no, customer, zone...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full text-xs bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
@@ -406,7 +408,7 @@ export default function OnlineOrdersView() {
                   {hasPendingOrders(1) && (
                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                   )}
-                  <span>External Orders</span>
+                  <span>{t('External Orders', 'External Orders')}</span>
                 </button>
                 <button
                   type="button"
@@ -418,7 +420,7 @@ export default function OnlineOrdersView() {
                   {hasPendingOrders(2) && (
                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                   )}
-                  <span>Omenu Orders</span>
+                  <span>{t('Omenu Orders', 'Omenu Orders')}</span>
                 </button>
               </div>
             </div>
@@ -431,14 +433,14 @@ export default function OnlineOrdersView() {
                 className="inline-flex items-center gap-1 px-3.5 py-2 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
               >
                 <Filter className="w-3.5 h-3.5" />
-                <span>Filter</span>
+                <span>{t('Filter', 'Filter')}</span>
               </button>
               <button
                 type="button"
                 onClick={handleResetFilters}
                 className="px-3 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded transition-colors cursor-pointer"
               >
-                Reset
+                {t('Reset', 'Reset')}
               </button>
             </div>
           </div>
@@ -450,11 +452,11 @@ export default function OnlineOrdersView() {
         <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
           <div className="p-3.5 border-b border-slate-200 bg-white flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Online Orders List</h2>
-              <p className="text-[11px] text-slate-500">Track receipt progress in POS for each online order.</p>
+              <h2 className="text-sm font-bold text-slate-900">{t('Online Orders List', 'Online Orders List')}</h2>
+              <p className="text-[11px] text-slate-500">{t('Track receipt progress in POS for each online order.', 'Track receipt progress in POS for each online order.')}</p>
             </div>
             <span className="text-xs font-medium text-slate-500">
-              Showing {filteredOrders.length} of {orders.filter(o => o.order_type === orderType).length} orders
+              {t('Showing', 'Showing')} {filteredOrders.length} {t('of', 'of')} {orders.filter(o => o.order_type === orderType).length} {t('orders', 'orders')}
             </span>
           </div>
 
@@ -462,23 +464,23 @@ export default function OnlineOrdersView() {
             <table className="w-full text-left text-xs text-slate-700 border-collapse">
               <thead>
                 <tr className="bg-slate-50/80 border-b-2 border-slate-200 text-slate-800 font-semibold text-[11px]">
-                  <th className="py-2.5 px-3">Order No.</th>
-                  <th className="py-2.5 px-3">Order Date</th>
-                  <th className="py-2.5 px-3">Delivery Date</th>
-                  <th className="py-2.5 px-3">Customer Name</th>
-                  <th className="py-2.5 px-3">Platform</th>
-                  <th className="py-2.5 px-3 text-end">Total Amount</th>
-                  <th className="py-2.5 px-3 text-center">POS Receipt Status</th>
-                  <th className="py-2.5 px-3">Zone Name</th>
-                  <th className="py-2.5 px-3">Branch Name</th>
-                  <th className="py-2.5 px-3 text-center">Actions</th>
+                  <th className="py-2.5 px-3">{t('Order No.', 'Order No.')}</th>
+                  <th className="py-2.5 px-3">{t('Order Date', 'Order Date')}</th>
+                  <th className="py-2.5 px-3">{t('Delivery Date', 'Delivery Date')}</th>
+                  <th className="py-2.5 px-3">{t('Customer Name', 'Customer Name')}</th>
+                  <th className="py-2.5 px-3">{t('Platform', 'Platform')}</th>
+                  <th className="py-2.5 px-3 text-end">{t('Total Amount', 'Total Amount')}</th>
+                  <th className="py-2.5 px-3 text-center">{t('POS Receipt Status', 'POS Receipt Status')}</th>
+                  <th className="py-2.5 px-3">{t('Zone Name', 'Zone Name')}</th>
+                  <th className="py-2.5 px-3">{t('Branch Name', 'Branch Name')}</th>
+                  <th className="py-2.5 px-3 text-center">{t('Actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
                 {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-10 text-center text-slate-400 font-medium">
-                      No online orders found matching current criteria.
+                      {t('No online orders found matching current criteria.', 'No online orders found matching current criteria.')}
                     </td>
                   </tr>
                 ) : (
@@ -535,32 +537,32 @@ export default function OnlineOrdersView() {
                         {order.order_status === 100 ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                             <XCircle className="w-3 h-3" />
-                            <span>Cancelled</span>
+                            <span>{t('Cancelled', 'Cancelled')}</span>
                           </span>
                         ) : order.status === -1 ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                             <CheckCircle className="w-3 h-3" />
-                            <span>Fully Received</span>
+                            <span>{t('Fully Received', 'Fully Received')}</span>
                           </span>
                         ) : order.status === -3 ? (
                           <div className="inline-flex items-center gap-1">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                               <CheckCircle className="w-3 h-3" />
-                              <span>Fully Received</span>
+                              <span>{t('Fully Received', 'Fully Received')}</span>
                             </span>
                             <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                              Accepted
+                              {t('Accepted', 'Accepted')}
                             </span>
                           </div>
                         ) : order.status === -2 ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
                             <AlertTriangle className="w-3 h-3" />
-                            <span>Partially Received</span>
+                            <span>{t('Partially Received', 'Partially Received')}</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                             <XCircle className="w-3 h-3" />
-                            <span>Not Received Yet</span>
+                            <span>{t('Not Received Yet', 'Not Received Yet')}</span>
                           </span>
                         )}
                       </td>
@@ -580,7 +582,7 @@ export default function OnlineOrdersView() {
                         <button
                           type="button"
                           onClick={() => setSelectedOrder(order)}
-                          title="Preview Order"
+                          title={t('Preview Order', 'Preview Order')}
                           className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -595,8 +597,8 @@ export default function OnlineOrdersView() {
 
           {/* TABLE FOOTER */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
-            <span>Showing {filteredOrders.length} records</span>
-            <span className="font-mono text-[11px]">Page 1 of 1</span>
+            <span>{t('Showing', 'Showing')} {filteredOrders.length} {t('records', 'records')}</span>
+            <span className="font-mono text-[11px]">{t('Page 1 of 1', 'Page 1 of 1')}</span>
           </div>
         </div>
       </div>
@@ -611,7 +613,7 @@ export default function OnlineOrdersView() {
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-blue-400" />
-                <h3 className="text-sm font-semibold tracking-wide">Preview Order</h3>
+                <h3 className="text-sm font-semibold tracking-wide">{t('Preview Order', 'Preview Order')}</h3>
                 <span className="text-xs font-mono text-blue-300">({selectedOrder.orderid})</span>
               </div>
               <button
@@ -631,42 +633,42 @@ export default function OnlineOrdersView() {
                 <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/60 space-y-2">
                   <div className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 flex items-center gap-1.5">
                     <FileText className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Order Info</span>
+                    <span>{t('Order Info', 'Order Info')}</span>
                   </div>
                   <div className="space-y-1 text-[11px]">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Order No:</span>
+                      <span className="text-slate-500">{t('Order No:', 'Order No:')}</span>
                       <span className="font-mono font-bold text-slate-800">{selectedOrder.orderid}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Order Date:</span>
+                      <span className="text-slate-500">{t('Order Date:', 'Order Date:')}</span>
                       <span className="font-mono text-slate-700">{selectedOrder.orderdate}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Delivery Date:</span>
+                      <span className="text-slate-500">{t('Delivery Date:', 'Delivery Date:')}</span>
                       <span className="font-mono text-slate-700">{selectedOrder.delivery_time}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Platform:</span>
-                      <span className="font-semibold text-slate-800">{selectedOrder.platform}</span>
+                      <span className="text-slate-500">{t('Platform:', 'Platform:')}</span>
+                      <span className="font-semibold text-slate-800">{t(selectedOrder.platform, selectedOrder.platform)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Branch:</span>
-                      <span className="text-slate-700">{selectedOrder.branchname}</span>
+                      <span className="text-slate-500">{t('Branch:', 'Branch:')}</span>
+                      <span className="text-slate-700">{t(selectedOrder.branchname, selectedOrder.branchname)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Zone:</span>
-                      <span className="text-slate-700">{selectedOrder.zonename}</span>
+                      <span className="text-slate-500">{t('Zone:', 'Zone:')}</span>
+                      <span className="text-slate-700">{t(selectedOrder.zonename, selectedOrder.zonename)}</span>
                     </div>
                     <div className="flex justify-between items-center pt-1 border-t border-slate-200">
-                      <span className="text-slate-500">Status:</span>
+                      <span className="text-slate-500">{t('Status:', 'Status:')}</span>
                       <div>
                         {selectedOrder.status === -1 ? (
-                          <span className="font-bold text-emerald-700">Fully Received</span>
+                          <span className="font-bold text-emerald-700">{t('Fully Received', 'Fully Received')}</span>
                         ) : selectedOrder.status === -2 ? (
-                          <span className="font-bold text-amber-700">Partially Received</span>
+                          <span className="font-bold text-amber-700">{t('Partially Received', 'Partially Received')}</span>
                         ) : (
-                          <span className="font-bold text-rose-700">Not Received Yet</span>
+                          <span className="font-bold text-rose-700">{t('Not Received Yet', 'Not Received Yet')}</span>
                         )}
                         {selectedOrder.status === 0 && (
                           <button
@@ -674,7 +676,7 @@ export default function OnlineOrdersView() {
                             onClick={() => handleRepushOrder(selectedOrder.id)}
                             className="ms-2 px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold"
                           >
-                            Push Order
+                            {t('Push Order', 'Push Order')}
                           </button>
                         )}
                       </div>
@@ -686,29 +688,29 @@ export default function OnlineOrdersView() {
                 <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/60 space-y-2">
                   <div className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Customer Info</span>
+                    <span>{t('Customer Info', 'Customer Info')}</span>
                   </div>
                   <div className="space-y-1 text-[11px]">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Name:</span>
+                      <span className="text-slate-500">{t('Name:', 'Name:')}</span>
                       <span className="font-bold text-slate-800">
                         {selectedOrder.customer_fname} {selectedOrder.customer_lname}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Phone:</span>
+                      <span className="text-slate-500">{t('Phone:', 'Phone:')}</span>
                       <span className="font-mono text-slate-700">{selectedOrder.customer_phone}</span>
                     </div>
                     {selectedOrder.customer_email && (
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Email:</span>
+                        <span className="text-slate-500">{t('Email:', 'Email:')}</span>
                         <span className="text-slate-700 truncate max-w-[140px]">{selectedOrder.customer_email}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Payment:</span>
+                      <span className="text-slate-500">{t('Payment:', 'Payment:')}</span>
                       <span className="font-semibold text-slate-800">
-                        {selectedOrder.payment_id === 1 ? 'Cash on Delivery' : 'Paid Online'}
+                        {selectedOrder.payment_id === 1 ? t('Cash on Delivery', 'Cash on Delivery') : t('Paid Online', 'Paid Online')}
                       </span>
                     </div>
                   </div>
@@ -718,19 +720,19 @@ export default function OnlineOrdersView() {
                 <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/60 space-y-2">
                   <div className="text-[11px] font-bold text-slate-900 border-b border-slate-200 pb-1 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Delivery Address</span>
+                    <span>{t('Delivery Address', 'Delivery Address')}</span>
                   </div>
                   <div className="space-y-1 text-[11px]">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">City:</span>
+                      <span className="text-slate-500">{t('City:', 'City:')}</span>
                       <span className="font-semibold text-slate-800">{selectedOrder.customer_city}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Street:</span>
+                      <span className="text-slate-500">{t('Street:', 'Street:')}</span>
                       <span className="text-slate-700">{selectedOrder.customer_street}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">Notes:</span>
+                      <span className="text-slate-500 block">{t('Notes:', 'Notes:')}</span>
                       <span className="text-slate-700 text-[10.5px] block">{selectedOrder.customer_address}</span>
                     </div>
                   </div>
@@ -741,14 +743,14 @@ export default function OnlineOrdersView() {
               {selectedOrder.remark && (
                 <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span><strong>Customer Note:</strong> {selectedOrder.remark}</span>
+                  <span><strong>{t('Customer Note:', 'Customer Note:')}</strong> {selectedOrder.remark}</span>
                 </div>
               )}
 
               {/* Order Items List */}
               <div className="border border-slate-200 rounded-lg overflow-hidden">
                 <div className="bg-slate-100 px-4 py-2 text-xs font-bold text-slate-800 border-b border-slate-200">
-                  Order Items
+                  {t('Order Items', 'Order Items')}
                 </div>
                 <div className="divide-y divide-slate-100 max-h-56 overflow-y-auto">
                   {selectedOrder.items.map((item, iIdx) => (
@@ -764,10 +766,10 @@ export default function OnlineOrdersView() {
                             {item.name} <span className="text-slate-400 font-mono text-[10px]">(#{item.item_id})</span>
                           </div>
                           <div className="text-slate-500 text-[11px]">
-                            Qty: <strong className="text-slate-700">{item.quantity}</strong> × ${item.price.toFixed(2)}
+                            {t('Qty:', 'Qty:')} <strong className="text-slate-700">{item.quantity}</strong> × ${item.price.toFixed(2)}
                           </div>
                           {item.note && (
-                            <div className="text-slate-400 italic text-[10.5px]">Note: {item.note}</div>
+                            <div className="text-slate-400 italic text-[10.5px]">{t('Note:', 'Note:')} {item.note}</div>
                           )}
                         </div>
                         <div className="font-mono font-bold text-slate-900 text-sm">
@@ -779,7 +781,7 @@ export default function OnlineOrdersView() {
                       {item.linked_items && item.linked_items.length > 0 && (
                         <div className="mt-2 pl-4 border-l-2 border-slate-300 space-y-1">
                           <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                            Included Items
+                            {t('Included Items', 'Included Items')}
                           </div>
                           {item.linked_items.map((linked, lIdx) => (
                             <div key={lIdx} className="flex justify-between text-[11px] text-slate-600">
@@ -800,18 +802,18 @@ export default function OnlineOrdersView() {
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center justify-end gap-6 text-xs">
                 {selectedOrder.discount_amount !== undefined && selectedOrder.discount_amount > 0 && (
                   <div className="text-right">
-                    <span className="text-slate-500 block text-[11px]">Discount:</span>
+                    <span className="text-slate-500 block text-[11px]">{t('Discount:', 'Discount:')}</span>
                     <span className="font-mono font-bold text-rose-600">-${selectedOrder.discount_amount.toFixed(2)}</span>
                   </div>
                 )}
                 {selectedOrder.delivery_charge !== undefined && selectedOrder.delivery_charge > 0 && (
                   <div className="text-right">
-                    <span className="text-slate-500 block text-[11px]">Delivery Fee:</span>
+                    <span className="text-slate-500 block text-[11px]">{t('Delivery Fee:', 'Delivery Fee:')}</span>
                     <span className="font-mono font-bold text-slate-700">${selectedOrder.delivery_charge.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="text-right pl-4 border-l border-slate-200">
-                  <span className="text-slate-500 block text-[11px]">Total:</span>
+                  <span className="text-slate-500 block text-[11px]">{t('Total:', 'Total:')}</span>
                   <span className="font-mono font-extrabold text-blue-700 text-base">
                     ${selectedOrder.totalamount.toFixed(2)}
                   </span>
@@ -829,7 +831,7 @@ export default function OnlineOrdersView() {
                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-xs transition-colors cursor-pointer"
                   >
                     <CheckCircle className="w-4 h-4" />
-                    <span>Mark as Fully Received</span>
+                    <span>{t('Mark as Fully Received', 'Mark as Fully Received')}</span>
                   </button>
                 )}
               </div>
@@ -838,7 +840,7 @@ export default function OnlineOrdersView() {
                 onClick={() => setSelectedOrder(null)}
                 className="px-4 py-2 border border-slate-300 rounded text-slate-700 hover:bg-slate-200 transition-colors font-medium cursor-pointer"
               >
-                Close
+                {t('Close', 'Close')}
               </button>
             </div>
           </div>
