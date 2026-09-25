@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import { INITIAL_TANKS } from '@/lib/pressingMillData';
 import { StainlessTank, OilGrade } from '@/types/pressingMill';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function TanksMatrixView() {
+  const { t } = useLanguage();
   const [tanks, setTanks] = useState<StainlessTank[]>(INITIAL_TANKS);
   const [selectedGrade, setSelectedGrade] = useState<'All' | OilGrade | 'Empty'>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,16 +68,18 @@ export default function TanksMatrixView() {
         <div>
           <div className="flex items-center gap-2">
             <Landmark className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-slate-900">Stainless Steel Tank Farm (50 Storage Silos)</h2>
+            <h2 className="text-base font-bold text-slate-900">
+              {t('tank_farm_title', 'Stainless Steel Tank Farm (50 Storage Silos)')}
+            </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Bulk olive oil storage monitoring, nitrogen blanketed hermetic silos, and laboratory quality grades
+            {t('tank_farm_sub', 'Bulk olive oil storage monitoring, nitrogen blanketed hermetic silos, and laboratory quality grades')}
           </p>
         </div>
 
         <div className="flex items-center gap-4 text-xs font-medium">
           <div className="text-right">
-            <span className="text-slate-400 block text-[10px]">Total Tank Capacity</span>
+            <span className="text-slate-400 block text-[10px]">{t('total_tank_capacity', 'Total Tank Capacity')}</span>
             <span className="font-bold text-slate-900">{totalOccupiedLiters.toLocaleString()} / {totalCapacityLiters.toLocaleString()} L ({overallOccupancyPct}%)</span>
           </div>
         </div>
@@ -88,7 +92,7 @@ export default function TanksMatrixView() {
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search Tank ID (e.g. TK-01, Extra Virgin, batch)..."
+            placeholder={t('search_tank_placeholder', 'Search Tank ID (e.g. TK-01, Extra Virgin, batch)...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full text-xs pl-9 pr-3 py-2 border border-slate-300 rounded focus:outline-none focus:border-slate-500"
@@ -99,57 +103,57 @@ export default function TanksMatrixView() {
         <div className="flex items-center gap-1.5 flex-wrap text-xs">
           <button
             onClick={() => setSelectedGrade('All')}
-            className={`px-3 py-1 rounded font-medium transition ${
+            className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
               selectedGrade === 'All'
                 ? 'bg-slate-900 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
-            All Tanks (50)
+            {t('all_tanks_50', 'All Tanks (50)')}
           </button>
 
           <button
             onClick={() => setSelectedGrade('Extra_Virgin')}
-            className={`px-3 py-1 rounded font-medium transition ${
+            className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
               selectedGrade === 'Extra_Virgin'
                 ? 'bg-emerald-800 text-white'
                 : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
             }`}
           >
-            Extra Virgin (15)
+            {t('extra_virgin_15', 'Extra Virgin (15)')}
           </button>
 
           <button
             onClick={() => setSelectedGrade('Virgin')}
-            className={`px-3 py-1 rounded font-medium transition ${
+            className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
               selectedGrade === 'Virgin'
                 ? 'bg-blue-800 text-white'
                 : 'bg-blue-50 text-blue-800 hover:bg-blue-100'
             }`}
           >
-            Virgin (15)
+            {t('virgin_15', 'Virgin (15)')}
           </button>
 
           <button
             onClick={() => setSelectedGrade('Settling_Raw')}
-            className={`px-3 py-1 rounded font-medium transition ${
+            className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
               selectedGrade === 'Settling_Raw'
                 ? 'bg-amber-800 text-white'
                 : 'bg-amber-50 text-amber-800 hover:bg-amber-100'
             }`}
           >
-            Settling Tanks (10)
+            {t('settling_tanks_10', 'Settling Tanks (10)')}
           </button>
 
           <button
             onClick={() => setSelectedGrade('Empty')}
-            className={`px-3 py-1 rounded font-medium transition ${
+            className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
               selectedGrade === 'Empty'
                 ? 'bg-slate-700 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
-            Sanitized Empty (10)
+            {t('sanitized_empty_10', 'Sanitized Empty (10)')}
           </button>
         </div>
       </div>
@@ -200,25 +204,25 @@ export default function TanksMatrixView() {
               {/* Telemetry Metrics */}
               <div className="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-100 text-[10px]">
                 <div>
-                  <span className="text-slate-400 block">Acidity</span>
+                  <span className="text-slate-400 block">{t('acidity', 'Acidity')}</span>
                   <span className="font-bold text-slate-800">
                     {tank.acidityPct > 0 ? `${tank.acidityPct}%` : '—'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Internal Temp</span>
+                  <span className="text-slate-400 block">{t('internal_temp', 'Internal Temp')}</span>
                   <span className="font-bold text-slate-800">{tank.internalTempC}°C</span>
                 </div>
               </div>
 
               {/* Footer status & sample action */}
               <div className="flex items-center justify-between pt-1 text-[10px] text-slate-500">
-                <span>{tank.nitrogenBlanketed ? '🛡️ N₂ Hermetic' : 'Atmospheric'}</span>
+                <span>{tank.nitrogenBlanketed ? t('n2_hermetic', '🛡️ N₂ Hermetic') : t('atmospheric', 'Atmospheric')}</span>
                 <button
                   onClick={() => setSelectedTankForSample(tank)}
-                  className="text-slate-700 hover:text-slate-900 font-semibold underline"
+                  className="text-slate-700 hover:text-slate-900 font-semibold underline cursor-pointer"
                 >
-                  Inspect / Sample
+                  {t('inspect_sample', 'Inspect / Sample')}
                 </button>
               </div>
             </div>
@@ -232,37 +236,39 @@ export default function TanksMatrixView() {
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200 relative text-slate-800">
             <button
               onClick={() => setSelectedTankForSample(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center border-b border-slate-200 pb-3 mb-3">
               <h3 className="text-sm font-bold text-slate-900">{selectedTankForSample.title}</h3>
-              <span className="text-xs text-slate-500 font-mono">{selectedTankForSample.id} • Stainless Steel 316 Food Grade</span>
+              <span className="text-xs text-slate-500 font-mono">
+                {selectedTankForSample.id} • {t('food_grade_ss316', 'Stainless Steel 316 Food Grade')}
+              </span>
             </div>
 
             <div className="space-y-2.5 text-xs">
               <div className="bg-slate-50 p-3 rounded border border-slate-200 space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Current Volume:</span>
-                  <span className="font-bold">{selectedTankForSample.currentLevelLiters.toLocaleString()} Liters</span>
+                  <span className="text-slate-500">{t('current_volume', 'Current Volume:')}</span>
+                  <span className="font-bold">{selectedTankForSample.currentLevelLiters.toLocaleString()} {t('liters_word', 'Liters')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Free Headspace:</span>
-                  <span className="font-bold">{(selectedTankForSample.capacityLiters - selectedTankForSample.currentLevelLiters).toLocaleString()} Liters</span>
+                  <span className="text-slate-500">{t('free_headspace', 'Free Headspace:')}</span>
+                  <span className="font-bold">{(selectedTankForSample.capacityLiters - selectedTankForSample.currentLevelLiters).toLocaleString()} {t('liters_word', 'Liters')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Acidity Reading:</span>
+                  <span className="text-slate-500">{t('acidity_reading', 'Acidity Reading:')}</span>
                   <span className="font-bold text-emerald-700">{selectedTankForSample.acidityPct}%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Harvest Year:</span>
+                  <span className="text-slate-500">{t('harvest_year', 'Harvest Year:')}</span>
                   <span className="font-bold">{selectedTankForSample.harvestYear}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Allocated Lot:</span>
-                  <span className="font-bold">{selectedTankForSample.allocatedFarmerOrBatch || 'General Mill Silo'}</span>
+                  <span className="text-slate-500">{t('allocated_lot', 'Allocated Lot:')}</span>
+                  <span className="font-bold">{selectedTankForSample.allocatedFarmerOrBatch || t('general_mill_silo', 'General Mill Silo')}</span>
                 </div>
               </div>
             </div>
@@ -270,18 +276,18 @@ export default function TanksMatrixView() {
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 onClick={() => setSelectedTankForSample(null)}
-                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold"
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 onClick={() => {
                   setSelectedTankForSample(null);
-                  showToast(`Laboratory sample extracted from ${selectedTankForSample.id}.`);
+                  showToast(`${t('lab_sample_extracted', 'Laboratory sample extracted from')} ${selectedTankForSample.id}.`);
                 }}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold"
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold cursor-pointer"
               >
-                Dispatch Quality Sample
+                {t('dispatch_quality_sample', 'Dispatch Quality Sample')}
               </button>
             </div>
           </div>

@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import { INITIAL_SETTLEMENTS, INITIAL_SCALE_TICKETS } from '@/lib/pressingMillData';
 import { SettlementVoucher, SettlementMethod } from '@/types/pressingMill';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function SettlementsEngineView() {
+  const { t } = useLanguage();
   const [settlements, setSettlements] = useState<SettlementVoucher[]>(INITIAL_SETTLEMENTS);
   
   // Interactive Calculator State
@@ -94,19 +96,21 @@ export default function SettlementsEngineView() {
         <div>
           <div className="flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-base font-bold text-slate-900">Triple Payment Settlement Engine</h2>
+            <h2 className="text-base font-bold text-slate-900">
+              {t('pm_settlements', 'Triple Payment Settlement Engine')}
+            </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Automated milling fee calculations, in-kind oil retention to mill silos, cash dues, and mixed payment split
+            {t('settlements_sub', 'Automated milling fee calculations, in-kind oil retention to mill silos, cash dues, and mixed payment split')}
           </p>
         </div>
 
         <button
-          onClick={() => showToast('Exported settlement ledgers to XLSX.')}
-          className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-xs"
+          onClick={() => showToast(t('exported_settlements_msg', 'Exported settlement ledgers to XLSX.'))}
+          className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-xs cursor-pointer"
         >
           <Download className="w-4 h-4" />
-          <span>Export Ledger Statement</span>
+          <span>{t('export_ledger_statement', 'Export Ledger Statement')}</span>
         </button>
       </div>
 
@@ -116,7 +120,7 @@ export default function SettlementsEngineView() {
           <div className="flex items-center gap-2">
             <Calculator className="w-4 h-4 text-amber-600" />
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Settlement Calculation &amp; Yield Breakdown
+              {t('settlement_calc_title', 'Settlement Calculation & Yield Breakdown')}
             </h3>
           </div>
 
@@ -124,35 +128,35 @@ export default function SettlementsEngineView() {
           <div className="flex items-center gap-2 text-xs">
             <button
               onClick={() => setCalcMethod('In_Kind')}
-              className={`px-3 py-1 rounded font-medium transition ${
+              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
                 calcMethod === 'In_Kind'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              In-Kind Oil Retention (Retention %)
+              {t('in_kind_retention', 'In-Kind Oil Retention (Retention %)')}
             </button>
 
             <button
               onClick={() => setCalcMethod('Cash')}
-              className={`px-3 py-1 rounded font-medium transition ${
+              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
                 calcMethod === 'Cash'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              Cash Milling Fee
+              {t('cash_milling_fee', 'Cash Milling Fee')}
             </button>
 
             <button
               onClick={() => setCalcMethod('Mixed')}
-              className={`px-3 py-1 rounded font-medium transition ${
+              className={`px-3 py-1 rounded font-medium transition cursor-pointer ${
                 calcMethod === 'Mixed'
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              Mixed Split (Cash + Oil)
+              {t('mixed_split_cash_oil', 'Mixed Split (Cash + Oil)')}
             </button>
           </div>
         </div>
@@ -160,7 +164,7 @@ export default function SettlementsEngineView() {
         {/* Form parameters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Grower / Farmer Name</label>
+            <label className="block font-semibold text-slate-700 mb-1">{t('farmer_grower', 'Grower / Farmer Name')}</label>
             <input
               type="text"
               value={calcGrowerName}
@@ -170,7 +174,7 @@ export default function SettlementsEngineView() {
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Net Olives Weighed (KG)</label>
+            <label className="block font-semibold text-slate-700 mb-1">{t('net_olives_weighed_kg', 'Net Olives Weighed (KG)')}</label>
             <input
               type="number"
               value={calcNetOlivesKg}
@@ -180,7 +184,7 @@ export default function SettlementsEngineView() {
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Actual Extraction Yield (%)</label>
+            <label className="block font-semibold text-slate-700 mb-1">{t('actual_extraction_yield', 'Actual Extraction Yield (%)')}</label>
             <input
               type="number"
               step="0.1"
@@ -192,7 +196,7 @@ export default function SettlementsEngineView() {
 
           {calcMethod === 'In_Kind' && (
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Retention Rate (%)</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('retention_rate_pct', 'Retention Rate (%)')}</label>
               <input
                 type="number"
                 value={calcRetentionPct}
@@ -204,7 +208,7 @@ export default function SettlementsEngineView() {
 
           {calcMethod === 'Cash' && (
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Cash Rate ($ USD / KG)</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('cash_rate_usd_kg', 'Cash Rate ($ USD / KG)')}</label>
               <input
                 type="number"
                 step="0.01"
@@ -217,7 +221,7 @@ export default function SettlementsEngineView() {
 
           {calcMethod === 'Mixed' && (
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Partial Cash Amount ($ USD)</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('partial_cash_amount_usd', 'Partial Cash Amount ($ USD)')}</label>
               <input
                 type="number"
                 value={calcMixedCashUSD}
@@ -231,17 +235,19 @@ export default function SettlementsEngineView() {
         {/* Live Calculation Output Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs">
           <div className="bg-white p-2.5 rounded border border-slate-200">
-            <span className="text-slate-400 block text-[10px]">Total Oil Produced</span>
+            <span className="text-slate-400 block text-[10px]">{t('total_oil_produced', 'Total Oil Produced')}</span>
             <span className="text-base font-bold text-slate-900">{calcTotalOilProducedKg.toLocaleString()} KG</span>
-            <span className="text-[10px] text-slate-500 block">Total: ~{calcTotalTins} Standard Tins (15 KG)</span>
+            <span className="text-[10px] text-slate-500 block">
+              {t('total_label', 'Total:')} ~{calcTotalTins} {t('standard_tins_15kg', 'Standard Tins (15 KG)')}
+            </span>
           </div>
 
           <div className="bg-white p-2.5 rounded border border-slate-200">
-            <span className="text-slate-400 block text-[10px]">Mill Fee Deduction</span>
+            <span className="text-slate-400 block text-[10px]">{t('mill_fee_deduction', 'Mill Fee Deduction')}</span>
             {calcMethod === 'In_Kind' ? (
               <>
-                <span className="text-base font-bold text-amber-700">{calcRetainedOilKg} KG Oil</span>
-                <span className="text-[10px] text-slate-500 block">({calcRetainedTins} Tins to Mill Silo)</span>
+                <span className="text-base font-bold text-amber-700">{calcRetainedOilKg} KG {t('oil_word', 'Oil')}</span>
+                <span className="text-[10px] text-slate-500 block">({calcRetainedTins} {t('tins_to_mill_silo', 'Tins to Mill Silo')})</span>
               </>
             ) : calcMethod === 'Cash' ? (
               <>
@@ -251,26 +257,28 @@ export default function SettlementsEngineView() {
             ) : (
               <>
                 <span className="text-base font-bold text-sky-700">${calcMixedCashUSD} + {calcRetainedOilKg} KG</span>
-                <span className="text-[10px] text-slate-500 block">Mixed Split Paid</span>
+                <span className="text-[10px] text-slate-500 block">{t('mixed_split_paid', 'Mixed Split Paid')}</span>
               </>
             )}
           </div>
 
           <div className="bg-white p-2.5 rounded border border-slate-200">
-            <span className="text-slate-400 block text-[10px]">Net Released to Grower</span>
+            <span className="text-slate-400 block text-[10px]">{t('net_released_to_grower', 'Net Released to Grower')}</span>
             <span className="text-base font-bold text-emerald-800">
-              {calcGrowerReleasedTins} Tins ({((calcGrowerReleasedTins * 15)).toFixed(1)} KG)
+              {calcGrowerReleasedTins} {t('tins_word', 'Tins')} ({((calcGrowerReleasedTins * 15)).toFixed(1)} KG)
             </span>
-            <span className="text-[10px] text-emerald-600 font-medium block">Ready for immediate gate pass</span>
+            <span className="text-[10px] text-emerald-600 font-medium block">
+              {t('ready_for_gate_pass', 'Ready for immediate gate pass')}
+            </span>
           </div>
 
           <div className="flex items-center justify-center">
             <button
               onClick={handlePostSettlement}
-              className="w-full h-full flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold rounded-lg shadow-xs transition"
+              className="w-full h-full flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold rounded-lg shadow-xs transition cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>Post Settlement Voucher</span>
+              <span>{t('post_settlement_voucher', 'Post Settlement Voucher')}</span>
             </button>
           </div>
         </div>
@@ -278,21 +286,21 @@ export default function SettlementsEngineView() {
 
       {/* VOUCHER HISTORY TABLE */}
       <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs space-y-4">
-        <h3 className="text-sm font-bold text-slate-900">Settled Milling Fee Ledgers</h3>
+        <h3 className="text-sm font-bold text-slate-900">{t('settled_milling_ledgers', 'Settled Milling Fee Ledgers')}</h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-700 border-collapse">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold text-slate-600 uppercase">
-                <th className="py-2.5 px-3">Voucher #</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Grower / Farmer</th>
-                <th className="py-2.5 px-3">Net Olives</th>
-                <th className="py-2.5 px-3">Oil Yield</th>
-                <th className="py-2.5 px-3">Settlement Method</th>
-                <th className="py-2.5 px-3">Mill Retained Oil</th>
-                <th className="py-2.5 px-3">Grower Released Tins</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3">{t('voucher_num', 'Voucher #')}</th>
+                <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                <th className="py-2.5 px-3">{t('farmer_grower', 'Grower / Farmer')}</th>
+                <th className="py-2.5 px-3">{t('net_olives', 'Net Olives')}</th>
+                <th className="py-2.5 px-3">{t('oil_yield', 'Oil Yield')}</th>
+                <th className="py-2.5 px-3">{t('settlement_method_label', 'Settlement Method')}</th>
+                <th className="py-2.5 px-3">{t('mill_retained_oil', 'Mill Retained Oil')}</th>
+                <th className="py-2.5 px-3">{t('grower_released_tins', 'Grower Released Tins')}</th>
+                <th className="py-2.5 px-3 text-right">{t('action', 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -302,23 +310,29 @@ export default function SettlementsEngineView() {
                   <td className="py-2.5 px-3 text-slate-500">{sv.date}</td>
                   <td className="py-2.5 px-3 font-medium">{sv.farmerName}</td>
                   <td className="py-2.5 px-3 font-bold text-slate-900">{sv.netOliveKg.toLocaleString()} KG</td>
-                  <td className="py-2.5 px-3 text-emerald-700 font-bold">{sv.oilYieldKg} KG ({sv.tinCountTotal} Tins)</td>
+                  <td className="py-2.5 px-3 text-emerald-700 font-bold">
+                    {sv.oilYieldKg} KG ({sv.tinCountTotal} {t('tins_word', 'Tins')})
+                  </td>
                   <td className="py-2.5 px-3">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       sv.method === 'In_Kind' ? 'bg-amber-100 text-amber-800' :
                       sv.method === 'Cash' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {sv.method}
+                      {t(sv.method, sv.method)}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 font-semibold">{sv.retainedOilKg > 0 ? `${sv.retainedOilKg} KG (${sv.retainedTins} Tins)` : '$' + sv.cashAmountDueUSD}</td>
-                  <td className="py-2.5 px-3 font-bold text-emerald-700">{sv.growerReleasedTins} Tins</td>
+                  <td className="py-2.5 px-3 font-semibold">
+                    {sv.retainedOilKg > 0 ? `${sv.retainedOilKg} KG (${sv.retainedTins} ${t('tins_word', 'Tins')})` : '$' + sv.cashAmountDueUSD}
+                  </td>
+                  <td className="py-2.5 px-3 font-bold text-emerald-700">
+                    {sv.growerReleasedTins} {t('tins_word', 'Tins')}
+                  </td>
                   <td className="py-2.5 px-3 text-right">
                     <button
                       onClick={() => setSelectedVoucherForPrint(sv)}
-                      className="text-slate-700 hover:text-slate-900 font-semibold"
+                      className="text-slate-700 hover:text-slate-900 font-semibold cursor-pointer"
                     >
-                      Print Voucher
+                      {t('print_voucher', 'Print Voucher')}
                     </button>
                   </td>
                 </tr>
@@ -334,40 +348,46 @@ export default function SettlementsEngineView() {
           <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 relative text-slate-800">
             <button
               onClick={() => setSelectedVoucherForPrint(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center border-b border-slate-200 pb-3 mb-3">
               <h2 className="text-base font-extrabold text-slate-900 uppercase">
-                Southern Olive Oil Products S.A.R.L
+                {t('company_name_long', 'Southern Olive Oil Products S.A.R.L')}
               </h2>
-              <p className="text-xs text-slate-500">Official Olive Pressing Settlement Voucher</p>
+              <p className="text-xs text-slate-500">
+                {t('settlement_voucher_subtitle', 'Official Olive Pressing Settlement Voucher')}
+              </p>
               <div className="mt-1 font-mono text-xs font-bold">{selectedVoucherForPrint.voucherNumber}</div>
             </div>
 
             <div className="space-y-2.5 text-xs">
               <div className="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Grower Name:</span>
+                  <span className="text-slate-500">{t('grower_name_label', 'Grower Name:')}</span>
                   <span className="font-bold">{selectedVoucherForPrint.farmerName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Net Olive Intake:</span>
+                  <span className="text-slate-500">{t('net_olive_intake_label', 'Net Olive Intake:')}</span>
                   <span className="font-mono">{selectedVoucherForPrint.netOliveKg.toLocaleString()} KG</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Total Oil Yield:</span>
-                  <span className="font-bold text-emerald-700">{selectedVoucherForPrint.oilYieldKg} KG ({selectedVoucherForPrint.tinCountTotal} Tins)</span>
+                  <span className="text-slate-500">{t('total_oil_yield_label', 'Total Oil Yield:')}</span>
+                  <span className="font-bold text-emerald-700">
+                    {selectedVoucherForPrint.oilYieldKg} KG ({selectedVoucherForPrint.tinCountTotal} {t('tins_word', 'Tins')})
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Settlement Method:</span>
-                  <span className="font-bold">{selectedVoucherForPrint.method}</span>
+                  <span className="text-slate-500">{t('settlement_method_label', 'Settlement Method:')}</span>
+                  <span className="font-bold">{t(selectedVoucherForPrint.method, selectedVoucherForPrint.method)}</span>
                 </div>
                 <div className="flex justify-between border-t border-slate-200 pt-1 font-bold">
-                  <span>Released to Grower:</span>
-                  <span className="text-emerald-800 font-mono">{selectedVoucherForPrint.growerReleasedTins} Tins (15 KG / 16L)</span>
+                  <span>{t('released_to_grower_label', 'Released to Grower:')}</span>
+                  <span className="text-emerald-800 font-mono">
+                    {selectedVoucherForPrint.growerReleasedTins} {t('standard_tins_15kg', 'Standard Tins (15 KG / 16L)')}
+                  </span>
                 </div>
               </div>
             </div>
@@ -375,20 +395,20 @@ export default function SettlementsEngineView() {
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 onClick={() => setSelectedVoucherForPrint(null)}
-                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold"
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 onClick={() => {
                   window.print();
                   setSelectedVoucherForPrint(null);
-                  showToast('Settlement voucher dispatched to printer.');
+                  showToast(t('voucher_dispatched_printer', 'Settlement voucher dispatched to printer.'));
                 }}
-                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs"
+                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Voucher</span>
+                <span>{t('print_voucher', 'Print Voucher')}</span>
               </button>
             </div>
           </div>

@@ -649,11 +649,11 @@ export default function SocialMediaManagementHub({
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-primary"></span>
               <h1 className="text-[20px] font-bold text-foreground tracking-tight">
-                10. V-Connect (Social CRM &amp; Support Management Hub)
+                {t('vconnect_title', '10. V-Connect (Social CRM & Support Management Hub)')}
               </h1>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 font-medium">
-              Southern Olive Oil Products S.A.R.L - Unified conversations, platform orders, publishing calendar, lead pipeline &amp; CPL analytics
+              {t('vconnect_sub', 'Southern Olive Oil Products S.A.R.L - Unified conversations, platform orders, publishing calendar, lead pipeline & CPL analytics')}
             </p>
           </div>
         </div>
@@ -695,14 +695,14 @@ export default function SocialMediaManagementHub({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-bold text-slate-800">
-                  Approved Store Partners & Distributors Directory (Read-Only Quick Lookup)
+                  {t('dist_directory_title', 'Approved Store Partners & Distributors Directory (Read-Only Quick Lookup)')}
                 </h2>
                 <span className="px-2.5 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10.5px] font-bold">
-                  Support Representative Directory
+                  {t('support_rep_directory', 'Support Representative Directory')}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Quick lookup for support representatives to instantly find store locations across Lebanon and copy address to customers in chat
+                {t('dist_directory_desc', 'Quick lookup for support representatives to instantly find store locations across Lebanon and copy address to customers in chat')}
               </p>
             </div>
           </div>
@@ -714,24 +714,24 @@ export default function SocialMediaManagementHub({
                 type="text"
                 value={distSearchQuery}
                 onChange={(e) => setDistSearchQuery(e.target.value)}
-                placeholder="🔍 Search store name, city, landmark, or phone number..."
+                placeholder={t('search_dist_placeholder', '🔍 Search store name, city, landmark, or phone number...')}
                 className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-medium focus:border-primary focus:outline-none"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full md:w-auto">
-              <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Region:</span>
+              <span className="text-xs font-bold text-slate-600 whitespace-nowrap">{t('region_label', 'Region:')}</span>
               <select
                 value={distRegionFilter}
                 onChange={(e) => setDistRegionFilter(e.target.value)}
                 className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-primary focus:outline-none cursor-pointer"
               >
-                <option value="ALL">All Lebanon Regions</option>
-                <option value="Mount Lebanon">Mount Lebanon (Choueifat / Jbeil)</option>
-                <option value="Beirut">Beirut (Hamra / Ashrafieh)</option>
-                <option value="South Lebanon">South Lebanon (Saida / Jezzine)</option>
-                <option value="Bekaa">Bekaa (Zahle)</option>
-                <option value="North Lebanon">North Lebanon (Tripoli)</option>
+                <option value="ALL">{t('all_lebanon_regions', 'All Lebanon Regions')}</option>
+                <option value="Mount Lebanon">{t('region_mount_lebanon', 'Mount Lebanon (Choueifat / Jbeil)')}</option>
+                <option value="Beirut">{t('region_beirut', 'Beirut (Hamra / Ashrafieh)')}</option>
+                <option value="South Lebanon">{t('region_south_lebanon', 'South Lebanon (Saida / Jezzine)')}</option>
+                <option value="Bekaa">{t('region_bekaa', 'Bekaa (Zahle)')}</option>
+                <option value="North Lebanon">{t('region_north_lebanon', 'North Lebanon (Tripoli)')}</option>
               </select>
             </div>
           </div>
@@ -741,12 +741,12 @@ export default function SocialMediaManagementHub({
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-300 bg-slate-50 text-slate-700 font-bold">
-                  <th className="py-2.5 px-3 normal-case">store / supermarket name</th>
-                  <th className="py-2.5 px-3 normal-case">region</th>
-                  <th className="py-2.5 px-3 normal-case">city & detailed address</th>
-                  <th className="py-2.5 px-3 normal-case">phone</th>
-                  <th className="py-2.5 px-3 normal-case">assigned area rep</th>
-                  <th className="py-2.5 px-3 normal-case text-center w-40">action</th>
+                  <th className="py-2.5 px-3 normal-case">{t('dist_store_name', 'store / supermarket name')}</th>
+                  <th className="py-2.5 px-3 normal-case">{t('dist_region', 'region')}</th>
+                  <th className="py-2.5 px-3 normal-case">{t('dist_address', 'city & detailed address')}</th>
+                  <th className="py-2.5 px-3 normal-case">{t('dist_phone', 'phone')}</th>
+                  <th className="py-2.5 px-3 normal-case">{t('dist_rep', 'assigned area rep')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center w-40">{t('dist_action', 'action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px]">
@@ -767,7 +767,7 @@ export default function SocialMediaManagementHub({
                         onClick={() => handleCopyStoreAddress(store)}
                         className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded font-bold text-[10.5px] transition-colors whitespace-nowrap flex items-center justify-center gap-1 mx-auto cursor-pointer"
                       >
-                        <span>📋 Copy Address for Chat</span>
+                        <span>{t('copy_address_for_chat', '📋 Copy Address for Chat')}</span>
                       </button>
                     </td>
                   </tr>
@@ -783,8 +783,8 @@ export default function SocialMediaManagementHub({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[650px]">
           <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-2xs p-3 flex flex-col h-full">
             <div className="flex justify-between items-center pb-2 border-b border-slate-100 mb-2">
-              <h3 className="text-xs font-bold text-slate-700">Active Rep Chats ({conversations.length})</h3>
-              <span className="text-[10px] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full">Management View</span>
+              <h3 className="text-xs font-bold text-slate-700">{t('active_rep_chats', 'Active Rep Chats')} ({conversations.length})</h3>
+              <span className="text-[10px] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full">{t('management_view', 'Management View')}</span>
             </div>
             <div className="overflow-y-auto space-y-1.5 flex-1 custom-scrollbar">
               {conversations.map((c) => (
@@ -796,7 +796,7 @@ export default function SocialMediaManagementHub({
                   <p className="text-[11.5px] text-slate-600 line-clamp-1">{c.lastMessage}</p>
                   <div className="flex items-center justify-between pt-1 mt-1 text-[10px] text-slate-500 border-t border-slate-200/50">
                     <span className="font-bold text-primary">{c.platform}</span>
-                    {c.isEscalatedToManagement ? <span className="text-red-600 font-bold bg-red-50 px-1.5 py-0.5 rounded">Pushed to Management</span> : <span>Rep: {c.assignedRep} (Read-Only)</span>}
+                    {c.isEscalatedToManagement ? <span className="text-red-600 font-bold bg-red-50 px-1.5 py-0.5 rounded">{t('pushed_to_mgmt', 'Pushed to Management')}</span> : <span>{t('rep_label', 'Rep:')} {c.assignedRep} ({t('read_only', 'Read-Only')})</span>}
                   </div>
                 </div>
               ))}
@@ -812,11 +812,11 @@ export default function SocialMediaManagementHub({
                       <span>{selectedChat.senderName}</span>
                       {selectedChat.isEscalatedToManagement ? (
                         <span className="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
-                          ⚠️ Pushed to Management (1-Hr SLA Expired)
+                          {t('pushed_to_mgmt_sla', '⚠️ Pushed to Management (1-Hr SLA Expired)')}
                         </span>
                       ) : (
                         <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
-                          🔒 Rep Active ({selectedChat.assignedRep}) - Management Read-Only
+                          {t('rep_active_label', '🔒 Rep Active')} ({selectedChat.assignedRep}) - {t('mgmt_readonly_status', 'Management Read-Only')}
                         </span>
                       )}
                     </div>
@@ -829,11 +829,11 @@ export default function SocialMediaManagementHub({
                       onClick={() => setShowOrderModal(true)}
                       className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                     >
-                      <span>⚡ Override &amp; Convert to Order</span>
+                      <span>{t('btn_override_convert_order', '⚡ Override & Convert to Order')}</span>
                     </button>
                     {!selectedChat.isEscalatedToManagement && (
                       <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
-                        (Rep active: {selectedChat.assignedRep})
+                        ({t('rep_active_small', 'Rep active:')} {selectedChat.assignedRep})
                       </span>
                     )}
                   </div>
@@ -846,18 +846,18 @@ export default function SocialMediaManagementHub({
                     <div className="text-[9px] text-slate-400 font-mono mt-1">{selectedChat.time}</div>
                   </div>
                   <div className="bg-primary text-primary-foreground p-3 rounded-2xl rounded-tr-none max-w-[80%] ml-auto text-xs shadow-2xs">
-                    <div className="font-bold text-amber-300 mb-1">{selectedChat.assignedRep} (Sales Rep)</div>
+                    <div className="font-bold text-amber-300 mb-1">{selectedChat.assignedRep} ({t('sales_rep_label', 'Sales Rep')})</div>
                     <p>Hello! The 17.5L Extra Virgin Olive Oil cold-pressed tin is $110, with delivery available to Beirut.</p>
                     <div className="text-[9px] text-slate-200 font-mono mt-1 text-right">12:47 PM ✓✓</div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                  <input type="text" disabled={!selectedChat.isEscalatedToManagement} value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder={selectedChat.isEscalatedToManagement ? 'Type management reply...' : 'Management Read-Only (Rep is handling chat)...'} className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:border-primary focus:outline-none disabled:bg-slate-100" />
-                  <button type="button" disabled={!selectedChat.isEscalatedToManagement} onClick={() => { setReplyMessage(''); alert('Sent.'); }} className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl disabled:opacity-50 cursor-pointer">Send</button>
+                  <input type="text" disabled={!selectedChat.isEscalatedToManagement} value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder={selectedChat.isEscalatedToManagement ? t('ph_type_mgmt_reply', 'Type management reply...') : t('ph_mgmt_readonly', 'Management Read-Only (Rep is handling chat)...')} className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:border-primary focus:outline-none disabled:bg-slate-100" />
+                  <button type="button" disabled={!selectedChat.isEscalatedToManagement} onClick={() => { setReplyMessage(''); alert('Sent.'); }} className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl disabled:opacity-50 cursor-pointer">{t('send', 'Send')}</button>
                 </div>
               </>
-            ) : <div className="flex items-center justify-center h-full text-xs text-slate-400">Select a chat</div>}
+            ) : <div className="flex items-center justify-center h-full text-xs text-slate-400">{t('select_a_chat', 'Select a chat')}</div>}
           </div>
         </div>
       )}
@@ -872,10 +872,10 @@ export default function SocialMediaManagementHub({
                 <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-sm">🛡️</span>
                 <div>
                   <h2 className="text-sm font-bold text-slate-800">
-                    Vanguard Inventory Reservation Engine (Double-Selling Shield)
+                    {t('inv_shield_title', 'Vanguard Inventory Reservation Engine (Double-Selling Shield)')}
                   </h2>
                   <p className="text-xs text-slate-500">
-                    Automatic stock reservation via <code className="font-mono text-blue-700 font-bold">process_vanguard_invoice_stock()</code> trigger logic. Physical stock is protected until POD confirmation or cancellation.
+                    {t('inv_shield_sub', 'Automatic stock reservation via process_vanguard_invoice_stock() trigger logic. Physical stock is protected until POD confirmation or cancellation.')}
                   </p>
                 </div>
               </div>
@@ -884,7 +884,7 @@ export default function SocialMediaManagementHub({
                 onClick={refreshOrdersAndInventory}
                 className="px-3 py-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg border border-primary/20 transition-colors self-start md:self-auto cursor-pointer"
               >
-                🔄 Refresh Inventory &amp; Orders
+                {t('btn_refresh_inv_orders', '🔄 Refresh Inventory & Orders')}
               </button>
             </div>
 
@@ -899,7 +899,7 @@ export default function SocialMediaManagementHub({
                           ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                           : 'bg-amber-100 text-amber-800 border border-amber-200'
                       }`}>
-                        {stock.available_stock > stock.min_threshold ? 'In Stock' : 'Low Stock'}
+                        {stock.available_stock > stock.min_threshold ? t('in_stock', 'In Stock') : t('low_stock', 'Low Stock')}
                       </span>
                     </div>
                     <h4 className="text-xs font-bold text-slate-800 line-clamp-2 mt-1" title={stock.item_name}>
@@ -909,16 +909,16 @@ export default function SocialMediaManagementHub({
 
                   <div className="pt-2 border-t border-slate-200/80 space-y-1 text-xs font-mono">
                     <div className="flex justify-between text-slate-600">
-                      <span>Physical Stock:</span>
-                      <strong className="text-slate-900">{stock.vanguard_stock} units</strong>
+                      <span>{t('physical_stock_lbl', 'Physical Stock:')}</span>
+                      <strong className="text-slate-900">{stock.vanguard_stock} {t('units_abbr', 'units')}</strong>
                     </div>
                     <div className="flex justify-between text-amber-700 font-semibold">
-                      <span>Reserved (Held):</span>
-                      <strong>{stock.qty_reserved} units</strong>
+                      <span>{t('reserved_held_lbl', 'Reserved (Held):')}</span>
+                      <strong>{stock.qty_reserved} {t('units_abbr', 'units')}</strong>
                     </div>
                     <div className="flex justify-between text-emerald-700 font-bold border-t border-dashed border-slate-300 pt-1">
-                      <span>Safe to Sell:</span>
-                      <span>{stock.available_stock} units</span>
+                      <span>{t('safe_to_sell_lbl', 'Safe to Sell:')}</span>
+                      <span>{stock.available_stock} {t('units_abbr', 'units')}</span>
                     </div>
                   </div>
                 </div>
@@ -930,24 +930,24 @@ export default function SocialMediaManagementHub({
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <h2 className="text-sm font-bold text-slate-800">Unified Platform Orders (Social CRM ➔ SuperSonic Fleet)</h2>
+                <h2 className="text-sm font-bold text-slate-800">{t('unified_platform_orders_title', 'Unified Platform Orders (Social CRM ➔ SuperSonic Fleet)')}</h2>
                 <p className="text-xs text-slate-500">
-                  Tracking orders across WhatsApp, Social Media, Website &amp; Direct SuperSonic dispatches.
+                  {t('unified_platform_orders_sub', 'Tracking orders across WhatsApp, Social Media, Website & Direct SuperSonic dispatches.')}
                 </p>
               </div>
 
               {/* Status Filter Chips */}
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 {[
-                  { key: 'ALL', label: 'All Orders' },
-                  { key: 'pending_rep_approval', label: '⏳ Pending Rep' },
-                  { key: 'approved', label: '✓ Approved' },
-                  { key: 'queued', label: '📋 Queued' },
-                  { key: 'on_route', label: '🚚 On Route' },
-                  { key: 'delivered', label: '✅ Delivered' },
-                  { key: 'moved_to_pos_pickup', label: '🏪 POS Pickup' },
-                  { key: 'escalated_to_management', label: '⚠️ Escalated' },
-                  { key: 'rejected', label: '✕ Rejected' },
+                  { key: 'ALL', label: t('filter_all_orders', 'All Orders') },
+                  { key: 'pending_rep_approval', label: t('filter_pending_rep', '⏳ Pending Rep') },
+                  { key: 'approved', label: t('filter_approved', '✓ Approved') },
+                  { key: 'queued', label: t('filter_queued', '📋 Queued') },
+                  { key: 'on_route', label: t('filter_on_route', '🚚 On Route') },
+                  { key: 'delivered', label: t('filter_delivered', '✅ Delivered') },
+                  { key: 'moved_to_pos_pickup', label: t('filter_pos_pickup', '🏪 POS Pickup') },
+                  { key: 'escalated_to_management', label: t('filter_escalated', '⚠️ Escalated') },
+                  { key: 'rejected', label: t('filter_rejected', '✕ Rejected') },
                 ].map((f) => (
                   <button
                     key={f.key}
@@ -969,15 +969,15 @@ export default function SocialMediaManagementHub({
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-slate-300 bg-slate-50 text-slate-700 font-bold">
-                    <th className="py-2.5 px-3 normal-case">order # &amp; channel</th>
-                    <th className="py-2.5 px-3 normal-case">customer &amp; phone</th>
-                    <th className="py-2.5 px-3 normal-case">destination &amp; corridor</th>
-                    <th className="py-2.5 px-3 normal-case">items / reserved</th>
-                    <th className="py-2.5 px-3 normal-case text-center">payment</th>
-                    <th className="py-2.5 px-3 normal-case text-right">amount ($)</th>
-                    <th className="py-2.5 px-3 normal-case">rep &amp; sla</th>
-                    <th className="py-2.5 px-3 normal-case text-center">status</th>
-                    <th className="py-2.5 px-3 normal-case text-center">lifecycle action</th>
+                    <th className="py-2.5 px-3 normal-case">{t('th_order_num_channel', 'order # & channel')}</th>
+                    <th className="py-2.5 px-3 normal-case">{t('th_customer_phone', 'customer & phone')}</th>
+                    <th className="py-2.5 px-3 normal-case">{t('th_destination_corridor', 'destination & corridor')}</th>
+                    <th className="py-2.5 px-3 normal-case">{t('th_items_reserved', 'items / reserved')}</th>
+                    <th className="py-2.5 px-3 normal-case text-center">{t('th_payment', 'payment')}</th>
+                    <th className="py-2.5 px-3 normal-case text-right">{t('th_amount_usd', 'amount ($)')}</th>
+                    <th className="py-2.5 px-3 normal-case">{t('th_rep_sla', 'rep & sla')}</th>
+                    <th className="py-2.5 px-3 normal-case text-center">{t('th_status', 'status')}</th>
+                    <th className="py-2.5 px-3 normal-case text-center">{t('th_lifecycle_action', 'lifecycle action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-[11.5px]">
@@ -985,21 +985,21 @@ export default function SocialMediaManagementHub({
                     .filter((ord) => orderStatusFilter === 'ALL' || ord.order_status === orderStatusFilter)
                     .map((ord) => {
                       const channelBadge = {
-                        whatsapp: { label: '💬 WhatsApp', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-                        social_media: { label: '📱 Social Media', color: 'bg-blue-50 text-blue-800 border-blue-200' },
-                        supersonic: { label: '⚡ SuperSonic', color: 'bg-amber-50 text-amber-800 border-amber-200' },
-                        website: { label: '🌐 Web Store', color: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
+                        whatsapp: { label: t('channel_whatsapp', '💬 WhatsApp'), color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+                        social_media: { label: t('channel_social_media', '📱 Social Media'), color: 'bg-blue-50 text-blue-800 border-blue-200' },
+                        supersonic: { label: t('channel_supersonic', '⚡ SuperSonic'), color: 'bg-amber-50 text-amber-800 border-amber-200' },
+                        website: { label: t('channel_website', '🌐 Web Store'), color: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
                       }[ord.channel] || { label: ord.channel, color: 'bg-slate-100 text-slate-700 border-slate-200' };
 
                       const statusBadge = {
-                        pending_rep_approval: { label: '⏳ Pending Rep', color: 'bg-amber-100 text-amber-900 border-amber-200' },
-                        approved: { label: '✓ Approved & Reserved', color: 'bg-blue-100 text-blue-900 border-blue-200' },
-                        queued: { label: '📋 Queued to Fleet', color: 'bg-indigo-100 text-indigo-900 border-indigo-200' },
-                        on_route: { label: '🚚 On Route', color: 'bg-cyan-100 text-cyan-900 border-cyan-200' },
-                        delivered: { label: '✅ Delivered & POD', color: 'bg-emerald-100 text-emerald-900 border-emerald-200' },
-                        moved_to_pos_pickup: { label: '🏪 Showroom Pickup', color: 'bg-purple-100 text-purple-900 border-purple-200' },
-                        escalated_to_management: { label: '⚠️ Escalated', color: 'bg-rose-100 text-rose-900 border-rose-200' },
-                        rejected: { label: '✕ Rejected', color: 'bg-slate-200 text-slate-700 border-slate-300' },
+                        pending_rep_approval: { label: t('st_pending_rep', '⏳ Pending Rep'), color: 'bg-amber-100 text-amber-900 border-amber-200' },
+                        approved: { label: t('st_approved_reserved', '✓ Approved & Reserved'), color: 'bg-blue-100 text-blue-900 border-blue-200' },
+                        queued: { label: t('st_queued_fleet', '📋 Queued to Fleet'), color: 'bg-indigo-100 text-indigo-900 border-indigo-200' },
+                        on_route: { label: t('st_on_route', '🚚 On Route'), color: 'bg-cyan-100 text-cyan-900 border-cyan-200' },
+                        delivered: { label: t('st_delivered_pod', '✅ Delivered & POD'), color: 'bg-emerald-100 text-emerald-900 border-emerald-200' },
+                        moved_to_pos_pickup: { label: t('st_pos_pickup', '🏪 Showroom Pickup'), color: 'bg-purple-100 text-purple-900 border-purple-200' },
+                        escalated_to_management: { label: t('st_escalated', '⚠️ Escalated'), color: 'bg-rose-100 text-rose-900 border-rose-200' },
+                        rejected: { label: t('st_rejected', '✕ Rejected'), color: 'bg-slate-200 text-slate-700 border-slate-300' },
                       }[ord.order_status] || { label: ord.order_status, color: 'bg-slate-100 text-slate-800 border-slate-200' };
 
                       return (
@@ -1020,7 +1020,7 @@ export default function SocialMediaManagementHub({
                               {ord.delivery_address}
                             </span>
                             <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded bg-slate-100 border border-slate-200 text-[9.5px] font-mono font-bold text-slate-600">
-                              Corridor {ord.corridor_id}
+                              {t('corridor_label', 'Corridor')} {ord.corridor_id}
                             </span>
                           </td>
                           <td className="py-2.5 px-3">
@@ -1033,34 +1033,34 @@ export default function SocialMediaManagementHub({
                                 ))}
                               </div>
                             ) : (
-                              <span className="text-slate-400 italic">Standard Offer</span>
+                              <span className="text-slate-400 italic">{t('standard_offer', 'Standard Offer')}</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-center">
                             {ord.payment_method === 'COD' ? (
                               <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px]">
-                                COD (Cash)
+                                {t('cod_cash_badge', 'COD (Cash)')}
                               </span>
                             ) : (
                               <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 font-bold text-[10px]">
-                                Whish Money
+                                {t('whish_money_badge', 'Whish Money')}
                               </span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono">
                             <span className="font-bold text-slate-900 block">${ord.product_amount_usd.toFixed(2)}</span>
                             {ord.delivery_fee_usd > 0 && (
-                              <span className="text-[10px] text-blue-700 block">+${ord.delivery_fee_usd.toFixed(2)} fee</span>
+                              <span className="text-[10px] text-blue-700 block">+${ord.delivery_fee_usd.toFixed(2)} {t('fee_suffix', 'fee')}</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3">
-                            <span className="text-slate-800 font-semibold block">{ord.rep_name || 'Direct'}</span>
+                            <span className="text-slate-800 font-semibold block">{ord.rep_name || t('direct_label', 'Direct')}</span>
                             {ord.order_status === 'pending_rep_approval' ? (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 font-mono">
-                                ⏳ {ord.sla_minutes_left}m SLA left
+                                ⏳ {ord.sla_minutes_left}m {t('sla_left', 'SLA left')}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-slate-400 font-mono">SLA Verified</span>
+                              <span className="text-[10px] text-slate-400 font-mono">{t('sla_verified', 'SLA Verified')}</span>
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-center">
@@ -1084,7 +1084,7 @@ export default function SocialMediaManagementHub({
                                     title="Approve Order & Reserve Physical Inventory"
                                     className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[10.5px] shadow-2xs transition-colors cursor-pointer"
                                   >
-                                    ✓ Approve &amp; Reserve
+                                    {t('btn_approve_reserve', '✓ Approve & Reserve')}
                                   </button>
                                   <button
                                     type="button"
@@ -1092,7 +1092,7 @@ export default function SocialMediaManagementHub({
                                     title="Escalate to Management"
                                     className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold rounded text-[10.5px] transition-colors cursor-pointer"
                                   >
-                                    ⚠️ Escalate
+                                    {t('btn_escalate', '⚠️ Escalate')}
                                   </button>
                                   <button
                                     type="button"
@@ -1121,14 +1121,14 @@ export default function SocialMediaManagementHub({
                                     }}
                                     className="px-2.5 py-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded text-[10.5px] shadow-2xs transition-colors cursor-pointer"
                                   >
-                                    🚚 Dispatch to Fleet
+                                    {t('btn_dispatch_fleet', '🚚 Dispatch to Fleet')}
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleMoveToPos(ord.id)}
                                     className="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 font-bold rounded text-[10.5px] transition-colors cursor-pointer"
                                   >
-                                    🏪 Move to POS
+                                    {t('btn_move_pos', '🏪 Move to POS')}
                                   </button>
                                 </>
                               )}
@@ -1140,7 +1140,7 @@ export default function SocialMediaManagementHub({
                                   onClick={() => handleOpenPODModal(ord)}
                                   className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[10.5px] shadow-2xs transition-colors cursor-pointer"
                                 >
-                                  ✍️ Sign POD &amp; Collect
+                                  {t('btn_sign_pod', '✍️ Sign POD & Collect')}
                                 </button>
                               )}
 
@@ -1155,14 +1155,14 @@ export default function SocialMediaManagementHub({
                                   }}
                                   className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold rounded text-[10.5px] transition-colors cursor-pointer"
                                 >
-                                  📄 View POD Note
+                                  {t('btn_view_pod', '📄 View POD Note')}
                                 </button>
                               )}
 
                               {/* If Moved to POS */}
                               {ord.order_status === 'moved_to_pos_pickup' && (
                                 <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200 font-bold text-[10px]">
-                                  Ready at Cashier
+                                  {t('ready_at_cashier', 'Ready at Cashier')}
                                 </span>
                               )}
 
@@ -1173,7 +1173,7 @@ export default function SocialMediaManagementHub({
                                   onClick={() => handleApproveOrder(ord.id)}
                                   className="px-2 py-1 bg-emerald-600 text-white font-bold rounded text-[10.5px] shadow-2xs cursor-pointer"
                                 >
-                                  Override &amp; Approve
+                                  {t('override_and_approve', 'Override & Approve')}
                                 </button>
                               )}
                             </div>
@@ -1193,12 +1193,12 @@ export default function SocialMediaManagementHub({
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 gap-3">
             <div>
-              <h2 className="text-sm font-bold text-slate-800">Omnichannel Publishing Calendar & Outbound Hub</h2>
-              <p className="text-xs text-slate-500">Schedule social media posts per rep and deploy direct WhatsApp broadcasts</p>
+              <h2 className="text-sm font-bold text-slate-800">{t('omnichannel_pub_cal_title', 'Omnichannel Publishing Calendar & Outbound Hub')}</h2>
+              <p className="text-xs text-slate-500">{t('omnichannel_pub_cal_sub', 'Schedule social media posts per rep and deploy direct WhatsApp broadcasts')}</p>
             </div>
             <div className="flex items-center gap-2">
-              <button type="button" onClick={() => { setScheduleType('SOCIAL_POST'); setShowScheduleModal(true); }} className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-2xs cursor-pointer">+ Schedule Social Post</button>
-              <button type="button" onClick={() => { setScheduleType('WHATSAPP_BROADCAST'); setShowScheduleModal(true); }} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-2xs cursor-pointer">+ Schedule WhatsApp Broadcast</button>
+              <button type="button" onClick={() => { setScheduleType('SOCIAL_POST'); setShowScheduleModal(true); }} className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-2xs cursor-pointer">{t('btn_schedule_social_post', '+ Schedule Social Post')}</button>
+              <button type="button" onClick={() => { setScheduleType('WHATSAPP_BROADCAST'); setShowScheduleModal(true); }} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-2xs cursor-pointer">{t('btn_schedule_wa_broadcast', '+ Schedule WhatsApp Broadcast')}</button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1207,7 +1207,7 @@ export default function SocialMediaManagementHub({
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="font-mono text-[10.5px] font-bold text-primary">{item.id}</span>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'WHATSAPP_BROADCAST' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}`}>{item.type === 'WHATSAPP_BROADCAST' ? '💬 WhatsApp' : '📱 Social'}</span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'WHATSAPP_BROADCAST' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}`}>{item.type === 'WHATSAPP_BROADCAST' ? t('channel_whatsapp', '💬 WhatsApp') : t('channel_social_media', '📱 Social')}</span>
                   </div>
                   <h3 className="text-xs font-bold text-slate-800">{item.title}</h3>
                 </div>
@@ -1222,8 +1222,8 @@ export default function SocialMediaManagementHub({
       {activeTab === 'cpl' && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-5">
           <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-sm font-bold text-slate-800">Ad Campaigns & CPL Analytics (Click Header to Toggle)</h2>
-            <p className="text-xs text-slate-600 font-medium mt-0.5">Click any campaign row to view per-page contribution share (%)</p>
+            <h2 className="text-sm font-bold text-slate-800">{t('cpl_analytics_title', 'Ad Campaigns & CPL Analytics (Click Header to Toggle)')}</h2>
+            <p className="text-xs text-slate-600 font-medium mt-0.5">{t('cpl_analytics_sub', 'Click any campaign row to view per-page contribution share (%)')}</p>
           </div>
           <div className="space-y-3">
             {campaignsData.map((camp) => {
@@ -1236,9 +1236,9 @@ export default function SocialMediaManagementHub({
                       <span className="px-2 py-0.5 bg-white text-primary rounded text-[10.5px] font-bold border border-slate-200">{camp.channelPlatform}</span>
                     </div>
                     <div className="flex items-center gap-4 text-xs font-mono">
-                      <span>Spend: ${camp.spendUsd.toFixed(2)}</span>
-                      <span className="text-emerald-600 font-bold">CPL: ${camp.cplUsd.toFixed(2)}</span>
-                      <span className="text-primary font-bold">Revenue: ${camp.totalRevenueUsd.toFixed(2)}</span>
+                      <span>{t('spend_label', 'Spend:')} ${camp.spendUsd.toFixed(2)}</span>
+                      <span className="text-emerald-600 font-bold">{t('cpl_label', 'CPL:')} ${camp.cplUsd.toFixed(2)}</span>
+                      <span className="text-primary font-bold">{t('revenue_label', 'Revenue:')} ${camp.totalRevenueUsd.toFixed(2)}</span>
                       <span className="text-slate-400 font-bold">{isExpanded ? '▲' : '▼'}</span>
                     </div>
                   </div>
@@ -1247,11 +1247,11 @@ export default function SocialMediaManagementHub({
                       <table className="w-full text-left text-xs border-collapse">
                         <thead>
                           <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold">
-                            <th className="py-2 px-3 normal-case w-1/3">sales rep & page handle</th>
-                            <th className="py-2 px-3 normal-case text-center">leads</th>
-                            <th className="py-2 px-3 normal-case text-center">orders</th>
-                            <th className="py-2 px-3 normal-case text-center">revenue ($)</th>
-                            <th className="py-2 px-3 normal-case text-center w-52">contribution (%)</th>
+                            <th className="py-2 px-3 normal-case w-1/3">{t('th_rep_page_handle', 'sales rep & page handle')}</th>
+                            <th className="py-2 px-3 normal-case text-center">{t('th_leads', 'leads')}</th>
+                            <th className="py-2 px-3 normal-case text-center">{t('th_orders', 'orders')}</th>
+                            <th className="py-2 px-3 normal-case text-center">{t('th_revenue_usd', 'revenue ($)')}</th>
+                            <th className="py-2 px-3 normal-case text-center w-52">{t('th_contribution_pct', 'contribution (%)')}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 font-medium text-[11.5px]">
@@ -1279,21 +1279,21 @@ export default function SocialMediaManagementHub({
       {activeTab === 'agents' && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 className="text-sm font-bold text-slate-800">Support Agents Performance</h2>
+            <h2 className="text-sm font-bold text-slate-800">{t('support_agents_perf_title', 'Support Agents Performance')}</h2>
             <span className="text-xs text-slate-500 font-mono">Southern Olive Oil Products S.A.R.L</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-300 bg-slate-50 text-slate-700 font-bold">
-                  <th className="py-2.5 px-3 normal-case">rep name</th>
-                  <th className="py-2.5 px-3 normal-case">admin code</th>
-                  <th className="py-2.5 px-3 normal-case text-center">active chats</th>
-                  <th className="py-2.5 px-3 normal-case text-center">total orders</th>
-                  <th className="py-2.5 px-3 normal-case text-center">conversion rate</th>
-                  <th className="py-2.5 px-3 normal-case text-center">avg response time</th>
-                  <th className="py-2.5 px-3 normal-case text-center">earned commission ($)</th>
-                  <th className="py-2.5 px-3 normal-case text-center">social pages breakdown</th>
+                  <th className="py-2.5 px-3 normal-case">{t('th_rep_name', 'rep name')}</th>
+                  <th className="py-2.5 px-3 normal-case">{t('th_admin_code', 'admin code')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_active_chats', 'active chats')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_total_orders', 'total orders')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_conversion_rate', 'conversion rate')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_avg_response_time', 'avg response time')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_earned_commission', 'earned commission ($)')}</th>
+                  <th className="py-2.5 px-3 normal-case text-center">{t('th_social_pages_breakdown', 'social pages breakdown')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-[11.5px]">
@@ -1304,10 +1304,10 @@ export default function SocialMediaManagementHub({
                     <td className="py-2.5 px-3 text-center font-mono">{ag.activeChats}</td>
                     <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-800">{ag.totalOrders}</td>
                     <td className="py-2.5 px-3 text-center font-mono font-bold text-emerald-600">{ag.conversionRatePct}%</td>
-                    <td className="py-2.5 px-3 text-center font-mono text-slate-600">{ag.avgResponseMins} mins</td>
+                    <td className="py-2.5 px-3 text-center font-mono text-slate-600">{ag.avgResponseMins} {t('minutes_abbr', 'mins')}</td>
                     <td className="py-2.5 px-3 text-center font-mono font-bold text-primary">${ag.earnedCommissionUsd.toFixed(2)}</td>
                     <td className="py-2.5 px-3 text-center">
-                      <button type="button" onClick={() => setSelectedAgentDrilldown(ag)} className="px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded text-[11px] cursor-pointer">View Pages ({ag.pages.length})</button>
+                      <button type="button" onClick={() => setSelectedAgentDrilldown(ag)} className="px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded text-[11px] cursor-pointer">{t('btn_view_pages', 'View Pages')} ({ag.pages.length})</button>
                     </td>
                   </tr>
                 ))}
@@ -1331,10 +1331,10 @@ export default function SocialMediaManagementHub({
             <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-1.5">
-                  <span>⚡ Management Override: Convert Chat to Fleet Order</span>
+                  <span>{t('mgmt_override_chat_order', '⚡ Management Override: Convert Chat to Fleet Order')}</span>
                 </h3>
                 <span className="text-[11px] text-emerald-400 font-mono">
-                  Direct Backoffice Takeover • Auto Stock Shield Active
+                  {t('direct_backoffice_takeover', 'Direct Backoffice Takeover • Auto Stock Shield Active')}
                 </span>
               </div>
               <button onClick={() => setShowOrderModal(false)} className="text-slate-400 hover:text-white font-bold cursor-pointer">✕</button>
@@ -1343,10 +1343,10 @@ export default function SocialMediaManagementHub({
             <div className="p-5 space-y-3.5 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
               <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl space-y-1">
                 <span className="text-foreground font-bold block">
-                  Customer: {selectedChat.senderName} ({selectedChat.senderPhone})
+                  {t('customer_colon', 'Customer:')} {selectedChat.senderName} ({selectedChat.senderPhone})
                 </span>
                 <p className="text-slate-600 text-[11px]">
-                  Original Rep: <strong className="text-slate-800">{selectedChat.assignedRep} ({selectedChat.repCode})</strong> • Platform: <strong className="text-primary">{selectedChat.platform}</strong>
+                  {t('original_rep_colon', 'Original Rep:')} <strong className="text-slate-800">{selectedChat.assignedRep} ({selectedChat.repCode})</strong> • {t('platform_colon', 'Platform:')} <strong className="text-primary">{selectedChat.platform}</strong>
                 </p>
                 <p className="text-slate-500 text-[10.5px] italic mt-0.5 font-mono">
                   &quot;{selectedChat.lastMessage}&quot;
@@ -1355,7 +1355,7 @@ export default function SocialMediaManagementHub({
 
               {/* Product Selection */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Select Product for Delivery:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('select_product_delivery', 'Select Product for Delivery:')}</label>
                 <select
                   value={overrideItemId}
                   onChange={(e) => setOverrideItemId(e.target.value)}
@@ -1363,7 +1363,7 @@ export default function SocialMediaManagementHub({
                 >
                   {inventoryStocks.map((inv) => (
                     <option key={inv.id} value={inv.id}>
-                      {inv.item_name} — ${(inv as any).unit_price_usd || 100} (Available: {inv.available_stock} units)
+                      {inv.item_name} — ${(inv as any).unit_price_usd || 100} ({t('available_colon', 'Available:')} {inv.available_stock} {t('units_abbr', 'units')})
                     </option>
                   ))}
                 </select>
@@ -1372,7 +1372,7 @@ export default function SocialMediaManagementHub({
               {/* Quantity & Calculations */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Quantity:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('quantity_label', 'Quantity:')}</label>
                   <input
                     type="number"
                     min={1}
@@ -1382,14 +1382,14 @@ export default function SocialMediaManagementHub({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Payment Method:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('payment_method_label', 'Payment Method:')}</label>
                   <select
                     value={overridePaymentMethod}
                     onChange={(e) => setOverridePaymentMethod(e.target.value as any)}
                     className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-primary"
                   >
-                    <option value="COD">Cash on Delivery (COD)</option>
-                    <option value="WHISH">Whish Money Transfer (WHISH)</option>
+                    <option value="COD">{t('cod_cash_opt', 'Cash on Delivery (COD)')}</option>
+                    <option value="WHISH">{t('whish_money_opt', 'Whish Money Transfer (WHISH)')}</option>
                   </select>
                 </div>
               </div>
@@ -1397,7 +1397,7 @@ export default function SocialMediaManagementHub({
               {/* Destination & Address */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Destination Town:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('dest_town_label', 'Destination Town:')}</label>
                   <input
                     type="text"
                     value={overrideTown}
@@ -1406,7 +1406,7 @@ export default function SocialMediaManagementHub({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Delivery Address:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('delivery_addr_label', 'Delivery Address:')}</label>
                   <input
                     type="text"
                     value={overrideAddress}
@@ -1418,7 +1418,7 @@ export default function SocialMediaManagementHub({
 
               {/* Corridor Selection */}
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Assign Highway Fleet Corridor:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('assign_fleet_corridor', 'Assign Highway Fleet Corridor:')}</label>
                 <select
                   value={overrideCorridorId}
                   onChange={(e) => setOverrideCorridorId(Number(e.target.value))}
@@ -1435,13 +1435,13 @@ export default function SocialMediaManagementHub({
               {/* Total Summary */}
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center font-mono">
                 <div>
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold">Total Payable</span>
+                  <span className="text-[10px] text-slate-500 block uppercase font-bold">{t('total_payable_lbl', 'Total Payable')}</span>
                   <strong className="text-emerald-700 text-sm">
                     ${((inventoryStocks.find((i) => i.id === overrideItemId) as any)?.unit_price_usd || 100) * overrideQty + 4.0} USD
                   </strong>
                 </div>
                 <div className="text-right text-[11px] text-slate-500">
-                  <span>Fee: $4.00 USD</span>
+                  <span>{t('fee_label', 'Fee:')} $4.00 USD</span>
                   <div className="text-slate-800 font-bold">
                     {(((inventoryStocks.find((i) => i.id === overrideItemId) as any)?.unit_price_usd || 100) * overrideQty * 90000).toLocaleString()} LBP
                   </div>
@@ -1454,14 +1454,14 @@ export default function SocialMediaManagementHub({
                   onClick={() => setShowOrderModal(false)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel_btn', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleManagementOverrideOrder}
                   className="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <span>⚡ Force Approve &amp; Queue to SuperSonic Fleet</span>
+                  <span>{t('btn_force_approve_queue', '⚡ Force Approve & Queue to SuperSonic Fleet')}</span>
                 </button>
               </div>
             </div>
@@ -1477,36 +1477,36 @@ export default function SocialMediaManagementHub({
               scheduleType === 'WHATSAPP_BROADCAST' ? 'bg-emerald-700 text-white' : 'bg-muted text-foreground border-b border-border'
             }`}>
               <h3 className="text-xs font-bold">
-                {scheduleType === 'WHATSAPP_BROADCAST' ? 'Schedule Direct WhatsApp Broadcast' : 'Schedule Social Post (Browse Image/Video)'}
+                {scheduleType === 'WHATSAPP_BROADCAST' ? t('schedule_wa_broadcast_title', 'Schedule Direct WhatsApp Broadcast') : t('schedule_social_post_title', 'Schedule Social Post (Browse Image/Video)')}
               </h3>
               <button onClick={() => setShowScheduleModal(false)} className="text-muted-foreground hover:text-foreground font-bold cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleCreateOutboundSchedule} className="p-5 space-y-4 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
-              <div><label className="block font-bold text-foreground mb-1">Title *</label><input type="text" required value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Title..." className="w-full px-3 py-2 border border-border bg-background rounded-lg font-bold" /></div>
+              <div><label className="block font-bold text-foreground mb-1">{t('title_req', 'Title *')}</label><input type="text" required value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Title..." className="w-full px-3 py-2 border border-border bg-background rounded-lg font-bold" /></div>
               
               <div className="bg-muted/40 border-2 border-dashed border-border p-4 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="font-bold text-foreground">Media Attachment (Browse Local Files):</label>
+                  <label className="font-bold text-foreground">{t('media_attach_label', 'Media Attachment (Browse Local Files):')}</label>
                   <div className="flex items-center gap-1">
-                    <button type="button" onClick={() => { setMediaType('IMAGE'); setUploadedFileName(null); setUploadedFilePreview(null); }} className={`px-2 py-0.5 rounded text-[11px] font-bold cursor-pointer ${mediaType === 'IMAGE' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>🖼️ Image</button>
-                    <button type="button" onClick={() => { setMediaType('VIDEO'); setUploadedFileName(null); setUploadedFilePreview(null); }} className={`px-2 py-0.5 rounded text-[11px] font-bold cursor-pointer ${mediaType === 'VIDEO' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>🎥 Video</button>
+                    <button type="button" onClick={() => { setMediaType('IMAGE'); setUploadedFileName(null); setUploadedFilePreview(null); }} className={`px-2 py-0.5 rounded text-[11px] font-bold cursor-pointer ${mediaType === 'IMAGE' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{t('media_image', '🖼️ Image')}</button>
+                    <button type="button" onClick={() => { setMediaType('VIDEO'); setUploadedFileName(null); setUploadedFilePreview(null); }} className={`px-2 py-0.5 rounded text-[11px] font-bold cursor-pointer ${mediaType === 'VIDEO' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{t('media_video', '🎥 Video')}</button>
                   </div>
                 </div>
                 <input type="file" ref={fileInputRef} accept={mediaType === 'IMAGE' ? 'image/*' : 'video/*'} onChange={(e) => { const f = e.target.files?.[0]; if (f) { setUploadedFileName(f.name); setUploadedFilePreview(URL.createObjectURL(f)); } }} className="hidden" />
                 {!uploadedFileName ? (
                   <div onClick={() => fileInputRef.current?.click()} className="w-full py-4 bg-background border border-border rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary">
-                    <div className="font-bold text-primary">Click to browse {mediaType === 'IMAGE' ? 'an Image' : 'a Video'} from computer</div>
+                    <div className="font-bold text-primary">{t('click_to_browse', 'Click to browse')} {mediaType === 'IMAGE' ? t('an_image', 'an Image') : t('a_video', 'a Video')} {t('from_computer', 'from computer')}</div>
                   </div>
                 ) : (
                   <div className="bg-card p-2.5 rounded-xl border border-emerald-200 flex items-center justify-between">
                     <span className="font-bold text-xs text-foreground">{uploadedFileName} ✓</span>
-                    <button type="button" onClick={() => { setUploadedFileName(null); setUploadedFilePreview(null); }} className="text-destructive font-bold cursor-pointer">✕ Remove</button>
+                    <button type="button" onClick={() => { setUploadedFileName(null); setUploadedFilePreview(null); }} className="text-destructive font-bold cursor-pointer">{t('remove_btn', '✕ Remove')}</button>
                   </div>
                 )}
               </div>
 
-              <div><label className="block font-bold text-foreground mb-1">Message Body</label><textarea rows={3} value={copyText} onChange={(e) => setCopyText(e.target.value)} placeholder="Type copy text..." className="w-full px-3 py-2 border border-border bg-background rounded-lg text-xs" /></div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-border"><button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 border border-border rounded-xl font-bold cursor-pointer text-foreground hover:bg-muted">Cancel</button><button type="submit" className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl cursor-pointer">Schedule</button></div>
+              <div><label className="block font-bold text-foreground mb-1">{t('message_body_lbl', 'Message Body')}</label><textarea rows={3} value={copyText} onChange={(e) => setCopyText(e.target.value)} placeholder={t('ph_type_copy_text', 'Type copy text...')} className="w-full px-3 py-2 border border-border bg-background rounded-lg text-xs" /></div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-border"><button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 border border-border rounded-xl font-bold cursor-pointer text-foreground hover:bg-muted">{t('cancel_btn', 'Cancel')}</button><button type="submit" className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl cursor-pointer">{t('btn_schedule_submit', 'Schedule')}</button></div>
             </form>
           </div>
         </div>
@@ -1517,13 +1517,13 @@ export default function SocialMediaManagementHub({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 select-none">
           <div className="bg-card text-foreground w-full max-w-md rounded-2xl border border-border shadow-xl overflow-hidden text-left">
             <div className="bg-muted text-foreground px-4 py-3 flex items-center justify-between border-b border-border">
-              <h3 className="text-xs font-bold">Add New Canned Quick Reply</h3>
+              <h3 className="text-xs font-bold">{t('add_new_canned_title', 'Add New Canned Quick Reply')}</h3>
               <button onClick={() => setShowNewCannedModal(false)} className="text-muted-foreground hover:text-foreground cursor-pointer">✕</button>
             </div>
             <div className="p-4 space-y-3 text-xs">
-              <div><label className="block font-bold text-foreground mb-0.5">Shortcut Tag</label><input type="text" value={newShortcut} onChange={(e) => setNewShortcut(e.target.value)} placeholder="/shortcut" className="w-full px-2.5 py-1.5 border border-border bg-background rounded font-mono font-bold text-primary" /></div>
-              <div><label className="block font-bold text-foreground mb-0.5">Message Text</label><textarea rows={3} value={newCannedText} onChange={(e) => setNewCannedText(e.target.value)} placeholder="Type reply..." className="w-full px-2.5 py-1.5 border border-border bg-background rounded" /></div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-border"><button onClick={() => setShowNewCannedModal(false)} className="px-3 py-1.5 border border-border rounded font-bold cursor-pointer hover:bg-muted">Cancel</button><button onClick={handleAddNewCannedReply} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl cursor-pointer">Save</button></div>
+              <div><label className="block font-bold text-foreground mb-0.5">{t('shortcut_tag_lbl', 'Shortcut Tag')}</label><input type="text" value={newShortcut} onChange={(e) => setNewShortcut(e.target.value)} placeholder="/shortcut" className="w-full px-2.5 py-1.5 border border-border bg-background rounded font-mono font-bold text-primary" /></div>
+              <div><label className="block font-bold text-foreground mb-0.5">{t('message_text_lbl', 'Message Text')}</label><textarea rows={3} value={newCannedText} onChange={(e) => setNewCannedText(e.target.value)} placeholder="Type reply..." className="w-full px-2.5 py-1.5 border border-border bg-background rounded" /></div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-border"><button onClick={() => setShowNewCannedModal(false)} className="px-3 py-1.5 border border-border rounded font-bold cursor-pointer hover:bg-muted">{t('cancel_btn', 'Cancel')}</button><button onClick={handleAddNewCannedReply} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl cursor-pointer">{t('save_btn', 'Save')}</button></div>
             </div>
           </div>
         </div>
@@ -1534,17 +1534,17 @@ export default function SocialMediaManagementHub({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 select-none">
           <div className="bg-card text-foreground w-full max-w-lg rounded-2xl border border-border shadow-xl overflow-hidden text-left">
             <div className="bg-muted text-foreground px-4 py-3 flex items-center justify-between border-b border-border">
-              <h3 className="text-xs font-bold">Social Pages Breakdown: {selectedAgentDrilldown.name} ({selectedAgentDrilldown.code})</h3>
+              <h3 className="text-xs font-bold">{t('social_pages_breakdown_title', 'Social Pages Breakdown:')} {selectedAgentDrilldown.name} ({selectedAgentDrilldown.code})</h3>
               <button onClick={() => setSelectedAgentDrilldown(null)} className="text-muted-foreground hover:text-foreground cursor-pointer">✕</button>
             </div>
             <div className="p-4 space-y-3 text-xs">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-border bg-muted/50 font-bold text-muted-foreground">
-                    <th className="py-2 px-2.5 normal-case">platform</th>
-                    <th className="py-2 px-2.5 normal-case">page / handle</th>
-                    <th className="py-2 px-2.5 normal-case text-center">audience</th>
-                    <th className="py-2 px-2.5 normal-case text-center">orders</th>
+                    <th className="py-2 px-2.5 normal-case">{t('th_platform', 'platform')}</th>
+                    <th className="py-2 px-2.5 normal-case">{t('th_page_handle', 'page / handle')}</th>
+                    <th className="py-2 px-2.5 normal-case text-center">{t('th_audience', 'audience')}</th>
+                    <th className="py-2 px-2.5 normal-case text-center">{t('th_orders', 'orders')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -1559,7 +1559,7 @@ export default function SocialMediaManagementHub({
                 </tbody>
               </table>
               <div className="pt-2 flex justify-end">
-                <button onClick={() => setSelectedAgentDrilldown(null)} className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground rounded-xl font-bold cursor-pointer">Close</button>
+                <button onClick={() => setSelectedAgentDrilldown(null)} className="px-4 py-1.5 bg-muted hover:bg-muted/80 text-foreground rounded-xl font-bold cursor-pointer">{t('close_btn', 'Close')}</button>
               </div>
             </div>
           </div>
@@ -1572,8 +1572,8 @@ export default function SocialMediaManagementHub({
           <div className="bg-card text-foreground w-full max-w-md rounded-2xl border border-border shadow-2xl overflow-hidden text-left">
             <div className="bg-primary text-primary-foreground px-5 py-3.5 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold">🚚 Dispatch Order to SuperSonic Fleet</h3>
-                <span className="text-[11px] opacity-90 font-mono">Order #{selectedOrderForDispatch.order_number}</span>
+                <h3 className="text-sm font-bold">{t('dispatch_modal_title', '🚚 Dispatch Order to SuperSonic Fleet')}</h3>
+                <span className="text-[11px] opacity-90 font-mono">{t('order_hash', 'Order #')}{selectedOrderForDispatch.order_number}</span>
               </div>
               <button
                 type="button"
@@ -1587,21 +1587,21 @@ export default function SocialMediaManagementHub({
             <div className="p-5 space-y-4 text-xs">
               <div className="p-3 bg-muted/40 rounded-xl border border-border space-y-1 font-mono">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Customer:</span>
+                  <span className="text-muted-foreground">{t('customer_colon', 'Customer:')}</span>
                   <strong className="text-foreground">{selectedOrderForDispatch.customer_name}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Destination:</span>
+                  <span className="text-muted-foreground">{t('destination_colon', 'Destination:')}</span>
                   <strong className="text-foreground">{selectedOrderForDispatch.destination_town}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Address:</span>
+                  <span className="text-muted-foreground">{t('address_colon', 'Address:')}</span>
                   <span className="text-foreground truncate max-w-[200px]" title={selectedOrderForDispatch.delivery_address}>
                     {selectedOrderForDispatch.delivery_address}
                   </span>
                 </div>
                 <div className="flex justify-between text-primary font-bold border-t border-border pt-1">
-                  <span>To Collect:</span>
+                  <span>{t('to_collect_colon', 'To Collect:')}</span>
                   <span>
                     ${selectedOrderForDispatch.product_amount_usd + selectedOrderForDispatch.delivery_fee_usd} (
                     {selectedOrderForDispatch.payment_method})
@@ -1610,7 +1610,7 @@ export default function SocialMediaManagementHub({
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Select Highway Corridor (1 to 7):</label>
+                <label className="block font-bold text-foreground mb-1">{t('select_corridor_lbl', 'Select Highway Corridor (1 to 7):')}</label>
                 <select
                   value={dispatchCorridorId}
                   onChange={(e) => {
@@ -1634,7 +1634,7 @@ export default function SocialMediaManagementHub({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-foreground mb-1">Assigned Driver:</label>
+                  <label className="block font-bold text-foreground mb-1">{t('assigned_driver_lbl', 'Assigned Driver:')}</label>
                   <input
                     type="text"
                     value={dispatchDriverName}
@@ -1643,7 +1643,7 @@ export default function SocialMediaManagementHub({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-foreground mb-1">Vehicle Plate:</label>
+                  <label className="block font-bold text-foreground mb-1">{t('vehicle_plate_lbl', 'Vehicle Plate:')}</label>
                   <input
                     type="text"
                     value={dispatchVehiclePlate}
@@ -1659,14 +1659,14 @@ export default function SocialMediaManagementHub({
                   onClick={() => setSelectedOrderForDispatch(null)}
                   className="px-4 py-2 border border-border text-foreground hover:bg-muted font-bold rounded-xl cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel_btn', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmDispatch}
                   className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs cursor-pointer"
                 >
-                  Confirm Dispatch ➔
+                  {t('btn_confirm_dispatch', 'Confirm Dispatch ➔')}
                 </button>
               </div>
             </div>
@@ -1680,9 +1680,9 @@ export default function SocialMediaManagementHub({
           <div className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden text-left">
             <div className="bg-emerald-700 text-white px-5 py-3.5 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold">✍️ Proof of Delivery (POD) &amp; Stock Deduction</h3>
+                <h3 className="text-sm font-bold">{t('pod_modal_title', '✍️ Proof of Delivery (POD) & Stock Deduction')}</h3>
                 <span className="text-[11px] text-emerald-100 font-mono">
-                  Order #{selectedOrderForPOD.order_number} (Corridor {selectedOrderForPOD.corridor_id})
+                  {t('order_hash', 'Order #')}{selectedOrderForPOD.order_number} ({t('corridor_label', 'Corridor')} {selectedOrderForPOD.corridor_id})
                 </span>
               </div>
               <button
@@ -1706,7 +1706,7 @@ export default function SocialMediaManagementHub({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Recipient Name:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('recipient_name_lbl', 'Recipient Name:')}</label>
                   <input
                     type="text"
                     value={podRecipientName}
@@ -1715,21 +1715,21 @@ export default function SocialMediaManagementHub({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Payment Collection Method:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('payment_method_label', 'Payment Method:')}</label>
                   <select
                     value={podPaymentMethod}
                     onChange={(e) => setPodPaymentMethod(e.target.value as PaymentCollectionMethod)}
                     className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold"
                   >
-                    <option value="COD">COD (Cash on Delivery)</option>
-                    <option value="WHISH">WHISH (Whish Money on Delivery)</option>
+                    <option value="COD">{t('cod_cash_opt', 'COD (Cash on Delivery)')}</option>
+                    <option value="WHISH">{t('whish_money_opt', 'WHISH (Whish Money on Delivery)')}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Collected USD ($):</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('collected_usd_lbl', 'Collected USD ($):')}</label>
                   <input
                     type="number"
                     step="0.5"
@@ -1739,7 +1739,7 @@ export default function SocialMediaManagementHub({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Collected LBP (Optional):</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('collected_lbp_lbl', 'Collected LBP (Optional):')}</label>
                   <input
                     type="number"
                     step="10000"
@@ -1751,16 +1751,16 @@ export default function SocialMediaManagementHub({
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Customer / Driver Signature (SVG Proof):</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('cust_driver_sig_lbl', 'Customer / Driver Signature (SVG Proof):')}</label>
                 <div className="h-16 bg-slate-50 border border-slate-300 rounded-xl flex items-center justify-center p-2">
                   <span className="font-serif italic font-bold text-slate-700 text-lg">
-                    ✍️ {podRecipientName || 'Customer Signature'} (Verified on Mobile)
+                    ✍️ {podRecipientName || t('cust_sig_default', 'Customer Signature')} ({t('verified_on_mobile', 'Verified on Mobile')})
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Delivery Notes:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('delivery_notes_lbl', 'Delivery Notes:')}</label>
                 <input
                   type="text"
                   value={podNotes}
@@ -1776,14 +1776,14 @@ export default function SocialMediaManagementHub({
                   onClick={() => setSelectedOrderForPOD(null)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel_btn', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmPOD}
                   className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs cursor-pointer"
                 >
-                  ✓ Confirm Delivery &amp; Deduct Stock
+                  {t('btn_confirm_delivery_stock', '✓ Confirm Delivery & Deduct Stock')}
                 </button>
               </div>
             </div>
@@ -1797,7 +1797,7 @@ export default function SocialMediaManagementHub({
           <div className="bg-white w-full max-w-md rounded-2xl border border-slate-200 shadow-2xl overflow-hidden text-left">
             <div className="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold">📄 Official Delivery Note (POD Voucher)</h3>
+                <h3 className="text-sm font-bold">{t('official_dn_title', '📄 Official Delivery Note (POD Voucher)')}</h3>
                 <span className="text-[11px] text-slate-300 font-mono">
                   DN #{selectedNoteView.delivery_note_number || '1001'} | Ref: {selectedNoteView.invoice_id}
                 </span>
@@ -1814,35 +1814,35 @@ export default function SocialMediaManagementHub({
             <div className="p-5 space-y-4 text-xs">
               <div className="border border-slate-200 rounded-xl p-4 space-y-2.5 font-mono">
                 <div className="flex justify-between border-b pb-1.5">
-                  <span className="text-slate-500">Delivered At:</span>
+                  <span className="text-slate-500">{t('delivered_at_lbl', 'Delivered At:')}</span>
                   <strong className="text-slate-900">{new Date(selectedNoteView.delivered_at).toLocaleString()}</strong>
                 </div>
                 <div className="flex justify-between border-b pb-1.5">
-                  <span className="text-slate-500">Recipient Name:</span>
+                  <span className="text-slate-500">{t('recipient_name_lbl', 'Recipient Name:')}</span>
                   <strong className="text-slate-900">{selectedNoteView.recipient_name}</strong>
                 </div>
                 <div className="flex justify-between border-b pb-1.5">
-                  <span className="text-slate-500">Delivered By Courier:</span>
+                  <span className="text-slate-500">{t('delivered_by_courier', 'Delivered By Courier:')}</span>
                   <strong className="text-slate-900">{selectedNoteView.delivered_by}</strong>
                 </div>
                 <div className="flex justify-between border-b pb-1.5">
-                  <span className="text-slate-500">Payment Collection:</span>
+                  <span className="text-slate-500">{t('payment_coll_lbl', 'Payment Collection:')}</span>
                   <span className="font-bold text-purple-700">{selectedNoteView.payment_method}</span>
                 </div>
                 <div className="flex justify-between border-b pb-1.5">
-                  <span className="text-slate-500">Collected USD:</span>
+                  <span className="text-slate-500">{t('collected_usd_lbl', 'Collected USD:')}</span>
                   <strong className="text-emerald-700">${selectedNoteView.collected_amount_usd.toFixed(2)}</strong>
                 </div>
                 {selectedNoteView.collected_amount_lbp > 0 && (
                   <div className="flex justify-between border-b pb-1.5">
-                    <span className="text-slate-500">Collected LBP:</span>
+                    <span className="text-slate-500">{t('collected_lbp_lbl', 'Collected LBP:')}</span>
                     <strong className="text-slate-800">{selectedNoteView.collected_amount_lbp.toLocaleString()} LBP</strong>
                   </div>
                 )}
                 <div className="pt-1">
-                  <span className="text-slate-500 block mb-1">Proof of Delivery Signature:</span>
+                  <span className="text-slate-500 block mb-1">{t('pod_sig_lbl', 'Proof of Delivery Signature:')}</span>
                   <div className="p-2.5 bg-slate-50 border rounded-lg flex items-center justify-center font-serif italic text-blue-900 font-bold text-base">
-                    ✍️ Verified SVG Signature Stamp
+                    {t('verified_svg_sig', '✍️ Verified SVG Signature Stamp')}
                   </div>
                 </div>
               </div>
@@ -1853,7 +1853,7 @@ export default function SocialMediaManagementHub({
                   onClick={() => setSelectedNoteView(null)}
                   className="px-5 py-2 bg-slate-800 text-white font-bold rounded-xl cursor-pointer"
                 >
-                  Close Voucher
+                  {t('btn_close_voucher', 'Close Voucher')}
                 </button>
               </div>
             </div>

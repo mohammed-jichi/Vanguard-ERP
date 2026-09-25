@@ -147,28 +147,28 @@ export default function SeasonManagementView() {
                 {t('pm_seasons', 'Season Lifecycle Management')}
               </h1>
               <span className="text-xs bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded">
-                Annual Harvest Campaigns
+                {t('annual_harvest_campaigns', 'Annual Harvest Campaigns')}
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Configure explicit start &amp; end dates, manage intake operational freeze triggers, and generate certified season audit reports.
+              {t('season_management_desc', 'Configure explicit start & end dates, manage intake operational freeze triggers, and generate certified season audit reports.')}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleCreateNew}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Create New Season</span>
+              <span>{t('create_new_season', 'Create New Season')}</span>
             </button>
             <button
               onClick={() => setShowAuditReportModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-xs transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-xs transition cursor-pointer"
             >
               <FileText className="w-3.5 h-3.5 text-amber-400" />
-              <span>Consolidated Audit Report</span>
+              <span>{t('consolidated_audit_report', 'Consolidated Audit Report')}</span>
             </button>
           </div>
         </div>
@@ -180,11 +180,10 @@ export default function SeasonManagementView() {
           <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold">
-              Operational Freeze Active for Selected Campaign ({selectedSeason.seasonName})
+              {t('operational_freeze_active', 'Operational Freeze Active for Selected Campaign')} ({selectedSeason.seasonName})
             </p>
             <p className="text-amber-800 leading-relaxed">
-              Weighbridge intake scale logging and pressing line batch queues are locked into read-only mode for this campaign.
-              All year-round modules (Tanks Matrix, Direct POS, Dispatch, and Client Ledgers) remain fully active.
+              {t('operational_freeze_desc', 'Weighbridge intake scale logging and pressing line batch queues are locked into read-only mode for this campaign. All year-round modules (Tanks Matrix, Direct POS, Dispatch, and Client Ledgers) remain fully active.')}
             </p>
           </div>
         </div>
@@ -197,10 +196,10 @@ export default function SeasonManagementView() {
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                Harvest Campaigns
+                {t('harvest_campaigns', 'Harvest Campaigns')}
               </h3>
               <span className="text-[11px] text-slate-500 font-medium">
-                {seasons.length} Campaigns Recorded
+                {seasons.length} {t('campaigns_recorded', 'Campaigns Recorded')}
               </span>
             </div>
 
@@ -229,25 +228,25 @@ export default function SeasonManagementView() {
                             : 'bg-slate-100 text-slate-600'
                         }`}
                       >
-                        {season.status}
+                        {t(season.status.toLowerCase(), season.status)}
                       </span>
                     </div>
 
                     <div className="text-[11px] text-slate-500 space-y-0.5">
                       <div>
-                        Start: <span className="font-medium text-slate-700">{season.startDateTime.replace('T', ' ')}</span>
+                        {t('start_date', 'Start')}: <span className="font-medium text-slate-700">{season.startDateTime.replace('T', ' ')}</span>
                       </div>
                       <div>
-                        End: <span className="font-medium text-slate-700">{season.endDateTime.replace('T', ' ')}</span>
+                        {t('end_date', 'End')}: <span className="font-medium text-slate-700">{season.endDateTime.replace('T', ' ')}</span>
                       </div>
                     </div>
 
                     <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
                       <span className="text-slate-500">
-                        Intake: {(season.totalOliveIntakeKg / 1000).toFixed(1)} T
+                        {t('intake', 'Intake')}: {(season.totalOliveIntakeKg / 1000).toFixed(1)} {t('unit_mt', 'T')}
                       </span>
                       <span className="font-semibold text-emerald-700">
-                        {season.totalTinsYield} Tins
+                        {season.totalTinsYield} {t('tins', 'Tins')}
                       </span>
                     </div>
                   </div>
@@ -258,7 +257,7 @@ export default function SeasonManagementView() {
 
           <div className="pt-4 mt-4 border-t border-slate-100">
             <div className="text-[11px] text-slate-500">
-              <span className="font-semibold text-slate-700">Audit Rule:</span> Each scale ticket and batch automatically tags the active season ID.
+              <span className="font-semibold text-slate-700">{t('audit_rule_label', 'Audit Rule:')}</span> {t('audit_rule_desc', 'Each scale ticket and batch automatically tags the active season ID.')}
             </div>
           </div>
         </div>
@@ -271,7 +270,7 @@ export default function SeasonManagementView() {
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-emerald-600" />
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                  Campaign Parameters &amp; Boundaries
+                  {t('campaign_parameters_boundaries', 'Campaign Parameters & Boundaries')}
                 </h3>
               </div>
               <div className="flex items-center gap-2">
@@ -281,12 +280,12 @@ export default function SeasonManagementView() {
                     className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold rounded transition cursor-pointer"
                   >
                     <Lock className="w-3.5 h-3.5 text-rose-600" />
-                    <span>End Campaign (Freeze Intake)</span>
+                    <span>{t('end_campaign_freeze', 'End Campaign (Freeze Intake)')}</span>
                   </button>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-xs text-slate-500 font-medium">
                     <Lock className="w-3.5 h-3.5" />
-                    <span>Campaign Closed</span>
+                    <span>{t('campaign_closed', 'Campaign Closed')}</span>
                   </span>
                 )}
               </div>
@@ -295,7 +294,7 @@ export default function SeasonManagementView() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div>
                 <label className="block text-slate-600 font-medium mb-1">
-                  Season Name &amp; Label
+                  {t('season_name_label', 'Season Name & Label')}
                 </label>
                 <input
                   type="text"
@@ -307,22 +306,22 @@ export default function SeasonManagementView() {
 
               <div>
                 <label className="block text-slate-600 font-medium mb-1">
-                  Campaign Status
+                  {t('campaign_status', 'Campaign Status')}
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as SeasonStatus)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-800 font-medium focus:bg-white focus:outline-emerald-600"
                 >
-                  <option value="Active">Active (Intake &amp; Pressing Open)</option>
-                  <option value="Planned">Planned (Pre-Season Setup)</option>
-                  <option value="Closed">Closed / Frozen (Read-Only Intake)</option>
+                  <option value="Active">{t('status_active_desc', 'Active (Intake & Pressing Open)')}</option>
+                  <option value="Planned">{t('status_planned_desc', 'Planned (Pre-Season Setup)')}</option>
+                  <option value="Closed">{t('status_closed_desc', 'Closed / Frozen (Read-Only Intake)')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-slate-600 font-medium mb-1">
-                  Start Date &amp; Time
+                  {t('start_date_time', 'Start Date & Time')}
                 </label>
                 <input
                   type="datetime-local"
@@ -334,7 +333,7 @@ export default function SeasonManagementView() {
 
               <div>
                 <label className="block text-slate-600 font-medium mb-1">
-                  End Date &amp; Time
+                  {t('end_date_time', 'End Date & Time')}
                 </label>
                 <input
                   type="datetime-local"
@@ -346,7 +345,7 @@ export default function SeasonManagementView() {
 
               <div className="md:col-span-2">
                 <label className="block text-slate-600 font-medium mb-1">
-                  Campaign Description &amp; Agronomic Notes
+                  {t('campaign_notes_label', 'Campaign Description & Agronomic Notes')}
                 </label>
                 <textarea
                   rows={2}
@@ -363,13 +362,13 @@ export default function SeasonManagementView() {
                 onClick={() => handleSelectSeason(selectedSeason)}
                 className="px-4 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs transition"
               >
-                Revert Changes
+                {t('revert_changes', 'Revert Changes')}
               </button>
               <button
                 onClick={handleSaveSeason}
                 className="px-4 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded shadow-xs transition"
               >
-                Save Campaign Parameters
+                {t('save_campaign_parameters', 'Save Campaign Parameters')}
               </button>
             </div>
           </div>
@@ -380,73 +379,73 @@ export default function SeasonManagementView() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                  Seasonal Audit Summary ({selectedSeason.seasonName})
+                  {t('seasonal_audit_summary', 'Seasonal Audit Summary')} ({selectedSeason.seasonName})
                 </h3>
               </div>
               <span className="text-[11px] text-slate-500">
-                Period: {selectedSeason.startDateTime.slice(0, 10)} to {selectedSeason.endDateTime.slice(0, 10)}
+                {t('period', 'Period')}: {selectedSeason.startDateTime.slice(0, 10)} {t('to', 'to')} {selectedSeason.endDateTime.slice(0, 10)}
               </span>
             </div>
 
             {/* 6 Metric KPI Panels */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">Total Olive Intake</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('total_olive_intake', 'Total Olive Intake')}</span>
                 <span className="text-base font-bold text-slate-900">
-                  {(selectedSeason.totalOliveIntakeKg / 1000).toFixed(1)} MT
+                  {(selectedSeason.totalOliveIntakeKg / 1000).toFixed(1)} {t('unit_mt', 'MT')}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  {selectedSeason.totalOliveIntakeKg.toLocaleString()} KG Gross
+                  {selectedSeason.totalOliveIntakeKg.toLocaleString()} {t('unit_kg', 'KG')} {t('gross', 'Gross')}
                 </span>
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">Total Virgin Oil</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('total_virgin_oil', 'Total Virgin Oil')}</span>
                 <span className="text-base font-bold text-emerald-800">
-                  {selectedSeason.totalTinsYield.toLocaleString()} Tins
+                  {selectedSeason.totalTinsYield.toLocaleString()} {t('tins', 'Tins')}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  {selectedSeason.totalVirginOilKg.toLocaleString()} KG Extracted
+                  {selectedSeason.totalVirginOilKg.toLocaleString()} {t('unit_kg', 'KG')} {t('extracted', 'Extracted')}
                 </span>
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">Overall Yield Ratio</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('overall_yield_ratio', 'Overall Yield Ratio')}</span>
                 <span className="text-base font-bold text-blue-700">
                   {selectedSeason.overallYieldPct}%
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  Weighted Mill Yield Avg
+                  {t('weighted_yield_avg', 'Weighted Mill Yield Avg')}
                 </span>
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">Total Pomace (Jift)</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('total_pomace_jift', 'Total Pomace (Jift)')}</span>
                 <span className="text-base font-bold text-amber-800">
-                  {(selectedSeason.totalPomaceKg / 1000).toFixed(1)} Tons
+                  {(selectedSeason.totalPomaceKg / 1000).toFixed(1)} {t('unit_mt', 'Tons')}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  Heating / Biomass Stock
+                  {t('heating_biomass_stock', 'Heating / Biomass Stock')}
                 </span>
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">In-Kind Oil Retained</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('in_kind_retained_oil', 'In-Kind Oil Retained')}</span>
                 <span className="text-base font-bold text-emerald-700">
-                  {selectedSeason.retainedOilKg.toLocaleString()} KG
+                  {selectedSeason.retainedOilKg.toLocaleString()} {t('unit_kg', 'KG')}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  vs {selectedSeason.deliveredOilKg.toLocaleString()} KG Dispatched
+                  {t('vs', 'vs')} {selectedSeason.deliveredOilKg.toLocaleString()} {t('unit_kg', 'KG')} {t('dispatched', 'Dispatched')}
                 </span>
               </div>
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3">
-                <span className="text-slate-500 font-medium block mb-0.5">Cash Fees Collected</span>
+                <span className="text-slate-500 font-medium block mb-0.5">{t('cash_fees_collected', 'Cash Fees Collected')}</span>
                 <span className="text-base font-bold text-slate-900">
                   ${selectedSeason.totalCashFeesUSD.toLocaleString()}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
-                  {(selectedSeason.totalCashFeesUSD * 89500).toLocaleString()} LBP
+                  {(selectedSeason.totalCashFeesUSD * 89500).toLocaleString()} {t('currency_lbp', 'LBP')}
                 </span>
               </div>
             </div>
@@ -457,7 +456,7 @@ export default function SeasonManagementView() {
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded transition cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-600" />
-                <span>View &amp; Print Audit Certificate</span>
+                <span>{t('view_print_audit_cert', 'View & Print Audit Certificate')}</span>
               </button>
             </div>
           </div>
@@ -471,18 +470,18 @@ export default function SeasonManagementView() {
             <div className="flex items-center gap-3 text-rose-600">
               <AlertTriangle className="w-6 h-6" />
               <h3 className="text-base font-bold text-slate-900">
-                Confirm Season Closure &amp; Operational Freeze
+                {t('confirm_season_closure', 'Confirm Season Closure & Operational Freeze')}
               </h3>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Ending the harvest season will lock the <span className="font-bold text-slate-900">Weighbridge Intake</span> scale logging and <span className="font-bold text-slate-900">Pressing Lines</span> into read-only mode to prevent new batch creation outside the official dates.
+              {t('confirm_season_closure_desc', 'Ending the harvest season will lock the Weighbridge Intake scale logging and Pressing Lines into read-only mode to prevent new batch creation outside the official dates.')}
             </p>
 
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700 space-y-1">
-              <div>Campaign: <span className="font-bold">{selectedSeason.seasonName}</span></div>
-              <div>Effective Freeze Date: <span className="font-semibold">{new Date().toLocaleString()}</span></div>
-              <div className="text-emerald-700">✓ Tank Matrix, POS Sales &amp; Ledgers remain permanently accessible.</div>
+              <div>{t('campaign', 'Campaign')}: <span className="font-bold">{selectedSeason.seasonName}</span></div>
+              <div>{t('effective_freeze_date', 'Effective Freeze Date')}: <span className="font-semibold">{new Date().toLocaleString()}</span></div>
+              <div className="text-emerald-700">✓ {t('freeze_safe_modules', 'Tank Matrix, POS Sales & Ledgers remain permanently accessible.')}</div>
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
@@ -490,13 +489,13 @@ export default function SeasonManagementView() {
                 onClick={() => setShowEndSeasonModal(false)}
                 className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleEndSeasonConfirm}
                 className="px-4 py-1.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold rounded shadow-xs"
               >
-                Confirm End of Season
+                {t('confirm_end_season', 'Confirm End of Season')}
               </button>
             </div>
           </div>
@@ -513,10 +512,10 @@ export default function SeasonManagementView() {
                 <ShieldCheck className="w-6 h-6 text-emerald-700" />
                 <div>
                   <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                    Consolidated Seasonal Harvest &amp; Production Audit Report
+                    {t('audit_report_modal_title', 'Consolidated Seasonal Harvest & Production Audit Report')}
                   </h2>
                   <p className="text-[11px] text-slate-500">
-                    Vanguard ERP Official Mill Operations Statement
+                    {t('audit_report_modal_subtitle', 'Vanguard ERP Official Mill Operations Statement')}
                   </p>
                 </div>
               </div>
@@ -531,51 +530,51 @@ export default function SeasonManagementView() {
             {/* Certificate Details */}
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-3 font-mono">
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Facility:</span>
-                <span className="font-bold text-slate-900">Southern Olive Oil Products S.A.R.L - Choueifat Plant</span>
+                <span className="text-slate-500">{t('facility_label', 'Facility')}:</span>
+                <span className="font-bold text-slate-900">{t('facility_name_val', 'Southern Olive Oil Products S.A.R.L - Choueifat Plant')}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Campaign ID:</span>
+                <span className="text-slate-500">{t('campaign_id_label', 'Campaign ID')}:</span>
                 <span className="font-bold text-slate-900">{selectedSeason.id} ({selectedSeason.seasonName})</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Operational Window:</span>
+                <span className="text-slate-500">{t('operational_window', 'Operational Window')}:</span>
                 <span className="font-bold text-slate-900">{selectedSeason.startDateTime.replace('T', ' ')} &rarr; {selectedSeason.endDateTime.replace('T', ' ')}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-2">
-                <span className="text-slate-500">Status:</span>
-                <span className="font-bold text-emerald-800">{selectedSeason.status.toUpperCase()}</span>
+                <span className="text-slate-500">{t('status', 'Status')}:</span>
+                <span className="font-bold text-emerald-800">{t(selectedSeason.status.toLowerCase(), selectedSeason.status).toUpperCase()}</span>
               </div>
 
               {/* Data Table */}
               <div className="pt-2 space-y-1.5 font-sans">
                 <div className="flex justify-between text-slate-700">
-                  <span>1. Net Olive Intake Weight:</span>
-                  <span className="font-bold">{selectedSeason.totalOliveIntakeKg.toLocaleString()} KG ({(selectedSeason.totalOliveIntakeKg / 1000).toFixed(2)} Metric Tons)</span>
+                  <span>1. {t('cert_net_olive_intake', 'Net Olive Intake Weight')}:</span>
+                  <span className="font-bold">{selectedSeason.totalOliveIntakeKg.toLocaleString()} {t('unit_kg', 'KG')} ({(selectedSeason.totalOliveIntakeKg / 1000).toFixed(2)} {t('metric_tons', 'Metric Tons')})</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
-                  <span>2. Total Virgin Olive Oil Extracted:</span>
-                  <span className="font-bold text-emerald-800">{selectedSeason.totalVirginOilKg.toLocaleString()} KG ({selectedSeason.totalTinsYield} Standard 16L Tins)</span>
+                  <span>2. {t('cert_total_virgin_oil', 'Total Virgin Olive Oil Extracted')}:</span>
+                  <span className="font-bold text-emerald-800">{selectedSeason.totalVirginOilKg.toLocaleString()} {t('unit_kg', 'KG')} ({selectedSeason.totalTinsYield} {t('cert_standard_tins', 'Standard 16L Tins')})</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
-                  <span>3. Overall Season Extraction Ratio:</span>
-                  <span className="font-bold text-blue-700">{selectedSeason.overallYieldPct}% Yield Average</span>
+                  <span>3. {t('cert_extraction_ratio', 'Overall Season Extraction Ratio')}:</span>
+                  <span className="font-bold text-blue-700">{selectedSeason.overallYieldPct}% {t('cert_yield_average', 'Yield Average')}</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
-                  <span>4. Olive Pomace (Jift Biomass):</span>
-                  <span className="font-bold">{selectedSeason.totalPomaceKg.toLocaleString()} KG ({(selectedSeason.totalPomaceKg / 1000).toFixed(2)} Metric Tons)</span>
+                  <span>4. {t('cert_pomace_biomass', 'Olive Pomace (Jift Biomass)')}:</span>
+                  <span className="font-bold">{selectedSeason.totalPomaceKg.toLocaleString()} {t('unit_kg', 'KG')} ({(selectedSeason.totalPomaceKg / 1000).toFixed(2)} {t('metric_tons', 'Metric Tons')})</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
-                  <span>5. In-Kind Retained Oil (Mill Ownership):</span>
-                  <span className="font-bold text-emerald-700">{selectedSeason.retainedOilKg.toLocaleString()} KG ({(selectedSeason.retainedOilKg / 15).toFixed(1)} Tins)</span>
+                  <span>5. {t('cert_in_kind_retained', 'In-Kind Retained Oil (Mill Ownership)')}:</span>
+                  <span className="font-bold text-emerald-700">{selectedSeason.retainedOilKg.toLocaleString()} {t('unit_kg', 'KG')} ({(selectedSeason.retainedOilKg / 15).toFixed(1)} {t('tins', 'Tins')})</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
-                  <span>6. Grower Released / Handed Over Oil:</span>
-                  <span className="font-bold">{selectedSeason.deliveredOilKg.toLocaleString()} KG ({(selectedSeason.deliveredOilKg / 15).toFixed(1)} Tins)</span>
+                  <span>6. {t('cert_grower_released', 'Grower Released / Handed Over Oil')}:</span>
+                  <span className="font-bold">{selectedSeason.deliveredOilKg.toLocaleString()} {t('unit_kg', 'KG')} ({(selectedSeason.deliveredOilKg / 15).toFixed(1)} {t('tins', 'Tins')})</span>
                 </div>
                 <div className="flex justify-between text-slate-900 font-bold pt-2 border-t border-slate-300">
-                  <span>7. Total Milling Cash Fees Audited:</span>
-                  <span className="text-emerald-800">${selectedSeason.totalCashFeesUSD.toLocaleString()} USD ({(selectedSeason.totalCashFeesUSD * 89500).toLocaleString()} LBP)</span>
+                  <span>7. {t('cert_cash_fees_audited', 'Total Milling Cash Fees Audited')}:</span>
+                  <span className="text-emerald-800">${selectedSeason.totalCashFeesUSD.toLocaleString()} USD ({(selectedSeason.totalCashFeesUSD * 89500).toLocaleString()} {t('currency_lbp', 'LBP')})</span>
                 </div>
               </div>
             </div>
@@ -583,11 +582,11 @@ export default function SeasonManagementView() {
             {/* Signature Block */}
             <div className="grid grid-cols-2 gap-6 pt-4 text-xs text-slate-600 border-t border-slate-200">
               <div className="space-y-6">
-                <div>Plant Operations Manager Signature:</div>
+                <div>{t('manager_signature_label', 'Plant Operations Manager Signature:')}</div>
                 <div className="border-b border-slate-400 w-48"></div>
               </div>
               <div className="space-y-6 text-right">
-                <div>Certified Weighbridge Scale Inspector:</div>
+                <div>{t('inspector_signature_label', 'Certified Weighbridge Scale Inspector:')}</div>
                 <div className="border-b border-slate-400 w-48 ml-auto"></div>
               </div>
             </div>
@@ -599,13 +598,13 @@ export default function SeasonManagementView() {
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-xs"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Official Certificate</span>
+                <span>{t('print_official_certificate', 'Print Official Certificate')}</span>
               </button>
               <button
                 onClick={() => setShowAuditReportModal(false)}
                 className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

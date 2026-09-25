@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import { INITIAL_DISPATCH_PASSES, INITIAL_SETTLEMENTS } from '@/lib/pressingMillData';
 import { OilDispatchPass } from '@/types/pressingMill';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function OilDispatchView() {
+  const { t } = useLanguage();
   const [passes, setPasses] = useState<OilDispatchPass[]>(INITIAL_DISPATCH_PASSES);
   
   // New Pass Form
@@ -76,16 +78,18 @@ export default function OilDispatchView() {
         <div>
           <div className="flex items-center gap-2">
             <Truck className="w-5 h-5 text-amber-600" />
-            <h2 className="text-base font-bold text-slate-900">Oil Handover &amp; Gate-Pass Dispatch</h2>
+            <h2 className="text-base font-bold text-slate-900">
+              {t('pm_dispatch', 'Oil Handover & Gate-Pass Dispatch')}
+            </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Formal release vouchers for grower tins, security exit inspection, and silo inventory balance deductions
+            {t('dispatch_sub', 'Formal release vouchers for grower tins, security exit inspection, and silo inventory balance deductions')}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded text-xs font-semibold">
-            Certified Dispatch Gate #01
+            {t('certified_dispatch_gate_01', 'Certified Dispatch Gate #01')}
           </span>
         </div>
       </div>
@@ -94,17 +98,17 @@ export default function OilDispatchView() {
       <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs space-y-4">
         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
           <FileCheck className="w-4 h-4 text-emerald-600" />
-          <span>Generate Factory Release Gate-Pass</span>
+          <span>{t('generate_factory_gate_pass', 'Generate Factory Release Gate-Pass')}</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Farmer / Grower Account <span className="text-rose-500">*</span>
+              {t('farmer_grower', 'Farmer / Grower Account')} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
-              placeholder="e.g. Michel El-Khoury"
+              placeholder={t('farmer_placeholder_sample', 'e.g. Michel El-Khoury')}
               value={farmerName}
               onChange={(e) => setFarmerName(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500"
@@ -113,7 +117,7 @@ export default function OilDispatchView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Settlement Ticket Ref #
+              {t('settlement_ticket_ref', 'Settlement Ticket Ref #')}
             </label>
             <input
               type="text"
@@ -125,7 +129,7 @@ export default function OilDispatchView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Tins Released (16L Standard) <span className="text-rose-500">*</span>
+              {t('tins_released_16l', 'Tins Released (16L Standard)')} <span className="text-rose-500">*</span>
             </label>
             <input
               type="number"
@@ -137,11 +141,11 @@ export default function OilDispatchView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Authorized Receiver Name
+              {t('authorized_receiver_name', 'Authorized Receiver Name')}
             </label>
             <input
               type="text"
-              placeholder="e.g. Driver / Family Representative"
+              placeholder={t('receiver_placeholder', 'e.g. Driver / Family Representative')}
               value={receiverName}
               onChange={(e) => setReceiverName(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500"
@@ -150,11 +154,11 @@ export default function OilDispatchView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Exit Vehicle Plate
+              {t('exit_vehicle_plate', 'Exit Vehicle Plate')}
             </label>
             <input
               type="text"
-              placeholder="e.g. M 21908"
+              placeholder={t('plate_placeholder', 'e.g. M 21908')}
               value={vehiclePlate}
               onChange={(e) => setVehiclePlate(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500"
@@ -163,7 +167,7 @@ export default function OilDispatchView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Authorizing Plant Supervisor
+              {t('authorizing_plant_supervisor', 'Authorizing Plant Supervisor')}
             </label>
             <input
               type="text"
@@ -182,38 +186,40 @@ export default function OilDispatchView() {
               setVehiclePlate('');
               setTinsReleased('');
             }}
-            className="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded"
+            className="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded cursor-pointer"
           >
-            Clear Form
+            {t('clear_form', 'Clear Form')}
           </button>
           <button
             onClick={handleCreatePass}
-            className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-xs"
+            className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded shadow-xs cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Authorize &amp; Print Gate-Pass</span>
+            <span>{t('authorize_print_gate_pass', 'Authorize & Print Gate-Pass')}</span>
           </button>
         </div>
       </div>
 
       {/* DISPATCH PASSES LOG */}
       <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs space-y-4">
-        <h3 className="text-sm font-bold text-slate-900">Historical Dispatches &amp; Security Passes</h3>
+        <h3 className="text-sm font-bold text-slate-900">
+          {t('historical_dispatches_title', 'Historical Dispatches & Security Passes')}
+        </h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-700 border-collapse">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold text-slate-600 uppercase">
-                <th className="py-2.5 px-3">Pass #</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Grower</th>
-                <th className="py-2.5 px-3">Ticket Ref</th>
-                <th className="py-2.5 px-3">Tins Handed</th>
-                <th className="py-2.5 px-3">Liters Equivalent</th>
-                <th className="py-2.5 px-3">Receiver / Driver</th>
-                <th className="py-2.5 px-3">Vehicle Plate</th>
-                <th className="py-2.5 px-3">Status</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3">{t('pass_num', 'Pass #')}</th>
+                <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                <th className="py-2.5 px-3">{t('farmer_grower', 'Grower')}</th>
+                <th className="py-2.5 px-3">{t('ticket_ref', 'Ticket Ref')}</th>
+                <th className="py-2.5 px-3">{t('tins_handed', 'Tins Handed')}</th>
+                <th className="py-2.5 px-3">{t('liters_equivalent', 'Liters Equivalent')}</th>
+                <th className="py-2.5 px-3">{t('receiver_driver', 'Receiver / Driver')}</th>
+                <th className="py-2.5 px-3">{t('vehicle_plate_label', 'Vehicle Plate')}</th>
+                <th className="py-2.5 px-3">{t('status', 'Status')}</th>
+                <th className="py-2.5 px-3 text-right">{t('action', 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -223,21 +229,25 @@ export default function OilDispatchView() {
                   <td className="py-2.5 px-3 text-slate-500">{p.date}</td>
                   <td className="py-2.5 px-3 font-semibold">{p.farmerName}</td>
                   <td className="py-2.5 px-3 font-mono">{p.ticketNumber}</td>
-                  <td className="py-2.5 px-3 font-bold text-emerald-700">{p.tinsReleased} Tins</td>
-                  <td className="py-2.5 px-3 text-slate-600">{p.litersReleased} L</td>
+                  <td className="py-2.5 px-3 font-bold text-emerald-700">
+                    {p.tinsReleased} {t('tins_word', 'Tins')}
+                  </td>
+                  <td className="py-2.5 px-3 text-slate-600">
+                    {p.litersReleased} {t('liters_word', 'L')}
+                  </td>
                   <td className="py-2.5 px-3">{p.receiverName}</td>
                   <td className="py-2.5 px-3 text-slate-500">{p.vehiclePlate}</td>
                   <td className="py-2.5 px-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                      {p.gatePassStatus}
+                      {t(p.gatePassStatus, p.gatePassStatus)}
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-right">
                     <button
                       onClick={() => setSelectedPassForPrint(p)}
-                      className="text-slate-700 hover:text-slate-900 font-semibold"
+                      className="text-slate-700 hover:text-slate-900 font-semibold cursor-pointer"
                     >
-                      Print Pass
+                      {t('print_pass', 'Print Pass')}
                     </button>
                   </td>
                 </tr>
@@ -253,42 +263,46 @@ export default function OilDispatchView() {
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-slate-200 relative text-slate-800">
             <button
               onClick={() => setSelectedPassForPrint(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center border-b border-slate-200 pb-3 mb-3">
               <h2 className="text-base font-extrabold text-slate-900 uppercase">
-                Southern Olive Oil Products S.A.R.L
+                {t('company_name_long', 'Southern Olive Oil Products S.A.R.L')}
               </h2>
-              <p className="text-xs text-slate-500">Official Factory Gate Exit &amp; Dispatch Pass</p>
+              <p className="text-xs text-slate-500">
+                {t('gate_pass_subtitle', 'Official Factory Gate Exit & Dispatch Pass')}
+              </p>
               <div className="mt-1 font-mono text-xs font-bold">{selectedPassForPrint.passNumber}</div>
             </div>
 
             <div className="space-y-2 text-xs bg-slate-50 p-3 rounded border border-slate-200">
               <div className="flex justify-between">
-                <span className="text-slate-500">Grower Name:</span>
+                <span className="text-slate-500">{t('grower_name_label', 'Grower Name:')}</span>
                 <span className="font-bold">{selectedPassForPrint.farmerName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Authorized Tins:</span>
-                <span className="font-bold text-emerald-700">{selectedPassForPrint.tinsReleased} Standard Tins (16L)</span>
+                <span className="text-slate-500">{t('authorized_tins_label', 'Authorized Tins:')}</span>
+                <span className="font-bold text-emerald-700">
+                  {selectedPassForPrint.tinsReleased} {t('standard_tins_16l', 'Standard Tins (16L)')}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Total Volume:</span>
-                <span className="font-semibold">{selectedPassForPrint.litersReleased} Liters</span>
+                <span className="text-slate-500">{t('total_volume_label', 'Total Volume:')}</span>
+                <span className="font-semibold">{selectedPassForPrint.litersReleased} {t('liters_word', 'Liters')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Authorized Receiver:</span>
+                <span className="text-slate-500">{t('authorized_receiver_label', 'Authorized Receiver:')}</span>
                 <span className="font-semibold">{selectedPassForPrint.receiverName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Vehicle Plate:</span>
+                <span className="text-slate-500">{t('vehicle_plate_label', 'Vehicle Plate:')}</span>
                 <span className="font-mono">{selectedPassForPrint.vehiclePlate}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-1">
-                <span className="text-slate-500">Approved By:</span>
+                <span className="text-slate-500">{t('approved_by_label', 'Approved By:')}</span>
                 <span className="font-bold">{selectedPassForPrint.authorizedBy}</span>
               </div>
             </div>
@@ -296,20 +310,20 @@ export default function OilDispatchView() {
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 onClick={() => setSelectedPassForPrint(null)}
-                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold"
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 onClick={() => {
                   window.print();
                   setSelectedPassForPrint(null);
-                  showToast('Factory gate pass dispatched to printer.');
+                  showToast(t('factory_gate_pass_dispatched', 'Factory gate pass dispatched to printer.'));
                 }}
-                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs"
+                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Exit Gate-Pass</span>
+                <span>{t('print_exit_gate_pass', 'Print Exit Gate-Pass')}</span>
               </button>
             </div>
           </div>

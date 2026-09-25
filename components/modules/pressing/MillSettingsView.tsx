@@ -112,7 +112,7 @@ export default function MillSettingsView() {
             </h1>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Manage dynamic pressing lines, admin license quotas, default milling retention rates, and facility standards.
+            {t('pm_setup_sub', 'Manage dynamic pressing lines, admin license quotas, default milling retention rates, and facility standards.')}
           </p>
         </div>
 
@@ -121,18 +121,18 @@ export default function MillSettingsView() {
             onClick={() => {
               setConfig(INITIAL_MILL_SETTINGS);
               setLines(INITIAL_DYNAMIC_LINES);
-              showToast('Configuration reverted to initial system defaults.');
+              showToast(t('config_reverted_defaults', 'Configuration reverted to initial system defaults.'));
             }}
-            className="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs transition"
+            className="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs transition cursor-pointer"
           >
-            Clear / Revert
+            {t('clear_revert', 'Clear / Revert')}
           </button>
           <button
             onClick={handleSave}
-            className="flex items-center gap-1.5 px-5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded shadow-xs transition"
+            className="flex items-center gap-1.5 px-5 py-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded shadow-xs transition cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            <span>Save &amp; Apply Changes</span>
+            <span>{t('save_apply_changes', 'Save & Apply Changes')}</span>
           </button>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default function MillSettingsView() {
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-emerald-600" />
             <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-              Dynamic Pressing Lines &amp; License Quota Architecture
+              {t('dynamic_lines_license_title', 'Dynamic Pressing Lines & License Quota Architecture')}
             </h2>
           </div>
 
@@ -151,7 +151,7 @@ export default function MillSettingsView() {
             <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs px-2.5 py-1 rounded font-medium">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>
-                License Quota: <strong className="font-bold">{lines.length} of {licenseQuota.maxAllowedLines} Lines Provisioned</strong>
+                {t('license_quota_label', 'License Quota:')} <strong className="font-bold">{lines.length} {t('of', 'of')} {licenseQuota.maxAllowedLines} {t('lines_provisioned', 'Lines Provisioned')}</strong>
               </span>
             </div>
 
@@ -165,7 +165,7 @@ export default function MillSettingsView() {
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Add Pressing Line</span>
+              <span>{t('add_pressing_line', 'Add Pressing Line')}</span>
             </button>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function MillSettingsView() {
                         status: e.target.value as LineOperationalStatus
                       })
                     }
-                    className={`text-[11px] font-bold px-2 py-0.5 rounded border focus:outline-none ${
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded border focus:outline-none cursor-pointer ${
                       line.status === 'Active'
                         ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                         : line.status === 'Cleaning'
@@ -203,17 +203,17 @@ export default function MillSettingsView() {
                         : 'bg-slate-200 text-slate-700 border-slate-300'
                     }`}
                   >
-                    <option value="Active">Active</option>
-                    <option value="Cleaning">Cleaning</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Active">{t('Active', 'Active')}</option>
+                    <option value="Cleaning">{t('Cleaning', 'Cleaning')}</option>
+                    <option value="Maintenance">{t('Maintenance', 'Maintenance')}</option>
+                    <option value="Inactive">{t('Inactive', 'Inactive')}</option>
                   </select>
 
                   {lines.length > 1 && (
                     <button
                       onClick={() => handleDeleteLine(line.id)}
-                      title="Remove Line"
-                      className="p-1 text-slate-400 hover:text-rose-600 transition"
+                      title={t('remove_line', 'Remove Line')}
+                      className="p-1 text-slate-400 hover:text-rose-600 transition cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -224,7 +224,7 @@ export default function MillSettingsView() {
               {/* Line Config Fields */}
               <div className="space-y-2">
                 <div>
-                  <label className="block text-slate-600 font-medium mb-0.5">Custom Line Display Name</label>
+                  <label className="block text-slate-600 font-medium mb-0.5">{t('custom_line_display_name', 'Custom Line Display Name')}</label>
                   <input
                     type="text"
                     value={line.name}
@@ -234,7 +234,7 @@ export default function MillSettingsView() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 font-medium mb-0.5">Machine Brand &amp; Model</label>
+                  <label className="block text-slate-600 font-medium mb-0.5">{t('machine_brand_model', 'Machine Brand & Model')}</label>
                   <input
                     type="text"
                     value={line.model}
@@ -245,7 +245,7 @@ export default function MillSettingsView() {
 
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block text-slate-600 font-medium mb-0.5">Throughput (KG / Hour)</label>
+                    <label className="block text-slate-600 font-medium mb-0.5">{t('throughput_kg_hour', 'Throughput (KG / Hour)')}</label>
                     <input
                       type="number"
                       step="100"
@@ -258,12 +258,12 @@ export default function MillSettingsView() {
                       className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-slate-800"
                     />
                     <span className="text-[10px] text-slate-400">
-                      {(line.hourlyThroughputKg / 1000).toFixed(1)} Tons/hr
+                      {(line.hourlyThroughputKg / 1000).toFixed(1)} {t('tons_per_hr', 'Tons/hr')}
                     </span>
                   </div>
 
                   <div>
-                    <label className="block text-slate-600 font-medium mb-0.5">Malaxer Limit (KG Batch)</label>
+                    <label className="block text-slate-600 font-medium mb-0.5">{t('malaxer_limit_kg_batch', 'Malaxer Limit (KG Batch)')}</label>
                     <input
                       type="number"
                       step="100"
@@ -275,7 +275,7 @@ export default function MillSettingsView() {
                       }
                       className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded font-bold text-slate-800"
                     />
-                    <span className="text-[10px] text-slate-400">Batch hopper max</span>
+                    <span className="text-[10px] text-slate-400">{t('batch_hopper_max', 'Batch hopper max')}</span>
                   </div>
                 </div>
               </div>
@@ -290,12 +290,12 @@ export default function MillSettingsView() {
         <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-2xs space-y-4">
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
             <Building className="w-4 h-4 text-sky-600" />
-            <span>Facility Info &amp; Active Campaign</span>
+            <span>{t('facility_info_active_campaign', 'Facility Info & Active Campaign')}</span>
           </h3>
 
           <div className="space-y-3 text-xs">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Facility Official Name</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('facility_official_name', 'Facility Official Name')}</label>
               <input
                 type="text"
                 value={config.facilityName}
@@ -305,7 +305,7 @@ export default function MillSettingsView() {
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Facility Physical Location</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('facility_physical_location', 'Facility Physical Location')}</label>
               <input
                 type="text"
                 value={config.millLocation}
@@ -315,24 +315,24 @@ export default function MillSettingsView() {
             </div>
 
             <div className="pt-2 border-t border-slate-100">
-              <label className="block font-semibold text-slate-700 mb-1">Assigned Active Season</label>
+              <label className="block font-semibold text-slate-700 mb-1">{t('assigned_active_season', 'Assigned Active Season')}</label>
               <div className="flex items-center gap-2">
                 <select
                   value={config.activeSeasonId}
                   onChange={(e) => setConfig({ ...config, activeSeasonId: e.target.value })}
-                  className="flex-1 border border-slate-300 rounded px-2.5 py-1.5 font-bold text-slate-800 focus:outline-none"
+                  className="flex-1 border border-slate-300 rounded px-2.5 py-1.5 font-bold text-slate-800 focus:outline-none cursor-pointer"
                 >
                   {INITIAL_SEASONS.map((s) => (
                     <option key={s.id} value={s.id}>
-                      {s.seasonName} ({s.status})
+                      {s.seasonName} ({t(s.status, s.status)})
                     </option>
                   ))}
                 </select>
                 <Link
                   href="/pressing-mill/seasons"
-                  className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-[11px] whitespace-nowrap transition"
+                  className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-[11px] whitespace-nowrap transition cursor-pointer"
                 >
-                  Manage Seasons
+                  {t('manage_seasons', 'Manage Seasons')}
                 </Link>
               </div>
             </div>
@@ -343,24 +343,24 @@ export default function MillSettingsView() {
         <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-2xs space-y-4">
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-emerald-600" />
-            <span>Standard Milling Fees &amp; Retentions</span>
+            <span>{t('standard_milling_fees_retentions', 'Standard Milling Fees & Retentions')}</span>
           </h3>
 
           <div className="space-y-3 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Standard Retention Rate (%)</label>
+                <label className="block font-semibold text-slate-700 mb-1">{t('standard_retention_rate_pct', 'Standard Retention Rate (%)')}</label>
                 <input
                   type="number"
                   value={config.standardRetentionPct}
                   onChange={(e) => setConfig({ ...config, standardRetentionPct: Number(e.target.value) || 0 })}
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none font-bold text-amber-700"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Default in-kind oil cut (Al-Raddah retention)</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{t('default_in_kind_oil_cut', 'Default in-kind oil cut (Al-Raddah retention)')}</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Default Cash Fee / KG ($)</label>
+                <label className="block font-semibold text-slate-700 mb-1">{t('default_cash_fee_per_kg', 'Default Cash Fee / KG ($)')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -368,13 +368,13 @@ export default function MillSettingsView() {
                   onChange={(e) => setConfig({ ...config, defaultCashFeePerKgUSD: Number(e.target.value) || 0 })}
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none font-bold text-emerald-700"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Cash fee per net kg olive</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{t('cash_fee_per_net_kg', 'Cash fee per net kg olive')}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Standard Tin Weight (KG)</label>
+                <label className="block font-semibold text-slate-700 mb-1">{t('standard_tin_weight_kg', 'Standard Tin Weight (KG)')}</label>
                 <input
                   type="number"
                   step="0.1"
@@ -382,18 +382,18 @@ export default function MillSettingsView() {
                   onChange={(e) => setConfig({ ...config, standardTinKg: Number(e.target.value) || 0 })}
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none font-semibold text-slate-800"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">15.0 KG = standard 16L tin</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{t('standard_tin_weight_desc', '15.0 KG = standard 16L tin')}</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Exchange Rate (USD ➔ LBP)</label>
+                <label className="block font-semibold text-slate-700 mb-1">{t('exchange_rate_usd_lbp', 'Exchange Rate (USD ➔ LBP)')}</label>
                 <input
                   type="number"
                   value={config.usdToLbpRate}
                   onChange={(e) => setConfig({ ...config, usdToLbpRate: Number(e.target.value) || 0 })}
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none font-mono font-bold text-slate-800"
                 />
-                <span className="text-[10px] text-slate-400 mt-0.5 block">Current Lebanese market rate</span>
+                <span className="text-[10px] text-slate-400 mt-0.5 block">{t('current_lebanese_rate', 'Current Lebanese market rate')}</span>
               </div>
             </div>
           </div>

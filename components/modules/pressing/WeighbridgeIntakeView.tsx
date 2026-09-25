@@ -196,10 +196,10 @@ export default function WeighbridgeIntakeView() {
             <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
               <span className="font-bold text-slate-900">
-                Operational Freeze Active ({selectedSeason.seasonName}):
+                {t('operational_freeze_active', 'Operational Freeze Active')} ({selectedSeason.seasonName}):
               </span>
               <p className="text-amber-900 leading-relaxed">
-                The selected harvest season is closed or out-of-season. Weighbridge scale logging and pressing lines batch entry are locked into read-only mode to preserve seasonal audit integrity.
+                {t('season_closed_freeze_msg', 'The selected harvest season is closed or out-of-season. Weighbridge scale logging and pressing lines batch entry are locked into read-only mode to preserve seasonal audit integrity.')}
               </p>
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function WeighbridgeIntakeView() {
             href="/pressing-mill/seasons"
             className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 underline shrink-0"
           >
-            <span>Manage Seasons</span>
+            <span>{t('manage_seasons', 'Manage Seasons')}</span>
             <ExternalLink className="w-3 h-3" />
           </Link>
         </div>
@@ -223,7 +223,7 @@ export default function WeighbridgeIntakeView() {
                 {t('pm_intake', 'Weighbridge & Olive Intake Console')}
               </h1>
               <span className="text-[11px] text-slate-500">
-                Gross / Tare / Net weighbridge scale logging, farmer receipts, and dynamic line dispatching
+                {t('pm_intake_sub', 'Gross / Tare / Net weighbridge scale logging, farmer receipts, and dynamic line dispatching')}
               </span>
             </div>
           </div>
@@ -233,10 +233,10 @@ export default function WeighbridgeIntakeView() {
                 setSelectedTicketForPrint(tickets[0]);
               }
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded shadow-2xs cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Reprint Last Scale Ticket</span>
+            <span>{t('reprint_last_ticket', 'Reprint Last Scale Ticket')}</span>
           </button>
         </div>
 
@@ -245,7 +245,7 @@ export default function WeighbridgeIntakeView() {
           <div>
             <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Active Harvest Season</span>
+              <span>{t('active_harvest_season', 'Active Harvest Season')}</span>
             </label>
             <select
               value={selectedSeasonId}
@@ -254,7 +254,7 @@ export default function WeighbridgeIntakeView() {
             >
               {INITIAL_SEASONS.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.seasonName} [{s.status}]
+                  {s.seasonName} [{t(s.status, s.status)}]
                 </option>
               ))}
             </select>
@@ -263,7 +263,7 @@ export default function WeighbridgeIntakeView() {
           <div>
             <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-sky-600" />
-              <span>Assigned Active Line (Dynamic)</span>
+              <span>{t('assigned_active_line', 'Assigned Active Line (Dynamic)')}</span>
             </label>
             <select
               disabled={!isSeasonActive || activeLines.length === 0}
@@ -273,7 +273,7 @@ export default function WeighbridgeIntakeView() {
             >
               {activeLines.map((l) => (
                 <option key={l.id} value={l.id}>
-                  {l.name} ({(l.hourlyThroughputKg / 1000).toFixed(1)} T/hr)
+                  {l.name} ({(l.hourlyThroughputKg / 1000).toFixed(1)} {t('ton_per_hr', 'T/hr')})
                 </option>
               ))}
             </select>
@@ -282,7 +282,7 @@ export default function WeighbridgeIntakeView() {
           <div>
             <label className="block font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-amber-600" />
-              <span>Intake Date &amp; Timestamp</span>
+              <span>{t('intake_date_timestamp', 'Intake Date & Timestamp')}</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <input
@@ -307,7 +307,7 @@ export default function WeighbridgeIntakeView() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Olive Variety <span className="text-rose-500">*</span>
+              {t('olive_variety', 'Olive Variety')} <span className="text-rose-500">*</span>
             </label>
             <select
               disabled={!isSeasonActive}
@@ -315,17 +315,17 @@ export default function WeighbridgeIntakeView() {
               onChange={(e) => setVariety(e.target.value as OliveVariety)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
             >
-              <option value="Souri">Souri Heritage (High Polyphenol)</option>
-              <option value="Nabali">Nabali (Mountain Grove)</option>
-              <option value="Shami">Shami (Large Table &amp; Pressing)</option>
-              <option value="Baladi_Mixed">Commercial Mixed Baladi</option>
-              <option value="Grossa">Grossa (Dual Purpose)</option>
+              <option value="Souri">{t('variety_souri', 'Souri Heritage (High Polyphenol)')}</option>
+              <option value="Nabali">{t('variety_nabali', 'Nabali (Mountain Grove)')}</option>
+              <option value="Shami">{t('variety_shami', 'Shami (Large Table & Pressing)')}</option>
+              <option value="Baladi_Mixed">{t('variety_baladi', 'Commercial Mixed Baladi')}</option>
+              <option value="Grossa">{t('variety_grossa', 'Grossa (Dual Purpose)')}</option>
             </select>
           </div>
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Target Storage Silo Tank
+              {t('target_storage_silo', 'Target Storage Silo Tank')}
             </label>
             <select
               disabled={!isSeasonActive}
@@ -335,7 +335,7 @@ export default function WeighbridgeIntakeView() {
             >
               {INITIAL_TANKS.slice(0, 15).map((tk) => (
                 <option key={tk.id} value={tk.id}>
-                  {tk.id} - {tk.title} ({tk.grade.replace('_', ' ')})
+                  {tk.id} - {tk.title} ({t(tk.grade, tk.grade.replace('_', ' '))})
                 </option>
               ))}
             </select>
@@ -343,13 +343,13 @@ export default function WeighbridgeIntakeView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Laboratory Acidity Test (%)
+              {t('lab_acidity_test', 'Laboratory Acidity Test (%)')}
             </label>
             <input
               type="number"
               step="0.05"
               disabled={!isSeasonActive}
-              placeholder="e.g. 0.55"
+              placeholder={t('acidity_placeholder', 'e.g. 0.55')}
               value={acidityTestPct}
               onChange={(e) => setAcidityTestPct(Number(e.target.value) || '')}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
@@ -361,12 +361,12 @@ export default function WeighbridgeIntakeView() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-100 text-xs">
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Farmer / Client Account Name <span className="text-rose-500">*</span>
+              {t('farmer_account_name', 'Farmer / Client Account Name')} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               disabled={!isSeasonActive}
-              placeholder="Enter grower or supplier name..."
+              placeholder={t('farmer_placeholder', 'Enter grower or supplier name...')}
               value={farmerName}
               onChange={(e) => setFarmerName(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
@@ -375,12 +375,12 @@ export default function WeighbridgeIntakeView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Contact Phone Number
+              {t('contact_phone_number', 'Contact Phone Number')}
             </label>
             <input
               type="text"
               disabled={!isSeasonActive}
-              placeholder="+961 70 XXXXXX"
+              placeholder={t('phone_placeholder', '+961 70 XXXXXX')}
               value={farmerPhone}
               onChange={(e) => setFarmerPhone(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
@@ -389,12 +389,12 @@ export default function WeighbridgeIntakeView() {
 
           <div>
             <label className="block font-semibold text-slate-700 mb-1">
-              Vehicle Plate / Transport Details
+              {t('vehicle_plate_transport', 'Vehicle Plate / Transport Details')}
             </label>
             <input
               type="text"
               disabled={!isSeasonActive}
-              placeholder="e.g. M 21908 (Pickup / Truck)"
+              placeholder={t('vehicle_placeholder', 'e.g. M 21908 (Pickup / Truck)')}
               value={vehiclePlate}
               onChange={(e) => setVehiclePlate(e.target.value)}
               className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
@@ -405,13 +405,13 @@ export default function WeighbridgeIntakeView() {
         {/* ROW 3: SCALE WEIGHT MEASUREMENTS */}
         <div className="bg-slate-50/70 border border-slate-200 rounded-lg p-4 space-y-3">
           <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-            Weighbridge Scale Readings (Digital Indicator)
+            {t('weighbridge_scale_readings', 'Weighbridge Scale Readings (Digital Indicator)')}
           </span>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block font-semibold text-slate-700 mb-1">
-                Gross Weight (KG) <span className="text-rose-500">*</span>
+                {t('gross_weight_kg', 'Gross Weight (KG)')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
@@ -421,12 +421,14 @@ export default function WeighbridgeIntakeView() {
                 onChange={(e) => setGrossWeight(Number(e.target.value) || '')}
                 className="w-full border border-slate-300 rounded px-3 py-2 font-mono text-base font-bold text-slate-900 bg-white focus:outline-none disabled:bg-slate-100"
               />
-              <span className="text-[10px] text-slate-400 mt-1 block">Vehicle + Full Olive Load</span>
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                {t('vehicle_plus_olive_load', 'Vehicle + Full Olive Load')}
+              </span>
             </div>
 
             <div>
               <label className="block font-semibold text-slate-700 mb-1">
-                Tare Weight (KG) <span className="text-rose-500">*</span>
+                {t('tare_weight_kg', 'Tare Weight (KG)')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
@@ -436,18 +438,22 @@ export default function WeighbridgeIntakeView() {
                 onChange={(e) => setTareWeight(Number(e.target.value) || '')}
                 className="w-full border border-slate-300 rounded px-3 py-2 font-mono text-base font-bold text-slate-900 bg-white focus:outline-none disabled:bg-slate-100"
               />
-              <span className="text-[10px] text-slate-400 mt-1 block">Empty Vehicle Weight</span>
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                {t('empty_vehicle_weight', 'Empty Vehicle Weight')}
+              </span>
             </div>
 
             <div>
               <label className="block font-semibold text-emerald-800 mb-1">
-                Net Olive Weight (KG)
+                {t('net_olive_weight_kg', 'Net Olive Weight (KG)')}
               </label>
               <div className="w-full border-2 border-emerald-600 bg-white rounded px-3 py-2 font-mono text-base font-extrabold text-emerald-800 flex items-center justify-between">
                 <span>{netWeight.toLocaleString()} KG</span>
                 <span className="text-xs text-emerald-600 font-sans font-normal">{(netWeight / 1000).toFixed(2)} MT</span>
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">Gross minus Tare</span>
+              <span className="text-[10px] text-slate-400 mt-1 block">
+                {t('gross_minus_tare', 'Gross minus Tare')}
+              </span>
             </div>
           </div>
         </div>
@@ -456,7 +462,7 @@ export default function WeighbridgeIntakeView() {
         <div className="border border-slate-200 rounded-lg p-4 space-y-3 bg-white">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
             <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-              Settlement Agreement &amp; Retention Formula
+              {t('settlement_agreement_formula', 'Settlement Agreement & Retention Formula')}
             </span>
 
             <div className="flex items-center gap-3 text-xs">
@@ -467,9 +473,9 @@ export default function WeighbridgeIntakeView() {
                   disabled={!isSeasonActive}
                   checked={settlementMethod === 'In_Kind'}
                   onChange={() => setSettlementMethod('In_Kind')}
-                  className="accent-slate-900"
+                  className="accent-slate-900 cursor-pointer"
                 />
-                <span className="font-semibold">In-Kind Oil Retention (Al-Raddah)</span>
+                <span className="font-semibold">{t('in_kind_retention', 'In-Kind Oil Retention (Al-Raddah)')}</span>
               </label>
 
               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -479,9 +485,9 @@ export default function WeighbridgeIntakeView() {
                   disabled={!isSeasonActive}
                   checked={settlementMethod === 'Cash'}
                   onChange={() => setSettlementMethod('Cash')}
-                  className="accent-slate-900"
+                  className="accent-slate-900 cursor-pointer"
                 />
-                <span>Cash Fee</span>
+                <span>{t('cash_fee', 'Cash Fee')}</span>
               </label>
 
               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -491,9 +497,9 @@ export default function WeighbridgeIntakeView() {
                   disabled={!isSeasonActive}
                   checked={settlementMethod === 'Mixed'}
                   onChange={() => setSettlementMethod('Mixed')}
-                  className="accent-slate-900"
+                  className="accent-slate-900 cursor-pointer"
                 />
-                <span>Mixed (Split)</span>
+                <span>{t('mixed_split', 'Mixed (Split)')}</span>
               </label>
             </div>
           </div>
@@ -502,7 +508,7 @@ export default function WeighbridgeIntakeView() {
             {settlementMethod === 'In_Kind' && (
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">
-                  Mill Retention Percentage (%)
+                  {t('retention_percentage', 'Mill Retention Percentage (%)')}
                 </label>
                 <input
                   type="number"
@@ -512,7 +518,7 @@ export default function WeighbridgeIntakeView() {
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Mill Retained Oil: ~{calculatedFeeOilKg} KG
+                  {t('mill_retained_oil', 'Mill Retained Oil')}: ~{calculatedFeeOilKg} KG
                 </span>
               </div>
             )}
@@ -520,7 +526,7 @@ export default function WeighbridgeIntakeView() {
             {settlementMethod === 'Cash' && (
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">
-                  Cash Rate ($ USD per Olive KG)
+                  {t('cash_rate_per_kg', 'Cash Rate ($ USD per Olive KG)')}
                 </label>
                 <input
                   type="number"
@@ -531,7 +537,7 @@ export default function WeighbridgeIntakeView() {
                   className="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-none focus:border-slate-500 disabled:bg-slate-100"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Total Cash Milling Fee: ${calculatedFeeCash} USD
+                  {t('total_cash_milling_fee', 'Total Cash Milling Fee')}: ${calculatedFeeCash} USD
                 </span>
               </div>
             )}
@@ -539,7 +545,9 @@ export default function WeighbridgeIntakeView() {
             {settlementMethod === 'Mixed' && (
               <div className="space-y-2">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Partial Cash Due (USD)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    {t('partial_cash_due_usd', 'Partial Cash Due (USD)')}
+                  </label>
                   <input
                     type="number"
                     disabled={!isSeasonActive}
@@ -552,17 +560,23 @@ export default function WeighbridgeIntakeView() {
             )}
 
             <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-              <span className="text-[11px] font-semibold text-slate-500 block">Est. Virgin Oil Extraction</span>
+              <span className="text-[11px] font-semibold text-slate-500 block">
+                {t('est_virgin_oil_extraction', 'Est. Virgin Oil Extraction')}
+              </span>
               <span className="text-base font-bold text-emerald-700">~{estimatedOilKg} KG</span>
               <span className="text-[11px] text-slate-500 block">
-                ~{tinCountEquivalent} Standard Tins (15 KG / 16L)
+                ~{tinCountEquivalent} {t('standard_tins', 'Standard Tins (15 KG / 16L)')}
               </span>
             </div>
 
             <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-              <span className="text-[11px] font-semibold text-slate-500 block">Subproduct / Pomace (Jift)</span>
+              <span className="text-[11px] font-semibold text-slate-500 block">
+                {t('subproduct_pomace_jift', 'Subproduct / Pomace (Jift)')}
+              </span>
               <span className="text-base font-bold text-amber-800">~{pomaceKg} KG</span>
-              <span className="text-[11px] text-slate-500 block">Heating fuel &amp; biomass</span>
+              <span className="text-[11px] text-slate-500 block">
+                {t('heating_fuel_biomass', 'Heating fuel & biomass')}
+              </span>
             </div>
           </div>
         </div>
@@ -570,46 +584,46 @@ export default function WeighbridgeIntakeView() {
         {/* BOTTOM ACTION BAR */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
           <div className="text-xs">
-            <span className="text-slate-500 font-semibold block">Batch Yield Summary:</span>
+            <span className="text-slate-500 font-semibold block">{t('batch_yield_summary', 'Batch Yield Summary')}:</span>
             <span className="text-sm font-bold text-slate-900">
-              {netWeight.toLocaleString()} KG Olives ➔ ~{estimatedOilKg} KG Virgin Olive Oil ({tinCountEquivalent} Tins)
+              {netWeight.toLocaleString()} KG {t('olives_word', 'Olives')} ➔ ~{estimatedOilKg} KG {t('virgin_olive_oil_word', 'Virgin Olive Oil')} ({tinCountEquivalent} {t('tins_word', 'Tins')})
             </span>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
             <button
               onClick={handleClear}
-              className="flex items-center gap-1 px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 rounded text-xs font-semibold text-slate-700 transition"
+              className="flex items-center gap-1 px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 rounded text-xs font-semibold text-slate-700 transition cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Clear</span>
+              <span>{t('clear', 'Clear')}</span>
             </button>
 
             <button
               disabled={!isSeasonActive}
               onClick={handleQueueToLine}
-              className="flex items-center gap-1 px-4 py-2 bg-sky-700 hover:bg-sky-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs"
+              className="flex items-center gap-1 px-4 py-2 bg-sky-700 hover:bg-sky-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Queue to Line</span>
+              <span>{t('queue_to_line', 'Queue to Line')}</span>
             </button>
 
             <button
               disabled={!isSeasonActive}
               onClick={handleSaveDraft}
-              className="flex items-center gap-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs"
+              className="flex items-center gap-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>Save Draft</span>
+              <span>{t('save_draft', 'Save Draft')}</span>
             </button>
 
             <button
               disabled={!isSeasonActive}
               onClick={handleSaveAndPrint}
-              className="flex items-center gap-1 px-5 py-2 bg-emerald-800 hover:bg-emerald-900 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs"
+              className="flex items-center gap-1 px-5 py-2 bg-emerald-800 hover:bg-emerald-900 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition shadow-xs cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Save &amp; Print Scale Ticket</span>
+              <span>{t('save_and_print_ticket', 'Save & Print Scale Ticket')}</span>
             </button>
           </div>
         </div>
@@ -621,11 +635,11 @@ export default function WeighbridgeIntakeView() {
           <div className="flex items-center gap-2">
             <Scale className="w-4 h-4 text-emerald-600" />
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-              Recent Weighbridge Intake Scale Tickets
+              {t('recent_intake_scale_tickets', 'Recent Weighbridge Intake Scale Tickets')}
             </h3>
           </div>
           <span className="text-[11px] text-slate-500 font-medium">
-            {tickets.length} Scale Tickets Recorded
+            {tickets.length} {t('scale_tickets_recorded', 'Scale Tickets Recorded')}
           </span>
         </div>
 
@@ -634,58 +648,58 @@ export default function WeighbridgeIntakeView() {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px] tracking-wider">
                 <th className="py-2.5 px-3">{t('ticket_num', 'Ticket #')}</th>
-                <th className="py-2.5 px-3">Date &amp; Time</th>
+                <th className="py-2.5 px-3">{t('date_and_time', 'Date & Time')}</th>
                 <th className="py-2.5 px-3">{t('campaign_season', 'Campaign Season')}</th>
                 <th className="py-2.5 px-3">{t('assigned_line', 'Assigned Line')}</th>
                 <th className="py-2.5 px-3">{t('farmer_grower', 'Farmer / Grower')}</th>
                 <th className="py-2.5 px-3 text-right">{t('net_olive_weight', 'Net KG')}</th>
-                <th className="py-2.5 px-3 text-right">Acidity</th>
+                <th className="py-2.5 px-3 text-right">{t('acidity', 'Acidity')}</th>
                 <th className="py-2.5 px-3">{t('target_silo', 'Target Tank')}</th>
                 <th className="py-2.5 px-3">{t('status', 'Status')}</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3 text-right">{t('action', 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {tickets.map((t) => (
-                <tr key={t.id} className="hover:bg-slate-50/80 transition">
-                  <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{t.ticketNumber}</td>
-                  <td className="py-2.5 px-3 text-slate-600">{t.date} {t.time}</td>
+              {tickets.map((tItem) => (
+                <tr key={tItem.id} className="hover:bg-slate-50/80 transition">
+                  <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{tItem.ticketNumber}</td>
+                  <td className="py-2.5 px-3 text-slate-600">{tItem.date} {tItem.time}</td>
                   <td className="py-2.5 px-3">
                     <span className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
-                      {t.seasonName || 'Season 2026/2027'}
+                      {tItem.seasonName || 'Season 2026/2027'}
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-slate-700 font-medium">
-                    {t.lineName || 'Line 01 - Pieralisi Leopard'}
+                    {tItem.lineName || 'Line 01 - Pieralisi Leopard'}
                   </td>
-                  <td className="py-2.5 px-3 font-semibold text-slate-800">{t.farmerName}</td>
+                  <td className="py-2.5 px-3 font-semibold text-slate-800">{tItem.farmerName}</td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">
-                    {t.netWeight.toLocaleString()} KG
+                    {tItem.netWeight.toLocaleString()} KG
                   </td>
-                  <td className="py-2.5 px-3 text-right font-mono">{t.acidityTestPct}%</td>
-                  <td className="py-2.5 px-3 text-slate-700 font-mono">{t.targetTankId}</td>
+                  <td className="py-2.5 px-3 text-right font-mono">{tItem.acidityTestPct}%</td>
+                  <td className="py-2.5 px-3 text-slate-700 font-mono">{tItem.targetTankId}</td>
                   <td className="py-2.5 px-3">
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                        t.status === 'Crushing'
+                        tItem.status === 'Crushing'
                           ? 'bg-amber-100 text-amber-800'
-                          : t.status === 'Malaxing'
+                          : tItem.status === 'Malaxing'
                           ? 'bg-sky-100 text-sky-800'
-                          : t.status === 'In_Queue'
+                          : tItem.status === 'In_Queue'
                           ? 'bg-purple-100 text-purple-800'
                           : 'bg-emerald-100 text-emerald-800'
                       }`}
                     >
-                      {t.status}
+                      {t(tItem.status, tItem.status)}
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-right">
                     <button
-                      onClick={() => setSelectedTicketForPrint(t)}
-                      className="text-xs text-slate-600 hover:text-slate-900 font-medium hover:underline inline-flex items-center gap-1"
+                      onClick={() => setSelectedTicketForPrint(tItem)}
+                      className="text-xs text-slate-600 hover:text-slate-900 font-medium hover:underline inline-flex items-center gap-1 cursor-pointer"
                     >
                       <Printer className="w-3 h-3" />
-                      <span>Print</span>
+                      <span>{t('print', 'Print')}</span>
                     </button>
                   </td>
                 </tr>
@@ -701,16 +715,18 @@ export default function WeighbridgeIntakeView() {
           <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 relative text-slate-800 animate-scaleUp">
             <button
               onClick={() => setSelectedTicketForPrint(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center border-b border-slate-200 pb-3 mb-3">
               <h2 className="text-base font-extrabold text-slate-900 uppercase tracking-wide">
-                Southern Olive Oil Products S.A.R.L
+                {t('company_name_long', 'Southern Olive Oil Products S.A.R.L')}
               </h2>
-              <p className="text-xs text-slate-500">Official Weighbridge Olive Reception &amp; Scale Voucher</p>
+              <p className="text-xs text-slate-500">
+                {t('scale_voucher_subtitle', 'Official Weighbridge Olive Reception & Scale Voucher')}
+              </p>
               <div className="mt-2 inline-flex items-center gap-2 bg-slate-100 px-3 py-1 rounded text-xs font-mono font-bold">
                 <span>{selectedTicketForPrint.ticketNumber}</span>
                 <span>•</span>
@@ -721,54 +737,54 @@ export default function WeighbridgeIntakeView() {
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded border border-slate-200">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Farmer / Client</span>
+                  <span className="text-slate-400 block text-[10px]">{t('farmer_grower', 'Farmer / Client')}</span>
                   <span className="font-bold text-slate-900">{selectedTicketForPrint.farmerName}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Vehicle / Plate</span>
+                  <span className="text-slate-400 block text-[10px]">{t('vehicle_plate_label', 'Vehicle / Plate')}</span>
                   <span className="font-semibold text-slate-800">{selectedTicketForPrint.vehiclePlate}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Variety</span>
-                  <span className="font-semibold text-slate-800">{selectedTicketForPrint.variety}</span>
+                  <span className="text-slate-400 block text-[10px]">{t('variety', 'Variety')}</span>
+                  <span className="font-semibold text-slate-800">{t(selectedTicketForPrint.variety, selectedTicketForPrint.variety)}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Target Storage Tank</span>
+                  <span className="text-slate-400 block text-[10px]">{t('target_storage_silo', 'Target Storage Tank')}</span>
                   <span className="font-semibold text-slate-800">{selectedTicketForPrint.targetTankId}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Campaign Season</span>
+                  <span className="text-slate-400 block text-[10px]">{t('campaign_season', 'Campaign Season')}</span>
                   <span className="font-semibold text-slate-800">{selectedTicketForPrint.seasonName || 'Season 2026/2027'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Assigned Pressing Line</span>
+                  <span className="text-slate-400 block text-[10px]">{t('assigned_line', 'Assigned Pressing Line')}</span>
                   <span className="font-semibold text-slate-800">{selectedTicketForPrint.lineName || 'Line 01'}</span>
                 </div>
               </div>
 
               <div className="border border-slate-200 rounded p-2.5 space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Gross Weight:</span>
+                  <span className="text-slate-500">{t('gross_weight_kg', 'Gross Weight')}:</span>
                   <span className="font-mono font-semibold">{selectedTicketForPrint.grossWeight.toLocaleString()} KG</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Tare Weight:</span>
+                  <span className="text-slate-500">{t('tare_weight_kg', 'Tare Weight')}:</span>
                   <span className="font-mono font-semibold">{selectedTicketForPrint.tareWeight.toLocaleString()} KG</span>
                 </div>
                 <div className="flex justify-between font-bold border-t border-slate-100 pt-1 text-slate-900">
-                  <span>Net Olive Weight:</span>
+                  <span>{t('net_olive_weight_kg', 'Net Olive Weight')}:</span>
                   <span className="text-emerald-700 font-mono">{selectedTicketForPrint.netWeight.toLocaleString()} KG</span>
                 </div>
               </div>
 
               <div className="bg-emerald-50 border border-emerald-200 rounded p-2.5 space-y-1 text-emerald-900">
                 <div className="flex justify-between">
-                  <span>Est. Oil Yield:</span>
-                  <span className="font-bold">~{selectedTicketForPrint.estimatedOilKg} KG ({selectedTicketForPrint.tinCountEquivalent} Tins)</span>
+                  <span>{t('est_oil_yield', 'Est. Oil Yield')}:</span>
+                  <span className="font-bold">~{selectedTicketForPrint.estimatedOilKg} KG ({selectedTicketForPrint.tinCountEquivalent} {t('tins_word', 'Tins')})</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Settlement Method:</span>
-                  <span className="font-bold">{selectedTicketForPrint.settlementMethod}</span>
+                  <span>{t('settlement_method_label', 'Settlement Method')}:</span>
+                  <span className="font-bold">{t(selectedTicketForPrint.settlementMethod, selectedTicketForPrint.settlementMethod)}</span>
                 </div>
               </div>
             </div>
@@ -776,20 +792,20 @@ export default function WeighbridgeIntakeView() {
             <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 onClick={() => setSelectedTicketForPrint(null)}
-                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold text-slate-700"
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold text-slate-700 cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 onClick={() => {
                   window.print();
                   setSelectedTicketForPrint(null);
-                  showToast('Scale receipt dispatched to thermal printer.');
+                  showToast(t('scale_ticket_dispatched_print', 'Scale receipt dispatched to thermal printer.'));
                 }}
-                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs"
+                className="flex items-center gap-1.5 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold shadow-xs cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print Scale Ticket</span>
+                <span>{t('print_scale_ticket', 'Print Scale Ticket')}</span>
               </button>
             </div>
           </div>

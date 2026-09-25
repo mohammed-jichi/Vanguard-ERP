@@ -53,11 +53,11 @@ export default function PressingDashboardView() {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-900">{activeSeason.seasonName}</span>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                {activeSeason.status}
+                {t(activeSeason.status.toLowerCase(), activeSeason.status)}
               </span>
             </div>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Campaign Window: {activeSeason.startDateTime.slice(0, 10)} &rarr; {activeSeason.endDateTime.slice(0, 10)} • Operational intake scale active
+              {t('campaign_window', 'Campaign Window')}: {activeSeason.startDateTime.slice(0, 10)} &rarr; {activeSeason.endDateTime.slice(0, 10)} • {t('operational_intake_scale_active', 'Operational intake scale active')}
             </p>
           </div>
         </div>
@@ -89,9 +89,9 @@ export default function PressingDashboardView() {
             <Scale className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="mt-2">
-            <span className="text-2xl font-bold text-slate-900">{totalCrushedToday.toLocaleString()} KG</span>
+            <span className="text-2xl font-bold text-slate-900">{totalCrushedToday.toLocaleString()} {t('unit_kg', 'KG')}</span>
             <span className="text-[11px] text-emerald-700 font-medium block mt-0.5">
-              {(totalCrushedToday / 1000).toFixed(2)} Metric Tons Received
+              {(totalCrushedToday / 1000).toFixed(2)} {t('metric_tons_received', 'Metric Tons Received')}
             </span>
           </div>
         </div>
@@ -104,10 +104,10 @@ export default function PressingDashboardView() {
           </div>
           <div className="mt-2">
             <span className="text-2xl font-bold text-sky-900">
-              {(INITIAL_DYNAMIC_LINES.reduce((a, b) => a + b.hourlyThroughputKg, 0) / 1000).toFixed(1)} T/hr
+              {(INITIAL_DYNAMIC_LINES.reduce((a, b) => a + b.hourlyThroughputKg, 0) / 1000).toFixed(1)} {t('ton_per_hr', 'T/hr')}
             </span>
             <span className="text-[11px] text-slate-500 block mt-0.5">
-              Across {INITIAL_DYNAMIC_LINES.length} provisioned continuous lines
+              {t('across_lines_prefix', 'Across')} {INITIAL_DYNAMIC_LINES.length} {t('provisioned_continuous_lines', 'provisioned continuous lines')}
             </span>
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function PressingDashboardView() {
           <div className="mt-2">
             <span className="text-2xl font-bold text-slate-900">{tanksFillPct}%</span>
             <span className="text-[11px] text-slate-500 block mt-0.5">
-              {totalTanksCurrent.toLocaleString()} / {totalTanksCap.toLocaleString()} L in farm
+              {totalTanksCurrent.toLocaleString()} / {totalTanksCap.toLocaleString()} {t('liters_in_farm', 'L in tank farm')}
             </span>
           </div>
         </div>
@@ -133,9 +133,9 @@ export default function PressingDashboardView() {
             <Truck className="w-4 h-4 text-amber-600" />
           </div>
           <div className="mt-2">
-            <span className="text-2xl font-bold text-amber-800">104 Tins</span>
+            <span className="text-2xl font-bold text-amber-800">104 {t('tins', 'Tins')}</span>
             <span className="text-[11px] text-slate-500 block mt-0.5">
-              1,560 KG oil released to growers
+              1,560 {t('kg_oil_released_growers', 'KG oil released to growers')}
             </span>
           </div>
         </div>
@@ -163,10 +163,10 @@ export default function PressingDashboardView() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-bold text-slate-900">{line.name}</h3>
-                  <span className="text-[11px] text-slate-500">{line.model} • {(line.hourlyThroughputKg / 1000).toFixed(1)} T/hr</span>
+                  <span className="text-[11px] text-slate-500">{line.model} • {(line.hourlyThroughputKg / 1000).toFixed(1)} {t('ton_per_hr', 'T/hr')}</span>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase">
-                  {line.status}
+                  {t(line.status.toLowerCase(), line.status)}
                 </span>
               </div>
 
@@ -184,27 +184,27 @@ export default function PressingDashboardView() {
               {/* Telemetry row */}
               <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
                 <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block text-[10px]">Malaxer Temp</span>
+                  <span className="text-slate-400 block text-[10px]">{t('malaxer_temp', 'Malaxer Temp')}</span>
                   <span className="font-bold text-slate-800 flex items-center justify-center gap-1 font-mono">
                     <Thermometer className="w-3 h-3 text-rose-500" /> {line.malaxingTempC}°C
                   </span>
-                  <span className="text-[9px] text-emerald-600 font-semibold">Cold Press OK</span>
+                  <span className="text-[9px] text-emerald-600 font-semibold">{t('cold_press_ok', 'Cold Press OK')}</span>
                 </div>
 
                 <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block text-[10px]">Decanter RPM</span>
+                  <span className="text-slate-400 block text-[10px]">{t('decanter_rpm', 'Decanter RPM')}</span>
                   <span className="font-bold text-slate-800 flex items-center justify-center gap-1 font-mono">
                     <Gauge className="w-3 h-3 text-blue-500" /> {line.decanterRpm}
                   </span>
-                  <span className="text-[9px] text-slate-500">Centrifuge Optimal</span>
+                  <span className="text-[9px] text-slate-500">{t('centrifuge_optimal', 'Centrifuge Optimal')}</span>
                 </div>
 
                 <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block text-[10px]">Oil Flow Rate</span>
+                  <span className="text-slate-400 block text-[10px]">{t('oil_flow_rate', 'Oil Flow Rate')}</span>
                   <span className="font-bold text-emerald-700 flex items-center justify-center gap-1 font-mono">
-                    <Droplets className="w-3 h-3 text-emerald-600" /> {line.flowRateLitersPerHour} L/h
+                    <Droplets className="w-3 h-3 text-emerald-600" /> {line.flowRateLitersPerHour} {t('liters_per_hour', 'L/h')}
                   </span>
-                  <span className="text-[9px] text-slate-500">Into Silo Tank</span>
+                  <span className="text-[9px] text-slate-500">{t('into_silo_tank', 'Into Silo Tank')}</span>
                 </div>
               </div>
             </div>
@@ -246,33 +246,33 @@ export default function PressingDashboardView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {INITIAL_SCALE_TICKETS.map((t) => (
-                <tr key={t.id} className="hover:bg-slate-50">
-                  <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{t.ticketNumber}</td>
-                  <td className="py-2.5 px-3 text-[11px] text-slate-500">{t.seasonName || 'Season 2026/2027'}</td>
-                  <td className="py-2.5 px-3 text-slate-700 font-medium">{t.lineName || 'Line 01'}</td>
-                  <td className="py-2.5 px-3 font-semibold text-slate-800">{t.farmerName}</td>
-                  <td className="py-2.5 px-3 text-slate-600">{t.variety}</td>
+              {INITIAL_SCALE_TICKETS.map((tItem) => (
+                <tr key={tItem.id} className="hover:bg-slate-50">
+                  <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{tItem.ticketNumber}</td>
+                  <td className="py-2.5 px-3 text-[11px] text-slate-500">{tItem.seasonName || 'Season 2026/2027'}</td>
+                  <td className="py-2.5 px-3 text-slate-700 font-medium">{tItem.lineName || 'Line 01'}</td>
+                  <td className="py-2.5 px-3 font-semibold text-slate-800">{tItem.farmerName}</td>
+                  <td className="py-2.5 px-3 text-slate-600">{t(tItem.variety.toLowerCase(), tItem.variety)}</td>
                   <td className="py-2.5 px-3 font-mono font-bold text-emerald-800 text-right">
-                    {t.netWeight.toLocaleString()} KG
+                    {tItem.netWeight.toLocaleString()} {t('unit_kg', 'KG')}
                   </td>
-                  <td className="py-2.5 px-3 text-slate-600 font-mono">{t.targetTankId}</td>
+                  <td className="py-2.5 px-3 text-slate-600 font-mono">{tItem.targetTankId}</td>
                   <td className="py-2.5 px-3">
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        t.settlementMethod === 'In_Kind'
+                        tItem.settlementMethod === 'In_Kind'
                           ? 'bg-amber-100 text-amber-800'
-                          : t.settlementMethod === 'Cash'
+                          : tItem.settlementMethod === 'Cash'
                           ? 'bg-emerald-100 text-emerald-800'
                           : 'bg-blue-100 text-blue-800'
                       }`}
                     >
-                      {t.settlementMethod}
+                      {tItem.settlementMethod === 'In_Kind' ? t('in_kind_retention', 'In-Kind') : tItem.settlementMethod === 'Cash' ? t('cash_fee', 'Cash') : t('mixed_settlement', 'Mixed')}
                     </span>
                   </td>
                   <td className="py-2.5 px-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">
-                      {t.status}
+                      {t(tItem.status.toLowerCase(), tItem.status)}
                     </span>
                   </td>
                 </tr>

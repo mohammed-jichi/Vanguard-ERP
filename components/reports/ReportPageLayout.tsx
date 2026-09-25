@@ -434,11 +434,12 @@ export function ReportSelectFilter({
   className = '',
   placeholder = 'Select...',
 }: SelectFilterProps) {
+  const { t } = useLanguage();
   return (
     <div className={`flex flex-col gap-1 text-left min-w-0 ${className || 'w-full'}`}>
       {label && (
-        <label htmlFor={id} className="text-[11px] font-medium text-slate-600 truncate" title={label}>
-          {label}
+        <label htmlFor={id} className="text-[11px] font-medium text-slate-600 truncate" title={t(label, label)}>
+          {t(label, label)}
         </label>
       )}
       <div className="relative min-w-0">
@@ -448,7 +449,7 @@ export function ReportSelectFilter({
           onChange={(e) => onChange(e.target.value)}
           className="w-full min-w-0 appearance-none bg-white border border-slate-300 rounded-md py-1.5 px-2.5 pr-7 text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-500 transition-all cursor-pointer shadow-2xs truncate"
         >
-          {placeholder && <option value="ALL">{placeholder}</option>}
+          {placeholder && <option value="ALL">{t(placeholder, placeholder)}</option>}
           {options.map((opt, idx) => (
             <option
               key={`${opt.value}-${idx}`}
@@ -456,7 +457,7 @@ export function ReportSelectFilter({
               disabled={(opt as any).disabled}
               title={(opt as any).tooltip}
             >
-              {opt.label}
+              {t(opt.label, opt.label)}
             </option>
           ))}
         </select>
