@@ -44,7 +44,7 @@ export default function PressingBatchesView() {
 
   const handleToggleLineStatus = (lineId: string) => {
     if (!isSeasonActive) {
-      showToast('Cannot modify line operations: Campaign is currently frozen/closed.');
+      showToast(t('cannot_modify_line_campaign_closed', 'Cannot modify line operations: Campaign is currently frozen/closed.'));
       return;
     }
     setLines((prev) =>
@@ -57,12 +57,12 @@ export default function PressingBatchesView() {
         return l;
       })
     );
-    showToast(`Extraction line ${lineId} status updated.`);
+    showToast(`${t('extraction_line', 'Extraction line')} ${lineId} ${t('status_updated', 'status updated.')}`);
   };
 
   const handleAdvanceBatch = (lineId: string) => {
     if (!isSeasonActive) {
-      showToast('Cannot advance batch: Campaign is currently frozen/closed.');
+      showToast(t('cannot_advance_batch_campaign_closed', 'Cannot advance batch: Campaign is currently frozen/closed.'));
       return;
     }
     setLines((prev) =>
@@ -74,7 +74,7 @@ export default function PressingBatchesView() {
         return l;
       })
     );
-    showToast(`Extraction progress updated for ${lineId}.`);
+    showToast(`${t('extraction_progress_updated', 'Extraction progress updated for')} ${lineId}.`);
   };
 
   return (

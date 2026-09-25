@@ -74,20 +74,20 @@ export default function MillSettingsView() {
       totalCrushedTodayKg: 0
     };
     setLines([...lines, newLine]);
-    showToast(`New extraction line ${newLineId} provisioned within license quota.`);
+    showToast(`${t('new_line_provisioned', 'New extraction line')} ${newLineId} ${t('within_license_quota', 'provisioned within license quota.')}`);
   };
 
   const handleDeleteLine = (id: string) => {
     if (lines.length <= 1) {
-      showToast('Facility must maintain at least one operational pressing line.');
+      showToast(t('facility_must_maintain_line', 'Facility must maintain at least one operational pressing line.'));
       return;
     }
     setLines((prev) => prev.filter((l) => l.id !== id));
-    showToast(`Extraction line ${id} removed.`);
+    showToast(`${t('extraction_line', 'Extraction line')} ${id} ${t('removed', 'removed.')}`);
   };
 
   const handleSave = () => {
-    showToast('Mill settings, line configurations, and operational quotas saved successfully.');
+    showToast(t('mill_settings_saved_success', 'Mill settings, line configurations, and operational quotas saved successfully.'));
   };
 
   const isAtQuota = lines.length >= licenseQuota.maxAllowedLines;

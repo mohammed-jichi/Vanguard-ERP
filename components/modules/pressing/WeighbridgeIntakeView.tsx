@@ -96,7 +96,7 @@ export default function WeighbridgeIntakeView() {
     setFarmerPhone('');
     setVehiclePlate('');
     setAcidityTestPct('');
-    showToast('Weighbridge scale form cleared.');
+    showToast(t('scale_form_cleared', 'Weighbridge scale form cleared.'));
   };
 
   const createTicketObject = (customStatus: ScaleTicket['status'] = 'Weighed'): ScaleTicket => {
@@ -113,9 +113,9 @@ export default function WeighbridgeIntakeView() {
       lineId: selectedLineId,
       lineName: assignedLine?.name || 'Line 01',
       farmerId: `FRM-${Math.floor(10 + Math.random() * 90)}`,
-      farmerName: farmerName.trim() || 'General Grower Intake',
-      farmerPhone: farmerPhone.trim() || 'Not Provided',
-      vehiclePlate: vehiclePlate.trim() || 'General Transport',
+      farmerName: farmerName.trim() || t('general_grower_intake', 'General Grower Intake'),
+      farmerPhone: farmerPhone.trim() || t('not_provided', 'Not Provided'),
+      vehiclePlate: vehiclePlate.trim() || t('general_transport', 'General Transport'),
       variety,
       grossWeight: Number(grossWeight) || 0,
       tareWeight: Number(tareWeight) || 0,
@@ -140,40 +140,40 @@ export default function WeighbridgeIntakeView() {
 
   const handleSaveDraft = () => {
     if (!isSeasonActive) {
-      showToast('Cannot save ticket: Harvest campaign is closed.');
+      showToast(t('cannot_save_campaign_closed', 'Cannot save ticket: Harvest campaign is closed.'));
       return;
     }
-    const t = createTicketObject('Weighed');
-    setTickets([t, ...tickets]);
-    showToast(`Intake scale ticket saved as draft: ${t.ticketNumber}`);
+    const ticketObj = createTicketObject('Weighed');
+    setTickets([ticketObj, ...tickets]);
+    showToast(`${t('ticket_saved_draft_prefix', 'Intake scale ticket saved as draft:')} ${ticketObj.ticketNumber}`);
   };
 
   const handleSaveAndPrint = () => {
     if (!isSeasonActive) {
-      showToast('Cannot save ticket: Harvest campaign is closed.');
+      showToast(t('cannot_save_campaign_closed', 'Cannot save ticket: Harvest campaign is closed.'));
       return;
     }
     if (netWeight <= 0) {
-      showToast('Please enter valid Gross and Tare scale weights.');
+      showToast(t('enter_valid_scale_weights', 'Please enter valid Gross and Tare scale weights.'));
       return;
     }
-    const t = createTicketObject('Weighed');
-    setTickets([t, ...tickets]);
-    setSelectedTicketForPrint(t);
+    const ticketObj = createTicketObject('Weighed');
+    setTickets([ticketObj, ...tickets]);
+    setSelectedTicketForPrint(ticketObj);
   };
 
   const handleQueueToLine = () => {
     if (!isSeasonActive) {
-      showToast('Cannot queue batch: Harvest campaign is closed.');
+      showToast(t('cannot_queue_campaign_closed', 'Cannot queue batch: Harvest campaign is closed.'));
       return;
     }
     if (netWeight <= 0) {
-      showToast('Please enter valid Gross and Tare scale weights.');
+      showToast(t('enter_valid_scale_weights', 'Please enter valid Gross and Tare scale weights.'));
       return;
     }
-    const t = createTicketObject('In_Queue');
-    setTickets([t, ...tickets]);
-    showToast(`Batch queued to ${t.lineName || 'active line'}: ${t.ticketNumber}`);
+    const ticketObj = createTicketObject('In_Queue');
+    setTickets([ticketObj, ...tickets]);
+    showToast(`${t('batch_queued_prefix', 'Batch queued to')} ${ticketObj.lineName || 'active line'}: ${ticketObj.ticketNumber}`);
   };
 
   return (

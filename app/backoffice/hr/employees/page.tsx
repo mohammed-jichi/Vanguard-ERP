@@ -1,17 +1,34 @@
-import React from 'react';
+'use client';
+
+import React, { Suspense } from 'react';
+import UnifiedHRConsole from '@/components/modules/hr/UnifiedHRConsole';
+import { useLanguage } from '@/lib/LanguageContext';
+import { Users } from 'lucide-react';
+
+function EmployeesDirectoryContent() {
+  const { t, dir } = useLanguage();
+
+  return (
+    <div className="p-4 md:p-6 space-y-4 font-sans bg-background min-h-screen text-slate-800" dir={dir}>
+      <div className="border-b border-slate-200 pb-3">
+        <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <Users className="w-5 h-5 text-primary" />
+          <span>{t('employees_directory_title', 'Employees & Personnel Master Directory')}</span>
+        </h1>
+        <p className="text-xs text-slate-600 font-medium mt-0.5">
+          {t('employees_directory_subtitle', 'Staff records, National IDs, department tags, basic salaries, hire dates, and contract statuses')}
+        </p>
+      </div>
+
+      <UnifiedHRConsole initialTab="employees" />
+    </div>
+  );
+}
 
 export default function EmployeesDirectoryPage() {
   return (
-    <div className="p-6 space-y-4 text-left">
-      <div className="border-b border-slate-200 pb-3">
-        <h1 className="text-xl font-bold text-slate-900">Employees & Personnel Directory</h1>
-        <p className="text-xs text-slate-600 font-medium">Staff contracts, departmental assignments, and social security numbers</p>
-      </div>
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center text-slate-500">
-        <span className="text-3xl block mb-2">👥</span>
-        <h2 className="text-sm font-bold text-slate-800">HR Personnel Records</h2>
-        <p className="text-xs text-slate-500 mt-1">Southern Olive Oil Products S.A.R.L - All Active Staff</p>
-      </div>
-    </div>
+    <Suspense fallback={<div className="p-6 text-xs font-mono text-slate-500">Loading Employees Directory...</div>}>
+      <EmployeesDirectoryContent />
+    </Suspense>
   );
 }

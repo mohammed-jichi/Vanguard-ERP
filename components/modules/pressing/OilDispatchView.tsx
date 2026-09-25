@@ -40,7 +40,7 @@ export default function OilDispatchView() {
 
   const handleCreatePass = () => {
     if (!farmerName.trim() || Number(tinsReleased) <= 0) {
-      showToast('Please enter grower name and released tins count.');
+      showToast(t('enter_grower_tins_count', 'Please enter grower name and released tins count.'));
       return;
     }
 
@@ -53,14 +53,14 @@ export default function OilDispatchView() {
       tinsReleased: Number(tinsReleased),
       litersReleased: Number(tinsReleased) * 16,
       receiverName: receiverName.trim() || farmerName.trim(),
-      vehiclePlate: vehiclePlate.trim() || 'Grower Private Transport',
+      vehiclePlate: vehiclePlate.trim() || t('grower_private_transport', 'Grower Private Transport'),
       authorizedBy,
       gatePassStatus: 'Approved'
     };
 
     setPasses([newPass, ...passes]);
     setSelectedPassForPrint(newPass);
-    showToast(`Gate Pass ${newPass.passNumber} authorized for dispatch.`);
+    showToast(`${t('gate_pass', 'Gate Pass')} ${newPass.passNumber} ${t('authorized_for_dispatch', 'authorized for dispatch.')}`);
   };
 
   return (

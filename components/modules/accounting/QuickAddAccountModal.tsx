@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { AccountDetail, LBP_RATE } from '@/lib/accountingData';
 import { apiCreateAccount } from '@/lib/accountingPersistenceService';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export type QuickAddPreset = 'SUPPLIER' | 'DISBURSING' | 'EXPENSE_OR_ASSET';
 
@@ -34,6 +35,7 @@ export default function QuickAddAccountModal({
   onSuccess,
   onShowToast
 }: QuickAddAccountModalProps) {
+  const { t, dir } = useLanguage();
   // Preset sub-selection
   const [subCategory, setSubCategory] = useState<string>('');
   const [accountNumber, setAccountNumber] = useState<string>('');
@@ -256,11 +258,11 @@ export default function QuickAddAccountModal({
   const getHeaderTitle = () => {
     switch (presetType) {
       case 'SUPPLIER':
-        return 'Quick-Add Supplier / Creditor Account (Class 40)';
+        return t('quick_add_supplier_title', 'Quick-Add Supplier / Creditor Account (Class 40)');
       case 'DISBURSING':
-        return 'Quick-Add Cash Vault or Bank Account (Class 5)';
+        return t('quick_add_disbursing_title', 'Quick-Add Cash Vault or Bank Account (Class 5)');
       case 'EXPENSE_OR_ASSET':
-        return 'Quick-Add Expense or Fixed Asset Account (Class 6 / Class 2)';
+        return t('quick_add_expense_asset_title', 'Quick-Add Expense or Fixed Asset Account (Class 6 / Class 2)');
     }
   };
 
@@ -276,7 +278,7 @@ export default function QuickAddAccountModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn font-sans select-none">
+    <div dir={dir} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn font-sans select-none">
       <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
         {/* Header Strip */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/40">
@@ -287,7 +289,7 @@ export default function QuickAddAccountModal({
             <div>
               <h3 className="text-sm font-bold text-foreground">{getHeaderTitle()}</h3>
               <p className="text-[11px] text-muted-foreground">
-                Lebanese PCG Standard Chart of Accounts Ledger Sync
+                {t('lebanese_pcg_sync_subtitle', 'Lebanese PCG Standard Chart of Accounts Ledger Sync')}
               </p>
             </div>
           </div>
@@ -312,33 +314,33 @@ export default function QuickAddAccountModal({
           {/* Sub-Category Selector */}
           <div>
             <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1.5">
-              Account Category &amp; Class
+              {t('account_category_class', 'Account Category & Class')}
             </label>
             {presetType === 'SUPPLIER' && (
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('TRADE_SUPPLIER')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'TRADE_SUPPLIER'
                       ? 'border-primary bg-primary/10 text-primary shadow-2xs ring-1 ring-primary'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">#40110 - Trade Supplier</div>
-                  <div className="text-[10px] opacity-80 font-normal">Raw materials &amp; packaging vendors</div>
+                  <div className="font-bold">{t('trade_supplier_opt', '#40110 - Trade Supplier')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('trade_supplier_sub', 'Raw materials & packaging vendors')}</div>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('ASSET_VENDOR')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'ASSET_VENDOR'
                       ? 'border-primary bg-primary/10 text-primary shadow-2xs ring-1 ring-primary'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">#40410 - Fixed Asset Vendor</div>
-                  <div className="text-[10px] opacity-80 font-normal">Machinery &amp; capital equipment suppliers</div>
+                  <div className="font-bold">{t('fixed_asset_vendor_opt', '#40410 - Fixed Asset Vendor')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('fixed_asset_vendor_sub', 'Machinery & capital equipment suppliers')}</div>
                 </button>
               </div>
             )}
@@ -348,26 +350,26 @@ export default function QuickAddAccountModal({
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('CASH_VAULT')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'CASH_VAULT'
                       ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-2xs ring-1 ring-emerald-500'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">#53200 - Petty Cash &amp; Vault</div>
-                  <div className="text-[10px] opacity-80 font-normal">Floor cash float &amp; physical drawer</div>
+                  <div className="font-bold">{t('petty_cash_vault_opt', '#53200 - Petty Cash & Vault')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('petty_cash_vault_sub', 'Floor cash float & physical drawer')}</div>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('COMMERCIAL_BANK')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'COMMERCIAL_BANK'
                       ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-2xs ring-1 ring-emerald-500'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">#51210 - Commercial Bank</div>
-                  <div className="text-[10px] opacity-80 font-normal">BLOM, Audi, or Beirut Checking</div>
+                  <div className="font-bold">{t('commercial_bank_opt', '#51210 - Commercial Bank')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('commercial_bank_sub', 'BLOM, Audi, or Beirut Checking')}</div>
                 </button>
               </div>
             )}
@@ -377,26 +379,26 @@ export default function QuickAddAccountModal({
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('EXPENSE_CLASS6')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'EXPENSE_CLASS6'
                       ? 'border-blue-600 bg-blue-50 text-blue-800 shadow-2xs ring-1 ring-blue-500'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">Class 6: Operating Expense</div>
-                  <div className="text-[10px] opacity-80 font-normal">Packaging, fuel, chemicals, maintenance</div>
+                  <div className="font-bold">{t('class6_expense_opt', 'Class 6: Operating Expense')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('class6_expense_sub', 'Packaging, fuel, chemicals, maintenance')}</div>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSubCategoryChange('FIXED_ASSET_CLASS2')}
-                  className={`p-2.5 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                  className={`p-2.5 rounded-xl border text-left rtl:text-right text-xs font-semibold transition-all cursor-pointer ${
                     subCategory === 'FIXED_ASSET_CLASS2'
                       ? 'border-blue-600 bg-blue-50 text-blue-800 shadow-2xs ring-1 ring-blue-500'
                       : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  <div className="font-bold">Class 2: Capitalized Asset</div>
-                  <div className="text-[10px] opacity-80 font-normal">Machinery, fleet vehicles, IT equipment</div>
+                  <div className="font-bold">{t('class2_asset_opt', 'Class 2: Capitalized Asset')}</div>
+                  <div className="text-[10px] opacity-80 font-normal">{t('class2_asset_sub', 'Machinery, fleet vehicles, IT equipment')}</div>
                 </button>
               </div>
             )}
@@ -406,7 +408,7 @@ export default function QuickAddAccountModal({
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                Account Number *
+                {t('account_number_req', 'Account Number *')}
               </label>
               <input
                 type="text"
@@ -420,12 +422,12 @@ export default function QuickAddAccountModal({
 
             <div>
               <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                Currency
+                {t('currency', 'Currency')}
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as 'USD' | 'LBP')}
-                className="w-full bg-card border border-input rounded-xl p-2.5 text-xs font-semibold text-foreground shadow-2xs outline-hidden"
+                className="w-full bg-card border border-input rounded-xl p-2.5 text-xs font-semibold text-foreground shadow-2xs outline-hidden cursor-pointer"
               >
                 <option value="USD">USD ($)</option>
                 <option value="LBP">LBP (ل.ل)</option>
@@ -436,7 +438,7 @@ export default function QuickAddAccountModal({
           {/* Account Name (English) */}
           <div>
             <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-              Account Name (English) *
+              {t('account_name_en_req', 'Account Name (English) *')}
             </label>
             <input
               type="text"
@@ -457,7 +459,7 @@ export default function QuickAddAccountModal({
           {/* Account Name (Arabic) */}
           <div>
             <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-              Account Name (Arabic / اسم الحساب بالعربية)
+              {t('account_name_ar_label', 'Account Name (Arabic / اسم الحساب بالعربية)')}
             </label>
             <input
               type="text"
@@ -472,13 +474,13 @@ export default function QuickAddAccountModal({
           {/* Description */}
           <div>
             <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-              Description / Notes
+              {t('description_notes', 'Description / Notes')}
             </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Internal ledger classification remark"
+              placeholder={t('description_placeholder', 'Internal ledger classification remark')}
               className="w-full bg-card border border-input rounded-xl p-2.5 text-xs text-foreground shadow-2xs focus:ring-1 focus:ring-primary focus:border-primary outline-hidden font-normal text-muted-foreground"
             />
           </div>
@@ -491,7 +493,7 @@ export default function QuickAddAccountModal({
               disabled={isSaving}
               className="px-4 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted transition-colors cursor-pointer"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
 
             <button
@@ -500,7 +502,7 @@ export default function QuickAddAccountModal({
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>{isSaving ? 'Saving & Syncing...' : 'Save & Select Account'}</span>
+              <span>{isSaving ? t('saving_and_syncing', 'Saving & Syncing...') : t('save_and_select_account', 'Save & Select Account')}</span>
             </button>
           </div>
         </form>

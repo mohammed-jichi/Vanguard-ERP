@@ -10,6 +10,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Sliders,
   FolderTree,
@@ -67,6 +68,7 @@ export interface AccountingSetupPageProps {
 }
 
 function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetupPageProps) {
+  const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get('section')?.toLowerCase();
 
@@ -254,7 +256,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
   }, [accounts, searchQuery, selectedClassFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={dir}>
 
       {/* NOTIFICATION BANNER */}
       {notification && (
@@ -272,11 +274,11 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
       {/* SETUP TOP NAVIGATION TABS */}
       <div className="bg-card border border-border rounded-xl p-2.5 shadow-xs flex flex-wrap items-center gap-2 text-xs font-medium">
         {[
-          { id: 'COA', label: 'Chart of Accounts (PCG Tree)', icon: FolderTree },
-          { id: 'AUX', label: 'Account Auxiliaries (Classes & Headers)', icon: Layers },
-          { id: 'JV_SETUP', label: 'Voucher Configuration (JV Setup)', icon: Sliders },
-          { id: 'CURRENCIES', label: 'Currencies & Official FX Rates', icon: DollarSign },
-          { id: 'DEPTS', label: 'Cost Centers & Cash Flow Setup', icon: Building2 }
+          { id: 'COA', label: t('chart_of_accounts_tree', 'Chart of Accounts (PCG Tree)'), icon: FolderTree },
+          { id: 'AUX', label: t('account_auxiliaries', 'Account Auxiliaries (Classes & Headers)'), icon: Layers },
+          { id: 'JV_SETUP', label: t('voucher_configuration', 'Voucher Configuration (JV Setup)'), icon: Sliders },
+          { id: 'CURRENCIES', label: t('currencies_rates', 'Currencies & Official FX Rates'), icon: DollarSign },
+          { id: 'DEPTS', label: t('cost_centers_cash_flow', 'Cost Centers & Cash Flow Setup'), icon: Building2 }
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSetupTab === tab.id;
@@ -306,14 +308,14 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <FolderTree className="w-4 h-4 text-primary" />
-                  <span>Chart of Accounts Hierarchy (Plan Comptable Général)</span>
+                  <span>{t('coa_hierarchy_title', 'Chart of Accounts Hierarchy (Plan Comptable Général)')}</span>
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border uppercase">
                   7 Classes
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Standard Lebanese &amp; International enterprise accounting taxonomy organized into primary asset, liability, equity, revenue, and expense classes
+                {t('coa_hierarchy_desc', 'Standard Lebanese & International enterprise accounting taxonomy organized into primary asset, liability, equity, revenue, and expense classes')}
               </p>
             </div>
 
@@ -329,7 +331,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                 }}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer shadow-2xs"
               >
-                {expandedClasses.length === 7 ? 'Collapse All' : 'Expand All'}
+                {expandedClasses.length === 7 ? t('collapse_all', 'Collapse All') : t('expand_all', 'Expand All')}
               </button>
 
               <button
@@ -338,7 +340,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Add Account</span>
+                <span>{t('add_account', '+ Add Account')}</span>
               </button>
             </div>
           </div>
@@ -346,7 +348,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           {/* MULTI-COUNTRY CHART OF ACCOUNTS PRESET SELECTOR */}
           <div className="bg-muted/50 border border-border rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="font-bold text-foreground">COA Template Preset:</span>
+              <span className="font-bold text-foreground">{t('coa_template_preset', 'COA Template Preset:')}</span>
               <span className="bg-primary/10 text-primary border border-primary/20 text-[11px] font-mono font-bold px-2 py-0.5 rounded">
                 {COA_PRESET_TEMPLATES[activePresetId]?.name || 'Lebanese PCA'}
               </span>
@@ -361,9 +363,9 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                 onChange={(e) => setPendingPresetId(e.target.value as CoaPresetId)}
                 className="bg-card border border-input rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-medium"
               >
-                <option value="lebanese_pca">Lebanese PCA (5-Digit Standard)</option>
-                <option value="international_ifrs">International Standard (IFRS / GAAP 4-Digit)</option>
-                <option value="custom_blank">Custom / Blank (Top-Level Classes Only)</option>
+                <option value="lebanese_pca">{t('lebanese_pca_standard', 'Lebanese PCA (5-Digit Standard)')}</option>
+                <option value="international_ifrs">{t('international_ifrs_standard', 'International Standard (IFRS / GAAP 4-Digit)')}</option>
+                <option value="custom_blank">{t('custom_blank_classes', 'Custom / Blank (Top-Level Classes Only)')}</option>
               </select>
 
               <button
@@ -372,7 +374,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                 className="bg-sky-700 hover:bg-sky-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <RefreshCw className="w-3 h-3" />
-                <span>Apply Preset</span>
+                <span>{t('apply_preset', 'Apply Preset')}</span>
               </button>
             </div>
           </div>
@@ -385,7 +387,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search account code or name..."
+                placeholder={t('search_account_code_or_name', 'Search account code or name...')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-3 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -437,10 +439,10 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                         {cls.class_number}
                       </span>
                       <span className="font-bold text-foreground text-xs md:text-sm">
-                        Class {cls.class_number}: {cls.account_group_name}
+                        {t('class_n', 'Class')} {cls.class_number}: {cls.account_group_name}
                       </span>
                       <span className="text-[11px] font-mono text-muted-foreground bg-card px-2 py-0.5 rounded border border-border">
-                        {classAccounts.length} Accounts
+                        {classAccounts.length} {t('accounts_count', 'Accounts')}
                       </span>
                     </div>
 
@@ -457,12 +459,12 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                           <table className="w-full text-left text-xs">
                             <thead>
                               <tr className="bg-muted text-muted-foreground font-semibold border-b border-border">
-                                <th className="p-2.5">Account Code</th>
-                                <th className="p-2.5">Account Title</th>
-                                <th className="p-2.5">Classification</th>
-                                <th className="p-2.5">Currency</th>
-                                <th className="p-2.5">Opening Balance</th>
-                                <th className="p-2.5">Status</th>
+                                <th className="p-2.5">{t('account_code', 'Account Code')}</th>
+                                <th className="p-2.5">{t('account_title', 'Account Title')}</th>
+                                <th className="p-2.5">{t('classification', 'Classification')}</th>
+                                <th className="p-2.5">{t('currency', 'Currency')}</th>
+                                <th className="p-2.5">{t('opening_balance', 'Opening Balance')}</th>
+                                <th className="p-2.5">{t('status', 'Status')}</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -484,7 +486,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                                   <td className="p-2.5 font-mono text-emerald-700 font-bold">${acc.balance_first_cur.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                                   <td className="p-2.5">
                                     <span className="text-emerald-700 text-[11px] flex items-center gap-1 font-semibold">
-                                      <Check className="w-3 h-3" /> Active
+                                      <Check className="w-3 h-3" /> {t('active', 'Active')}
                                     </span>
                                   </td>
                                 </tr>
@@ -494,7 +496,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                         </div>
                       ) : (
                         <div className="p-4 text-center text-xs text-muted-foreground">
-                          No accounts registered under this class.
+                          {t('no_accounts_registered', 'No accounts registered under this class.')}
                         </div>
                       )}
                     </div>
@@ -512,21 +514,21 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           <div className="border-b border-border pb-4">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Layers className="w-4 h-4 text-primary" />
-              <span>Account Auxiliaries &amp; Structural Headers (1-4)</span>
+              <span>{t('aux_headers_title', 'Account Auxiliaries & Structural Headers (1-4)')}</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Multi-tiered hierarchy management for parent groupings, financial reporting aggregates, and cost center allocations
+              {t('aux_headers_desc', 'Multi-tiered hierarchy management for parent groupings, financial reporting aggregates, and cost center allocations')}
             </p>
           </div>
 
           {/* Aux Sub-Tabs */}
           <div className="flex items-center gap-2 border-b border-border pb-2 text-xs font-medium">
             {[
-              { id: 'CLASSES', num: '1', label: 'Primary Classes (1-7)' },
-              { id: 'H1', num: '2', label: 'Header Level 1' },
-              { id: 'H2', num: '3', label: 'Header Level 2' },
-              { id: 'H3', num: '4', label: 'Header Level 3' },
-              { id: 'H4', num: '5', label: 'Sub-Groups (Level 4)' }
+              { id: 'CLASSES', num: '1', label: t('primary_classes_1_7', 'Primary Classes (1-7)') },
+              { id: 'H1', num: '2', label: t('header_level_1', 'Header Level 1') },
+              { id: 'H2', num: '3', label: t('header_level_2', 'Header Level 2') },
+              { id: 'H3', num: '4', label: t('header_level_3', 'Header Level 3') },
+              { id: 'H4', num: '5', label: t('sub_groups_level_4', 'Sub-Groups (Level 4)') }
             ].map(sub => (
               <button
                 key={sub.id}
@@ -550,15 +552,15 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-muted text-foreground font-semibold border-b border-border">
-                    <th className="p-3">Class #</th>
-                    <th className="p-3">Class Title</th>
-                    <th className="p-3">Standard Definition &amp; Scope</th>
+                    <th className="p-3">{t('class_number_th', 'Class #')}</th>
+                    <th className="p-3">{t('class_title_th', 'Class Title')}</th>
+                    <th className="p-3">{t('def_scope_th', 'Standard Definition & Scope')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
                   {OMEGA_ACCOUNT_CLASSES.map(cls => (
                     <tr key={cls.id} className="hover:bg-muted/40 text-foreground">
-                      <td className="p-3 font-mono font-bold text-primary">Class {cls.class_number}</td>
+                      <td className="p-3 font-mono font-bold text-primary">{t('class_n', 'Class')} {cls.class_number}</td>
                       <td className="p-3 font-semibold text-foreground">{cls.account_group_name}</td>
                       <td className="p-3 text-muted-foreground">{cls.account_label}</td>
                     </tr>
@@ -574,17 +576,17 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-muted text-foreground font-semibold border-b border-border">
-                    <th className="p-3">Reference #</th>
-                    <th className="p-3">Parent Class</th>
-                    <th className="p-3">Header 1 Title</th>
-                    <th className="p-3">Functional Description</th>
+                    <th className="p-3">{t('reference_num_th', 'Reference #')}</th>
+                    <th className="p-3">{t('parent_class_th', 'Parent Class')}</th>
+                    <th className="p-3">{t('header_1_title_th', 'Header 1 Title')}</th>
+                    <th className="p-3">{t('functional_desc_th', 'Functional Description')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
                   {OMEGA_HEADER_1_SAMPLE.map((h: AccountHeader1) => (
                     <tr key={h.id} className="hover:bg-muted/40 text-foreground">
                       <td className="p-3 font-mono font-bold text-primary">#{h.account_number_ref}</td>
-                      <td className="p-3 font-mono text-muted-foreground">Class {h.class_id}</td>
+                      <td className="p-3 font-mono text-muted-foreground">{t('class_n', 'Class')} {h.class_id}</td>
                       <td className="p-3 font-semibold text-foreground">{h.account_name}</td>
                       <td className="p-3 text-muted-foreground">{h.account_label}</td>
                     </tr>
@@ -597,8 +599,8 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           {(auxSubTab === 'H2' || auxSubTab === 'H3' || auxSubTab === 'H4') && (
             <div className="p-8 text-center text-xs text-muted-foreground bg-muted/40 rounded-xl border border-border">
               <Layers className="w-8 h-8 text-primary mx-auto mb-2 opacity-80" />
-              <p className="font-bold text-foreground">Auxiliary Level Formatted to Omega ERP Specifications</p>
-              <p className="text-muted-foreground mt-1">Automatic parent reference codes are generated when assigning detailed subsidiary accounts.</p>
+              <p className="font-bold text-foreground">{t('aux_level_formatted_title', 'Auxiliary Level Formatted to Omega ERP Specifications')}</p>
+              <p className="text-muted-foreground mt-1">{t('aux_level_formatted_desc', 'Automatic parent reference codes are generated when assigning detailed subsidiary accounts.')}</p>
             </div>
           )}
         </div>
@@ -610,47 +612,47 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           <div className="border-b border-border pb-4">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Sliders className="w-4 h-4 text-primary" />
-              <span>Voucher Templates &amp; Default JV Descriptions</span>
+              <span>{t('voucher_templates_title', 'Voucher Templates & Default JV Descriptions')}</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Standard recurring journal voucher definitions and auto-fill memo templates
+              {t('voucher_templates_desc', 'Standard recurring journal voucher definitions and auto-fill memo templates')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-muted/50 p-4 rounded-xl border border-border space-y-3 text-xs">
-              <h4 className="font-bold text-foreground">Approved Journal Voucher Types:</h4>
+              <h4 className="font-bold text-foreground">{t('approved_jv_types', 'Approved Journal Voucher Types:')}</h4>
               <ul className="space-y-2 font-medium text-foreground">
                 <li className="p-2.5 bg-card rounded-lg border border-border flex justify-between items-center shadow-2xs">
-                  <span>STANDARD - Routine Daily Operating Entry</span>
-                  <span className="text-emerald-700 font-mono font-semibold">Default</span>
+                  <span>{t('jv_type_standard_desc', 'STANDARD - Routine Daily Operating Entry')}</span>
+                  <span className="text-emerald-700 font-mono font-semibold">{t('default_badge', 'Default')}</span>
                 </li>
                 <li className="p-2.5 bg-card rounded-lg border border-border flex justify-between items-center shadow-2xs">
-                  <span>OPENING - Fiscal Period Opening Balance</span>
-                  <span className="text-primary font-mono font-semibold">Annual</span>
+                  <span>{t('jv_type_opening_desc', 'OPENING - Fiscal Period Opening Balance')}</span>
+                  <span className="text-primary font-mono font-semibold">{t('annual_badge', 'Annual')}</span>
                 </li>
                 <li className="p-2.5 bg-card rounded-lg border border-border flex justify-between items-center shadow-2xs">
-                  <span>DEPRECIATION - Fixed Asset Amortization</span>
-                  <span className="text-primary font-mono font-semibold">Monthly</span>
+                  <span>{t('jv_type_depreciation_desc', 'DEPRECIATION - Fixed Asset Amortization')}</span>
+                  <span className="text-primary font-mono font-semibold">{t('monthly_badge', 'Monthly')}</span>
                 </li>
                 <li className="p-2.5 bg-card rounded-lg border border-border flex justify-between items-center shadow-2xs">
-                  <span>ADJUSTING - Inventory &amp; Accrual Adjustment</span>
-                  <span className="text-primary font-mono font-semibold">Quarterly</span>
+                  <span>{t('jv_type_adjusting_desc', 'ADJUSTING - Inventory & Accrual Adjustment')}</span>
+                  <span className="text-primary font-mono font-semibold">{t('quarterly_badge', 'Quarterly')}</span>
                 </li>
                 <li className="p-2.5 bg-card rounded-lg border border-border flex justify-between items-center shadow-2xs">
-                  <span>CLOSING - Profit &amp; Loss Year-End Settlement</span>
-                  <span className="text-destructive font-mono font-semibold">Final</span>
+                  <span>{t('jv_type_closing_desc', 'CLOSING - Profit & Loss Year-End Settlement')}</span>
+                  <span className="text-destructive font-mono font-semibold">{t('final_badge', 'Final')}</span>
                 </li>
               </ul>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-xl border border-border space-y-3 text-xs">
-              <h4 className="font-bold text-foreground">Standardized Enterprise Ledger Memos:</h4>
+              <h4 className="font-bold text-foreground">{t('standardized_memos', 'Standardized Enterprise Ledger Memos:')}</h4>
               <ul className="space-y-2 font-medium text-foreground">
-                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">Daily retail store cash collection &amp; point-of-sale deposits</li>
-                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">Procurement of raw olive crop - Central Choueifat Mill</li>
-                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">Monthly payroll &amp; technical engineering salary disbursement</li>
-                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">Fleet diesel fuel consumption &amp; logistics freight expense</li>
+                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">{t('memo_pos_deposit', 'Daily retail store cash collection & point-of-sale deposits')}</li>
+                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">{t('memo_olive_procurement', 'Procurement of raw olive crop - Central Choueifat Mill')}</li>
+                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">{t('memo_payroll', 'Monthly payroll & technical engineering salary disbursement')}</li>
+                <li className="p-2.5 bg-card rounded-lg border border-border shadow-2xs">{t('memo_diesel_fleet', 'Fleet diesel fuel consumption & logistics freight expense')}</li>
               </ul>
             </div>
           </div>
@@ -663,10 +665,10 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           <div className="border-b border-border pb-4">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-primary" />
-              <span>Currencies &amp; Official Exchange Rates</span>
+              <span>{t('currencies_exchange_rates_title', 'Currencies & Official Exchange Rates')}</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Manage base functional ledger currency (USD) and local reporting currency (LBP) with exchange rate precision
+              {t('currencies_exchange_rates_desc', 'Manage base functional ledger currency (USD) and local reporting currency (LBP) with exchange rate precision')}
             </p>
           </div>
 
@@ -674,12 +676,12 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
             <table className="w-full text-left text-xs font-medium">
               <thead>
                 <tr className="bg-muted text-foreground font-semibold border-b border-border">
-                  <th className="p-3">Currency Code</th>
-                  <th className="p-3">Currency Name</th>
-                  <th className="p-3">Symbol</th>
-                  <th className="p-3">FX Rate vs USD</th>
-                  <th className="p-3">Decimal Precision</th>
-                  <th className="p-3">Classification</th>
+                  <th className="p-3">{t('currency_code', 'Currency Code')}</th>
+                  <th className="p-3">{t('currency_name', 'Currency Name')}</th>
+                  <th className="p-3">{t('symbol', 'Symbol')}</th>
+                  <th className="p-3">{t('fx_rate_vs_usd', 'FX Rate vs USD')}</th>
+                  <th className="p-3">{t('decimal_precision', 'Decimal Precision')}</th>
+                  <th className="p-3">{t('classification', 'Classification')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border text-foreground">
@@ -691,7 +693,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                   <td className="p-3 font-mono">2 decimals</td>
                   <td className="p-3">
                     <span className="bg-muted text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded text-[11px] font-semibold">
-                      Base Functional Currency
+                      {t('base_functional_currency', 'Base Functional Currency')}
                     </span>
                   </td>
                 </tr>
@@ -704,7 +706,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                   <td className="p-3 font-mono">0 decimals</td>
                   <td className="p-3">
                     <span className="bg-muted text-foreground border border-border px-2 py-0.5 rounded text-[11px] font-semibold">
-                      Local Statutory Currency
+                      {t('local_statutory_currency', 'Local Statutory Currency')}
                     </span>
                   </td>
                 </tr>
@@ -717,7 +719,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                   <td className="p-3 font-mono">2 decimals</td>
                   <td className="p-3">
                     <span className="bg-muted text-muted-foreground border border-border px-2 py-0.5 rounded text-[11px] font-semibold">
-                      Secondary Trade Currency
+                      {t('secondary_trade_currency', 'Secondary Trade Currency')}
                     </span>
                   </td>
                 </tr>
@@ -733,32 +735,32 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           <div className="border-b border-border pb-4">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Building2 className="w-4 h-4 text-primary" />
-              <span>Cost Centers &amp; Cash Flow Classifications</span>
+              <span>{t('cost_centers_cash_flow_title', 'Cost Centers & Cash Flow Classifications')}</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Assign administrative and factory cost centers and map accounts to standard cash flow statement activities
+              {t('cost_centers_cash_flow_desc', 'Assign administrative and factory cost centers and map accounts to standard cash flow statement activities')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-medium">
             <div className="bg-muted/50 p-4 rounded-xl border border-border space-y-2">
-              <span className="text-foreground block font-bold">1. Operating Activities</span>
+              <span className="text-foreground block font-bold">{t('cf_operating_activities', '1. Operating Activities')}</span>
               <p className="text-muted-foreground leading-relaxed">
-                Directly mapped to customer collection receipts, farmer harvest procurements, factory staff payroll, and VAT liabilities.
+                {t('cf_operating_desc', 'Directly mapped to customer collection receipts, farmer harvest procurements, factory staff payroll, and VAT liabilities.')}
               </p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-xl border border-border space-y-2">
-              <span className="text-foreground block font-bold">2. Investing Activities</span>
+              <span className="text-foreground block font-bold">{t('cf_investing_activities', '2. Investing Activities')}</span>
               <p className="text-muted-foreground leading-relaxed">
-                Mapped to mechanical olive press additions, bottling line upgrades, storage warehouse expansions, and vehicle acquisitions.
+                {t('cf_investing_desc', 'Mapped to mechanical olive press additions, bottling line upgrades, storage warehouse expansions, and vehicle acquisitions.')}
               </p>
             </div>
 
             <div className="bg-muted/50 p-4 rounded-xl border border-border space-y-2">
-              <span className="text-foreground block font-bold">3. Financing Activities</span>
+              <span className="text-foreground block font-bold">{t('cf_financing_activities', '3. Financing Activities')}</span>
               <p className="text-muted-foreground leading-relaxed">
-                Mapped to paid-up equity capital, commercial banking credit facilities, loan principal payments, and shareholder distributions.
+                {t('cf_financing_desc', 'Mapped to paid-up equity capital, commercial banking credit facilities, loan principal payments, and shareholder distributions.')}
               </p>
             </div>
           </div>
@@ -774,10 +776,10 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               <div>
                 <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <FolderTree className="w-4 h-4 text-primary" />
-                  <span>Add New Account to Chart of Accounts</span>
+                  <span>{t('add_new_account_coa', 'Add New Account to Chart of Accounts')}</span>
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Specify accounting class, ledger code, title, and normal balance
+                  {t('add_new_account_coa_desc', 'Specify accounting class, ledger code, title, and normal balance')}
                 </p>
               </div>
               <button
@@ -791,7 +793,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
 
             <form onSubmit={handleCreateAccount} className="space-y-4 text-xs font-medium">
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Primary Accounting Class</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('primary_accounting_class', 'Primary Accounting Class')}</label>
                 <select
                   value={newAccClass}
                   onChange={(e) => setNewAccClass(Number(e.target.value))}
@@ -806,7 +808,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               </div>
 
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Account Number (Code)</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('account_number_code', 'Account Number (Code)')}</label>
                 <input
                   type="text"
                   value={newAccNumber}
@@ -818,7 +820,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
               </div>
 
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Account Title / Name</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('account_title_name', 'Account Title / Name')}</label>
                 <input
                   type="text"
                   value={newAccName}
@@ -831,40 +833,40 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-muted-foreground mb-1 block font-medium">Account Classification (Class)</label>
+                  <label className="text-muted-foreground mb-1 block font-medium">{t('account_classification_class', 'Account Classification (Class)')}</label>
                   <select
                     value={newAccType}
                     onChange={(e) => setNewAccType(e.target.value as any)}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                   >
-                    <option value="ASSET">Asset (Debit Normal)</option>
-                    <option value="LIABILITY">Liability (Credit Normal)</option>
-                    <option value="EQUITY">Equity</option>
-                    <option value="REVENUE">Revenue</option>
-                    <option value="EXPENSE">Expense</option>
+                    <option value="ASSET">{t('asset_debit_normal', 'Asset (Debit Normal)')}</option>
+                    <option value="LIABILITY">{t('liability_credit_normal', 'Liability (Credit Normal)')}</option>
+                    <option value="EQUITY">{t('equity', 'Equity')}</option>
+                    <option value="REVENUE">{t('revenue', 'Revenue')}</option>
+                    <option value="EXPENSE">{t('expense', 'Expense')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-muted-foreground mb-1 block font-medium">Account Functional Type (Sub Type) *</label>
+                  <label className="text-muted-foreground mb-1 block font-medium">{t('account_functional_type', 'Account Functional Type (Sub Type) *')}</label>
                   <select
                     value={newAccSubType}
                     onChange={(e) => setNewAccSubType(e.target.value as any)}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-semibold"
                   >
-                    <option value="Cash">Cash (Instant Disbursing Vault)</option>
-                    <option value="Bank">Bank (Instant Disbursing Commercial Bank)</option>
-                    <option value="Employee">Employee (Advance / Custody Disbursing)</option>
-                    <option value="Customer">Customer (Trade Debtor / AR)</option>
-                    <option value="Supplier">Supplier (Trade Creditor / AP)</option>
-                    <option value="Expense">Expense (Operational Overhead)</option>
-                    <option value="Other">Other (General Control Ledger)</option>
+                    <option value="Cash">{t('cash_vault_option', 'Cash (Instant Disbursing Vault)')}</option>
+                    <option value="Bank">{t('bank_comm_option', 'Bank (Instant Disbursing Commercial Bank)')}</option>
+                    <option value="Employee">{t('employee_custody_option', 'Employee (Advance / Custody Disbursing)')}</option>
+                    <option value="Customer">{t('customer_ar_option', 'Customer (Trade Debtor / AR)')}</option>
+                    <option value="Supplier">{t('supplier_ap_option', 'Supplier (Trade Creditor / AP)')}</option>
+                    <option value="Expense">{t('expense_overhead_option', 'Expense (Operational Overhead)')}</option>
+                    <option value="Other">{t('other_control_option', 'Other (General Control Ledger)')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Primary Currency</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('primary_currency', 'Primary Currency')}</label>
                 <select
                   value={newAccCurrency}
                   onChange={(e) => setNewAccCurrency(e.target.value as any)}
@@ -883,7 +885,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
                     onChange={(e) => setNewAccChecking(e.target.checked)}
                     className="rounded border-input text-primary focus:ring-primary"
                   />
-                  <span>Checking / Active Cash Liquidity Account</span>
+                  <span>{t('checking_liquidity_account', 'Checking / Active Cash Liquidity Account')}</span>
                 </label>
               </div>
 
@@ -914,7 +916,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
 
 export default function AccountingSetupPage(props: AccountingSetupPageProps) {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm">Loading Chart of Accounts &amp; Setup...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground text-sm">Loading Chart of Accounts...</div>}>
       <AccountingSetupContent {...props} />
     </Suspense>
   );

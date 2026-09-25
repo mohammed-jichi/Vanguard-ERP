@@ -67,14 +67,14 @@ export default function PressingMillPage() {
           </span>
           <span className="text-xs text-slate-400">|</span>
           <span className="text-xs text-slate-500">
-            Industrial Weighbridge, Cold Extraction Lines & Stainless Tank Farm
+            {t('pressing_mill_desc', 'Industrial Weighbridge, Cold Extraction Lines & Stainless Tank Farm')}
           </span>
         </div>
         <Link
           href="/pressing-mill/dashboard"
           className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold transition shadow-xs"
         >
-          <span>Open Full Standalone Suite</span>
+          <span>{t('open_full_suite', 'Open Full Standalone Suite')}</span>
           <ExternalLink className="w-3 h-3" />
         </Link>
       </div>
