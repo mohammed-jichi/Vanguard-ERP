@@ -109,8 +109,9 @@ export default function LoginPage() {
     e.preventDefault();
     setToast({ show: false, message: '', type: 'info' });
 
+    const cleanCompanyId = companyId.trim();
     const cleanEmail = email.trim();
-    if (!cleanEmail || !password) {
+    if (!cleanCompanyId || !cleanEmail || !password) {
       showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
       return;
     }
@@ -132,12 +133,12 @@ export default function LoginPage() {
       const verifiedUserId = data.user.id;
       const verifiedEmail = data.user.email || cleanEmail;
 
-      // Securely store session access token cookies
+      // Securely store session access token cookies (session-scoped: no expires / no max-age)
       document.cookie = `sb-${verifiedUserId}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
       document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
 
       // Query user's assigned tenant & authorization role dynamically from Supabase
-      const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, companyId);
+      const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, cleanCompanyId);
 
       // Persist tenant session to cookies and client localStorage
       persistTenantSession(assignment);
@@ -365,6 +366,7 @@ export default function LoginPage() {
                 type="text"
                 value={companyId}
                 onChange={(e) => setCompanyId(e.target.value)}
+                required
                 placeholder="e.g. 1300, SO-OLIVE, or ADMIN"
                 className={`w-full px-5 py-4 rounded-xl border ${tenantPreview ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-slate-200/80'} bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold uppercase tracking-wider`}
               />
