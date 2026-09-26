@@ -841,9 +841,9 @@ export function ReportTableWrapper({
           <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
             <span className="font-medium">{displayDate}</span>
             <span className="font-bold text-center flex-1">
-              {periodText || subtitle || t('current_active_period', 'Current Active Period')}
+              {(periodText ? t(periodText, periodText) : '') || (subtitle ? t(subtitle, subtitle) : '') || t('current_active_period', 'Current Active Period')}
             </span>
-            <span className="font-medium">{pageInfo}</span>
+            <span className="font-medium">{pageInfo ? t(pageInfo, pageInfo) : ''}</span>
           </div>
 
           {/* ================================================================= */}
@@ -854,7 +854,7 @@ export function ReportTableWrapper({
           {/* Branch Subtitle & Ledger Source */}
           {branchInfo && (
             <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
-              <span>{branchInfo}</span>
+              <span>{branchInfo ? t(branchInfo, branchInfo) : ''}</span>
               <span className="font-mono text-slate-500">{t('system_source_ledger', 'System Source: Vanguard ERP Live Ledger')}</span>
             </div>
           )}

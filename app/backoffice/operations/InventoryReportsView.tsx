@@ -1569,17 +1569,17 @@ export default function AuthenticVanguardInventoryReports() {
                             {log.date}
                           </div>
                           <div className="font-mono text-xs text-slate-600 font-medium">
-                            {log.shift}
+                            {t(log.shift, log.shift)}
                           </div>
                         </td>
                         <td className="py-2 px-3">
                           <span className="inline-flex items-center gap-1 font-medium text-slate-800">
                             <Factory className="w-3.5 h-3.5 text-slate-400" />
-                            {log.line}
+                            {t(log.line, log.line)}
                           </span>
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {log.growerSource}
+                          {t(log.growerSource, log.growerSource)}
                         </td>
                         <td className="py-2 px-3 text-right font-mono font-medium text-slate-900">
                           {log.oliveIntakeKg.toLocaleString()} kg
@@ -1610,10 +1610,10 @@ export default function AuthenticVanguardInventoryReports() {
                           </span>
                         </td>
                         <td className="py-2 px-3 font-mono text-xs font-bold text-slate-800">
-                          {log.destinationTank}
+                          {t(log.destinationTank, log.destinationTank)}
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {log.operator}
+                          {t(log.operator, log.operator)}
                         </td>
                         <td className="py-2 px-3 text-center">
                           {renderStatusBadge(log.status)}
@@ -1677,12 +1677,12 @@ export default function AuthenticVanguardInventoryReports() {
                           {cycle.cycleCode}
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {cycle.line}
+                          {t(cycle.line, cycle.line)}
                         </td>
                         <td className="py-2 px-3 font-mono text-xs text-slate-600 font-medium">
                           {cycle.date}
                         </td>
-                        <td className="py-2 px-3 font-medium text-slate-800">{cycle.oliveVariety}</td>
+                        <td className="py-2 px-3 font-medium text-slate-800">{t(cycle.oliveVariety, cycle.oliveVariety)}</td>
                         <td className="py-2 px-3 text-right font-mono font-bold">
                           <span
                             className={
@@ -1704,7 +1704,7 @@ export default function AuthenticVanguardInventoryReports() {
                           {cycle.throughputKgHr.toLocaleString()} kg/h
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {cycle.operator}
+                          {t(cycle.operator, cycle.operator)}
                         </td>
                         <td className="py-2 px-3 text-center">
                           {renderStatusBadge(cycle.status)}
@@ -1769,10 +1769,10 @@ export default function AuthenticVanguardInventoryReports() {
                           {tank.id}
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {tank.tankName}
+                          {t(tank.tankName, tank.tankName)}
                         </td>
                         <td className="py-2 px-3 font-bold text-slate-800 text-xs">
-                          {tank.category}
+                          {t(tank.category, tank.category)}
                         </td>
                         <td className="py-2 px-3 text-right font-mono text-slate-900 font-medium">
                           {tank.capacityL.toLocaleString()} L
@@ -1866,13 +1866,13 @@ export default function AuthenticVanguardInventoryReports() {
                         </td>
                         <td className="py-2 px-3">
                           <div className="font-medium text-slate-800">
-                            {wo.itemDescription}
+                            {t(wo.itemDescription, wo.itemDescription)}
                           </div>
                           <div className="font-mono text-xs text-slate-600 font-medium">
                             {wo.itemSku}
                           </div>
                         </td>
-                        <td className="py-2 px-3 font-medium text-slate-800">{wo.line}</td>
+                        <td className="py-2 px-3 font-medium text-slate-800">{t(wo.line, wo.line)}</td>
                         <td className="py-2 px-3 text-right font-mono text-slate-900 font-medium">
                           {wo.targetUnits.toLocaleString()}
                         </td>
@@ -1893,7 +1893,7 @@ export default function AuthenticVanguardInventoryReports() {
                         <td className="py-2 px-3 font-mono text-xs text-slate-600 font-medium">
                           {wo.targetDate}
                         </td>
-                        <td className="py-2 px-3 font-medium text-slate-800">{wo.supervisor}</td>
+                        <td className="py-2 px-3 font-medium text-slate-800">{t(wo.supervisor, wo.supervisor)}</td>
                         <td className="py-2 px-3 text-center">
                           {renderPriorityBadge(wo.priority)}
                         </td>
@@ -1962,10 +1962,10 @@ export default function AuthenticVanguardInventoryReports() {
                           {run.time}
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {run.destination}
+                          {t(run.destination, run.destination)}
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {run.carrierDriver}
+                          {t(run.carrierDriver, run.carrierDriver)}
                         </td>
                         <td className="py-2 px-3 text-right font-mono font-medium text-slate-900">
                           {run.packagesCount} pkgs
@@ -1982,7 +1982,7 @@ export default function AuthenticVanguardInventoryReports() {
                           </span>
                         </td>
                         <td className="py-2 px-3 font-medium text-slate-800">
-                          {run.dispatcher}
+                          {t(run.dispatcher, run.dispatcher)}
                         </td>
                         <td className="py-2 px-3 text-center">
                           {renderStatusBadge(run.status)}
