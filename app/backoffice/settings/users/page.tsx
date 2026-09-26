@@ -20,6 +20,7 @@ import {
   Mail,
   Key,
   Edit2,
+  Pen,
   Trash2,
   Lock
 } from 'lucide-react';
@@ -105,6 +106,27 @@ export default function UsersSettingsPage() {
   const [newUserRole, setNewUserRole] = useState('POS Terminal Cashier');
   const [newUserBranch, setNewUserBranch] = useState('Choueifat Central Plant');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<EnterpriseUser | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(prev => (prev === msg ? null : prev));
+    }, 3500);
+  };
+
+  const handleStartEditUser = (user: EnterpriseUser) => {
+    setEditingUser({ ...user });
+  };
+
+  const handleSaveEditUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setUsers(prev => prev.map(u => (u.id === editingUser.id ? editingUser : u)));
+    const targetName = editingUser.name;
+    setEditingUser(null);
+    showToast(`Updated permissions & profile for ${targetName}`);
+  };
 
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,8 +147,7 @@ export default function UsersSettingsPage() {
     setIsAddUserModalOpen(false);
     setNewUserName('');
     setNewUserEmail('');
-    setToastMessage(`User ${newUser.name} created successfully! Temporary credentials dispatched.`);
-    setTimeout(() => setToastMessage(null), 4000);
+    showToast(`User ${newUser.name} created successfully! Temporary credentials dispatched.`);
   };
 
   const handleToggleStatus = (userId: string) => {
@@ -302,19 +323,19 @@ export default function UsersSettingsPage() {
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         type="button"
-                        onClick={() => alert(`Reset password link dispatched to ${user.email}`)}
+                        onClick={() => showToast(`Reset password link dispatched to ${user.email}`)}
                         title="Reset Password"
-                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                       >
                         <Lock className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"
-                        onClick={() => alert(`Editing permissions for ${user.name}`)}
+                        onClick={() => handleStartEditUser(user)}
                         title="Edit Permissions"
-                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                       >
-                        <Edit2 className="w-3.5 h-3.5" />
+                        <Pen className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
@@ -413,6 +434,128 @@ export default function UsersSettingsPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Edit User & Permissions Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" onClick={() => setEditingUser(null)} />
+          <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-md p-6 z-10 animate-zoomIn space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Pen className="w-4 h-4 text-primary" />
+                <h3 className="font-extrabold text-slate-900 text-sm">
+                  {t('edit_user_permissions', 'Edit User & Permissions')}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingUser(null)}
+                className="text-slate-400 hover:text-slate-700 text-sm p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditUser} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('full_name', 'Full Name')} *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingUser.name}
+                  onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:bg-white focus:border-primary text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('corporate_email', 'Corporate Email')} *</label>
+                <input
+                  type="email"
+                  required
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:bg-white focus:border-primary text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('assigned_role', 'Assigned Role')}</label>
+                <select
+                  value={editingUser.role}
+                  onChange={(e) => {
+                    const newRole = e.target.value;
+                    let badge = 'bg-blue-100 text-blue-800 border-blue-200';
+                    if (newRole.includes('Manager')) badge = 'bg-indigo-100 text-indigo-800 border-indigo-200';
+                    else if (newRole.includes('Pressing') || newRole.includes('Shift')) badge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                    else if (newRole.includes('Accountant')) badge = 'bg-amber-100 text-amber-800 border-amber-200';
+                    else if (newRole.includes('Driver')) badge = 'bg-purple-100 text-purple-800 border-purple-200';
+                    setEditingUser({ ...editingUser, role: newRole, roleBadge: badge });
+                  }}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:bg-white focus:border-primary text-slate-900"
+                >
+                  <option value="General Operations Manager">General Operations Manager</option>
+                  <option value="Pressing Mill Shift Lead">Pressing Mill Shift Lead</option>
+                  <option value="Chief Financial Accountant">Chief Financial Accountant</option>
+                  <option value="POS Terminal Cashier">POS Terminal Cashier</option>
+                  <option value="SuperSonic Fleet Driver Lead">SuperSonic Fleet Driver Lead</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('branch_facility', 'Branch / Facility')}</label>
+                <select
+                  value={editingUser.branch}
+                  onChange={(e) => setEditingUser({ ...editingUser, branch: e.target.value })}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:bg-white focus:border-primary text-slate-900"
+                >
+                  <option value="Choueifat Central Plant">Choueifat Central Plant</option>
+                  <option value="Choueifat Production Mill">Choueifat Production Mill</option>
+                  <option value="Beirut Corporate Hub">Beirut Corporate Hub</option>
+                  <option value="Choueifat Cashier Desk">Choueifat Cashier Desk</option>
+                  <option value="Distribution Fleet">Distribution Fleet</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('account_status', 'Account Status')}</label>
+                <select
+                  value={editingUser.status}
+                  onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as 'ACTIVE' | 'INACTIVE' })}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:bg-white focus:border-primary text-slate-900"
+                >
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                </select>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-100 cursor-pointer"
+                >
+                  {t('cancel', 'Cancel')}
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-xs cursor-pointer"
+                >
+                  {t('save_changes', 'Save Changes')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Non-blocking Toast Feedback */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs font-semibold flex items-center gap-2 animate-slideUp">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>
