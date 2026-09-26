@@ -22,7 +22,7 @@ export const DEFAULT_MASTER_TENANT = {
   name: 'منتوجات زيت وزيتون الجنوب',
   slug: 'southern-olive',
   brandNameAr: 'منتوجات زيت وزيتون الجنوب',
-  brandNameEn: 'Southern Olive Oil Products S.A.R.L',
+  brandNameEn: 'Southern Olive and Oil Products S.A.R.L',
   logoUrl: '/assets/images/logo.png',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
