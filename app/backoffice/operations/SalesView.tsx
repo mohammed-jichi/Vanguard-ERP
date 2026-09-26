@@ -51,6 +51,8 @@ import {
   Tag
 } from 'lucide-react';
 import DatePickerInput from '@/components/DatePickerInput';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 
 export interface SalesItem {
   id: string;
@@ -430,6 +432,7 @@ export default function AuthenticOmegaSalesWorkstation({
 }: {
   withOmegaSidebar?: boolean;
 }) {
+  const { currentTenant } = useTenant();
   // --- Sidebar State (when running in Standalone Omega layout) ---
   const [omegaSidebarCollapsed, setOmegaSidebarCollapsed] = useState(false);
   const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
@@ -808,6 +811,81 @@ export default function AuthenticOmegaSalesWorkstation({
   const [newReceiptAmount, setNewReceiptAmount] = useState('');
   const [newReceiptMethod, setNewReceiptMethod] = useState('Cash USD');
   const [newReceiptNotes, setNewReceiptNotes] = useState('');
+
+  // --- Customer Outstanding Invoices & Aging State ---
+  const [customerInvoices, setCustomerInvoices] = useState([
+    { id: 'INV-2026-08940', date: '06-Sep-2026', dueDate: '20-Sep-2026', total: 145.00, balanceDue: 145.00, agingDays: 1 },
+    { id: 'INV-2026-08870', date: '18-Aug-2026', dueDate: '01-Sep-2026', total: 280.00, balanceDue: 280.00, agingDays: 20 },
+    { id: 'INV-2026-08795', date: '10-Jul-2026', dueDate: '24-Jul-2026', total: 50.00, balanceDue: 50.00, agingDays: 58 },
+  ]);
+
+  const customerAgingSummary = useMemo(() => {
+    let b0_30 = 0;
+    let b31_60 = 0;
+    let b61_90 = 0;
+    let b90_plus = 0;
+
+    customerInvoices.forEach(inv => {
+      if (inv.balanceDue <= 0) return;
+      if (inv.agingDays <= 30) b0_30 += inv.balanceDue;
+      else if (inv.agingDays <= 60) b31_60 += inv.balanceDue;
+      else if (inv.agingDays <= 90) b61_90 += inv.balanceDue;
+      else b90_plus += inv.balanceDue;
+    });
+
+    const totalOutstanding = b0_30 + b31_60 + b61_90 + b90_plus;
+    return { b0_30, b31_60, b61_90, b90_plus, totalOutstanding };
+  }, [customerInvoices]);
+
+  // Hydrate Customer Receipts from Supabase & feature_flags
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data: dbPayments, error } = await supabase
+          .from('customer_payments')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && dbPayments && dbPayments.length > 0) {
+          const mapped = dbPayments.map((p: any) => ({
+            id: p.receipt_number || p.id,
+            date: new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            customerName: p.customer_name || 'Customer',
+            customerId: p.customer_id || 'CUST-001',
+            method: p.payment_method || 'Cash USD',
+            invoiceRef: p.reference_invoice || 'INV-2026-08942',
+            amount: Number(p.amount) || 0,
+            cleared: true
+          }));
+          setCustomerReceipts(prev => {
+            const existingIds = new Set(mapped.map((m: any) => m.id));
+            return [...mapped, ...prev.filter(p => !existingIds.has(p.id))];
+          });
+        } else {
+          const { data: tenantData } = await supabase
+            .from('tenants')
+            .select('feature_flags')
+            .eq('id', targetTenantId)
+            .maybeSingle();
+
+          const flags = tenantData?.feature_flags || {};
+          if (Array.isArray(flags.customer_payments) && flags.customer_payments.length > 0) {
+            setCustomerReceipts(prev => {
+              const existingIds = new Set(flags.customer_payments.map((m: any) => m.id));
+              return [...flags.customer_payments, ...prev.filter(p => !existingIds.has(p.id))];
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Customer receipts initial fetch notice:', err);
+      }
+    };
+    fetchPayments();
+  }, [currentTenant?.id]);
 
   // --- POS Reading (X/Z) State ---
   const [readingType, setReadingType] = useState<'X' | 'Z'>('X');
@@ -1343,7 +1421,7 @@ export default function AuthenticOmegaSalesWorkstation({
     setTimeout(() => setStatusNotice(null), 4000);
   };
 
-  const handleRecordCustomerReceipt = () => {
+  const handleRecordCustomerReceipt = async () => {
     const amt = parseFloat(newReceiptAmount);
     if (isNaN(amt) || amt <= 0) {
       alert('Please enter a valid receipt amount.');
@@ -1360,10 +1438,73 @@ export default function AuthenticOmegaSalesWorkstation({
       amount: amt,
       cleared: true
     };
+
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    try {
+      // 1. Direct write to public.customer_payments
+      const { error: dbError } = await supabase
+        .from('customer_payments')
+        .insert([{
+          tenant_id: targetTenantId,
+          customer_id: selectedCustomer.id || 'CUST-001',
+          customer_name: selectedCustomer.name || 'Miscellaneous Customer',
+          receipt_number: rctNum,
+          amount: amt,
+          payment_method: newReceiptMethod,
+          reference_invoice: invoiceNumber || 'INV-2026-08942',
+          notes: newReceiptNotes || 'Customer Receipt Settlement',
+          created_at: new Date().toISOString()
+        }]);
+
+      if (dbError) {
+        console.warn('Direct customer_payments insert notice, dual-persisting:', dbError.message);
+      }
+
+      // 2. Dual-persist to feature_flags
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetTenantId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || {};
+      const existingPayments = Array.isArray(existingFlags.customer_payments) ? existingFlags.customer_payments : [];
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            customer_payments: [newRct, ...existingPayments].slice(0, 100)
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetTenantId);
+
+    } catch (err: any) {
+      console.warn('Customer payment persistence notice:', err);
+    }
+
+    // 3. Clear customer balance and adjust aging buckets (0-30, 31-60, 61-90, 90+)
+    let remainingToClear = amt;
+    setCustomerInvoices((prev) =>
+      prev.map((inv) => {
+        if (remainingToClear <= 0 || inv.balanceDue <= 0) return inv;
+        const deduction = Math.min(inv.balanceDue, remainingToClear);
+        remainingToClear -= deduction;
+        return {
+          ...inv,
+          balanceDue: Math.max(0, inv.balanceDue - deduction)
+        };
+      })
+    );
+
     setCustomerReceipts((prev) => [newRct, ...prev]);
     setNewReceiptAmount('');
     setNewReceiptNotes('');
-    setStatusNotice(`Payment Receipt ${rctNum} recorded ($${amt.toFixed(2)}) for ${selectedCustomer.name}`);
+    setStatusNotice(`Payment Receipt ${rctNum} recorded ($${amt.toFixed(2)}) & aging balance cleared for ${selectedCustomer.name}`);
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
@@ -4890,7 +5031,9 @@ export default function AuthenticOmegaSalesWorkstation({
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Outstanding Debt</span>
-                  <span className="text-lg font-mono font-extrabold text-red-600">$475.00 USD</span>
+                  <span className="text-lg font-mono font-extrabold text-red-600">
+                    ${customerAgingSummary.totalOutstanding.toFixed(2)} USD
+                  </span>
                 </div>
               </div>
 
@@ -4898,23 +5041,25 @@ export default function AuthenticOmegaSalesWorkstation({
               <div className="grid grid-cols-4 gap-2.5">
                 <div className="bg-emerald-50 border border-emerald-200 rounded p-2.5 text-center">
                   <span className="text-[10px] text-emerald-800 font-semibold block uppercase">0 - 30 Days</span>
-                  <span className="text-sm font-mono font-bold text-emerald-900">$280.00</span>
+                  <span className="text-sm font-mono font-bold text-emerald-900">${customerAgingSummary.b0_30.toFixed(2)}</span>
                   <span className="text-[9px] text-emerald-600 block mt-0.5">Current / On Time</span>
                 </div>
                 <div className="bg-blue-50 border border-blue-200 rounded p-2.5 text-center">
                   <span className="text-[10px] text-blue-800 font-semibold block uppercase">31 - 60 Days</span>
-                  <span className="text-sm font-mono font-bold text-blue-900">$145.00</span>
+                  <span className="text-sm font-mono font-bold text-blue-900">${customerAgingSummary.b31_60.toFixed(2)}</span>
                   <span className="text-[9px] text-blue-600 block mt-0.5">Follow-up due</span>
                 </div>
                 <div className="bg-amber-50 border border-amber-200 rounded p-2.5 text-center">
                   <span className="text-[10px] text-amber-800 font-semibold block uppercase">61 - 90 Days</span>
-                  <span className="text-sm font-mono font-bold text-amber-900">$50.00</span>
+                  <span className="text-sm font-mono font-bold text-amber-900">${customerAgingSummary.b61_90.toFixed(2)}</span>
                   <span className="text-[9px] text-amber-600 block mt-0.5">Overdue Warning</span>
                 </div>
                 <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
                   <span className="text-[10px] text-slate-500 font-semibold block uppercase">&gt; 90 Days</span>
-                  <span className="text-sm font-mono font-bold text-slate-700">$0.00</span>
-                  <span className="text-[9px] text-slate-400 block mt-0.5">No Bad Debts</span>
+                  <span className="text-sm font-mono font-bold text-slate-700">${customerAgingSummary.b90_plus.toFixed(2)}</span>
+                  <span className="text-[9px] text-slate-400 block mt-0.5">
+                    {customerAgingSummary.b90_plus > 0 ? 'Action Required' : 'No Bad Debts'}
+                  </span>
                 </div>
               </div>
 
@@ -4934,30 +5079,30 @@ export default function AuthenticOmegaSalesWorkstation({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      <tr>
-                        <td className="py-2 px-2.5 font-mono font-bold text-slate-800">INV-2026-08940</td>
-                        <td className="py-2 px-2 text-slate-600">06-Sep-2026</td>
-                        <td className="py-2 px-2 text-slate-600">20-Sep-2026</td>
-                        <td className="py-2 px-2 text-right font-mono">$145.00</td>
-                        <td className="py-2 px-2 text-right font-mono font-bold text-slate-900">$145.00</td>
-                        <td className="py-2 px-2 text-center"><span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded">1 day</span></td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-2.5 font-mono font-bold text-slate-800">INV-2026-08870</td>
-                        <td className="py-2 px-2 text-slate-600">18-Aug-2026</td>
-                        <td className="py-2 px-2 text-slate-600">01-Sep-2026</td>
-                        <td className="py-2 px-2 text-right font-mono">$280.00</td>
-                        <td className="py-2 px-2 text-right font-mono font-bold text-slate-900">$280.00</td>
-                        <td className="py-2 px-2 text-center"><span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded">20 days</span></td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-2.5 font-mono font-bold text-slate-800">INV-2026-08795</td>
-                        <td className="py-2 px-2 text-slate-600">10-Jul-2026</td>
-                        <td className="py-2 px-2 text-slate-600">24-Jul-2026</td>
-                        <td className="py-2 px-2 text-right font-mono">$50.00</td>
-                        <td className="py-2 px-2 text-right font-mono font-bold text-amber-700">$50.00</td>
-                        <td className="py-2 px-2 text-center"><span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded">58 days</span></td>
-                      </tr>
+                      {customerInvoices.map((inv) => (
+                        <tr key={inv.id}>
+                          <td className="py-2 px-2.5 font-mono font-bold text-slate-800">{inv.id}</td>
+                          <td className="py-2 px-2 text-slate-600">{inv.date}</td>
+                          <td className="py-2 px-2 text-slate-600">{inv.dueDate}</td>
+                          <td className="py-2 px-2 text-right font-mono">${inv.total.toFixed(2)}</td>
+                          <td className="py-2 px-2 text-right font-mono font-bold text-slate-900">
+                            ${inv.balanceDue.toFixed(2)}
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                              inv.balanceDue <= 0
+                                ? 'bg-slate-100 text-slate-500'
+                                : inv.agingDays <= 30
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : inv.agingDays <= 60
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {inv.balanceDue <= 0 ? 'Settled' : `${inv.agingDays} days`}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

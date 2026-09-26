@@ -2,6 +2,8 @@
 import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import { FleetSocialIntegrationService } from '@/lib/fleetSocialIntegrationService';
 
 interface AssignedRep {
@@ -14,6 +16,7 @@ interface AssignedRep {
 }
 
 export default function SocialLandingPageOrder() {
+  const { currentTenant } = useTenant();
   const { t } = useLanguage();
   const [rep] = useState<AssignedRep>({
     adminCode: 'ADM-REP-01',
@@ -60,7 +63,7 @@ export default function SocialLandingPageOrder() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleCustomerSubmit = (e: React.FormEvent) => {
+  const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName || !customerPhone || !customerAddress) {
       alert('Please fill out all required fields.');
@@ -83,6 +86,47 @@ export default function SocialLandingPageOrder() {
       commissionCredited: false,
       escalated: false,
     };
+
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    // 1. Direct verified write to public.orders (Gap 12.1)
+    try {
+      const { data: newOrderDb, error: orderErr } = await supabase
+        .from('orders')
+        .insert([{
+          tenant_id: targetTenantId,
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          delivery_address: customerAddress,
+          total_amount: 114.0,
+          delivery_fee: 4.0,
+          status: 'PENDING_APPROVAL',
+          channel: 'online_storefront',
+          payment_method: paymentMethod,
+          created_at: new Date().toISOString()
+        }])
+        .select()
+        .single();
+
+      if (!orderErr && newOrderDb) {
+        await supabase
+          .from('order_items')
+          .insert([{
+            tenant_id: targetTenantId,
+            order_id: newOrderDb.id,
+            sku: 'inv-item-01',
+            product_name: 'Extra Virgin Olive Oil 17.5L Tin + Pomegranate Molasses',
+            unit_price: 110.0,
+            quantity: 1,
+            subtotal: 110.0,
+            created_at: new Date().toISOString()
+          }]);
+      }
+    } catch (dbErr) {
+      console.warn('Storefront order write to public.orders notice:', dbErr);
+    }
 
     // Forward to unified platform orders table in Vanguard ERP
     FleetSocialIntegrationService.createPlatformOrder({

@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Award,
   Crown,
@@ -307,6 +309,10 @@ export default function UnifiedLoyaltyManagementConsole() {
     }
   }, [rawSection]);
 
+  const { currentTenant } = useTenant();
+  const [members, setMembers] = useState<LoyaltyMember[]>(INITIAL_MEMBERS);
+  const [logs, setLogs] = useState<PointsTransactionLog[]>(INITIAL_LOGS);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [tierFilter, setTierFilter] = useState('ALL');
   const [selectedMember, setSelectedMember] = useState<LoyaltyMember | null>(null);
@@ -328,9 +334,229 @@ export default function UnifiedLoyaltyManagementConsole() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Hydrate Loyalty Members & Ledger from Supabase
+  useEffect(() => {
+    const fetchLoyaltyData = async () => {
+      try {
+        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        // 1. Fetch live loyalty members from public.loyalty_members
+        const { data: dbMembers, error: membersError } = await supabase
+          .from('loyalty_members')
+          .select('*')
+          .order('points', { ascending: false });
+
+        if (!membersError && dbMembers && dbMembers.length > 0) {
+          const mappedMembers: LoyaltyMember[] = dbMembers.map((m: any) => ({
+            id: m.id,
+            cardNumber: m.card_number,
+            title: m.title || 'Mr.',
+            firstName: m.first_name,
+            lastName: m.last_name,
+            phone: m.phone || '',
+            email: m.email || '',
+            group: m.group_name || 'Retail',
+            tier: m.tier || 'BRONZE',
+            points: m.points || 0,
+            cashbackUsd: m.cashback_usd ? Number(m.cashback_usd) : Number(((m.points || 0) * 0.01).toFixed(2)),
+            joinedDate: m.created_at ? m.created_at.split('T')[0] : '2026-01-01',
+            status: m.status || 'ACTIVE'
+          }));
+          setMembers(mappedMembers);
+        } else {
+          const { data: tenantData } = await supabase
+            .from('tenants')
+            .select('feature_flags')
+            .eq('id', targetTenantId)
+            .maybeSingle();
+
+          const flags = tenantData?.feature_flags || {};
+          if (Array.isArray(flags.loyalty_members) && flags.loyalty_members.length > 0) {
+            setMembers(flags.loyalty_members);
+          }
+        }
+
+        // 2. Fetch live logs from public.loyalty_ledger
+        const { data: dbLedger, error: ledgerError } = await supabase
+          .from('loyalty_ledger')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!ledgerError && dbLedger && dbLedger.length > 0) {
+          const mappedLogs: PointsTransactionLog[] = dbLedger.map((l: any) => ({
+            txId: l.id ? `PTX-${l.id.slice(0, 6)}` : `PTX-${Date.now()}`,
+            memberId: l.member_id || 'MEM-001',
+            memberName: l.reference_notes || 'Loyalty Member',
+            type: (l.transaction_type || 'PURCHASE_ACCRUAL') as any,
+            pointsDelta: l.points_delta || 0,
+            usdEquivalent: Number(l.usd_equivalent) || 0,
+            cashierSource: l.cashier_source || 'Central POS',
+            date: l.created_at ? l.created_at.replace('T', ' ').slice(0, 16) : new Date().toISOString(),
+            balanceAfter: l.balance_after || 0
+          }));
+          setLogs(prev => {
+            const existingIds = new Set(mappedLogs.map(m => m.txId));
+            return [...mappedLogs, ...prev.filter(p => !existingIds.has(p.txId))];
+          });
+        }
+      } catch (err) {
+        console.warn('Loyalty live query notice:', err);
+      }
+    };
+    fetchLoyaltyData();
+  }, [currentTenant?.id]);
+
+  // Points Adjustment Handler
+  const handleConfirmPointsAdjustment = async () => {
+    if (!adjustPointsModal) return;
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    const newPoints = Math.max(0, adjustPointsModal.points + adjustPointsAmount);
+    const newTier = newPoints >= 12000 ? 'PLATINUM' : newPoints >= 8000 ? 'GOLD' : newPoints >= 4000 ? 'SILVER' : 'BRONZE';
+    const newCashback = Number((newPoints * 0.01).toFixed(2));
+
+    try {
+      await supabase.from('loyalty_ledger').insert([{
+        tenant_id: targetTenantId,
+        member_id: adjustPointsModal.id,
+        card_number: adjustPointsModal.cardNumber,
+        transaction_type: adjustPointsAmount >= 0 ? 'BONUS' : 'ADJUSTMENT',
+        points_delta: adjustPointsAmount,
+        usd_equivalent: Number((adjustPointsAmount * 0.01).toFixed(2)),
+        reference_notes: adjustPointsReason,
+        balance_after: newPoints,
+        created_at: new Date().toISOString()
+      }]);
+
+      await supabase.from('loyalty_members').upsert([{
+        id: adjustPointsModal.id,
+        tenant_id: targetTenantId,
+        card_number: adjustPointsModal.cardNumber,
+        first_name: adjustPointsModal.firstName,
+        last_name: adjustPointsModal.lastName,
+        tier: newTier,
+        points: newPoints,
+        cashback_usd: newCashback,
+        updated_at: new Date().toISOString()
+      }]);
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetTenantId)
+        .maybeSingle();
+
+      const flags = tenantData?.feature_flags || {};
+      const existingMembers = Array.isArray(flags.loyalty_members) ? flags.loyalty_members : members;
+      const updatedMembers = existingMembers.map((m: any) =>
+        m.id === adjustPointsModal.id
+          ? { ...m, points: newPoints, tier: newTier, cashbackUsd: newCashback }
+          : m
+      );
+
+      await supabase.from('tenants').update({
+        feature_flags: {
+          ...flags,
+          loyalty_members: updatedMembers
+        },
+        updated_at: new Date().toISOString()
+      }).eq('id', targetTenantId);
+
+    } catch (err) {
+      console.warn('Points adjustment persistence notice:', err);
+    }
+
+    setMembers(prev => prev.map(m => m.id === adjustPointsModal.id ? { ...m, points: newPoints, tier: newTier as any, cashbackUsd: newCashback } : m));
+    setLogs(prev => [
+      {
+        txId: `PTX-${Date.now().toString().slice(-4)}`,
+        memberId: adjustPointsModal.id,
+        memberName: `${adjustPointsModal.firstName} ${adjustPointsModal.lastName}`,
+        type: adjustPointsAmount >= 0 ? 'BONUS' : 'ADJUSTMENT',
+        pointsDelta: adjustPointsAmount,
+        usdEquivalent: Number((adjustPointsAmount * 0.01).toFixed(2)),
+        cashierSource: adjustCashierSource,
+        date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        balanceAfter: newPoints
+      } as any,
+      ...prev
+    ]);
+
+    showToast(t('points_adjusted_success_toast', `Successfully adjusted points for member ${adjustPointsModal.cardNumber} (New Tier: ${newTier})!`));
+    setAdjustPointsModal(null);
+  };
+
+  // Reward Voucher Issuance Handler
+  const handleIssueRewardVoucher = async () => {
+    if (!issueRewardModal) return;
+    const targetMember = members.find(m => m.id === selectedRewardMember);
+    if (!targetMember) return;
+    if (targetMember.points < issueRewardModal.pointsCost) {
+      showToast(t('insufficient_points_error', 'Insufficient points to redeem this reward!'));
+      return;
+    }
+
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    const newPoints = targetMember.points - issueRewardModal.pointsCost;
+    const newTier = newPoints >= 12000 ? 'PLATINUM' : newPoints >= 8000 ? 'GOLD' : newPoints >= 4000 ? 'SILVER' : 'BRONZE';
+    const newCashback = Number((newPoints * 0.01).toFixed(2));
+
+    try {
+      await supabase.from('loyalty_ledger').insert([{
+        tenant_id: targetTenantId,
+        member_id: targetMember.id,
+        card_number: targetMember.cardNumber,
+        transaction_type: 'GIFT_REDEMPTION',
+        points_delta: -issueRewardModal.pointsCost,
+        usd_equivalent: -issueRewardModal.dollarValue,
+        reference_notes: `Redeemed Voucher: ${issueRewardModal.name}`,
+        balance_after: newPoints,
+        created_at: new Date().toISOString()
+      }]);
+
+      await supabase.from('loyalty_members').upsert([{
+        id: targetMember.id,
+        tenant_id: targetTenantId,
+        card_number: targetMember.cardNumber,
+        points: newPoints,
+        tier: newTier,
+        cashback_usd: newCashback,
+        updated_at: new Date().toISOString()
+      }]);
+    } catch (err) {
+      console.warn('Voucher issuance persistence notice:', err);
+    }
+
+    setMembers(prev => prev.map(m => m.id === targetMember.id ? { ...m, points: newPoints, tier: newTier as any, cashbackUsd: newCashback } : m));
+    setLogs(prev => [
+      {
+        txId: `PTX-${Date.now().toString().slice(-4)}`,
+        memberId: targetMember.id,
+        memberName: `${targetMember.firstName} ${targetMember.lastName}`,
+        type: 'GIFT_REDEMPTION',
+        pointsDelta: -issueRewardModal.pointsCost,
+        usdEquivalent: -issueRewardModal.dollarValue,
+        cashierSource: 'Rewards Desk',
+        date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        balanceAfter: newPoints
+      } as any,
+      ...prev
+    ]);
+
+    showToast(t('voucher_issued_success_toast', `Voucher issued successfully for member ${targetMember.firstName} ${targetMember.lastName}!`));
+    setIssueRewardModal(null);
+  };
+
   // Filtered members
   const filteredMembers = useMemo(() => {
-    return INITIAL_MEMBERS.filter(m => {
+    return members.filter(m => {
       const matchSearch =
         m.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         m.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -339,7 +565,7 @@ export default function UnifiedLoyaltyManagementConsole() {
       const matchTier = tierFilter === 'ALL' || m.tier === tierFilter;
       return matchSearch && matchTier;
     });
-  }, [searchQuery, tierFilter]);
+  }, [members, searchQuery, tierFilter]);
 
   // Export handlers
   const handleExportPDF = () => {
@@ -731,7 +957,7 @@ export default function UnifiedLoyaltyManagementConsole() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-mono">
-                  {INITIAL_LOGS.map(log => (
+                  {logs.map(log => (
                     <tr key={log.txId} className="hover:bg-slate-50 transition">
                       <td className="py-3 px-3.5 font-bold text-primary">{log.txId}</td>
                       <td className="py-3 px-3.5 text-slate-600">{log.memberId}</td>
@@ -1015,10 +1241,7 @@ export default function UnifiedLoyaltyManagementConsole() {
                 {t('cancel', 'Cancel')}
               </button>
               <button
-                onClick={() => {
-                  showToast(t('points_adjusted_success_toast', `Successfully adjusted points for member ${adjustPointsModal.cardNumber}!`));
-                  setAdjustPointsModal(null);
-                }}
+                onClick={handleConfirmPointsAdjustment}
                 className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-xs font-bold transition shadow-xs cursor-pointer"
               >
                 {t('confirm_points_adjustment', 'Confirm Points Adjustment')}
@@ -1054,7 +1277,7 @@ export default function UnifiedLoyaltyManagementConsole() {
                 onChange={(e) => setSelectedRewardMember(e.target.value)}
                 className="w-full p-2 border border-slate-200 rounded-lg bg-white font-semibold cursor-pointer"
               >
-                {INITIAL_MEMBERS.map(m => (
+                {members.map(m => (
                   <option key={m.id} value={m.id}>
                     {m.firstName} {m.lastName} ({m.cardNumber}) • {m.points.toLocaleString()} PTS available
                   </option>
@@ -1070,10 +1293,7 @@ export default function UnifiedLoyaltyManagementConsole() {
                 {t('cancel', 'Cancel')}
               </button>
               <button
-                onClick={() => {
-                  showToast(t('voucher_issued_success_toast', `Voucher issued successfully for member ${selectedRewardMember}!`));
-                  setIssueRewardModal(null);
-                }}
+                onClick={handleIssueRewardVoucher}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
               >
                 <Check className="w-4 h-4" />

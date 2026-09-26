@@ -16,6 +16,8 @@ import { useLanguage } from '@/lib/LanguageContext';
  */
 
 import React, { useState, useRef } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Truck,
   CheckCircle2,
@@ -96,6 +98,7 @@ export default function SuperSonicFleetManager({
   onBack
 }: SuperSonicFleetManagerProps) {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
 
   // 1. DRIVER PROFILE & SHIFT TELEMETRY STATE
   const [driverProfile, setDriverProfile] = useState<DriverProfile>({
@@ -426,16 +429,107 @@ ${trackingLink}`;
   };
 
   // SUBMIT OUTCOME ACTION (Delivered / Rejected / Postponed)
-  const submitOrderOutcome = (outcome: DeliveryOutcome) => {
+  const submitOrderOutcome = async (outcome: DeliveryOutcome) => {
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
     const canvas = canvasRef.current;
     const dataUrl = canvas ? canvas.toDataURL('image/png') : '';
+    let cloudSigUrl = dataUrl;
+
+    if (outcome === 'Delivered' || outcome === 'Rejected') {
+      try {
+        if (canvas) {
+          const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+          if (blob) {
+            const fileName = `pod-signatures/pod-${selectedOrder.id}-${Date.now()}.png`;
+            const { data: storageData, error: storageErr } = await supabase.storage
+              .from('organization-media')
+              .upload(fileName, blob, { contentType: 'image/png', upsert: true });
+
+            if (!storageErr && storageData) {
+              const { data: publicUrlData } = supabase.storage
+                .from('organization-media')
+                .getPublicUrl(fileName);
+              if (publicUrlData?.publicUrl) {
+                cloudSigUrl = publicUrlData.publicUrl;
+              }
+            }
+          }
+        }
+      } catch (storageErr) {
+        console.warn('Storage upload notice, falling back to data URL:', storageErr);
+      }
+
+      try {
+        // Direct database update to public.orders (Gap 9.1)
+        await supabase
+          .from('orders')
+          .update({
+            status: outcome === 'Delivered' ? 'Delivered' : 'Rejected',
+            delivery_status: outcome === 'Delivered' ? 'Delivered' : 'Rejected',
+            signature_url: cloudSigUrl,
+            pod_signature: cloudSigUrl,
+            collected_cash_usd: outcome === 'Delivered' ? selectedOrder.amountUsd : (outcome === 'Rejected' ? 5.00 : 0),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', selectedOrder.id);
+
+        // Record collected cash into driver run sheets in public.driver_run_sheets
+        await supabase
+          .from('driver_run_sheets')
+          .insert([{
+            tenant_id: targetTenantId,
+            driver_id: driverProfile.id,
+            driver_name: driverProfile.name,
+            order_id: selectedOrder.id,
+            order_number: selectedOrder.orderNumber,
+            customer_name: selectedOrder.customerName,
+            collected_usd: outcome === 'Delivered' ? selectedOrder.amountUsd : (outcome === 'Rejected' ? 5.00 : 0),
+            collected_lbp: outcome === 'Delivered' ? selectedOrder.amountLbp : 0,
+            payment_method: 'COD',
+            signature_url: cloudSigUrl,
+            status: outcome.toUpperCase(),
+            created_at: new Date().toISOString()
+          }]);
+
+        // Dual-persist to feature_flags
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetTenantId)
+          .maybeSingle();
+
+        const flags = tenantData?.feature_flags || {};
+        const runSheets = Array.isArray(flags.driver_run_sheets) ? flags.driver_run_sheets : [];
+        await supabase.from('tenants').update({
+          feature_flags: {
+            ...flags,
+            driver_run_sheets: [{
+              id: `drs-${Date.now()}`,
+              driverId: driverProfile.id,
+              driverName: driverProfile.name,
+              orderId: selectedOrder.id,
+              orderNumber: selectedOrder.orderNumber,
+              collectedUsd: outcome === 'Delivered' ? selectedOrder.amountUsd : 0,
+              signatureUrl: cloudSigUrl,
+              status: outcome,
+              timestamp: new Date().toISOString()
+            }, ...runSheets].slice(0, 100)
+          },
+          updated_at: new Date().toISOString()
+        }).eq('id', targetTenantId);
+      } catch (dbErr) {
+        console.warn('Supersonic fleet orders update notice:', dbErr);
+      }
+    }
 
     setOrders(prev => prev.map((ord, idx) => {
       if (ord.id === selectedOrder.id) {
         return {
           ...ord,
           outcome,
-          podSignature: (outcome === 'Delivered' || outcome === 'Rejected') ? dataUrl : undefined,
+          podSignature: (outcome === 'Delivered' || outcome === 'Rejected') ? cloudSigUrl : undefined,
           rejectionReason: outcome === 'Rejected' ? rejectionReasonInput : undefined,
           postponedReason: outcome === 'Postponed' ? postponedReasonInput : undefined,
           rejectionFeeCollectedUsd: outcome === 'Rejected' ? 5.00 : 0

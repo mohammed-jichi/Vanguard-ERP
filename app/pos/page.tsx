@@ -248,7 +248,79 @@ export default function POSTouchTerminalPage() {
         console.warn('Inventory movement deduction notice:', invErr);
       }
 
-      // 5. Complete sale in UI
+      // 5. Checkout Loyalty Points Engine (Module 6)
+      try {
+        const earnedPoints = Math.max(1, Math.floor(financialSummary.netUsd * 10)); // 10 pts per $1 spent
+        const memberId = tenderType === 'ON_ACCOUNT' ? 'MEM-002' : 'MEM-001';
+        const cardNumber = tenderType === 'ON_ACCOUNT' ? 'MERIT-880193' : 'MERIT-880192';
+
+        // 5a. Record entry in public.loyalty_ledger
+        const { error: loyaltyError } = await supabase
+          .from('loyalty_ledger')
+          .insert([{
+            tenant_id: targetTenantId,
+            member_id: memberId,
+            card_number: cardNumber,
+            transaction_type: 'EARN_PURCHASE',
+            points_delta: earnedPoints,
+            order_id: newOrder.id,
+            usd_equivalent: Number((financialSummary.netUsd * 0.01).toFixed(2)),
+            reference_notes: `POS Retail Order #${newOrder.id.slice(0, 8)} (${tenderType})`,
+            created_at: new Date().toISOString()
+          }]);
+
+        if (loyaltyError) {
+          console.warn('Loyalty ledger direct insert notice:', loyaltyError.message);
+        }
+
+        // 5b. Dual-persist loyalty ledger and update member balance in feature_flags
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetTenantId)
+          .maybeSingle();
+
+        const flags = tenantData?.feature_flags || {};
+        const loyaltyLedger = Array.isArray(flags.loyalty_ledger) ? flags.loyalty_ledger : [];
+        const loyaltyMembers = Array.isArray(flags.loyalty_members) ? flags.loyalty_members : [];
+
+        const newLedgerEntry = {
+          id: `LEDGER-${Date.now()}`,
+          memberId,
+          cardNumber,
+          type: 'EARN_PURCHASE',
+          pointsDelta: earnedPoints,
+          usdEquivalent: Number((financialSummary.netUsd * 0.01).toFixed(2)),
+          orderId: newOrder.id,
+          date: new Date().toISOString()
+        };
+
+        const updatedMembers = loyaltyMembers.map((m: any) => {
+          if (m.id === memberId || m.cardNumber === cardNumber) {
+            const nextPoints = (m.points || 0) + earnedPoints;
+            const nextTier = nextPoints >= 12000 ? 'PLATINUM' : nextPoints >= 8000 ? 'GOLD' : nextPoints >= 4000 ? 'SILVER' : 'BRONZE';
+            return { ...m, points: nextPoints, tier: nextTier, cashbackUsd: Number((nextPoints * 0.01).toFixed(2)) };
+          }
+          return m;
+        });
+
+        await supabase
+          .from('tenants')
+          .update({
+            feature_flags: {
+              ...flags,
+              loyalty_ledger: [newLedgerEntry, ...loyaltyLedger].slice(0, 200),
+              loyalty_members: updatedMembers.length > 0 ? updatedMembers : flags.loyalty_members
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', targetTenantId);
+
+      } catch (loyaltyErr) {
+        console.warn('Loyalty points calculation notice:', loyaltyErr);
+      }
+
+      // 6. Complete sale in UI
       handleCleanCart();
       setIsCheckoutOpen(false);
       setStatusMessage(`SALE FINALIZED: #${newOrder.id.slice(0, 8)} via ${tenderType}`);

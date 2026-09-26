@@ -3,6 +3,8 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Truck,
   CheckCircle2,
@@ -140,6 +142,7 @@ const INITIAL_STOPS: DriverStop[] = [
 
 export default function VDriverApp() {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -365,6 +368,31 @@ export default function VDriverApp() {
       const canvas = canvasRef.current;
       const signatureData = canvas ? canvas.toDataURL('image/png') : 'data:image/svg+xml;utf8,<svg></svg>';
       const signatureSvg = `<svg viewBox="0 0 100 40"><path d="M10 20 Q 30 5 50 20 T 90 20" stroke="#10b981" fill="none"/></svg>`;
+      let cloudSignatureUrl = signatureData;
+
+      // Upload signature PNG directly to Supabase Storage bucket 'organization-media' (Gap 9.1)
+      try {
+        if (canvas) {
+          const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+          if (blob) {
+            const fileName = `pod-signatures/pod-${selectedStopForAction.id}-${Date.now()}.png`;
+            const { data: uploadData, error: uploadErr } = await supabase.storage
+              .from('organization-media')
+              .upload(fileName, blob, { contentType: 'image/png', upsert: true });
+
+            if (!uploadErr && uploadData) {
+              const { data: urlData } = supabase.storage
+                .from('organization-media')
+                .getPublicUrl(fileName);
+              if (urlData?.publicUrl) {
+                cloudSignatureUrl = urlData.publicUrl;
+              }
+            }
+          }
+        }
+      } catch (storageErr) {
+        console.warn('Storage upload notice, falling back to signature data:', storageErr);
+      }
 
       // Update Stop State in UI
       setStops((prev) =>
@@ -377,7 +405,7 @@ export default function VDriverApp() {
                 paymentUsd: inputUsd,
                 paymentWhish: inputWhish,
                 whishProofUrl: inputWhish > 0 ? 'whish_proof_attached.jpg' : undefined,
-                customerSignatureSvg: signatureSvg,
+                customerSignatureSvg: cloudSignatureUrl,
                 synced: isOnline,
               }
             : s
@@ -398,6 +426,46 @@ export default function VDriverApp() {
         signatureSvg,
         timestamp: new Date().toISOString(),
       };
+
+      const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      try {
+        // Direct database update to public.orders (Gap 9.1)
+        await supabase
+          .from('orders')
+          .update({
+            status: 'Delivered',
+            delivery_status: 'Delivered',
+            signature_url: cloudSignatureUrl,
+            pod_signature: cloudSignatureUrl,
+            collected_cash_usd: inputUsd + inputWhish,
+            collected_cash_lbp: inputLbp,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', selectedStopForAction.id);
+
+        // Record collected cash into driver run sheets (public.driver_run_sheets)
+        await supabase
+          .from('driver_run_sheets')
+          .insert([{
+            tenant_id: targetTenantId,
+            driver_id: driverId,
+            driver_name: driverName,
+            order_id: selectedStopForAction.id,
+            order_number: selectedStopForAction.orderNo,
+            customer_name: selectedStopForAction.customerName,
+            collected_usd: inputUsd + inputWhish,
+            collected_lbp: inputLbp,
+            payment_method: inputWhish > 0 ? 'WHISH' : 'COD',
+            signature_url: cloudSignatureUrl,
+            status: 'DELIVERED',
+            created_at: new Date().toISOString()
+          }]);
+      } catch (dbErr) {
+        console.warn('Direct order and run sheet update notice:', dbErr);
+      }
 
       if (isOnline) {
         try {
