@@ -566,57 +566,20 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 3: PURCHASING & PROCUREMENT
-            =================================================================== */}
-        {isModuleEnabled('purchasing') && (
-        <div>
-          <button
-            onClick={() => { ensureOpen(); toggleGroup('purchasing'); }}
-            title={t('purchases', '3. Purchasing & Procurement')}
-            className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['purchasing'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
-              <Package className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && (
-                <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('purchases', '3. Purchasing & Procurement')}</span>
-                  <span className="bg-amber-100 text-amber-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('po', 'PO')}</span>
-                </span>
-              )}
-            </div>
-            {isOpen && (expandedGroups['purchasing'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
-          </button>
-
-          {isOpen && expandedGroups['purchasing'] && (
-            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/purchases" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold">{t('purchases_ap_bills', 'Purchases & AP Bills')}</Link>
-              <Link href="/purchase-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('purchase_orders', 'Purchase Orders')}</Link>
-              <Link href="/backoffice/operations?section=reorder_guide" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('reorder_guide', 'Reorder Guide')}</Link>
-              <Link href="/receiving-of-goods" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('goods_receiving_grn', 'Goods Receiving (GRN)')}</Link>
-              <Link href="/backoffice/operations?section=suppliers" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('suppliers_directory', 'Suppliers Directory')}</Link>
-              <Link href="/backoffice/operations?section=reports" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded text-emerald-700 font-medium">{t('procurement_reports', 'Procurement Reports')}</Link>
-            </div>
-          )}
-        </div>
-        )}
-
-        {/* ===================================================================
-            MODULE 4: CUSTOMER MANAGEMENT (CRM)
+            MODULE 3: CUSTOMER MANAGEMENT
             =================================================================== */}
         {(isModuleEnabled('customers') || isModuleEnabled('feedback') || isModuleEnabled('loyalty')) && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('cust'); }}
-            title={t('crm_debtors', '4. Customer Management (CRM)')}
+            title={t('crm_debtors', '3. Customer Management')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['cust'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
               <Users className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('crm_debtors', '4. Customer Management (CRM)')}</span>}
+              {isOpen && <span className="truncate font-semibold">{t('crm_debtors', '3. Customer Management')}</span>}
             </div>
             {isOpen && (expandedGroups['cust'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
@@ -656,6 +619,7 @@ export default function Sidebar({
                     <Link href="/backoffice/loyalty?section=loyalty_levels" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_levels', 'Loyalty Levels')}</Link>
                     <Link href="/backoffice/loyalty?section=loyalty_programs" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_programs', 'Loyalty Programs')}</Link>
                     <Link href="/backoffice/loyalty?section=send_messages" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('send_messages', 'Send Messages')}</Link>
+                    <Link href="/backoffice/loyalty?section=company_info" className="block p-1 hover:text-primary hover:bg-slate-50 rounded font-medium text-amber-800">{t('company_info', 'Company Info')}</Link>
                   </div>
                 )}
               </div>
@@ -680,6 +644,27 @@ export default function Sidebar({
                     <Link href="/backoffice/feedback?section=add_complaints" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('add_complaints', 'Add Complaint')}</Link>
                     <Link href="/backoffice/feedback?section=manage_surveys" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('manage_surveys', 'Manage Surveys')}</Link>
                     <Link href="/backoffice/feedback?section=send_survey_emails" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('send_survey_emails', 'Send Survey Emails')}</Link>
+
+                    {/* Feedback Setup */}
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup('cm_fb_setup')}
+                        className="w-full flex items-center justify-between p-1 text-slate-700 hover:text-primary hover:bg-slate-50 rounded font-semibold text-xs transition-colors cursor-pointer"
+                      >
+                        <span>{t('feedback_setup', 'Feedback Setup')}</span>
+                        <span className="text-[9px] text-primary">{expandedGroups['cm_fb_setup'] ? '▲' : '▼'}</span>
+                      </button>
+                      {expandedGroups['cm_fb_setup'] && (
+                        <div className="ms-2 ps-2 border-s border-blue-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                          <Link href="/backoffice/feedback?section=complaint_sources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_resources', 'Complaint Resources')}</Link>
+                          <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_categories', 'Complaint Categories')}</Link>
+                          <Link href="/backoffice/feedback?section=complaint_action_types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_action_types', 'Complaint Action Type')}</Link>
+                          <Link href="/backoffice/feedback?section=customer_care" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customer_care', 'Customer Care')}</Link>
+                          <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('survey_setup', 'Survey Setup')}</Link>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -699,8 +684,7 @@ export default function Sidebar({
                     <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_groups', 'Customer Groups')}</Link>
                     <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_categories', 'Customer Categories')}</Link>
                     <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_tags', 'Customer Tags')}</Link>
-                    <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_categories', 'Complaint Resources & Categories')}</Link>
-                    <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('surveys_setup', 'Survey Setup')}</Link>
+                    <Link href="/backoffice/customers?section=leads_settings" className="block p-1 hover:text-primary hover:bg-slate-50 rounded font-medium text-blue-700">{t('leads_settings', 'Leads Settings')}</Link>
                   </div>
                 )}
               </div>
@@ -710,20 +694,20 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 7: ACCOUNTING & FINANCIALS
+            MODULE 4: ACCOUNTING & FINANCIALS
             =================================================================== */}
         {isModuleEnabled('accounting') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('acc'); }}
-            title={t('accounting_finance', '7. Accounting & Financials')}
+            title={t('accounting_finance', '4. Accounting & Financials')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['acc'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
               <FileSpreadsheet className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('accounting_finance', '7. Accounting & Financials')}</span>}
+              {isOpen && <span className="truncate font-semibold">{t('accounting_finance', '4. Accounting & Financials')}</span>}
             </div>
             {isOpen && (expandedGroups['acc'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
@@ -1049,20 +1033,20 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 8: HUMAN RESOURCES & PAYROLL
+            MODULE 5: HUMAN RESOURCES & PAYROLL
             =================================================================== */}
         {isModuleEnabled('hr') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('hr'); }}
-            title={t('hr_payroll', '8. Human Resources & Payroll')}
+            title={t('hr_payroll', '5. Human Resources & Payroll')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['hr'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
               <UserCheck className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('hr_payroll', '8. Human Resources & Payroll')}</span>}
+              {isOpen && <span className="truncate font-semibold">{t('hr_payroll', '5. Human Resources & Payroll')}</span>}
             </div>
             {isOpen && (expandedGroups['hr'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
@@ -1135,13 +1119,13 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 9: SUPERSONIC FLEET / V-DRIVER
+            MODULE 6: SUPERSONIC FLEET MANAGEMENT
             =================================================================== */}
         {isModuleEnabled('fleet') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
-            title={t('supersonic_fleet', '9. Supersonic Fleet / V-Driver')}
+            title={t('supersonic_fleet', '6. Supersonic Fleet Management')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               (expandedGroups['supersonic'] || expandedGroups['fleet']) ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
@@ -1150,7 +1134,7 @@ export default function Sidebar({
               <Truck className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('supersonic_fleet', '9. Supersonic Fleet / V-Driver')}</span>
+                  <span>{t('supersonic_fleet', '6. Supersonic Fleet Management')}</span>
                   <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">{t('pro', 'PRO')}</span>
                 </span>
               )}
@@ -1180,13 +1164,13 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 10: V-CONNECT (SOCIAL CRM) & LEAD PIPELINE
+            MODULE 7: V-CONNECT (SOCIAL CRM & SUPPORT)
             =================================================================== */}
         {isModuleEnabled('social') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('social'); }}
-            title={t('social_crm', '10. V-Connect (Social CRM)')}
+            title={t('social_crm', '7. V-Connect (Social CRM & Support)')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['social'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
@@ -1195,7 +1179,7 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('social_crm', '10. V-Connect (Social CRM)')}</span>
+                  <span>{t('social_crm', '7. V-Connect (Social CRM & Support)')}</span>
                   <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('connect', 'CONNECT')}</span>
                 </span>
               )}
@@ -1227,13 +1211,13 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 11: PRESSING MILL ENGINE (MANUFACTURING)
+            MODULE 8: PRESSING MILL ENGINE (MANUFACTURING)
             =================================================================== */}
         {isModuleEnabled('pressing-mill') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('pressing-mill'); }}
-            title={t('pressing_mill_nav', '11. Pressing Mill Engine')}
+            title={t('pressing_mill_nav', '8. Pressing Mill Engine (Manufacturing)')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               (expandedGroups['pressing-mill'] || expandedGroups['pressing']) ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
@@ -1242,7 +1226,7 @@ export default function Sidebar({
               <Scale className="w-4 h-4 text-emerald-600 shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('pressing_mill_nav', '11. Pressing Mill Engine')}</span>
+                  <span>{t('pressing_mill_nav', '8. Pressing Mill Engine (Manufacturing)')}</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('mill', 'MILL')}</span>
                 </span>
               )}
@@ -1358,13 +1342,13 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 12: V-STORE (ONLINE STOREFRONT & E-COMMERCE)
+            MODULE 9: V-STORE (ONLINE STOREFRONT & E-COMMERCE)
             =================================================================== */}
         {isModuleEnabled('v-store') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('v-store'); }}
-            title={t('online_orders', '12. V-Store (Online Storefront)')}
+            title={t('online_orders', '9. V-Store (Online Storefront)')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               (expandedGroups['v-store'] || expandedGroups['store']) ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
@@ -1373,7 +1357,7 @@ export default function Sidebar({
               <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('online_orders', '12. V-Store (Online Storefront)')}</span>
+                  <span>{t('online_orders', '9. V-Store (Online Storefront)')}</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('web', 'WEB')}</span>
                 </span>
               )}

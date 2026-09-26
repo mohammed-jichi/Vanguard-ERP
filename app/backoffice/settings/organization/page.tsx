@@ -27,6 +27,7 @@ import {
   Minus
 } from 'lucide-react';
 import LicenseActivationCertificateModal from '@/components/LicenseActivationCertificateModal';
+import { SOUTHERN_OLIVE_OFFICIAL_LICENSE } from '@/lib/TenantContext';
 
 interface LicenseModuleItem {
   id: string;
@@ -36,6 +37,9 @@ interface LicenseModuleItem {
   allocatedQty: string;
   status: 'ACTIVE' | 'LICENSED';
   description: string;
+  tier?: string;
+  renewalDate?: string;
+  duration?: string;
 }
 
 interface HeadOfficeRecord {
@@ -189,7 +193,7 @@ export default function OrganizationSettingsPage() {
   };
 
   const handleCopyKey = () => {
-    navigator.clipboard.writeText('VANGUARD-PERPETUAL-SO-OLIVE-2026-988421');
+    navigator.clipboard.writeText(SOUTHERN_OLIVE_OFFICIAL_LICENSE.licenseKey);
     setCopiedKey(true);
     setTimeout(() => setCopiedKey(false), 2500);
   };
@@ -203,6 +207,9 @@ export default function OrganizationSettingsPage() {
       licenseCount: '1',
       allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires',
       description: 'Multi-currency dual-ledger engine, automated PCA & IFRS fiscal chart of accounts, tax return generators, and balance sheet auditing.',
     },
     {
@@ -212,6 +219,9 @@ export default function OrganizationSettingsPage() {
       licenseCount: '1',
       allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires',
       description: 'Master controllership console, multi-tenant workspace routing, cross-departmental operations inbox, and executive BI analytics.',
     },
     {
@@ -221,6 +231,9 @@ export default function OrganizationSettingsPage() {
       licenseCount: '1',
       allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires',
       description: 'Real-time multi-depot stock balance, olive oil tank volume tracking, batch formulation assembly, and automated reorder triggers.',
     },
     {
@@ -230,6 +243,9 @@ export default function OrganizationSettingsPage() {
       licenseCount: '1',
       allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires',
       description: 'Enterprise commercial distribution, B2B wholesale quotation lifecycle, van sales dispatch, and credit limit validations.',
     },
     {
@@ -239,6 +255,9 @@ export default function OrganizationSettingsPage() {
       licenseCount: '4',
       allocatedQty: '4 Workstations / Unlimited Ent.',
       status: 'ACTIVE',
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires',
       description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.',
     },
   ]);
@@ -748,13 +767,16 @@ export default function OrganizationSettingsPage() {
           {/* Top License Overview Banner */}
           <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono text-[10px] font-bold uppercase tracking-wider">
                   ENTERPRISE ACTIVE
                 </span>
                 <span className="text-emerald-400 text-xs font-bold flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Perpetual 5-Year Contract
+                  Perpetual Enterprise License
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
+                  Lifetime Perpetual (Never Expires)
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-extrabold text-white">
@@ -907,17 +929,17 @@ export default function OrganizationSettingsPage() {
                                     </div>
                                   </div>
 
-                                  {/* Renewal Date */}
+                                  {/* Renewal Date / Validity Duration */}
                                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
                                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
                                       <Calendar className="w-3 h-3 text-emerald-600" />
-                                      <span>Renewal Date</span>
+                                      <span>Renewal Date / Duration</span>
                                     </span>
                                     <div className="font-bold text-xs text-emerald-800 font-mono">
-                                      20 Sep, 2031
+                                      Lifetime Perpetual
                                     </div>
                                     <div className="text-[9.5px] text-emerald-600 font-semibold">
-                                      (5-Year Enterprise Plan)
+                                      (Perpetual / Never Expires)
                                     </div>
                                   </div>
                                 </div>

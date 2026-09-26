@@ -66,7 +66,9 @@ import {
   HelpCircle,
   Share2,
   Navigation,
-  Scale
+  Scale,
+  Globe,
+  Headphones
 } from 'lucide-react';
 
 export interface NavSubItem {
@@ -90,7 +92,7 @@ export const navigationConfig: NavItem[] = [
   // 1. SALES CONTROL
   // ==========================================
   {
-    title: 'Sales Control',
+    title: '1. Sales Control',
     icon: ShoppingBag,
     items: [
       { title: 'Dashboard', href: '/sales-control/dashboard', icon: LayoutDashboard },
@@ -129,7 +131,7 @@ export const navigationConfig: NavItem[] = [
   // 2. OPERATIONS CENTER
   // ==========================================
   {
-    title: 'Operations Center',
+    title: '2. Operations Center',
     icon: Boxes,
     items: [
       { title: 'Dashboard', href: '/operations-center/dashboard', icon: LayoutDashboard },
@@ -214,7 +216,7 @@ export const navigationConfig: NavItem[] = [
   // 3. CUSTOMER MANAGEMENT
   // ==========================================
   {
-    title: 'Customer Management',
+    title: '3. Customer Management',
     icon: Users,
     items: [
       // Core Directory & Accounts
@@ -237,7 +239,8 @@ export const navigationConfig: NavItem[] = [
           { title: 'Members', href: '/backoffice/loyalty?section=members', icon: Users },
           { title: 'Loyalty Levels', href: '/backoffice/loyalty?section=loyalty_levels', icon: Layers },
           { title: 'Loyalty Programs', href: '/backoffice/loyalty?section=loyalty_programs', icon: Bookmark },
-          { title: 'Send Messages', href: '/backoffice/loyalty?section=send_messages', icon: Send }
+          { title: 'Send Messages', href: '/backoffice/loyalty?section=send_messages', icon: Send },
+          { title: 'Company Info', href: '/backoffice/loyalty?section=company_info', icon: Building2 }
         ]
       },
 
@@ -251,7 +254,19 @@ export const navigationConfig: NavItem[] = [
           { title: 'Manage Complaints', href: '/backoffice/feedback?section=manage_complaints', icon: CheckSquare },
           { title: 'Add Complaint', href: '/backoffice/feedback?section=add_complaints', icon: AlertOctagon },
           { title: 'Manage Surveys', href: '/backoffice/feedback?section=manage_surveys', icon: ClipboardList },
-          { title: 'Send Survey Emails', href: '/backoffice/feedback?section=send_survey_emails', icon: Send }
+          { title: 'Send Survey Emails', href: '/backoffice/feedback?section=send_survey_emails', icon: Send },
+          {
+            title: 'Setup',
+            href: '/backoffice/feedback?section=complaint_sources',
+            icon: Settings,
+            items: [
+              { title: 'Complaint Resources', href: '/backoffice/feedback?section=complaint_sources', icon: Bookmark },
+              { title: 'Complaint Categories', href: '/backoffice/feedback?section=complaint_categories', icon: ListFilter },
+              { title: 'Complaint Action Types', href: '/backoffice/feedback?section=complaint_action_types', icon: SlidersHorizontal },
+              { title: 'Customer Care', href: '/backoffice/feedback?section=customer_care', icon: Headphones },
+              { title: 'Survey Setup', href: '/backoffice/feedback?section=surveys_setup', icon: Settings }
+            ]
+          }
         ]
       },
 
@@ -264,18 +279,17 @@ export const navigationConfig: NavItem[] = [
           { title: 'Customer Groups', href: '/backoffice/customers?section=groups', icon: FolderTree },
           { title: 'Customer Categories', href: '/backoffice/customers?section=categories', icon: ListFilter },
           { title: 'Customer Tags', href: '/backoffice/customers?section=tags', icon: Tag },
-          { title: 'Complaint Resources & Categories', href: '/backoffice/feedback?section=complaint_categories', icon: Bookmark },
-          { title: 'Survey Setup', href: '/backoffice/feedback?section=surveys_setup', icon: SlidersHorizontal }
+          { title: 'Leads Settings', href: '/backoffice/customers?section=leads_settings', icon: SlidersHorizontal }
         ]
       }
     ]
   },
 
   // ==========================================
-  // 6. ACCOUNTING
+  // 4. ACCOUNTING & FINANCIALS
   // ==========================================
   {
-    title: 'Accounting',
+    title: '4. Accounting & Financials',
     icon: BookOpen,
     items: [
       { title: 'Dashboard', href: '/accounting/dashboard', icon: LayoutDashboard },
@@ -334,10 +348,10 @@ export const navigationConfig: NavItem[] = [
   },
 
   // ==========================================
-  // 7. HUMAN RESOURCES
+  // 5. HUMAN RESOURCES & PAYROLL
   // ==========================================
   {
-    title: 'Human Resources',
+    title: '5. Human Resources & Payroll',
     icon: Users,
     items: [
       { title: 'Schedule Overview', href: '/hr/schedule-overview', icon: CalendarDays },
@@ -380,10 +394,10 @@ export const navigationConfig: NavItem[] = [
   },
 
   // ==========================================
-  // 8. SUPERSONIC FLEET MANAGEMENT (RETAINED)
+  // 6. SUPERSONIC FLEET MANAGEMENT
   // ==========================================
   {
-    title: 'Supersonic Fleet Management',
+    title: '6. Supersonic Fleet Management',
     icon: Navigation,
     items: [
       { title: 'Fleet Dashboard', href: '/supersonic/dashboard', icon: LayoutDashboard },
@@ -398,10 +412,10 @@ export const navigationConfig: NavItem[] = [
   },
 
   // ==========================================
-  // 9. V-CONNECT (SOCIAL CRM & SUPPORT)
+  // 7. V-CONNECT (SOCIAL CRM & SUPPORT)
   // ==========================================
   {
-    title: '9. V-Connect (Social CRM & Support)',
+    title: '7. V-Connect (Social CRM & Support)',
     icon: Share2,
     items: [
       { title: 'V-Connect Hub', href: '/connect', icon: MessageSquare },
@@ -416,10 +430,10 @@ export const navigationConfig: NavItem[] = [
   },
 
   // ==========================================
-  // 10. PRESSING MILL (STANDALONE MODULE)
+  // 8. PRESSING MILL ENGINE (MANUFACTURING)
   // ==========================================
   {
-    title: '10. Pressing Mill',
+    title: '8. Pressing Mill Engine (Manufacturing)',
     icon: Scale,
     href: '/pressing-mill/dashboard',
     path: '/pressing-mill',
@@ -434,6 +448,19 @@ export const navigationConfig: NavItem[] = [
       { title: 'Direct Counter Sales & POS', href: '/pressing-mill/pos', path: '/pressing-mill/pos', icon: ShoppingCart },
       { title: 'Directory & Ledgers', href: '/pressing-mill/directory', path: '/pressing-mill/directory', icon: BookOpen },
       { title: 'Mill Settings & Line Config', href: '/pressing-mill/setup', path: '/pressing-mill/setup', icon: Settings }
+    ]
+  },
+
+  // ==========================================
+  // 9. V-STORE (ONLINE STOREFRONT)
+  // ==========================================
+  {
+    title: '9. V-Store (Online Storefront)',
+    icon: Globe,
+    href: '/backoffice/online-orders',
+    items: [
+      { title: 'Online Orders', href: '/backoffice/online-orders', icon: ShoppingCart },
+      { title: 'Customer Storefront', href: '/landing', icon: Globe }
     ]
   }
 ];

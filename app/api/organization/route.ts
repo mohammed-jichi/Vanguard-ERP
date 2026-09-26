@@ -92,7 +92,7 @@ export async function GET(request: Request) {
       // fallback
     }
 
-    const licenseModules = data.feature_flags?.license_modules || [
+    const licenseModules = (data.feature_flags?.license_modules || [
       {
         id: 'core-accounting',
         name: 'Vanguard Core Accounting',
@@ -100,6 +100,9 @@ export async function GET(request: Request) {
         licenseCount: '1',
         allocatedQty: '1 Workstation / Unlimited Ent.',
         status: 'ACTIVE',
+        tier: 'Perpetual Enterprise License',
+        renewalDate: 'Lifetime Perpetual',
+        duration: 'Perpetual / Never Expires',
         description: 'Multi-currency dual-ledger engine, automated PCA & IFRS fiscal chart of accounts, tax return generators, and balance sheet auditing.'
       },
       {
@@ -109,6 +112,9 @@ export async function GET(request: Request) {
         licenseCount: '1',
         allocatedQty: '1 Workstation / Unlimited Ent.',
         status: 'ACTIVE',
+        tier: 'Perpetual Enterprise License',
+        renewalDate: 'Lifetime Perpetual',
+        duration: 'Perpetual / Never Expires',
         description: 'Master controllership console, multi-tenant workspace routing, cross-departmental operations inbox, and executive BI analytics.'
       },
       {
@@ -118,6 +124,9 @@ export async function GET(request: Request) {
         licenseCount: '1',
         allocatedQty: '1 Workstation / Unlimited Ent.',
         status: 'ACTIVE',
+        tier: 'Perpetual Enterprise License',
+        renewalDate: 'Lifetime Perpetual',
+        duration: 'Perpetual / Never Expires',
         description: 'Real-time multi-depot stock balance, olive oil tank volume tracking, batch formulation assembly, and automated reorder triggers.'
       },
       {
@@ -127,6 +136,9 @@ export async function GET(request: Request) {
         licenseCount: '1',
         allocatedQty: '1 Workstation / Unlimited Ent.',
         status: 'ACTIVE',
+        tier: 'Perpetual Enterprise License',
+        renewalDate: 'Lifetime Perpetual',
+        duration: 'Perpetual / Never Expires',
         description: 'Enterprise commercial distribution, B2B wholesale quotation lifecycle, van sales dispatch, and credit limit validations.'
       },
       {
@@ -136,13 +148,24 @@ export async function GET(request: Request) {
         licenseCount: '4',
         allocatedQty: '4 Workstations / Unlimited Ent.',
         status: 'ACTIVE',
+        tier: 'Perpetual Enterprise License',
+        renewalDate: 'Lifetime Perpetual',
+        duration: 'Perpetual / Never Expires',
         description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.'
       }
-    ];
+    ]).map((mod: any) => ({
+      ...mod,
+      tier: 'Perpetual Enterprise License',
+      renewalDate: 'Lifetime Perpetual',
+      duration: 'Perpetual / Never Expires'
+    }));
 
     const responseData = {
       ...data,
       license_modules: licenseModules,
+      license_tier: 'Perpetual Enterprise License',
+      validity: 'Lifetime Perpetual',
+      renewal_date: 'Lifetime Perpetual',
       metrics: {
         brandsCount,
         branchesCount,
