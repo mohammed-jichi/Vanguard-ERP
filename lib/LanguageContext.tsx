@@ -65,6 +65,9 @@ export interface LanguageContextType {
 
 const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   en: {
+    'show_password': "Show password",
+    'hide_password': "Hide password",
+
     'disbursing': "Disbursing...",
     'approve_and_disburse_payroll': "Approve & Disburse Payroll",
     'payroll_disbursed_badge': "Payroll Disbursed & Posted to General Ledger",
@@ -4660,6 +4663,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   ar: {
+    'show_password': "إظهار كلمة المرور",
+    'hide_password': "إخفاء كلمة المرور",
+
     'disbursing': "جارٍ الصرف والتسجيل...",
     'approve_and_disburse_payroll': "اعتماد وصرف كشوف المرتبات",
     'payroll_disbursed_badge': "تم صرف الرواتب وترحيل قيود اليومية العامة",
@@ -9255,6 +9261,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fr: {
+    'show_password': "Afficher le mot de passe",
+    'hide_password': "Masquer le mot de passe",
+
     'disbursing': "Décaissement en cours...",
     'approve_and_disburse_payroll': "Approuver et décaisser la paie",
     'payroll_disbursed_badge': "Paie décaissée et comptabilisée au grand livre",
@@ -13849,6 +13858,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   es: {
+    'show_password': "Mostrar contraseña",
+    'hide_password': "Ocultar contraseña",
+
     'disbursing': "Desembolsando...",
     'approve_and_disburse_payroll': "Aprobar y desembolsar nómina",
     'payroll_disbursed_badge': "Nómina desembolsada y contabilizada en el libro mayor",
@@ -18443,6 +18455,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fa: {
+    'show_password': "نمایش رمز عبور",
+    'hide_password': "پنهان کردن رمز عبور",
+
     'disbursing': "در حال پرداخت...",
     'approve_and_disburse_payroll': "تأیید و پرداخت حقوق",
     'payroll_disbursed_badge': "حقوق پرداخت شد و در دفتر کل ثبت گردید",

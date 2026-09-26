@@ -506,10 +506,12 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           localStorage.setItem('vanguard_activation_license', JSON.stringify(SOUTHERN_OLIVE_OFFICIAL_LICENSE));
         }
 
-        // Restore user role & identity ONLY if active session cookie is present
+        // Restore user role & identity ONLY if active Supabase session token is present
         const hasSessionCookie = typeof document !== 'undefined' && document.cookie.split(';').some(c => {
           const [n, v] = c.trim().split('=');
-          return (n === 'so_authenticated' && (v === 'true' || v === '1')) || (n === 'vanguard_auth_session' && Boolean(v));
+          if (!v) return false;
+          return (n.startsWith('sb-') && (n.endsWith('-auth-token') || n.includes('token') || n.includes('auth'))) ||
+            n === 'sb-access-token' || n === 'sb-refresh-token' || n === 'supabase-auth-token';
         });
 
         if (hasSessionCookie) {

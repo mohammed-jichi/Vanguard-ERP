@@ -173,17 +173,18 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     return () => clearInterval(keepAliveTimer);
   }, []);
 
-  const { isSuperAdmin } = useTenant();
+  const { isSuperAdmin, currentUser } = useTenant();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const role = localStorage.getItem('vanguard_user_role');
       const isImp = localStorage.getItem('vanguard_is_impersonating') === 'true';
-      if (role === 'SUPER_ADMIN' || isImp || isSuperAdmin) {
+      if ((isImp || isSuperAdmin) && currentUser?.role === 'SUPER_ADMIN') {
         setIsSuperAdminImpersonating(true);
+      } else {
+        setIsSuperAdminImpersonating(false);
       }
     }
-  }, [isSuperAdmin]);
+  }, [isSuperAdmin, currentUser]);
 
   // Determine if the current route belongs to a specific module (out of 12 canonical modules)
   const getRouteModuleKey = (path: string, section?: string | null): string | null => {
@@ -325,15 +326,6 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           <div className="flex items-center gap-2">
             <Link
               href="/admin"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem('vanguard_user_role', 'SUPER_ADMIN');
-                  localStorage.setItem('vanguard_is_super_admin', 'true');
-                  document.cookie = 'vanguard_user_role=SUPER_ADMIN; path=/; SameSite=Lax';
-                  document.cookie = 'vanguard_is_super_admin=true; path=/; SameSite=Lax';
-                  document.cookie = 'so_authenticated=true; path=/; SameSite=Lax';
-                }
-              }}
               className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-black shadow transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer"
             >
               <span>Return to Admin Console (/admin) ↩</span>

@@ -87,10 +87,12 @@ export function hasClientSession(): boolean {
   if (typeof document === 'undefined') return false;
   return document.cookie.split(';').some((c) => {
     const [name, val] = c.trim().split('=');
+    if (!val) return false;
     return (
-      (name === 'so_authenticated' && (val === 'true' || val === '1')) ||
-      (name === 'vanguard_auth_session' && Boolean(val)) ||
-      (name === 'sb-access-token' && Boolean(val))
+      (name.startsWith('sb-') && (name.endsWith('-auth-token') || name.includes('token') || name.includes('auth'))) ||
+      name === 'sb-access-token' ||
+      name === 'sb-refresh-token' ||
+      name === 'supabase-auth-token'
     );
   });
 }

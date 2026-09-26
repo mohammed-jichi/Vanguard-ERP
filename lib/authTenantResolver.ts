@@ -185,20 +185,37 @@ export async function resolveUserTenantAndRole(
   // =========================================================================
   const isExplicitAdminCode = upperCompanyCode === 'ADMIN' || upperCompanyCode === 'MASTER' || upperCompanyCode === 'VANGUARD';
   if (isExplicitAdminCode) {
-    return {
-      userId,
-      email: normalizedEmail || 'admin@vanguard-erp.com',
-      fullName: 'System Owner / Super Admin',
-      role: 'SUPER_ADMIN',
-      isSuperAdmin: true,
-      tenantId: DEFAULT_MASTER_TENANT.id,
-      tenantName: DEFAULT_MASTER_TENANT.name,
-      tenantSlug: DEFAULT_MASTER_TENANT.slug,
-      brandNameAr: DEFAULT_MASTER_TENANT.brandNameAr,
-      brandNameEn: DEFAULT_MASTER_TENANT.brandNameEn,
-      logoUrl: DEFAULT_MASTER_TENANT.logoUrl,
-      companyCode: 'ADMIN'
-    };
+    let isAuthorizedSuperAdmin = isKnownSuperAdminEmail;
+
+    if (!isAuthorizedSuperAdmin && userId) {
+      try {
+        const { data: prof } = await withTimeout(
+          supabase.from('profiles').select('role, full_name').eq('id', userId).maybeSingle()
+        );
+        if (prof?.role === 'SUPER_ADMIN') {
+          isAuthorizedSuperAdmin = true;
+        }
+      } catch (e) {
+        // silent
+      }
+    }
+
+    if (isAuthorizedSuperAdmin) {
+      return {
+        userId,
+        email: normalizedEmail || 'admin@vanguard-erp.com',
+        fullName: 'System Owner / Super Admin',
+        role: 'SUPER_ADMIN',
+        isSuperAdmin: true,
+        tenantId: DEFAULT_MASTER_TENANT.id,
+        tenantName: DEFAULT_MASTER_TENANT.name,
+        tenantSlug: DEFAULT_MASTER_TENANT.slug,
+        brandNameAr: DEFAULT_MASTER_TENANT.brandNameAr,
+        brandNameEn: DEFAULT_MASTER_TENANT.brandNameEn,
+        logoUrl: DEFAULT_MASTER_TENANT.logoUrl,
+        companyCode: 'ADMIN'
+      };
+    }
   }
 
   // =========================================================================

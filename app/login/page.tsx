@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Sparkles, X, CheckCircle2, ArrowRight } from "lucide-react";
+import { Sparkles, X, CheckCircle2, ArrowRight, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/lib/LanguageContext";
 import { supabase } from "@/lib/supabaseClient";
 import { resolveUserTenantAndRole, persistTenantSession, getPostLoginDestination, getTenantPreview } from "@/lib/authTenantResolver";
 
@@ -21,6 +22,17 @@ export default function LoginPage() {
     tenantId: string;
   } | null>(null);
   const [isResolvingTenant, setIsResolvingTenant] = useState(false);
+  const { t } = useLanguage();
+  const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'error' | 'success' | 'info' }>({
+    show: false,
+    message: '',
+    type: 'info'
+  });
+
+  const showToast = (message: string, type: 'error' | 'success' | 'info' = 'error') => {
+    setToast({ show: true, message, type });
+  };
 
   // Demo Request Modal State
   const [showDemoModal, setShowDemoModal] = useState(false);
@@ -95,25 +107,37 @@ export default function LoginPage() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setToast({ show: false, message: '', type: 'info' });
+
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !password) {
+      showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      let authUserId: string | undefined;
-      if (email && password) {
-        try {
-          const { data } = await supabase.auth.signInWithPassword({ email, password });
-          if (data?.session) {
-            authUserId = data.session.user.id;
-            document.cookie = `sb-${data.session.user.id}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
-            document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
-          }
-        } catch (supaErr) {
-          console.warn("Supabase auth fallback:", supaErr);
-        }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: password,
+      });
+
+      if (error || !data?.user || !data?.session) {
+        setIsLoading(false);
+        showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
+        return;
       }
 
+      const verifiedUserId = data.user.id;
+      const verifiedEmail = data.user.email || cleanEmail;
+
+      // Securely store session access token cookies
+      document.cookie = `sb-${verifiedUserId}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
+      document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
+
       // Query user's assigned tenant & authorization role dynamically from Supabase
-      const assignment = await resolveUserTenantAndRole(email, authUserId, companyId);
+      const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, companyId);
 
       // Persist tenant session to cookies and client localStorage
       persistTenantSession(assignment);
@@ -125,9 +149,10 @@ export default function LoginPage() {
       const target = getPostLoginDestination(assignment, redirectUrl);
 
       window.location.href = target;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login processing error:", err);
       setIsLoading(false);
+      showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
     }
   };
 
@@ -295,6 +320,31 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* TOAST ALERT FEEDBACK */}
+          {toast.show && (
+            <div
+              role="alert"
+              className={`p-3.5 rounded-xl border flex items-center gap-3 text-sm animate-fadeIn transition-all ${
+                toast.type === 'error'
+                  ? 'bg-rose-50 border-rose-200 text-rose-800'
+                  : toast.type === 'success'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : 'bg-blue-50 border-blue-200 text-blue-800'
+              }`}
+            >
+              <AlertCircle className={`w-5 h-5 shrink-0 ${toast.type === 'error' ? 'text-rose-600' : 'text-blue-600'}`} />
+              <span className="flex-1 font-semibold">{toast.message}</span>
+              <button
+                type="button"
+                onClick={() => setToast({ show: false, message: '', type: 'info' })}
+                className="p-1 hover:bg-black/5 rounded-lg text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                aria-label="Dismiss error"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleSignIn} className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
@@ -343,14 +393,28 @@ export default function LoginPage() {
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
                 <Link href="/forgot-password" target="_blank" className="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot password?</Link>
               </div>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold tracking-widest"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-5 py-4 pe-12 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold tracking-wider"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? t('hide_password', 'Hide password') : t('show_password', 'Show password')}
+                  className="absolute end-3.5 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#123b70] rounded-lg cursor-pointer flex items-center justify-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" aria-hidden="true" />
+                  ) : (
+                    <Eye className="w-5 h-5" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button

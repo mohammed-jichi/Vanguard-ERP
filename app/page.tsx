@@ -25,12 +25,7 @@ export default async function RootEntryPage() {
       name === 'supabase-auth-token' ||
       name.startsWith('sb:token');
 
-    const isAppAuth =
-      (name === 'so_authenticated' && (val === 'true' || val === '1')) ||
-      (name === 'vanguard_auth_session' && val.length > 0) ||
-      (name === 'vanguard_token' && val.length > 0);
-
-    return isSupabase || isAppAuth;
+    return isSupabase;
   });
 
   if (isAuthenticated) {

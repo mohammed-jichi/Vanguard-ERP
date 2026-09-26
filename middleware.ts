@@ -38,7 +38,7 @@ function hasActiveAuthSession(request: NextRequest): boolean {
     const val = cookie.value?.trim();
     if (!val) return false;
 
-    // 1. Supabase Auth Cookies: sb-<ref>-auth-token, sb-access-token, supabase-auth-token
+    // Strict Supabase Auth Tokens
     const isSupabaseCookie =
       (name.startsWith('sb-') && (name.endsWith('-auth-token') || name.includes('token') || name.includes('auth'))) ||
       name === 'sb-access-token' ||
@@ -46,13 +46,7 @@ function hasActiveAuthSession(request: NextRequest): boolean {
       name === 'supabase-auth-token' ||
       name.startsWith('sb:token');
 
-    // 2. Vanguard Application Session Cookies
-    const isVanguardAppCookie =
-      (name === 'so_authenticated' && (val === 'true' || val === '1')) ||
-      (name === 'vanguard_auth_session' && val.length > 0) ||
-      (name === 'vanguard_token' && val.length > 0);
-
-    return isSupabaseCookie || isVanguardAppCookie;
+    return isSupabaseCookie;
   });
 }
 
@@ -126,34 +120,31 @@ export function middleware(request: NextRequest) {
   const isSuperAdminFlag = request.cookies.get('vanguard_is_super_admin')?.value === 'true';
   const companyCode = request.cookies.get('vanguard_company_code')?.value?.toUpperCase();
   const sessionEmail = request.cookies.get('vanguard_auth_session')?.value?.toLowerCase();
-  const isSuperAdminEmail = Boolean(sessionEmail && (
-    sessionEmail.includes('admin') ||
-    sessionEmail.includes('jichi') ||
-    sessionEmail.includes('mohammed') ||
-    [
-      'mohammed@vanguard-erp.com',
-      'admin@vanguard.com',
-      'superadmin@vanguard-erp.com',
-      'jichi@vanguard-erp.com'
-    ].includes(sessionEmail)
-  ));
+  const VERIFIED_SUPER_ADMIN_EMAILS = [
+    'mohammed@vanguard-erp.com',
+    'admin@vanguard.com',
+    'superadmin@vanguard-erp.com',
+    'jichi@vanguard-erp.com'
+  ];
+  const isSuperAdminEmail = Boolean(sessionEmail && VERIFIED_SUPER_ADMIN_EMAILS.includes(sessionEmail));
 
   // Explicit platform super admin flag for default landing routing
   const isExplicitSuperAdmin =
-    userRoleRaw === 'SUPER_ADMIN' ||
-    isSuperAdminFlag ||
-    companyCode === 'ADMIN' ||
-    companyCode === 'MASTER' ||
-    companyCode === 'VANGUARD' ||
-    isSuperAdminEmail;
+    isAuthenticated && (
+      userRoleRaw === 'SUPER_ADMIN' ||
+      isSuperAdminFlag ||
+      isSuperAdminEmail
+    );
 
   // Broad authorized admin set for accessing /admin management console
   const isAuthorizedForAdmin =
-    isExplicitSuperAdmin ||
-    isImpersonating ||
-    userRoleRaw === 'COMPANY_ADMIN' ||
-    userRoleRaw === 'ADMIN' ||
-    userRoleRaw === 'OWNER';
+    isAuthenticated && (
+      isExplicitSuperAdmin ||
+      isImpersonating ||
+      userRoleRaw === 'COMPANY_ADMIN' ||
+      userRoleRaw === 'ADMIN' ||
+      userRoleRaw === 'OWNER'
+    );
 
   const rawTenantCookie = request.cookies.get('vanguard_tenant_id')?.value;
   const tenantRouteCode = resolveTenantRouteCode(rawTenantCookie);
