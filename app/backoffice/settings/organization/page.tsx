@@ -27,7 +27,7 @@ import {
 import LicenseActivationCertificateModal from '@/components/LicenseActivationCertificateModal';
 
 export default function OrganizationSettingsPage() {
-  const { currentTenant, updateTenantSettings } = useTenant();
+  const { currentTenant, updateTenantSettings, refreshTenants } = useTenant();
   const { language, dir, t } = useLanguage();
 
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
@@ -63,7 +63,11 @@ export default function OrganizationSettingsPage() {
     setIsSaving(true);
     setStatusMsg(null);
     try {
-      const result = await updateTenantSettings({
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const settingsPayload = {
         name: companyName,
         brandNameAr,
         brandNameEn,
@@ -72,14 +76,34 @@ export default function OrganizationSettingsPage() {
         headquartersAddress: address,
         phoneNumber: phone,
         billingEmail: email
+      };
+
+      // 1. Direct call to internal server route /api/organization
+      const response = await fetch('/api/organization', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          targetId,
+          settings: settingsPayload,
+          payload: settingsPayload
+        })
       });
 
-      if (!result.success) {
+      const resData = await response.json();
+      if (!response.ok || !resData.success) {
         setStatusMsg({
           type: 'error',
-          text: result.error || 'Failed to update organization profile in Supabase database.'
+          text: resData?.error || 'Failed to update organization profile in Supabase database.'
         });
         return;
+      }
+
+      // 2. Synchronize TenantContext with the persisted row
+      await updateTenantSettings(settingsPayload);
+      if (refreshTenants) {
+        await refreshTenants();
       }
 
       setStatusMsg({

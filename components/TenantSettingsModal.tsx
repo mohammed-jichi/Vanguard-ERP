@@ -28,7 +28,7 @@ interface TenantSettingsModalProps {
 }
 
 export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsModalProps) {
-  const { currentTenant, updateTenantSettings } = useTenant();
+  const { currentTenant, updateTenantSettings, refreshTenants } = useTenant();
   const { language, dir, t } = useLanguage();
 
   const [companyName, setCompanyName] = useState<string>('');
@@ -107,18 +107,48 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
       }
     }
 
-    const result = await updateTenantSettings({
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    const settingsPayload = {
       name: companyName,
       brandNameAr: brandNameAr || companyName,
       brandNameEn: brandNameEn || companyName,
       logoUrl: finalLogoUrl,
       companyRegistrationNumber: companyRegistrationNumber,
       taxIdentificationNumber: taxIdentificationNumber
-    });
+    };
 
-    setIsSaving(false);
+    try {
+      // 1. Direct call to internal server route /api/organization
+      const apiRes = await fetch('/api/organization', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetId,
+          settings: settingsPayload,
+          payload: settingsPayload
+        })
+      });
 
-    if (result.success) {
+      const resData = await apiRes.json();
+      if (!apiRes.ok || !resData.success) {
+        setIsSaving(false);
+        setStatusMessage({
+          type: 'error',
+          text: resData?.error || t('settings_save_error', 'Database write failed. Changes were not persisted.')
+        });
+        return;
+      }
+
+      // 2. Sync TenantContext local state
+      await updateTenantSettings(settingsPayload);
+      if (refreshTenants) {
+        await refreshTenants();
+      }
+
+      setIsSaving(false);
       setStatusMessage({
         type: 'success',
         text: t('settings_saved_success', 'Legal details, logo, and brand identity saved and persisted to database successfully!')
@@ -126,10 +156,11 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
       setTimeout(() => {
         onClose();
       }, 1200);
-    } else {
+    } catch (err: any) {
+      setIsSaving(false);
       setStatusMessage({
         type: 'error',
-        text: result.error || t('settings_save_error', 'Database write failed. Changes were not persisted.')
+        text: err?.message || 'Network error saving settings to database.'
       });
     }
   };
