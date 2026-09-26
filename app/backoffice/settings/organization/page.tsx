@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -8,25 +8,17 @@ import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import {
   Building2,
   ShieldCheck,
-  CheckCircle2,
   Globe,
   Award,
-  FileText,
-  Key,
   Copy,
   Users,
-  Shield,
-  User,
   ChevronRight,
   MapPin,
   Phone,
   Mail,
   Lock,
   ExternalLink,
-  Layers,
-  Sparkles,
   Store,
-  Monitor,
   Check,
   Calendar,
   Hash,
@@ -46,32 +38,64 @@ interface LicenseModuleItem {
   description: string;
 }
 
+interface HeadOfficeRecord {
+  companyName: string;
+  primaryContactEmail: string;
+  phone: string;
+  website: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  customerId: string;
+}
+
+interface LiveTenantMetrics {
+  brandsCount: number;
+  branchesCount: number;
+  activeUsersCount: number;
+  teamMembersCount: number;
+  erpUsersCount: number;
+}
+
 export default function OrganizationSettingsPage() {
   const { currentTenant } = useTenant();
   const { dir, t } = useLanguage();
 
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
 
-  // Active Top Tabs: 'organization' | 'licenses'
+  // Active Top Tabs: Strictly ONLY 'organization' | 'licenses'
   const [activeTab, setActiveTab] = useState<'organization' | 'licenses'>('organization');
 
   // Head Office Details (Strictly Read-Only Enterprise Record)
-  const headOfficeData = {
+  const [headOfficeData, setHeadOfficeData] = useState<HeadOfficeRecord>({
     companyName: 'Southern Olive and Oil Products S.A.R.L',
     primaryContactEmail: 'mohammed.jichi@gmail.com',
     phone: '707673828',
-    website: 'https://vanguard-erp.net',
+    website: 'https://southernolive-lb.com',
     streetAddress: 'Old Saida Road',
     city: 'Kfarchima',
     state: 'Mount Lebanon',
     country: 'Lebanon',
     customerId: '1300',
-  };
+  });
 
-  // Brands & Sub-branches Accordion State
-  const [isBrandDrawerOpen, setIsBrandDrawerOpen] = useState(false);
+  // Dynamic Live Tenant Metrics (Read from Supabase matching tenant 1300)
+  const [liveMetrics, setLiveMetrics] = useState<LiveTenantMetrics>({
+    brandsCount: 1,
+    branchesCount: 1,
+    activeUsersCount: 6,
+    teamMembersCount: 4,
+    erpUsersCount: 2,
+  });
 
-  // Mutual Exclusive License Accordion State (single open module id)
+  // Decoupled Accordion States:
+  // - expandedBrandId: Controls brand row expansion to show nested branch table
+  // - expandedBranchId: Controls nested branch facility details drawer independently
+  const [expandedBrandId, setExpandedBrandId] = useState<string | null>(null);
+  const [expandedBranchId, setExpandedBranchId] = useState<string | null>(null);
+
+  // Mutual-Exclusive Single-Open License Accordion State
   const [openLicenseModule, setOpenLicenseModule] = useState<string | null>(null);
 
   // Certificate Modal & Copy Feedback State
@@ -79,6 +103,74 @@ export default function OrganizationSettingsPage() {
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  // Fetch Live Tenant Data & Metrics from Supabase API
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchLiveTenantData() {
+      try {
+        const targetId = currentTenant?.id || '00000000-0000-0000-0000-000000000001';
+        const res = await fetch(`/api/organization?id=${encodeURIComponent(targetId)}`);
+        if (!res.ok) return;
+
+        const json = await res.json();
+        if (json.success && json.data && isMounted) {
+          const tenant = json.data;
+          const flags = tenant.feature_flags || {};
+
+          // Update head office details with live Supabase data
+          setHeadOfficeData({
+            companyName: tenant.name || 'Southern Olive and Oil Products S.A.R.L',
+            primaryContactEmail: tenant.billing_email || flags.primary_admin?.email || 'mohammed.jichi@gmail.com',
+            phone: tenant.phone || tenant.phone_number || '707673828',
+            website: flags.website || 'https://southernolive-lb.com',
+            streetAddress: tenant.address || tenant.headquarters_address || 'Old Saida Road',
+            city: tenant.city || 'Kfarchima',
+            state: flags.state || 'Mount Lebanon',
+            country: tenant.country || 'Lebanon',
+            customerId: tenant.company_id ? String(tenant.company_id) : '1300',
+          });
+
+          // Update dynamic metrics if returned by API
+          if (tenant.metrics) {
+            setLiveMetrics({
+              brandsCount: Number(tenant.metrics.brandsCount) || 1,
+              branchesCount: Number(tenant.metrics.branchesCount) || 1,
+              activeUsersCount: Number(tenant.metrics.activeUsersCount) || 6,
+              teamMembersCount: Number(tenant.metrics.teamMembersCount) || 4,
+              erpUsersCount: Number(tenant.metrics.erpUsersCount) || 2,
+            });
+          } else if (flags.team_metrics) {
+            setLiveMetrics({
+              brandsCount: Number(flags.team_metrics.brands_count) || 1,
+              branchesCount: Number(flags.team_metrics.branches_count) || 1,
+              activeUsersCount: Number(flags.team_metrics.active_users) || 6,
+              teamMembersCount: Number(flags.team_metrics.team_members) || 4,
+              erpUsersCount: Number(flags.team_metrics.erp_users) || 2,
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch live organization tenant metrics:', err);
+      }
+    }
+
+    fetchLiveTenantData();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTenant?.id]);
+
+  // Decoupled Accordion Toggles
+  const toggleBrandAccordion = (brandId: string) => {
+    setExpandedBrandId((prev) => (prev === brandId ? null : brandId));
+  };
+
+  const toggleBranchAccordion = (branchId: string) => {
+    setExpandedBranchId((prev) => (prev === branchId ? null : branchId));
+  };
+
+  // Mutual-Exclusive Single-Open License Accordion Toggle:
+  // Clicking any row opens its detail drawer and automatically collapses any other open row.
   const toggleLicenseAccordion = (moduleId: string) => {
     setOpenLicenseModule((prev) => (prev === moduleId ? null : moduleId));
   };
@@ -157,7 +249,7 @@ export default function OrganizationSettingsPage() {
         <span className="text-primary font-bold">{t('organization', 'Organization')}</span>
       </div>
 
-      {/* Header Banner */}
+      {/* Header Banner - Clean Corporate Identity (Extraneous tabs removed) */}
       <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 font-black text-2xl shadow-xs">
@@ -181,45 +273,25 @@ export default function OrganizationSettingsPage() {
           </div>
         </div>
 
-        {/* Quick Top Navigation Links */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Link
-            href={`/${orgId}/settings/users`}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>{t('users', 'Users')}</span>
-          </Link>
-          <Link
-            href={`/${orgId}/settings/roles`}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
-          >
-            <Shield className="w-3.5 h-3.5" />
-            <span>{t('roles', 'Roles')}</span>
-          </Link>
-          <Link
-            href={`/${orgId}/settings/account`}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5"
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>{t('account', 'Account')}</span>
-          </Link>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-bold">
+          <Lock className="w-3.5 h-3.5 text-slate-400" />
+          <span>Read-Only Profile</span>
         </div>
       </div>
 
-      {/* Main Mode Navigation Tabs: Organization vs Licenses & Subscriptions */}
+      {/* Header Navigation Tabs - Strictly ONLY the Two Core Sub-Tabs */}
       <div className="flex items-center border-b border-slate-200 bg-white rounded-2xl p-1.5 shadow-2xs gap-2">
         <button
           type="button"
           onClick={() => setActiveTab('organization')}
           className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2.5 cursor-pointer ${
             activeTab === 'organization'
-              ? 'bg-primary text-white shadow-md'
+              ? 'bg-blue-600 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>{t('organization', 'Organization')}</span>
+          <span>Organization</span>
         </button>
 
         <button
@@ -227,7 +299,7 @@ export default function OrganizationSettingsPage() {
           onClick={() => setActiveTab('licenses')}
           className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2.5 cursor-pointer ${
             activeTab === 'licenses'
-              ? 'bg-primary text-white shadow-md'
+              ? 'bg-blue-600 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -286,7 +358,7 @@ export default function OrganizationSettingsPage() {
                     type="button"
                     onClick={() => handleCopyText(headOfficeData.companyName, 'companyName')}
                     title="Copy Company Name"
-                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors"
+                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
                   >
                     {copiedField === 'companyName' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -310,7 +382,7 @@ export default function OrganizationSettingsPage() {
                     type="button"
                     onClick={() => handleCopyText(headOfficeData.primaryContactEmail, 'email')}
                     title="Copy Email"
-                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors"
+                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
                   >
                     {copiedField === 'email' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -334,7 +406,7 @@ export default function OrganizationSettingsPage() {
                     type="button"
                     onClick={() => handleCopyText(headOfficeData.phone, 'phone')}
                     title="Copy Phone"
-                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors"
+                    className="absolute end-2.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition-colors cursor-pointer"
                   >
                     {copiedField === 'phone' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -424,21 +496,21 @@ export default function OrganizationSettingsPage() {
             </div>
           </div>
 
-          {/* 2. Summary Cards Specification */}
+          {/* 2. Summary Cards with Live Tenant Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Card 1: Brands (Expandable) */}
             <div
-              onClick={() => setIsBrandDrawerOpen(!isBrandDrawerOpen)}
+              onClick={() => toggleBrandAccordion('brand-1')}
               className="bg-white border border-slate-200/90 hover:border-blue-400 rounded-3xl p-5 shadow-xs transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Brands</span>
                 <span className="text-xs text-blue-600 font-bold group-hover:underline">
-                  {isBrandDrawerOpen ? 'Collapse ▲' : 'Expand ▼'}
+                  {expandedBrandId === 'brand-1' ? 'Collapse ▲' : 'Expand ▼'}
                 </span>
               </div>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900">1</span>
+                <span className="text-3xl font-black text-slate-900">{liveMetrics.brandsCount}</span>
                 <span className="text-xs text-slate-500 font-medium">(Expandable)</span>
               </div>
               <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
@@ -448,17 +520,17 @@ export default function OrganizationSettingsPage() {
 
             {/* Card 2: Branches (Expandable) */}
             <div
-              onClick={() => setIsBrandDrawerOpen(!isBrandDrawerOpen)}
+              onClick={() => toggleBranchAccordion('branch-1')}
               className="bg-white border border-slate-200/90 hover:border-blue-400 rounded-3xl p-5 shadow-xs transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Branches</span>
                 <span className="text-xs text-blue-600 font-bold group-hover:underline">
-                  {isBrandDrawerOpen ? 'Collapse ▲' : 'Expand ▼'}
+                  {expandedBranchId === 'branch-1' ? 'Collapse ▲' : 'Expand ▼'}
                 </span>
               </div>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900">1</span>
+                <span className="text-3xl font-black text-slate-900">{liveMetrics.branchesCount}</span>
                 <span className="text-xs text-slate-500 font-medium">(Expandable)</span>
               </div>
               <div className="mt-2 text-[11px] text-slate-400 flex items-center gap-1">
@@ -475,7 +547,7 @@ export default function OrganizationSettingsPage() {
               <div className="mt-2 flex items-baseline gap-1.5 flex-wrap">
                 <span className="text-2xl font-black text-slate-900">Unlimited</span>
                 <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                  6 Active
+                  {liveMetrics.activeUsersCount} Active
                 </span>
               </div>
               <div className="mt-2 text-[11px] text-slate-400">
@@ -483,7 +555,7 @@ export default function OrganizationSettingsPage() {
               </div>
             </div>
 
-            {/* Card 4: Team Members & ERP Users Breakdown */}
+            {/* Card 4: Team Members & ERP Users (Live Tenant Metrics from Supabase) */}
             <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Team Breakdown</span>
@@ -492,20 +564,20 @@ export default function OrganizationSettingsPage() {
               <div className="mt-3 flex items-center justify-between divide-x divide-slate-100">
                 <div className="pr-3">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Team Members</div>
-                  <div className="text-xl font-black text-slate-900 mt-0.5">4</div>
+                  <div className="text-xl font-black text-slate-900 mt-0.5">{liveMetrics.teamMembersCount}</div>
                 </div>
                 <div className="pl-3">
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ERP Users</div>
-                  <div className="text-xl font-black text-primary mt-0.5">2</div>
+                  <div className="text-xl font-black text-blue-600 mt-0.5">{liveMetrics.erpUsersCount}</div>
                 </div>
               </div>
               <div className="mt-2 text-[11px] text-slate-400">
-                Staff: 4 | ERP Operators: 2
+                Staff: {liveMetrics.teamMembersCount} | ERP Operators: {liveMetrics.erpUsersCount}
               </div>
             </div>
           </div>
 
-          {/* 3. Brands & Sub-branches Table with Detailed Accordion Drawer */}
+          {/* 3. Brands & Sub-branches Table (Isolated Accordion) */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100">
               <div>
@@ -518,7 +590,7 @@ export default function OrganizationSettingsPage() {
               </div>
 
               <span className="text-xs font-bold text-slate-500 font-mono">
-                1 Registered Brand Entity
+                {liveMetrics.brandsCount} Registered Brand Entity
               </span>
             </div>
 
@@ -533,16 +605,16 @@ export default function OrganizationSettingsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {/* Primary Row */}
+                  {/* Primary Brand Row */}
                   <tr className="hover:bg-slate-50/80 transition-colors">
                     <td className="py-3.5 px-4 text-center">
                       <button
                         type="button"
-                        onClick={() => setIsBrandDrawerOpen(!isBrandDrawerOpen)}
-                        aria-label={isBrandDrawerOpen ? 'Collapse branch details' : 'Expand branch details'}
+                        onClick={() => toggleBrandAccordion('brand-1')}
+                        aria-label={expandedBrandId === 'brand-1' ? 'Collapse branch details' : 'Expand branch details'}
                         className="w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold inline-flex items-center justify-center transition-all shadow-xs cursor-pointer"
                       >
-                        {isBrandDrawerOpen ? <Minus className="w-4 h-4 stroke-[3]" /> : <Plus className="w-4 h-4 stroke-[3]" />}
+                        {expandedBrandId === 'brand-1' ? <Minus className="w-4 h-4 stroke-[3]" /> : <Plus className="w-4 h-4 stroke-[3]" />}
                       </button>
                     </td>
                     <td className="py-3.5 px-4">
@@ -566,8 +638,8 @@ export default function OrganizationSettingsPage() {
                     </td>
                   </tr>
 
-                  {/* Expandable Detailed Branch Drawer */}
-                  {isBrandDrawerOpen && (
+                  {/* Nested Sub-Branch Drawer (Decoupled from branch facility details) */}
+                  {expandedBrandId === 'brand-1' && (
                     <tr className="bg-slate-50/90 animate-fadeIn">
                       <td colSpan={4} className="p-4 sm:p-5 border-t border-blue-200">
                         <div className="bg-white rounded-2xl border-2 border-blue-500/40 p-4 shadow-sm space-y-3">
@@ -616,6 +688,44 @@ export default function OrganizationSettingsPage() {
                       </td>
                     </tr>
                   )}
+
+                  {/* Independent Branch Facility Details Drawer (Triggered by Branch Card or Branch Toggle) */}
+                  {expandedBranchId === 'branch-1' && (
+                    <tr className="bg-emerald-50/40 animate-fadeIn">
+                      <td colSpan={4} className="p-4 sm:p-5 border-t border-emerald-200">
+                        <div className="bg-white rounded-2xl border-2 border-emerald-500/40 p-4 shadow-sm space-y-3">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <span className="text-xs font-extrabold text-emerald-900 uppercase tracking-wider flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Branch Facility Specs &bull; Southern Olive and Oil Products - Main</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setExpandedBranchId(null)}
+                              className="text-xs text-slate-400 hover:text-slate-600 font-bold"
+                            >
+                              Close &times;
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Facility Code</span>
+                              <span className="font-mono font-bold text-slate-900 mt-1 block">SO-HQ-MAIN-01</span>
+                            </div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Facility Type</span>
+                              <span className="font-bold text-slate-900 mt-1 block">Corporate Mill &amp; Commercial Hub</span>
+                            </div>
+                            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Operational Status</span>
+                              <span className="font-bold text-emerald-700 mt-1 block">Fully Operational / Online</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -624,7 +734,7 @@ export default function OrganizationSettingsPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 2: LICENSES & SUBSCRIPTIONS (Mutual Exclusive Single-Open Accordion)   */}
+      {/* TAB 2: LICENSES & SUBSCRIPTIONS (Mutual-Exclusive Accordion)               */}
       {/* ========================================================================= */}
       {activeTab === 'licenses' && (
         <div className="space-y-6 animate-fadeIn">
@@ -669,7 +779,7 @@ export default function OrganizationSettingsPage() {
             </div>
           </div>
 
-          {/* Mutual Exclusive Accordion Table */}
+          {/* Mutual-Exclusive Accordion Table */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100">
               <div>
