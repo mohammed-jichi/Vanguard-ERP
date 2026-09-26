@@ -217,68 +217,57 @@ export const navigationConfig: NavItem[] = [
     title: 'Customer Management',
     icon: Users,
     items: [
-      { title: 'Customers', href: '/customer-management/customers', icon: Users },
-      { title: 'Customer Receipts', href: '/customer-management/receipts', icon: Receipt },
-      { title: 'Customer Aged', href: '/customer-management/aged', icon: Clock },
-      { title: 'Customer Insights', href: '/customer-management/insights', icon: LayoutDashboard },
-      { title: 'Tasks and Appointments', href: '/customer-management/tasks', icon: Calendar },
-      { title: 'Leads & Contacts', href: '/customer-management/leads', icon: Users },
-      { title: 'Sales Team Performance', href: '/customer-management/performance', icon: FileBarChart },
-      {
-        title: 'Settings',
-        href: '/customer-management/settings',
-        icon: Settings,
-        items: [
-          { title: 'Customers Groups', href: '/customer-management/settings/groups', icon: FolderTree },
-          { title: 'Customers Categories', href: '/customer-management/settings/categories', icon: ListFilter },
-          { title: 'Customers Tags', href: '/customer-management/settings/tags', icon: Tag },
-          { title: 'Leads Settings', href: '/customer-management/settings/leads', icon: SlidersHorizontal }
-        ]
-      }
-    ]
-  },
+      // Core Directory & Accounts
+      { title: 'Customers', href: '/backoffice/customers', icon: Users },
+      { title: 'Customer Receipt', href: '/backoffice/customers?section=receipts', icon: Receipt },
+      { title: 'Customer Aged', href: '/backoffice/customers?section=aged', icon: Clock },
+      { title: 'Customer Insights', href: '/customer-insights', icon: LayoutDashboard },
+      { title: 'Tasks and Appointments', href: '/schedule', icon: Calendar },
+      { title: 'Leads and Contacts', href: '/contacts', icon: Users },
+      { title: 'Sales Team Performance', href: '/sales-manager-dashboard', icon: FileBarChart },
 
-  // ==========================================
-  // 4. FEEDBACK & SURVEYS
-  // ==========================================
-  {
-    title: 'Feedback & Surveys',
-    icon: HelpCircle,
-    items: [
-      { title: 'Dashboard', href: '/feedback/dashboard', icon: LayoutDashboard },
-      { title: 'Manage Complaints', href: '/feedback/manage-complaints', icon: CheckSquare },
-      { title: 'Add Complaints', href: '/feedback/add-complaints', icon: AlertOctagon },
-      { title: 'Manage Surveys', href: '/feedback/manage-surveys', icon: ClipboardList },
-      { title: 'Send Survey Emails', href: '/feedback/send-surveys', icon: Send },
+      // Loyalty Sub-menu
+      {
+        title: 'Loyalty Management',
+        href: '/backoffice/loyalty?section=dashboard',
+        icon: Gift,
+        items: [
+          { title: 'Dashboard', href: '/backoffice/loyalty?section=dashboard', icon: LayoutDashboard },
+          { title: 'Reports', href: '/backoffice/loyalty?section=reports', icon: FileBarChart },
+          { title: 'Members', href: '/backoffice/loyalty?section=members', icon: Users },
+          { title: 'Loyalty Levels', href: '/backoffice/loyalty?section=loyalty_levels', icon: Layers },
+          { title: 'Loyalty Programs', href: '/backoffice/loyalty?section=loyalty_programs', icon: Bookmark },
+          { title: 'Send Messages', href: '/backoffice/loyalty?section=send_messages', icon: Send }
+        ]
+      },
+
+      // Feedback & Surveys Sub-menu
+      {
+        title: 'Feedback & Surveys',
+        href: '/backoffice/feedback?section=dashboard',
+        icon: MessageSquare,
+        items: [
+          { title: 'Dashboard', href: '/backoffice/feedback?section=dashboard', icon: LayoutDashboard },
+          { title: 'Manage Complaints', href: '/backoffice/feedback?section=manage_complaints', icon: CheckSquare },
+          { title: 'Add Complaint', href: '/backoffice/feedback?section=add_complaints', icon: AlertOctagon },
+          { title: 'Manage Surveys', href: '/backoffice/feedback?section=manage_surveys', icon: ClipboardList },
+          { title: 'Send Survey Emails', href: '/backoffice/feedback?section=send_survey_emails', icon: Send }
+        ]
+      },
+
+      // Setup
       {
         title: 'Setup',
-        href: '/feedback/setup',
+        href: '/backoffice/customers?section=groups',
         icon: Settings,
         items: [
-          { title: 'Complaint Sources', href: '/feedback/setup/sources', icon: Bookmark },
-          { title: 'Complaint Categories', href: '/feedback/setup/categories', icon: ListFilter },
-          { title: 'Complaint Action Types', href: '/feedback/setup/actions', icon: Zap },
-          { title: 'Customer care', href: '/feedback/setup/customer-care', icon: Users },
-          { title: 'Surveys Setup', href: '/feedback/setup/surveys', icon: SlidersHorizontal }
+          { title: 'Customer Groups', href: '/backoffice/customers?section=groups', icon: FolderTree },
+          { title: 'Customer Categories', href: '/backoffice/customers?section=categories', icon: ListFilter },
+          { title: 'Customer Tags', href: '/backoffice/customers?section=tags', icon: Tag },
+          { title: 'Complaint Resources & Categories', href: '/backoffice/feedback?section=complaint_categories', icon: Bookmark },
+          { title: 'Survey Setup', href: '/backoffice/feedback?section=surveys_setup', icon: SlidersHorizontal }
         ]
       }
-    ]
-  },
-
-  // ==========================================
-  // 5. LOYALTY MANAGEMENT
-  // ==========================================
-  {
-    title: 'Loyalty Management',
-    icon: Gift,
-    items: [
-      { title: 'Dashboard', href: '/loyalty/dashboard', icon: LayoutDashboard },
-      { title: 'Reports', href: '/loyalty/reports', icon: FileBarChart },
-      { title: 'Members', href: '/loyalty/members', icon: Users },
-      { title: 'Loyalty Levels', href: '/loyalty/levels', icon: Layers },
-      { title: 'Loyalty Programs', href: '/loyalty/programs', icon: Bookmark },
-      { title: 'Send Messages', href: '/loyalty/messages', icon: Send },
-      { title: 'Company Info', href: '/loyalty/company-info', icon: Info }
     ]
   },
 

@@ -605,7 +605,7 @@ export default function Sidebar({
         {/* ===================================================================
             MODULE 4: CUSTOMER MANAGEMENT (CRM)
             =================================================================== */}
-        {isModuleEnabled('customers') && (
+        {(isModuleEnabled('customers') || isModuleEnabled('feedback') || isModuleEnabled('loyalty')) && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('cust'); }}
@@ -623,117 +623,87 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['cust'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/customers" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold">{t('customers_directory', 'Customers Directory')}</Link>
-              <Link href="/backoffice/customers?section=receipts" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('customer_receipts', 'Customer Receipts')}</Link>
-              <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('customer_aged_receivables', 'Customer Aged Receivables')}</Link>
+              {/* Core Directory & Accounts */}
+              <Link href="/backoffice/customers" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold">{t('customers_directory', 'Customers')}</Link>
+              <Link href="/backoffice/customers?section=receipts" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('customer_receipts', 'Customer Receipt')}</Link>
+              <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('customer_aged_receivables', 'Customer Aged')}</Link>
               <Link href="/customer-insights" className="w-full text-start p-1.5 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between block">
                 <span>{t('customer_insights', 'Customer Insights')}</span>
                 <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">{t('ai_crm', 'AI CRM')}</span>
               </Link>
               <Link href="/schedule" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('tasks_appointments', 'Tasks and Appointments')}</Link>
+              <Link href="/contacts" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('leads_contacts', 'Leads and Contacts')}</Link>
               <Link href="/sales-manager-dashboard" target="_blank" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('sales_team_performance', 'Sales Team Performance')}</Link>
 
-              {/* Settings */}
+              {/* Loyalty Sub-menu */}
               <div className="pt-0.5">
                 <button
-                  onClick={() => toggleGroup('cm_settings')}
-                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  type="button"
+                  onClick={() => toggleGroup('cm_loyalty')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-800 hover:text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors cursor-pointer"
                 >
-                  <span>{t('settings', 'Settings')}</span>
-                  <span className="text-[9px]">{expandedGroups['cm_settings'] ? '▲' : '▼'}</span>
+                  <div className="flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>{t('loyalty_program', 'Loyalty Management')}</span>
+                  </div>
+                  <span className="text-[9px] text-slate-400">{expandedGroups['cm_loyalty'] ? '▲' : '▼'}</span>
                 </button>
-                {expandedGroups['cm_settings'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_groups', 'Customers Groups')}</Link>
-                    <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_categories', 'Customers Categories')}</Link>
-                    <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_tags', 'Customers Tags')}</Link>
+                {expandedGroups['cm_loyalty'] && (
+                  <div className="ms-2 ps-2 border-s border-amber-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link href="/backoffice/loyalty?section=dashboard" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('dashboard', 'Dashboard')}</Link>
+                    <Link href="/backoffice/loyalty?section=reports" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('reports', 'Reports')}</Link>
+                    <Link href="/backoffice/loyalty?section=members" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('members', 'Members')}</Link>
+                    <Link href="/backoffice/loyalty?section=loyalty_levels" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_levels', 'Loyalty Levels')}</Link>
+                    <Link href="/backoffice/loyalty?section=loyalty_programs" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_programs', 'Loyalty Programs')}</Link>
+                    <Link href="/backoffice/loyalty?section=send_messages" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('send_messages', 'Send Messages')}</Link>
                   </div>
                 )}
               </div>
-            </div>
-          )}
-        </div>
-        )}
 
-        {/* ===================================================================
-            MODULE 5: FEEDBACK & SURVEYS
-            =================================================================== */}
-        {isModuleEnabled('feedback') && (
-        <div>
-          <button
-            onClick={() => { ensureOpen(); toggleGroup('feedback'); }}
-            title={t('complaints_dashboard', '5. Feedback & Surveys')}
-            className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['feedback'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
-              <MessageSquare className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('complaints_dashboard', '5. Feedback & Surveys')}</span>}
-            </div>
-            {isOpen && (expandedGroups['feedback'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
-          </button>
-
-          {isOpen && expandedGroups['feedback'] && (
-            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/feedback?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('dashboard', 'Dashboard')}</Link>
-              <Link href="/backoffice/feedback?section=manage_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('manage_complaints', 'Manage Complaints')}</Link>
-              <Link href="/backoffice/feedback?section=add_complaints" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('add_complaints', 'Add Complaints')}</Link>
-              <Link href="/backoffice/feedback?section=manage_surveys" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('manage_surveys', 'Manage Surveys')}</Link>
-              <Link href="/backoffice/feedback?section=send_survey_emails" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('send_survey_emails', 'Send Survey Emails')}</Link>
+              {/* Feedback & Surveys Sub-menu */}
+              <div className="pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup('cm_feedback')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-800 hover:text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span>{t('feedback_surveys', 'Feedback & Surveys')}</span>
+                  </div>
+                  <span className="text-[9px] text-slate-400">{expandedGroups['cm_feedback'] ? '▲' : '▼'}</span>
+                </button>
+                {expandedGroups['cm_feedback'] && (
+                  <div className="ms-2 ps-2 border-s border-blue-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link href="/backoffice/feedback?section=dashboard" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('dashboard', 'Dashboard')}</Link>
+                    <Link href="/backoffice/feedback?section=manage_complaints" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('manage_complaints', 'Manage Complaints')}</Link>
+                    <Link href="/backoffice/feedback?section=add_complaints" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('add_complaints', 'Add Complaint')}</Link>
+                    <Link href="/backoffice/feedback?section=manage_surveys" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('manage_surveys', 'Manage Surveys')}</Link>
+                    <Link href="/backoffice/feedback?section=send_survey_emails" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('send_survey_emails', 'Send Survey Emails')}</Link>
+                  </div>
+                )}
+              </div>
 
               {/* Setup */}
               <div className="pt-0.5">
                 <button
-                  onClick={() => toggleGroup('fb_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors"
+                  type="button"
+                  onClick={() => toggleGroup('cm_settings')}
+                  className="w-full flex items-center justify-between p-1.5 text-primary hover:bg-slate-100 rounded font-bold text-xs transition-colors cursor-pointer"
                 >
                   <span>{t('setup', 'Setup')}</span>
-                  <span className="text-[9px]">{expandedGroups['fb_setup'] ? '▲' : '▼'}</span>
+                  <span className="text-[9px]">{expandedGroups['cm_settings'] ? '▲' : '▼'}</span>
                 </button>
-                {expandedGroups['fb_setup'] && (
+                {expandedGroups['cm_settings'] && (
                   <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/feedback?section=complaint_sources" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_sources', 'Complaint Sources')}</Link>
-                    <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_categories', 'Complaint Categories')}</Link>
-                    <Link href="/backoffice/feedback?section=complaint_action_types" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_action_types', 'Complaint Action Types')}</Link>
-                    <Link href="/backoffice/feedback?section=customer_care" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customer_care', 'Customer Care')}</Link>
-                    <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('surveys_setup', 'Surveys Setup')}</Link>
+                    <Link href="/backoffice/customers?section=groups" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_groups', 'Customer Groups')}</Link>
+                    <Link href="/backoffice/customers?section=categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_categories', 'Customer Categories')}</Link>
+                    <Link href="/backoffice/customers?section=tags" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('customers_tags', 'Customer Tags')}</Link>
+                    <Link href="/backoffice/feedback?section=complaint_categories" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('complaint_categories', 'Complaint Resources & Categories')}</Link>
+                    <Link href="/backoffice/feedback?section=surveys_setup" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('surveys_setup', 'Survey Setup')}</Link>
                   </div>
                 )}
               </div>
-            </div>
-          )}
-        </div>
-        )}
-
-        {/* ===================================================================
-            MODULE 6: LOYALTY MANAGEMENT
-            =================================================================== */}
-        {isModuleEnabled('loyalty') && (
-        <div>
-          <button
-            onClick={() => { ensureOpen(); toggleGroup('loyalty'); }}
-            title={t('loyalty_program', '6. Loyalty Management')}
-            className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              expandedGroups['loyalty'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
-              <Award className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('loyalty_program', '6. Loyalty Management')}</span>}
-            </div>
-            {isOpen && (expandedGroups['loyalty'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
-          </button>
-
-          {isOpen && expandedGroups['loyalty'] && (
-            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/loyalty?section=dashboard" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('dashboard', 'Dashboard')}</Link>
-              <Link href="/backoffice/loyalty?section=reports" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('reports', 'Reports')}</Link>
-              <Link href="/backoffice/loyalty?section=members" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('members', 'Members')}</Link>
-              <Link href="/backoffice/loyalty?section=loyalty_levels" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_levels', 'Loyalty Levels')}</Link>
-              <Link href="/backoffice/loyalty?section=loyalty_programs" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('loyalty_programs', 'Loyalty Programs')}</Link>
-              <Link href="/backoffice/loyalty?section=send_messages" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('send_messages', 'Send Messages')}</Link>
-              <Link href="/backoffice/loyalty?section=company_info" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('company_info', 'Company Info')}</Link>
             </div>
           )}
         </div>

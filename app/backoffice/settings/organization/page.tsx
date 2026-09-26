@@ -193,8 +193,8 @@ export default function OrganizationSettingsPage() {
       id: 'core-accounting',
       name: 'Vanguard Core Accounting',
       category: 'Financials & General Ledger',
-      licenseCount: 'Enterprise / Unlimited',
-      allocatedQty: 'Unlimited / 999',
+      licenseCount: '1',
+      allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
       description: 'Multi-currency dual-ledger engine, automated PCA & IFRS fiscal chart of accounts, tax return generators, and balance sheet auditing.',
     },
@@ -202,8 +202,8 @@ export default function OrganizationSettingsPage() {
       id: 'cloud-back-office',
       name: 'Vanguard Cloud Back Office',
       category: 'HQ Management & Controllership',
-      licenseCount: 'Enterprise / Unlimited',
-      allocatedQty: 'Unlimited / 999',
+      licenseCount: '1',
+      allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
       description: 'Master controllership console, multi-tenant workspace routing, cross-departmental operations inbox, and executive BI analytics.',
     },
@@ -211,8 +211,8 @@ export default function OrganizationSettingsPage() {
       id: 'cloud-inventory',
       name: 'Vanguard Cloud Inventory Management',
       category: 'Warehouse & Operations Center',
-      licenseCount: 'Enterprise / Unlimited',
-      allocatedQty: 'Unlimited / 999',
+      licenseCount: '1',
+      allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
       description: 'Real-time multi-depot stock balance, olive oil tank volume tracking, batch formulation assembly, and automated reorder triggers.',
     },
@@ -220,8 +220,8 @@ export default function OrganizationSettingsPage() {
       id: 'sales-workstations',
       name: 'Vanguard ERP Sales Workstations',
       category: 'Commercial Distribution & CRM',
-      licenseCount: 'Enterprise / Unlimited',
-      allocatedQty: 'Unlimited / 999',
+      licenseCount: '1',
+      allocatedQty: '1 Workstation / Unlimited Ent.',
       status: 'ACTIVE',
       description: 'Enterprise commercial distribution, B2B wholesale quotation lifecycle, van sales dispatch, and credit limit validations.',
     },
@@ -229,8 +229,8 @@ export default function OrganizationSettingsPage() {
       id: 'pos-workstations',
       name: 'POS Workstations',
       category: 'Retail Point-of-Sale (V-POS)',
-      licenseCount: 'Enterprise / Unlimited',
-      allocatedQty: 'Unlimited / 999',
+      licenseCount: '4',
+      allocatedQty: '4 Workstations / Unlimited Ent.',
       status: 'ACTIVE',
       description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.',
     },
@@ -802,7 +802,7 @@ export default function OrganizationSettingsPage() {
                   <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
                     <th className="py-3.5 px-4 w-14 text-center">Action</th>
                     <th className="py-3.5 px-4">License / Module</th>
-                    <th className="py-3.5 px-4 text-center">License Count</th>
+                    <th className="py-3.5 px-4 text-center min-w-[120px]">License Count</th>
                     <th className="py-3.5 px-4 text-center">Status</th>
                   </tr>
                 </thead>
@@ -835,8 +835,8 @@ export default function OrganizationSettingsPage() {
                               {mod.description}
                             </div>
                           </td>
-                          <td className="py-3.5 px-4 text-center">
-                            <span className="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-900 font-bold text-xs">
+                          <td className="py-3.5 px-4 text-center min-w-[120px]">
+                            <span className="whitespace-nowrap inline-flex items-center justify-center px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 border border-slate-200 text-slate-900 font-mono">
                               {mod.licenseCount}
                             </span>
                           </td>
