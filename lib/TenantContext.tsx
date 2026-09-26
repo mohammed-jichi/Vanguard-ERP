@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from './supabaseClient';
+import { supabase, SUPABASE_URL } from './supabaseClient';
 import { logSystemActivity } from './activityLogger';
 
 export interface TenantLicense {
@@ -340,16 +340,32 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const refreshTenants = async () => {
     try {
-      const { data, error } = await supabase
-        .from('tenants')
-        .select('*')
-        .order('created_at', { ascending: true });
+      let data: any[] | null = null;
+      try {
+        const apiRes = await fetch('/api/organization?all=true');
+        if (apiRes.ok) {
+          const apiJson = await apiRes.json();
+          if (apiJson.success && Array.isArray(apiJson.data)) {
+            data = apiJson.data;
+          }
+        }
+      } catch (apiErr) {
+        // Fallback to direct client call
+      }
 
-      console.log('Admin Tenants Fetch:', data, error);
+      if (!data) {
+        const { data: directData, error } = await supabase
+          .from('tenants')
+          .select('*')
+          .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching tenants from Supabase:', error);
-        return;
+        console.log('Admin Tenants Fetch:', directData, error);
+
+        if (error) {
+          console.error("Supabase write error details:", error);
+          return;
+        }
+        data = directData;
       }
 
       if (data && Array.isArray(data)) {
@@ -614,23 +630,64 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         updated_at: nowIso
       };
 
-      const { data, error } = await supabase
-        .from('tenants')
-        .update(tenantSettingsPayload)
-        .eq('id', targetId)
-        .select('*');
+      // Dual-strategy: Route through Next.js server API /api/organization first to eliminate browser CORS/RLS issues
+      let persistedRow: any = null;
+      let apiRouteError: string | null = null;
 
-      if (error) {
-        console.error('Failed to update tenant in Supabase:', error);
-        return { success: false, error: `Database write failed: ${error.message}` };
+      try {
+        const apiResponse = await fetch('/api/organization', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            targetId,
+            settings,
+            payload: tenantSettingsPayload
+          })
+        });
+
+        if (apiResponse.ok) {
+          const resJson = await apiResponse.json();
+          if (resJson.success && resJson.data) {
+            persistedRow = resJson.data;
+          } else {
+            apiRouteError = resJson.error || 'Server API route indicated failure';
+          }
+        } else {
+          const errText = await apiResponse.text();
+          apiRouteError = `HTTP ${apiResponse.status}: ${errText}`;
+        }
+      } catch (fetchErr: any) {
+        apiRouteError = fetchErr?.message || String(fetchErr);
+        console.warn('Notice: /api/organization route call failed or unavailable, attempting direct Supabase fallback:', apiRouteError);
       }
 
-      if (!data || data.length === 0) {
-        console.error('Supabase update matched 0 rows for tenant ID:', targetId);
-        return { success: false, error: `Tenant #${targetId} was not found in the database. Changes could not be persisted.` };
-      }
+      // Fallback strategy: Direct client-side Supabase mutation
+      if (!persistedRow) {
+        console.log(`[TenantContext] Attempting direct Supabase update for tenant [${targetId}] targeting: ${SUPABASE_URL}`);
+        const { data, error } = await supabase
+          .from('tenants')
+          .update(tenantSettingsPayload)
+          .eq('id', targetId)
+          .select('*');
 
-      const persistedRow = data[0];
+        if (error) {
+          console.error("Supabase write error details:", error);
+          const isFetchFailure = error.message === 'Failed to fetch' || (error as any).name === 'TypeError' || String(error).includes('fetch');
+          const errorMsg = isFetchFailure
+            ? `Database write failed: TypeError: Failed to fetch. (API route fallback: ${apiRouteError || 'failed'}). Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are configured in your Vercel Project Environment Variables.`
+            : `Database write failed: ${error.message}`;
+          return { success: false, error: errorMsg };
+        }
+
+        if (!data || data.length === 0) {
+          console.error('Supabase update matched 0 rows for tenant ID:', targetId);
+          return { success: false, error: `Tenant #${targetId} was not found in the database. Changes could not be persisted.` };
+        }
+
+        persistedRow = data[0];
+      }
       const updatedTenant: TenantCompany = {
         ...currentTenant,
         ...settings,
@@ -793,15 +850,43 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ? tenantId
         : '00000000-0000-0000-0000-000000000001';
 
-      let { data: updatedData, error } = await supabase
-        .from('tenants')
-        .update(dbUpdates)
-        .eq('id', targetId)
-        .select('*');
+      let updatedData: any[] | null = null;
+      let apiRouteError: string | null = null;
 
-      if (error) {
-        console.error('Supabase tenant modules/branding update error:', error.message);
-        return { success: false, error: `Database update failed: ${error.message}` };
+      try {
+        const apiResponse = await fetch('/api/organization', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetId,
+            updates,
+            payload: dbUpdates
+          })
+        });
+
+        if (apiResponse.ok) {
+          const resJson = await apiResponse.json();
+          if (resJson.success && resJson.data) {
+            updatedData = [resJson.data];
+          }
+        }
+      } catch (err: any) {
+        apiRouteError = err?.message || String(err);
+      }
+
+      if (!updatedData) {
+        console.log(`[TenantContext] Attempting direct Supabase update for modules/branding [${targetId}] targeting: ${SUPABASE_URL}`);
+        const { data, error } = await supabase
+          .from('tenants')
+          .update(dbUpdates)
+          .eq('id', targetId)
+          .select('*');
+
+        if (error) {
+          console.error("Supabase write error details:", error);
+          return { success: false, error: `Database update failed: ${error.message}` };
+        }
+        updatedData = data;
       }
 
       if (!updatedData || updatedData.length === 0) {
