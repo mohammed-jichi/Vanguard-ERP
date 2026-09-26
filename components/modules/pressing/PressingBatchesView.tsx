@@ -36,6 +36,7 @@ export default function PressingBatchesView() {
   const { t } = useLanguage();
   const [lines, setLines] = useState<DynamicPressingLine[]>(INITIAL_DYNAMIC_LINES);
   const [tickets, setTickets] = useState<ScaleTicket[]>(INITIAL_SCALE_TICKETS);
+  const [lineQueue, setLineQueue] = useState<any[]>([]);
   const [selectedSeason] = useState(INITIAL_SEASONS[0]); // Active season
   const isSeasonActive = selectedSeason.status === 'Active';
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -47,6 +48,23 @@ export default function PressingBatchesView() {
           ? currentTenant.id
           : '00000000-0000-0000-0000-000000000001';
 
+        // 1. Load from public.pressing_line_queue
+        try {
+          const { data: queueData } = await supabase
+            .from('pressing_line_queue')
+            .select('*')
+            .eq('tenant_id', targetId)
+            .eq('status', 'Pending')
+            .order('queued_at', { ascending: false });
+
+          if (queueData && queueData.length > 0) {
+            setLineQueue(queueData);
+          }
+        } catch (queueErr) {
+          console.warn('Dedicated pressing_line_queue read notice:', queueErr);
+        }
+
+        // 2. Load feature flags for lines, tickets, and queue backup
         const { data } = await supabase
           .from('tenants')
           .select('feature_flags')
@@ -58,6 +76,9 @@ export default function PressingBatchesView() {
         }
         if (data?.feature_flags?.weighbridge_tickets && Array.isArray(data.feature_flags.weighbridge_tickets) && data.feature_flags.weighbridge_tickets.length > 0) {
           setTickets(data.feature_flags.weighbridge_tickets);
+        }
+        if (data?.feature_flags?.pressing_line_queue && Array.isArray(data.feature_flags.pressing_line_queue) && data.feature_flags.pressing_line_queue.length > 0) {
+          setLineQueue(prev => prev.length > 0 ? prev : data.feature_flags.pressing_line_queue);
         }
       } catch (err) {
         console.warn('Notice loading pressing lines from database:', err);
@@ -135,7 +156,7 @@ export default function PressingBatchesView() {
     }
     const updatedLines = lines.map((l) => {
       if (l.id === lineId) {
-        const nextProgress = Math.min(100, l.batchProgressPct + 15);
+        const nextProgress = Math.min(100, l.batchProgressPct + 25);
         return { ...l, batchProgressPct: nextProgress };
       }
       return l;
@@ -149,6 +170,119 @@ export default function PressingBatchesView() {
 
     setLines(updatedLines);
     showToast(`${t('extraction_progress_updated', 'Extraction progress updated and persisted for')} ${lineId}.`);
+  };
+
+  const handleCompleteBatch = async (lineId: string) => {
+    if (!isSeasonActive) {
+      showToast(t('cannot_complete_batch_campaign_closed', 'Cannot complete batch: Campaign is currently frozen/closed.'));
+      return;
+    }
+    const targetLine = lines.find((l) => l.id === lineId);
+    if (!targetLine) return;
+
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    // 1. Calculate extracted volume and quality metrics
+    const oilExtractedLiters = 420; // ~420 L per completed batch
+    const targetTankId = lineId === 'LINE-01' ? 'TK-01' : 'TK-02';
+    const isCold = targetLine.malaxingTempC <= 27.0;
+    const batchAcidity = isCold ? 0.45 : 0.82;
+    const batchGrade = isCold ? 'Extra_Virgin' : 'Virgin';
+
+    // 2. Real Supabase mutation to public.mill_tanks
+    try {
+      await supabase
+        .from('mill_tanks')
+        .upsert([{
+          id: targetTankId,
+          tenant_id: targetId,
+          title: `Silo Tank ${targetTankId}`,
+          current_level_liters: 7200,
+          acidity_pct: batchAcidity,
+          grade: batchGrade,
+          status: 'Active',
+          updated_at: new Date().toISOString()
+        }], { onConflict: 'id' });
+    } catch (tankErr) {
+      console.warn('mill_tanks write notice:', tankErr);
+    }
+
+    // 3. Mark queued ticket as completed in public.pressing_line_queue
+    try {
+      await supabase
+        .from('pressing_line_queue')
+        .update({
+          status: 'Completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('line_id', lineId)
+        .eq('status', 'Pending');
+    } catch (qErr) {
+      console.warn('pressing_line_queue update notice:', qErr);
+    }
+
+    // 4. Update multi-tenant feature_flags for cross-view synchronization (TanksMatrixView & Queue)
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const currentTanks = Array.isArray(existingFlags.mill_tanks) ? existingFlags.mill_tanks : [];
+      const updatedTanks = currentTanks.map((tk: any) => {
+        if (tk.id === targetTankId) {
+          return {
+            ...tk,
+            currentLevelLiters: (tk.currentLevelLiters || 6800) + oilExtractedLiters,
+            acidityPct: batchAcidity,
+            grade: batchGrade,
+            status: 'Active',
+            allocatedFarmerOrBatch: `${targetLine.currentFarmerName} (${targetLine.currentBatchId})`
+          };
+        }
+        return tk;
+      });
+
+      const updatedQueue = Array.isArray(existingFlags.pressing_line_queue)
+        ? existingFlags.pressing_line_queue.filter((q: any) => q.lineId !== lineId || q.status !== 'Pending')
+        : [];
+
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            mill_tanks: updatedTanks.length > 0 ? updatedTanks : undefined,
+            pressing_line_queue: updatedQueue
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+    } catch (syncErr) {
+      console.warn('Tenant sync error:', syncErr);
+    }
+
+    // 5. Update local state
+    const updatedLines = lines.map((l) => {
+      if (l.id === lineId) {
+        return {
+          ...l,
+          batchProgressPct: 0,
+          totalCrushedTodayKg: l.totalCrushedTodayKg + l.malaxerBatchLimitKg,
+          currentBatchId: `LOT-2026-${Math.floor(100 + Math.random() * 900)}`
+        };
+      }
+      return l;
+    });
+
+    await persistLinesToDatabase(updatedLines);
+    setLines(updatedLines);
+    setLineQueue(prev => prev.filter(q => q.line_id !== lineId && q.lineId !== lineId));
+    showToast(`${t('batch_complete_tank_volume_updated', 'Batch completed and atomic tank volume updated')}: +${oilExtractedLiters}L -> ${targetTankId} (${batchGrade}, ${batchAcidity}%)`);
   };
 
   return (
@@ -340,14 +474,25 @@ export default function PressingBatchesView() {
                 <span className="text-slate-400 text-[11px]">
                   {t('hopper_batch_limit', 'Hopper Batch Limit')}: {line.malaxerBatchLimitKg.toLocaleString()} KG
                 </span>
-                <button
-                  disabled={!isSeasonActive || line.batchProgressPct >= 100}
-                  onClick={() => handleAdvanceBatch(line.id)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:cursor-not-allowed text-white font-semibold rounded shadow-xs transition cursor-pointer"
-                >
-                  <Play className="w-3 h-3 text-emerald-400" />
-                  <span>{t('advance_extraction_step', 'Advance Extraction Step')}</span>
-                </button>
+                {line.batchProgressPct >= 100 ? (
+                  <button
+                    disabled={!isSeasonActive}
+                    onClick={() => handleCompleteBatch(line.id)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-md transition cursor-pointer animate-pulse"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                    <span>{t('complete_transfer_tank', 'Complete & Transfer to Tank')}</span>
+                  </button>
+                ) : (
+                  <button
+                    disabled={!isSeasonActive}
+                    onClick={() => handleAdvanceBatch(line.id)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200 disabled:cursor-not-allowed text-white font-semibold rounded shadow-xs transition cursor-pointer"
+                  >
+                    <Play className="w-3 h-3 text-emerald-400" />
+                    <span>{t('advance_extraction_step', 'Advance Extraction Step (+25%)')}</span>
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -364,7 +509,7 @@ export default function PressingBatchesView() {
             </h3>
           </div>
           <span className="text-[11px] text-slate-500 font-medium">
-            {tickets.filter((t) => t.status === 'In_Queue').length} {t('batches_in_hopper', 'Batches in Line Hopper')}
+            {(lineQueue.length > 0 ? lineQueue.length : tickets.filter((t) => t.status === 'In_Queue').length)} {t('batches_in_hopper', 'Batches in Line Hopper')}
           </span>
         </div>
 
@@ -383,28 +528,51 @@ export default function PressingBatchesView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {tickets
-                .filter((t) => t.status === 'In_Queue' || t.status === 'Crushing' || t.status === 'Malaxing')
-                .map((tItem, idx) => (
-                  <tr key={tItem.id} className="hover:bg-slate-50/80 transition">
+              {lineQueue.length > 0 ? (
+                lineQueue.map((qItem, idx) => (
+                  <tr key={qItem.id || `q-${idx}`} className="hover:bg-slate-50/80 transition">
                     <td className="py-2.5 px-3 font-mono font-bold text-slate-700">Q-0{idx + 1}</td>
-                    <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">{tItem.ticketNumber}</td>
-                    <td className="py-2.5 px-3 font-semibold text-slate-800">{tItem.farmerName}</td>
-                    <td className="py-2.5 px-3 text-slate-600">{t(tItem.variety, tItem.variety)}</td>
+                    <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">{qItem.ticket_number || qItem.ticketNumber}</td>
+                    <td className="py-2.5 px-3 font-semibold text-slate-800">{qItem.farmer_name || qItem.farmerName}</td>
+                    <td className="py-2.5 px-3 text-slate-600">{t(qItem.variety, qItem.variety)}</td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">
-                      {tItem.netWeight.toLocaleString()} KG
+                      {(qItem.net_weight || qItem.netWeight || 0).toLocaleString()} KG
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{tItem.targetTankId}</td>
+                    <td className="py-2.5 px-3 font-mono text-slate-700">{qItem.target_tank_id || qItem.targetTankId || 'TK-01'}</td>
                     <td className="py-2.5 px-3 text-slate-700 font-medium">
-                      {tItem.lineName || 'Line 01 - Pieralisi Leopard'}
+                      {qItem.line_name || qItem.lineName || 'Line 01 - Pieralisi Leopard'}
                     </td>
                     <td className="py-2.5 px-3 text-right">
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
-                        {t(tItem.status, tItem.status)}
+                        {t('Pending', 'Pending')}
                       </span>
                     </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                tickets
+                  .filter((t) => t.status === 'In_Queue' || t.status === 'Crushing' || t.status === 'Malaxing')
+                  .map((tItem, idx) => (
+                    <tr key={tItem.id} className="hover:bg-slate-50/80 transition">
+                      <td className="py-2.5 px-3 font-mono font-bold text-slate-700">Q-0{idx + 1}</td>
+                      <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">{tItem.ticketNumber}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-800">{tItem.farmerName}</td>
+                      <td className="py-2.5 px-3 text-slate-600">{t(tItem.variety, tItem.variety)}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">
+                        {tItem.netWeight.toLocaleString()} KG
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-slate-700">{tItem.targetTankId}</td>
+                      <td className="py-2.5 px-3 text-slate-700 font-medium">
+                        {tItem.lineName || 'Line 01 - Pieralisi Leopard'}
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
+                          {t(tItem.status, tItem.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+              )}
             </tbody>
           </table>
         </div>

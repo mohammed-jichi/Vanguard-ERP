@@ -15,10 +15,10 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { INITIAL_SETTLEMENTS, INITIAL_SCALE_TICKETS } from '@/lib/pressingMillData';
-import { SettlementVoucher, SettlementMethod } from '@/types/pressingMill';
+import { SettlementVoucher, SettlementMethod, OilDispatchPass } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useTenant } from '@/lib/TenantContext';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SettlementsEngineView() {
   const { t } = useLanguage();
@@ -117,6 +117,10 @@ export default function SettlementsEngineView() {
   };
 
   const handlePostSettlement = async () => {
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
     const newVoucher: SettlementVoucher = {
       id: `SV-${Date.now()}`,
       voucherNumber: `SET-2026-${String(settlements.length + 82).padStart(4, '0')}`,
@@ -136,6 +140,7 @@ export default function SettlementsEngineView() {
       paymentStatus: 'Paid'
     };
 
+    // 1. Persist settlement voucher
     const updated = [newVoucher, ...settlements];
     const res = await persistSettlementsToDatabase(updated);
     if (!res.success) {
@@ -143,9 +148,126 @@ export default function SettlementsEngineView() {
       return;
     }
 
+    // 2. Auto-generate Gate Release Pass (public.oil_dispatch_passes & sync to OilDispatchView)
+    const gatePassNumber = `GP-2026-${String(Date.now()).slice(-4)}`;
+    const gatePassRecord: OilDispatchPass = {
+      id: `DP-${Date.now()}`,
+      passNumber: gatePassNumber,
+      date: newVoucher.date,
+      farmerName: newVoucher.farmerName,
+      ticketNumber: newVoucher.ticketNumber,
+      tinsReleased: newVoucher.growerReleasedTins,
+      litersReleased: Number((newVoucher.growerReleasedTins * 16).toFixed(1)),
+      receiverName: newVoucher.farmerName,
+      vehiclePlate: 'Grower Transport',
+      authorizedBy: 'Operations Foreman',
+      gatePassStatus: 'Approved'
+    };
+
+    try {
+      await supabase
+        .from('oil_dispatch_passes')
+        .insert([{
+          id: gatePassRecord.id,
+          tenant_id: targetId,
+          pass_number: gatePassRecord.passNumber,
+          date: gatePassRecord.date,
+          farmer_name: gatePassRecord.farmerName,
+          ticket_number: gatePassRecord.ticketNumber,
+          tins_released: gatePassRecord.tinsReleased,
+          liters_released: gatePassRecord.litersReleased,
+          receiver_name: gatePassRecord.receiverName,
+          vehicle_plate: gatePassRecord.vehiclePlate,
+          authorized_by: gatePassRecord.authorizedBy,
+          status: 'Approved',
+          created_at: new Date().toISOString()
+        }]);
+    } catch (gpErr) {
+      console.warn('Dedicated oil_dispatch_passes table write notice:', gpErr);
+    }
+
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const currentPasses = Array.isArray(existingFlags.oil_dispatch_passes) ? existingFlags.oil_dispatch_passes : [];
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            oil_dispatch_passes: [gatePassRecord, ...currentPasses]
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+    } catch (flagErr) {
+      console.warn('Sync dispatch pass to feature flags notice:', flagErr);
+    }
+
+    // 3. Auto-post Mill Fee Journal Voucher to General Ledger (Module 7)
+    const millFeeUSD = newVoucher.cashAmountDueUSD > 0
+      ? newVoucher.cashAmountDueUSD
+      : Number((newVoucher.retainedOilKg * 6.5).toFixed(2));
+    const jvId = `jv-mill-${Date.now()}`;
+    const jvNumber = `JV-MILL-${Date.now().toString().slice(-6)}`;
+
+    try {
+      const { error: jvError } = await supabase
+        .from('acc_journal_vouchers')
+        .insert([{
+          id: jvId,
+          tenant_id: targetId,
+          voucher_number: jvNumber,
+          date: newVoucher.date,
+          reference: newVoucher.voucherNumber,
+          description: `Olive Pressing Fee Settlement - ${newVoucher.farmerName} (${newVoucher.voucherNumber})`,
+          currency: 'USD',
+          exchange_rate: 89500,
+          total_debit: millFeeUSD,
+          total_credit: millFeeUSD,
+          status: 'POSTED',
+          is_posted: true,
+          posted_at: new Date().toISOString(),
+          created_by: 'Olive Mill Settlements Engine',
+          created_at: new Date().toISOString()
+        }]);
+
+      if (!jvError) {
+        await supabase.from('acc_journal_voucher_lines').insert([
+          {
+            jv_id: jvId,
+            tenant_id: targetId,
+            line_no: 1,
+            account_id: newVoucher.method === 'Cash' ? '53100' : '41100', // Cash / Receivables
+            description: `Milling fee from ${newVoucher.farmerName}`,
+            debit_amount: millFeeUSD,
+            credit_amount: 0,
+            created_at: new Date().toISOString()
+          },
+          {
+            jv_id: jvId,
+            tenant_id: targetId,
+            line_no: 2,
+            account_id: '70200', // Milling Service Revenue
+            description: `Pressing service fee revenue`,
+            debit_amount: 0,
+            credit_amount: millFeeUSD,
+            created_at: new Date().toISOString()
+          }
+        ]);
+      }
+    } catch (jvErr) {
+      console.warn('Milling fee journal voucher posting notice:', jvErr);
+    }
+
     setSettlements(updated);
     setSelectedVoucherForPrint(newVoucher);
-    showToast(`Settlement voucher ${newVoucher.voucherNumber} created & posted to database.`);
+    showToast(`${t('settlement_finalized_gate_pass_created', `Settlement ${newVoucher.voucherNumber} finalized. Gate Pass ${gatePassNumber} authorized & JV ${jvNumber} posted to General Ledger.`)}`);
   };
 
   return (

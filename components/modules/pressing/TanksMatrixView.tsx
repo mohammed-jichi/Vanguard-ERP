@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Landmark,
   Droplets,
@@ -19,11 +21,63 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 export default function TanksMatrixView() {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
   const [tanks, setTanks] = useState<StainlessTank[]>(INITIAL_TANKS);
   const [selectedGrade, setSelectedGrade] = useState<'All' | OilGrade | 'Empty'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedTankForSample, setSelectedTankForSample] = useState<StainlessTank | null>(null);
+
+  useEffect(() => {
+    async function loadPersistedTanks() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        // 1. Try public.mill_tanks
+        try {
+          const { data: dbTanks } = await supabase
+            .from('mill_tanks')
+            .select('*')
+            .eq('tenant_id', targetId);
+
+          if (dbTanks && dbTanks.length > 0) {
+            setTanks(prev => prev.map(t => {
+              const match = dbTanks.find(d => d.id === t.id);
+              if (match) {
+                return {
+                  ...t,
+                  currentLevelLiters: Number(match.current_level_liters),
+                  acidityPct: Number(match.acidity_pct),
+                  grade: match.grade || t.grade,
+                  title: match.title || t.title
+                };
+              }
+              return t;
+            }));
+            return;
+          }
+        } catch (dbErr) {
+          console.warn('mill_tanks table query notice:', dbErr);
+        }
+
+        // 2. Fallback to feature_flags.mill_tanks
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (tenantData?.feature_flags?.mill_tanks && Array.isArray(tenantData.feature_flags.mill_tanks) && tenantData.feature_flags.mill_tanks.length > 0) {
+          setTanks(tenantData.feature_flags.mill_tanks);
+        }
+      } catch (err) {
+        console.warn('Notice loading tanks from database:', err);
+      }
+    }
+    loadPersistedTanks();
+  }, [currentTenant?.id]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);

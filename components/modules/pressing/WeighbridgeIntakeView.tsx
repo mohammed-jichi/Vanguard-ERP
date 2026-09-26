@@ -63,12 +63,72 @@ export default function WeighbridgeIntakeView() {
     loadPersistedTickets();
   }, [currentTenant?.id]);
 
-  const persistTicketsToDatabase = async (newTickets: ScaleTicket[]): Promise<{ success: boolean; error?: string }> => {
+  const persistTicketsToDatabase = async (
+    newTickets: ScaleTicket[],
+    queuedTicket?: ScaleTicket
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
       const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
         ? currentTenant.id
         : '00000000-0000-0000-0000-000000000001';
 
+      // 1. Dedicated Supabase Table write to public.weighbridge_tickets
+      const latestTicket = queuedTicket || newTickets[0];
+      if (latestTicket) {
+        try {
+          await supabase.from('weighbridge_tickets').upsert([{
+            ticket_number: latestTicket.ticketNumber,
+            tenant_id: targetId,
+            date: latestTicket.date,
+            time: latestTicket.time,
+            season_id: latestTicket.seasonId,
+            line_id: latestTicket.lineId,
+            farmer_id: latestTicket.farmerId,
+            farmer_name: latestTicket.farmerName,
+            farmer_phone: latestTicket.farmerPhone,
+            vehicle_plate: latestTicket.vehiclePlate,
+            variety: latestTicket.variety,
+            gross_weight: latestTicket.grossWeight,
+            tare_weight: latestTicket.tareWeight,
+            net_weight: latestTicket.netWeight,
+            acidity_pct: latestTicket.acidityTestPct,
+            target_tank_id: latestTicket.targetTankId,
+            settlement_method: latestTicket.settlementMethod,
+            cash_fee_rate_per_kg: latestTicket.cashFeeRatePerKg,
+            in_kind_retention_pct: latestTicket.inKindRetentionPct,
+            estimated_yield_pct: latestTicket.estimatedYieldPct,
+            estimated_oil_kg: latestTicket.estimatedOilKg,
+            status: latestTicket.status,
+            notes: latestTicket.notes,
+            created_at: new Date().toISOString()
+          }], { onConflict: 'ticket_number' });
+        } catch (tableErr) {
+          console.warn('Dedicated weighbridge_tickets table write notice:', tableErr);
+        }
+
+        // 2. Automatically insert into public.pressing_line_queue if queued
+        if (latestTicket.status === 'In_Queue') {
+          try {
+            await supabase.from('pressing_line_queue').insert([{
+              tenant_id: targetId,
+              ticket_number: latestTicket.ticketNumber,
+              line_id: latestTicket.lineId,
+              line_name: latestTicket.lineName,
+              farmer_name: latestTicket.farmerName,
+              variety: latestTicket.variety,
+              net_weight: latestTicket.netWeight,
+              target_tank_id: latestTicket.targetTankId,
+              status: 'Pending',
+              priority: 1,
+              queued_at: new Date().toISOString()
+            }]);
+          } catch (queueErr) {
+            console.warn('Dedicated pressing_line_queue insert notice:', queueErr);
+          }
+        }
+      }
+
+      // 3. Multi-Tenant feature_flags synchronization for cross-client resilience
       const { data: tenantData } = await supabase
         .from('tenants')
         .select('feature_flags')
@@ -76,12 +136,32 @@ export default function WeighbridgeIntakeView() {
         .maybeSingle();
 
       const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const existingQueue = Array.isArray(existingFlags.pressing_line_queue) ? existingFlags.pressing_line_queue : [];
+      const updatedQueue = (queuedTicket && queuedTicket.status === 'In_Queue')
+        ? [
+            {
+              id: `PLQ-${Date.now()}`,
+              ticketNumber: queuedTicket.ticketNumber,
+              lineId: queuedTicket.lineId,
+              lineName: queuedTicket.lineName,
+              farmerName: queuedTicket.farmerName,
+              variety: queuedTicket.variety,
+              netWeight: queuedTicket.netWeight,
+              targetTankId: queuedTicket.targetTankId,
+              status: 'Pending',
+              queuedAt: new Date().toISOString()
+            },
+            ...existingQueue
+          ]
+        : existingQueue;
+
       const { error: dbError } = await supabase
         .from('tenants')
         .update({
           feature_flags: {
             ...existingFlags,
-            weighbridge_tickets: newTickets
+            weighbridge_tickets: newTickets,
+            pressing_line_queue: updatedQueue
           },
           updated_at: new Date().toISOString()
         })
@@ -249,7 +329,7 @@ export default function WeighbridgeIntakeView() {
     const ticketObj = createTicketObject('In_Queue');
     const updatedTickets = [ticketObj, ...tickets];
 
-    const res = await persistTicketsToDatabase(updatedTickets);
+    const res = await persistTicketsToDatabase(updatedTickets, ticketObj);
     if (!res.success) {
       showToast(`Database write error: ${res.error}`);
       return;

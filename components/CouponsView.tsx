@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Pencil,
   Ban,
@@ -34,9 +36,71 @@ interface ToastState {
 
 export default function CouponsView() {
   const { t, dir } = useLanguage();
+  const { currentTenant } = useTenant();
 
   // Main data state
   const [vouchersList, setVouchersList] = useState<OmegaVoucher[]>(INITIAL_VOUCHERS);
+
+  // Initial mount hydration from Supabase
+  useEffect(() => {
+    async function loadCoupons() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        // 1. Try public.promotions
+        try {
+          const { data: dbPromos } = await supabase
+            .from('promotions')
+            .select('*')
+            .eq('tenant_id', targetId);
+
+          if (dbPromos && dbPromos.length > 0) {
+            const mapped: OmegaVoucher[] = dbPromos.map((p, idx) => ({
+              ID: idx + 100,
+              COUPON_ID: p.code,
+              BRAND_ID: 9606,
+              BRANCHID: 1,
+              VOUCHER_TYPE: p.name?.includes('Certificate') ? 1 : 0,
+              COUPON_VALUE: Number(p.discount_value),
+              COUPON_CURRENCY: '$',
+              COUPON_EXPIRYDATE: p.end_date ? p.end_date.split('T')[0] : '2026-12-31',
+              CONSUMED: 0,
+              expired: 0,
+              NOT_ACTIVE: p.is_active ? 0 : 1,
+              DATE_INSERT: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+              DATE_UPDATED: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+              ANYONE_CAN_USE: 1,
+              CUSTOMERID: null,
+              customerAssigned: null,
+              PAYMENTTYPEID: null,
+              EMPLOYEEID: null,
+              employeeAssigned: null
+            }));
+            setVouchersList(mapped);
+            return;
+          }
+        } catch (pErr) {
+          console.warn('Dedicated promotions table read notice:', pErr);
+        }
+
+        // 2. Fallback to feature_flags.vouchers
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (tenantData?.feature_flags?.vouchers && Array.isArray(tenantData.feature_flags.vouchers) && tenantData.feature_flags.vouchers.length > 0) {
+          setVouchersList(tenantData.feature_flags.vouchers);
+        }
+      } catch (err) {
+        console.warn('Notice loading vouchers from database:', err);
+      }
+    }
+    loadCoupons();
+  }, [currentTenant?.id]);
 
   // Filters & Sorting
   const [searchVal, setSearchVal] = useState<string>('');
@@ -169,24 +233,88 @@ export default function CouponsView() {
     setShowPrintModal(true);
   };
 
-  // Deactivate Coupon
-  const handleDeactivate = (voucher: OmegaVoucher) => {
+  // Deactivate Coupon (Zero Mock Real Supabase Mutation)
+  const handleDeactivate = async (voucher: OmegaVoucher) => {
     if (voucher.NOT_ACTIVE === 1) return;
-    setVouchersList(prev =>
-      prev.map(v => (v.ID === voucher.ID ? { ...v, NOT_ACTIVE: 1, DATE_UPDATED: new Date().toISOString().replace('T', ' ').substring(0, 19) } : v))
+
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    // 1. Supabase update to public.promotions
+    try {
+      await supabase
+        .from('promotions')
+        .update({ is_active: false })
+        .eq('code', voucher.COUPON_ID)
+        .eq('tenant_id', targetId);
+    } catch (promoErr) {
+      console.warn('promotions update notice:', promoErr);
+    }
+
+    // 2. Supabase update to public.coupons
+    try {
+      await supabase
+        .from('coupons')
+        .update({ is_active: false, updated_at: new Date().toISOString() })
+        .eq('code', voucher.COUPON_ID)
+        .eq('tenant_id', targetId);
+    } catch (coupErr) {
+      console.warn('coupons update notice:', coupErr);
+    }
+
+    // 3. Multi-tenant feature flags sync
+    const updatedList = vouchersList.map(v =>
+      v.ID === voucher.ID
+        ? { ...v, NOT_ACTIVE: 1, DATE_UPDATED: new Date().toISOString().replace('T', ' ').substring(0, 19) }
+        : v
     );
-    showToast(`Voucher ${voucher.COUPON_ID} deactivated!`, 'warning');
+
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            vouchers: updatedList
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        showToast(`Database write error: ${dbError.message}`, 'error');
+        return;
+      }
+    } catch (err: any) {
+      showToast(`Deactivation error: ${err?.message || 'Database connection error'}`, 'error');
+      return;
+    }
+
+    setVouchersList(updatedList);
+    showToast(`${t('voucher_deactivated_prefix', 'Voucher')} ${voucher.COUPON_ID} ${t('deactivated_success', 'deactivated & persisted.')}`, 'warning');
   };
 
-  // Save New Voucher(s)
-  const handleSaveNew = (e: React.FormEvent) => {
+  // Save New Voucher(s) (Zero Mock Real Supabase Mutation)
+  const handleSaveNew = async (e: React.FormEvent) => {
     e.preventDefault();
     const qty = Math.max(1, Math.min(999, parseInt(newQuantity) || 1));
     const val = parseFloat(newValue) || 0;
     if (val <= 0) {
-      showToast('Please specify a positive voucher value', 'warning');
+      showToast(t('specify_positive_voucher_val', 'Please specify a positive voucher value'), 'warning');
       return;
     }
+
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
 
     const newItems: OmegaVoucher[] = [];
     const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
@@ -220,43 +348,178 @@ export default function CouponsView() {
       });
     }
 
-    setVouchersList(prev => [...newItems, ...prev]);
+    // 1. Write to public.promotions
+    try {
+      const promoPayload = newItems.map(item => ({
+        tenant_id: targetId,
+        code: item.COUPON_ID,
+        name: item.VOUCHER_TYPE === 0 ? 'Coupon Discount' : 'Gift Certificate',
+        discount_type: 'FIXED_AMOUNT',
+        discount_value: item.COUPON_VALUE,
+        start_date: new Date().toISOString(),
+        end_date: item.COUPON_EXPIRYDATE ? new Date(item.COUPON_EXPIRYDATE).toISOString() : new Date().toISOString(),
+        applicable_to: 'ALL_PRODUCTS',
+        is_active: true
+      }));
+
+      await supabase.from('promotions').insert(promoPayload);
+    } catch (promoErr) {
+      console.warn('promotions write notice:', promoErr);
+    }
+
+    // 2. Write to public.coupons
+    try {
+      const couponPayload = newItems.map(item => ({
+        tenant_id: targetId,
+        code: item.COUPON_ID,
+        voucher_type: item.VOUCHER_TYPE,
+        value: item.COUPON_VALUE,
+        currency: item.COUPON_CURRENCY,
+        expiry_date: item.COUPON_EXPIRYDATE,
+        consumed: 0,
+        is_active: true,
+        anyone_can_use: item.ANYONE_CAN_USE,
+        customer_id: item.CUSTOMERID,
+        employee_id: item.EMPLOYEEID
+      }));
+
+      await supabase.from('coupons').insert(couponPayload);
+    } catch (coupErr) {
+      console.warn('coupons write notice:', coupErr);
+    }
+
+    // 3. Multi-tenant feature flags sync
+    const updatedList = [...newItems, ...vouchersList];
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            vouchers: updatedList
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        showToast(`Database write error: ${dbError.message}`, 'error');
+        return;
+      }
+    } catch (err: any) {
+      showToast(`Voucher generation error: ${err?.message || 'Database error'}`, 'error');
+      return;
+    }
+
+    setVouchersList(updatedList);
     showToast(
-      `${qty} ${newVoucherType === 0 ? 'Coupon(s)' : 'Gift Certificate(s)'} generated successfully!`,
+      `${qty} ${newVoucherType === 0 ? t('coupons_generated_suffix', 'Coupon(s) generated and persisted!') : t('gift_cert_generated_suffix', 'Gift Certificate(s) generated and persisted!')}`,
       'success'
     );
     setShowAddModal(false);
   };
 
-  // Save Edit Voucher
-  const handleSaveEdit = (e: React.FormEvent) => {
+  // Save Edit Voucher (Zero Mock Real Supabase Mutation)
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingVoucher) return;
     const val = parseFloat(editValue) || 0;
     if (val <= 0) {
-      showToast('Please enter a valid value', 'warning');
+      showToast(t('enter_valid_value', 'Please enter a valid value'), 'warning');
       return;
     }
 
-    setVouchersList(prev =>
-      prev.map(v => {
-        if (v.ID === editingVoucher.ID) {
-          return {
-            ...v,
-            COUPON_VALUE: val,
-            VOUCHER_TYPE: editVoucherType,
-            COUPON_EXPIRYDATE: editExpiryDate,
-            ANYONE_CAN_USE: editAnyoneCanUse,
-            CUSTOMERID: editAnyoneCanUse === 0 && editSelectedCustomer ? editSelectedCustomer.ID : null,
-            customerAssigned: editAnyoneCanUse === 0 ? editSelectedCustomer : null,
-            DATE_UPDATED: new Date().toISOString().replace('T', ' ').substring(0, 19)
-          };
-        }
-        return v;
-      })
-    );
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
 
-    showToast(`Voucher ${editingVoucher.COUPON_ID} updated!`, 'success');
+    // 1. Supabase update to public.promotions
+    try {
+      await supabase
+        .from('promotions')
+        .update({
+          discount_value: val,
+          end_date: editExpiryDate ? new Date(editExpiryDate).toISOString() : undefined,
+          is_active: true
+        })
+        .eq('code', editingVoucher.COUPON_ID)
+        .eq('tenant_id', targetId);
+    } catch (promoErr) {
+      console.warn('promotions update notice:', promoErr);
+    }
+
+    // 2. Supabase update to public.coupons
+    try {
+      await supabase
+        .from('coupons')
+        .update({
+          value: val,
+          voucher_type: editVoucherType,
+          expiry_date: editExpiryDate,
+          anyone_can_use: editAnyoneCanUse,
+          customer_id: editAnyoneCanUse === 0 && editSelectedCustomer ? editSelectedCustomer.ID : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('code', editingVoucher.COUPON_ID)
+        .eq('tenant_id', targetId);
+    } catch (coupErr) {
+      console.warn('coupons update notice:', coupErr);
+    }
+
+    // 3. Multi-tenant feature flags sync
+    const updatedList = vouchersList.map(v => {
+      if (v.ID === editingVoucher.ID) {
+        return {
+          ...v,
+          COUPON_VALUE: val,
+          VOUCHER_TYPE: editVoucherType,
+          COUPON_EXPIRYDATE: editExpiryDate,
+          ANYONE_CAN_USE: editAnyoneCanUse,
+          CUSTOMERID: editAnyoneCanUse === 0 && editSelectedCustomer ? editSelectedCustomer.ID : null,
+          customerAssigned: editAnyoneCanUse === 0 ? editSelectedCustomer : null,
+          DATE_UPDATED: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        };
+      }
+      return v;
+    });
+
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            vouchers: updatedList
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        showToast(`Database update error: ${dbError.message}`, 'error');
+        return;
+      }
+    } catch (err: any) {
+      showToast(`Update error: ${err?.message || 'Database error'}`, 'error');
+      return;
+    }
+
+    setVouchersList(updatedList);
+    showToast(`${t('voucher_updated_prefix', 'Voucher')} ${editingVoucher.COUPON_ID} ${t('updated_persisted_suffix', 'updated and persisted to database!')}`, 'success');
     setShowEditModal(false);
   };
 
