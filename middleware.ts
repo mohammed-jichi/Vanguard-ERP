@@ -223,12 +223,10 @@ export function middleware(request: NextRequest) {
     // Ensure the effective tenant UUID is persisted in background context/cookie
     rewriteResponse.cookies.set('vanguard_tenant_id', effectiveUuid, {
       path: '/',
-      maxAge: 60 * 60 * 24 * 30,
       sameSite: 'lax',
     });
     rewriteResponse.cookies.set('vanguard_company_code', routeCode, {
       path: '/',
-      maxAge: 60 * 60 * 24 * 30,
       sameSite: 'lax',
     });
 

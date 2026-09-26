@@ -174,7 +174,7 @@ export async function resolveUserTenantAndRole(
   email: string,
   userId?: string,
   companyId?: string
-): Promise<UserTenantAssignment> {
+): Promise<UserTenantAssignment | null> {
   const normalizedEmail = (email || '').trim().toLowerCase();
   const normalizedCompanyCode = (companyId || '').trim();
   const upperCompanyCode = normalizedCompanyCode.toUpperCase();
@@ -300,10 +300,15 @@ export async function resolveUserTenantAndRole(
         }
       }
 
+      if (!matchedTenant) {
+        return null;
+      }
+
       if (matchedTenant) {
         // Query user's profile under this tenant if available
         let userRole: 'COMPANY_ADMIN' | 'MANAGER' | 'STAFF' | 'DRIVER' = 'COMPANY_ADMIN';
         let userFullName = 'Vanguard Operator';
+        let profile: any = null;
 
         try {
           let profileQuery = supabase.from('profiles').select('*');
@@ -314,7 +319,8 @@ export async function resolveUserTenantAndRole(
           } else if (normalizedEmail) {
             profileQuery = profileQuery.ilike('email', normalizedEmail);
           }
-          const { data: profile } = await profileQuery.maybeSingle();
+          const { data } = await profileQuery.maybeSingle();
+          profile = data;
           if (profile) {
             if (profile.role && profile.role !== 'SUPER_ADMIN') {
               userRole = profile.role as any;
@@ -329,6 +335,28 @@ export async function resolveUserTenantAndRole(
           }
         } catch (e) {
           // keep defaults
+        }
+
+        // Verify user membership in the requested Company / Tenant
+        const isSuper = isKnownSuperAdminEmail || profile?.role === 'SUPER_ADMIN';
+        const isOwner = Boolean(matchedTenant.owner_email && matchedTenant.owner_email.toLowerCase() === normalizedEmail);
+        const profileTenantId = profile?.tenant_id || profile?.company_id;
+        const isExplicitlyAssigned = Boolean(
+          profileTenantId && (
+            profileTenantId === matchedTenant.id ||
+            String(profileTenantId) === String(matchedTenant.company_id) ||
+            String(profileTenantId) === String(matchedTenant.id)
+          )
+        );
+        const isPrimaryDefaultAllowed =
+          (matchedTenant.company_id === 1300 || matchedTenant.id === DEFAULT_MASTER_TENANT.id) &&
+          (!profileTenantId || profileTenantId === DEFAULT_MASTER_TENANT.id || String(profileTenantId) === '1300');
+
+        const isAuthorizedForTenant = isSuper || isOwner || isExplicitlyAssigned || isPrimaryDefaultAllowed;
+
+        if (!isAuthorizedForTenant) {
+          console.warn(`User ${normalizedEmail} does not belong to Company ID: ${normalizedCompanyCode}`);
+          return null;
         }
 
         return {

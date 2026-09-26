@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
 
         // Query user's assigned tenant workspace & authorization role from Supabase
         const assignment = await resolveUserTenantAndRole(userEmail, userId, companyId);
+        if (!assignment) {
+          return NextResponse.redirect(new URL('/login?error=unauthorized_tenant', request.url));
+        }
 
         // Determine destination: tenant workspace dashboard vs /admin
         const destination = getPostLoginDestination(assignment, next);

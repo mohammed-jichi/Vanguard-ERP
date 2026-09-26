@@ -137,10 +137,20 @@ export default function LoginPage() {
       document.cookie = `sb-${verifiedUserId}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
       document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
 
-      // Query user's assigned tenant & authorization role dynamically from Supabase
+      // Verify that the authenticated user belongs to the specified Company / Tenant ID
       const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, cleanCompanyId);
 
-      // Persist tenant session to cookies and client localStorage
+      if (!assignment) {
+        setIsLoading(false);
+        // Revoke the Supabase session so unauthorized attempt is completely cleaned up
+        await supabase.auth.signOut().catch(() => {});
+        document.cookie = `sb-${verifiedUserId}-auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+        document.cookie = `sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+        showToast(t('user_not_in_tenant', 'User account is not registered with this Company ID.'), 'error');
+        return;
+      }
+
+      // Persist tenant session to cookies and client sessionStorage
       persistTenantSession(assignment);
 
       // Redirect directly to tenant workspace dashboard route (e.g. /[tenant_id]/dashboard)

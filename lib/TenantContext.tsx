@@ -329,12 +329,7 @@ const TenantContext = createContext<TenantContextType | undefined>(undefined);
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [registeredCompanies, setRegisteredCompanies] = useState<TenantCompany[]>(INITIAL_COMPANIES);
   const [currentTenant, setCurrentTenant] = useState<TenantCompany>(DEFAULT_SUPERADMIN_TENANT);
-  const [currentUser, setCurrentUser] = useState<TenantUser | null>({
-    id: 'usr-superadmin-01',
-    email: 'mohammed@vanguard-erp.com',
-    fullName: 'Mohammed (Vanguard Super Admin)',
-    role: 'SUPER_ADMIN'
-  });
+  const [currentUser, setCurrentUser] = useState<TenantUser | null>(null);
 
   const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
 

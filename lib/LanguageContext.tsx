@@ -65,6 +65,8 @@ export interface LanguageContextType {
 
 const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   en: {
+    'user_not_in_tenant': "User account is not registered with this Company ID.",
+
     'show_password': "Show password",
     'hide_password': "Hide password",
 
@@ -4663,6 +4665,8 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   ar: {
+    'user_not_in_tenant': "حساب المستخدم غير مسجل ضمن معرّف هذه المؤسسة.",
+
     'show_password': "إظهار كلمة المرور",
     'hide_password': "إخفاء كلمة المرور",
 
@@ -9261,6 +9265,8 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fr: {
+    'user_not_in_tenant': "Le compte utilisateur n'est pas enregistré pour cet identifiant d'entreprise.",
+
     'show_password': "Afficher le mot de passe",
     'hide_password': "Masquer le mot de passe",
 
@@ -13858,6 +13864,8 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   es: {
+    'user_not_in_tenant': "La cuenta de usuario no está registrada con este ID de empresa.",
+
     'show_password': "Mostrar contraseña",
     'hide_password': "Ocultar contraseña",
 
@@ -18455,6 +18463,8 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fa: {
+    'user_not_in_tenant': "حساب کاربری برای این شناسه شرکت ثبت نشده است.",
+
     'show_password': "نمایش رمز عبور",
     'hide_password': "پنهان کردن رمز عبور",
 
