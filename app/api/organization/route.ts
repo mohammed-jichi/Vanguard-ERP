@@ -92,8 +92,57 @@ export async function GET(request: Request) {
       // fallback
     }
 
+    const licenseModules = data.feature_flags?.license_modules || [
+      {
+        id: 'core-accounting',
+        name: 'Vanguard Core Accounting',
+        category: 'Financials & General Ledger',
+        licenseCount: '1',
+        allocatedQty: '1 Workstation / Unlimited Ent.',
+        status: 'ACTIVE',
+        description: 'Multi-currency dual-ledger engine, automated PCA & IFRS fiscal chart of accounts, tax return generators, and balance sheet auditing.'
+      },
+      {
+        id: 'cloud-back-office',
+        name: 'Vanguard Cloud Back Office',
+        category: 'HQ Management & Controllership',
+        licenseCount: '1',
+        allocatedQty: '1 Workstation / Unlimited Ent.',
+        status: 'ACTIVE',
+        description: 'Master controllership console, multi-tenant workspace routing, cross-departmental operations inbox, and executive BI analytics.'
+      },
+      {
+        id: 'cloud-inventory',
+        name: 'Vanguard Cloud Inventory Management',
+        category: 'Warehouse & Operations Center',
+        licenseCount: '1',
+        allocatedQty: '1 Workstation / Unlimited Ent.',
+        status: 'ACTIVE',
+        description: 'Real-time multi-depot stock balance, olive oil tank volume tracking, batch formulation assembly, and automated reorder triggers.'
+      },
+      {
+        id: 'sales-workstations',
+        name: 'Vanguard ERP Sales Workstations',
+        category: 'Commercial Distribution & CRM',
+        licenseCount: '1',
+        allocatedQty: '1 Workstation / Unlimited Ent.',
+        status: 'ACTIVE',
+        description: 'Enterprise commercial distribution, B2B wholesale quotation lifecycle, van sales dispatch, and credit limit validations.'
+      },
+      {
+        id: 'pos-workstations',
+        name: 'POS Workstations',
+        category: 'Retail Point-of-Sale (V-POS)',
+        licenseCount: '4',
+        allocatedQty: '4 Workstations / Unlimited Ent.',
+        status: 'ACTIVE',
+        description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.'
+      }
+    ];
+
     const responseData = {
       ...data,
+      license_modules: licenseModules,
       metrics: {
         brandsCount,
         branchesCount,

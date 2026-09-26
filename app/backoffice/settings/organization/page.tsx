@@ -148,6 +148,13 @@ export default function OrganizationSettingsPage() {
               erpUsersCount: Number(flags.team_metrics.erp_users) || 2,
             });
           }
+
+          // Update dynamic license modules if returned by live Supabase API or tenant feature_flags
+          if (tenant.license_modules && Array.isArray(tenant.license_modules) && tenant.license_modules.length > 0) {
+            setLicenseModules(tenant.license_modules);
+          } else if (flags.license_modules && Array.isArray(flags.license_modules) && flags.license_modules.length > 0) {
+            setLicenseModules(flags.license_modules);
+          }
         }
       } catch (err) {
         console.warn('Could not fetch live organization tenant metrics:', err);
@@ -187,8 +194,8 @@ export default function OrganizationSettingsPage() {
     setTimeout(() => setCopiedKey(false), 2500);
   };
 
-  // The 5 Required Enterprise Modules
-  const licenseModules: LicenseModuleItem[] = [
+  // The 5 Enterprise Modules (Read dynamically from live Supabase tenant data)
+  const [licenseModules, setLicenseModules] = useState<LicenseModuleItem[]>([
     {
       id: 'core-accounting',
       name: 'Vanguard Core Accounting',
@@ -234,7 +241,7 @@ export default function OrganizationSettingsPage() {
       status: 'ACTIVE',
       description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.',
     },
-  ];
+  ]);
 
   return (
     <div dir={dir} className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-fadeIn font-sans">
@@ -836,7 +843,7 @@ export default function OrganizationSettingsPage() {
                             </div>
                           </td>
                           <td className="py-3.5 px-4 text-center min-w-[120px]">
-                            <span className="whitespace-nowrap inline-flex items-center justify-center px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 border border-slate-200 text-slate-900 font-mono">
+                            <span className="whitespace-nowrap inline-flex items-center justify-center px-3 py-1 text-xs font-semibold rounded-full min-w-[36px] bg-slate-100 border border-slate-200 text-slate-900 font-mono">
                               {mod.licenseCount}
                             </span>
                           </td>
