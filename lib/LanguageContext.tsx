@@ -65,6 +65,17 @@ export interface LanguageContextType {
 
 const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   en: {
+    'disbursing': "Disbursing...",
+    'approve_and_disburse_payroll': "Approve & Disburse Payroll",
+    'payroll_disbursed_badge': "Payroll Disbursed & Posted to General Ledger",
+    'payroll_disbursed_success': "Payroll approved & disbursed successfully. General Ledger vouchers posted.",
+    'payroll_already_disbursed': "Payroll for this period has already been disbursed.",
+    'customer_receipt_recorded': "Customer receipt recorded and aging balance cleared.",
+    'points_awarded': "Loyalty points awarded",
+    'points_adjusted_success': "Loyalty points adjusted successfully.",
+    'reward_issued_success': "Reward voucher issued successfully.",
+
+    'invalid_credentials': 'Invalid email or password.',
     'receive_cargo': 'Receive Cargo at Destination',
     'po_converted_locked': 'PO Converted to AP Bill (Locked)',
     'po_locked_converted_notice': 'Cannot modify: Purchase Order is already converted to a Purchase Invoice and is locked.',
@@ -4649,6 +4660,17 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   ar: {
+    'disbursing': "جارٍ الصرف والتسجيل...",
+    'approve_and_disburse_payroll': "اعتماد وصرف كشوف المرتبات",
+    'payroll_disbursed_badge': "تم صرف الرواتب وترحيل قيود اليومية العامة",
+    'payroll_disbursed_success': "تم اعتماد وصرف الرواتب بنجاح وترحيل قيود اليومية المحاسبية.",
+    'payroll_already_disbursed': "تم صرف رواتب هذه الفترة مسبقاً.",
+    'customer_receipt_recorded': "تم تسجيل سند قبض العميل وتحديث أعمار الديون.",
+    'points_awarded': "تم منح نقاط الولاء",
+    'points_adjusted_success': "تم تعديل رصيد نقاط الولاء بنجاح.",
+    'reward_issued_success': "تم إصدار قسيمة المكافأة بنجاح.",
+
+    'invalid_credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
     'receive_cargo': 'استلام البضائع في الوجهة',
     'po_converted_locked': 'تم تحويل أمر الشراء إلى فاتورة مورد (مغلق)',
     'po_locked_converted_notice': 'لا يمكن التعديل: أمر الشراء تم تحويله بالفعل إلى فاتورة مورد وهو مغلق.',
@@ -9233,6 +9255,17 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fr: {
+    'disbursing': "Décaissement en cours...",
+    'approve_and_disburse_payroll': "Approuver et décaisser la paie",
+    'payroll_disbursed_badge': "Paie décaissée et comptabilisée au grand livre",
+    'payroll_disbursed_success': "Paie approuvée et décaissée avec succès. Pièces du grand livre comptabilisées.",
+    'payroll_already_disbursed': "La paie pour cette période a déjà été décaissée.",
+    'customer_receipt_recorded': "Reçu client enregistré et solde échu apuré.",
+    'points_awarded': "Points de fidélité attribués",
+    'points_adjusted_success': "Points de fidélité ajustés avec succès.",
+    'reward_issued_success': "Bon de récompense émis avec succès.",
+    'invalid_credentials': "Adresse e-mail ou mot de passe invalide.",
+
     'receive_cargo': 'Réceptionner la cargaison à destination',
     'po_converted_locked': 'Bon de commande converti en facture fournisseur (Verrouillé)',
     'po_locked_converted_notice': 'Modification impossible : le bon de commande a déjà été converti en facture fournisseur et est verrouillé.',
@@ -13816,6 +13849,17 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   es: {
+    'disbursing': "Desembolsando...",
+    'approve_and_disburse_payroll': "Aprobar y desembolsar nómina",
+    'payroll_disbursed_badge': "Nómina desembolsada y contabilizada en el libro mayor",
+    'payroll_disbursed_success': "Nómina aprobada y desembolsada con éxito. Comprobantes contabilizados en el libro mayor.",
+    'payroll_already_disbursed': "La nómina de este período ya ha sido desembolsada.",
+    'customer_receipt_recorded': "Recibo de cliente registrado y saldo por antigüedad liquidado.",
+    'points_awarded': "Puntos de fidelidad otorgados",
+    'points_adjusted_success': "Puntos de fidelidad ajustados con éxito.",
+    'reward_issued_success': "Cupón de recompensa emitido con éxito.",
+    'invalid_credentials': "Correo electrónico o contraseña no válidos.",
+
     'receive_cargo': 'Recibir carga en destino',
     'po_converted_locked': 'Orden de compra convertida a factura de proveedor (Bloqueada)',
     'po_locked_converted_notice': 'No se puede modificar: la orden de compra ya se ha convertido en una factura de compras y está bloqueada.',
@@ -18399,6 +18443,17 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fa: {
+    'disbursing': "در حال پرداخت...",
+    'approve_and_disburse_payroll': "تأیید و پرداخت حقوق",
+    'payroll_disbursed_badge': "حقوق پرداخت شد و در دفتر کل ثبت گردید",
+    'payroll_disbursed_success': "حقوق و دستمزد با موفقیت تأیید و پرداخت شد. اسناد دفتر کل ثبت گردید.",
+    'payroll_already_disbursed': "حقوق و دستمزد این دوره قبلاً پرداخت شده است.",
+    'customer_receipt_recorded': "رسید مشتری ثبت و مانده تسویه شد.",
+    'points_awarded': "امتیازات وفاداری اعطا شد",
+    'points_adjusted_success': "امتیازات وفاداری با موفقیت تنظیم شد.",
+    'reward_issued_success': "کوپن پاداش با موفقیت صادر شد.",
+    'invalid_credentials': "ایمیل یا رمز عبور نامعتبر است.",
+
     'receive_cargo': 'دریافت بار در مقصد',
     'po_converted_locked': 'سفارش خرید به صورت‌حساب بستانکاران تبدیل شد (قفل شده)',
     'po_locked_converted_notice': 'امکان ویرایش وجود ندارد: این سفارش خرید قبلاً به فاکتور خرید تبدیل و قفل شده است.',
