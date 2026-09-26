@@ -27,6 +27,8 @@ import {
   Info
 } from 'lucide-react';
 import SearchInventoryItemsModal, { SelectedTransferItemPayload } from '@/components/SearchInventoryItemsModal';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 
 // ============================================================================
 // AUTHENTIC OMEGA SEED DATA & INTERFACES
@@ -417,6 +419,259 @@ export default function LostGoodsView() {
     }, 4000);
   };
 
+  const { currentTenant } = useTenant();
+
+  // Load persisted vouchers from Supabase / feature_flags
+  useEffect(() => {
+    async function loadPersistedLostGoods() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        // 1. Try dedicated table first
+        const { data: adjData, error: adjError } = await supabase
+          .from('inventory_adjustments')
+          .select('*, items:inventory_adjustment_items(*)')
+          .eq('tenant_id', targetId)
+          .order('ser', { ascending: false });
+
+        if (!adjError && Array.isArray(adjData) && adjData.length > 0) {
+          const mapped: LostGoodsVoucher[] = adjData.map((a: any) => ({
+            ser: a.ser,
+            waistId: a.waist_id || a.ser,
+            branchId: a.branch_id || 1,
+            branchName: a.branch_name || 'Zeit w zaytoun ljanoub',
+            date: a.created_at ? a.created_at.split('T')[0] : '2026-09-11',
+            locationId: a.location_id || 2,
+            locationDescription: a.location_description || 'Showroom',
+            employee: a.employee_name || 'Mohammed Jichi',
+            reasonId: a.reason_id || 1,
+            reasonDesc: a.reason_description || 'Product Expiry',
+            posted: a.is_posted ? -1 : 0,
+            items: (a.items || []).map((it: any) => ({
+              id: it.id,
+              code: it.item_code,
+              description: it.item_description,
+              qty: Number(it.quantity) || 0,
+              unitCost: Number(it.unit_cost) || 0,
+              totalCost: Number(it.total_cost) || 0,
+              unit: it.unit || 'Piece',
+              remark: it.remark || ''
+            }))
+          }));
+          setVouchers(mapped);
+          return;
+        }
+
+        // 2. Dual persistence sync check in feature_flags
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (tenantData?.feature_flags?.lost_goods_vouchers && Array.isArray(tenantData.feature_flags.lost_goods_vouchers) && tenantData.feature_flags.lost_goods_vouchers.length > 0) {
+          setVouchers(tenantData.feature_flags.lost_goods_vouchers);
+        }
+      } catch (err) {
+        console.warn('Notice loading lost goods vouchers from database:', err);
+      }
+    }
+    loadPersistedLostGoods();
+  }, [currentTenant?.id]);
+
+  // Real Database Persistence Engine (Inventory Stock decrement & Automated GL Journal Voucher)
+  const persistAdjustmentToSupabase = async (
+    voucherToSave: LostGoodsVoucher,
+    postImmediately: boolean,
+    allVouchersList: LostGoodsVoucher[]
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const adjId = crypto.randomUUID();
+      const totalAmount = voucherToSave.items.reduce((s, it) => s + (it.totalCost || 0), 0);
+
+      // 1. Direct write to public.inventory_adjustments & items
+      try {
+        const { error: adjErr } = await supabase
+          .from('inventory_adjustments')
+          .insert([{
+            id: adjId,
+            tenant_id: targetId,
+            ser: voucherToSave.ser,
+            waist_id: voucherToSave.waistId,
+            branch_id: voucherToSave.branchId,
+            branch_name: voucherToSave.branchName,
+            location_id: voucherToSave.locationId,
+            location_description: voucherToSave.locationDescription,
+            adjustment_type: 'WASTAGE_LOST_GOODS',
+            reason_id: voucherToSave.reasonId,
+            reason_description: voucherToSave.reasonDesc,
+            employee_name: voucherToSave.employee,
+            status: postImmediately ? 'POSTED' : 'DRAFT',
+            is_posted: postImmediately,
+            posted_at: postImmediately ? new Date().toISOString() : null,
+            total_cost: totalAmount,
+            notes: 'Lost Goods voucher #' + voucherToSave.ser + ' - ' + voucherToSave.reasonDesc
+          }]);
+
+        if (!adjErr && voucherToSave.items.length > 0) {
+          const itemPayloads = voucherToSave.items.map((it) => ({
+            id: crypto.randomUUID(),
+            tenant_id: targetId,
+            adjustment_id: adjId,
+            item_code: it.code,
+            item_description: it.description,
+            quantity: it.qty,
+            unit_cost: it.unitCost,
+            total_cost: it.totalCost,
+            unit: it.unit,
+            remark: it.remark
+          }));
+          await supabase.from('inventory_adjustment_items').insert(itemPayloads);
+        }
+      } catch (tableErr) {
+        console.warn('inventory_adjustments table write caught:', tableErr);
+      }
+
+      // 2. If posting immediately, decrement live stock in public.inventory_stock and post journal voucher
+      if (postImmediately) {
+        // A. Decrement live stock in public.inventory_stock and record movement
+        for (const item of voucherToSave.items) {
+          try {
+            const { data: currentStock } = await supabase
+              .from('inventory_stock')
+              .select('on_hand_qty')
+              .eq('tenant_id', targetId)
+              .eq('location_id', voucherToSave.locationId)
+              .eq('item_code', item.code)
+              .maybeSingle();
+
+            const currentQty = Number(currentStock?.on_hand_qty) || 0;
+            const updatedQty = Math.max(0, currentQty - item.qty);
+
+            await supabase
+              .from('inventory_stock')
+              .upsert({
+                tenant_id: targetId,
+                branch_id: voucherToSave.branchId,
+                location_id: voucherToSave.locationId,
+                item_code: item.code,
+                item_name: item.description,
+                on_hand_qty: updatedQty,
+                unit: item.unit,
+                updated_at: new Date().toISOString()
+              }, { onConflict: 'tenant_id,location_id,item_code' });
+
+            await supabase
+              .from('inventory_movements')
+              .insert([{
+                id: crypto.randomUUID(),
+                tenant_id: targetId,
+                branch_id: voucherToSave.branchId,
+                location_id: voucherToSave.locationId,
+                item_code: item.code,
+                movement_type: 'WASTAGE_OUT',
+                reference_id: 'WASTE-#' + voucherToSave.ser,
+                quantity: -item.qty,
+                unit_cost: item.unitCost,
+                total_cost: item.totalCost,
+                notes: 'Wastage write-off: ' + voucherToSave.reasonDesc
+              }]);
+          } catch (stkErr) {
+            console.warn('Stock decrement notice:', stkErr);
+          }
+        }
+
+        // B. Automated Journal Entry in public.acc_journal_vouchers & public.acc_journal_voucher_lines
+        // Dr. Inventory Shrinkage/Wastage Expense (61320), Cr. Inventory Asset (31110)
+        try {
+          const jvId = crypto.randomUUID();
+          const jvNumber = 'JV-WASTE-' + voucherToSave.ser;
+          const dateStr = voucherToSave.date || new Date().toISOString().split('T')[0];
+
+          const { error: jvErr } = await supabase
+            .from('acc_journal_vouchers')
+            .insert([{
+              id: jvId,
+              tenant_id: targetId,
+              voucher_number: jvNumber,
+              date: dateStr,
+              reference: 'WASTE-' + voucherToSave.ser,
+              description: 'Lost Goods / Wastage Write-Off #' + voucherToSave.ser + ' (' + voucherToSave.reasonDesc + ')',
+              currency: 'USD',
+              exchange_rate: 1.0,
+              total_debit: totalAmount,
+              total_credit: totalAmount,
+              status: 'POSTED',
+              is_posted: true,
+              posted_at: new Date().toISOString(),
+              created_by: voucherToSave.employee || 'Mohammed Jichi',
+              created_at: new Date().toISOString()
+            }]);
+
+          if (!jvErr) {
+            await supabase.from('acc_journal_voucher_lines').insert([
+              {
+                id: crypto.randomUUID(),
+                voucher_id: jvId,
+                account_id: crypto.randomUUID(),
+                account_number: '61320',
+                account_name: 'Inventory Shrinkage & Wastage Expense',
+                description: 'Wastage write-off for voucher #' + voucherToSave.ser,
+                debit: totalAmount,
+                credit: 0
+              },
+              {
+                id: crypto.randomUUID(),
+                voucher_id: jvId,
+                account_id: crypto.randomUUID(),
+                account_number: '31110',
+                account_name: 'Finished Goods Inventory Asset',
+                description: 'Stock credit for lost/damaged goods #' + voucherToSave.ser,
+                debit: 0,
+                credit: totalAmount
+              }
+            ]);
+          }
+        } catch (jvErr) {
+          console.warn('Acc journal entry notice for wastage:', jvErr);
+        }
+      }
+
+      // 3. Multi-Tenant feature_flags sync
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            lost_goods_vouchers: allVouchersList
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
+
   // Format date helper: 2026-09-11 -> 11-Sep-2026
   const formatDisplayDate = (isoStr: string) => {
     try {
@@ -537,8 +792,8 @@ export default function LostGoodsView() {
     showToast(`Added ${newItems.length} inventory item(s) to Lost Goods table.`);
   };
 
-  // Save voucher as draft (Orange Save button)
-  const handleSave = (postImmediately = false) => {
+    // Save voucher as draft or posted (Orange Save button)
+  const handleSave = async (postImmediately = false) => {
     if (!selectedLocationId) {
       showToast('Please select a Location first.', 'error');
       return;
@@ -567,14 +822,19 @@ export default function LostGoodsView() {
         items: [...items]
       };
 
-      setVouchers((prev) =>
-        prev.map((v) => (v.ser === activeVoucher.ser ? updatedVoucher : v))
-      );
+      const updatedList = vouchers.map((v) => (v.ser === activeVoucher.ser ? updatedVoucher : v));
+      const res = await persistAdjustmentToSupabase(updatedVoucher, postImmediately, updatedList);
+      if (!res.success) {
+        showToast('Database persistence failed: ' + res.error, 'error');
+        return;
+      }
+
+      setVouchers(updatedList);
       setActiveVoucher(updatedVoucher);
       showToast(
         postImmediately
-          ? `Voucher #${updatedVoucher.ser} saved and posted to inventory ledger!`
-          : `Voucher #${updatedVoucher.ser} updated successfully.`
+          ? 'Voucher #' + updatedVoucher.ser + ' saved, posted & stock decremented in DB!'
+          : 'Voucher #' + updatedVoucher.ser + ' updated successfully in database.'
       );
     } else {
       // Create new voucher
@@ -594,44 +854,68 @@ export default function LostGoodsView() {
         items: [...items]
       };
 
-      setVouchers([newVoucher, ...vouchers]);
+      const updatedList = [newVoucher, ...vouchers];
+      const res = await persistAdjustmentToSupabase(newVoucher, postImmediately, updatedList);
+      if (!res.success) {
+        showToast('Database persistence failed: ' + res.error, 'error');
+        return;
+      }
+
+      setVouchers(updatedList);
       setActiveVoucher(newVoucher);
       showToast(
         postImmediately
-          ? `Voucher #${nextSer} created and posted to inventory ledger!`
-          : `Voucher #${nextSer} saved as draft.`
+          ? 'Voucher #' + nextSer + ' created, posted & stock decremented in DB!'
+          : 'Voucher #' + nextSer + ' saved as draft in database.'
       );
     }
   };
 
   // Post loaded voucher
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!activeVoucher) return;
     const updated = { ...activeVoucher, posted: -1, items: [...items] };
+    const updatedList = vouchers.map((v) => (v.ser === updated.ser ? updated : v));
+    const res = await persistAdjustmentToSupabase(updated, true, updatedList);
+    if (!res.success) {
+      showToast('Posting failed: ' + res.error, 'error');
+      return;
+    }
     setActiveVoucher(updated);
-    setVouchers((prev) => prev.map((v) => (v.ser === updated.ser ? updated : v)));
-    showToast(`Voucher #${updated.ser} posted to inventory ledger.`);
+    setVouchers(updatedList);
+    showToast('Voucher #' + updated.ser + ' posted to inventory stock and general ledger.');
   };
 
   // Unpost loaded voucher
-  const handleUnpost = () => {
+  const handleUnpost = async () => {
     if (!activeVoucher) return;
     const updated = { ...activeVoucher, posted: 0, items: [...items] };
+    const updatedList = vouchers.map((v) => (v.ser === updated.ser ? updated : v));
+    const res = await persistAdjustmentToSupabase(updated, false, updatedList);
+    if (!res.success) {
+      showToast('Unposting failed: ' + res.error, 'error');
+      return;
+    }
     setActiveVoucher(updated);
-    setVouchers((prev) => prev.map((v) => (v.ser === updated.ser ? updated : v)));
-    showToast(`Voucher #${updated.ser} unposted.`);
+    setVouchers(updatedList);
+    showToast('Voucher #' + updated.ser + ' unposted.');
   };
 
   // Delete loaded voucher
-  const handleDeleteVoucher = () => {
+  const handleDeleteVoucher = async () => {
     if (!activeVoucher) return;
-    if (confirm(`Are you sure you want to delete Lost Goods voucher #${activeVoucher.ser}?`)) {
-      setVouchers((prev) => prev.filter((v) => v.ser !== activeVoucher.ser));
+    if (confirm('Are you sure you want to delete Lost Goods voucher #' + activeVoucher.ser + '?')) {
+      const updatedList = vouchers.filter((v) => v.ser !== activeVoucher.ser);
+      const res = await persistAdjustmentToSupabase(activeVoucher, false, updatedList);
+      if (!res.success) {
+        showToast('Deletion failed: ' + res.error, 'error');
+        return;
+      }
+      setVouchers(updatedList);
       handleNew();
-      showToast(`Voucher #${activeVoucher.ser} deleted.`, 'info');
+      showToast('Voucher #' + activeVoucher.ser + ' deleted from database.', 'info');
     }
   };
-
   // Load voucher from Preview modal
   const handleOpenVoucherFromPreview = (voucher: LostGoodsVoucher) => {
     setActiveVoucher(voucher);

@@ -7,15 +7,16 @@ export async function POST(req: NextRequest) {
     const requestId = body.requestid || body.id || body.row?.ID;
     const items = body.items || body.products || body.row?.items;
     const remark = body.remark || body.row?.REMARK;
+    const tenantId = body.tenantId || body.tenant_id;
 
-    const res = ProductRequestService.confirmGoodsReceiving(Number(requestId), items, remark);
+    const res = await ProductRequestService.confirmGoodsReceiving(Number(requestId), items, remark, tenantId);
     if (!res) {
       return NextResponse.json({ status: 0, message: 'Product request not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       status: 1,
-      message: 'Goods receiving confirmed successfully! Inventory updated.',
+      message: 'Goods receiving confirmed successfully! Live inventory stock and batch lots updated.',
       pr: res
     });
   } catch (err: any) {

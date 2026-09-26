@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabaseClient';
 import {
   ProductRequestHeader,
   ProductRequestLineItem,
@@ -621,11 +622,12 @@ export class ProductRequestService {
     return pr;
   }
 
-  public static confirmGoodsReceiving(
+  public static async confirmGoodsReceiving(
     requestId: number,
     receivedItems?: Array<{ ITEMID: number; QTYREC: number; REMARK?: string }>,
-    remark?: string
-  ): ProductRequestHeader | null {
+    remark?: string,
+    tenantId?: string
+  ): Promise<ProductRequestHeader | null> {
     const pr = this.saveGoodsReceiving(requestId, receivedItems, remark);
     if (!pr) return null;
 
@@ -636,6 +638,104 @@ export class ProductRequestService {
         it.QTYREC = it.QTYAPP;
       }
     });
+
+    const targetTenantId = (tenantId && tenantId !== '1300' && !tenantId.startsWith('comp-'))
+      ? tenantId
+      : '00000000-0000-0000-0000-000000000001';
+
+    // 1. Live stock increment & batch lot / movement logging in Supabase
+    for (const item of pr.items) {
+      const recQty = Number(item.QTYREC) || Number(item.QTYAPP) || 0;
+      if (recQty <= 0) continue;
+
+      try {
+        const { data: stockRow } = await supabase
+          .from('inventory_stock')
+          .select('on_hand_qty')
+          .eq('tenant_id', targetTenantId)
+          .eq('location_id', pr.LOCATIONID || 1)
+          .eq('item_code', item.ITEMCODE)
+          .maybeSingle();
+
+        const currentQty = Number(stockRow?.on_hand_qty) || 0;
+        const newQty = currentQty + recQty;
+
+        await supabase
+          .from('inventory_stock')
+          .upsert({
+            tenant_id: targetTenantId,
+            branch_id: pr.BRANCHID || 1,
+            location_id: pr.LOCATIONID || 1,
+            item_code: item.ITEMCODE,
+            item_name: item.ITEMDESCRIPTION,
+            on_hand_qty: newQty,
+            unit: item.UNIT,
+            average_unit_cost: item.COST,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'tenant_id,location_id,item_code' });
+
+        const lotNumber = 'LOT-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + item.ITEMID;
+        await supabase
+          .from('inventory_movements')
+          .insert([{
+            id: crypto.randomUUID(),
+            tenant_id: targetTenantId,
+            branch_id: pr.BRANCHID || 1,
+            location_id: pr.LOCATIONID || 1,
+            item_code: item.ITEMCODE,
+            movement_type: 'PURCHASE_RECEIPT',
+            reference_id: pr.REQUESTNB,
+            quantity: recQty,
+            unit_cost: item.COST,
+            total_cost: recQty * item.COST,
+            notes: 'GRN Received Lot #' + lotNumber + ': ' + (item.REMARK || pr.REMARK || 'Goods accepted')
+          }]);
+      } catch (stockErr) {
+        console.warn('Inventory stock update notice during GRN confirm:', stockErr);
+      }
+    }
+
+    // 2. Update status in purchase orders & product requests in Supabase
+    try {
+      await supabase
+        .from('purchase_orders')
+        .update({
+          status: 'Received',
+          updated_at: new Date().toISOString()
+        })
+        .or('po_number.eq.' + pr.REQUESTNB + ',pr_number.eq.' + pr.REQUESTNB);
+    } catch (poErr) {
+      console.warn('PO status update notice:', poErr);
+    }
+
+    // 3. Multi-Tenant feature_flags sync
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetTenantId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || {};
+      const existingPrs = Array.isArray(existingFlags.product_requests) ? existingFlags.product_requests : [];
+      const updatedPrs = existingPrs.map((r: any) => (r.ID === pr.ID ? pr : r));
+      if (!updatedPrs.some((r: any) => r.ID === pr.ID)) {
+        updatedPrs.unshift(pr);
+      }
+
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            product_requests: updatedPrs
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetTenantId);
+    } catch (tenantErr) {
+      console.warn('Tenant sync notice during GRN confirm:', tenantErr);
+    }
 
     return pr;
   }

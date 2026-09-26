@@ -590,6 +590,10 @@ export default function PurchaseOrderView() {
 
   // Save Purchase Order
   const handleSaveOrder = async (post: boolean = false) => {
+    if (activeOrder && activeOrder.status === 'Converted') {
+      triggerToast(t('po_locked_converted_notice', 'Cannot modify: Purchase Order is already converted to a Purchase Invoice and is locked.'));
+      return;
+    }
     if (!formSupplier || !formSupplier.name) {
       alert('Please choose a supplier');
       return;
@@ -678,17 +682,108 @@ export default function PurchaseOrderView() {
     }
   };
 
-  // Convert to Purchase Invoice
+  // Convert to Purchase Invoice (Creates Draft AP Bill in public.purchases_invoices & locks PO edits)
   const handleConvertToInvoice = async () => {
     if (!activeOrder) return;
+
+    const invoiceId = crypto.randomUUID();
+    const cleanPoNum = activeOrder.poNumber.replace(/[^0-9]/g, '') || Date.now().toString().slice(-6);
+    const invoiceNum = 'INV-PO-' + cleanPoNum;
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    const itemsSubtotal = activeOrder.items.reduce((sum, it) => sum + (Number(it.amount) || 0), 0);
+    const orderGrandTotal = itemsSubtotal + (Number(activeOrder.freight) || 0) + (Number(activeOrder.customs) || 0) + (Number(activeOrder.otherCost) || 0) - (Number(activeOrder.discountValue) || 0);
+
+    // 1. Write Draft AP Bill to public.purchases_invoices and items
+    try {
+      const { error: invErr } = await supabase
+        .from('purchases_invoices')
+        .insert([{
+          id: invoiceId,
+          tenant_id: targetTenantId,
+          invoice_number: invoiceNum,
+          po_number: activeOrder.poNumber,
+          supplier_id: activeOrder.id,
+          supplier_name: activeOrder.supplier,
+          invoice_date: new Date().toISOString().split('T')[0],
+          due_date: activeOrder.deliveryDate || new Date().toISOString().split('T')[0],
+          currency: activeOrder.currency || 'USD',
+          exchange_rate: Number(activeOrder.currencyRate) || 1.0,
+          subtotal: itemsSubtotal,
+          tax_amount: 0,
+          total_amount: orderGrandTotal,
+          status: 'DRAFT',
+          is_posted: false,
+          notes: 'Converted from Purchase Order #' + activeOrder.poNumber,
+          created_by: 'Procurement Specialist',
+          created_at: new Date().toISOString()
+        }]);
+
+      if (!invErr && activeOrder.items.length > 0) {
+        const itemRows = activeOrder.items.map(it => ({
+          id: crypto.randomUUID(),
+          tenant_id: targetTenantId,
+          invoice_id: invoiceId,
+          item_code: it.code,
+          description: it.description,
+          quantity: it.qty,
+          unit_price: it.priceUnit,
+          subtotal: it.amount,
+          created_at: new Date().toISOString()
+        }));
+        await supabase.from('purchases_invoice_items').insert(itemRows);
+      }
+    } catch (dbErr) {
+      console.warn('purchases_invoices insert notice:', dbErr);
+    }
+
+    // 2. Dual-persist to feature_flags.purchases_invoices
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetTenantId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || {};
+      const existingInvoices = Array.isArray(existingFlags.purchases_invoices) ? existingFlags.purchases_invoices : [];
+      const newInvoiceObj = {
+        id: invoiceId,
+        invoiceNumber: invoiceNum,
+        poNumber: activeOrder.poNumber,
+        supplierName: activeOrder.supplier,
+        date: new Date().toISOString().split('T')[0],
+        totalAmount: orderGrandTotal,
+        currency: activeOrder.currency || 'USD',
+        status: 'DRAFT',
+        items: activeOrder.items
+      };
+
+      await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            purchases_invoices: [newInvoiceObj, ...existingInvoices]
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetTenantId);
+    } catch (fErr) {
+      console.warn('Tenant sync for purchases_invoices notice:', fErr);
+    }
+
+    // 3. Mark PO status as Converted in database and lock further edits
     const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Converted' as const } : o);
     const res = await persistOrdersToDatabase(updated);
     if (!res.success) {
-      triggerToast(`Database persistence failed: ${res.error}`);
+      triggerToast('Database persistence failed: ' + res.error);
       return;
     }
     setOrders(updated);
-    triggerToast(`Purchase Order #${activeOrder.poNumber} successfully converted in database.`);
+    triggerToast('Purchase Order #' + activeOrder.poNumber + ' successfully converted to Draft AP Bill (' + invoiceNum + ') in database. Further edits locked.');
     setShowPreviewList(true);
   };
 
@@ -1711,6 +1806,13 @@ export default function PurchaseOrderView() {
                       <span>{t('reject', 'Reject')}</span>
                     </button>
                   </>
+                )}
+
+                {activeOrder.status === 'Converted' && (
+                  <div className="h-[36px] px-4 bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold rounded flex items-center gap-1.5 select-none">
+                    <i className="fa fa-lock"></i>
+                    <span>{t('po_converted_locked', 'PO Converted to AP Bill (Locked)')}</span>
+                  </div>
                 )}
 
                 {activeOrder.status === 'Approved' && (

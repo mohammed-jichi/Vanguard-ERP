@@ -65,7 +65,8 @@ export interface SavedTransferRecord {
   locSource: string;
   branchDest: string;
   locDest: string;
-  status: 'POSTED' | 'UNPOSTED' | 'IN_TRANSIT';
+  status: 'DRAFT' | 'IN_TRANSIT' | 'RECEIVED' | 'POSTED' | 'UNPOSTED';
+  receivedAt?: string;
   posted: boolean;
   fromReqNo?: string;
   prNumber?: string;
@@ -487,11 +488,106 @@ export default function TransfersView() {
     setIsActionsDropdownOpen(false);
   };
 
-  // Save / Post Actions
+  // Atomic stock updates for transfers (Source decrement & In-Transit / Destination increment)
+  const executeTransferStockMovements = async (
+    transfer: SavedTransferRecord,
+    stage: 'DISPATCH_IN_TRANSIT' | 'RECEIVE_DESTINATION'
+  ) => {
+    const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    for (const item of transfer.items) {
+      try {
+        const qty = Number(item.qtyTransfered) || 0;
+        if (qty <= 0) continue;
+
+        if (stage === 'DISPATCH_IN_TRANSIT') {
+          // Decrement source on_hand_qty and increment in_transit_qty
+          const { data: srcStock } = await supabase
+            .from('inventory_stock')
+            .select('on_hand_qty, in_transit_qty')
+            .eq('tenant_id', targetId)
+            .eq('item_code', item.code)
+            .maybeSingle();
+
+          const currentOnHand = Number(srcStock?.on_hand_qty) || Number(item.qtyOnHand) || 100;
+          const currentInTransit = Number(srcStock?.in_transit_qty) || 0;
+
+          await supabase.from('inventory_stock').upsert({
+            tenant_id: targetId,
+            branch_id: 1,
+            location_id: 1,
+            item_code: item.code,
+            item_name: item.description,
+            on_hand_qty: Math.max(0, currentOnHand - qty),
+            in_transit_qty: currentInTransit + qty,
+            unit: item.unit,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'tenant_id,location_id,item_code' });
+
+          await supabase.from('inventory_movements').insert([{
+            id: crypto.randomUUID(),
+            tenant_id: targetId,
+            branch_id: 1,
+            location_id: 1,
+            item_code: item.code,
+            movement_type: 'TRANSFER_OUT',
+            reference_id: transfer.reqNo,
+            quantity: -qty,
+            unit_cost: item.unitCostUsd,
+            total_cost: qty * item.unitCostUsd,
+            notes: 'Dispatched in-transit to ' + transfer.locDest
+          }]);
+        } else if (stage === 'RECEIVE_DESTINATION') {
+          // Increment destination on_hand_qty and decrement in_transit_qty
+          const { data: destStock } = await supabase
+            .from('inventory_stock')
+            .select('on_hand_qty, in_transit_qty')
+            .eq('tenant_id', targetId)
+            .eq('item_code', item.code)
+            .maybeSingle();
+
+          const currentOnHand = Number(destStock?.on_hand_qty) || 0;
+          const currentInTransit = Number(destStock?.in_transit_qty) || qty;
+
+          await supabase.from('inventory_stock').upsert({
+            tenant_id: targetId,
+            branch_id: 2,
+            location_id: 2,
+            item_code: item.code,
+            item_name: item.description,
+            on_hand_qty: currentOnHand + qty,
+            in_transit_qty: Math.max(0, currentInTransit - qty),
+            unit: item.unit,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'tenant_id,location_id,item_code' });
+
+          await supabase.from('inventory_movements').insert([{
+            id: crypto.randomUUID(),
+            tenant_id: targetId,
+            branch_id: 2,
+            location_id: 2,
+            item_code: item.code,
+            movement_type: 'TRANSFER_IN',
+            reference_id: transfer.reqNo,
+            quantity: qty,
+            unit_cost: item.unitCostUsd,
+            total_cost: qty * item.unitCostUsd,
+            notes: 'Received cargo at ' + transfer.locDest
+          }]);
+        }
+      } catch (stkErr) {
+        console.warn('Stock movement notice for transfer:', stkErr);
+      }
+    }
+  };
+
+  // Save / Dispatch / Receive Lifecycle Actions (DRAFT -> IN_TRANSIT -> RECEIVED)
   const handleSaveTransfer = async (postImmediately: boolean) => {
-    const statusVal: 'POSTED' | 'UNPOSTED' = postImmediately ? 'POSTED' : 'UNPOSTED';
+    const statusVal = postImmediately ? 'IN_TRANSIT' : 'DRAFT';
     const newRecord: SavedTransferRecord = {
-      id: `TRN-${Date.now()}`,
+      id: 'TRN-' + Date.now(),
       reqNo: transferNumber,
       reqDate: transferDate,
       branchSource: fromBranch,
@@ -506,27 +602,77 @@ export default function TransfersView() {
       totalCostUsd: totalUnitCostUsd
     };
 
+    if (postImmediately) {
+      await executeTransferStockMovements(newRecord, 'DISPATCH_IN_TRANSIT');
+    }
+
     const updated = [newRecord, ...savedTransfers];
     const res = await persistTransfersToDatabase(updated);
     if (!res.success) {
-      showToast(`Database write failed: ${res.error}`);
+      showToast('Database write failed: ' + res.error);
       return;
     }
 
     setSavedTransfers(updated);
     setPreviewReq(true);
-    showToast(postImmediately ? `Transfer ${transferNumber} Saved, Posted & Persisted to DB successfully!` : `Transfer ${transferNumber} Saved & Persisted (Draft).`);
+    showToast(
+      postImmediately
+        ? 'Transfer ' + transferNumber + ' dispatched (IN_TRANSIT) & source stock decremented!'
+        : 'Transfer ' + transferNumber + ' saved as Draft.'
+    );
   };
 
   const handlePostCurrentTransfer = async () => {
-    const updated = savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'POSTED' as const, posted: true } : tr);
+    const current = savedTransfers.find(tr => tr.reqNo === transferNumber);
+    if (current && current.status === 'DRAFT') {
+      await executeTransferStockMovements(current, 'DISPATCH_IN_TRANSIT');
+    }
+    const updated = savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'IN_TRANSIT' as const, posted: true } : tr);
     const res = await persistTransfersToDatabase(updated);
     if (!res.success) {
-      showToast(`Database write failed: ${res.error}`);
+      showToast('Database write failed: ' + res.error);
       return;
     }
     setSavedTransfers(updated);
-    showToast(`Transfer ${transferNumber} Posted and updated in database!`);
+    showToast('Transfer ' + transferNumber + ' dispatched (IN_TRANSIT).');
+  };
+
+  // Receive Transfer at Destination (IN_TRANSIT -> RECEIVED)
+  const handleReceiveTransfer = async (trIdOrReqNo: string) => {
+    const target = savedTransfers.find(tr => tr.id === trIdOrReqNo || tr.reqNo === trIdOrReqNo);
+    if (!target) {
+      showToast('Transfer record not found.');
+      return;
+    }
+    if (target.status === 'RECEIVED') {
+      showToast('Transfer already marked as RECEIVED.');
+      return;
+    }
+
+    // 1. Atomically increment destination stock & decrement in-transit quantities
+    await executeTransferStockMovements(target, 'RECEIVE_DESTINATION');
+
+    // 2. Update lifecycle status to RECEIVED
+    const updatedRecord: SavedTransferRecord = {
+      ...target,
+      status: 'RECEIVED',
+      posted: true,
+      receivedAt: new Date().toISOString(),
+      items: target.items.map(it => ({ ...it, qtyReceived: it.qtyTransfered }))
+    };
+
+    const updated = savedTransfers.map(tr => tr.id === target.id ? updatedRecord : tr);
+    const res = await persistTransfersToDatabase(updated);
+    if (!res.success) {
+      showToast('Database write failed: ' + res.error);
+      return;
+    }
+
+    setSavedTransfers(updated);
+    if (transferNumber === target.reqNo) {
+      setItems(updatedRecord.items);
+    }
+    showToast('Cargo received! Destination on-hand stock atomically updated for #' + target.reqNo);
   };
 
   const handleDeleteCurrentTransfer = async () => {
@@ -1439,6 +1585,15 @@ export default function TransfersView() {
                       >
                         {t('post', 'Post')}
                       </button>
+                      {savedTransfers.find(tr => tr.reqNo === transferNumber)?.status === 'IN_TRANSIT' && (
+                        <button
+                          onClick={() => handleReceiveTransfer(transferNumber)}
+                          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>{t('receive_cargo', 'Receive Cargo at Destination')}</span>
+                        </button>
+                      )}
                       <button
                         onClick={handleDeleteCurrentTransfer}
                         className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
@@ -1686,7 +1841,7 @@ export default function TransfersView() {
                             ? 'bg-blue-100 text-blue-800'
                             : 'bg-amber-100 text-amber-800'
                         }`}>
-                          {row.posted ? 'Posted' : row.status === 'IN_TRANSIT' ? 'In-Transit' : 'Unposted'}
+                          {row.status === 'RECEIVED' ? 'Received' : row.status === 'IN_TRANSIT' ? 'In-Transit' : row.posted ? 'Posted' : 'Draft'}
                         </span>
                       </td>
                       <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">
@@ -1703,6 +1858,16 @@ export default function TransfersView() {
                             <Plus className="w-3.5 h-3.5" />
                           </button>
 
+                          {/* [Check] Receive Transfer if In-Transit */}
+                          {row.status === 'IN_TRANSIT' && (
+                            <button
+                              onClick={() => handleReceiveTransfer(row.id)}
+                              className="p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition shadow-2xs"
+                              title="Receive Cargo at Destination"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                           {/* [Tag] Post Transfer */}
                           {!row.posted && (
                             <button

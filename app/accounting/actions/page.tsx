@@ -23,10 +23,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import {
-  getLocalJVs,
-  saveLocalJVs,
-  getLocalAccounts,
-  saveLocalAccounts,
   INITIAL_JOURNAL_VOUCHERS,
   INITIAL_ACCOUNT_DETAILS,
   JournalVoucher,
@@ -36,6 +32,7 @@ import {
   apiFetchVouchers,
   apiFetchAccounts,
   apiSaveVoucher,
+  apiCreateAccount,
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
 
@@ -145,8 +142,6 @@ function AccountingActionsContent({ initialTab, initialScreenMode }: AccountingA
   const [accounts, setAccounts] = useState<AccountDetail[]>(INITIAL_ACCOUNT_DETAILS);
 
   useEffect(() => {
-    setJvs(getLocalJVs());
-    setAccounts(getLocalAccounts());
 
     apiFetchVouchers().then((persistedJvs) => {
       if (persistedJvs && persistedJvs.length > 0) {
@@ -196,14 +191,67 @@ function AccountingActionsContent({ initialTab, initialScreenMode }: AccountingA
   };
 
   // State Persistence handlers
-  const handleSaveJVs = (updatedJvs: JournalVoucher[]) => {
+  // Real Database Persistence Handlers (Zero localStorage - direct Supabase & ServerStorage)
+  const handleSaveJVs = async (updatedJvs: JournalVoucher[]) => {
     setJvs(updatedJvs);
-    saveLocalJVs(updatedJvs);
+    try {
+      const topVoucher = updatedJvs[0];
+      if (topVoucher && topVoucher.jv_number) {
+        const linesPayload = (topVoucher.lines || []).map((l: any, idx: number) => ({
+          id: l.id || crypto.randomUUID(),
+          line_number: l.line_number || idx + 1,
+          account_id: l.account_id || null,
+          account_number: l.account_number || '',
+          account_name: l.account_name || '',
+          description: l.description || topVoucher.description || 'Ledger line entry',
+          amount_debit: Number(l.amount_debit) || 0,
+          amount_credit: Number(l.amount_credit) || 0,
+          currency_rate: Number(l.currency_rate) || 1.0,
+          amount_native: Number(l.amount_native) || 0
+        }));
+
+        await apiSaveVoucher({
+          voucher: {
+            id: topVoucher.id,
+            jv_number: topVoucher.jv_number,
+            date_of_jv: topVoucher.date_of_jv,
+            jv_type: topVoucher.jv_type || 'STANDARD',
+            currency_id: topVoucher.currency_id || 'USD',
+            description: topVoucher.description,
+            internal_remark: topVoucher.internal_remark,
+            department: topVoucher.department,
+            sub_department: topVoucher.sub_department,
+            created_by: topVoucher.created_by || 'Finance Controller'
+          },
+          lines: linesPayload,
+          postImmediately: Boolean(topVoucher.is_posted)
+        });
+      }
+    } catch (saveErr) {
+      console.warn('Database JV sync notice:', saveErr);
+    }
   };
 
-  const handleSaveAccounts = (updatedAccounts: AccountDetail[]) => {
+  const handleSaveAccounts = async (updatedAccounts: AccountDetail[]) => {
     setAccounts(updatedAccounts);
-    saveLocalAccounts(updatedAccounts);
+    try {
+      const latestAcc = updatedAccounts[0];
+      if (latestAcc) {
+        await apiCreateAccount({
+          account_number: latestAcc.account_number,
+          account_name: latestAcc.account_name,
+          account_name_ar: latestAcc.account_name_ar,
+          description: latestAcc.description,
+          class_id: latestAcc.class_id,
+          account_type: latestAcc.account_type,
+          currency_id: latestAcc.currency_id,
+          balance_first_cur: latestAcc.balance_first_cur,
+          is_active: latestAcc.is_active
+        });
+      }
+    } catch (accErr) {
+      console.warn('Database account sync notice:', accErr);
+    }
   };
 
   // Cross-module trigger: Open RV with pre-filled customer

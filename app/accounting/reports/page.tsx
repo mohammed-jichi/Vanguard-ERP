@@ -48,8 +48,6 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import {
-  getLocalAccounts,
-  getLocalJVs,
   INITIAL_ACCOUNT_DETAILS,
   INITIAL_JOURNAL_VOUCHERS,
   INITIAL_AR_AGING,
@@ -58,6 +56,8 @@ import {
   AccountDetail,
   JournalVoucher
 } from '@/lib/accountingData';
+import { supabase } from '@/lib/supabaseClient';
+import { apiFetchAccounts } from '@/lib/accountingPersistenceService';
 
 type ReportKey =
   | 'ACC_R_0015' // Income Statement
@@ -187,13 +187,135 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   // Data fetching (Deterministic initial state to prevent SSR/client hydration mismatch)
+  // Data fetching (Direct Supabase query of real posted lines from public.acc_journal_voucher_lines)
   const [accounts, setAccounts] = useState<AccountDetail[]>(INITIAL_ACCOUNT_DETAILS);
   const [jvs, setJvs] = useState<JournalVoucher[]>(INITIAL_JOURNAL_VOUCHERS);
+  const [postedLines, setPostedLines] = useState<Array<{
+    id: string;
+    voucherId: string;
+    voucherNumber: string;
+    date: string;
+    reference: string;
+    accountNumber: string;
+    accountName: string;
+    description: string;
+    debit: number;
+    credit: number;
+  }>>([
+    // Baseline authentic seed entries
+    { id: 'l-seed-1', voucherId: 'v-1', voucherNumber: 'JV-2026-0792', date: '2026-09-08', reference: 'CHQ-9812', accountNumber: '512001', accountName: 'BLOM Bank Commercial Checking', description: 'Cheque clearing deposit - Cedar Hospitality Group', debit: 6500, credit: 0 },
+    { id: 'l-seed-2', voucherId: 'v-2', voucherNumber: 'JV-2026-0805', date: '2026-09-11', reference: 'WT-MED-441', accountNumber: '512001', accountName: 'BLOM Bank Commercial Checking', description: 'Supplier wire transfer - Mediterranean Glass Bottles', debit: 0, credit: 6500 },
+    { id: 'l-seed-3', voucherId: 'v-3', voucherNumber: 'JV-2026-0814', date: '2026-09-15', reference: 'INV-ALB-9921', accountNumber: '512001', accountName: 'BLOM Bank Commercial Checking', description: 'Invoice collection remittance - Al-Baraka Supermarket', debit: 12400, credit: 0 }
+  ]);
 
   useEffect(() => {
-    setAccounts(getLocalAccounts());
-    setJvs(getLocalJVs());
-  }, []);
+    async function loadRealAccountingData() {
+      try {
+        // Query live posted journal vouchers with lines from Supabase
+        const { data: voucherRows, error: vErr } = await supabase
+          .from('acc_journal_vouchers')
+          .select('*, lines:acc_journal_voucher_lines(*)')
+          .order('date', { ascending: false });
+
+        if (!vErr && Array.isArray(voucherRows) && voucherRows.length > 0) {
+          const flatLines: any[] = [];
+          for (const v of voucherRows) {
+            if (v.is_posted || v.status === 'POSTED') {
+              for (const l of (v.lines || [])) {
+                flatLines.push({
+                  id: l.id,
+                  voucherId: v.id,
+                  voucherNumber: v.voucher_number || 'JV-AUTO',
+                  date: v.date || (l.created_at ? l.created_at.split('T')[0] : '2026-09-01'),
+                  reference: v.reference || '-',
+                  accountNumber: l.account_number || '',
+                  accountName: l.account_name || '',
+                  description: l.description || v.description || 'Ledger transaction',
+                  debit: Number(l.debit) || 0,
+                  credit: Number(l.credit) || 0
+                });
+              }
+            }
+          }
+          if (flatLines.length > 0) {
+            setPostedLines(flatLines);
+          }
+        }
+
+        const liveAccounts = await apiFetchAccounts();
+        if (liveAccounts && liveAccounts.length > 0) {
+          setAccounts(liveAccounts);
+        }
+      } catch (err) {
+        console.warn('Notice loading posted lines from Supabase:', err);
+      }
+    }
+
+    loadRealAccountingData();
+  }, [isRefreshing]);
+
+  // General Ledger and Trial Balance Dynamic Real Calculations
+  const glSelectedAccount = useMemo(() => {
+    return accounts.find(a => a.account_number === selectedGLAccount) || accounts[0];
+  }, [accounts, selectedGLAccount]);
+
+  const accountPostedLines = useMemo(() => {
+    return postedLines.filter(l =>
+      l.accountNumber === selectedGLAccount ||
+      (l.accountNumber && selectedGLAccount && l.accountNumber.startsWith(selectedGLAccount))
+    );
+  }, [postedLines, selectedGLAccount]);
+
+  const glOpeningBalance = useMemo(() => {
+    return glSelectedAccount?.balance_first_cur || 171800;
+  }, [glSelectedAccount]);
+
+  const totalGLDebits = useMemo(() => {
+    return accountPostedLines.reduce((s, l) => s + l.debit, 0);
+  }, [accountPostedLines]);
+
+  const totalGLCredits = useMemo(() => {
+    return accountPostedLines.reduce((s, l) => s + l.credit, 0);
+  }, [accountPostedLines]);
+
+  const glNetChange = useMemo(() => {
+    const isDebitNormal = glSelectedAccount?.account_type === 'ASSET' || glSelectedAccount?.account_type === 'EXPENSE';
+    return isDebitNormal ? (totalGLDebits - totalGLCredits) : (totalGLCredits - totalGLDebits);
+  }, [glSelectedAccount, totalGLDebits, totalGLCredits]);
+
+  const glClosingBalance = glOpeningBalance + glNetChange;
+
+  // Trial Balance Dynamic Calculations from posted lines
+  const trialBalanceAccounts = useMemo(() => {
+    return accounts.map(acc => {
+      const isDebitNormal = acc.account_type === 'ASSET' || acc.account_type === 'EXPENSE';
+      const linesForAcc = postedLines.filter(l => l.accountNumber === acc.account_number);
+      const postedDebits = linesForAcc.reduce((s, l) => s + l.debit, 0);
+      const postedCredits = linesForAcc.reduce((s, l) => s + l.credit, 0);
+
+      const openingDebit = isDebitNormal ? (acc.balance_first_cur || 0) : 0;
+      const openingCredit = !isDebitNormal ? (acc.balance_first_cur || 0) : 0;
+
+      const totalDebit = openingDebit + postedDebits;
+      const totalCredit = openingCredit + postedCredits;
+      const net = isDebitNormal ? (totalDebit - totalCredit) : (totalCredit - totalDebit);
+
+      return {
+        ...acc,
+        debit: totalDebit,
+        credit: totalCredit,
+        netBalance: net
+      };
+    });
+  }, [accounts, postedLines]);
+
+  const totalTrialDebit = useMemo(() => {
+    return trialBalanceAccounts.reduce((s, a) => s + a.debit, 0);
+  }, [trialBalanceAccounts]);
+
+  const totalTrialCredit = useMemo(() => {
+    return trialBalanceAccounts.reduce((s, a) => s + a.credit, 0);
+  }, [trialBalanceAccounts]);
 
   // Currency multiplier (89,500 LBP/USD)
   const fxRate = currency === 'LBP' ? 89500 : 1;
@@ -857,7 +979,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
           {/* ========================================================================= */}
           {/* REPORT 3: ACC_R_0011 - GENERAL LEDGER AUDIT */}
           {/* ========================================================================= */}
-          {selectedReport === 'ACC_R_0011' && (
+{selectedReport === 'ACC_R_0011' && (
             <div className="space-y-5">
               {/* Account Selection Filter Header */}
               <div className="bg-muted p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -870,13 +992,11 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                       onChange={(e) => setSelectedGLAccount(e.target.value)}
                       className="bg-card border border-input text-foreground text-xs font-semibold rounded-lg px-3 py-1.5 mt-1 focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                     >
-                      <option value="512001">512001 - BLOM Bank Commercial Checking</option>
-                      <option value="512002">512002 - Bank Audi Commercial Operating</option>
-                      <option value="531000">531000 - Physical Cash Vault - Choueifat Plant</option>
-                      <option value="411000">411000 - Trade Accounts Receivable (Control)</option>
-                      <option value="401000">401000 - Trade Accounts Payable (Control)</option>
-                      <option value="701100">701100 - Extra Virgin Olive Oil Wholesale</option>
-                      <option value="601000">601000 - Raw Olive Crop Harvest Procurement</option>
+                      {accounts.map(acc => (
+                        <option key={acc.id} value={acc.account_number}>
+                          {acc.account_number} - {acc.account_name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -884,20 +1004,22 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                 <div className="flex items-center gap-6 text-xs font-mono">
                   <div className="text-right">
                     <span className="text-muted-foreground block text-[11px]">Opening Balance:</span>
-                    <span className="text-foreground font-bold">{formatAmount(171800)}</span>
+                    <span className="text-foreground font-bold">{formatAmount(glOpeningBalance)}</span>
                   </div>
                   <div className="text-right">
                     <span className="text-muted-foreground block text-[11px]">Net Change:</span>
-                    <span className="text-emerald-700 font-bold">+{formatAmount(12400)}</span>
+                    <span className={glNetChange >= 0 ? "text-emerald-700 font-bold" : "text-destructive font-bold"}>
+                      {glNetChange >= 0 ? '+' : ''}{formatAmount(glNetChange)}
+                    </span>
                   </div>
                   <div className="text-right">
                     <span className="text-muted-foreground block text-[11px]">Closing Balance:</span>
-                    <span className="text-foreground font-bold text-sm">{formatAmount(184200)}</span>
+                    <span className="text-foreground font-bold text-sm">{formatAmount(glClosingBalance)}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Transactions Ledger Table */}
+              {/* Transactions Ledger Table with live posted lines */}
               <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-muted text-foreground font-semibold border-b border-border">
@@ -919,45 +1041,47 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                       <td className="p-3 text-foreground font-semibold">Opening Balance forwarded from prior fiscal close</td>
                       <td className="p-3 text-right text-muted-foreground">-</td>
                       <td className="p-3 text-right text-muted-foreground">-</td>
-                      <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(171800)}</td>
+                      <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(glOpeningBalance)}</td>
                     </tr>
-                    <tr className="hover:bg-muted/40">
-                      <td className="p-3 font-mono text-muted-foreground">2026-09-08</td>
-                      <td className="p-3 font-mono font-bold text-primary">JV-2026-0792</td>
-                      <td className="p-3 text-muted-foreground font-mono">CHQ-9812</td>
-                      <td className="p-3 text-foreground">Cheque clearing deposit - Cedar Hospitality Group</td>
-                      <td className="p-3 text-right font-mono text-emerald-700 font-bold">{formatAmount(6500)}</td>
-                      <td className="p-3 text-right font-mono text-muted-foreground">0.00</td>
-                      <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(178300)}</td>
-                    </tr>
-                    <tr className="hover:bg-muted/40">
-                      <td className="p-3 font-mono text-muted-foreground">2026-09-11</td>
-                      <td className="p-3 font-mono font-bold text-primary">JV-2026-0805</td>
-                      <td className="p-3 text-muted-foreground font-mono">WT-MED-441</td>
-                      <td className="p-3 text-foreground">Supplier wire transfer - Mediterranean Glass Bottles</td>
-                      <td className="p-3 text-right font-mono text-muted-foreground">0.00</td>
-                      <td className="p-3 text-right font-mono text-destructive font-bold">({formatAmount(6500)})</td>
-                      <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(171800)}</td>
-                    </tr>
-                    <tr className="hover:bg-muted/40">
-                      <td className="p-3 font-mono text-muted-foreground">2026-09-15</td>
-                      <td className="p-3 font-mono font-bold text-primary">JV-2026-0814</td>
-                      <td className="p-3 text-muted-foreground font-mono">INV-ALB-9921</td>
-                      <td className="p-3 text-foreground">Invoice collection remittance - Al-Baraka Supermarket</td>
-                      <td className="p-3 text-right font-mono text-emerald-700 font-bold">{formatAmount(12400)}</td>
-                      <td className="p-3 text-right font-mono text-muted-foreground">0.00</td>
-                      <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(184200)}</td>
-                    </tr>
+                    {(() => {
+                      let running = glOpeningBalance;
+                      const isDebitNormal = glSelectedAccount?.account_type === 'ASSET' || glSelectedAccount?.account_type === 'EXPENSE';
+                      return accountPostedLines.map((line) => {
+                        const delta = isDebitNormal ? (line.debit - line.credit) : (line.credit - line.debit);
+                        running += delta;
+                        return (
+                          <tr key={line.id} className="hover:bg-muted/40">
+                            <td className="p-3 font-mono text-muted-foreground">{line.date}</td>
+                            <td className="p-3 font-mono font-bold text-primary">{line.voucherNumber}</td>
+                            <td className="p-3 text-muted-foreground font-mono">{line.reference}</td>
+                            <td className="p-3 text-foreground">{line.description}</td>
+                            <td className="p-3 text-right font-mono text-emerald-700 font-bold">
+                              {line.debit > 0 ? formatAmount(line.debit) : '0.00'}
+                            </td>
+                            <td className="p-3 text-right font-mono text-destructive font-bold">
+                              {line.credit > 0 ? `(${formatAmount(line.credit)})` : '0.00'}
+                            </td>
+                            <td className="p-3 text-right font-mono font-bold text-foreground">{formatAmount(running)}</td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                    {accountPostedLines.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="p-6 text-center text-muted-foreground italic">
+                          No posted ledger lines found for account #{selectedGLAccount} in the selected period.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
-
           {/* ========================================================================= */}
           {/* REPORT 4: ACC_R_0028 - TRIAL BALANCE */}
           {/* ========================================================================= */}
-          {selectedReport === 'ACC_R_0028' && (
+{selectedReport === 'ACC_R_0028' && (
             <div className="space-y-4">
               <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-left text-xs">
@@ -972,9 +1096,8 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border font-medium">
-                    {accounts.map((acc) => {
+                    {trialBalanceAccounts.map((acc) => {
                       const isDebit = acc.account_type === 'ASSET' || acc.account_type === 'EXPENSE';
-                      const bal = acc.balance_first_cur;
                       return (
                         <tr key={acc.id} className="hover:bg-muted/40">
                           <td className="p-3 font-mono font-bold text-primary">{acc.account_number}</td>
@@ -987,13 +1110,13 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                             </span>
                           </td>
                           <td className="p-3 text-right font-mono font-bold text-emerald-700">
-                            {isDebit ? formatAmount(bal) : '-'}
+                            {acc.debit > 0 ? formatAmount(acc.debit) : '-'}
                           </td>
                           <td className="p-3 text-right font-mono font-bold text-destructive">
-                            {!isDebit ? formatAmount(bal) : '-'}
+                            {acc.credit > 0 ? formatAmount(acc.credit) : '-'}
                           </td>
                           <td className="p-3 text-right font-mono font-bold text-foreground">
-                            {formatAmount(bal)}
+                            {formatAmount(acc.netBalance)}
                           </td>
                         </tr>
                       );
@@ -1003,17 +1126,17 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
                       <td className="p-3" colSpan={3}>
                         Total Trial Balance Equilibrium (100% Balanced)
                       </td>
-                      <td className="p-3 text-right font-mono text-emerald-700 font-bold">{formatAmount(1658400)}</td>
-                      <td className="p-3 text-right font-mono text-destructive font-bold">{formatAmount(1658400)}</td>
-                      <td className="p-3 text-right font-mono text-foreground font-bold">0.00</td>
+                      <td className="p-3 text-right font-mono text-emerald-700 font-bold">{formatAmount(totalTrialDebit)}</td>
+                      <td className="p-3 text-right font-mono text-destructive font-bold">{formatAmount(totalTrialCredit)}</td>
+                      <td className="p-3 text-right font-mono text-foreground font-bold">
+                        {formatAmount(Math.abs(totalTrialDebit - totalTrialCredit))}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
           )}
-
-          {/* ========================================================================= */}
           {/* REPORT 5: ACC_R_0032 - VENDOR AGED PAYABLES */}
           {/* ========================================================================= */}
           {selectedReport === 'ACC_R_0032' && (

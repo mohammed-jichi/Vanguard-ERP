@@ -65,6 +65,9 @@ export interface LanguageContextType {
 
 const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   en: {
+    'receive_cargo': 'Receive Cargo at Destination',
+    'po_converted_locked': 'PO Converted to AP Bill (Locked)',
+    'po_locked_converted_notice': 'Cannot modify: Purchase Order is already converted to a Purchase Invoice and is locked.',
     'quotation_to': 'Quotation To',
     'order_information': 'Order Information',
     'equivalent_lbp': 'Equivalent LBP:',
@@ -4646,6 +4649,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   ar: {
+    'receive_cargo': 'استلام البضائع في الوجهة',
+    'po_converted_locked': 'تم تحويل أمر الشراء إلى فاتورة مورد (مغلق)',
+    'po_locked_converted_notice': 'لا يمكن التعديل: أمر الشراء تم تحويله بالفعل إلى فاتورة مورد وهو مغلق.',
     'quotation_to': 'عرض موجه إلى',
     'order_information': 'Order Information',
     'equivalent_lbp': 'Equivalent LBP:',
@@ -9227,6 +9233,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fr: {
+    'receive_cargo': 'Réceptionner la cargaison à destination',
+    'po_converted_locked': 'Bon de commande converti en facture fournisseur (Verrouillé)',
+    'po_locked_converted_notice': 'Modification impossible : le bon de commande a déjà été converti en facture fournisseur et est verrouillé.',
     'quotation_to': 'Devis pour',
     'order_information': 'Order Information',
     'equivalent_lbp': 'Equivalent LBP:',
@@ -13807,6 +13816,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   es: {
+    'receive_cargo': 'Recibir carga en destino',
+    'po_converted_locked': 'Orden de compra convertida a factura de proveedor (Bloqueada)',
+    'po_locked_converted_notice': 'No se puede modificar: la orden de compra ya se ha convertido en una factura de compras y está bloqueada.',
     'quotation_to': 'Cotización para',
     'order_information': 'Order Information',
     'equivalent_lbp': 'Equivalent LBP:',
@@ -18387,6 +18399,9 @@ const translations: Partial<Record<LanguageCode, Record<string, string>>> = {
   },
 
   fa: {
+    'receive_cargo': 'دریافت بار در مقصد',
+    'po_converted_locked': 'سفارش خرید به صورت‌حساب بستانکاران تبدیل شد (قفل شده)',
+    'po_locked_converted_notice': 'امکان ویرایش وجود ندارد: این سفارش خرید قبلاً به فاکتور خرید تبدیل و قفل شده است.',
     'quotation_to': 'پیش‌فاکتور برای',
     'order_information': 'Order Information',
     'equivalent_lbp': 'Equivalent LBP:',
