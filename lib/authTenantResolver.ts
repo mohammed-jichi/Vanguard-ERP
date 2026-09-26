@@ -71,6 +71,7 @@ export function resolveTenantRouteCode(rawId?: string | null): string {
 }
 
 export const SUPER_ADMIN_EMAILS = [
+  'mohammed.jichi@gmail.com',
   'mohammed@vanguard-erp.com',
   'admin@vanguard.com',
   'superadmin@vanguard-erp.com',

@@ -121,6 +121,7 @@ export function middleware(request: NextRequest) {
   const companyCode = request.cookies.get('vanguard_company_code')?.value?.toUpperCase();
   const sessionEmail = request.cookies.get('vanguard_auth_session')?.value?.toLowerCase();
   const VERIFIED_SUPER_ADMIN_EMAILS = [
+    'mohammed.jichi@gmail.com',
     'mohammed@vanguard-erp.com',
     'admin@vanguard.com',
     'superadmin@vanguard-erp.com',
